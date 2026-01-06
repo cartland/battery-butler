@@ -1,0 +1,29 @@
+package com.chriscartland.blanket.data.room
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import com.chriscartland.blanket.domain.model.BatteryEvent
+import kotlinx.datetime.Instant
+
+@Entity(tableName = "battery_events")
+data class BatteryEventEntity(
+    @PrimaryKey val id: String,
+    val deviceId: String,
+    val date: Long, // Epoch milliseconds
+)
+
+fun BatteryEventEntity.toDomain(): BatteryEvent {
+    return BatteryEvent(
+        id = id,
+        deviceId = deviceId,
+        date = Instant.fromEpochMilliseconds(date),
+    )
+}
+
+fun BatteryEvent.toEntity(): BatteryEventEntity {
+    return BatteryEventEntity(
+        id = id,
+        deviceId = deviceId,
+        date = date.toEpochMilliseconds(),
+    )
+}

@@ -1,69 +1,107 @@
 package com.chriscartland.blanket
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import blanket.composeapp.generated.resources.Res
-import blanket.composeapp.generated.resources.compose_multiplatform
+import androidx.compose.runtime.*
+import com.chriscartland.blanket.di.AppComponent
+import com.chriscartland.blanket.feature.adddevice.AddDeviceScreen
+import com.chriscartland.blanket.feature.home.HomeScreen
 import com.chriscartland.blanket.ui.theme.BlanketTheme
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 @Preview
-fun App() {
+fun App(component: AppComponent) {
     BlanketTheme {
-        var showContent by remember { mutableStateOf(false) }
-        Column(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.background)
-                .safeContentPadding()
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Button(
-                onClick = { showContent = !showContent },
-                colors = ButtonDefaults.buttonColors(),
-            ) {
-                Text(
-                    "Click me!",
-                    style = MaterialTheme.typography.labelLarge,
+        var currentScreen by remember { mutableStateOf<Screen>(Screen.Home) }
+
+        when (currentScreen) {
+            Screen.Home -> {
+                HomeScreen(
+                    viewModel = component.homeViewModel,
+                    onAddDeviceClick = { currentScreen = Screen.AddDevice },
+                    onDeviceClick = { deviceId -> currentScreen = Screen.DeviceDetail(deviceId) },
+                    onManageTypesClick = { currentScreen = Screen.DeviceTypeList }
                 )
             }
-            AnimatedVisibility(
-                showContent,
-                enter = slideInVertically { -it } + fadeIn(),
-                exit = slideOutVertically { -it } + fadeOut(),
-            ) {
-                val greeting = remember { Greeting().greet() }
-                Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                    Image(painterResource(Res.drawable.compose_multiplatform), null)
-                    Text(
-                        "Compose: $greeting",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.onBackground,
-                    )
+            Screen.AddDevice -> {
+                AddDeviceScreen(
+                    viewModel = component.addDeviceViewModel,
+                    onDeviceAdded = { currentScreen = Screen.Home },
+                    onAddDeviceTypeClick = { currentScreen = Screen.AddDeviceType(returnScreen = Screen.AddDevice) },
+                    onBack = { currentScreen = Screen.Home }
+                )
+            }
+            is Screen.AddDeviceType -> {
+                 val returnScreen = (currentScreen as Screen.AddDeviceType).returnScreen
+                 com.chriscartland.blanket.feature.adddevicetype.AddDeviceTypeScreen(
+                    viewModel = component.addDeviceTypeViewModel,
+                    onDeviceTypeAdded = { currentScreen = returnScreen },
+                    onBack = { currentScreen = returnScreen }
+                )
+            }
+            is Screen.DeviceDetail -> {
+                val detailScreen = currentScreen as Screen.DeviceDetail
+                val viewModel = remember(detailScreen) { 
+                    component.deviceDetailViewModelFactory.create(detailScreen.deviceId) 
                 }
+                com.chriscartland.blanket.feature.devicedetail.DeviceDetailScreen(
+                    viewModel = viewModel,
+                    onBack = { currentScreen = Screen.Home },
+                    onEdit = { currentScreen = Screen.EditDevice(detailScreen.deviceId) },
+                    onEventClick = { eventId -> currentScreen = Screen.EventDetail(eventId, detailScreen.deviceId) }
+                )
+            }
+            is Screen.EventDetail -> {
+                val eventDetailScreen = currentScreen as Screen.EventDetail
+                val viewModel = remember(eventDetailScreen) {
+                    component.eventDetailViewModelFactory.create(eventDetailScreen.eventId)
+                }
+                com.chriscartland.blanket.feature.eventdetail.EventDetailScreen(
+                    viewModel = viewModel,
+                    onBack = { currentScreen = Screen.DeviceDetail(eventDetailScreen.deviceId) }
+                )
+            }
+            is Screen.EditDevice -> {
+                val editDeviceScreen = currentScreen as Screen.EditDevice
+                val viewModel = remember(editDeviceScreen) {
+                    component.editDeviceViewModelFactory.create(editDeviceScreen.deviceId)
+                }
+                com.chriscartland.blanket.feature.editdevice.EditDeviceScreen(
+                    viewModel = viewModel,
+                    onBack = { currentScreen = Screen.DeviceDetail(editDeviceScreen.deviceId) },
+                    onDelete = { currentScreen = Screen.Home }
+                )
+            }
+            is Screen.DeviceTypeList -> {
+                val viewModel = remember { component.deviceTypeListViewModel }
+                com.chriscartland.blanket.feature.devicetypes.DeviceTypeListScreen(
+                    viewModel = viewModel,
+                    onBack = { currentScreen = Screen.Home },
+                    onAddType = { currentScreen = Screen.AddDeviceType(returnScreen = Screen.DeviceTypeList) },
+                    onEditType = { typeId -> currentScreen = Screen.EditDeviceType(typeId) }
+                )
+            }
+            is Screen.EditDeviceType -> {
+                val editTypeScreen = currentScreen as Screen.EditDeviceType
+                val viewModel = remember(editTypeScreen) {
+                    component.editDeviceTypeViewModelFactory.create(editTypeScreen.typeId)
+                }
+                com.chriscartland.blanket.feature.devicetypes.EditDeviceTypeScreen(
+                    viewModel = viewModel,
+                    onBack = { currentScreen = Screen.DeviceTypeList },
+                    onDelete = { currentScreen = Screen.DeviceTypeList }
+                )
             }
         }
     }
+}
+
+sealed interface Screen {
+    data object Home : Screen
+    data object AddDevice : Screen
+    data class AddDeviceType(val returnScreen: Screen) : Screen
+    data class DeviceDetail(val deviceId: String) : Screen
+    data class EditDevice(val deviceId: String) : Screen
+    data class EventDetail(val eventId: String, val deviceId: String) : Screen
+    data object DeviceTypeList : Screen
+    data class EditDeviceType(val typeId: String) : Screen
 }

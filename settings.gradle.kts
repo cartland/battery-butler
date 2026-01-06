@@ -34,5 +34,8 @@ plugins {
 
 include(":composeApp")
 include(":server")
-include(":shared")
+include(":shared") // Legacy, to be removed or repurposed
+include(":domain")
+include(":data")
+include(":ui-core")
 
