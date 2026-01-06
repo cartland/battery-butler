@@ -52,6 +52,7 @@ kotlin {
             implementation(project(":domain"))
             implementation(project(":data"))
             implementation(project(":ui-core"))
+            implementation(project(":viewmodel"))
 
             implementation(libs.androidx.nav3.ui)
             implementation(libs.androidx.lifecycle.viewmodel.nav3)

@@ -38,4 +38,5 @@ include(":shared") // Legacy, to be removed or repurposed
 include(":domain")
 include(":data")
 include(":ui-core")
+include(":viewmodel")
 
