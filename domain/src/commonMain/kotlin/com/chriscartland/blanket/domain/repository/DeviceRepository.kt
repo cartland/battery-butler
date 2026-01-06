@@ -28,6 +28,8 @@ interface DeviceRepository {
 
     fun getEventsForDevice(deviceId: String): Flow<List<BatteryEvent>>
 
+    fun getAllEvents(): Flow<List<BatteryEvent>>
+
     fun getEventById(id: String): Flow<BatteryEvent?>
 
     suspend fun addEvent(event: BatteryEvent)

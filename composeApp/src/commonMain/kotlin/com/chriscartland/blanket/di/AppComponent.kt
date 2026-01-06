@@ -12,6 +12,7 @@ import com.chriscartland.blanket.feature.devicetypes.DeviceTypeListViewModel
 import com.chriscartland.blanket.feature.devicetypes.EditDeviceTypeViewModelFactory
 import com.chriscartland.blanket.feature.editdevice.EditDeviceViewModelFactory
 import com.chriscartland.blanket.feature.eventdetail.EventDetailViewModelFactory
+import com.chriscartland.blanket.feature.history.HistoryListViewModel
 import com.chriscartland.blanket.feature.home.HomeViewModel
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
@@ -28,6 +29,7 @@ abstract class AppComponent(
     abstract val homeViewModel: HomeViewModel
     abstract val addDeviceViewModel: AddDeviceViewModel
     abstract val addDeviceTypeViewModel: AddDeviceTypeViewModel
+    abstract val historyListViewModel: HistoryListViewModel
     abstract val deviceDetailViewModelFactory: DeviceDetailViewModelFactory
     abstract val editDeviceViewModelFactory: EditDeviceViewModelFactory
     abstract val eventDetailViewModelFactory: EventDetailViewModelFactory

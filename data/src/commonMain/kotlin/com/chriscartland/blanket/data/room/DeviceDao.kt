@@ -44,6 +44,9 @@ interface DeviceDao {
     @Query("SELECT * FROM battery_events WHERE deviceId = :deviceId ORDER BY date DESC")
     fun getEventsForDevice(deviceId: String): Flow<List<BatteryEventEntity>>
 
+    @Query("SELECT * FROM battery_events ORDER BY date DESC")
+    fun getAllEvents(): Flow<List<BatteryEventEntity>>
+
     @Query("SELECT * FROM battery_events WHERE id = :id")
     fun getEventById(id: String): Flow<BatteryEventEntity?>
 

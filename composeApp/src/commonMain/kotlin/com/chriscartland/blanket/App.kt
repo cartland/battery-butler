@@ -15,11 +15,15 @@ fun App(component: AppComponent) {
 
         when (currentScreen) {
             Screen.Home -> {
-                HomeScreen(
-                    viewModel = component.homeViewModel,
+                val homeViewModel = remember { component.homeViewModel }
+                val historyListViewModel = remember { component.historyListViewModel }
+                com.chriscartland.blanket.feature.main.MainScreen(
+                    homeViewModel = homeViewModel,
+                    historyListViewModel = historyListViewModel,
                     onAddDeviceClick = { currentScreen = Screen.AddDevice },
                     onDeviceClick = { deviceId -> currentScreen = Screen.DeviceDetail(deviceId) },
-                    onManageTypesClick = { currentScreen = Screen.DeviceTypeList }
+                    onManageTypesClick = { currentScreen = Screen.DeviceTypeList },
+                    onEventClick = { eventId, deviceId -> currentScreen = Screen.EventDetail(eventId, deviceId) }
                 )
             }
             Screen.AddDevice -> {

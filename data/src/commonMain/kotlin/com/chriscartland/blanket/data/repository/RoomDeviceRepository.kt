@@ -59,6 +59,11 @@ class RoomDeviceRepository(
             entities.map { it.toDomain() }
         }
 
+    override fun getAllEvents(): Flow<List<BatteryEvent>> =
+        dao.getAllEvents().map { entities ->
+            entities.map { it.toDomain() }
+        }
+
     override fun getEventById(id: String): Flow<BatteryEvent?> =
         dao.getEventById(id).map { it?.toDomain() }
 

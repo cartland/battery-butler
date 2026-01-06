@@ -26,44 +26,15 @@ fun HomeScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
 
-    Scaffold(
-        modifier = modifier,
-        floatingActionButton = {
-            androidx.compose.material3.FloatingActionButton(
-                onClick = onAddDeviceClick
-            ) {
-                androidx.compose.material3.Icon(
-                    imageVector = androidx.compose.material.icons.Icons.Default.Add,
-                    contentDescription = "Add Device"
-                )
-            }
-        },
-        topBar = {
-            androidx.compose.material3.TopAppBar(
-                title = { androidx.compose.material3.Text("Blanket") },
-                actions = {
-                    androidx.compose.material3.IconButton(onClick = onManageTypesClick) {
-                        androidx.compose.material3.Icon(
-                            imageVector = androidx.compose.material.icons.Icons.Default.Settings,
-                            contentDescription = "Manage Device Types"
-                        )
-                    }
-                }
+    LazyColumn(
+        modifier = modifier.fillMaxSize(),
+    ) {
+        items(state.devices) { device ->
+            DeviceListItem(
+                device = device,
+                deviceType = state.deviceTypes[device.typeId],
+                onClick = { onDeviceClick(device.id) },
             )
-        }
-    ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-        ) {
-            items(state.devices) { device ->
-                DeviceListItem(
-                    device = device,
-                    deviceType = state.deviceTypes[device.typeId],
-                    onClick = { onDeviceClick(device.id) },
-                )
-            }
         }
     }
 }
