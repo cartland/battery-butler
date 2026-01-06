@@ -58,27 +58,14 @@ fun EventDetailScreen(
     Scaffold(
         modifier = modifier,
         topBar = {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp) // Standard TopAppBar height
-                    .background(MaterialTheme.colorScheme.surface)
-                    .padding(horizontal = 16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                TextButton(onClick = onBack) {
-                    Text("Done", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.primary)
+            androidx.compose.material3.TopAppBar(
+                title = { Text("Edit Event", fontWeight = FontWeight.Bold) },
+                navigationIcon = {
+                    TextButton(onClick = onBack) {
+                        Text("Done", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.primary)
+                    }
                 }
-                Text(
-                    text = "Edit Event",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                // Placeholder to balance layout if needed, or Save button if we had transient state
-                 Spacer(modifier = Modifier.size(64.dp)) // Approximate width of "Done" button to center title
-            }
+            )
         }
     ) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
