@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
@@ -19,11 +18,9 @@ import me.tatarka.inject.annotations.Inject
 
 @Inject
 class EventDetailViewModelFactory(
-    private val deviceRepository: DeviceRepository
+    private val deviceRepository: DeviceRepository,
 ) {
-    fun create(eventId: String): EventDetailViewModel {
-        return EventDetailViewModel(eventId, deviceRepository)
-    }
+    fun create(eventId: String): EventDetailViewModel = EventDetailViewModel(eventId, deviceRepository)
 }
 
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
@@ -31,29 +28,28 @@ class EventDetailViewModel(
     private val eventId: String,
     private val deviceRepository: DeviceRepository,
 ) : ViewModel() {
-
-    val uiState: StateFlow<EventDetailUiState> = deviceRepository.getEventById(eventId)
+    val uiState: StateFlow<EventDetailUiState> = deviceRepository
+        .getEventById(eventId)
         .flatMapLatest { event ->
             if (event == null) {
                 kotlinx.coroutines.flow.flowOf(EventDetailUiState.NotFound)
             } else {
                 combine(
                     deviceRepository.getDeviceById(event.deviceId).filterNotNull(),
-                    deviceRepository.getAllDeviceTypes()
+                    deviceRepository.getAllDeviceTypes(),
                 ) { device, types ->
                     val deviceType = types.find { it.id == device.typeId }
                     EventDetailUiState.Success(
                         event = event,
                         device = device,
-                        deviceType = deviceType
+                        deviceType = deviceType,
                     )
                 }
             }
-        }
-        .stateIn(
+        }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = EventDetailUiState.Loading
+            initialValue = EventDetailUiState.Loading,
         )
 
     fun updateDate(newDate: Instant) {
@@ -74,10 +70,12 @@ class EventDetailViewModel(
 
 sealed interface EventDetailUiState {
     data object Loading : EventDetailUiState
+
     data object NotFound : EventDetailUiState
+
     data class Success(
         val event: BatteryEvent,
         val device: Device,
-        val deviceType: DeviceType?
+        val deviceType: DeviceType?,
     ) : EventDetailUiState
 }

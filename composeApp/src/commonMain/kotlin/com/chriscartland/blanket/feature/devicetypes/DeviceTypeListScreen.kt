@@ -25,7 +25,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.chriscartland.blanket.ui.components.DeviceIconMapper
@@ -50,14 +49,14 @@ fun DeviceTypeListScreen(
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
-                }
+                },
             )
         },
         floatingActionButton = {
             FloatingActionButton(onClick = onAddType) {
                 Icon(Icons.Default.Add, contentDescription = "Add Type")
             }
-        }
+        },
     ) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
             when (val state = uiState) {
@@ -67,7 +66,7 @@ fun DeviceTypeListScreen(
                 is DeviceTypeListUiState.Success -> {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(16.dp)
+                        contentPadding = PaddingValues(16.dp),
                     ) {
                         items(state.deviceTypes) { type ->
                             ListItem(
@@ -77,10 +76,10 @@ fun DeviceTypeListScreen(
                                     Icon(
                                         imageVector = DeviceIconMapper.getIcon(type.defaultIcon),
                                         contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.primary
+                                        tint = MaterialTheme.colorScheme.primary,
                                     )
                                 },
-                                modifier = Modifier.clickable { onEditType(type.id) }
+                                modifier = Modifier.clickable { onEditType(type.id) },
                             )
                         }
                     }

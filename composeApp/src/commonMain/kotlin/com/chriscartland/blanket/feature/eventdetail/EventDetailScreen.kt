@@ -64,9 +64,9 @@ fun EventDetailScreen(
                     TextButton(onClick = onBack) {
                         Text("Done", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.primary)
                     }
-                }
+                },
             )
-        }
+        },
     ) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
             when (val state = uiState) {
@@ -79,11 +79,14 @@ fun EventDetailScreen(
                 is EventDetailUiState.Success -> {
                     val event = state.event
                     val date = event.date.toLocalDateTime(TimeZone.currentSystemDefault())
-                    val dateString = "${date.year}-${date.monthNumber.toString().padStart(2, '0')}-${date.dayOfMonth.toString().padStart(2, '0')}"
+                    val dateString = "${date.year}-${date.monthNumber.toString().padStart(
+                        2,
+                        '0',
+                    )}-${date.dayOfMonth.toString().padStart(2, '0')}"
 
                     if (showDatePicker) {
                         val datePickerState = rememberDatePickerState(
-                            initialSelectedDateMillis = event.date.toEpochMilliseconds()
+                            initialSelectedDateMillis = event.date.toEpochMilliseconds(),
                         )
                         DatePickerDialog(
                             onDismissRequest = { showDatePicker = false },
@@ -94,7 +97,7 @@ fun EventDetailScreen(
                                             viewModel.updateDate(Instant.fromEpochMilliseconds(millis))
                                         }
                                         showDatePicker = false
-                                    }
+                                    },
                                 ) {
                                     Text("OK")
                                 }
@@ -103,7 +106,7 @@ fun EventDetailScreen(
                                 TextButton(onClick = { showDatePicker = false }) {
                                     Text("Cancel")
                                 }
-                            }
+                            },
                         ) {
                             DatePicker(state = datePickerState)
                         }
@@ -111,7 +114,7 @@ fun EventDetailScreen(
 
                     Column(
                         modifier = Modifier.fillMaxSize().padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         // Profile Header
                         val iconName = state.deviceType?.defaultIcon ?: "devices_other"
@@ -121,25 +124,25 @@ fun EventDetailScreen(
                                 .size(96.dp)
                                 .clip(CircleShape)
                                 .background(DeviceIconMapper.getContainerColor(iconName)),
-                            contentAlignment = Alignment.Center
+                            contentAlignment = Alignment.Center,
                         ) {
                             Icon(
                                 imageVector = DeviceIconMapper.getIcon(iconName),
                                 contentDescription = null,
                                 modifier = Modifier.size(48.dp),
-                                tint = DeviceIconMapper.getContentColor(iconName)
+                                tint = DeviceIconMapper.getContentColor(iconName),
                             )
                         }
-                        
+
                         Text(
                             text = state.device.name,
                             style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
                         )
-                         Text(
+                        Text(
                             text = state.deviceType?.name ?: "Unknown",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
 
                         Spacer(modifier = Modifier.height(32.dp))
@@ -153,7 +156,7 @@ fun EventDetailScreen(
                                 .clickable { showDatePicker = true }
                                 .padding(16.dp),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
+                            horizontalArrangement = Arrangement.SpaceBetween,
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                                 Icon(Icons.Default.CalendarToday, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
@@ -161,7 +164,11 @@ fun EventDetailScreen(
                             }
                             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 Text(dateString, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
-                                Icon(Icons.Default.ChevronRight, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Icon(
+                                    Icons.Default.ChevronRight,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
                             }
                         }
 
@@ -169,16 +176,16 @@ fun EventDetailScreen(
 
                         // Delete Button
                         Button(
-                            onClick = { 
+                            onClick = {
                                 viewModel.deleteEvent()
                                 onBack() // Navigate back after delete
                             },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.errorContainer,
-                                contentColor = MaterialTheme.colorScheme.error
+                                contentColor = MaterialTheme.colorScheme.error,
                             ),
                             modifier = Modifier.fillMaxWidth().height(56.dp),
-                            shape = RoundedCornerShape(12.dp)
+                            shape = RoundedCornerShape(12.dp),
                         ) {
                             Text("Delete Entry", fontWeight = FontWeight.SemiBold)
                         }

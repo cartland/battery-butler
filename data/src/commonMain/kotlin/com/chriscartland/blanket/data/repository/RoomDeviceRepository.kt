@@ -39,8 +39,7 @@ class RoomDeviceRepository(
             entities.map { it.toDomain() }
         }
 
-    override fun getDeviceTypeById(id: String): Flow<DeviceType?> =
-        dao.getDeviceTypeById(id).map { it?.toDomain() }
+    override fun getDeviceTypeById(id: String): Flow<DeviceType?> = dao.getDeviceTypeById(id).map { it?.toDomain() }
 
     override suspend fun addDeviceType(type: DeviceType) {
         dao.insertDeviceType(type.toEntity())
@@ -64,8 +63,7 @@ class RoomDeviceRepository(
             entities.map { it.toDomain() }
         }
 
-    override fun getEventById(id: String): Flow<BatteryEvent?> =
-        dao.getEventById(id).map { it?.toDomain() }
+    override fun getEventById(id: String): Flow<BatteryEvent?> = dao.getEventById(id).map { it?.toDomain() }
 
     override suspend fun addEvent(event: BatteryEvent) {
         dao.insertEvent(event.toEntity())

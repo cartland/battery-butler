@@ -28,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import com.chriscartland.blanket.domain.model.Device
 import com.chriscartland.blanket.domain.model.DeviceType
 import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 
 @Composable
 fun DeviceListItem(
@@ -65,7 +64,7 @@ fun DeviceListItem(
                     imageVector = DeviceIconMapper.getIcon(iconName),
                     contentDescription = deviceType?.name,
                     tint = DeviceIconMapper.getContentColor(iconName),
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(24.dp),
                 )
             }
 
@@ -88,17 +87,17 @@ fun DeviceListItem(
             // Battery
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.width(60.dp)
+                modifier = Modifier.width(60.dp),
             ) {
                 val isLowBattery = device.batteryLevel < 0.2f
                 val batteryIcon = if (isLowBattery) Icons.Default.BatteryAlert else Icons.Default.BatteryFull
                 val batteryTint = if (isLowBattery) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
-                
+
                 Icon(
                     imageVector = batteryIcon,
                     contentDescription = if (isLowBattery) "Low Battery" else "Battery Good",
                     tint = batteryTint,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(24.dp),
                 )
                 Text(
                     text = "$daysSinceBatteryChange days",

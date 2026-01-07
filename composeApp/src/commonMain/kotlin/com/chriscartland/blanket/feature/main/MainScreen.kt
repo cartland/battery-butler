@@ -26,9 +26,12 @@ import com.chriscartland.blanket.feature.history.HistoryListViewModel
 import com.chriscartland.blanket.feature.home.HomeScreen
 import com.chriscartland.blanket.feature.home.HomeViewModel
 
-enum class MainTab(val label: String, val icon: androidx.compose.ui.graphics.vector.ImageVector) {
+enum class MainTab(
+    val label: String,
+    val icon: androidx.compose.ui.graphics.vector.ImageVector,
+) {
     Devices("Devices", Icons.Default.Home),
-    History("History", Icons.Default.History)
+    History("History", Icons.Default.History),
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,7 +58,7 @@ fun MainScreen(
                             Icon(Icons.Default.Settings, contentDescription = "Manage Types")
                         }
                     }
-                }
+                },
             )
         },
         floatingActionButton = {
@@ -72,11 +75,11 @@ fun MainScreen(
                         selected = currentTab == tab,
                         onClick = { currentTab = tab },
                         icon = { Icon(tab.icon, contentDescription = tab.label) },
-                        label = { Text(tab.label) }
+                        label = { Text(tab.label) },
                     )
                 }
             }
-        }
+        },
     ) { innerPadding ->
         when (currentTab) {
             MainTab.Devices -> {
@@ -85,14 +88,14 @@ fun MainScreen(
                     onAddDeviceClick = {}, // Handled by FAB in MainScreen
                     onDeviceClick = onDeviceClick,
                     onManageTypesClick = {}, // Handled by TopBar in MainScreen
-                    modifier = Modifier.padding(innerPadding)
+                    modifier = Modifier.padding(innerPadding),
                 )
             }
             MainTab.History -> {
                 HistoryListScreen(
                     viewModel = historyListViewModel,
                     onEventClick = onEventClick,
-                    modifier = Modifier.padding(innerPadding)
+                    modifier = Modifier.padding(innerPadding),
                 )
             }
         }

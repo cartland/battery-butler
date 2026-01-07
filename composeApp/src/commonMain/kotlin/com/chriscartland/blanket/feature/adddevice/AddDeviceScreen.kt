@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -79,17 +78,18 @@ fun AddDeviceScreen(
                         }
                     }) {
                         Text(
-                            "Save", 
-                            color = if (name.isNotBlank() && selectedType != null) 
-                                MaterialTheme.colorScheme.primary 
-                            else 
-                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
-                            fontWeight = FontWeight.Bold
+                            "Save",
+                            color = if (name.isNotBlank() && selectedType != null) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                            },
+                            fontWeight = FontWeight.Bold,
                         )
                     }
-                }
+                },
             )
-        }
+        },
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -97,49 +97,49 @@ fun AddDeviceScreen(
                 .padding(innerPadding)
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             // Icon Selection Visual (Placeholder)
             Box(
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
             ) {
-                 Box(
+                Box(
                     modifier = Modifier
                         .size(96.dp)
                         .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape)
                         .border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape),
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) {
                     Icon(
                         imageVector = Icons.Default.DevicesOther,
                         contentDescription = null,
                         modifier = Modifier.size(40.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
                 Text(
-                    "Tap to choose icon", 
-                    style = MaterialTheme.typography.bodySmall, 
-                    color = MaterialTheme.colorScheme.onSurfaceVariant, 
-                    modifier = Modifier.padding(top = 108.dp)
+                    "Tap to choose icon",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 108.dp),
                 )
             }
 
             Column(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
                     label = { Text("Device Name") },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(12.dp),
                 )
 
                 // Device Type Dropdown
                 Box(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     OutlinedTextField(
                         value = selectedType?.name ?: "",
@@ -152,11 +152,11 @@ fun AddDeviceScreen(
                             }
                         },
                         modifier = Modifier.fillMaxWidth(),
-                         shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(12.dp),
                     )
                     DropdownMenu(
                         expanded = expanded,
-                        onDismissRequest = { expanded = false }
+                        onDismissRequest = { expanded = false },
                     ) {
                         deviceTypes.forEach { type ->
                             DropdownMenuItem(
@@ -164,14 +164,19 @@ fun AddDeviceScreen(
                                 onClick = {
                                     selectedType = type
                                     expanded = false
-                                }
+                                },
                             )
                         }
                         // Add new type option
                         DropdownMenuItem(
-                            text = { 
+                            text = {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(Icons.Default.AddCircle, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
+                                    Icon(
+                                        Icons.Default.AddCircle,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.size(20.dp),
+                                    )
                                     Spacer(Modifier.width(8.dp))
                                     Text("Add new device type", color = MaterialTheme.colorScheme.primary)
                                 }
@@ -180,7 +185,7 @@ fun AddDeviceScreen(
                                 expanded = false
                                 // TODO: Navigate to Add Type Screen
                                 onAddDeviceTypeClick()
-                            }
+                            },
                         )
                     }
                 }

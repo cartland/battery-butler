@@ -15,44 +15,44 @@ import me.tatarka.inject.annotations.Inject
 
 @Inject
 class EditDeviceViewModelFactory(
-    private val deviceRepository: DeviceRepository
+    private val deviceRepository: DeviceRepository,
 ) {
-    fun create(deviceId: String): EditDeviceViewModel {
-        return EditDeviceViewModel(deviceId, deviceRepository)
-    }
+    fun create(deviceId: String): EditDeviceViewModel = EditDeviceViewModel(deviceId, deviceRepository)
 }
 
 class EditDeviceViewModel(
     private val deviceId: String,
     private val deviceRepository: DeviceRepository,
 ) : ViewModel() {
-
     val uiState: StateFlow<EditDeviceUiState> = combine(
         deviceRepository.getDeviceById(deviceId),
-        deviceRepository.getAllDeviceTypes()
+        deviceRepository.getAllDeviceTypes(),
     ) { device, types ->
         if (device == null) {
             EditDeviceUiState.NotFound
         } else {
             EditDeviceUiState.Success(
                 device = device,
-                deviceTypes = types
+                deviceTypes = types,
             )
         }
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
-        initialValue = EditDeviceUiState.Loading
+        initialValue = EditDeviceUiState.Loading,
     )
 
-    fun updateDevice(name: String, typeId: String) {
+    fun updateDevice(
+        name: String,
+        typeId: String,
+    ) {
         val currentState = uiState.value
         if (currentState is EditDeviceUiState.Success) {
             viewModelScope.launch {
                 val updatedDevice = currentState.device.copy(
                     name = name,
                     typeId = typeId,
-                    lastUpdated = Clock.System.now()
+                    lastUpdated = Clock.System.now(),
                 )
                 deviceRepository.updateDevice(updatedDevice)
             }
@@ -68,9 +68,11 @@ class EditDeviceViewModel(
 
 sealed interface EditDeviceUiState {
     data object Loading : EditDeviceUiState
+
     data object NotFound : EditDeviceUiState
+
     data class Success(
         val device: Device,
-        val deviceTypes: List<DeviceType>
+        val deviceTypes: List<DeviceType>,
     ) : EditDeviceUiState
 }

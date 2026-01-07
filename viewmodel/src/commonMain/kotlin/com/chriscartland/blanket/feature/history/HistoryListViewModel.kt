@@ -12,20 +12,22 @@ import me.tatarka.inject.annotations.Inject
 
 sealed interface HistoryListUiState {
     data object Loading : HistoryListUiState
-    data class Success(val events: List<BatteryEvent>) : HistoryListUiState
+
+    data class Success(
+        val events: List<BatteryEvent>,
+    ) : HistoryListUiState
 }
 
 @Inject
 class HistoryListViewModel(
     private val deviceRepository: DeviceRepository,
 ) : ViewModel() {
-
     val uiState: StateFlow<HistoryListUiState> = deviceRepository
         .getAllEvents()
         .map { list -> HistoryListUiState.Success(list) }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = HistoryListUiState.Loading
+            initialValue = HistoryListUiState.Loading,
         )
 }

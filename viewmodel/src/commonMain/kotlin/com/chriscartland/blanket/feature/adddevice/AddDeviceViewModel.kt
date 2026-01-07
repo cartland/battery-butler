@@ -7,12 +7,10 @@ import com.chriscartland.blanket.domain.model.DeviceType
 import com.chriscartland.blanket.domain.repository.DeviceRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import me.tatarka.inject.annotations.Inject
-import kotlin.random.Random
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -20,7 +18,6 @@ import kotlin.uuid.Uuid
 class AddDeviceViewModel(
     private val deviceRepository: DeviceRepository,
 ) : ViewModel() {
-
     val deviceTypes: StateFlow<List<DeviceType>> = deviceRepository
         .getAllDeviceTypes()
         .stateIn(
@@ -30,7 +27,10 @@ class AddDeviceViewModel(
         )
 
     @OptIn(ExperimentalUuidApi::class)
-    fun addDevice(name: String, typeId: String) {
+    fun addDevice(
+        name: String,
+        typeId: String,
+    ) {
         viewModelScope.launch {
             val newDevice = Device(
                 id = Uuid.random().toString(),
@@ -43,12 +43,12 @@ class AddDeviceViewModel(
             deviceRepository.addDevice(newDevice)
         }
     }
-    
+
     // Helper to seed types if empty (temporary for testing)
     fun seedDeviceTypes() {
         viewModelScope.launch {
-             // Logic to check and add types if needed
-             // For now, let's assume Repository or Data layer handles seeding or we do it here
+            // Logic to check and add types if needed
+            // For now, let's assume Repository or Data layer handles seeding or we do it here
         }
     }
 }

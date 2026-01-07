@@ -68,6 +68,16 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
         }
+
+        val androidInstrumentedTest by getting {
+            dependencies {
+                implementation(libs.androidx.testExt.junit)
+                implementation(libs.androidx.espresso.core)
+                implementation(libs.androidx.runner)
+                implementation(libs.androidx.core)
+                implementation(libs.compose.ui.test.junit4)
+            }
+        }
     }
 }
 
@@ -90,6 +100,7 @@ android {
                 .toInt()
         versionCode = 1
         versionName = "1.0"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     packaging {
         resources {
@@ -108,10 +119,22 @@ android {
     lint {
         disable += "NullSafeMutableLiveData"
     }
+    testOptions {
+        managedDevices {
+            devices {
+                maybeCreate<com.android.build.api.dsl.ManagedVirtualDevice>("pixel5api34").apply {
+                    device = "Pixel 5"
+                    apiLevel = 34
+                    systemImageSource = "google"
+                }
+            }
+        }
+    }
 }
 
 dependencies {
     debugImplementation(compose.uiTooling)
+    debugImplementation(libs.compose.ui.test.manifest)
 }
 
 compose.desktop {

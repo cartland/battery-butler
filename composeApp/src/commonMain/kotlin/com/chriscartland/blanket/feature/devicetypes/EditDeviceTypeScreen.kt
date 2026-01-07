@@ -8,10 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -24,11 +20,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -52,7 +46,7 @@ fun EditDeviceTypeScreen(
     modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    
+
     var name by remember { mutableStateOf("") }
     var batteryType by remember { mutableStateOf("") }
     var batteryQuantity by remember { mutableStateOf(1) }
@@ -75,13 +69,13 @@ fun EditDeviceTypeScreen(
                             viewModel.updateDeviceType(name, batteryType, batteryQuantity, defaultIcon)
                             onBack()
                         },
-                        enabled = name.isNotBlank() && batteryType.isNotBlank()
+                        enabled = name.isNotBlank() && batteryType.isNotBlank(),
                     ) {
                         Text("Save", fontWeight = FontWeight.Bold)
                     }
-                }
+                },
             )
-        }
+        },
     ) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
             when (val state = uiState) {
@@ -93,7 +87,7 @@ fun EditDeviceTypeScreen(
                 }
                 is EditDeviceTypeUiState.Success -> {
                     val original = state.deviceType
-                     LaunchedEffect(original) {
+                    LaunchedEffect(original) {
                         if (!isInitialized) {
                             name = original.name
                             batteryType = original.batteryType
@@ -106,15 +100,15 @@ fun EditDeviceTypeScreen(
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(16.dp)
+                            .padding(16.dp),
                     ) {
-                         // Name
+                        // Name
                         OutlinedTextField(
                             value = name,
                             onValueChange = { name = it },
                             label = { Text("Type Name") },
                             modifier = Modifier.fillMaxWidth(),
-                            singleLine = true
+                            singleLine = true,
                         )
 
                         Spacer(modifier = Modifier.height(16.dp))
@@ -125,7 +119,7 @@ fun EditDeviceTypeScreen(
                             onValueChange = { batteryType = it },
                             label = { Text("Battery Type (e.g., AA)") },
                             modifier = Modifier.fillMaxWidth(),
-                            singleLine = true
+                            singleLine = true,
                         )
 
                         Spacer(modifier = Modifier.height(16.dp))
@@ -133,7 +127,7 @@ fun EditDeviceTypeScreen(
                         // Quantity
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
                         ) {
                             Text("Quantity", style = MaterialTheme.typography.bodyLarge)
                             Spacer(Modifier.weight(1f))
@@ -143,29 +137,41 @@ fun EditDeviceTypeScreen(
                             Text(
                                 text = batteryQuantity.toString(),
                                 style = MaterialTheme.typography.titleMedium,
-                                modifier = Modifier.padding(horizontal = 8.dp)
+                                modifier = Modifier.padding(horizontal = 8.dp),
                             )
                             IconButton(onClick = { batteryQuantity++ }) {
                                 Icon(Icons.Default.Add, contentDescription = "Increase")
                             }
                         }
-                        
-                         Spacer(modifier = Modifier.height(24.dp))
-                        
+
+                        Spacer(modifier = Modifier.height(24.dp))
+
                         // Icon Selection (Mini)
                         Text("Default Icon", style = MaterialTheme.typography.labelLarge)
                         val icons = listOf(
-                            "settings_remote", "scale", "schedule", 
-                            "flashlight_on", "detector_smoke", "toys", "videogame_asset", "devices_other"
+                            "settings_remote",
+                            "scale",
+                            "schedule",
+                            "flashlight_on",
+                            "detector_smoke",
+                            "toys",
+                            "videogame_asset",
+                            "devices_other",
                         )
                         Row(modifier = Modifier.fillMaxWidth()) {
                             // Simple horizontal scroll or just first few
-                            icons.take(5).forEach { iconName -> 
+                            icons.take(5).forEach { iconName ->
                                 IconButton(onClick = { defaultIcon = iconName }) {
                                     Icon(
-                                        imageVector = DeviceIconMapper.getIcon(iconName), 
+                                        imageVector = DeviceIconMapper.getIcon(iconName),
                                         contentDescription = null,
-                                        tint = if(defaultIcon == iconName) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                                        tint = if (defaultIcon ==
+                                            iconName
+                                        ) {
+                                            MaterialTheme.colorScheme.primary
+                                        } else {
+                                            MaterialTheme.colorScheme.onSurfaceVariant
+                                        },
                                     )
                                 }
                             }
@@ -174,18 +180,18 @@ fun EditDeviceTypeScreen(
                         Spacer(modifier = Modifier.weight(1f))
 
                         Button(
-                            onClick = { 
+                            onClick = {
                                 viewModel.deleteDeviceType()
-                                onDelete() 
+                                onDelete()
                             },
-                             colors = ButtonDefaults.buttonColors(
+                            colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.errorContainer,
-                                contentColor = MaterialTheme.colorScheme.error
+                                contentColor = MaterialTheme.colorScheme.error,
                             ),
                             modifier = Modifier.fillMaxWidth().height(56.dp),
-                            shape = RoundedCornerShape(12.dp)
+                            shape = RoundedCornerShape(12.dp),
                         ) {
-                             Text("Delete Device Type", fontWeight = FontWeight.SemiBold)
+                            Text("Delete Device Type", fontWeight = FontWeight.SemiBold)
                         }
                     }
                 }

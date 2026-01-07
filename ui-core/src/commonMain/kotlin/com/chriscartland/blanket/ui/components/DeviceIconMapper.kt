@@ -1,29 +1,26 @@
 package com.chriscartland.blanket.ui.components
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BatteryAlert
-import androidx.compose.material.icons.filled.BatteryFull
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Sensors
-import androidx.compose.material.icons.filled.SmartButton
-import androidx.compose.material.icons.filled.Propane
-import androidx.compose.material.icons.filled.Thermostat
-import androidx.compose.material.icons.filled.Garage
 import androidx.compose.material.icons.filled.DevicesOther
 import androidx.compose.material.icons.filled.Gamepad
-import androidx.compose.material.icons.filled.Tv
-import androidx.compose.material.icons.filled.Toys
-import androidx.compose.material.icons.filled.Mouse
-import androidx.compose.material.icons.filled.Keyboard
-import androidx.compose.material.icons.filled.FlashlightOn
-import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.Garage
 import androidx.compose.material.icons.filled.Highlight
+import androidx.compose.material.icons.filled.Keyboard
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Mouse
+import androidx.compose.material.icons.filled.Propane
+import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.Sensors
+import androidx.compose.material.icons.filled.SmartButton
+import androidx.compose.material.icons.filled.Thermostat
+import androidx.compose.material.icons.filled.Toys
+import androidx.compose.material.icons.filled.Tv
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 
 object DeviceIconMapper {
-    fun getIcon(iconName: String?): ImageVector {
-        return when (iconName) {
+    fun getIcon(iconName: String?): ImageVector =
+        when (iconName) {
             "lock" -> Icons.Default.Lock
             "sensors" -> Icons.Default.Sensors
             "smart_button" -> Icons.Default.SmartButton
@@ -39,7 +36,6 @@ object DeviceIconMapper {
             "schedule" -> Icons.Default.Schedule
             else -> Icons.Default.DevicesOther
         }
-    }
 
     fun getContainerColor(iconName: String?): Color {
         // Approximate colors from design (Tailwind blue-100, orange-100, etc.)
@@ -60,9 +56,9 @@ object DeviceIconMapper {
             else -> Color(0xFFF1F5F9)
         }
     }
-    
-    fun getContentColor(iconName: String?): Color {
-         return when (iconName) {
+
+    fun getContentColor(iconName: String?): Color =
+        when (iconName) {
             "lock" -> Color(0xFF137FEC) // primary blue
             "sensors" -> Color(0xFFEA580C) // orange-600
             "smart_button" -> Color(0xFF9333EA) // purple-600
@@ -78,5 +74,4 @@ object DeviceIconMapper {
             "schedule" -> Color(0xFF7C3AED) // violet-600
             else -> Color(0xFF475569)
         }
-    }
 }

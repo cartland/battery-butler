@@ -4,8 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
 import com.chriscartland.blanket.data.di.DatabaseFactory
 import com.chriscartland.blanket.di.AppComponent
 import com.chriscartland.blanket.di.create

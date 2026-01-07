@@ -60,16 +60,16 @@ dependencies {
     // Room: Use platform-specific KSP. Room generates 'actual' implementation.
     // add("kspCommonMainMetadata", libs.androidx.room.compiler)
     add("kspCommonMainMetadata", libs.kotlin.inject.compiler)
-    
+
     add("kspAndroid", libs.androidx.room.compiler)
     add("kspAndroid", libs.kotlin.inject.compiler)
-    
+
     add("kspIosX64", libs.androidx.room.compiler)
     add("kspIosX64", libs.kotlin.inject.compiler)
-    
+
     add("kspIosArm64", libs.androidx.room.compiler)
     add("kspIosArm64", libs.kotlin.inject.compiler)
-    
+
     add("kspIosSimulatorArm64", libs.androidx.room.compiler)
     add("kspIosSimulatorArm64", libs.kotlin.inject.compiler)
 

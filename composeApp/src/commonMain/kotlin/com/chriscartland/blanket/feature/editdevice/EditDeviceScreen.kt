@@ -1,9 +1,7 @@
 package com.chriscartland.blanket.feature.editdevice
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,9 +15,8 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuItemColors
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -34,10 +31,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.chriscartland.blanket.feature.eventdetail.EventDetailUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -48,7 +43,7 @@ fun EditDeviceScreen(
     modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    
+
     // Local state for form fields
     var name by remember { mutableStateOf("") }
     var selectedTypeId by remember { mutableStateOf("") }
@@ -70,13 +65,13 @@ fun EditDeviceScreen(
                             viewModel.updateDevice(name, selectedTypeId)
                             onBack()
                         },
-                        enabled = name.isNotBlank() && selectedTypeId.isNotBlank()
+                        enabled = name.isNotBlank() && selectedTypeId.isNotBlank(),
                     ) {
                         Text("Save", fontWeight = FontWeight.Bold)
                     }
-                }
+                },
             )
-        }
+        },
     ) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
             when (val state = uiState) {
@@ -99,7 +94,7 @@ fun EditDeviceScreen(
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(16.dp)
+                            .padding(16.dp),
                     ) {
                         // Name Input
                         OutlinedTextField(
@@ -107,7 +102,7 @@ fun EditDeviceScreen(
                             onValueChange = { name = it },
                             label = { Text("Device Name") },
                             modifier = Modifier.fillMaxWidth(),
-                            singleLine = true
+                            singleLine = true,
                         )
 
                         Spacer(modifier = Modifier.height(16.dp))
@@ -119,7 +114,7 @@ fun EditDeviceScreen(
                         ExposedDropdownMenuBox(
                             expanded = expanded,
                             onExpandedChange = { expanded = !expanded },
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
                         ) {
                             OutlinedTextField(
                                 modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled = true).fillMaxWidth(),
@@ -146,21 +141,21 @@ fun EditDeviceScreen(
                                 }
                             }
                         }
-                        
+
                         Spacer(modifier = Modifier.weight(1f))
-                        
+
                         // Delete Button
                         Button(
-                            onClick = { 
+                            onClick = {
                                 viewModel.deleteDevice()
-                                onDelete() 
+                                onDelete()
                             },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.errorContainer,
-                                contentColor = MaterialTheme.colorScheme.error
+                                contentColor = MaterialTheme.colorScheme.error,
                             ),
                             modifier = Modifier.fillMaxWidth().height(56.dp),
-                            shape = RoundedCornerShape(12.dp)
+                            shape = RoundedCornerShape(12.dp),
                         ) {
                             Text("Delete Device", fontWeight = FontWeight.SemiBold)
                         }

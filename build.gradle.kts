@@ -12,18 +12,18 @@ plugins {
     alias(libs.plugins.androidKotlinMultiplatformLibrary) apply false
 }
 
-subprojects {
+allprojects {
     apply(plugin = "com.diffplug.spotless")
     configure<com.diffplug.gradle.spotless.SpotlessExtension> {
 
         kotlin {
-            target("**/*.kt")
-            targetExclude("**/build/**")
+            target("src/**/*.kt")
+            targetExclude("**/build/**", "**/iosApp/**", "**/.gradle/**")
             ktlint()
         }
         kotlinGradle {
-            target("**/*.kts")
-            targetExclude("**/build/**")
+            target("*.gradle.kts", "**/build.gradle.kts", "buildSrc/**/*.kts")
+            targetExclude("**/build/**", "**/iosApp/**", "**/.gradle/**")
             ktlint()
         }
     }

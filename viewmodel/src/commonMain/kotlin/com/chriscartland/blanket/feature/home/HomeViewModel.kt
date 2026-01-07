@@ -3,8 +3,8 @@ package com.chriscartland.blanket.feature.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chriscartland.blanket.domain.model.Device
-import com.chriscartland.blanket.domain.repository.DeviceRepository
 import com.chriscartland.blanket.domain.model.DeviceType
+import com.chriscartland.blanket.domain.repository.DeviceRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -17,11 +17,11 @@ class HomeViewModel(
 ) : ViewModel() {
     val uiState: StateFlow<HomeUiState> = combine(
         deviceRepository.getAllDevices(),
-        deviceRepository.getAllDeviceTypes()
+        deviceRepository.getAllDeviceTypes(),
     ) { devices, types ->
         HomeUiState(
             devices = devices,
-            deviceTypes = types.associateBy { it.id }
+            deviceTypes = types.associateBy { it.id },
         )
     }.stateIn(
         scope = viewModelScope,

@@ -20,17 +20,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.chriscartland.blanket.domain.model.BatteryEvent
 import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import kotlinx.datetime.daysUntil
-import kotlinx.datetime.monthsUntil
-import kotlinx.datetime.yearsUntil
+import kotlinx.datetime.toLocalDateTime
 
 @Composable
 fun HistoryListItem(
     event: BatteryEvent,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val date = event.date.toLocalDateTime(TimeZone.currentSystemDefault())
     val month = date.month.name.take(3)
@@ -42,37 +39,40 @@ fun HistoryListItem(
             .padding(vertical = 8.dp)
             .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp))
             .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(
             modifier = Modifier
                 .size(50.dp)
                 .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(10.dp)),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
                 text = month,
                 style = MaterialTheme.typography.labelSmall,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Text(
                 text = day,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onSurface,
             )
         }
-        
+
         Column(
-            modifier = Modifier.weight(1f).padding(horizontal = 16.dp)
+            modifier = Modifier.weight(1f).padding(horizontal = 16.dp),
         ) {
             val timeZone = TimeZone.currentSystemDefault()
-            val now = Clock.System.now().toLocalDateTime(timeZone).date
+            val now = Clock.System
+                .now()
+                .toLocalDateTime(timeZone)
+                .date
             val eventDate = event.date.toLocalDateTime(timeZone).date
             val daysAgo = eventDate.daysUntil(now)
-            
+
             val relativeTime = when {
                 daysAgo == 0 -> "Today"
                 daysAgo == 1 -> "Yesterday"
@@ -91,19 +91,19 @@ fun HistoryListItem(
                 text = "Battery Replaced",
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onSurface,
             )
-             Text(
+            Text(
                 text = relativeTime,
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        
+
         Icon(
             imageVector = Icons.Default.ChevronRight,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
 }

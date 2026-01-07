@@ -14,20 +14,21 @@ import me.tatarka.inject.annotations.Inject
 class DeviceTypeListViewModel(
     private val deviceRepository: DeviceRepository,
 ) : ViewModel() {
-
     val uiState: StateFlow<DeviceTypeListUiState> = deviceRepository
         .getAllDeviceTypes()
         .map { list ->
             DeviceTypeListUiState.Success(list)
-        }
-        .stateIn(
+        }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = DeviceTypeListUiState.Loading
+            initialValue = DeviceTypeListUiState.Loading,
         )
 }
 
 sealed interface DeviceTypeListUiState {
     data object Loading : DeviceTypeListUiState
-    data class Success(val deviceTypes: List<DeviceType>) : DeviceTypeListUiState
+
+    data class Success(
+        val deviceTypes: List<DeviceType>,
+    ) : DeviceTypeListUiState
 }

@@ -13,13 +13,12 @@ import kotlin.uuid.Uuid
 class AddDeviceTypeViewModel(
     private val deviceRepository: DeviceRepository,
 ) : ViewModel() {
-
     @OptIn(ExperimentalUuidApi::class)
     fun addDeviceType(
-        name: String, 
-        icon: String?, 
-        batteryType: String, 
-        batteryQuantity: Int
+        name: String,
+        icon: String?,
+        batteryType: String,
+        batteryQuantity: Int,
     ) {
         viewModelScope.launch {
             val newType = DeviceType(
@@ -27,7 +26,7 @@ class AddDeviceTypeViewModel(
                 name = name,
                 defaultIcon = icon,
                 batteryType = batteryType,
-                batteryQuantity = batteryQuantity
+                batteryQuantity = batteryQuantity,
             )
             deviceRepository.addDeviceType(newType)
         }
