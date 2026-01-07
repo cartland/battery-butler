@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.chriscartland.blanket.data.room.AppDatabase
+import com.chriscartland.blanket.data.room.MIGRATION_3_4
 
 actual class DatabaseFactory(
     private val context: Context,
@@ -15,7 +16,7 @@ actual class DatabaseFactory(
                 context = context,
                 name = dbFile.absolutePath,
             ).setDriver(BundledSQLiteDriver())
-            .fallbackToDestructiveMigration(true)
+            .addMigrations(MIGRATION_3_4)
             .build()
     }
 }

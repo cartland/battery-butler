@@ -39,6 +39,7 @@ kotlin {
                 implementation(libs.androidx.testExt.junit)
                 implementation(libs.androidx.runner)
                 implementation(libs.androidx.core)
+                implementation(libs.androidx.room.testing)
                 implementation(libs.kotlinx.coroutines.test)
             }
         }
@@ -64,6 +65,10 @@ android {
 
 room {
     schemaDirectory("$projectDir/schemas")
+}
+
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
 }
 
 dependencies {

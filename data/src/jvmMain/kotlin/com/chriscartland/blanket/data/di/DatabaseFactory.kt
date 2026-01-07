@@ -3,6 +3,7 @@ package com.chriscartland.blanket.data.di
 import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.chriscartland.blanket.data.room.AppDatabase
+import com.chriscartland.blanket.data.room.MIGRATION_3_4
 import java.io.File
 
 actual class DatabaseFactory {
@@ -12,7 +13,7 @@ actual class DatabaseFactory {
             .databaseBuilder<AppDatabase>(
                 name = dbFile.absolutePath,
             ).setDriver(BundledSQLiteDriver())
-            .fallbackToDestructiveMigration(true)
+            .addMigrations(MIGRATION_3_4)
             .build()
     }
 }

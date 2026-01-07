@@ -3,6 +3,7 @@ package com.chriscartland.blanket.data.di
 import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.chriscartland.blanket.data.room.AppDatabase
+import com.chriscartland.blanket.data.room.MIGRATION_3_4
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
@@ -15,7 +16,7 @@ actual class DatabaseFactory {
             .databaseBuilder<AppDatabase>(
                 name = dbFile,
             ).setDriver(BundledSQLiteDriver())
-            .fallbackToDestructiveMigration(true)
+            .addMigrations(MIGRATION_3_4)
             .build()
     }
 
