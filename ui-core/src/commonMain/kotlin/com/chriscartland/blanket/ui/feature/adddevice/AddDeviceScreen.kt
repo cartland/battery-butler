@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -149,6 +150,7 @@ fun AddDeviceScreen(
                         onClick = onManageDeviceTypesClick,
                         shape = RoundedCornerShape(12.dp),
                         contentPadding = PaddingValues(0.dp),
+                        modifier = Modifier.size(64.dp), // Match standard text field height approximately with padding
                     ) {
                         Icon(Icons.Default.DevicesOther, contentDescription = "Manage Types")
                     }
