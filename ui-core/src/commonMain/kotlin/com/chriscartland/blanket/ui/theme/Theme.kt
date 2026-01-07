@@ -1,7 +1,7 @@
 package com.chriscartland.blanket.ui.theme
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
@@ -21,7 +21,8 @@ private val LightColorScheme = lightColorScheme(
 
 private val DarkColorScheme = darkColorScheme(
     primary = Primary,
-    onPrimary = OnPrimary, // Depending on design, might want dark text on primary in dark mode, but keeping white for now as Primary is dark-ish blue
+    // Depending on design, might want dark text on primary in dark mode, but keeping white for now as Primary is dark-ish blue
+    onPrimary = OnPrimary,
     secondary = Secondary,
     onSecondary = OnSecondary,
     background = BackgroundDark,
@@ -35,7 +36,7 @@ private val DarkColorScheme = darkColorScheme(
 @Composable
 fun BlanketTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
 

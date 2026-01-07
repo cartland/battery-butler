@@ -55,7 +55,7 @@ fun App(component: AppComponent) {
                         viewModel = viewModel,
                         onEditType = { typeId -> backStack.add(Screen.EditDeviceType(typeId)) },
                         onAddType = {
-                             backStack.add(Screen.AddDeviceType(returnScreen = Screen.DeviceTypeList))
+                            backStack.add(Screen.AddDeviceType(returnScreen = Screen.DeviceTypeList))
                         },
                         onBack = { backStack.removeLastOrNull() },
                     )
@@ -64,7 +64,7 @@ fun App(component: AppComponent) {
                 entry<Screen.AddDeviceType> {
                     val args = it
                     // returnScreen arg is technically available but backStack logic handles the flow naturally now
-                    
+
                     com.chriscartland.blanket.feature.adddevicetype.AddDeviceTypeScreen(
                         viewModel = component.addDeviceTypeViewModel,
                         onDeviceTypeAdded = {

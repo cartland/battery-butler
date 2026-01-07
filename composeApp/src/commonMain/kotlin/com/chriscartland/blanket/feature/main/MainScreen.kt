@@ -2,7 +2,6 @@ package com.chriscartland.blanket.feature.main
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
@@ -20,8 +19,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.chriscartland.blanket.feature.devicetypes.DeviceTypeListScreen
-import com.chriscartland.blanket.feature.devicetypes.DeviceTypeListViewModel
 import com.chriscartland.blanket.feature.history.HistoryListScreen
 import com.chriscartland.blanket.feature.history.HistoryListViewModel
 import com.chriscartland.blanket.feature.home.HomeScreen

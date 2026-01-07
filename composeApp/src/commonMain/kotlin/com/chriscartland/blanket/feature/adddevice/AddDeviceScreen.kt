@@ -1,22 +1,15 @@
 package com.chriscartland.blanket.feature.adddevice
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.DevicesOther
 import androidx.compose.material3.DropdownMenu
@@ -116,7 +109,7 @@ fun AddDeviceScreen(
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Box(
                         modifier = Modifier.weight(1f),
@@ -138,9 +131,9 @@ fun AddDeviceScreen(
                         Box(
                             modifier = Modifier
                                 .matchParentSize()
-                                .clickable { expanded = true }
+                                .clickable { expanded = true },
                         )
-                        
+
                         DropdownMenu(
                             expanded = expanded,
                             onDismissRequest = { expanded = false },
@@ -156,14 +149,15 @@ fun AddDeviceScreen(
                             }
                         }
                     }
-                    
+
                     // Manage Button
                     androidx.compose.material3.OutlinedButton(
                         onClick = onManageDeviceTypesClick,
                         shape = RoundedCornerShape(12.dp),
-                        contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp)
+                        contentPadding = androidx.compose.foundation.layout
+                            .PaddingValues(0.dp),
                     ) {
-                         Icon(Icons.Default.DevicesOther, contentDescription = "Manage Types")
+                        Icon(Icons.Default.DevicesOther, contentDescription = "Manage Types")
                     }
                 }
             }
