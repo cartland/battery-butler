@@ -8,6 +8,7 @@ import com.chriscartland.blanket.domain.model.Device
 import com.chriscartland.blanket.domain.model.DeviceType
 import com.chriscartland.blanket.domain.repository.DeviceRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import me.tatarka.inject.annotations.Inject
 
@@ -78,58 +79,61 @@ class RoomDeviceRepository(
     }
 
     override suspend fun ensureDefaultDeviceTypes() {
-        if (dao.getDeviceTypeCount() > 0) {
-            return
-        }
+        // We will seed or update based on Name to ensure icons are correct
+        val existingTypes = dao
+            .getAllDeviceTypes()
+            .map { entities ->
+                entities.map { it.toDomain() }.associateBy { it.name }
+            }.firstOrNull() ?: emptyMap()
 
         val defaultTypes = listOf(
             DeviceType(
-                id = com.benasher44.uuid
+                id = existingTypes["Smart Button"]?.id ?: com.benasher44.uuid
                     .uuid4()
                     .toString(),
                 name = "Smart Button",
-                batteryType = "CR2450",
+                batteryType = "CR2450", // Assumption based on common smart buttons (e.g. Zigbee)
                 batteryQuantity = 1,
-                defaultIcon = "sensor",
+                defaultIcon = "smart_button",
             ),
             DeviceType(
-                id = com.benasher44.uuid
+                id = existingTypes["Smart Motion Sensor"]?.id ?: com.benasher44.uuid
                     .uuid4()
                     .toString(),
                 name = "Smart Motion Sensor",
-                batteryType = "CR2477",
+                batteryType = "CR2477", // Assumption for some sensors, or CR123A
                 batteryQuantity = 1,
-                defaultIcon = "sensor",
+                defaultIcon = "sensors",
             ),
             DeviceType(
-                id = com.benasher44.uuid
+                id = existingTypes["Tile Mate"]?.id ?: com.benasher44.uuid
                     .uuid4()
                     .toString(),
                 name = "Tile Mate",
                 batteryType = "CR1632",
                 batteryQuantity = 1,
-                defaultIcon = "other",
+                defaultIcon = "location_on",
             ),
             DeviceType(
-                id = com.benasher44.uuid
+                id = existingTypes["Tile Pro"]?.id ?: com.benasher44.uuid
                     .uuid4()
                     .toString(),
                 name = "Tile Pro",
                 batteryType = "CR2032",
                 batteryQuantity = 1,
-                defaultIcon = "other",
+                defaultIcon = "location_on",
             ),
             DeviceType(
-                id = com.benasher44.uuid
+                id = existingTypes["Calipers"]?.id ?: com.benasher44.uuid
                     .uuid4()
                     .toString(),
                 name = "Calipers",
                 batteryType = "LR44",
                 batteryQuantity = 1,
-                defaultIcon = "tool",
+                defaultIcon = "straighten",
             ),
             DeviceType(
-                id = com.benasher44.uuid
+                id = existingTypes["ULTRALOQ U-Bolt Pro Lock"]?.id ?: com.benasher44.uuid
                     .uuid4()
                     .toString(),
                 name = "ULTRALOQ U-Bolt Pro Lock",
@@ -138,54 +142,59 @@ class RoomDeviceRepository(
                 defaultIcon = "lock",
             ),
             DeviceType(
-                id = com.benasher44.uuid
+                id = existingTypes["Digital Angle Ruler"]?.id ?: com.benasher44.uuid
                     .uuid4()
                     .toString(),
                 name = "Digital Angle Ruler",
                 batteryType = "CR2032",
                 batteryQuantity = 1,
-                defaultIcon = "tool",
+                defaultIcon = "straighten",
             ),
             DeviceType(
-                id = com.benasher44.uuid
+                id = existingTypes["Tile Wallet"]?.id ?: com.benasher44.uuid
                     .uuid4()
                     .toString(),
                 name = "Tile Wallet",
                 batteryType = "Thin Tile",
                 batteryQuantity = 1,
-                defaultIcon = "other",
+                defaultIcon = "account_balance_wallet",
             ),
             DeviceType(
-                id = com.benasher44.uuid
+                id = existingTypes["1-9V Smoke Detector"]?.id ?: com.benasher44.uuid
                     .uuid4()
                     .toString(),
                 name = "1-9V Smoke Detector",
                 batteryType = "9V",
                 batteryQuantity = 1,
-                defaultIcon = "sensor",
+                defaultIcon = "detector_smoke",
             ),
             DeviceType(
-                id = com.benasher44.uuid
+                id = existingTypes["2-AA Smoke Detector"]?.id ?: com.benasher44.uuid
                     .uuid4()
                     .toString(),
                 name = "2-AA Smoke Detector",
                 batteryType = "AA",
                 batteryQuantity = 2,
-                defaultIcon = "sensor",
+                defaultIcon = "detector_smoke",
             ),
             DeviceType(
-                id = com.benasher44.uuid
+                id = existingTypes["Orbit 57896 Sprinkler Timer"]?.id ?: com.benasher44.uuid
                     .uuid4()
                     .toString(),
                 name = "Orbit 57896 Sprinkler Timer",
-                batteryType = "CR2032",
+                batteryType = "CR2032", // User didn't specify but sticking to previous assumption or generic
                 batteryQuantity = 1,
-                defaultIcon = "other",
+                defaultIcon = "water_drop",
             ),
         )
 
         defaultTypes.forEach { type ->
-            addDeviceType(type)
+            if (existingTypes.containsKey(type.name)) {
+                // Update to ensure icon is correct
+                updateDeviceType(type)
+            } else {
+                addDeviceType(type)
+            }
         }
     }
 }

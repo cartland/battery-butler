@@ -46,8 +46,7 @@ class AddDeviceViewModel(
     // Helper to seed types if empty (temporary for testing)
     fun seedDeviceTypes() {
         viewModelScope.launch {
-            // Logic to check and add types if needed
-            // For now, let's assume Repository or Data layer handles seeding or we do it here
+            deviceRepository.ensureDefaultDeviceTypes()
         }
     }
 }
