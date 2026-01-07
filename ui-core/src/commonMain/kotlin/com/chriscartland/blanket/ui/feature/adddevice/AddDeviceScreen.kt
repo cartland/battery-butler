@@ -5,12 +5,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DevicesOther
@@ -105,7 +104,7 @@ fun AddDeviceScreen(
                 Row(
                     modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+                    verticalAlignment = Alignment.Bottom,
                 ) {
                     ExposedDropdownMenuBox(
                         expanded = expanded,
@@ -146,7 +145,7 @@ fun AddDeviceScreen(
                         onClick = onManageDeviceTypesClick,
                         shape = RoundedCornerShape(12.dp),
                         contentPadding = PaddingValues(0.dp),
-                        modifier = Modifier.fillMaxHeight().aspectRatio(1f),
+                        modifier = Modifier.size(56.dp),
                     ) {
                         Icon(Icons.Default.DevicesOther, contentDescription = "Manage Types")
                     }
