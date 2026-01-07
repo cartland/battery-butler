@@ -34,25 +34,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.chriscartland.blanket.domain.model.DeviceInput
 import com.chriscartland.blanket.domain.model.DeviceType
+import com.chriscartland.blanket.ui.components.BlanketCenteredTopAppBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddDeviceScreen(
     deviceTypes: List<DeviceType>,
-    onAddDevice: (String, String) -> Unit,
+    onAddDevice: (DeviceInput) -> Unit,
     onManageDeviceTypesClick: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var name by remember { mutableStateOf("") }
+    var location by remember { mutableStateOf("") }
     var selectedType by remember { mutableStateOf<DeviceType?>(null) }
     var expanded by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = modifier,
         topBar = {
-            com.chriscartland.blanket.ui.components.BlanketCenteredTopAppBar(
+            BlanketCenteredTopAppBar(
                 title = "Add Device",
                 onBack = onBack,
                 navigationIcon = {
@@ -63,7 +66,13 @@ fun AddDeviceScreen(
                 actions = {
                     TextButton(onClick = {
                         if (name.isNotBlank() && selectedType != null) {
-                            onAddDevice(name, selectedType!!.id)
+                            onAddDevice(
+                                DeviceInput(
+                                    name = name,
+                                    location = location.takeIf { it.isNotBlank() },
+                                    typeId = selectedType!!.id,
+                                ),
+                            )
                         }
                     }) {
                         Text(
@@ -96,6 +105,14 @@ fun AddDeviceScreen(
                     value = name,
                     onValueChange = { name = it },
                     label = { Text("Device Name") },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                )
+
+                OutlinedTextField(
+                    value = location,
+                    onValueChange = { location = it },
+                    label = { Text("Location") },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
                 )

@@ -24,8 +24,8 @@ fun AddDeviceScreen(
 
     AddDeviceScreen(
         deviceTypes = deviceTypes,
-        onAddDevice = { name, typeId ->
-            viewModel.addDevice(name, typeId)
+        onAddDevice = { input ->
+            viewModel.addDevice(input)
             onDeviceAdded()
         },
         onManageDeviceTypesClick = onManageDeviceTypesClick,

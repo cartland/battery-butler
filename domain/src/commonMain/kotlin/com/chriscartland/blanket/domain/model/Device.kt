@@ -8,5 +8,6 @@ data class Device(
     val typeId: String,
     val batteryLastReplaced: Instant,
     val lastUpdated: Instant,
+    val location: String? = null,
     val imagePath: String? = null,
 )

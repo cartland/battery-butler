@@ -32,6 +32,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.chriscartland.blanket.domain.model.DeviceInput
+import com.chriscartland.blanket.ui.components.BlanketCenteredTopAppBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,13 +47,14 @@ fun EditDeviceScreen(
 
     // Local state for form fields
     var name by remember { mutableStateOf("") }
+    var location by remember { mutableStateOf("") }
     var selectedTypeId by remember { mutableStateOf("") }
     var isInitialized by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = modifier,
         topBar = {
-            com.chriscartland.blanket.ui.components.BlanketCenteredTopAppBar(
+            BlanketCenteredTopAppBar(
                 title = "Edit Device",
                 onBack = onBack,
                 navigationIcon = {
@@ -62,7 +65,13 @@ fun EditDeviceScreen(
                 actions = {
                     TextButton(
                         onClick = {
-                            viewModel.updateDevice(name, selectedTypeId)
+                            viewModel.updateDevice(
+                                DeviceInput(
+                                    name = name,
+                                    location = location.takeIf { it.isNotBlank() },
+                                    typeId = selectedTypeId,
+                                ),
+                            )
                             onBack()
                         },
                         enabled = name.isNotBlank() && selectedTypeId.isNotBlank(),
@@ -86,6 +95,7 @@ fun EditDeviceScreen(
                     LaunchedEffect(state) {
                         if (!isInitialized) {
                             name = state.device.name
+                            location = state.device.location ?: ""
                             selectedTypeId = state.device.typeId
                             isInitialized = true
                         }
@@ -101,6 +111,16 @@ fun EditDeviceScreen(
                             value = name,
                             onValueChange = { name = it },
                             label = { Text("Device Name") },
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true,
+                        )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        OutlinedTextField(
+                            value = location,
+                            onValueChange = { location = it },
+                            label = { Text("Location") },
                             modifier = Modifier.fillMaxWidth(),
                             singleLine = true,
                         )

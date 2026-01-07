@@ -3,6 +3,7 @@ package com.chriscartland.blanket.feature.devicetypes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chriscartland.blanket.domain.model.DeviceType
+import com.chriscartland.blanket.domain.model.DeviceTypeInput
 import com.chriscartland.blanket.domain.repository.DeviceRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -36,20 +37,15 @@ class EditDeviceTypeViewModel(
             initialValue = EditDeviceTypeUiState.Loading,
         )
 
-    fun updateDeviceType(
-        name: String,
-        batteryType: String,
-        batteryQuantity: Int,
-        defaultIcon: String,
-    ) {
+    fun updateDeviceType(input: DeviceTypeInput) {
         val currentState = uiState.value
         if (currentState is EditDeviceTypeUiState.Success) {
             viewModelScope.launch {
                 val updatedType = currentState.deviceType.copy(
-                    name = name,
-                    batteryType = batteryType,
-                    batteryQuantity = batteryQuantity,
-                    defaultIcon = defaultIcon,
+                    name = input.name,
+                    batteryType = input.batteryType,
+                    batteryQuantity = input.batteryQuantity,
+                    defaultIcon = input.defaultIcon,
                 )
                 deviceRepository.updateDeviceType(updatedType)
             }

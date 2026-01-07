@@ -40,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.chriscartland.blanket.ui.components.BlanketCenteredTopAppBar
 import com.chriscartland.blanket.ui.components.DeviceIconMapper
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
@@ -58,7 +59,7 @@ fun EventDetailScreen(
     Scaffold(
         modifier = modifier,
         topBar = {
-            com.chriscartland.blanket.ui.components.BlanketCenteredTopAppBar(
+            BlanketCenteredTopAppBar(
                 title = "Edit Event",
                 onBack = onBack,
                 navigationIcon = {

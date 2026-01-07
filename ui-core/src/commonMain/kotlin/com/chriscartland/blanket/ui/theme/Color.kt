@@ -2,22 +2,24 @@ package com.chriscartland.blanket.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Primary = Color(0xFF137FEC)
-val Secondary = Color(0xFF4F4F4F)
+// Comforting Theme: Sage & Linen
+
+val Primary = Color(0xFF537A66) // Deep Sage
+val Secondary = Color(0xFF8B7355) // Warm Walnut
 
 // Light Theme
-val BackgroundLight = Color(0xFFF6F7F8)
-val SurfaceLight = Color(0xFFFFFFFF)
-val OnBackgroundLight = Color(0xFF0F172A) // Slate-900 equivalent
-val OnSurfaceLight = Color(0xFF0F172A)
+val BackgroundLight = Color(0xFFF7F5EF) // Warm Linen (Not White)
+val SurfaceLight = Color(0xFFFEFCF8) // Off-white for cards
+val OnBackgroundLight = Color(0xFF2D2926) // Soft Black
+val OnSurfaceLight = Color(0xFF2D2926)
 
 // Dark Theme
-val BackgroundDark = Color(0xFF101922)
-val SurfaceDark = Color(0xFF1C242D)
-val OnBackgroundDark = Color(0xFFFFFFFF)
-val OnSurfaceDark = Color(0xFFFFFFFF)
+val BackgroundDark = Color(0xFF191C1A) // Warm Dark Green-Grey
+val SurfaceDark = Color(0xFF252927)
+val OnBackgroundDark = Color(0xFFE3E2E6)
+val OnSurfaceDark = Color(0xFFE3E2E6)
 
-val Error = Color(0xFFB00020)
+val Error = Color(0xFFBA1A1A)
 val OnPrimary = Color.White
 val OnSecondary = Color.White
 val OnError = Color.White

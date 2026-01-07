@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.chriscartland.blanket.domain.model.DeviceType
+import com.chriscartland.blanket.ui.components.BlanketCenteredTopAppBar
 import com.chriscartland.blanket.ui.components.DeviceIconMapper
 
 sealed interface DeviceTypeListUiState {
@@ -45,7 +46,7 @@ fun DeviceTypeListScreen(
     Scaffold(
         modifier = modifier,
         topBar = {
-            com.chriscartland.blanket.ui.components.BlanketCenteredTopAppBar(
+            BlanketCenteredTopAppBar(
                 title = "Device Types",
                 onBack = onBack,
             )

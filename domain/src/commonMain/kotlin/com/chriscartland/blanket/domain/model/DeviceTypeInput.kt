@@ -1,0 +1,8 @@
+package com.chriscartland.blanket.domain.model
+
+data class DeviceTypeInput(
+    val name: String,
+    val defaultIcon: String?,
+    val batteryType: String,
+    val batteryQuantity: Int,
+)

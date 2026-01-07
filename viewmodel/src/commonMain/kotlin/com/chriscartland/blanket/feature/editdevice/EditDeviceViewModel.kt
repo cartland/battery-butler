@@ -3,6 +3,7 @@ package com.chriscartland.blanket.feature.editdevice
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chriscartland.blanket.domain.model.Device
+import com.chriscartland.blanket.domain.model.DeviceInput
 import com.chriscartland.blanket.domain.model.DeviceType
 import com.chriscartland.blanket.domain.repository.DeviceRepository
 import kotlinx.coroutines.flow.SharingStarted
@@ -42,16 +43,15 @@ class EditDeviceViewModel(
         initialValue = EditDeviceUiState.Loading,
     )
 
-    fun updateDevice(
-        name: String,
-        typeId: String,
-    ) {
+    fun updateDevice(input: DeviceInput) {
         val currentState = uiState.value
         if (currentState is EditDeviceUiState.Success) {
             viewModelScope.launch {
                 val updatedDevice = currentState.device.copy(
-                    name = name,
-                    typeId = typeId,
+                    name = input.name,
+                    location = input.location,
+                    typeId = input.typeId,
+                    imagePath = input.imagePath ?: currentState.device.imagePath,
                     lastUpdated = Clock.System.now(),
                 )
                 deviceRepository.updateDevice(updatedDevice)

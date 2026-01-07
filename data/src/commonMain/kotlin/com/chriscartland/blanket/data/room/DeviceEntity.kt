@@ -12,6 +12,7 @@ data class DeviceEntity(
     val typeId: String,
     val batteryLastReplaced: Long,
     val lastUpdated: Long, // Store as Long (ms)
+    val location: String?,
     val imagePath: String?,
 )
 
@@ -22,6 +23,7 @@ fun DeviceEntity.toDomain(): Device =
         typeId = typeId,
         batteryLastReplaced = Instant.fromEpochMilliseconds(batteryLastReplaced),
         lastUpdated = Instant.fromEpochMilliseconds(lastUpdated),
+        location = location,
         imagePath = imagePath,
     )
 
@@ -32,5 +34,6 @@ fun Device.toEntity(): DeviceEntity =
         typeId = typeId,
         batteryLastReplaced = batteryLastReplaced.toEpochMilliseconds(),
         lastUpdated = lastUpdated.toEpochMilliseconds(),
+        location = location,
         imagePath = imagePath,
     )

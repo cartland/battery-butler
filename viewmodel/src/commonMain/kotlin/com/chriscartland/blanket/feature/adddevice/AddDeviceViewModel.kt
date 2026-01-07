@@ -3,6 +3,7 @@ package com.chriscartland.blanket.feature.adddevice
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chriscartland.blanket.domain.model.Device
+import com.chriscartland.blanket.domain.model.DeviceInput
 import com.chriscartland.blanket.domain.model.DeviceType
 import com.chriscartland.blanket.domain.repository.DeviceRepository
 import kotlinx.coroutines.flow.SharingStarted
@@ -27,15 +28,14 @@ class AddDeviceViewModel(
         )
 
     @OptIn(ExperimentalUuidApi::class)
-    fun addDevice(
-        name: String,
-        typeId: String,
-    ) {
+    fun addDevice(input: DeviceInput) {
         viewModelScope.launch {
             val newDevice = Device(
                 id = Uuid.random().toString(),
-                name = name,
-                typeId = typeId,
+                name = input.name,
+                location = input.location,
+                typeId = input.typeId,
+                imagePath = input.imagePath,
                 batteryLastReplaced = Clock.System.now(),
                 lastUpdated = Clock.System.now(),
             )

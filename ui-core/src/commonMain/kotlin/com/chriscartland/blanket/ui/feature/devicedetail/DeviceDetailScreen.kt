@@ -21,7 +21,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.BatteryFull
 import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material.icons.filled.MeetingRoom
+import androidx.compose.material.icons.filled.DevicesOther
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Numbers
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -42,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import com.chriscartland.blanket.domain.model.BatteryEvent
 import com.chriscartland.blanket.domain.model.Device
 import com.chriscartland.blanket.domain.model.DeviceType
+import com.chriscartland.blanket.ui.components.BlanketCenteredTopAppBar
 import com.chriscartland.blanket.ui.components.DeviceIconMapper
 import com.chriscartland.blanket.ui.components.HistoryListItem
 
@@ -70,7 +72,7 @@ fun DeviceDetailScreen(
     Scaffold(
         modifier = modifier,
         topBar = {
-            com.chriscartland.blanket.ui.components.BlanketCenteredTopAppBar(
+            BlanketCenteredTopAppBar(
                 title = "Device Details",
                 onBack = onBack,
                 actions = {
@@ -150,7 +152,7 @@ fun DeviceDetailContent(
                     modifier = Modifier.padding(top = 4.dp),
                 ) {
                     Icon(
-                        Icons.Default.MeetingRoom,
+                        Icons.Default.DevicesOther,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(16.dp),
@@ -161,6 +163,27 @@ fun DeviceDetailContent(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontWeight = FontWeight.Medium,
                     )
+                }
+
+                if (!device.location.isNullOrBlank()) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        modifier = Modifier.padding(top = 4.dp),
+                    ) {
+                        Icon(
+                            Icons.Default.LocationOn,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(16.dp),
+                        )
+                        Text(
+                            text = device.location!!,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontWeight = FontWeight.Medium,
+                        )
+                    }
                 }
             }
         }

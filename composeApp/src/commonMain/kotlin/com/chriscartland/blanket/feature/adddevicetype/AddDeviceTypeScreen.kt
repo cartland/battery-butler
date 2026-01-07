@@ -38,6 +38,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.chriscartland.blanket.domain.model.DeviceTypeInput
+import com.chriscartland.blanket.ui.components.BlanketCenteredTopAppBar
 import com.chriscartland.blanket.ui.components.DeviceIconMapper
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -74,7 +76,7 @@ fun AddDeviceTypeScreen(
     Scaffold(
         modifier = modifier,
         topBar = {
-            com.chriscartland.blanket.ui.components.BlanketCenteredTopAppBar(
+            BlanketCenteredTopAppBar(
                 title = "New Device Type",
                 onBack = onBack,
                 navigationIcon = {
@@ -85,7 +87,14 @@ fun AddDeviceTypeScreen(
                 actions = {
                     androidx.compose.material3.TextButton(onClick = {
                         if (name.isNotBlank()) {
-                            viewModel.addDeviceType(name, selectedIcon, batteryType, batteryQuantity)
+                            viewModel.addDeviceType(
+                                DeviceTypeInput(
+                                    name = name,
+                                    defaultIcon = selectedIcon,
+                                    batteryType = batteryType,
+                                    batteryQuantity = batteryQuantity,
+                                ),
+                            )
                             onDeviceTypeAdded()
                         }
                     }) {

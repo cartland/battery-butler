@@ -34,6 +34,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.chriscartland.blanket.domain.model.DeviceTypeInput
+import com.chriscartland.blanket.ui.components.BlanketCenteredTopAppBar
 import com.chriscartland.blanket.ui.components.DeviceIconMapper
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,7 +57,7 @@ fun EditDeviceTypeScreen(
     Scaffold(
         modifier = modifier,
         topBar = {
-            com.chriscartland.blanket.ui.components.BlanketCenteredTopAppBar(
+            BlanketCenteredTopAppBar(
                 title = "Edit Device Type",
                 onBack = onBack,
                 navigationIcon = {
@@ -66,7 +68,14 @@ fun EditDeviceTypeScreen(
                 actions = {
                     TextButton(
                         onClick = {
-                            viewModel.updateDeviceType(name, batteryType, batteryQuantity, defaultIcon)
+                            viewModel.updateDeviceType(
+                                DeviceTypeInput(
+                                    name = name,
+                                    batteryType = batteryType,
+                                    batteryQuantity = batteryQuantity,
+                                    defaultIcon = defaultIcon,
+                                ),
+                            )
                             onBack()
                         },
                         enabled = name.isNotBlank() && batteryType.isNotBlank(),
