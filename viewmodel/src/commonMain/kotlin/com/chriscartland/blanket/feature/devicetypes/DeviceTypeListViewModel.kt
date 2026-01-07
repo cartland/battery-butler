@@ -21,7 +21,7 @@ class DeviceTypeListViewModel(
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = DeviceTypeListUiState.Loading,
+            initialValue = DeviceTypeListUiState.Success(emptyList()),
         )
 }
 

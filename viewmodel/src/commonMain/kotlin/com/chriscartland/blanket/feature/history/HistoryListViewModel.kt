@@ -28,6 +28,6 @@ class HistoryListViewModel(
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = HistoryListUiState.Loading,
+            initialValue = HistoryListUiState.Success(emptyList()),
         )
 }

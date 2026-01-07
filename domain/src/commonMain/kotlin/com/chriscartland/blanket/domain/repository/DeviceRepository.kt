@@ -37,4 +37,6 @@ interface DeviceRepository {
     suspend fun updateEvent(event: BatteryEvent)
 
     suspend fun deleteEvent(id: String)
+
+    suspend fun ensureDefaultDeviceTypes()
 }

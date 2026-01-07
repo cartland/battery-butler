@@ -76,4 +76,116 @@ class RoomDeviceRepository(
     override suspend fun deleteEvent(id: String) {
         dao.deleteEvent(id)
     }
+
+    override suspend fun ensureDefaultDeviceTypes() {
+        if (dao.getDeviceTypeCount() > 0) {
+            return
+        }
+
+        val defaultTypes = listOf(
+            DeviceType(
+                id = com.benasher44.uuid
+                    .uuid4()
+                    .toString(),
+                name = "Smart Button",
+                batteryType = "CR2450",
+                batteryQuantity = 1,
+                defaultIcon = "sensor",
+            ),
+            DeviceType(
+                id = com.benasher44.uuid
+                    .uuid4()
+                    .toString(),
+                name = "Smart Motion Sensor",
+                batteryType = "CR2477",
+                batteryQuantity = 1,
+                defaultIcon = "sensor",
+            ),
+            DeviceType(
+                id = com.benasher44.uuid
+                    .uuid4()
+                    .toString(),
+                name = "Tile Mate",
+                batteryType = "CR1632",
+                batteryQuantity = 1,
+                defaultIcon = "other",
+            ),
+            DeviceType(
+                id = com.benasher44.uuid
+                    .uuid4()
+                    .toString(),
+                name = "Tile Pro",
+                batteryType = "CR2032",
+                batteryQuantity = 1,
+                defaultIcon = "other",
+            ),
+            DeviceType(
+                id = com.benasher44.uuid
+                    .uuid4()
+                    .toString(),
+                name = "Calipers",
+                batteryType = "LR44",
+                batteryQuantity = 1,
+                defaultIcon = "tool",
+            ),
+            DeviceType(
+                id = com.benasher44.uuid
+                    .uuid4()
+                    .toString(),
+                name = "ULTRALOQ U-Bolt Pro Lock",
+                batteryType = "AA",
+                batteryQuantity = 4,
+                defaultIcon = "lock",
+            ),
+            DeviceType(
+                id = com.benasher44.uuid
+                    .uuid4()
+                    .toString(),
+                name = "Digital Angle Ruler",
+                batteryType = "CR2032",
+                batteryQuantity = 1,
+                defaultIcon = "tool",
+            ),
+            DeviceType(
+                id = com.benasher44.uuid
+                    .uuid4()
+                    .toString(),
+                name = "Tile Wallet",
+                batteryType = "Thin Tile",
+                batteryQuantity = 1,
+                defaultIcon = "other",
+            ),
+            DeviceType(
+                id = com.benasher44.uuid
+                    .uuid4()
+                    .toString(),
+                name = "1-9V Smoke Detector",
+                batteryType = "9V",
+                batteryQuantity = 1,
+                defaultIcon = "sensor",
+            ),
+            DeviceType(
+                id = com.benasher44.uuid
+                    .uuid4()
+                    .toString(),
+                name = "2-AA Smoke Detector",
+                batteryType = "AA",
+                batteryQuantity = 2,
+                defaultIcon = "sensor",
+            ),
+            DeviceType(
+                id = com.benasher44.uuid
+                    .uuid4()
+                    .toString(),
+                name = "Orbit 57896 Sprinkler Timer",
+                batteryType = "CR2032",
+                batteryQuantity = 1,
+                defaultIcon = "other",
+            ),
+        )
+
+        defaultTypes.forEach { type ->
+            addDeviceType(type)
+        }
+    }
 }

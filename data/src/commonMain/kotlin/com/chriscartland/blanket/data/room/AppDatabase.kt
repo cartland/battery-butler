@@ -5,7 +5,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 
-@Database(entities = [DeviceEntity::class, DeviceTypeEntity::class, BatteryEventEntity::class], version = 1)
+@Database(entities = [DeviceEntity::class, DeviceTypeEntity::class, BatteryEventEntity::class], version = 2)
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun deviceDao(): DeviceDao

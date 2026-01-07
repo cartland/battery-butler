@@ -15,6 +15,7 @@ actual class DatabaseFactory(
                 context = context,
                 name = dbFile.absolutePath,
             ).setDriver(BundledSQLiteDriver())
+            .fallbackToDestructiveMigration(true)
             .build()
     }
 }

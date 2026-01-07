@@ -12,6 +12,7 @@ actual class DatabaseFactory {
             .databaseBuilder<AppDatabase>(
                 name = dbFile.absolutePath,
             ).setDriver(BundledSQLiteDriver())
+            .fallbackToDestructiveMigration(true)
             .build()
     }
 }

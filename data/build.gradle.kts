@@ -28,11 +28,20 @@ kotlin {
             implementation(libs.kotlin.inject.runtime)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.datetime)
+            implementation(libs.uuid)
         }
         androidMain.dependencies {
             implementation(libs.androidx.room.runtime)
         }
-        // Room compiler via KSP is configured in dependencies block
+        val androidInstrumentedTest by getting {
+            dependencies {
+                implementation(libs.junit)
+                implementation(libs.androidx.testExt.junit)
+                implementation(libs.androidx.runner)
+                implementation(libs.androidx.core)
+                implementation(libs.kotlinx.coroutines.test)
+            }
+        }
     }
 }
 
@@ -45,6 +54,7 @@ android {
         minSdk = libs.versions.android.minSdk
             .get()
             .toInt()
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11

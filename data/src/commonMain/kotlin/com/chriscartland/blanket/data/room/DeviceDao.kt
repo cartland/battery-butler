@@ -40,6 +40,9 @@ interface DeviceDao {
     @Query("DELETE FROM device_types WHERE id = :id")
     suspend fun deleteDeviceType(id: String)
 
+    @Query("SELECT COUNT(*) FROM device_types")
+    suspend fun getDeviceTypeCount(): Int
+
     // Battery Events
     @Query("SELECT * FROM battery_events WHERE deviceId = :deviceId ORDER BY date DESC")
     fun getEventsForDevice(deviceId: String): Flow<List<BatteryEventEntity>>
