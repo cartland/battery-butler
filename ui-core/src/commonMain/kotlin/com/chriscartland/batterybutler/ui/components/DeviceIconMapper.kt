@@ -70,8 +70,8 @@ object DeviceIconMapper {
             else -> Icons.Default.DevicesOther
         }
 
-    fun getContainerColor(iconName: String?): Color {
-        return when (iconName) {
+    fun getContainerColor(iconName: String?): Color =
+        when (iconName) {
             "videogame_asset", "toys" -> Color(0xFFE0F2FE) // sky-100
             "tv", "mouse", "keyboard" -> Color(0xFFF1F5F9) // slate-100
             "lock" -> Color(0xFFDBEAFE) // blue-100
@@ -88,7 +88,6 @@ object DeviceIconMapper {
             "water_drop" -> Color(0xFFE0F2FE) // sky-100
             else -> Color(0xFFF1F5F9)
         }
-    }
 
     fun getContentColor(iconName: String?): Color =
         when (iconName) {

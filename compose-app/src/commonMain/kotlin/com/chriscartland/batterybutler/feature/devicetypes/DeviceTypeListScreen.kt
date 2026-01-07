@@ -20,7 +20,7 @@ fun DeviceTypeListScreen(
     val coreUiState = when (val state = uiState) {
         com.chriscartland.batterybutler.feature.devicetypes.DeviceTypeListUiState.Loading -> DeviceTypeListUiState.Loading
         is com.chriscartland.batterybutler.feature.devicetypes.DeviceTypeListUiState.Success -> DeviceTypeListUiState.Success(
-            deviceTypes = state.deviceTypes
+            deviceTypes = state.deviceTypes,
         )
     }
 

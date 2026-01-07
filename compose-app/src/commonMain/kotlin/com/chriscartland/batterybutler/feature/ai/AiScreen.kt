@@ -14,7 +14,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -45,7 +44,7 @@ fun AiScreen(
 ) {
     val messages by viewModel.messages.collectAsState()
     val isAvailable by viewModel.isAiAvailable.collectAsState()
-    
+
     var prompt by remember { mutableStateOf("") }
 
     Scaffold(
@@ -60,16 +59,16 @@ fun AiScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                .padding(innerPadding),
         ) {
             if (!isAvailable) {
-                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                     Text("AI capabilities are not available on this device.")
-                 }
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("AI capabilities are not available on this device.")
+                }
             } else {
                 LazyColumn(
                     modifier = Modifier.weight(1f).fillMaxWidth(),
-                    reverseLayout = true, // Chat style usually bottom-up? Or top-down. 
+                    reverseLayout = true, // Chat style usually bottom-up? Or top-down.
                     // If regular list, stick to top-down but scroll to end.
                     // Let's do standard top-down.
                 ) {
@@ -82,7 +81,7 @@ fun AiScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     OutlinedTextField(
                         value = prompt,
@@ -99,7 +98,7 @@ fun AiScreen(
                                 prompt = ""
                             }
                         },
-                        enabled = prompt.isNotBlank()
+                        enabled = prompt.isNotBlank(),
                     ) {
                         Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Send")
                     }
@@ -118,14 +117,14 @@ fun AiMessageBubble(message: AiMessage) {
 
     Box(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
-        contentAlignment = if (isUser) Alignment.CenterEnd else Alignment.CenterStart
+        contentAlignment = if (isUser) Alignment.CenterEnd else Alignment.CenterStart,
     ) {
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(12.dp))
                 .background(color)
                 .padding(12.dp)
-                .widthIn(max = 300.dp)
+                .widthIn(max = 300.dp),
         ) {
             Text(message.text, color = textColor)
         }

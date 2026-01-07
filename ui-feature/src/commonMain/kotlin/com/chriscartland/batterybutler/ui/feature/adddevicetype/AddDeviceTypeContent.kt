@@ -82,13 +82,19 @@ fun AddDeviceTypeContent(
                                     defaultIcon = selectedIcon,
                                     batteryType = batteryType,
                                     batteryQuantity = batteryQuantity,
-                                )
+                                ),
                             )
                         }
                     }) {
                         Text(
                             "Save",
-                            color = if (name.isNotBlank()) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
+                            color = if (name.isNotBlank()) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                MaterialTheme.colorScheme.onSurface.copy(
+                                    alpha = 0.38f,
+                                )
+                            },
                             fontWeight = FontWeight.Bold,
                         )
                     }
@@ -172,9 +178,17 @@ fun AddDeviceTypeContent(
                                     .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(8.dp)),
                                 contentAlignment = Alignment.Center,
                             ) {
-                                Icon(Icons.Default.BatteryFull, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Icon(
+                                    Icons.Default.BatteryFull,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
                             }
-                            Text("Batteries needed", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(
+                                "Batteries needed",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
                         }
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                             IconButton(

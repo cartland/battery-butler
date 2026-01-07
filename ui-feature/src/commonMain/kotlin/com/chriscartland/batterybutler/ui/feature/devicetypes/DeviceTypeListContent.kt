@@ -28,7 +28,10 @@ import com.chriscartland.batterybutler.ui.components.DeviceIconMapper
 
 sealed interface DeviceTypeListUiState {
     data object Loading : DeviceTypeListUiState
-    data class Success(val deviceTypes: List<DeviceType>) : DeviceTypeListUiState
+
+    data class Success(
+        val deviceTypes: List<DeviceType>,
+    ) : DeviceTypeListUiState
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

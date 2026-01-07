@@ -8,5 +8,8 @@ data class AiMessage(
 )
 
 enum class AiRole {
-    USER, MODEL, SYSTEM, TOOL
+    USER,
+    MODEL,
+    SYSTEM,
+    TOOL,
 }

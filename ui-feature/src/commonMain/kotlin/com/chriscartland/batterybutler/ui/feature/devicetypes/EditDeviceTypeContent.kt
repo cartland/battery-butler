@@ -46,8 +46,12 @@ import com.chriscartland.batterybutler.ui.components.DeviceIconMapper
 
 sealed interface EditDeviceTypeUiState {
     data object Loading : EditDeviceTypeUiState
+
     data object NotFound : EditDeviceTypeUiState
-    data class Success(val deviceType: DeviceType) : EditDeviceTypeUiState
+
+    data class Success(
+        val deviceType: DeviceType,
+    ) : EditDeviceTypeUiState
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -128,19 +132,23 @@ fun EditDeviceTypeContent(
                             keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
                         )
                         Spacer(modifier = Modifier.height(16.dp))
-                        
+
                         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                             Text("Quantity", style = MaterialTheme.typography.bodyLarge)
                             Spacer(Modifier.weight(1f))
                             IconButton(onClick = { if (batteryQuantity > 1) batteryQuantity-- }) {
                                 Icon(Icons.Default.Remove, contentDescription = "Decrease")
                             }
-                            Text(batteryQuantity.toString(), style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(horizontal = 8.dp))
+                            Text(
+                                batteryQuantity.toString(),
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.padding(horizontal = 8.dp),
+                            )
                             IconButton(onClick = { batteryQuantity++ }) {
                                 Icon(Icons.Default.Add, contentDescription = "Increase")
                             }
                         }
-                        
+
                         Spacer(modifier = Modifier.height(24.dp))
 
                         // Icon Selection
@@ -152,17 +160,26 @@ fun EditDeviceTypeContent(
                                     Icon(
                                         imageVector = DeviceIconMapper.getIcon(iconName),
                                         contentDescription = null,
-                                        tint = if (defaultIcon == iconName) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                                        tint = if (defaultIcon ==
+                                            iconName
+                                        ) {
+                                            MaterialTheme.colorScheme.primary
+                                        } else {
+                                            MaterialTheme.colorScheme.onSurfaceVariant
+                                        },
                                     )
                                 }
                             }
                         }
-                        
+
                         Spacer(modifier = Modifier.weight(1f))
 
                         Button(
                             onClick = { showDeleteDialog = true },
-                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.errorContainer, contentColor = MaterialTheme.colorScheme.error),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.errorContainer,
+                                contentColor = MaterialTheme.colorScheme.error,
+                            ),
                             modifier = Modifier.fillMaxWidth().height(56.dp),
                             shape = RoundedCornerShape(12.dp),
                         ) {
@@ -178,9 +195,9 @@ fun EditDeviceTypeContent(
                 title = { Text("Delete Device Type") },
                 text = { Text("Are you sure you want to delete this device type?") },
                 confirmButton = {
-                    TextButton(onClick = { 
+                    TextButton(onClick = {
                         onDelete()
-                        showDeleteDialog = false 
+                        showDeleteDialog = false
                     }, colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)) { Text("Delete") }
                 },
                 dismissButton = { TextButton(onClick = { showDeleteDialog = false }) { Text("Cancel") } },

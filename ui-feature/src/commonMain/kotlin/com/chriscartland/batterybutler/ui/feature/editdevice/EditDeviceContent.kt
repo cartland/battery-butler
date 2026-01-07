@@ -44,7 +44,9 @@ import com.chriscartland.batterybutler.ui.components.ButlerCenteredTopAppBar
 
 sealed interface EditDeviceUiState {
     data object Loading : EditDeviceUiState
+
     data object NotFound : EditDeviceUiState
+
     data class Success(
         val device: Device,
         val deviceTypes: List<DeviceType>,

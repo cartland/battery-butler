@@ -12,7 +12,12 @@ class IosNativeHelper {
         val databaseFactory = DatabaseFactory()
         val noOpAiEngine = object : AiEngine {
             override val isAvailable: Flow<Boolean> = flowOf(false)
-            override suspend fun generateResponse(prompt: String, toolHandler: ToolHandler?): Flow<AiMessage> = flowOf()
+
+            override suspend fun generateResponse(
+                prompt: String,
+                toolHandler: ToolHandler?,
+            ): Flow<AiMessage> = flowOf()
+
             override val compatibility: Flow<Boolean> = flowOf(false)
         }
         // val component = InjectNativeComponent(databaseFactory, noOpAiEngine)

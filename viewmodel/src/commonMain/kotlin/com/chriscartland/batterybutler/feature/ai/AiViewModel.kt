@@ -6,25 +6,23 @@ import com.benasher44.uuid.uuid4
 import com.chriscartland.batterybutler.domain.ai.AiEngine
 import com.chriscartland.batterybutler.domain.ai.AiMessage
 import com.chriscartland.batterybutler.domain.ai.AiRole
+import com.chriscartland.batterybutler.domain.ai.ToolHandler
+import com.chriscartland.batterybutler.domain.model.Device
+import com.chriscartland.batterybutler.domain.model.DeviceType
+import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import me.tatarka.inject.annotations.Inject
-
-import com.chriscartland.batterybutler.domain.ai.ToolHandler
-import com.chriscartland.batterybutler.domain.model.Device
-import com.chriscartland.batterybutler.domain.model.DeviceType
-import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import kotlinx.datetime.Clock
+import me.tatarka.inject.annotations.Inject
 
 @Inject
 class AiViewModel(
     private val aiEngine: AiEngine,
     private val deviceRepository: DeviceRepository,
 ) : ViewModel() {
-
     private val _messages = MutableStateFlow<List<AiMessage>>(emptyList())
     val messages = _messages.asStateFlow()
 
@@ -41,46 +39,46 @@ class AiViewModel(
                 // Accumulate tokens for streaming effect
                 val modelMsgId = uuid4().toString()
                 var accumulatedText = ""
-                
+
                 val toolHandler = ToolHandler { name, args ->
                     when (name) {
                         "addDevice" -> {
                             val name = args["name"] as? String ?: return@ToolHandler "Error: Missing name"
                             val typeId = args["typeId"] as? String ?: return@ToolHandler "Error: Missing typeId"
-                             // Assume other fields default
-                             try {
-                                 deviceRepository.addDevice(
-                                     Device(
-                                         id = uuid4().toString(),
-                                         name = name,
-                                         typeId = typeId,
-                                         batteryLastReplaced = kotlinx.datetime.Instant.fromEpochMilliseconds(0), 
-                                         lastUpdated = Clock.System.now(),
-                                         // We need a way to get existing types to validate? Or standard types?
-                                         // For now, allow loosely.
-                                     )
-                                 )
-                                 "Success: Added device '$name'"
-                             } catch (e: Exception) {
-                                 "Error adding device: ${e.message}"
-                             }
+                            // Assume other fields default
+                            try {
+                                deviceRepository.addDevice(
+                                    Device(
+                                        id = uuid4().toString(),
+                                        name = name,
+                                        typeId = typeId,
+                                        batteryLastReplaced = kotlinx.datetime.Instant.fromEpochMilliseconds(0),
+                                        lastUpdated = Clock.System.now(),
+                                        // We need a way to get existing types to validate? Or standard types?
+                                        // For now, allow loosely.
+                                    ),
+                                )
+                                "Success: Added device '$name'"
+                            } catch (e: Exception) {
+                                "Error adding device: ${e.message}"
+                            }
                         }
                         "addDeviceType" -> {
-                             val name = args["name"] as? String ?: return@ToolHandler "Error: Missing name"
-                             val iconName = args["icon"] as? String ?: "default"
-                             // Validate icon? 
-                             try {
-                                 deviceRepository.addDeviceType(
-                                     DeviceType(
-                                         id = uuid4().toString(),
-                                         name = name,
-                                         defaultIcon = iconName // simplified
-                                     )
-                                 )
-                                 "Success: Added device type '$name'"
-                             } catch (e: Exception) {
-                                  "Error adding device type: ${e.message}"
-                             }
+                            val name = args["name"] as? String ?: return@ToolHandler "Error: Missing name"
+                            val iconName = args["icon"] as? String ?: "default"
+                            // Validate icon?
+                            try {
+                                deviceRepository.addDeviceType(
+                                    DeviceType(
+                                        id = uuid4().toString(),
+                                        name = name,
+                                        defaultIcon = iconName, // simplified
+                                    ),
+                                )
+                                "Success: Added device type '$name'"
+                            } catch (e: Exception) {
+                                "Error adding device type: ${e.message}"
+                            }
                         }
                         else -> "Error: Unknown tool '$name'"
                     }
@@ -88,21 +86,25 @@ class AiViewModel(
 
                 // Assuming generateResponse emits partial updates of text (tokens)
                 aiEngine.generateResponse(text, toolHandler).collect { tokenMsg ->
-                   // We assume the engine returns the FULL text so far OR just tokens.
-                   // Let's assume it returns chunks/tokens for now, so we append.
-                   // Wait, if AiEngine returns AiMessage, it implies structure.
-                   // Let's decide: AiEngine emits accumulated AiMessage. 
-                   // Then the VM just updates state.
-                   updateOrAddMessage(modelMsgId, AiRole.MODEL, tokenMsg.text)
+                    // We assume the engine returns the FULL text so far OR just tokens.
+                    // Let's assume it returns chunks/tokens for now, so we append.
+                    // Wait, if AiEngine returns AiMessage, it implies structure.
+                    // Let's decide: AiEngine emits accumulated AiMessage.
+                    // Then the VM just updates state.
+                    updateOrAddMessage(modelMsgId, AiRole.MODEL, tokenMsg.text)
                 }
             } catch (e: Exception) {
-                 val errorId = uuid4().toString()
+                val errorId = uuid4().toString()
                 updateOrAddMessage(errorId, AiRole.SYSTEM, "Error: ${e.message}")
             }
         }
     }
 
-    private fun updateOrAddMessage(id: String, role: AiRole, text: String) {
+    private fun updateOrAddMessage(
+        id: String,
+        role: AiRole,
+        text: String,
+    ) {
         val current = _messages.value.toMutableList()
         val index = current.indexOfFirst { it.id == id }
         if (index != -1) {
