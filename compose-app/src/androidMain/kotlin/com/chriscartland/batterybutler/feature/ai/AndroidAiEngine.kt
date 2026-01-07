@@ -50,11 +50,23 @@ class AndroidAiEngine(
         ),
     )
 
+    private val recordBatteryReplacementTool = defineFunction(
+        name = "recordBatteryReplacement",
+        description = "Record a battery replacement event for a device. If the device does not exist, it will be created.",
+        parameters = listOf(
+            Schema.str("deviceName", "Name of the device"),
+            Schema.str("date", "Date of replacement (YYYY-MM-DD)"),
+            Schema.str("deviceType", "Type of the device (optional, used if creating new device)"),
+            Schema.str("batteryType", "Type of battery used (optional)"),
+            Schema.str("location", "Location of the device (optional)")
+        ),
+    )
+
     private val generativeModel = GenerativeModel(
         modelName = "gemini-1.5-flash",
         apiKey = apiKey,
-        tools = listOf(Tool(listOf(addDeviceTool, addDeviceTypeTool))),
-        systemInstruction = content { text("You are Battery Butler, a helpful home inventory assistant. You can add devices and device types.") }
+        tools = listOf(Tool(listOf(addDeviceTool, addDeviceTypeTool, recordBatteryReplacementTool))),
+        systemInstruction = content { text("You are Battery Butler, a helpful home inventory assistant. You can add devices and device types. If the user provides a date for a device, use recordBatteryReplacement to log it.") }
     )
 
     private val chat by lazy { generativeModel.startChat() }

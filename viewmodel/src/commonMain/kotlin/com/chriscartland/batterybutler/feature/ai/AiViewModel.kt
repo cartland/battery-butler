@@ -14,8 +14,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
+import kotlinx.datetime.atStartOfDayIn
 import me.tatarka.inject.annotations.Inject
 
 @Inject
@@ -53,17 +56,23 @@ class AiViewModel(
                                 
                                 try {
                                     val typeId = if (!typeName.isNullOrBlank()) {
-                                        // Create a new type on the fly or find it (simplification: always create new or use predictable ID?)
-                                        // We'll create a new one for now to ensure constraint satisfaction
-                                        val newTypeId = uuid4().toString()
-                                        deviceRepository.addDeviceType(
-                                            DeviceType(
-                                                id = newTypeId,
-                                                name = typeName,
-                                                defaultIcon = "default",
-                                            ),
-                                        )
-                                        newTypeId
+                                        // smart-creation: check if exists
+                                        val existingTypes = kotlinx.coroutines.flow.first(deviceRepository.getAllDeviceTypes())
+                                        val existingType = existingTypes.find { it.name == typeName }
+                                        
+                                        if (existingType != null) {
+                                            existingType.id
+                                        } else {
+                                            val newTypeId = uuid4().toString()
+                                            deviceRepository.addDeviceType(
+                                                DeviceType(
+                                                    id = newTypeId,
+                                                    name = typeName,
+                                                    defaultIcon = "default",
+                                                ),
+                                            )
+                                            newTypeId
+                                        }
                                     } else {
                                         "default_type" // Sentinel or error if FK constraint exists
                                     }
@@ -97,6 +106,70 @@ class AiViewModel(
                                     "Success: Added device type '$name'"
                                 } catch (e: Exception) {
                                     "Error adding device type: ${e.message}"
+                                }
+                            }
+                                val deviceName = args["deviceName"] as? String ?: return@ToolHandler "Error: Missing deviceName"
+                                val dateStr = args["date"] as? String ?: return@ToolHandler "Error: Missing date"
+                                val deviceTypeName = args["deviceType"] as? String
+                                
+                                try {
+                                    // 1. Find or Create Device
+                                    val existingDevices = kotlinx.coroutines.flow.first(deviceRepository.getAllDevices())
+                                    var device = existingDevices.find { it.name == deviceName } // Exact match per user request
+                                    
+                                    if (device == null) {
+                                        // Find or Create Device Type
+                                        val typeId = if (!deviceTypeName.isNullOrBlank()) {
+                                            val existingTypes = kotlinx.coroutines.flow.first(deviceRepository.getAllDeviceTypes())
+                                            val existingType = existingTypes.find { it.name == deviceTypeName }
+                                            
+                                            if (existingType != null) {
+                                                existingType.id
+                                            } else {
+                                                val newTypeId = uuid4().toString()
+                                                deviceRepository.addDeviceType(DeviceType(newTypeId, deviceTypeName, "default"))
+                                                newTypeId
+                                            }
+                                        } else {
+                                            "default_type"
+                                        }
+
+                                        val newDevice = Device(
+                                            id = uuid4().toString(),
+                                            name = deviceName,
+                                            typeId = typeId,
+                                            batteryLastReplaced = kotlinx.datetime.Instant.fromEpochMilliseconds(0),
+                                            lastUpdated = Clock.System.now(),
+                                        )
+                                        deviceRepository.addDevice(newDevice)
+                                        device = newDevice
+                                    }
+
+                                    // Ensure non-null for updates
+                                    val targetDevice = device!!
+
+                                    // 2. Parse Date
+                                    val date = kotlinx.datetime.LocalDate.parse(dateStr)
+                                    val instant = date.atStartOfDayIn(kotlinx.datetime.TimeZone.currentSystemDefault())
+
+                                    // 3. Add Battery Event
+                                    val event = com.chriscartland.batterybutler.domain.model.BatteryEvent(
+                                        id = uuid4().toString(),
+                                        deviceId = targetDevice.id,
+                                        date = instant,
+                                        batteryType = args["batteryType"] as? String ?: "Unknown", // Assuming generic
+                                        notes = "Imported via AI"
+                                    )
+                                    deviceRepository.addEvent(event)
+
+                                    // 4. Update Device if newer
+                                    if (instant > targetDevice.batteryLastReplaced) {
+                                        deviceRepository.updateDevice(targetDevice.copy(batteryLastReplaced = instant))
+                                    }
+
+                                    "Success: Recorded battery replacement for '$deviceName' on $dateStr"
+                                } catch (e: Exception) {
+                                    "Error recording battery replacement: ${e.message}"
                                 }
                             }
                             else -> "Error: Unknown tool '$name'"
