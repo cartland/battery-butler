@@ -21,10 +21,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-// @Preview
-// @Composable
-// fun AppAndroidPreview() {
-//     val component = AppComponent::class.create(DatabaseFactory(LocalContext.current))
-//     App(component)
-// }
