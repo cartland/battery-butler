@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidKotlinMultiplatformLibrary)
+    alias(libs.plugins.ksp)
 }
 
 kotlin {
@@ -22,16 +23,22 @@ kotlin {
     iosX64 {
         binaries.framework {
             baseName = "shared"
+            export(project(":domain"))
+            export(project(":viewmodel"))
         }
     }
     iosArm64 {
         binaries.framework {
             baseName = "shared"
+            export(project(":domain"))
+            export(project(":viewmodel"))
         }
     }
     iosSimulatorArm64 {
         binaries.framework {
             baseName = "shared"
+            export(project(":domain"))
+            export(project(":viewmodel"))
         }
     }
 
@@ -39,10 +46,22 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            // put your Multiplatform dependencies here
+            implementation(libs.kotlin.stdlib)
+            implementation(project(":domain"))
+            implementation(project(":data"))
+            implementation(project(":viewmodel"))
+            implementation(libs.kotlin.inject.runtime)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
     }
+}
+
+dependencies {
+    add("kspCommonMainMetadata", libs.kotlin.inject.compiler)
+    add("kspAndroid", libs.kotlin.inject.compiler)
+    add("kspIosX64", libs.kotlin.inject.compiler)
+    add("kspIosArm64", libs.kotlin.inject.compiler)
+    add("kspIosSimulatorArm64", libs.kotlin.inject.compiler)
 }
