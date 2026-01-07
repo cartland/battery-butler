@@ -3,9 +3,8 @@ package com.chriscartland.blanket
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
-import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.runtime.entryProvider
-import androidx.navigation3.runtime.NavEntry
+import androidx.navigation3.ui.NavDisplay
 import com.chriscartland.blanket.di.AppComponent
 import com.chriscartland.blanket.feature.adddevice.AddDeviceScreen
 import com.chriscartland.blanket.feature.main.MainTab
@@ -28,7 +27,7 @@ fun App(component: AppComponent) {
                     val homeViewModel = remember { component.homeViewModel }
                     val historyListViewModel = remember { component.historyListViewModel }
                     val deviceTypeListViewModel = remember { component.deviceTypeListViewModel }
-                    
+
                     com.chriscartland.blanket.feature.main.MainScreen(
                         homeViewModel = homeViewModel,
                         historyListViewModel = historyListViewModel,
@@ -41,32 +40,32 @@ fun App(component: AppComponent) {
                         onEventClick = { eventId, deviceId -> backStack.add(Screen.EventDetail(eventId, deviceId)) },
                     )
                 }
-                
+
                 entry<Screen.AddDevice> {
                     AddDeviceScreen(
                         viewModel = component.addDeviceViewModel,
-                        onDeviceAdded = { 
+                        onDeviceAdded = {
                             backStack.removeLastOrNull()
                         },
                         onAddDeviceTypeClick = { backStack.add(Screen.AddDeviceType(returnScreen = Screen.AddDevice)) },
                         onBack = { backStack.removeLastOrNull() },
                     )
                 }
-                
-                entry<Screen.AddDeviceType> { 
+
+                entry<Screen.AddDeviceType> {
                     val args = it
                     val returnScreen = args.returnScreen
-                    
+
                     com.chriscartland.blanket.feature.adddevicetype.AddDeviceTypeScreen(
                         viewModel = component.addDeviceTypeViewModel,
-                        onDeviceTypeAdded = { 
+                        onDeviceTypeAdded = {
                             // Simple pop for "return" in this stack model
                             backStack.removeLastOrNull()
                         },
                         onBack = { backStack.removeLastOrNull() },
                     )
                 }
-                
+
                 entry<Screen.DeviceDetail> {
                     val args = it
                     val viewModel = remember(args.deviceId) {
@@ -79,7 +78,7 @@ fun App(component: AppComponent) {
                         onEventClick = { eventId -> backStack.add(Screen.EventDetail(eventId, args.deviceId)) },
                     )
                 }
-                
+
                 entry<Screen.EventDetail> {
                     val args = it
                     val viewModel = remember(args.eventId) {
@@ -90,7 +89,7 @@ fun App(component: AppComponent) {
                         onBack = { backStack.removeLastOrNull() },
                     )
                 }
-                
+
                 entry<Screen.EditDevice> {
                     val args = it
                     val viewModel = remember(args.deviceId) {
@@ -99,7 +98,7 @@ fun App(component: AppComponent) {
                     com.chriscartland.blanket.feature.editdevice.EditDeviceScreen(
                         viewModel = viewModel,
                         onBack = { backStack.removeLastOrNull() },
-                        onDelete = { 
+                        onDelete = {
                             // Pop back to Home (removing DeviceDetail)
                             // Remove EditDevice
                             backStack.removeLastOrNull()
@@ -110,7 +109,7 @@ fun App(component: AppComponent) {
                         },
                     )
                 }
-                
+
                 entry<Screen.EditDeviceType> {
                     val args = it
                     val viewModel = remember(args.typeId) {
@@ -122,7 +121,7 @@ fun App(component: AppComponent) {
                         onDelete = { backStack.removeLastOrNull() },
                     )
                 }
-            }
+            },
         )
     }
 }
