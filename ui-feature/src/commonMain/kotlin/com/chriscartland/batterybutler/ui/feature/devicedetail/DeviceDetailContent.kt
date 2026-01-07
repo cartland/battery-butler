@@ -49,9 +49,7 @@ import com.chriscartland.batterybutler.ui.components.HistoryListItem
 
 sealed interface DeviceDetailUiState {
     data object Loading : DeviceDetailUiState
-
     data object NotFound : DeviceDetailUiState
-
     data class Success(
         val device: Device,
         val deviceType: DeviceType?,
@@ -61,7 +59,7 @@ sealed interface DeviceDetailUiState {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DeviceDetailScreen(
+fun DeviceDetailContent(
     state: DeviceDetailUiState,
     onRecordReplacement: () -> Unit,
     onBack: () -> Unit,
@@ -92,7 +90,7 @@ fun DeviceDetailScreen(
                     Text("Device not found", modifier = Modifier.align(Alignment.Center))
                 }
                 is DeviceDetailUiState.Success -> {
-                    DeviceDetailContent(
+                    DeviceDetailBody(
                         state = state,
                         onRecordReplacement = onRecordReplacement,
                         onEventClick = onEventClick,
@@ -105,7 +103,7 @@ fun DeviceDetailScreen(
 }
 
 @Composable
-fun DeviceDetailContent(
+fun DeviceDetailBody(
     state: DeviceDetailUiState.Success,
     onRecordReplacement: () -> Unit,
     onEventClick: (String) -> Unit,

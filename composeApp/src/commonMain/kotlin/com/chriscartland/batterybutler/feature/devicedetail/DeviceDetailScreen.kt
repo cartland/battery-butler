@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.chriscartland.batterybutler.ui.feature.devicedetail.DeviceDetailScreen
+import com.chriscartland.batterybutler.ui.feature.devicedetail.DeviceDetailContent
 import com.chriscartland.batterybutler.ui.feature.devicedetail.DeviceDetailUiState
 
 @Composable
@@ -27,7 +27,7 @@ fun DeviceDetailScreen(
         )
     }
 
-    DeviceDetailScreen(
+    DeviceDetailContent(
         state = coreUiState,
         onRecordReplacement = { viewModel.recordReplacement() },
         onBack = onBack,

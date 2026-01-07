@@ -5,7 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.chriscartland.batterybutler.ui.feature.adddevice.AddDeviceScreen
+import com.chriscartland.batterybutler.ui.feature.adddevice.AddDeviceContent
 
 @Composable
 fun AddDeviceScreen(
@@ -22,7 +22,7 @@ fun AddDeviceScreen(
         viewModel.seedDeviceTypes()
     }
 
-    AddDeviceScreen(
+    AddDeviceContent(
         deviceTypes = deviceTypes,
         onAddDevice = { input ->
             viewModel.addDevice(input)

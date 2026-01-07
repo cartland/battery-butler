@@ -45,7 +45,7 @@ import com.chriscartland.batterybutler.ui.components.ButlerCenteredTopAppBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddDeviceScreen(
+fun AddDeviceContent(
     deviceTypes: List<DeviceType>,
     onAddDevice: (DeviceInput) -> Unit,
     onManageDeviceTypesClick: () -> Unit,

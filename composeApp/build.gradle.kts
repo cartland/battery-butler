@@ -62,6 +62,7 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             implementation(libs.uuid)
             implementation(libs.kotlinx.serialization.json)
+            implementation(project(":ui-feature"))
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

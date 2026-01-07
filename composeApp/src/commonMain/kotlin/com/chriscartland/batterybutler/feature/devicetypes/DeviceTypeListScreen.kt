@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.chriscartland.batterybutler.ui.feature.devicetypes.DeviceTypeListScreen
+import com.chriscartland.batterybutler.ui.feature.devicetypes.DeviceTypeListContent
 import com.chriscartland.batterybutler.ui.feature.devicetypes.DeviceTypeListUiState
 
 @Composable
@@ -17,15 +17,14 @@ fun DeviceTypeListScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    // Map ViewModel UiState to UI Core UiState
     val coreUiState = when (val state = uiState) {
         com.chriscartland.batterybutler.feature.devicetypes.DeviceTypeListUiState.Loading -> DeviceTypeListUiState.Loading
         is com.chriscartland.batterybutler.feature.devicetypes.DeviceTypeListUiState.Success -> DeviceTypeListUiState.Success(
-            state.deviceTypes,
+            deviceTypes = state.deviceTypes
         )
     }
 
-    DeviceTypeListScreen(
+    DeviceTypeListContent(
         state = coreUiState,
         onEditType = onEditType,
         onAddType = onAddType,
