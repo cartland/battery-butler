@@ -46,6 +46,10 @@ fun MainScreen(
 ) {
     var currentTab by remember { mutableStateOf(initialTab) }
 
+    com.chriscartland.blanket.ui.components.BackHandler(enabled = currentTab != MainTab.Devices) {
+        currentTab = MainTab.Devices
+    }
+
     Scaffold(
         modifier = modifier,
         topBar = {
