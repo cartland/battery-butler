@@ -40,40 +40,42 @@ class AndroidAiEngine(
     private suspend fun ensureChatSession(): com.google.ai.edge.localagents.ChatSession {
         // ... implementation commented out ...
     }
-    */
+     */
 
     override suspend fun generateResponse(
         prompt: String,
         toolHandler: ToolHandler?,
-    ): Flow<AiMessage> = flow {
-        checkAvailability()
-        if (!_isAvailable.value) {
-            emit(AiMessage("error", AiRole.MODEL, "Model not found. Please push llm.bin to $modelPath", false))
-            return@flow
-        }
+    ): Flow<AiMessage> =
+        flow {
+            checkAvailability()
+            if (!_isAvailable.value) {
+                emit(AiMessage("error", AiRole.MODEL, "Model not found. Please push llm.bin to $modelPath", false))
+                return@flow
+            }
 
-        try {
-            // Stub response for now
-            emit(AiMessage("temp_id", AiRole.MODEL, "Model found! (Function calling logic pending SDK fix)", false))
-            // Note: API integration commented out due to unresolved references in 0.1.0 SDK.
-            // Needs verification of ChatSession.sendMessage signature and Part accessor methods.
+            try {
+                // Stub response for now
+                emit(AiMessage("temp_id", AiRole.MODEL, "Model found! (Function calling logic pending SDK fix)", false))
+                // Note: API integration commented out due to unresolved references in 0.1.0 SDK.
+                // Needs verification of ChatSession.sendMessage signature and Part accessor methods.
+
             /*
             var currentResponse = chat.sendMessage(prompt)
-            
+
             // Loop while response has function call
             while (true) {
                 // Check candidates
                 val candidates = currentResponse.candidatesList
                 if (candidates.isEmpty()) break
-                
+
                 val content = candidates[0].content
                 val part = if (content.partsCount > 0) content.partsList[0] else null
-                
+
                 if (part != null && part.hasFunctionCall()) {
                      val call = part.functionCall
                      val functionName = call.name
                      val argsJava = call.args.fieldsMap
-                     
+
                      // Convert Java Map to Kotlin Map<String, Any?>
                      val argsKotlin = argsJava.entries.associate { (k, v) ->
                          k to when {
@@ -83,25 +85,25 @@ class AndroidAiEngine(
                              else -> v.toString()
                          }
                      }
-                     
+
                      // Execute tool
                      val resultJson = toolHandler?.execute(functionName, argsKotlin) ?: "{ \"status\": \"error\", \"message\": \"No tool handler\" }"
-                     
+
                      // Build FunctionResponse
                      val responseStructBuilder = com.google.protobuf.Struct.newBuilder()
                      responseStructBuilder.putFields("result", com.google.protobuf.Value.newBuilder().setStringValue(resultJson).build())
-                     
+
                      val functionResponse = com.google.ai.edge.localagents.FunctionResponse.newBuilder()
                          .setName(functionName)
                          .setResponse(responseStructBuilder.build())
                          .build()
-                         
+
                      // Send function response back to model
                      val followUpContent = com.google.ai.edge.localagents.Content.newBuilder()
                         .setRole("function")
                         .addParts(com.google.ai.edge.localagents.Part.newBuilder().setFunctionResponse(functionResponse).build())
                         .build()
-                        
+
                      currentResponse = chat.sendMessage(followUpContent)
                 } else {
                     // Text response
@@ -110,12 +112,11 @@ class AndroidAiEngine(
                     break
                 }
             }
-            */
-            emit(AiMessage("temp_id", AiRole.MODEL, "Model found! (Function calling logic pending API fix)", false))
-            
-        } catch (e: Exception) {
-            e.printStackTrace()
-            emit(AiMessage("error", AiRole.MODEL, "Error: ${e.message}", false))
+             */
+                emit(AiMessage("temp_id", AiRole.MODEL, "Model found! (Function calling logic pending API fix)", false))
+            } catch (e: Exception) {
+                e.printStackTrace()
+                emit(AiMessage("error", AiRole.MODEL, "Error: ${e.message}", false))
+            }
         }
-    }
 }
