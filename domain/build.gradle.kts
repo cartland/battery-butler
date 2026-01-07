@@ -29,7 +29,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.chriscartland.blanket.domain"
+    namespace = "com.chriscartland.batterybutler.domain"
     compileSdk = libs.versions.android.compileSdk
         .get()
         .toInt()

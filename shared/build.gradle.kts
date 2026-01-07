@@ -5,7 +5,7 @@ plugins {
 
 kotlin {
     androidLibrary {
-        namespace = "com.chriscartland.blanket.shared"
+        namespace = "com.chriscartland.batterybutler.shared"
         compileSdk = libs.versions.android.compileSdk
             .get()
             .toInt()

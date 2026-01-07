@@ -37,7 +37,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.chriscartland.blanket.uicore"
+    namespace = "com.chriscartland.batterybutler.uicore"
     compileSdk = libs.versions.android.compileSdk
         .get()
         .toInt()

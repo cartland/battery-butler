@@ -1,0 +1,35 @@
+package com.chriscartland.batterybutler.feature.home
+
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import com.chriscartland.batterybutler.ui.components.DeviceListItem
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun HomeScreen(
+    viewModel: HomeViewModel,
+    onAddDeviceClick: () -> Unit,
+    onDeviceClick: (String) -> Unit,
+    onManageTypesClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val state by viewModel.uiState.collectAsState()
+
+    LazyColumn(
+        modifier = modifier.fillMaxSize(),
+    ) {
+        items(state.devices) { device ->
+            DeviceListItem(
+                device = device,
+                deviceType = state.deviceTypes[device.typeId],
+                onClick = { onDeviceClick(device.id) },
+            )
+        }
+    }
+}

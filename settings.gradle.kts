@@ -1,4 +1,4 @@
-rootProject.name = "Blanket"
+rootProject.name = "BatteryButler"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {

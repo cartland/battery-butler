@@ -51,7 +51,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.chriscartland.blanket.viewmodel"
+    namespace = "com.chriscartland.batterybutler.viewmodel"
     compileSdk = libs.versions.android.compileSdk
         .get()
         .toInt()

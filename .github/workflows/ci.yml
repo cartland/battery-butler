@@ -1,4 +1,4 @@
-name: Blanket CI
+name: Battery Butler CI
 
 on:
   push:

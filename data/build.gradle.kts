@@ -47,7 +47,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.chriscartland.blanket.data"
+    namespace = "com.chriscartland.batterybutler.data"
     compileSdk = libs.versions.android.compileSdk
         .get()
         .toInt()

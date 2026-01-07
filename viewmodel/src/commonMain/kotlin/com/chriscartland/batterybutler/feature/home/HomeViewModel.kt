@@ -1,0 +1,43 @@
+package com.chriscartland.batterybutler.feature.home
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.chriscartland.batterybutler.domain.model.Device
+import com.chriscartland.batterybutler.domain.model.DeviceType
+import com.chriscartland.batterybutler.domain.repository.DeviceRepository
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import me.tatarka.inject.annotations.Inject
+
+@Inject
+class HomeViewModel(
+    private val deviceRepository: DeviceRepository,
+) : ViewModel() {
+    init {
+        viewModelScope.launch {
+            deviceRepository.ensureDefaultDeviceTypes()
+        }
+    }
+
+    val uiState: StateFlow<HomeUiState> = combine(
+        deviceRepository.getAllDevices(),
+        deviceRepository.getAllDeviceTypes(),
+    ) { devices, types ->
+        HomeUiState(
+            devices = devices,
+            deviceTypes = types.associateBy { it.id },
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = HomeUiState(),
+    )
+}
+
+data class HomeUiState(
+    val devices: List<Device> = emptyList(),
+    val deviceTypes: Map<String, DeviceType> = emptyMap(),
+)

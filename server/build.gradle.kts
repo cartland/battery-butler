@@ -4,10 +4,10 @@ plugins {
     application
 }
 
-group = "com.chriscartland.blanket"
+group = "com.chriscartland.batterybutler"
 version = "1.0.0"
 application {
-    mainClass.set("com.chriscartland.blanket.ApplicationKt")
+    mainClass.set("com.chriscartland.batterybutler.ApplicationKt")
 
     val isDevelopment: Boolean = project.ext.has("development")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")

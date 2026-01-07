@@ -4,7 +4,7 @@ set -ex
 # Builds, installs, and runs the iOS application on a simulator.
 
 # Set the bundle identifier for the app
-BUNDLE_IDENTIFIER="com.chriscartland.blanket.Blanket"
+BUNDLE_IDENTIFIER="com.chriscartland.batterybutler.BatteryButler"
 
 # Find an available, booted iPhone simulator
 SIMULATOR_UDID=$(xcrun simctl list devices 'iPhone' --json | jq -r '.devices | .[] | .[] | select(.state == "Booted") | .udid' | head -n 1)
