@@ -47,9 +47,9 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(libs.kotlin.stdlib)
-            implementation(project(":domain"))
+            api(project(":domain"))
             implementation(project(":data"))
-            implementation(project(":viewmodel"))
+            api(project(":viewmodel"))
             implementation(libs.kotlin.inject.runtime)
         }
         commonTest.dependencies {
