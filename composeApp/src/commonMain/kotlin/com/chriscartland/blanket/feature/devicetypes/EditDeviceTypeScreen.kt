@@ -9,9 +9,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -32,7 +35,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.chriscartland.blanket.domain.model.DeviceTypeInput
 import com.chriscartland.blanket.ui.components.BlanketCenteredTopAppBar
@@ -53,6 +59,8 @@ fun EditDeviceTypeScreen(
     var batteryQuantity by remember { mutableStateOf(1) }
     var defaultIcon by remember { mutableStateOf("devices_other") }
     var isInitialized by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    val focusManager = LocalFocusManager.current
 
     Scaffold(
         modifier = modifier,
@@ -118,6 +126,10 @@ fun EditDeviceTypeScreen(
                             label = { Text("Type Name") },
                             modifier = Modifier.fillMaxWidth(),
                             singleLine = true,
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                            keyboardActions = KeyboardActions(
+                                onNext = { focusManager.moveFocus(FocusDirection.Next) },
+                            ),
                         )
 
                         Spacer(modifier = Modifier.height(16.dp))
@@ -129,6 +141,10 @@ fun EditDeviceTypeScreen(
                             label = { Text("Battery Type (e.g., AA)") },
                             modifier = Modifier.fillMaxWidth(),
                             singleLine = true,
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                            keyboardActions = KeyboardActions(
+                                onDone = { focusManager.clearFocus() },
+                            ),
                         )
 
                         Spacer(modifier = Modifier.height(16.dp))
@@ -190,8 +206,7 @@ fun EditDeviceTypeScreen(
 
                         Button(
                             onClick = {
-                                viewModel.deleteDeviceType()
-                                onDelete()
+                                showDeleteDialog = true
                             },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.errorContainer,
@@ -205,6 +220,31 @@ fun EditDeviceTypeScreen(
                     }
                 }
             }
+        }
+
+        if (showDeleteDialog) {
+            AlertDialog(
+                onDismissRequest = { showDeleteDialog = false },
+                title = { Text("Delete Device Type") },
+                text = { Text("Are you sure you want to delete this device type? This action cannot be undone.") },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            viewModel.deleteDeviceType()
+                            onDelete()
+                            showDeleteDialog = false
+                        },
+                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
+                    ) {
+                        Text("Delete")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDeleteDialog = false }) {
+                        Text("Cancel")
+                    }
+                },
+            )
         }
     }
 }

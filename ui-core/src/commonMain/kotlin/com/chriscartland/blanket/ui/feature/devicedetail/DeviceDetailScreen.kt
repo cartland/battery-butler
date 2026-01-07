@@ -118,7 +118,7 @@ fun DeviceDetailContent(
     LazyColumn(
         modifier = modifier.padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(24.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         item {
             Spacer(modifier = Modifier.height(8.dp))
@@ -187,6 +187,9 @@ fun DeviceDetailContent(
                 }
             }
         }
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+        }
 
         // Stats Grid
         item {
@@ -206,6 +209,9 @@ fun DeviceDetailContent(
                     modifier = Modifier.weight(1f),
                 )
             }
+        }
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
         }
 
         // Action Section
@@ -245,6 +251,9 @@ fun DeviceDetailContent(
                     Icon(Icons.Default.ChevronRight, contentDescription = null)
                 }
             }
+        }
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
         }
 
         // History Section

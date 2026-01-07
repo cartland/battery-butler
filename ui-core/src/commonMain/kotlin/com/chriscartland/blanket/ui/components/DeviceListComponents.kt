@@ -36,8 +36,12 @@ fun DeviceListItem(
     modifier: Modifier = Modifier,
 ) {
     val daysSinceBatteryChange = remember(device.batteryLastReplaced) {
-        val now = Clock.System.now()
-        now.minus(device.batteryLastReplaced).inWholeDays
+        if (device.batteryLastReplaced.toEpochMilliseconds() == 0L) {
+            "N/A"
+        } else {
+            val now = Clock.System.now()
+            "${now.minus(device.batteryLastReplaced).inWholeDays} days"
+        }
     }
 
     Card(
@@ -96,7 +100,7 @@ fun DeviceListItem(
                     modifier = Modifier.size(24.dp),
                 )
                 Text(
-                    text = "$daysSinceBatteryChange days",
+                    text = daysSinceBatteryChange,
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

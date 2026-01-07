@@ -1,7 +1,6 @@
 package com.chriscartland.blanket.data.room
 
 import androidx.room.testing.MigrationTestHelper
-import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Rule
@@ -16,7 +15,7 @@ class MigrationTest {
     @get:Rule
     val helper: MigrationTestHelper = MigrationTestHelper(
         InstrumentationRegistry.getInstrumentation(),
-        AppDatabase::class.java.canonicalName
+        AppDatabase::class.java,
     )
 
     @Test
@@ -31,7 +30,7 @@ class MigrationTest {
 
         // Re-open the database with version 4 and provide MIGRATION_3_4
         db = helper.runMigrationsAndValidate(testDb, 4, true, MIGRATION_3_4)
-        
+
         // Verify 'location' column exists or data integrity
         // The validate step above ensures the schema matches 4.json
     }

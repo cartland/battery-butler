@@ -17,6 +17,8 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.BatteryFull
@@ -36,7 +38,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.chriscartland.blanket.domain.model.DeviceTypeInput
 import com.chriscartland.blanket.ui.components.BlanketCenteredTopAppBar
@@ -55,6 +60,7 @@ fun AddDeviceTypeScreen(
     var batteryType by remember { mutableStateOf("AA") }
     var batteryQuantity by remember { mutableStateOf(1) }
     var batteryDropdownExpanded by remember { mutableStateOf(false) }
+    val focusManager = LocalFocusManager.current
 
     val icons = listOf(
         "videogame_asset",
@@ -156,6 +162,10 @@ fun AddDeviceTypeScreen(
                         placeholder = { Text("e.g. Xbox Controller") },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                        keyboardActions = KeyboardActions(
+                            onNext = { focusManager.moveFocus(FocusDirection.Next) },
+                        ),
                     )
                 }
 
@@ -169,6 +179,10 @@ fun AddDeviceTypeScreen(
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
                         shape = RoundedCornerShape(12.dp),
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                        keyboardActions = KeyboardActions(
+                            onDone = { focusManager.clearFocus() },
+                        ),
                     )
                 }
 

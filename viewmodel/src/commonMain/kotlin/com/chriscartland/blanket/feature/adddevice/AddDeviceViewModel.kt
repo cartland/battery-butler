@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import me.tatarka.inject.annotations.Inject
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -36,7 +37,7 @@ class AddDeviceViewModel(
                 location = input.location,
                 typeId = input.typeId,
                 imagePath = input.imagePath,
-                batteryLastReplaced = Clock.System.now(),
+                batteryLastReplaced = Instant.fromEpochMilliseconds(0),
                 lastUpdated = Clock.System.now(),
             )
             deviceRepository.addDevice(newDevice)
