@@ -12,7 +12,6 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,7 +22,6 @@ import com.chriscartland.batterybutler.feature.history.HistoryListScreen
 import com.chriscartland.batterybutler.feature.history.HistoryListViewModel
 import com.chriscartland.batterybutler.feature.home.HomeScreen
 import com.chriscartland.batterybutler.feature.home.HomeViewModel
-
 import com.chriscartland.batterybutler.ui.components.ButlerCenteredTopAppBar
 
 @kotlinx.serialization.Serializable
@@ -51,7 +49,6 @@ fun MainScreen(
     com.chriscartland.batterybutler.ui.components.BackHandler(enabled = currentTab != MainTab.Devices) {
         currentTab = MainTab.Devices
     }
-
 
     Scaffold(
         modifier = modifier,

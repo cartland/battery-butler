@@ -13,7 +13,6 @@ import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -41,7 +40,7 @@ class AiViewModel(
             try {
                 // Split input by newlines to handle batch requests
                 val lines = text.lines().filter { it.isNotBlank() }
-                
+
                 for (line in lines) {
                     // Accumulate tokens for streaming effect
                     val modelMsgId = uuid4().toString()
@@ -53,13 +52,13 @@ class AiViewModel(
                                 val name = args["name"] as? String ?: return@ToolHandler "Error: Missing name"
                                 // Scheme provides 'type' (name of type), not typeId
                                 val typeName = args["type"] as? String
-                                
+
                                 try {
                                     val typeId = if (!typeName.isNullOrBlank()) {
                                         // smart-creation: check if exists
                                         val existingTypes = kotlinx.coroutines.flow.first(deviceRepository.getAllDeviceTypes())
                                         val existingType = existingTypes.find { it.name == typeName }
-                                        
+
                                         if (existingType != null) {
                                             existingType.id
                                         } else {
@@ -108,21 +107,22 @@ class AiViewModel(
                                     "Error adding device type: ${e.message}"
                                 }
                             }
+                            "recordBatteryReplacement" -> {
                                 val deviceName = args["deviceName"] as? String ?: return@ToolHandler "Error: Missing deviceName"
                                 val dateStr = args["date"] as? String ?: return@ToolHandler "Error: Missing date"
                                 val deviceTypeName = args["deviceType"] as? String
-                                
+
                                 try {
                                     // 1. Find or Create Device
                                     val existingDevices = kotlinx.coroutines.flow.first(deviceRepository.getAllDevices())
-                                    var device = existingDevices.find { it.name == deviceName } // Exact match per user request
-                                    
+                                    var device: com.chriscartland.batterybutler.domain.model.Device? = existingDevices.find { it.name == deviceName } // Exact match per user request
+
                                     if (device == null) {
                                         // Find or Create Device Type
                                         val typeId = if (!deviceTypeName.isNullOrBlank()) {
                                             val existingTypes = kotlinx.coroutines.flow.first(deviceRepository.getAllDeviceTypes())
                                             val existingType = existingTypes.find { it.name == deviceTypeName }
-                                            
+
                                             if (existingType != null) {
                                                 existingType.id
                                             } else {
@@ -146,7 +146,7 @@ class AiViewModel(
                                     }
 
                                     // Ensure non-null for updates
-                                    val targetDevice = device!!
+                                    val targetDevice: com.chriscartland.batterybutler.domain.model.Device = device!!
 
                                     // 2. Parse Date
                                     val date = kotlinx.datetime.LocalDate.parse(dateStr)
@@ -158,7 +158,7 @@ class AiViewModel(
                                         deviceId = targetDevice.id,
                                         date = instant,
                                         batteryType = args["batteryType"] as? String ?: "Unknown", // Assuming generic
-                                        notes = "Imported via AI"
+                                        notes = "Imported via AI",
                                     )
                                     deviceRepository.addEvent(event)
 
