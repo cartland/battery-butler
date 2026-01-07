@@ -24,6 +24,8 @@ import com.chriscartland.batterybutler.feature.history.HistoryListViewModel
 import com.chriscartland.batterybutler.feature.home.HomeScreen
 import com.chriscartland.batterybutler.feature.home.HomeViewModel
 
+import com.chriscartland.batterybutler.ui.components.ButlerCenteredTopAppBar
+
 @kotlinx.serialization.Serializable
 enum class MainTab(
     val label: String,
@@ -50,11 +52,12 @@ fun MainScreen(
         currentTab = MainTab.Devices
     }
 
+
     Scaffold(
         modifier = modifier,
         topBar = {
-            TopAppBar(
-                title = { Text(currentTab.label) },
+            ButlerCenteredTopAppBar(
+                title = currentTab.label,
             )
         },
         floatingActionButton = {
