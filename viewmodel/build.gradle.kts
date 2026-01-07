@@ -29,6 +29,10 @@ kotlin {
     // JVM (Desktop)
     jvm("desktop")
 
+    wasmJs {
+        browser()
+    }
+
     sourceSets {
         commonMain.dependencies {
             implementation(libs.kotlin.stdlib)
@@ -73,4 +77,5 @@ dependencies {
     add("kspIosArm64", libs.kotlin.inject.compiler)
     add("kspIosSimulatorArm64", libs.kotlin.inject.compiler)
     add("kspDesktop", libs.kotlin.inject.compiler)
+    add("kspWasmJs", libs.kotlin.inject.compiler)
 }

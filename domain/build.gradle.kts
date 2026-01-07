@@ -19,6 +19,10 @@ kotlin {
     iosArm64()
     iosSimulatorArm64()
 
+    wasmJs {
+        browser()
+    }
+
     sourceSets {
         commonMain.dependencies {
             implementation(libs.kotlinx.datetime)
@@ -46,4 +50,10 @@ android {
 
 dependencies {
     add("kspCommonMainMetadata", libs.kotlin.inject.compiler)
+    add("kspAndroid", libs.kotlin.inject.compiler)
+    add("kspIosX64", libs.kotlin.inject.compiler)
+    add("kspIosArm64", libs.kotlin.inject.compiler)
+    add("kspIosSimulatorArm64", libs.kotlin.inject.compiler)
+    add("kspJvm", libs.kotlin.inject.compiler)
+    add("kspWasmJs", libs.kotlin.inject.compiler)
 }

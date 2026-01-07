@@ -37,6 +37,10 @@ kotlin {
 
     jvm()
 
+    wasmJs {
+        browser()
+    }
+
     sourceSets {
         commonMain.dependencies {
             // put your Multiplatform dependencies here

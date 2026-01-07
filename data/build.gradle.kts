@@ -20,6 +20,10 @@ kotlin {
     iosArm64()
     iosSimulatorArm64()
 
+    wasmJs {
+        browser()
+    }
+
     sourceSets {
         commonMain.dependencies {
             implementation(project(":domain"))
@@ -91,6 +95,10 @@ dependencies {
     // Add JVM KSP for Desktop support
     add("kspJvm", libs.androidx.room.compiler)
     add("kspJvm", libs.kotlin.inject.compiler)
+
+    // Add WasmJs KSP for WASM support
+    add("kspWasmJs", libs.androidx.room.compiler)
+    add("kspWasmJs", libs.kotlin.inject.compiler)
 }
 
 configurations.named("kspCommonMainMetadata") {
