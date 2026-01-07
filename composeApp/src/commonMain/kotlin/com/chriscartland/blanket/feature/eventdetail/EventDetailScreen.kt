@@ -58,8 +58,9 @@ fun EventDetailScreen(
     Scaffold(
         modifier = modifier,
         topBar = {
-            androidx.compose.material3.TopAppBar(
-                title = { Text("Edit Event", fontWeight = FontWeight.Bold) },
+            com.chriscartland.blanket.ui.components.BlanketCenteredTopAppBar(
+                title = "Edit Event",
+                onBack = onBack,
                 navigationIcon = {
                     TextButton(onClick = onBack) {
                         Text("Done", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.primary)

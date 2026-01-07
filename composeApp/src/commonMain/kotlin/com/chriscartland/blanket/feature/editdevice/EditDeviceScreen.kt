@@ -21,7 +21,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -52,8 +51,9 @@ fun EditDeviceScreen(
     Scaffold(
         modifier = modifier,
         topBar = {
-            TopAppBar(
-                title = { Text("Edit Device", fontWeight = FontWeight.Bold) },
+            com.chriscartland.blanket.ui.components.BlanketCenteredTopAppBar(
+                title = "Edit Device",
+                onBack = onBack,
                 navigationIcon = {
                     TextButton(onClick = onBack) {
                         Text("Cancel")

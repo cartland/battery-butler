@@ -25,7 +25,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -53,8 +52,9 @@ fun AddDeviceScreen(
     Scaffold(
         modifier = modifier,
         topBar = {
-            TopAppBar(
-                title = { Text("Add Device", style = MaterialTheme.typography.titleLarge) },
+            com.chriscartland.blanket.ui.components.BlanketCenteredTopAppBar(
+                title = "Add Device",
+                onBack = onBack,
                 navigationIcon = {
                     TextButton(onClick = onBack) {
                         Text("Cancel", color = MaterialTheme.colorScheme.primary)
