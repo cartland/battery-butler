@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlinSerialization)
 }
 
 kotlin {
@@ -55,11 +56,12 @@ kotlin {
             implementation(project(":viewmodel"))
 
             implementation(libs.androidx.nav3.ui)
-            implementation(libs.androidx.lifecycle.viewmodel.nav3)
+            implementation(libs.androidx.nav3.runtime)
             implementation(libs.androidx.lifecycle.viewmodel.nav3)
             implementation(libs.kotlin.inject.runtime)
             implementation(libs.kotlinx.datetime)
             implementation(libs.uuid)
+            implementation(libs.kotlinx.serialization.json)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

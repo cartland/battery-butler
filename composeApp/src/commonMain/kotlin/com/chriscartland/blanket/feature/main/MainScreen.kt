@@ -27,6 +27,7 @@ import com.chriscartland.blanket.feature.history.HistoryListViewModel
 import com.chriscartland.blanket.feature.home.HomeScreen
 import com.chriscartland.blanket.feature.home.HomeViewModel
 
+@kotlinx.serialization.Serializable
 enum class MainTab(
     val label: String,
     val icon: androidx.compose.ui.graphics.vector.ImageVector,

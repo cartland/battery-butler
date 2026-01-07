@@ -1,128 +1,164 @@
 package com.chriscartland.blanket
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.navigation3.ui.NavDisplay
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.NavEntry
 import com.chriscartland.blanket.di.AppComponent
 import com.chriscartland.blanket.feature.adddevice.AddDeviceScreen
 import com.chriscartland.blanket.feature.main.MainTab
 import com.chriscartland.blanket.ui.theme.BlanketTheme
+import kotlinx.serialization.Serializable
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 @Preview
 fun App(component: AppComponent) {
     BlanketTheme {
-        var currentScreen by remember { mutableStateOf<Screen>(Screen.Home()) }
+        val backStack = remember { mutableStateListOf<Any>(Screen.Home()) }
 
-        when (val screen = currentScreen) {
-            is Screen.Home -> {
-                val homeViewModel = remember { component.homeViewModel }
-                val historyListViewModel = remember { component.historyListViewModel }
-                val deviceTypeListViewModel = remember { component.deviceTypeListViewModel }
-                com.chriscartland.blanket.feature.main.MainScreen(
-                    homeViewModel = homeViewModel,
-                    historyListViewModel = historyListViewModel,
-                    deviceTypeListViewModel = deviceTypeListViewModel,
-                    initialTab = screen.initialTab,
-                    onAddDeviceClick = { currentScreen = Screen.AddDevice },
-                    onDeviceClick = { deviceId -> currentScreen = Screen.DeviceDetail(deviceId) },
-                    onAddTypeClick = { currentScreen = Screen.AddDeviceType(returnScreen = Screen.Home(MainTab.Types)) },
-                    onEditTypeClick = { typeId -> currentScreen = Screen.EditDeviceType(typeId) },
-                    onEventClick = { eventId, deviceId -> currentScreen = Screen.EventDetail(eventId, deviceId) },
-                )
-            }
-            Screen.AddDevice -> {
-                AddDeviceScreen(
-                    viewModel = component.addDeviceViewModel,
-                    onDeviceAdded = { currentScreen = Screen.Home() },
-                    onAddDeviceTypeClick = { currentScreen = Screen.AddDeviceType(returnScreen = Screen.AddDevice) },
-                    onBack = { currentScreen = Screen.Home() },
-                )
-            }
-            is Screen.AddDeviceType -> {
-                val returnScreen = (currentScreen as Screen.AddDeviceType).returnScreen
-                com.chriscartland.blanket.feature.adddevicetype.AddDeviceTypeScreen(
-                    viewModel = component.addDeviceTypeViewModel,
-                    onDeviceTypeAdded = { currentScreen = returnScreen },
-                    onBack = { currentScreen = returnScreen },
-                )
-            }
-            is Screen.DeviceDetail -> {
-                val detailScreen = currentScreen as Screen.DeviceDetail
-                val viewModel = remember(detailScreen) {
-                    component.deviceDetailViewModelFactory.create(detailScreen.deviceId)
+        NavDisplay(
+            backStack = backStack,
+            onBack = { backStack.removeLastOrNull() },
+            entryProvider = entryProvider {
+                entry<Screen.Home> {
+                    val homeArgs = it
+                    val homeViewModel = remember { component.homeViewModel }
+                    val historyListViewModel = remember { component.historyListViewModel }
+                    val deviceTypeListViewModel = remember { component.deviceTypeListViewModel }
+                    
+                    com.chriscartland.blanket.feature.main.MainScreen(
+                        homeViewModel = homeViewModel,
+                        historyListViewModel = historyListViewModel,
+                        deviceTypeListViewModel = deviceTypeListViewModel,
+                        initialTab = homeArgs.initialTab,
+                        onAddDeviceClick = { backStack.add(Screen.AddDevice) },
+                        onDeviceClick = { deviceId -> backStack.add(Screen.DeviceDetail(deviceId)) },
+                        onAddTypeClick = { backStack.add(Screen.AddDeviceType(returnScreen = Screen.Home(MainTab.Types))) },
+                        onEditTypeClick = { typeId -> backStack.add(Screen.EditDeviceType(typeId)) },
+                        onEventClick = { eventId, deviceId -> backStack.add(Screen.EventDetail(eventId, deviceId)) },
+                    )
                 }
-                com.chriscartland.blanket.feature.devicedetail.DeviceDetailScreen(
-                    viewModel = viewModel,
-                    onBack = { currentScreen = Screen.Home() },
-                    onEdit = { currentScreen = Screen.EditDevice(detailScreen.deviceId) },
-                    onEventClick = { eventId -> currentScreen = Screen.EventDetail(eventId, detailScreen.deviceId) },
-                )
-            }
-            is Screen.EventDetail -> {
-                val eventDetailScreen = currentScreen as Screen.EventDetail
-                val viewModel = remember(eventDetailScreen) {
-                    component.eventDetailViewModelFactory.create(eventDetailScreen.eventId)
+                
+                entry<Screen.AddDevice> {
+                    AddDeviceScreen(
+                        viewModel = component.addDeviceViewModel,
+                        onDeviceAdded = { 
+                            backStack.removeLastOrNull()
+                        },
+                        onAddDeviceTypeClick = { backStack.add(Screen.AddDeviceType(returnScreen = Screen.AddDevice)) },
+                        onBack = { backStack.removeLastOrNull() },
+                    )
                 }
-                com.chriscartland.blanket.feature.eventdetail.EventDetailScreen(
-                    viewModel = viewModel,
-                    onBack = { currentScreen = Screen.DeviceDetail(eventDetailScreen.deviceId) },
-                )
-            }
-            is Screen.EditDevice -> {
-                val editDeviceScreen = currentScreen as Screen.EditDevice
-                val viewModel = remember(editDeviceScreen) {
-                    component.editDeviceViewModelFactory.create(editDeviceScreen.deviceId)
+                
+                entry<Screen.AddDeviceType> { 
+                    val args = it
+                    val returnScreen = args.returnScreen
+                    
+                    com.chriscartland.blanket.feature.adddevicetype.AddDeviceTypeScreen(
+                        viewModel = component.addDeviceTypeViewModel,
+                        onDeviceTypeAdded = { 
+                            // Simple pop for "return" in this stack model
+                            backStack.removeLastOrNull()
+                        },
+                        onBack = { backStack.removeLastOrNull() },
+                    )
                 }
-                com.chriscartland.blanket.feature.editdevice.EditDeviceScreen(
-                    viewModel = viewModel,
-                    onBack = { currentScreen = Screen.DeviceDetail(editDeviceScreen.deviceId) },
-                    onDelete = { currentScreen = Screen.Home() },
-                )
-            }
-            // Screen.DeviceTypeList removed as it is now part of Home
-            is Screen.EditDeviceType -> {
-                val editTypeScreen = currentScreen as Screen.EditDeviceType
-                val viewModel = remember(editTypeScreen) {
-                    component.editDeviceTypeViewModelFactory.create(editTypeScreen.typeId)
+                
+                entry<Screen.DeviceDetail> {
+                    val args = it
+                    val viewModel = remember(args.deviceId) {
+                        component.deviceDetailViewModelFactory.create(args.deviceId)
+                    }
+                    com.chriscartland.blanket.feature.devicedetail.DeviceDetailScreen(
+                        viewModel = viewModel,
+                        onBack = { backStack.removeLastOrNull() },
+                        onEdit = { backStack.add(Screen.EditDevice(args.deviceId)) },
+                        onEventClick = { eventId -> backStack.add(Screen.EventDetail(eventId, args.deviceId)) },
+                    )
                 }
-                com.chriscartland.blanket.feature.devicetypes.EditDeviceTypeScreen(
-                    viewModel = viewModel,
-                    onBack = { currentScreen = Screen.Home(MainTab.Types) },
-                    onDelete = { currentScreen = Screen.Home(MainTab.Types) },
-                )
+                
+                entry<Screen.EventDetail> {
+                    val args = it
+                    val viewModel = remember(args.eventId) {
+                        component.eventDetailViewModelFactory.create(args.eventId)
+                    }
+                    com.chriscartland.blanket.feature.eventdetail.EventDetailScreen(
+                        viewModel = viewModel,
+                        onBack = { backStack.removeLastOrNull() },
+                    )
+                }
+                
+                entry<Screen.EditDevice> {
+                    val args = it
+                    val viewModel = remember(args.deviceId) {
+                        component.editDeviceViewModelFactory.create(args.deviceId)
+                    }
+                    com.chriscartland.blanket.feature.editdevice.EditDeviceScreen(
+                        viewModel = viewModel,
+                        onBack = { backStack.removeLastOrNull() },
+                        onDelete = { 
+                            // Pop back to Home (removing DeviceDetail)
+                            // Remove EditDevice
+                            backStack.removeLastOrNull()
+                            // Remove DeviceDetail if present below
+                            if (backStack.lastOrNull() is Screen.DeviceDetail) {
+                                backStack.removeLastOrNull()
+                            }
+                        },
+                    )
+                }
+                
+                entry<Screen.EditDeviceType> {
+                    val args = it
+                    val viewModel = remember(args.typeId) {
+                        component.editDeviceTypeViewModelFactory.create(args.typeId)
+                    }
+                    com.chriscartland.blanket.feature.devicetypes.EditDeviceTypeScreen(
+                        viewModel = viewModel,
+                        onBack = { backStack.removeLastOrNull() },
+                        onDelete = { backStack.removeLastOrNull() },
+                    )
+                }
             }
-        }
+        )
     }
 }
 
+@Serializable
 sealed interface Screen {
+    @Serializable
     data class Home(
         val initialTab: MainTab = MainTab.Devices,
     ) : Screen
 
+    @Serializable
     data object AddDevice : Screen
 
+    @Serializable
     data class AddDeviceType(
         val returnScreen: Screen,
     ) : Screen
 
+    @Serializable
     data class DeviceDetail(
         val deviceId: String,
     ) : Screen
 
+    @Serializable
     data class EditDevice(
         val deviceId: String,
     ) : Screen
 
+    @Serializable
     data class EventDetail(
         val eventId: String,
         val deviceId: String,
     ) : Screen
 
+    @Serializable
     data class EditDeviceType(
         val typeId: String,
     ) : Screen
