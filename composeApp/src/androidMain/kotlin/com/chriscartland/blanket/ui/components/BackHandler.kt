@@ -1,5 +1,6 @@
 package com.chriscartland.blanket.ui.components
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 
 @Composable
@@ -7,5 +8,5 @@ actual fun BackHandler(
     enabled: Boolean,
     onBack: () -> Unit,
 ) {
-    androidx.activity.compose.BackHandler(enabled = enabled, onBack = onBack)
+    BackHandler(enabled = enabled, onBack = onBack)
 }
