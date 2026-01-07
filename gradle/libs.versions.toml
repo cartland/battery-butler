@@ -33,6 +33,8 @@ androidx-nav3 = "1.0.0-alpha05" # Navigation 3 KMP
 kotlin-inject = "0.8.0"
 kotlinx-datetime = "0.6.1"
 uuid = "0.8.4"
+mediapipe-genai = "0.10.29"
+localagents-fc = "0.1.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -70,6 +72,8 @@ uuid = { group = "com.benasher44", name = "uuid", version.ref = "uuid" }
 compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "composeMultiplatform" }
 compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "composeMultiplatform" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version = "1.8.0" }
+mediapipe-tasks-genai = { group = "com.google.mediapipe", name = "tasks-genai", version.ref = "mediapipe-genai" }
+localagents-function-calling = { group = "com.google.ai.edge.localagents", name = "localagents-fc", version.ref = "localagents-fc" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

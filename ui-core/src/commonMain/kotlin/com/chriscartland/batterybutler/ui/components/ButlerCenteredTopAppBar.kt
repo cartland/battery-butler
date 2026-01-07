@@ -12,6 +12,10 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
+import androidx.compose.material.icons.filled.AutoAwesome
+import com.chriscartland.batterybutler.ui.theme.LocalAiAction
+import com.chriscartland.batterybutler.ui.theme.LocalAiAvailable
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ButlerCenteredTopAppBar(
@@ -21,6 +25,9 @@ fun ButlerCenteredTopAppBar(
     actions: @Composable RowScope.() -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
+    val isAiAvailable = LocalAiAvailable.current
+    val onAiClick = LocalAiAction.current
+
     CenterAlignedTopAppBar(
         title = { Text(title) },
         navigationIcon = {
@@ -35,7 +42,17 @@ fun ButlerCenteredTopAppBar(
                 }
             }
         },
-        actions = actions,
+        actions = {
+            actions()
+            if (isAiAvailable) {
+                IconButton(onClick = onAiClick) {
+                    Icon(
+                        imageVector = Icons.Default.AutoAwesome,
+                        contentDescription = "AI Assistant",
+                    )
+                }
+            }
+        },
         modifier = modifier,
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(),
     )

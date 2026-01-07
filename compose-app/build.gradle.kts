@@ -39,6 +39,8 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.mediapipe.tasks.genai)
+            implementation(libs.localagents.function.calling)
         }
         commonMain.dependencies {
             implementation(compose.runtime)

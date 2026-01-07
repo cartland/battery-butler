@@ -8,13 +8,16 @@ import com.chriscartland.batterybutler.data.di.DatabaseFactory
 import com.chriscartland.batterybutler.di.AppComponent
 import com.chriscartland.batterybutler.di.create
 
+import com.chriscartland.batterybutler.feature.ai.AndroidAiEngine
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
         val databaseFactory = DatabaseFactory(applicationContext)
-        val component = AppComponent::class.create(databaseFactory)
+        val aiEngine = AndroidAiEngine(applicationContext)
+        val component = AppComponent::class.create(databaseFactory, aiEngine)
 
         setContent {
             App(component)

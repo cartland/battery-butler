@@ -8,6 +8,8 @@ import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.feature.adddevice.AddDeviceViewModel
 import com.chriscartland.batterybutler.feature.adddevicetype.AddDeviceTypeViewModel
 import com.chriscartland.batterybutler.feature.devicedetail.DeviceDetailViewModelFactory
+import com.chriscartland.batterybutler.domain.ai.AiEngine
+import com.chriscartland.batterybutler.feature.ai.AiViewModel
 import com.chriscartland.batterybutler.feature.devicetypes.DeviceTypeListViewModel
 import com.chriscartland.batterybutler.feature.devicetypes.EditDeviceTypeViewModelFactory
 import com.chriscartland.batterybutler.feature.editdevice.EditDeviceViewModelFactory
@@ -25,8 +27,10 @@ annotation class Singleton
 @Singleton
 abstract class AppComponent(
     private val databaseFactory: DatabaseFactory,
+    @get:Provides val aiEngine: AiEngine,
 ) {
     abstract val homeViewModel: HomeViewModel
+    abstract val aiViewModel: AiViewModel
     abstract val addDeviceViewModel: AddDeviceViewModel
     abstract val addDeviceTypeViewModel: AddDeviceTypeViewModel
     abstract val historyListViewModel: HistoryListViewModel

@@ -5,10 +5,16 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chriscartland.batterybutler.di.AppComponent
 import com.chriscartland.batterybutler.feature.adddevice.AddDeviceScreen
+import com.chriscartland.batterybutler.feature.ai.AiScreen
 import com.chriscartland.batterybutler.feature.main.MainTab
 import com.chriscartland.batterybutler.ui.theme.BatteryButlerTheme
+import com.chriscartland.batterybutler.ui.theme.LocalAiAction
+import com.chriscartland.batterybutler.ui.theme.LocalAiAvailable
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -17,9 +23,15 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun App(component: AppComponent) {
     BatteryButlerTheme {
         val backStack = remember { mutableStateListOf<Any>(Screen.Home()) }
+        val aiViewModel = remember { component.aiViewModel }
+        val isAiAvailable = aiViewModel.isAiAvailable.collectAsStateWithLifecycle().value
 
-        NavDisplay(
-            backStack = backStack,
+        CompositionLocalProvider(
+            LocalAiAvailable provides isAiAvailable,
+            LocalAiAction provides { backStack.add(Screen.AiChat) },
+        ) {
+            NavDisplay(
+                backStack = backStack,
             onBack = { backStack.removeLastOrNull() },
             entryProvider = entryProvider {
                 entry<Screen.Home> {
@@ -129,8 +141,16 @@ fun App(component: AppComponent) {
                         onDelete = { backStack.removeLastOrNull() },
                     )
                 }
+
+                entry<Screen.AiChat> {
+                    AiScreen(
+                        viewModel = aiViewModel,
+                        onBack = { backStack.removeLastOrNull() },
+                    )
+                }
             },
         )
+        }
     }
 }
 
@@ -172,4 +192,7 @@ sealed interface Screen {
 
     @Serializable
     data object DeviceTypeList : Screen
+
+    @Serializable
+    data object AiChat : Screen
 }
