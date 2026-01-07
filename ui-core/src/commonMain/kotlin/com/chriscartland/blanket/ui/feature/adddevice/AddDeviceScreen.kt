@@ -2,7 +2,6 @@ package com.chriscartland.blanket.ui.feature.adddevice
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
@@ -103,7 +102,7 @@ fun AddDeviceScreen(
 
                 // Device Type Selection
                 Row(
-                    modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min),
+                    modifier = Modifier.fillMaxWidth().height(56.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
