@@ -45,6 +45,7 @@ fun DeviceListItem(
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 6.dp)
             .clickable { onClick() },
+        shape = RoundedCornerShape(12.dp),
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -55,7 +56,7 @@ fun DeviceListItem(
             Box(
                 modifier = Modifier
                     .size(48.dp)
-                    .clip(RoundedCornerShape(12.dp)) // Design calls for rounded-xl which is roughly 12dp
+                    .clip(RoundedCornerShape(8.dp))
                     .background(DeviceIconMapper.getContainerColor(iconName)),
                 contentAlignment = Alignment.Center,
             ) {

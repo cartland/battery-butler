@@ -26,17 +26,14 @@ fun App(component: AppComponent) {
                     val homeArgs = it
                     val homeViewModel = remember { component.homeViewModel }
                     val historyListViewModel = remember { component.historyListViewModel }
-                    val deviceTypeListViewModel = remember { component.deviceTypeListViewModel }
+                    // deviceTypeListViewModel no longer needed for MainScreen
 
                     com.chriscartland.blanket.feature.main.MainScreen(
                         homeViewModel = homeViewModel,
                         historyListViewModel = historyListViewModel,
-                        deviceTypeListViewModel = deviceTypeListViewModel,
                         initialTab = homeArgs.initialTab,
                         onAddDeviceClick = { backStack.add(Screen.AddDevice) },
                         onDeviceClick = { deviceId -> backStack.add(Screen.DeviceDetail(deviceId)) },
-                        onAddTypeClick = { backStack.add(Screen.AddDeviceType(returnScreen = Screen.Home(MainTab.Types))) },
-                        onEditTypeClick = { typeId -> backStack.add(Screen.EditDeviceType(typeId)) },
                         onEventClick = { eventId, deviceId -> backStack.add(Screen.EventDetail(eventId, deviceId)) },
                     )
                 }
@@ -47,19 +44,30 @@ fun App(component: AppComponent) {
                         onDeviceAdded = {
                             backStack.removeLastOrNull()
                         },
-                        onAddDeviceTypeClick = { backStack.add(Screen.AddDeviceType(returnScreen = Screen.AddDevice)) },
+                        onManageDeviceTypesClick = { backStack.add(Screen.DeviceTypeList) },
+                        onBack = { backStack.removeLastOrNull() },
+                    )
+                }
+
+                entry<Screen.DeviceTypeList> {
+                    val viewModel = remember { component.deviceTypeListViewModel }
+                    com.chriscartland.blanket.feature.devicetypes.DeviceTypeListScreen(
+                        viewModel = viewModel,
+                        onEditType = { typeId -> backStack.add(Screen.EditDeviceType(typeId)) },
+                        onAddType = {
+                             backStack.add(Screen.AddDeviceType(returnScreen = Screen.DeviceTypeList))
+                        },
                         onBack = { backStack.removeLastOrNull() },
                     )
                 }
 
                 entry<Screen.AddDeviceType> {
                     val args = it
-                    val returnScreen = args.returnScreen
-
+                    // returnScreen arg is technically available but backStack logic handles the flow naturally now
+                    
                     com.chriscartland.blanket.feature.adddevicetype.AddDeviceTypeScreen(
                         viewModel = component.addDeviceTypeViewModel,
                         onDeviceTypeAdded = {
-                            // Simple pop for "return" in this stack model
                             backStack.removeLastOrNull()
                         },
                         onBack = { backStack.removeLastOrNull() },
@@ -161,4 +169,7 @@ sealed interface Screen {
     data class EditDeviceType(
         val typeId: String,
     ) : Screen
+
+    @Serializable
+    data object DeviceTypeList : Screen
 }

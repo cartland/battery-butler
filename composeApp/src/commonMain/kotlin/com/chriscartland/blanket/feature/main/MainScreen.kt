@@ -33,7 +33,6 @@ enum class MainTab(
     val icon: androidx.compose.ui.graphics.vector.ImageVector,
 ) {
     Devices("Devices", Icons.Default.Home),
-    Types("Types", Icons.AutoMirrored.Filled.List),
     History("History", Icons.Default.History),
 }
 
@@ -42,11 +41,8 @@ enum class MainTab(
 fun MainScreen(
     homeViewModel: HomeViewModel,
     historyListViewModel: HistoryListViewModel,
-    deviceTypeListViewModel: DeviceTypeListViewModel,
     onAddDeviceClick: () -> Unit,
-    onAddTypeClick: () -> Unit,
     onDeviceClick: (String) -> Unit,
-    onEditTypeClick: (String) -> Unit,
     onEventClick: (String, String) -> Unit,
     initialTab: MainTab = MainTab.Devices,
     modifier: Modifier = Modifier,
@@ -64,10 +60,6 @@ fun MainScreen(
             if (currentTab == MainTab.Devices) {
                 FloatingActionButton(onClick = onAddDeviceClick) {
                     Icon(Icons.Default.Add, contentDescription = "Add Device")
-                }
-            } else if (currentTab == MainTab.Types) {
-                FloatingActionButton(onClick = onAddTypeClick) {
-                    Icon(Icons.Default.Add, contentDescription = "Add Type")
                 }
             }
         },
@@ -92,13 +84,6 @@ fun MainScreen(
                     onAddDeviceClick = {}, // Handled by FAB in MainScreen
                     onDeviceClick = onDeviceClick,
                     onManageTypesClick = {}, // Removed from here
-                    modifier = Modifier.padding(innerPadding),
-                )
-            }
-            MainTab.Types -> {
-                DeviceTypeListScreen(
-                    viewModel = deviceTypeListViewModel,
-                    onEditType = onEditTypeClick,
                     modifier = Modifier.padding(innerPadding),
                 )
             }

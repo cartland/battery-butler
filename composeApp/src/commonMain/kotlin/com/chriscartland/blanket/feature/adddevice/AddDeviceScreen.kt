@@ -2,6 +2,7 @@ package com.chriscartland.blanket.feature.adddevice
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,7 +47,7 @@ import com.chriscartland.blanket.domain.model.DeviceType
 fun AddDeviceScreen(
     viewModel: AddDeviceViewModel,
     onDeviceAdded: () -> Unit,
-    onAddDeviceTypeClick: () -> Unit,
+    onManageDeviceTypesClick: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -99,32 +100,6 @@ fun AddDeviceScreen(
             verticalArrangement = Arrangement.spacedBy(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            // Icon Selection Visual (Placeholder)
-            Box(
-                contentAlignment = Alignment.Center,
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(96.dp)
-                        .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape)
-                        .border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.DevicesOther,
-                        contentDescription = null,
-                        modifier = Modifier.size(40.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-                Text(
-                    "Tap to choose icon",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(top = 108.dp),
-                )
-            }
-
             Column(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.fillMaxWidth(),
@@ -137,56 +112,58 @@ fun AddDeviceScreen(
                     shape = RoundedCornerShape(12.dp),
                 )
 
-                // Device Type Dropdown
-                Box(
+                // Device Type Selection
+                Row(
                     modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    OutlinedTextField(
-                        value = selectedType?.name ?: "",
-                        onValueChange = {},
-                        label = { Text("Device Type") },
-                        readOnly = true,
-                        trailingIcon = {
-                            IconButton(onClick = { expanded = true }) {
-                                Icon(Icons.Default.ArrowDropDown, contentDescription = "Select Type")
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
-                    )
-                    DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false },
+                    Box(
+                        modifier = Modifier.weight(1f),
                     ) {
-                        deviceTypes.forEach { type ->
-                            DropdownMenuItem(
-                                text = { Text(type.name) },
-                                onClick = {
-                                    selectedType = type
-                                    expanded = false
-                                },
-                            )
-                        }
-                        // Add new type option
-                        DropdownMenuItem(
-                            text = {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        Icons.Default.AddCircle,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.size(20.dp),
-                                    )
-                                    Spacer(Modifier.width(8.dp))
-                                    Text("Add new device type", color = MaterialTheme.colorScheme.primary)
+                        OutlinedTextField(
+                            value = selectedType?.name ?: "",
+                            onValueChange = {},
+                            label = { Text("Device Type") },
+                            readOnly = true,
+                            trailingIcon = {
+                                IconButton(onClick = { expanded = true }) {
+                                    Icon(Icons.Default.ArrowDropDown, contentDescription = "Select Type")
                                 }
                             },
-                            onClick = {
-                                expanded = false
-                                // TODO: Navigate to Add Type Screen
-                                onAddDeviceTypeClick()
-                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp),
                         )
+                        // Invisible overlay to capture clicks
+                        Box(
+                            modifier = Modifier
+                                .matchParentSize()
+                                .clickable { expanded = true }
+                        )
+                        
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false },
+                        ) {
+                            deviceTypes.forEach { type ->
+                                DropdownMenuItem(
+                                    text = { Text(type.name) },
+                                    onClick = {
+                                        selectedType = type
+                                        expanded = false
+                                    },
+                                )
+                            }
+                        }
+                    }
+                    
+                    // Manage Button
+                    androidx.compose.material3.OutlinedButton(
+                        onClick = onManageDeviceTypesClick,
+                        shape = RoundedCornerShape(12.dp),
+                        contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp)
+                    ) {
+                         Icon(Icons.Default.DevicesOther, contentDescription = "Manage Types")
                     }
                 }
             }
