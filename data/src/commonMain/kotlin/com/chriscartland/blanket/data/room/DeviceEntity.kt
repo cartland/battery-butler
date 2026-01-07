@@ -10,7 +10,6 @@ data class DeviceEntity(
     @PrimaryKey val id: String,
     val name: String,
     val typeId: String,
-    val batteryLevel: Float,
     val batteryLastReplaced: Long,
     val lastUpdated: Long, // Store as Long (ms)
     val imagePath: String?,
@@ -21,7 +20,6 @@ fun DeviceEntity.toDomain(): Device =
         id = id,
         name = name,
         typeId = typeId,
-        batteryLevel = batteryLevel,
         batteryLastReplaced = Instant.fromEpochMilliseconds(batteryLastReplaced),
         lastUpdated = Instant.fromEpochMilliseconds(lastUpdated),
         imagePath = imagePath,
@@ -32,7 +30,6 @@ fun Device.toEntity(): DeviceEntity =
         id = id,
         name = name,
         typeId = typeId,
-        batteryLevel = batteryLevel,
         batteryLastReplaced = batteryLastReplaced.toEpochMilliseconds(),
         lastUpdated = lastUpdated.toEpochMilliseconds(),
         imagePath = imagePath,

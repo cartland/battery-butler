@@ -89,14 +89,10 @@ fun DeviceListItem(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.width(60.dp),
             ) {
-                val isLowBattery = device.batteryLevel < 0.2f
-                val batteryIcon = if (isLowBattery) Icons.Default.BatteryAlert else Icons.Default.BatteryFull
-                val batteryTint = if (isLowBattery) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
-
                 Icon(
-                    imageVector = batteryIcon,
-                    contentDescription = if (isLowBattery) "Low Battery" else "Battery Good",
-                    tint = batteryTint,
+                    imageVector = Icons.Default.BatteryFull,
+                    contentDescription = "Battery Status",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(24.dp),
                 )
                 Text(

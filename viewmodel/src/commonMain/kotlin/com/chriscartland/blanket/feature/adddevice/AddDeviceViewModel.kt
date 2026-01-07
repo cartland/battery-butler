@@ -36,7 +36,6 @@ class AddDeviceViewModel(
                 id = Uuid.random().toString(),
                 name = name,
                 typeId = typeId,
-                batteryLevel = 1.0f,
                 batteryLastReplaced = Clock.System.now(),
                 lastUpdated = Clock.System.now(),
             )
