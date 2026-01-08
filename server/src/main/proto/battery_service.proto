@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package com.chriscartland.batterybutler;
+
+service BatteryService {
+  rpc GetServerStatus (ServerStatusRequest) returns (ServerStatusResponse);
+}
+
+message ServerStatusRequest {
+  // Empty request
+}
+
+message ServerStatusResponse {
+  bool is_alive = 1;
+  string version = 2;
+  string message = 3;
+}
