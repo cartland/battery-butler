@@ -174,6 +174,7 @@ fun App(
                                     backStack.removeLastOrNull()
                                 }
                             },
+                            onManageDeviceTypesClick = { backStack.add(Screen.DeviceTypeList) },
                         )
                     }
 

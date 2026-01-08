@@ -14,6 +14,7 @@ fun EditDeviceScreen(
     viewModel: EditDeviceViewModel,
     onBack: () -> Unit,
     onDelete: () -> Unit,
+    onManageDeviceTypesClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -37,6 +38,7 @@ fun EditDeviceScreen(
             viewModel.deleteDevice()
             onDelete()
         },
+        onManageDeviceTypesClick = onManageDeviceTypesClick,
         onBack = onBack,
         modifier = modifier,
     )
