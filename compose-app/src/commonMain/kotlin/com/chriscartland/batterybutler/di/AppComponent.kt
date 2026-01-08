@@ -1,9 +1,9 @@
 package com.chriscartland.batterybutler.di
 
+import com.chriscartland.batterybutler.data.di.DataComponent
 import com.chriscartland.batterybutler.data.di.DatabaseFactory
 import com.chriscartland.batterybutler.data.repository.RoomDeviceRepository
 import com.chriscartland.batterybutler.data.room.AppDatabase
-import com.chriscartland.batterybutler.data.room.DeviceDao
 import com.chriscartland.batterybutler.domain.ai.AiEngine
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.feature.addbatteryevent.AddBatteryEventViewModel
@@ -26,9 +26,10 @@ annotation class Singleton
 @Component
 @Singleton
 abstract class AppComponent(
-    private val databaseFactory: DatabaseFactory,
+    // We pass this through to DataComponent
+    override val databaseFactory: DatabaseFactory,
     @get:Provides val aiEngine: AiEngine,
-) {
+) : DataComponent {
     abstract val homeViewModel: HomeViewModel
     abstract val addDeviceViewModel: AddDeviceViewModel
     abstract val addDeviceTypeViewModel: AddDeviceTypeViewModel
@@ -41,14 +42,19 @@ abstract class AppComponent(
     abstract val editDeviceTypeViewModelFactory: EditDeviceTypeViewModelFactory
     abstract val deviceRepository: DeviceRepository
 
+    // DataComponent provides AppDatabase, DeviceDao, and DeviceRepository
+    // We need to ensure that provideAppDatabase and provideDeviceRepository are scoped to Singleton.
+    // Since they are defined in the interface, we may need to override them to add the scope annotation,
+    // or we assume they are lightweight/stateless enough, OR we check if kotlin-inject supports scope on interface implementation.
+    //
+    // However, DataComponent methods are just default implementations. 
+    // To enforcing Singleton scope on the Database instance:
+    
     @Provides
     @Singleton
-    fun provideAppDatabase(): AppDatabase = databaseFactory.createDatabase()
-
-    @Provides
-    fun provideDeviceDao(database: AppDatabase): DeviceDao = database.deviceDao()
+    override fun provideAppDatabase(): AppDatabase = super.provideAppDatabase()
 
     @Provides
     @Singleton
-    fun provideDeviceRepository(repo: RoomDeviceRepository): DeviceRepository = repo
+    override fun provideDeviceRepository(repo: RoomDeviceRepository): DeviceRepository = super.provideDeviceRepository(repo)
 }
