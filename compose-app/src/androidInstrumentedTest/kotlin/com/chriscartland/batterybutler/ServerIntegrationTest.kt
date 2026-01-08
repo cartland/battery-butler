@@ -31,7 +31,7 @@ class ServerIntegrationTest {
         val pushResponse = client.PushUpdate().execute(update)
         
         assertNotNull("Push response should not be null", pushResponse)
-        assertEquals("Server should return success status", "success", pushResponse.status)
+        assertEquals("Server should return success status", true, pushResponse.success)
         
         // 2. Subscribe (basic check)
         // Note: Streaming tests in instrumented environments can be tricky depending on timeout/server state.

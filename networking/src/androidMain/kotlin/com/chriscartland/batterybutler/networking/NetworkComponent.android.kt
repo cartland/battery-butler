@@ -9,7 +9,11 @@ actual class NetworkComponent(
 ) {
     actual val grpcClient: GrpcClient by lazy {
         GrpcClient.Builder()
-            .client(OkHttpClient.Builder().build())
+            .client(
+                OkHttpClient.Builder()
+                    .protocols(listOf(okhttp3.Protocol.H2_PRIOR_KNOWLEDGE))
+                    .build()
+            )
             .baseUrl("http://10.0.2.2:50051")
             .build()
     }
