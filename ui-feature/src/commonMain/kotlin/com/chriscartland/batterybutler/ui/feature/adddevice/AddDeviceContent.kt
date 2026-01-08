@@ -138,7 +138,7 @@ fun AddDeviceContent(
                         },
                         enabled = aiInput.isNotBlank()
                     ) {
-                        Icon(androidx.compose.material.icons.filled.AutoAwesome, contentDescription = "Process with AI")
+                        Icon(Icons.Default.AutoAwesome, contentDescription = "Process with AI")
                     }
                 }
 

@@ -9,11 +9,8 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import com.chriscartland.batterybutler.di.AppComponent
 import com.chriscartland.batterybutler.feature.adddevice.AddDeviceScreen
-import com.chriscartland.batterybutler.feature.ai.AiScreen
 import com.chriscartland.batterybutler.feature.main.MainTab
 import com.chriscartland.batterybutler.ui.theme.BatteryButlerTheme
-import com.chriscartland.batterybutler.ui.theme.LocalAiAction
-import com.chriscartland.batterybutler.ui.theme.LocalAiAvailable
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.ui.tooling.preview.Preview
 

@@ -57,6 +57,7 @@ kotlin {
             implementation(project(":data"))
             implementation(project(":ui-core"))
             implementation(project(":viewmodel"))
+            implementation(project(":usecase"))
 
             implementation(libs.androidx.nav3.ui)
             implementation(libs.androidx.nav3.runtime)

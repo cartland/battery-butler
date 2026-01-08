@@ -27,6 +27,10 @@ kotlin {
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.uuid)
         }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+            implementation(libs.kotlinx.coroutines.test)
+        }
     }
 }
 
