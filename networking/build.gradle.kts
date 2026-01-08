@@ -33,6 +33,10 @@ kotlin {
         androidMain.dependencies {
             api(libs.okhttp)
         }
+        iosMain.dependencies {
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.darwin)
+        }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
