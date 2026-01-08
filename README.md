@@ -1,26 +1,69 @@
-This is a Kotlin Multiplatform project targeting Android, iOS, Web, Desktop, Server.
+# Blanket (Battery Butler)
 
-* `/composeApp` is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - `commonMain` is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    `iosMain` would be the right folder for such calls.
+**Blanket** is a Kotlin Multiplatform (KMP) application designed to help users track battery usage and replacements for their household devices. It leverages modern Android and KMP technologies including Compose Multiplatform, Room, Koin, and on-device AI integration.
 
-* `/iosApp` contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform, 
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
+## 🚀 Features
 
-* `/server` is for the Ktor server application.
+*   **Device Management**: Add, edit, and delete devices with custom attributes (name, location).
+*   **Battery History**: Track battery replacement events for each device.
+*   **Device Types**: Manage reusable device types (e.g., "TV Remote" uses 2x AAA batteries).
+*   **AI Integration**:
+    *   **Magic AI Button**: Automatically suggests device types and icons based on descriptions.
+    *   **Batch Import**: Parse natural language notes (e.g., "Replaced smoke detector battery yesterday") to batch create events.
+*   **Cross-Platform**: Runs on Android, iOS, and Desktop (JVM).
 
-* `/shared` is for the code that will be shared between all targets in the project.
-  The most important subfolder is `commonMain`. If preferred, you can add code to the platform-specific folders here too.
+## 🏗 Architecture
 
+The project follows **Clean Architecture** principles adapted for Kotlin Multiplatform, with a focus on modularity and separation of concerns.
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html),
-[Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform/#compose-multiplatform),
-[Kotlin/Wasm](https://kotl.in/wasm/)…
+### Module Structure (Flat Hierarchy)
 
-We would appreciate your feedback on Compose/Web and Kotlin/Wasm in the public Slack channel [#compose-web](https://slack-chats.kotlinlang.org/c/compose-web).
-If you face any issues, please report them on [YouTrack](https://youtrack.jetbrains.com/newIssue?project=CMP).
+The project is organized into the following Gradle modules:
 
-You can open the web application by running the `:composeApp:wasmJsBrowserDevelopmentRun` Gradle task.
+*   **`:composeApp`**: The main entry point for Android and Desktop applications. Contains the Navigation graph and platform-specific wiring.
+*   **`:iosApp`**: The native iOS application entry point (SwiftUI).
+*   **`:domain`**: Pure Kotlin module. Contains **Entities** (Data Classes), **Repository Interfaces**, and **Business Logic Objects**. No platform dependencies.
+*   **`:data`**: Implements the Repository interfaces. Handles data persistence using **Room** (SQLite) and **DataStore**.
+*   **`:usecase`**: Contains granular **Use Cases** that encapsulate specific business rules and orchestration logic (e.g., `AddDeviceUseCase`). Bridges the ViewModel and Repository.
+*   **`:viewmodel`**: Contains **ViewModels** (holding `UiState` via `StateFlow`). These use the UseCases to perform actions and expose state to the UI.
+*   **`:ui-core`**: Reusable UI components (Design System), formatting utilities, and base UI classes used across features.
+*   **`:ui-feature`**: Feature-specific UI Composables (Screens and Content). These depend on `:viewmodel` and `:ui-core`.
+
+### Tech Stack
+
+*   **Language**: Kotlin 2.0+
+*   **UI**: [Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform) (Android, Desktop), SwiftUI (iOS).
+*   **Dependency Injection**: [Koin](https://insert-koin.io/) & [Kotlin Inject](https://github.com/evant/kotlin-inject).
+*   **Persistence**: [Room for KMP](https://developer.android.com/kotlin/multiplatform/room).
+*   **Concurrency**: Kotlin Coroutines & Flow.
+*   **AI**: Google AI Client SDK (Gemini) / ML Kit.
+*   **Date/Time**: `kotlinx-datetime`.
+
+## 🛠 Building and Running
+
+### Android
+*   Open the project in **Android Studio**.
+*   Select the `composeApp` configuration.
+*   Run on an Emulator or connected Device.
+
+### Desktop (JVM)
+*   Run the Gradle task: `./gradlew :composeApp:run`
+
+### iOS
+*   Open `iosApp/iosApp.xcodeproj` in **Xcode**.
+*   Ensure you have built the KMP framework at least once (`./gradlew :composeApp:embedAndSignAppleFrameworkForXcode`).
+*   Run on an iPhone Simulator or Device.
+
+## 🔑 AI Configuration (Optional)
+
+To enable the AI features (Gemini), you need an API Key.
+1.  Obtain an API Key from [Google AI Studio](https://aistudio.google.com/).
+2.  Add it to your `local.properties` file:
+    ```properties
+    GEMINI_API_KEY=your_api_key_here
+    ```
+
+## 🤝 Contributing
+
+This project uses `Spotless` for code formatting.
+Run `./gradlew spotlessApply` before committing to ensure your code follows the style guidelines.
