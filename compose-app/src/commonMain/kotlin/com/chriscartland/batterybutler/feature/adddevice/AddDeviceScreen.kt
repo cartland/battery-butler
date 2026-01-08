@@ -22,12 +22,16 @@ fun AddDeviceScreen(
         viewModel.seedDeviceTypes()
     }
 
+    val aiMessages by viewModel.aiMessages.collectAsStateWithLifecycle()
+
     AddDeviceContent(
         deviceTypes = deviceTypes,
+        aiMessages = aiMessages,
         onAddDevice = { input ->
             viewModel.addDevice(input)
             onDeviceAdded()
         },
+        onBatchAdd = viewModel::batchAddDevices,
         onManageDeviceTypesClick = onManageDeviceTypesClick,
         onBack = onBack,
         modifier = modifier,

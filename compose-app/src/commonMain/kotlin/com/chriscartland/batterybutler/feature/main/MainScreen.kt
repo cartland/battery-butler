@@ -5,6 +5,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -30,6 +31,7 @@ enum class MainTab(
     val icon: androidx.compose.ui.graphics.vector.ImageVector,
 ) {
     Devices("Devices", Icons.Default.Home),
+    Types("Types", Icons.Default.List),
     History("History", Icons.Default.History),
 }
 
@@ -38,9 +40,14 @@ enum class MainTab(
 fun MainScreen(
     homeViewModel: HomeViewModel,
     historyListViewModel: HistoryListViewModel,
+    deviceTypeListViewModel: com.chriscartland.batterybutler.feature.devicetypes.DeviceTypeListViewModel,
     onAddDeviceClick: () -> Unit,
     onDeviceClick: (String) -> Unit,
     onEventClick: (String, String) -> Unit,
+    onAddTypeClick: () -> Unit,
+    onEditTypeClick: (String) -> Unit,
+    onAddEventClick: () -> Unit,
+    onManageTypesClick: () -> Unit, // Potentially unused if handled by Types tab, but kept for compatibility
     initialTab: MainTab = MainTab.Devices,
     modifier: Modifier = Modifier,
 ) {
@@ -58,10 +65,16 @@ fun MainScreen(
             )
         },
         floatingActionButton = {
-            if (currentTab == MainTab.Devices) {
-                FloatingActionButton(onClick = onAddDeviceClick) {
-                    Icon(Icons.Default.Add, contentDescription = "Add Device")
+            FloatingActionButton(
+                onClick = {
+                    when (currentTab) {
+                        MainTab.Devices -> onAddDeviceClick()
+                        MainTab.Types -> onAddTypeClick()
+                        MainTab.History -> onAddEventClick()
+                    }
                 }
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Add")
             }
         },
         bottomBar = {
@@ -85,6 +98,15 @@ fun MainScreen(
                     onAddDeviceClick = {}, // Handled by FAB in MainScreen
                     onDeviceClick = onDeviceClick,
                     onManageTypesClick = {}, // Removed from here
+                    modifier = Modifier.padding(innerPadding),
+                )
+            }
+            MainTab.Types -> {
+                com.chriscartland.batterybutler.feature.devicetypes.DeviceTypeListScreen(
+                    viewModel = deviceTypeListViewModel,
+                    onEditType = onEditTypeClick,
+                    onAddType = onAddTypeClick,
+                    onBack = { /* Root tab, maybe invalid action or handled? */ },
                     modifier = Modifier.padding(innerPadding),
                 )
             }

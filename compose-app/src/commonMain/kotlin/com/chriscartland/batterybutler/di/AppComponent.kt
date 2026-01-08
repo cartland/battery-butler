@@ -6,9 +6,9 @@ import com.chriscartland.batterybutler.data.room.AppDatabase
 import com.chriscartland.batterybutler.data.room.DeviceDao
 import com.chriscartland.batterybutler.domain.ai.AiEngine
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
+import com.chriscartland.batterybutler.feature.addbatteryevent.AddBatteryEventViewModel
 import com.chriscartland.batterybutler.feature.adddevice.AddDeviceViewModel
 import com.chriscartland.batterybutler.feature.adddevicetype.AddDeviceTypeViewModel
-import com.chriscartland.batterybutler.feature.ai.AiViewModel
 import com.chriscartland.batterybutler.feature.devicedetail.DeviceDetailViewModelFactory
 import com.chriscartland.batterybutler.feature.devicetypes.DeviceTypeListViewModel
 import com.chriscartland.batterybutler.feature.devicetypes.EditDeviceTypeViewModelFactory
@@ -30,9 +30,9 @@ abstract class AppComponent(
     @get:Provides val aiEngine: AiEngine,
 ) {
     abstract val homeViewModel: HomeViewModel
-    abstract val aiViewModel: AiViewModel
     abstract val addDeviceViewModel: AddDeviceViewModel
     abstract val addDeviceTypeViewModel: AddDeviceTypeViewModel
+    abstract val addBatteryEventViewModel: AddBatteryEventViewModel
     abstract val historyListViewModel: HistoryListViewModel
     abstract val deviceDetailViewModelFactory: DeviceDetailViewModelFactory
     abstract val editDeviceViewModelFactory: EditDeviceViewModelFactory

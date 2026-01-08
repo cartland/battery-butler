@@ -10,6 +10,8 @@ data class BatteryEventEntity(
     @PrimaryKey val id: String,
     val deviceId: String,
     val date: Long, // Epoch milliseconds
+    val batteryType: String? = null,
+    val notes: String? = null,
 )
 
 fun BatteryEventEntity.toDomain(): BatteryEvent =
@@ -17,6 +19,8 @@ fun BatteryEventEntity.toDomain(): BatteryEvent =
         id = id,
         deviceId = deviceId,
         date = Instant.fromEpochMilliseconds(date),
+        batteryType = batteryType,
+        notes = notes,
     )
 
 fun BatteryEvent.toEntity(): BatteryEventEntity =
@@ -24,4 +28,6 @@ fun BatteryEvent.toEntity(): BatteryEventEntity =
         id = id,
         deviceId = deviceId,
         date = date.toEpochMilliseconds(),
+        batteryType = batteryType,
+        notes = notes,
     )

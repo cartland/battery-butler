@@ -16,9 +16,12 @@ import me.tatarka.inject.annotations.Inject
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
+import com.chriscartland.batterybutler.usecase.BatchAddDevicesUseCase
+
 @Inject
 class AddDeviceViewModel(
     private val deviceRepository: DeviceRepository,
+    private val batchAddDevicesUseCase: BatchAddDevicesUseCase,
 ) : ViewModel() {
     val deviceTypes: StateFlow<List<DeviceType>> = deviceRepository
         .getAllDeviceTypes()
@@ -49,5 +52,20 @@ class AddDeviceViewModel(
         viewModelScope.launch {
             deviceRepository.ensureDefaultDeviceTypes()
         }
+    }
+
+    private val _aiMessages = kotlinx.coroutines.flow.MutableStateFlow<List<com.chriscartland.batterybutler.domain.ai.AiMessage>>(emptyList())
+    val aiMessages: StateFlow<List<com.chriscartland.batterybutler.domain.ai.AiMessage>> = _aiMessages
+
+    fun batchAddDevices(input: String) {
+        viewModelScope.launch {
+            batchAddDevicesUseCase(input).collect { message ->
+                _aiMessages.value += message
+            }
+        }
+    }
+
+    fun clearAiMessages() {
+        _aiMessages.value = emptyList()
     }
 }

@@ -36,6 +36,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.kotlin.inject.runtime)
             implementation(project(":domain"))
+            implementation(projects.usecase)
             implementation(libs.kotlinx.datetime)
             implementation(libs.uuid)
             // Data needed for Repositories? No, domain repositories.

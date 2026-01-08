@@ -43,6 +43,9 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.foundation.lazy.items
+import com.chriscartland.batterybutler.domain.ai.AiMessage
 import com.chriscartland.batterybutler.domain.model.DeviceTypeInput
 import com.chriscartland.batterybutler.ui.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.ui.components.DeviceIconMapper
@@ -50,7 +53,9 @@ import com.chriscartland.batterybutler.ui.components.DeviceIconMapper
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddDeviceTypeContent(
+    aiMessages: List<AiMessage>,
     onDeviceTypeAdded: (DeviceTypeInput) -> Unit,
+    onBatchAdd: (String) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -109,6 +114,59 @@ fun AddDeviceTypeContent(
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp),
         ) {
+            // AI Section
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    "Batch Import (AI)",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+
+                var aiInput by remember { mutableStateOf("") }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    OutlinedTextField(
+                        value = aiInput,
+                        onValueChange = { aiInput = it },
+                        modifier = Modifier.weight(1f),
+                        placeholder = { Text("E.g. Add AA, AAA, and 9V types") },
+                        maxLines = 3,
+                    )
+                    IconButton(
+                        onClick = {
+                            if (aiInput.isNotBlank()) {
+                                onBatchAdd(aiInput)
+                                aiInput = ""
+                            }
+                        },
+                        enabled = aiInput.isNotBlank()
+                    ) {
+                        Icon(Icons.Default.AutoAwesome, contentDescription = "Process with AI")
+                    }
+                }
+
+                if (aiMessages.isNotEmpty()) {
+                    Text("AI Output:", style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(top = 8.dp))
+                    androidx.compose.foundation.lazy.LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(150.dp)
+                            .padding(8.dp),
+                    ) {
+                        items(aiMessages) { msg ->
+                            Text(
+                                text = "${msg.role}: ${msg.text}",
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.padding(vertical = 4.dp)
+                            )
+                        }
+                    }
+                }
+            }
+
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 Text("Choose an Icon", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                 LazyVerticalGrid(

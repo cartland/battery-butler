@@ -5,6 +5,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.chriscartland.batterybutler.ui.feature.adddevicetype.AddDeviceTypeContent
 
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddDeviceTypeScreen(
@@ -13,11 +15,15 @@ fun AddDeviceTypeScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val aiMessages by viewModel.aiMessages.collectAsStateWithLifecycle()
+
     AddDeviceTypeContent(
+        aiMessages = aiMessages,
         onDeviceTypeAdded = { input ->
             viewModel.addDeviceType(input)
             onDeviceTypeAdded()
         },
+        onBatchAdd = viewModel::batchAddDeviceTypes,
         onBack = onBack,
         modifier = modifier,
     )

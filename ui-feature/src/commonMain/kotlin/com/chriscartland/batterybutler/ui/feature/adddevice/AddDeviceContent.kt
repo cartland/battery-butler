@@ -39,6 +39,9 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.foundation.lazy.items
+import com.chriscartland.batterybutler.domain.ai.AiMessage
 import com.chriscartland.batterybutler.domain.model.DeviceInput
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.ui.components.ButlerCenteredTopAppBar
@@ -47,7 +50,9 @@ import com.chriscartland.batterybutler.ui.components.ButlerCenteredTopAppBar
 @Composable
 fun AddDeviceContent(
     deviceTypes: List<DeviceType>,
+    aiMessages: List<AiMessage>,
     onAddDevice: (DeviceInput) -> Unit,
+    onBatchAdd: (String) -> Unit,
     onManageDeviceTypesClick: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
@@ -103,10 +108,69 @@ fun AddDeviceContent(
             verticalArrangement = Arrangement.spacedBy(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            // AI Section
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    "Batch Import (AI)",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                
+                var aiInput by remember { mutableStateOf("") }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    OutlinedTextField(
+                        value = aiInput,
+                        onValueChange = { aiInput = it },
+                        modifier = Modifier.weight(1f),
+                        placeholder = { Text("E.g. Add Fire Alarm in Hallway") },
+                        maxLines = 3,
+                    )
+                    androidx.compose.material3.IconButton(
+                        onClick = {
+                            if (aiInput.isNotBlank()) {
+                                onBatchAdd(aiInput)
+                                aiInput = ""
+                            }
+                        },
+                        enabled = aiInput.isNotBlank()
+                    ) {
+                        Icon(androidx.compose.material.icons.filled.AutoAwesome, contentDescription = "Process with AI")
+                    }
+                }
+
+                if (aiMessages.isNotEmpty()) {
+                    Text("AI Output:", style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(top = 8.dp))
+                    androidx.compose.foundation.lazy.LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(150.dp)
+                            .padding(8.dp),
+                    ) {
+                        items(aiMessages) { msg ->
+                            Text(
+                                text = "${msg.role}: ${msg.text}",
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.padding(vertical = 4.dp)
+                            )
+                        }
+                    }
+                }
+            }
+
+            // Manual Section
             Column(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.fillMaxWidth(),
             ) {
+                Text(
+                    "Manual Entry",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
