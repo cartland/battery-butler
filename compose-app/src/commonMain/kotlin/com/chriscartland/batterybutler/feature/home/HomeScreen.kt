@@ -134,7 +134,8 @@ fun HomeScreen(
         },
     ) { innerPadding ->
         LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(innerPadding),
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = innerPadding,
         ) {
             coreUiState.groupedDevices.forEach { (groupName, devices) ->
                 if (coreUiState.groupOption != GroupOption.NONE) {
