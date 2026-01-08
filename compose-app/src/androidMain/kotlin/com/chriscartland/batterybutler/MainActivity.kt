@@ -17,9 +17,11 @@ class MainActivity : ComponentActivity() {
         val databaseFactory = DatabaseFactory(applicationContext)
         val aiEngine = AndroidAiEngine(applicationContext)
         val component = AppComponent::class.create(databaseFactory, aiEngine)
+        val shareHandler = com.chriscartland.batterybutler.ui.util
+            .AndroidShareHandler(this)
 
         setContent {
-            App(component)
+            App(component, shareHandler)
         }
     }
 }

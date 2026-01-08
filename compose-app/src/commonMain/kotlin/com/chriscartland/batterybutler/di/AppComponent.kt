@@ -47,9 +47,9 @@ abstract class AppComponent(
     // Since they are defined in the interface, we may need to override them to add the scope annotation,
     // or we assume they are lightweight/stateless enough, OR we check if kotlin-inject supports scope on interface implementation.
     //
-    // However, DataComponent methods are just default implementations. 
+    // However, DataComponent methods are just default implementations.
     // To enforcing Singleton scope on the Database instance:
-    
+
     @Provides
     @Singleton
     override fun provideAppDatabase(): AppDatabase = super.provideAppDatabase()

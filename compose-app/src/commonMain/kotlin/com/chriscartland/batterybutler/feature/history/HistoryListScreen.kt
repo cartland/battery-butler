@@ -30,11 +30,14 @@ fun HistoryListScreen(
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                 ) {
-                    items(state.events) { event ->
+                    items(state.items) { item ->
                         HistoryListItem(
-                            event = event,
+                            event = item.event,
+                            deviceName = item.deviceName,
+                            deviceTypeName = item.deviceTypeName,
+                            deviceLocation = item.deviceLocation,
                             modifier = Modifier.clickable {
-                                onEventClick(event.id, event.deviceId)
+                                onEventClick(item.event.id, item.event.deviceId)
                             },
                         )
                     }

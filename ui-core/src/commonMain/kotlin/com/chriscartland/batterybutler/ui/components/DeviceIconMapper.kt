@@ -44,7 +44,6 @@ import androidx.compose.material.icons.filled.Watch
 import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-
 import com.chriscartland.batterybutler.domain.model.DeviceIcons
 
 object DeviceIconMapper {

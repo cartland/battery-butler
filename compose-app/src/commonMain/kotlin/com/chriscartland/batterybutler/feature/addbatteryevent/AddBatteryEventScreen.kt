@@ -13,7 +13,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -27,16 +31,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chriscartland.batterybutler.ui.components.ButlerCenteredTopAppBar
 import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
+import kotlinx.datetime.toLocalDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddBatteryEventScreen(
     viewModel: AddBatteryEventViewModel,
     onEventAdded: () -> Unit,
+    onAddDeviceClick: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -116,25 +126,86 @@ fun AddBatteryEventScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Manual Section (Stub for now, or simple ID input)
+            // Manual Section
             Text(
                 "Manual Entry",
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,
             )
+
+            val devices by viewModel.devices.collectAsStateWithLifecycle()
+            var expanded by remember { mutableStateOf(false) }
+            val selectedDevice = devices.find { it.id == deviceIdInput }
+
+            // Date Selection
+            val today = remember {
+                Clock.System
+                    .now()
+                    .toLocalDateTime(kotlinx.datetime.TimeZone.currentSystemDefault())
+                    .date
+                    .toString()
+            }
+            var dateInput by remember { mutableStateOf(today) }
+
+            ExposedDropdownMenuBox(
+                expanded = expanded,
+                onExpandedChange = { expanded = !expanded },
+            ) {
+                OutlinedTextField(
+                    value = selectedDevice?.name ?: "Select Device",
+                    onValueChange = {}, // ReadOnly
+                    readOnly = true,
+                    label = { Text("Device") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                    modifier = Modifier.menuAnchor().fillMaxWidth(),
+                )
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false },
+                ) {
+                    devices.forEach { device ->
+                        DropdownMenuItem(
+                            text = { Text(device.name) },
+                            onClick = {
+                                deviceIdInput = device.id
+                                expanded = false
+                            },
+                        )
+                    }
+                    HorizontalDivider()
+                    DropdownMenuItem(
+                        text = { Text("Add New Device...", fontWeight = FontWeight.Bold) },
+                        onClick = {
+                            onAddDeviceClick()
+                            expanded = false
+                        },
+                    )
+                }
+            }
+
             OutlinedTextField(
-                value = deviceIdInput,
-                onValueChange = { deviceIdInput = it },
-                label = { Text("Device ID") }, // Ideally a dropdown
+                value = dateInput,
+                onValueChange = { dateInput = it },
+                label = { Text("Date (YYYY-MM-DD)") },
                 modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
             )
 
             Button(
                 onClick = {
                     if (deviceIdInput.isNotBlank()) {
+                        // Validate Date
+                        val date = try {
+                            kotlinx.datetime.LocalDate
+                                .parse(dateInput)
+                                .atStartOfDayIn(kotlinx.datetime.TimeZone.currentSystemDefault())
+                        } catch (e: Exception) {
+                            Clock.System.now() // Fallback or handle error
+                        }
+
                         viewModel.addEvent(
                             deviceId = deviceIdInput,
-                            date = Clock.System.now(),
+                            date = date,
                             batteryType = null,
                             notes = null,
                         )

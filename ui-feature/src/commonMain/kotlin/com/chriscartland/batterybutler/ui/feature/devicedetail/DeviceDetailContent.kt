@@ -271,6 +271,9 @@ fun DeviceDetailBody(
         items(state.events) { event ->
             HistoryListItem(
                 event = event,
+                deviceName = device.name,
+                deviceTypeName = deviceType?.name ?: "Unknown Type",
+                deviceLocation = device.location,
                 modifier = Modifier.clickable { onEventClick(event.id) },
             )
         }

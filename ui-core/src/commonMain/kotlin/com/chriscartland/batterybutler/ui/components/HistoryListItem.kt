@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.BatteryFull
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,6 +27,9 @@ import kotlinx.datetime.toLocalDateTime
 @Composable
 fun HistoryListItem(
     event: BatteryEvent,
+    deviceName: String,
+    deviceTypeName: String,
+    deviceLocation: String?,
     modifier: Modifier = Modifier,
 ) {
     val date = event.date.toLocalDateTime(TimeZone.currentSystemDefault())
@@ -88,22 +91,41 @@ fun HistoryListItem(
             }
 
             Text(
-                text = "Battery Replaced",
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Medium,
+                text = deviceName,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
             )
+            val subText = if (deviceLocation != null) "$deviceTypeName • $deviceLocation" else deviceTypeName
             Text(
-                text = relativeTime,
-                style = MaterialTheme.typography.bodySmall,
+                text = subText,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
 
-        Icon(
-            imageVector = Icons.Default.ChevronRight,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        Column(horizontalAlignment = Alignment.End) {
+            Icon(
+                imageVector = Icons.Default.BatteryFull, // Placeholder or specific icon
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+            )
+
+            // Re-calculate relative time for the right side or just use the days?
+            // "Right side should also be a battery with the age in days"
+            val timeZone = TimeZone.currentSystemDefault()
+            val now = Clock.System
+                .now()
+                .toLocalDateTime(timeZone)
+                .date
+            val eventDate = event.date.toLocalDateTime(timeZone).date
+            val daysAgo = eventDate.daysUntil(now)
+
+            Text(
+                text = "$daysAgo days",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
     }
 }

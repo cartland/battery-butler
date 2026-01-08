@@ -54,6 +54,9 @@ import com.chriscartland.batterybutler.ui.components.DeviceIconMapper
 @Composable
 fun AddDeviceTypeContent(
     aiMessages: List<AiMessage>,
+    suggestedIcon: String? = null,
+    onSuggestIcon: (String) -> Unit = {},
+    onConsumeSuggestedIcon: () -> Unit = {},
     onDeviceTypeAdded: (DeviceTypeInput) -> Unit,
     onBatchAdd: (String) -> Unit,
     onBack: () -> Unit,
@@ -64,6 +67,13 @@ fun AddDeviceTypeContent(
     var batteryType by remember { mutableStateOf("AA") }
     var batteryQuantity by remember { mutableStateOf(1) }
     val focusManager = LocalFocusManager.current
+
+    androidx.compose.runtime.LaunchedEffect(suggestedIcon) {
+        suggestedIcon?.let {
+            selectedIcon = it
+            onConsumeSuggestedIcon()
+        }
+    }
 
     val icons = DeviceIconMapper.AvailableIcons
 
@@ -201,6 +211,17 @@ fun AddDeviceTypeContent(
                         shape = RoundedCornerShape(12.dp),
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                         keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Next) }),
+                        trailingIcon = {
+                            if (name.isNotBlank()) {
+                                IconButton(onClick = { onSuggestIcon(name) }) {
+                                    Icon(
+                                        Icons.Default.AutoAwesome,
+                                        contentDescription = "Suggest Icon",
+                                        tint = MaterialTheme.colorScheme.primary,
+                                    )
+                                }
+                            }
+                        },
                     )
                 }
 

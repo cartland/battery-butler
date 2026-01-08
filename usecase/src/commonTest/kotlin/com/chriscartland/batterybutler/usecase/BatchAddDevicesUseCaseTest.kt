@@ -29,12 +29,12 @@ class FakeDeviceRepository : DeviceRepository {
     }
 
     override suspend fun updateDevice(device: Device) {
-        devices.removeIf { it.id == device.id }
+        devices.removeAll { it.id == device.id }
         devices.add(device)
     }
 
     override suspend fun deleteDevice(id: String) {
-        devices.removeIf { it.id == id }
+        devices.removeAll { it.id == id }
     }
 
     override fun getAllDeviceTypes(): Flow<List<DeviceType>> = flowOf(deviceTypes)
@@ -46,12 +46,12 @@ class FakeDeviceRepository : DeviceRepository {
     }
 
     override suspend fun updateDeviceType(type: DeviceType) {
-        deviceTypes.removeIf { it.id == type.id }
+        deviceTypes.removeAll { it.id == type.id }
         deviceTypes.add(type)
     }
 
     override suspend fun deleteDeviceType(id: String) {
-        deviceTypes.removeIf { it.id == id }
+        deviceTypes.removeAll { it.id == id }
     }
 
     override suspend fun ensureDefaultDeviceTypes() {}

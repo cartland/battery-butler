@@ -16,9 +16,13 @@ fun AddDeviceTypeScreen(
     modifier: Modifier = Modifier,
 ) {
     val aiMessages by viewModel.aiMessages.collectAsStateWithLifecycle()
+    val suggestedIcon by viewModel.suggestedIcon.collectAsStateWithLifecycle()
 
     AddDeviceTypeContent(
         aiMessages = aiMessages,
+        suggestedIcon = suggestedIcon,
+        onSuggestIcon = viewModel::suggestIcon,
+        onConsumeSuggestedIcon = viewModel::consumeSuggestedIcon,
         onDeviceTypeAdded = { input ->
             viewModel.addDeviceType(input)
             onDeviceTypeAdded()

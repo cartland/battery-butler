@@ -6,8 +6,10 @@ import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.DeviceTypeInput
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.usecase.BatchAddDeviceTypesUseCase
+import com.chriscartland.batterybutler.usecase.SuggestDeviceIconUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 import kotlin.uuid.ExperimentalUuidApi
@@ -17,7 +19,25 @@ import kotlin.uuid.Uuid
 class AddDeviceTypeViewModel(
     private val deviceRepository: DeviceRepository,
     private val batchAddDeviceTypesUseCase: BatchAddDeviceTypesUseCase,
+    private val suggestDeviceIconUseCase: SuggestDeviceIconUseCase,
 ) : ViewModel() {
+    private val _suggestedIcon = MutableStateFlow<String?>(null)
+    val suggestedIcon = _suggestedIcon.asStateFlow()
+
+    fun suggestIcon(name: String) {
+        if (name.isBlank()) return
+        viewModelScope.launch {
+            val icon = suggestDeviceIconUseCase(name)
+            if (icon != null && icon != "default") {
+                _suggestedIcon.value = icon
+            }
+        }
+    }
+
+    fun consumeSuggestedIcon() {
+        _suggestedIcon.value = null
+    }
+
     @OptIn(ExperimentalUuidApi::class)
     fun addDeviceType(input: DeviceTypeInput) {
         viewModelScope.launch {

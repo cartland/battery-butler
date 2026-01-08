@@ -10,7 +10,6 @@ interface DataComponent {
     // Requirements from the platform/app
     val databaseFactory: DatabaseFactory
 
-    @Provides
     // Scope is managed by the Component using this interface (e.g. Singleton in AppComponent)
     // We cannot use @Singleton here because it's an interface, but we can rely on the implementation scope.
     // However, kotlin-inject usually requires scopes on the provides methods if we want them scoped.
@@ -18,7 +17,8 @@ interface DataComponent {
     // Ideally, for Singletons, we define them here but the 'Singleton' annotation needs to be available.
     // Since 'Singleton' is defined in App, we might need a shared scope annotation or just provide open methods.
     // For now, let's keep it simple: providers.
-    
+
+    @Provides
     fun provideAppDatabase(): AppDatabase = databaseFactory.createDatabase()
 
     @Provides

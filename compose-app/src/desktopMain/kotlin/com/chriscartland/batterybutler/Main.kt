@@ -6,6 +6,7 @@ import com.chriscartland.batterybutler.data.di.DatabaseFactory
 import com.chriscartland.batterybutler.di.AppComponent
 import com.chriscartland.batterybutler.di.create
 import com.chriscartland.batterybutler.feature.ai.NoOpAiEngine
+import com.chriscartland.batterybutler.ui.util.DesktopShareHandler
 
 fun main() =
     application {
@@ -15,6 +16,7 @@ fun main() =
         ) {
             val databaseFactory = DatabaseFactory()
             val component = AppComponent::class.create(databaseFactory, NoOpAiEngine)
-            App(component)
+            val shareHandler = DesktopShareHandler()
+            App(component, shareHandler)
         }
     }

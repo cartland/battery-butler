@@ -1,0 +1,193 @@
+Reusing configuration cache.
+> Task :data:preBuild UP-TO-DATE
+> Task :data:preReleaseBuild UP-TO-DATE
+> Task :domain:preBuild UP-TO-DATE
+> Task :data:writeReleaseAarMetadata UP-TO-DATE
+> Task :composeApp:kmpPartiallyResolvedDependenciesChecker
+> Task :composeApp:preBuild UP-TO-DATE
+> Task :data:kmpPartiallyResolvedDependenciesChecker
+> Task :viewmodel:preBuild UP-TO-DATE
+> Task :usecase:preBuild UP-TO-DATE
+> Task :ui-core:preBuild UP-TO-DATE
+> Task :domain:preReleaseBuild UP-TO-DATE
+> Task :composeApp:copyNonXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :composeApp:generateComposeResClass UP-TO-DATE
+> Task :composeApp:preReleaseBuild UP-TO-DATE
+> Task :ui-core:preReleaseBuild UP-TO-DATE
+> Task :composeApp:convertXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :ui-feature:preBuild UP-TO-DATE
+> Task :composeApp:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :ui-feature:preReleaseBuild UP-TO-DATE
+> Task :domain:writeReleaseAarMetadata UP-TO-DATE
+> Task :domain:generateReleaseResValues UP-TO-DATE
+> Task :composeApp:prepareComposeResourcesTaskForAndroidMain NO-SOURCE
+> Task :usecase:preReleaseBuild UP-TO-DATE
+> Task :composeApp:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :data:generateReleaseResValues UP-TO-DATE
+> Task :composeApp:generateResourceAccessorsForAndroidMain NO-SOURCE
+> Task :ui-feature:writeReleaseAarMetadata UP-TO-DATE
+> Task :composeApp:convertXmlValueResourcesForAndroidRelease NO-SOURCE
+> Task :ui-core:generateReleaseResValues UP-TO-DATE
+> Task :composeApp:copyNonXmlValueResourcesForAndroidRelease NO-SOURCE
+> Task :viewmodel:preReleaseBuild UP-TO-DATE
+> Task :data:generateReleaseBuildConfig UP-TO-DATE
+> Task :composeApp:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :data:processReleaseManifest UP-TO-DATE
+> Task :ui-feature:generateReleaseResValues UP-TO-DATE
+> Task :composeApp:generateReleaseResValues UP-TO-DATE
+> Task :usecase:generateReleaseResValues UP-TO-DATE
+> Task :composeApp:generateReleaseBuildConfig UP-TO-DATE
+> Task :viewmodel:writeReleaseAarMetadata UP-TO-DATE
+> Task :composeApp:createReleaseCompatibleScreenManifests UP-TO-DATE
+> Task :domain:generateReleaseResources UP-TO-DATE
+> Task :ui-core:generateReleaseResources UP-TO-DATE
+> Task :ui-core:writeReleaseAarMetadata UP-TO-DATE
+> Task :data:generateReleaseResources UP-TO-DATE
+> Task :usecase:generateReleaseResources UP-TO-DATE
+> Task :usecase:writeReleaseAarMetadata UP-TO-DATE
+> Task :composeApp:extractDeepLinksRelease UP-TO-DATE
+> Task :composeApp:copyNonXmlValueResourcesForCommonMain UP-TO-DATE
+> Task :viewmodel:generateReleaseResValues UP-TO-DATE
+> Task :domain:extractDeepLinksRelease UP-TO-DATE
+> Task :data:extractDeepLinksRelease UP-TO-DATE
+> Task :composeApp:prepareComposeResourcesTaskForAndroidRelease NO-SOURCE
+> Task :composeApp:generateReleaseResources UP-TO-DATE
+> Task :composeApp:generateResourceAccessorsForAndroidRelease NO-SOURCE
+> Task :viewmodel:generateReleaseResources UP-TO-DATE
+> Task :usecase:extractDeepLinksRelease UP-TO-DATE
+> Task :ui-feature:generateReleaseResources UP-TO-DATE
+> Task :ui-feature:extractDeepLinksRelease UP-TO-DATE
+> Task :ui-core:extractDeepLinksRelease UP-TO-DATE
+> Task :composeApp:prepareComposeResourcesTaskForCommonMain UP-TO-DATE
+> Task :data:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :viewmodel:extractDeepLinksRelease UP-TO-DATE
+> Task :domain:kmpPartiallyResolvedDependenciesChecker
+> Task :domain:processReleaseManifest UP-TO-DATE
+> Task :domain:packageReleaseResources UP-TO-DATE
+> Task :domain:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :composeApp:packageReleaseResources UP-TO-DATE
+> Task :ui-feature:processReleaseManifest UP-TO-DATE
+> Task :ui-core:packageReleaseResources UP-TO-DATE
+> Task :usecase:packageReleaseResources UP-TO-DATE
+> Task :data:packageReleaseResources UP-TO-DATE
+> Task :composeApp:generateResourceAccessorsForCommonMain UP-TO-DATE
+> Task :data:javaPreCompileRelease UP-TO-DATE
+> Task :domain:javaPreCompileRelease UP-TO-DATE
+> Task :domain:compileReleaseLibraryResources UP-TO-DATE
+> Task :ui-core:processReleaseManifest UP-TO-DATE
+> Task :usecase:processReleaseManifest UP-TO-DATE
+> Task :viewmodel:packageReleaseResources UP-TO-DATE
+> Task :ui-core:kmpPartiallyResolvedDependenciesChecker
+> Task :ui-core:compileReleaseLibraryResources UP-TO-DATE
+> Task :domain:parseReleaseLocalResources UP-TO-DATE
+> Task :ui-core:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :data:compileReleaseLibraryResources UP-TO-DATE
+> Task :composeApp:parseReleaseLocalResources UP-TO-DATE
+> Task :composeApp:generateActualResourceCollectorsForAndroidMain UP-TO-DATE
+> Task :usecase:compileReleaseLibraryResources UP-TO-DATE
+> Task :ui-core:convertXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :ui-feature:packageReleaseResources UP-TO-DATE
+> Task :ui-core:parseReleaseLocalResources UP-TO-DATE
+> Task :viewmodel:compileReleaseLibraryResources UP-TO-DATE
+> Task :viewmodel:processReleaseManifest UP-TO-DATE
+> Task :ui-core:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :data:parseReleaseLocalResources UP-TO-DATE
+> Task :ui-core:convertXmlValueResourcesForAndroidRelease NO-SOURCE
+> Task :ui-core:generateComposeResClass UP-TO-DATE
+> Task :ui-core:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :ui-core:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :domain:generateReleaseRFile UP-TO-DATE
+> Task :ui-feature:compileReleaseLibraryResources UP-TO-DATE
+> Task :usecase:parseReleaseLocalResources UP-TO-DATE
+> Task :ui-core:copyNonXmlValueResourcesForAndroidRelease NO-SOURCE
+> Task :viewmodel:parseReleaseLocalResources UP-TO-DATE
+> Task :ui-core:copyNonXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :domain:kspReleaseKotlinAndroid SKIPPED
+> Task :ui-core:generateReleaseRFile UP-TO-DATE
+> Task :viewmodel:generateReleaseRFile UP-TO-DATE
+> Task :usecase:generateReleaseRFile UP-TO-DATE
+> Task :ui-feature:convertXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :ui-feature:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :ui-core:prepareComposeResourcesTaskForAndroidMain NO-SOURCE
+> Task :ui-feature:generateComposeResClass UP-TO-DATE
+> Task :ui-core:prepareComposeResourcesTaskForAndroidRelease NO-SOURCE
+> Task :ui-feature:kmpPartiallyResolvedDependenciesChecker
+> Task :ui-feature:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :data:generateReleaseRFile UP-TO-DATE
+> Task :ui-core:generateResourceAccessorsForAndroidMain NO-SOURCE
+> Task :ui-core:javaPreCompileRelease UP-TO-DATE
+> Task :ui-core:generateResourceAccessorsForAndroidRelease NO-SOURCE
+> Task :ui-feature:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :ui-feature:convertXmlValueResourcesForAndroidRelease NO-SOURCE
+> Task :ui-feature:javaPreCompileRelease UP-TO-DATE
+> Task :ui-feature:copyNonXmlValueResourcesForAndroidRelease NO-SOURCE
+> Task :viewmodel:javaPreCompileRelease UP-TO-DATE
+> Task :ui-feature:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :ui-feature:parseReleaseLocalResources UP-TO-DATE
+> Task :ui-feature:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :ui-feature:prepareComposeResourcesTaskForAndroidRelease NO-SOURCE
+> Task :ui-feature:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :usecase:javaPreCompileRelease UP-TO-DATE
+> Task :viewmodel:kmpPartiallyResolvedDependenciesChecker
+> Task :ui-feature:copyNonXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :viewmodel:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :usecase:kmpPartiallyResolvedDependenciesChecker
+> Task :usecase:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :ui-core:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :ui-feature:generateResourceAccessorsForAndroidRelease NO-SOURCE
+> Task :ui-core:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :ui-feature:generateReleaseRFile UP-TO-DATE
+> Task :ui-core:generateActualResourceCollectorsForAndroidMain UP-TO-DATE
+> Task :domain:compileReleaseKotlinAndroid UP-TO-DATE
+> Task :ui-feature:prepareComposeResourcesTaskForAndroidMain NO-SOURCE
+> Task :ui-feature:generateResourceAccessorsForAndroidMain NO-SOURCE
+> Task :domain:compileReleaseJavaWithJavac NO-SOURCE
+> Task :domain:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :ui-feature:generateActualResourceCollectorsForAndroidMain UP-TO-DATE
+> Task :composeApp:mapReleaseSourceSetPaths UP-TO-DATE
+> Task :composeApp:mergeReleaseResources UP-TO-DATE
+> Task :usecase:kspReleaseKotlinAndroid UP-TO-DATE
+> Task :composeApp:checkReleaseAarMetadata UP-TO-DATE
+> Task :data:kspReleaseKotlinAndroid UP-TO-DATE
+> Task :usecase:compileReleaseKotlinAndroid UP-TO-DATE
+> Task :ui-core:compileReleaseKotlinAndroid UP-TO-DATE
+> Task :usecase:compileReleaseJavaWithJavac NO-SOURCE
+> Task :usecase:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :ui-core:compileReleaseJavaWithJavac NO-SOURCE
+> Task :data:compileReleaseKotlinAndroid UP-TO-DATE
+> Task :ui-core:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :composeApp:processReleaseMainManifest UP-TO-DATE
+> Task :composeApp:processReleaseManifest UP-TO-DATE
+> Task :composeApp:processReleaseManifestForPackage UP-TO-DATE
+> Task :data:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :viewmodel:kspReleaseKotlinAndroid UP-TO-DATE
+> Task :data:copyRoomSchemas NO-SOURCE
+> Task :data:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :ui-feature:compileReleaseKotlinAndroid UP-TO-DATE
+> Task :viewmodel:compileReleaseKotlinAndroid UP-TO-DATE
+> Task :ui-feature:compileReleaseJavaWithJavac NO-SOURCE
+> Task :ui-feature:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :viewmodel:compileReleaseJavaWithJavac NO-SOURCE
+> Task :viewmodel:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :composeApp:processReleaseResources UP-TO-DATE
+> Task :composeApp:kspReleaseKotlinAndroid UP-TO-DATE
+
+> Task :composeApp:compileReleaseKotlinAndroid FAILED
+e: file:///Users/cartland/github/cartland/Blanket/composeApp/src/commonMain/kotlin/com/chriscartland/batterybutler/feature/home/HomeScreen.kt:69:61 Unresolved reference 'Download'.
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':composeApp:compileReleaseKotlinAndroid'.
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more details
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 613ms
+112 actionable tasks: 8 executed, 104 up-to-date
+Configuration cache entry reused.

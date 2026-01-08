@@ -8,8 +8,10 @@ import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.usecase.BatchAddBatteryEventsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
 import me.tatarka.inject.annotations.Inject
@@ -21,6 +23,12 @@ class AddBatteryEventViewModel(
 ) : ViewModel() {
     private val _aiMessages = MutableStateFlow<List<AiMessage>>(emptyList())
     val aiMessages: StateFlow<List<AiMessage>> = _aiMessages
+
+    val devices = deviceRepository.getAllDevices().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList(),
+    )
 
     fun addEvent(
         deviceId: String,
