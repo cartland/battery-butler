@@ -8,57 +8,60 @@ The architecture is designed to maximize code sharing for business logic and dat
 
 ## 2. Modularization Strategy
 
-The project uses a **granular, feature-based modularization** strategy, replacing the template's monolithic `:shared` module.
-
-* **Application Modules**:
-    * `:composeApp`: The primary application module for Compose-based targets (Android, Desktop). It contains shared UI, platform-specific entry points, and the main navigation host.
-    * `:iosApp`: The dedicated application module for the iOS target, containing the native SwiftUI implementation.
-* **Feature Modules (`:feature_x`)**: Each feature is split into two modules using the `:api`/`:impl` convention.
-* **Core Modules (`:core_x`)**: Foundational modules providing shared, cross-cutting concerns.
+The project uses a **flat, layer-based modularization** strategy for simplicity and clarity.
+ 
+ * **Application Modules**:
+     * `:composeApp`: The primary application module for Compose-based targets (Android, Desktop). It contains shared UI, platform-specific entry points, and the main navigation host.
+     * `:iosApp`: The dedicated application module for the iOS target, containing the native SwiftUI implementation.
+ * **Feature Modules**:
+     * `:ui-feature`: Contains all feature-specific UI screens and content.
+     * `:viewmodel`: Contains all ViewModels and UI state management logic.
+     * `:usecase`: Contains business rule encapsulation.
+ * **Core Modules**:
+     * `:domain`: Pure business entities and repository interfaces.
+     * `:data`: Repository implementations, database, and network logic.
+     * `:ui-core`: Reusable UI components and design system.
 
 ## 3. Project Structure
-
-```sh
-.
-├── .github/
-│   └── workflows/
-│       ├── build-and-test.yml
-│       ├── internal-distribution.yml
-│       └── release-deploy.yml
-├── compose-app/
-│   ├── build.gradle.kts
-│   └── src/
-│       ├── androidMain/kotlin/com/blanket/MainActivity.kt
-│       ├── commonMain/kotlin/com/blanket/App.kt
-│       └── desktopMain/kotlin/com/blanket/main.kt
-├── core/
-│   ├── data/
-│   ├── di/
-│   ├── model/
-│   ├── navigation/
-│   └── network/
-├── feature_a/
-│   ├── api/
-│   └── impl/
-├── gradle/
-│   └── libs.versions.toml
-├── ios-app-compose-ui/
-│   ├── ios-app-compose-ui/
-│   │   ├── ContentView.swift
-│   │   └── iOSApp.swift
-│   └── iosApp.xcodeproj/
-├── scripts/
-│   └── ...
-├── build.gradle.kts
-└── settings.gradle.kts
-```
+ 
+ ```sh
+ .
+ ├── .github/
+ │   └── workflows/
+ │       ├── build-and-test.yml
+ │       ├── internal-distribution.yml
+ │       └── release-deploy.yml
+ ├── compose-app/
+ │   ├── build.gradle.kts
+ │   └── src/
+ │       ├── androidMain/kotlin/com/blanket/MainActivity.kt
+ │       ├── commonMain/kotlin/com/blanket/App.kt
+ │       └── desktopMain/kotlin/com/blanket/main.kt
+ ├── domain/
+ ├── data/
+ ├── usecase/
+ ├── viewmodel/
+ ├── ui-core/
+ ├── ui-feature/
+ ├── gradle/
+ │   └── libs.versions.toml
+ ├── ios-app-compose-ui/
+ │   ├── iosApp/
+ │   │   ├── ContentView.swift
+ │   │   └── iOSApp.swift
+ │   └── iosApp.xcodeproj/
+ ├── ios-app-swift-ui/
+ ├── scripts/
+ │   └── ...
+ ├── build.gradle.kts
+ └── settings.gradle.kts
+ ```
 
 ## 4. UI and Presentation Layer
 
 * **Pattern**: **Model-View-ViewModel (MVVM)**. A shared `ViewModel` resides in the `commonMain` of each `:feature:impl` module.
 * **UI Strategy (Hybrid)**:
     * **Shared Compose UI**: The `:compose-app/src/commonMain` contains the shared Compose UI for Android and Desktop targets. The central `App.kt` will host the `NavDisplay`.
-    * **Native iOS UI**: The `:iosApp` module contains a completely separate **SwiftUI** implementation. It does not use the shared Compose UI.
 
 ## 5. Navigation
 
