@@ -6,8 +6,8 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chriscartland.batterybutler.ui.feature.devicedetail.DeviceDetailContent
 import com.chriscartland.batterybutler.ui.feature.devicedetail.DeviceDetailUiState
-import com.chriscartland.batterybutler.viewmodel.devicedetail.DeviceDetailUiState as VmUiState
 import com.chriscartland.batterybutler.viewmodel.devicedetail.DeviceDetailViewModel
+import com.chriscartland.batterybutler.viewmodel.devicedetail.DeviceDetailUiState as VmUiState
 
 @Composable
 fun DeviceDetailScreen(

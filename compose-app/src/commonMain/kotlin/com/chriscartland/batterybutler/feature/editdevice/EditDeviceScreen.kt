@@ -6,8 +6,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.chriscartland.batterybutler.ui.feature.editdevice.EditDeviceContent
 import com.chriscartland.batterybutler.ui.feature.editdevice.EditDeviceUiState
-import com.chriscartland.batterybutler.viewmodel.editdevice.EditDeviceUiState as VmUiState
 import com.chriscartland.batterybutler.viewmodel.editdevice.EditDeviceViewModel
+import com.chriscartland.batterybutler.viewmodel.editdevice.EditDeviceUiState as VmUiState
 
 @Composable
 fun EditDeviceScreen(

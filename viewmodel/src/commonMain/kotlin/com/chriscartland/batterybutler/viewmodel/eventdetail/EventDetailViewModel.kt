@@ -28,14 +28,15 @@ class EventDetailViewModelFactory(
     private val updateBatteryEventUseCase: UpdateBatteryEventUseCase,
     private val deleteBatteryEventUseCase: DeleteBatteryEventUseCase,
 ) {
-    fun create(eventId: String): EventDetailViewModel = EventDetailViewModel(
-        eventId,
-        getEventDetailUseCase,
-        getDeviceDetailUseCase,
-        getDeviceTypesUseCase,
-        updateBatteryEventUseCase,
-        deleteBatteryEventUseCase
-    )
+    fun create(eventId: String): EventDetailViewModel =
+        EventDetailViewModel(
+            eventId,
+            getEventDetailUseCase,
+            getDeviceDetailUseCase,
+            getDeviceTypesUseCase,
+            updateBatteryEventUseCase,
+            deleteBatteryEventUseCase,
+        )
 }
 
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)

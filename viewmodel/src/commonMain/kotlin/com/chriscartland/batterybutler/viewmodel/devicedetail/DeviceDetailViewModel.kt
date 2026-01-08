@@ -27,14 +27,15 @@ class DeviceDetailViewModelFactory(
     private val addBatteryEventUseCase: AddBatteryEventUseCase,
     private val updateDeviceUseCase: UpdateDeviceUseCase,
 ) {
-    fun create(deviceId: String): DeviceDetailViewModel = DeviceDetailViewModel(
-        deviceId,
-        getDeviceDetailUseCase,
-        getDeviceTypesUseCase,
-        getBatteryEventsUseCase,
-        addBatteryEventUseCase,
-        updateDeviceUseCase,
-    )
+    fun create(deviceId: String): DeviceDetailViewModel =
+        DeviceDetailViewModel(
+            deviceId,
+            getDeviceDetailUseCase,
+            getDeviceTypesUseCase,
+            getBatteryEventsUseCase,
+            addBatteryEventUseCase,
+            updateDeviceUseCase,
+        )
 }
 
 class DeviceDetailViewModel(

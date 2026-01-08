@@ -10,6 +10,6 @@ class GetBatteryEventsUseCase(
     private val deviceRepository: DeviceRepository,
 ) {
     operator fun invoke(): Flow<List<BatteryEvent>> = deviceRepository.getAllEvents()
-    
+
     fun forDevice(deviceId: String): Flow<List<BatteryEvent>> = deviceRepository.getEventsForDevice(deviceId)
 }

@@ -42,11 +42,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.ui.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.ui.components.DeviceIconMapper
+import com.chriscartland.batterybutler.viewmodel.eventdetail.EventDetailUiState
+import com.chriscartland.batterybutler.viewmodel.eventdetail.EventDetailViewModel
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import com.chriscartland.batterybutler.viewmodel.eventdetail.EventDetailUiState
-import com.chriscartland.batterybutler.viewmodel.eventdetail.EventDetailViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

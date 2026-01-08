@@ -11,9 +11,10 @@ class HistoryListViewModelFactory(
     private val getDevicesUseCase: GetDevicesUseCase,
     private val getDeviceTypesUseCase: GetDeviceTypesUseCase,
 ) {
-    fun create(): HistoryListViewModel = HistoryListViewModel(
-        getBatteryEventsUseCase,
-        getDevicesUseCase,
-        getDeviceTypesUseCase,
-    )
+    fun create(): HistoryListViewModel =
+        HistoryListViewModel(
+            getBatteryEventsUseCase,
+            getDevicesUseCase,
+            getDeviceTypesUseCase,
+        )
 }

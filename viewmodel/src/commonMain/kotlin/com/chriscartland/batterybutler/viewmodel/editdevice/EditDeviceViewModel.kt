@@ -24,13 +24,14 @@ class EditDeviceViewModelFactory(
     private val updateDeviceUseCase: UpdateDeviceUseCase,
     private val deleteDeviceUseCase: DeleteDeviceUseCase,
 ) {
-    fun create(deviceId: String): EditDeviceViewModel = EditDeviceViewModel(
-        deviceId,
-        getDeviceDetailUseCase,
-        getDeviceTypesUseCase,
-        updateDeviceUseCase,
-        deleteDeviceUseCase,
-    )
+    fun create(deviceId: String): EditDeviceViewModel =
+        EditDeviceViewModel(
+            deviceId,
+            getDeviceDetailUseCase,
+            getDeviceTypesUseCase,
+            updateDeviceUseCase,
+            deleteDeviceUseCase,
+        )
 }
 
 class EditDeviceViewModel(

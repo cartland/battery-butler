@@ -2,11 +2,11 @@ package com.chriscartland.batterybutler.di
 
 import com.chriscartland.batterybutler.data.di.DataComponent
 import com.chriscartland.batterybutler.data.di.DatabaseFactory
-import com.chriscartland.batterybutler.usecase.di.UseCaseComponent
 import com.chriscartland.batterybutler.data.repository.RoomDeviceRepository
 import com.chriscartland.batterybutler.data.room.AppDatabase
 import com.chriscartland.batterybutler.domain.ai.AiEngine
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
+import com.chriscartland.batterybutler.usecase.di.UseCaseComponent
 import com.chriscartland.batterybutler.viewmodel.addbatteryevent.AddBatteryEventViewModel
 import com.chriscartland.batterybutler.viewmodel.adddevice.AddDeviceViewModel
 import com.chriscartland.batterybutler.viewmodel.adddevicetype.AddDeviceTypeViewModel
@@ -31,7 +31,8 @@ abstract class AppComponent(
     // We pass this through to DataComponent
     override val databaseFactory: DatabaseFactory,
     @get:Provides val aiEngine: AiEngine,
-) : DataComponent, UseCaseComponent() {
+) : UseCaseComponent(),
+    DataComponent {
     abstract val homeViewModel: HomeViewModel
     abstract val addDeviceViewModel: AddDeviceViewModel
     abstract val addDeviceTypeViewModel: AddDeviceTypeViewModel

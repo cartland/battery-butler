@@ -7,8 +7,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.chriscartland.batterybutler.ui.feature.devicetypes.EditDeviceTypeContent
 import com.chriscartland.batterybutler.ui.feature.devicetypes.EditDeviceTypeUiState
-import com.chriscartland.batterybutler.viewmodel.devicetypes.EditDeviceTypeUiState as VmUiState
 import com.chriscartland.batterybutler.viewmodel.devicetypes.EditDeviceTypeViewModel
+import com.chriscartland.batterybutler.viewmodel.devicetypes.EditDeviceTypeUiState as VmUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
