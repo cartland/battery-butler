@@ -15,22 +15,22 @@ import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import com.chriscartland.batterybutler.di.AppComponent
+import com.chriscartland.batterybutler.feature.addbatteryevent.AddBatteryEventScreen
 import com.chriscartland.batterybutler.feature.adddevice.AddDeviceScreen
+import com.chriscartland.batterybutler.feature.adddevicetype.AddDeviceTypeScreen
+import com.chriscartland.batterybutler.feature.devicedetail.DeviceDetailScreen
+import com.chriscartland.batterybutler.feature.devicetypes.DeviceTypeListScreen
+import com.chriscartland.batterybutler.feature.devicetypes.EditDeviceTypeScreen
+import com.chriscartland.batterybutler.feature.editdevice.EditDeviceScreen
+import com.chriscartland.batterybutler.feature.eventdetail.EventDetailScreen
+import com.chriscartland.batterybutler.feature.main.MainScreen
 import com.chriscartland.batterybutler.feature.main.MainTab
+import com.chriscartland.batterybutler.feature.settings.SettingsScreen
 import com.chriscartland.batterybutler.ui.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.ui.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.ui.util.LocalShareHandler
 import com.chriscartland.batterybutler.ui.util.ShareHandler
 import kotlinx.serialization.Serializable
-import com.chriscartland.batterybutler.feature.main.MainScreen
-import com.chriscartland.batterybutler.feature.addbatteryevent.AddBatteryEventScreen
-import com.chriscartland.batterybutler.feature.devicetypes.DeviceTypeListScreen
-import com.chriscartland.batterybutler.feature.adddevicetype.AddDeviceTypeScreen
-import com.chriscartland.batterybutler.feature.devicedetail.DeviceDetailScreen
-import com.chriscartland.batterybutler.feature.eventdetail.EventDetailScreen
-import com.chriscartland.batterybutler.feature.editdevice.EditDeviceScreen
-import com.chriscartland.batterybutler.feature.devicetypes.EditDeviceTypeScreen
-import com.chriscartland.batterybutler.feature.settings.SettingsScreen
 
 // Preview removed as we can't easily preview with DI and Interfaces
 @OptIn(ExperimentalMaterial3Api::class)

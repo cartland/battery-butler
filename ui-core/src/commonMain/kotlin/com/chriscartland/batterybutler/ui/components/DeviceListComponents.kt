@@ -131,7 +131,8 @@ fun DeviceTypeIconItem(
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(4.dp),
+        verticalArrangement = androidx.compose.foundation.layout.Arrangement
+            .spacedBy(4.dp),
         modifier = Modifier.clickable { onClick() },
     ) {
         Box(
@@ -139,7 +140,17 @@ fun DeviceTypeIconItem(
                 .size(64.dp)
                 .clip(androidx.compose.foundation.shape.CircleShape)
                 .background(if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant)
-                .then(if (isSelected) Modifier.border(2.dp, MaterialTheme.colorScheme.primary, androidx.compose.foundation.shape.CircleShape) else Modifier),
+                .then(
+                    if (isSelected) {
+                        Modifier.border(
+                            2.dp,
+                            MaterialTheme.colorScheme.primary,
+                            androidx.compose.foundation.shape.CircleShape,
+                        )
+                    } else {
+                        Modifier
+                    },
+                ),
             contentAlignment = Alignment.Center,
         ) {
             Icon(

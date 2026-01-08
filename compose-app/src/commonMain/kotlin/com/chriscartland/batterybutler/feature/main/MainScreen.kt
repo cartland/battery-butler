@@ -71,7 +71,7 @@ fun MainScreen(
                             contentDescription = "Settings",
                         )
                     }
-                }
+                },
             )
         },
         floatingActionButton = {

@@ -1,19 +1,18 @@
 package com.chriscartland.batterybutler.feature.settings
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.chriscartland.batterybutler.usecase.ExportDataUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import me.tatarka.inject.annotations.Inject
 
 @Inject
 class SettingsViewModel(
     private val exportDataUseCase: ExportDataUseCase,
 ) : ViewModel() {
-
     private val _exportData = MutableStateFlow<String?>(null)
     val exportData: StateFlow<String?> = _exportData.asStateFlow()
 

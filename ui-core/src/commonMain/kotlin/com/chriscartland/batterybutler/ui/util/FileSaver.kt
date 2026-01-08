@@ -3,7 +3,10 @@ package com.chriscartland.batterybutler.ui.util
 import androidx.compose.runtime.compositionLocalOf
 
 interface FileSaver {
-    fun saveFile(fileName: String, content: ByteArray)
+    fun saveFile(
+        fileName: String,
+        content: ByteArray,
+    )
 }
 
 val LocalFileSaver = compositionLocalOf<FileSaver> {

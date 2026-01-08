@@ -5,7 +5,10 @@ import javax.swing.JFileChooser
 import javax.swing.filechooser.FileNameExtensionFilter
 
 class DesktopFileSaver : FileSaver {
-    override fun saveFile(fileName: String, content: ByteArray) {
+    override fun saveFile(
+        fileName: String,
+        content: ByteArray,
+    ) {
         val fileChooser = JFileChooser()
         fileChooser.dialogTitle = "Save Data"
         fileChooser.selectedFile = File(fileName)
