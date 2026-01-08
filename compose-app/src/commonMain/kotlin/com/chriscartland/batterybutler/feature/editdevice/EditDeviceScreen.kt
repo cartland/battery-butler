@@ -6,6 +6,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.chriscartland.batterybutler.ui.feature.editdevice.EditDeviceContent
 import com.chriscartland.batterybutler.ui.feature.editdevice.EditDeviceUiState
+import com.chriscartland.batterybutler.viewmodel.editdevice.EditDeviceUiState as VmUiState
+import com.chriscartland.batterybutler.viewmodel.editdevice.EditDeviceViewModel
 
 @Composable
 fun EditDeviceScreen(
@@ -17,9 +19,9 @@ fun EditDeviceScreen(
     val uiState by viewModel.uiState.collectAsState()
 
     val coreUiState = when (val state = uiState) {
-        com.chriscartland.batterybutler.feature.editdevice.EditDeviceUiState.Loading -> EditDeviceUiState.Loading
-        com.chriscartland.batterybutler.feature.editdevice.EditDeviceUiState.NotFound -> EditDeviceUiState.NotFound
-        is com.chriscartland.batterybutler.feature.editdevice.EditDeviceUiState.Success -> EditDeviceUiState.Success(
+        VmUiState.Loading -> EditDeviceUiState.Loading
+        VmUiState.NotFound -> EditDeviceUiState.NotFound
+        is VmUiState.Success -> EditDeviceUiState.Success(
             device = state.device,
             deviceTypes = state.deviceTypes,
         )

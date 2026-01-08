@@ -8,9 +8,10 @@ import com.chriscartland.batterybutler.ui.feature.devicetypes.DeviceTypeListCont
 import com.chriscartland.batterybutler.ui.feature.devicetypes.DeviceTypeListUiState
 import com.chriscartland.batterybutler.ui.feature.devicetypes.UiDeviceTypeGroupOption
 import com.chriscartland.batterybutler.ui.feature.devicetypes.UiDeviceTypeSortOption
-import com.chriscartland.batterybutler.feature.devicetypes.DeviceTypeGroupOption as VmGroupOption
-import com.chriscartland.batterybutler.feature.devicetypes.DeviceTypeListUiState as VmUiState
-import com.chriscartland.batterybutler.feature.devicetypes.DeviceTypeSortOption as VmSortOption
+import com.chriscartland.batterybutler.viewmodel.devicetypes.DeviceTypeGroupOption as VmGroupOption
+import com.chriscartland.batterybutler.viewmodel.devicetypes.DeviceTypeListUiState as VmUiState
+import com.chriscartland.batterybutler.viewmodel.devicetypes.DeviceTypeSortOption as VmSortOption
+import com.chriscartland.batterybutler.viewmodel.devicetypes.DeviceTypeListViewModel
 
 @Composable
 fun DeviceTypeListScreen(

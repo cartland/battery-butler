@@ -21,10 +21,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.chriscartland.batterybutler.feature.history.HistoryListScreen
-import com.chriscartland.batterybutler.feature.history.HistoryListViewModel
+import com.chriscartland.batterybutler.viewmodel.history.HistoryListViewModel
 import com.chriscartland.batterybutler.feature.home.HomeScreen
-import com.chriscartland.batterybutler.feature.home.HomeViewModel
+import com.chriscartland.batterybutler.viewmodel.home.HomeViewModel
 import com.chriscartland.batterybutler.ui.components.ButlerCenteredTopAppBar
+import com.chriscartland.batterybutler.viewmodel.devicetypes.DeviceTypeListViewModel
 
 @kotlinx.serialization.Serializable
 enum class MainTab(
@@ -41,7 +42,7 @@ enum class MainTab(
 fun MainScreen(
     homeViewModel: HomeViewModel,
     historyListViewModel: HistoryListViewModel,
-    deviceTypeListViewModel: com.chriscartland.batterybutler.feature.devicetypes.DeviceTypeListViewModel,
+    deviceTypeListViewModel: DeviceTypeListViewModel,
     onAddDeviceClick: () -> Unit,
     onDeviceClick: (String) -> Unit,
     onEventClick: (String, String) -> Unit,

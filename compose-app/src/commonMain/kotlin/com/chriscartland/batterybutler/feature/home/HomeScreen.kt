@@ -29,6 +29,9 @@ import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.ui.components.CompositeControl
 import com.chriscartland.batterybutler.ui.components.DeviceListItem
 import com.chriscartland.batterybutler.ui.util.LocalShareHandler
+import com.chriscartland.batterybutler.viewmodel.home.GroupOption
+import com.chriscartland.batterybutler.viewmodel.home.HomeViewModel
+import com.chriscartland.batterybutler.viewmodel.home.SortOption
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable

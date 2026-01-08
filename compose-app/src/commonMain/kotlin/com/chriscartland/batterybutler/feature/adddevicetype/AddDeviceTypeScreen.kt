@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chriscartland.batterybutler.ui.feature.adddevicetype.AddDeviceTypeContent
+import com.chriscartland.batterybutler.viewmodel.adddevicetype.AddDeviceTypeViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

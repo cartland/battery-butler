@@ -12,6 +12,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.chriscartland.batterybutler.ui.components.HistoryListItem
+import com.chriscartland.batterybutler.viewmodel.history.HistoryListUiState
+import com.chriscartland.batterybutler.viewmodel.history.HistoryListViewModel
 
 @Composable
 fun HistoryListScreen(

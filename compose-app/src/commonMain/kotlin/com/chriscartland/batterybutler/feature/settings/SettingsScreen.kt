@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.ui.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.ui.util.LocalFileSaver
+import com.chriscartland.batterybutler.viewmodel.settings.SettingsViewModel
 
 @Composable
 fun SettingsScreen(

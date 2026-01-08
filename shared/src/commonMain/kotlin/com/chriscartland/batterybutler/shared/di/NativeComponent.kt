@@ -6,7 +6,7 @@ import com.chriscartland.batterybutler.data.room.AppDatabase
 import com.chriscartland.batterybutler.data.room.DeviceDao
 import com.chriscartland.batterybutler.domain.ai.AiEngine
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
-import com.chriscartland.batterybutler.feature.home.HomeViewModel
+import com.chriscartland.batterybutler.viewmodel.home.HomeViewModel
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
 import me.tatarka.inject.annotations.Scope

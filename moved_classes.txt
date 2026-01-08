@@ -1,0 +1,12 @@
+SettingsViewModel
+HomeViewModel
+DeviceDetailViewModel
+AddDeviceTypeViewModel
+EditDeviceViewModel
+EditDeviceTypeViewModel
+DeviceTypeListViewModel
+HistoryListViewModel
+HistoryListViewModelFactory
+EventDetailViewModel
+AddDeviceViewModel
+AddBatteryEventViewModel
