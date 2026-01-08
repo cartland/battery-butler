@@ -33,6 +33,10 @@ kotlin {
 
             implementation(project(":domain"))
         }
+        
+        androidMain.dependencies {
+             implementation(libs.androidx.core.ktx)
+        }
     }
 }
 

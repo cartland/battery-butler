@@ -6,6 +6,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -47,6 +48,7 @@ fun MainScreen(
     onAddTypeClick: () -> Unit,
     onEditTypeClick: (String) -> Unit,
     onAddEventClick: () -> Unit,
+    onSettingsClick: () -> Unit,
     onManageTypesClick: () -> Unit, // Potentially unused if handled by Types tab, but kept for compatibility
     initialTab: MainTab = MainTab.Devices,
     modifier: Modifier = Modifier,
@@ -62,6 +64,14 @@ fun MainScreen(
         topBar = {
             ButlerCenteredTopAppBar(
                 title = currentTab.label,
+                actions = {
+                    androidx.compose.material3.IconButton(onClick = onSettingsClick) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = "Settings",
+                        )
+                    }
+                }
             )
         },
         floatingActionButton = {

@@ -41,6 +41,7 @@ abstract class AppComponent(
     abstract val deviceTypeListViewModel: DeviceTypeListViewModel
     abstract val editDeviceTypeViewModelFactory: EditDeviceTypeViewModelFactory
     abstract val deviceRepository: DeviceRepository
+    abstract val settingsViewModel: com.chriscartland.batterybutler.feature.settings.SettingsViewModel
 
     // DataComponent provides AppDatabase, DeviceDao, and DeviceRepository
     // We need to ensure that provideAppDatabase and provideDeviceRepository are scoped to Singleton.

@@ -61,17 +61,17 @@ fun HomeScreen(
         modifier = modifier.fillMaxSize(),
         topBar = {
             Column {
-                ButlerCenteredTopAppBar(
-                    title = "Battery Butler",
-                    actions = {
-                        IconButton(onClick = { viewModel.onExportData() }) {
-                            Icon(
-                                imageVector = Icons.Default.Download,
-                                contentDescription = "Export Data",
-                            )
-                        }
-                    },
-                )
+                // ButlerCenteredTopAppBar(
+                //     title = "Battery Butler",
+                //     actions = {
+                //         IconButton(onClick = { viewModel.onExportData() }) {
+                //             Icon(
+                //                 imageVector = Icons.Default.Download,
+                //                 contentDescription = "Export Data",
+                //             )
+                //         }
+                //     },
+                // )
                 // Filter Row
                 Row(
                     modifier = Modifier

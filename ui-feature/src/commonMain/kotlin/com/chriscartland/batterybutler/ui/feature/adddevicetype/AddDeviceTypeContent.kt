@@ -49,6 +49,7 @@ import com.chriscartland.batterybutler.domain.ai.AiMessage
 import com.chriscartland.batterybutler.domain.model.DeviceTypeInput
 import com.chriscartland.batterybutler.ui.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.ui.components.DeviceIconMapper
+import com.chriscartland.batterybutler.ui.components.DeviceTypeIconItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -291,31 +292,3 @@ fun AddDeviceTypeContent(
     }
 }
 
-@Composable
-fun DeviceTypeIconItem(
-    iconName: String,
-    isSelected: Boolean,
-    onClick: () -> Unit,
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = Modifier.clickable { onClick() },
-    ) {
-        Box(
-            modifier = Modifier
-                .size(64.dp)
-                .clip(CircleShape)
-                .background(if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant)
-                .then(if (isSelected) Modifier.border(2.dp, MaterialTheme.colorScheme.primary, CircleShape) else Modifier),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                imageVector = DeviceIconMapper.getIcon(iconName),
-                contentDescription = null,
-                tint = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(32.dp),
-            )
-        }
-    }
-}

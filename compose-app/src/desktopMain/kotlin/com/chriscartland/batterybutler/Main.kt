@@ -17,6 +17,12 @@ fun main() =
             val databaseFactory = DatabaseFactory()
             val component = AppComponent::class.create(databaseFactory, NoOpAiEngine)
             val shareHandler = DesktopShareHandler()
-            App(component, shareHandler)
+            val fileSaver = com.chriscartland.batterybutler.ui.util.DesktopFileSaver()
+            
+            androidx.compose.runtime.CompositionLocalProvider(
+                com.chriscartland.batterybutler.ui.util.LocalFileSaver provides fileSaver,
+            ) {
+                App(component, shareHandler)
+            }
         }
     }

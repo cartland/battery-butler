@@ -22,6 +22,15 @@ import com.chriscartland.batterybutler.ui.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.ui.util.LocalShareHandler
 import com.chriscartland.batterybutler.ui.util.ShareHandler
 import kotlinx.serialization.Serializable
+import com.chriscartland.batterybutler.feature.main.MainScreen
+import com.chriscartland.batterybutler.feature.addbatteryevent.AddBatteryEventScreen
+import com.chriscartland.batterybutler.feature.devicetypes.DeviceTypeListScreen
+import com.chriscartland.batterybutler.feature.adddevicetype.AddDeviceTypeScreen
+import com.chriscartland.batterybutler.feature.devicedetail.DeviceDetailScreen
+import com.chriscartland.batterybutler.feature.eventdetail.EventDetailScreen
+import com.chriscartland.batterybutler.feature.editdevice.EditDeviceScreen
+import com.chriscartland.batterybutler.feature.devicetypes.EditDeviceTypeScreen
+import com.chriscartland.batterybutler.feature.settings.SettingsScreen
 
 // Preview removed as we can't easily preview with DI and Interfaces
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,7 +53,7 @@ fun App(
                         val historyListViewModel = remember { component.historyListViewModel }
                         val deviceTypeListViewModel = remember { component.deviceTypeListViewModel }
 
-                        com.chriscartland.batterybutler.feature.main.MainScreen(
+                        MainScreen(
                             homeViewModel = homeViewModel,
                             historyListViewModel = historyListViewModel,
                             deviceTypeListViewModel = deviceTypeListViewModel,
@@ -65,6 +74,7 @@ fun App(
                             onEditTypeClick = { typeId -> backStack.add(Screen.EditDeviceType(typeId)) },
                             onAddEventClick = { backStack.add(Screen.AddBatteryEvent) },
                             onManageTypesClick = { backStack.add(Screen.DeviceTypeList) }, // Fallback if Types tab exists?
+                            onSettingsClick = { backStack.add(Screen.Settings) },
                         )
                     }
 
@@ -80,8 +90,7 @@ fun App(
                     }
 
                     entry<Screen.AddBatteryEvent> {
-                        // TODO: Create AddBatteryEventScreen
-                        com.chriscartland.batterybutler.feature.addbatteryevent.AddBatteryEventScreen(
+                        AddBatteryEventScreen(
                             viewModel = component.addBatteryEventViewModel,
                             onEventAdded = { backStack.removeLastOrNull() },
                             onAddDeviceClick = { backStack.add(Screen.AddDevice) },
@@ -108,7 +117,7 @@ fun App(
                                 }
                             },
                         ) { innerPadding ->
-                            com.chriscartland.batterybutler.feature.devicetypes.DeviceTypeListScreen(
+                            DeviceTypeListScreen(
                                 viewModel = viewModel,
                                 onEditType = { typeId -> backStack.add(Screen.EditDeviceType(typeId)) },
                                 modifier = Modifier.padding(innerPadding),
@@ -118,7 +127,7 @@ fun App(
 
                     entry<Screen.AddDeviceType> {
                         val args = it
-                        com.chriscartland.batterybutler.feature.adddevicetype.AddDeviceTypeScreen(
+                        AddDeviceTypeScreen(
                             viewModel = component.addDeviceTypeViewModel,
                             onDeviceTypeAdded = {
                                 backStack.removeLastOrNull()
@@ -132,7 +141,7 @@ fun App(
                         val viewModel = remember(args.deviceId) {
                             component.deviceDetailViewModelFactory.create(args.deviceId)
                         }
-                        com.chriscartland.batterybutler.feature.devicedetail.DeviceDetailScreen(
+                        DeviceDetailScreen(
                             viewModel = viewModel,
                             onBack = { backStack.removeLastOrNull() },
                             onEdit = { backStack.add(Screen.EditDevice(args.deviceId)) },
@@ -145,7 +154,7 @@ fun App(
                         val viewModel = remember(args.eventId) {
                             component.eventDetailViewModelFactory.create(args.eventId)
                         }
-                        com.chriscartland.batterybutler.feature.eventdetail.EventDetailScreen(
+                        EventDetailScreen(
                             viewModel = viewModel,
                             onBack = { backStack.removeLastOrNull() },
                         )
@@ -156,7 +165,7 @@ fun App(
                         val viewModel = remember(args.deviceId) {
                             component.editDeviceViewModelFactory.create(args.deviceId)
                         }
-                        com.chriscartland.batterybutler.feature.editdevice.EditDeviceScreen(
+                        EditDeviceScreen(
                             viewModel = viewModel,
                             onBack = { backStack.removeLastOrNull() },
                             onDelete = {
@@ -173,10 +182,17 @@ fun App(
                         val viewModel = remember(args.typeId) {
                             component.editDeviceTypeViewModelFactory.create(args.typeId)
                         }
-                        com.chriscartland.batterybutler.feature.devicetypes.EditDeviceTypeScreen(
+                        EditDeviceTypeScreen(
                             viewModel = viewModel,
                             onBack = { backStack.removeLastOrNull() },
                             onDelete = { backStack.removeLastOrNull() },
+                        )
+                    }
+
+                    entry<Screen.Settings> {
+                        SettingsScreen(
+                            viewModel = component.settingsViewModel,
+                            onBack = { backStack.removeLastOrNull() },
                         )
                     }
                 },
@@ -191,6 +207,9 @@ sealed interface Screen {
     data class Home(
         val initialTab: MainTab = MainTab.Devices,
     ) : Screen
+
+    @Serializable
+    data object Settings : Screen
 
     @Serializable
     data object AddDevice : Screen

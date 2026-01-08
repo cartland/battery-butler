@@ -1,5 +1,6 @@
 package com.chriscartland.batterybutler.ui.feature.devicetypes
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,6 +9,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -43,6 +47,7 @@ import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.DeviceTypeInput
 import com.chriscartland.batterybutler.ui.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.ui.components.DeviceIconMapper
+import com.chriscartland.batterybutler.ui.components.DeviceTypeIconItem
 
 sealed interface EditDeviceTypeUiState {
     data object Loading : EditDeviceTypeUiState
@@ -154,21 +159,19 @@ fun EditDeviceTypeContent(
                         // Icon Selection
                         Text("Default Icon", style = MaterialTheme.typography.labelLarge)
                         val icons = DeviceIconMapper.AvailableIcons
-                        Row(modifier = Modifier.fillMaxWidth()) {
-                            icons.take(5).forEach { iconName ->
-                                IconButton(onClick = { defaultIcon = iconName }) {
-                                    Icon(
-                                        imageVector = DeviceIconMapper.getIcon(iconName),
-                                        contentDescription = null,
-                                        tint = if (defaultIcon ==
-                                            iconName
-                                        ) {
-                                            MaterialTheme.colorScheme.primary
-                                        } else {
-                                            MaterialTheme.colorScheme.onSurfaceVariant
-                                        },
-                                    )
-                                }
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(4),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                            modifier = Modifier.height(160.dp),
+                        ) {
+                            items(icons) { iconName ->
+                                val isSelected = defaultIcon == iconName
+                                DeviceTypeIconItem(
+                                    iconName = iconName,
+                                    isSelected = isSelected,
+                                    onClick = { defaultIcon = iconName },
+                                )
                             }
                         }
 
