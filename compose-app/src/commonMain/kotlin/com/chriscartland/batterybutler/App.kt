@@ -1,10 +1,8 @@
 package com.chriscartland.batterybutler
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import com.chriscartland.batterybutler.di.AppComponent
@@ -38,7 +36,6 @@ fun App(component: AppComponent) {
                         onAddDeviceClick = { backStack.add(Screen.AddDevice) },
                         onDeviceClick = { deviceId -> backStack.add(Screen.DeviceDetail(deviceId)) },
                         onEventClick = { eventId, deviceId -> backStack.add(Screen.EventDetail(eventId, deviceId)) },
-                        
                         // New Actions
                         onAddTypeClick = { backStack.add(Screen.AddDeviceType(returnScreen = Screen.Home(initialTab = MainTab.Types))) },
                         onEditTypeClick = { typeId -> backStack.add(Screen.EditDeviceType(typeId)) },

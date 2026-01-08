@@ -5,14 +5,13 @@ import androidx.lifecycle.viewModelScope
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.DeviceTypeInput
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
+import com.chriscartland.batterybutler.usecase.BatchAddDeviceTypesUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
-
-import com.chriscartland.batterybutler.usecase.BatchAddDeviceTypesUseCase
 
 @Inject
 class AddDeviceTypeViewModel(
@@ -33,7 +32,9 @@ class AddDeviceTypeViewModel(
         }
     }
 
-    private val _aiMessages = kotlinx.coroutines.flow.MutableStateFlow<List<com.chriscartland.batterybutler.domain.ai.AiMessage>>(emptyList())
+    private val _aiMessages = kotlinx.coroutines.flow.MutableStateFlow<List<com.chriscartland.batterybutler.domain.ai.AiMessage>>(
+        emptyList(),
+    )
     val aiMessages: StateFlow<List<com.chriscartland.batterybutler.domain.ai.AiMessage>> = _aiMessages
 
     fun batchAddDeviceTypes(input: String) {

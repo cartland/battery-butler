@@ -2,11 +2,10 @@ package com.chriscartland.batterybutler.feature.adddevicetype
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import com.chriscartland.batterybutler.ui.feature.adddevicetype.AddDeviceTypeContent
-
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.chriscartland.batterybutler.ui.feature.adddevicetype.AddDeviceTypeContent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

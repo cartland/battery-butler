@@ -72,7 +72,7 @@ fun MainScreen(
                         MainTab.Types -> onAddTypeClick()
                         MainTab.History -> onAddEventClick()
                     }
-                }
+                },
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Add")
             }

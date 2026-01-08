@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -31,7 +30,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chriscartland.batterybutler.ui.components.ButlerCenteredTopAppBar
-import com.chriscartland.batterybutler.domain.ai.AiMessage
 import kotlinx.datetime.Clock
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,12 +43,12 @@ fun AddBatteryEventScreen(
     val aiMessages by viewModel.aiMessages.collectAsStateWithLifecycle()
     var aiInput by remember { mutableStateOf("") }
     var deviceIdInput by remember { mutableStateOf("") }
-    
+
     // Note: Manual entry requires device selection. For MVP refactor,
     // we focus on providing the AI Batch capability as primary requested feature,
     // plus a simple placeholder for manual entry or just rely on AI.
     // The requirements emphasized "Magic AI Button" and "Input fields".
-    
+
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -71,9 +69,9 @@ fun AddBatteryEventScreen(
             Text(
                 "Batch Import (AI)",
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.primary,
             )
-            
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -92,7 +90,7 @@ fun AddBatteryEventScreen(
                             aiInput = ""
                         }
                     },
-                    enabled = aiInput.isNotBlank()
+                    enabled = aiInput.isNotBlank(),
                 ) {
                     Icon(Icons.Default.AutoAwesome, contentDescription = "Process with AI")
                 }
@@ -110,27 +108,27 @@ fun AddBatteryEventScreen(
                         Text(
                             text = "${msg.role}: ${msg.text}",
                             style = MaterialTheme.typography.bodySmall,
-                            modifier = Modifier.padding(vertical = 4.dp)
+                            modifier = Modifier.padding(vertical = 4.dp),
                         )
                     }
                 }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             // Manual Section (Stub for now, or simple ID input)
             Text(
                 "Manual Entry",
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.primary,
             )
             OutlinedTextField(
                 value = deviceIdInput,
                 onValueChange = { deviceIdInput = it },
                 label = { Text("Device ID") }, // Ideally a dropdown
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
-            
+
             Button(
                 onClick = {
                     if (deviceIdInput.isNotBlank()) {
@@ -138,13 +136,13 @@ fun AddBatteryEventScreen(
                             deviceId = deviceIdInput,
                             date = Clock.System.now(),
                             batteryType = null,
-                            notes = null
+                            notes = null,
                         )
                         onEventAdded()
                     }
                 },
                 enabled = deviceIdInput.isNotBlank(),
-                modifier = Modifier.align(Alignment.End)
+                modifier = Modifier.align(Alignment.End),
             ) {
                 Text("Add Event")
             }

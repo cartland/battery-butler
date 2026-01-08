@@ -10,10 +10,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.DevicesOther
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,8 +41,6 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import androidx.compose.material.icons.filled.AutoAwesome
-import androidx.compose.foundation.lazy.items
 import com.chriscartland.batterybutler.domain.ai.AiMessage
 import com.chriscartland.batterybutler.domain.model.DeviceInput
 import com.chriscartland.batterybutler.domain.model.DeviceType
@@ -114,9 +114,9 @@ fun AddDeviceContent(
                     "Batch Import (AI)",
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    modifier = Modifier.padding(bottom = 8.dp),
                 )
-                
+
                 var aiInput by remember { mutableStateOf("") }
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -136,7 +136,7 @@ fun AddDeviceContent(
                                 aiInput = ""
                             }
                         },
-                        enabled = aiInput.isNotBlank()
+                        enabled = aiInput.isNotBlank(),
                     ) {
                         Icon(Icons.Default.AutoAwesome, contentDescription = "Process with AI")
                     }
@@ -154,7 +154,7 @@ fun AddDeviceContent(
                             Text(
                                 text = "${msg.role}: ${msg.text}",
                                 style = MaterialTheme.typography.bodySmall,
-                                modifier = Modifier.padding(vertical = 4.dp)
+                                modifier = Modifier.padding(vertical = 4.dp),
                             )
                         }
                     }
@@ -169,7 +169,7 @@ fun AddDeviceContent(
                 Text(
                     "Manual Entry",
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.primary,
                 )
                 OutlinedTextField(
                     value = name,

@@ -2,6 +2,7 @@ package com.chriscartland.batterybutler.feature.addbatteryevent
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.benasher44.uuid.uuid4
 import com.chriscartland.batterybutler.domain.ai.AiMessage
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
@@ -10,21 +11,23 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import me.tatarka.inject.annotations.Inject
-import com.benasher44.uuid.uuid4
 
 @Inject
 class AddBatteryEventViewModel(
     private val deviceRepository: DeviceRepository,
     private val batchAddBatteryEventsUseCase: BatchAddBatteryEventsUseCase,
 ) : ViewModel() {
-
     private val _aiMessages = MutableStateFlow<List<AiMessage>>(emptyList())
     val aiMessages: StateFlow<List<AiMessage>> = _aiMessages
 
-    fun addEvent(deviceId: String, date: Instant, batteryType: String?, notes: String?) {
+    fun addEvent(
+        deviceId: String,
+        date: Instant,
+        batteryType: String?,
+        notes: String?,
+    ) {
         viewModelScope.launch {
             deviceRepository.addEvent(
                 BatteryEvent(
@@ -33,7 +36,7 @@ class AddBatteryEventViewModel(
                     date = date,
                     batteryType = batteryType,
                     notes = notes,
-                )
+                ),
             )
             // Need to update device batteryLastReplaced?
             // Domain repo or UseCase should ideally handle this logic consistency.
