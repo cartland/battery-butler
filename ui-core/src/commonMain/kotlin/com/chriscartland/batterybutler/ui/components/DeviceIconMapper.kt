@@ -6,9 +6,9 @@ import androidx.compose.material.icons.filled.Brush
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Circle
+import androidx.compose.material.icons.filled.DevicesOther
 import androidx.compose.material.icons.filled.Diamond
 import androidx.compose.material.icons.filled.DirectionsCar
-import androidx.compose.material.icons.filled.DevicesOther
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Garage
 import androidx.compose.material.icons.filled.Headphones
@@ -28,8 +28,8 @@ import androidx.compose.material.icons.filled.Scale
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Sensors
 import androidx.compose.material.icons.filled.SettingsRemote
-import androidx.compose.material.icons.filled.Smartphone
 import androidx.compose.material.icons.filled.SmartButton
+import androidx.compose.material.icons.filled.Smartphone
 import androidx.compose.material.icons.filled.Speaker
 import androidx.compose.material.icons.filled.SportsEsports
 import androidx.compose.material.icons.filled.Square
@@ -45,20 +45,10 @@ import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 
+import com.chriscartland.batterybutler.domain.model.DeviceIcons
+
 object DeviceIconMapper {
-    val AvailableIcons = listOf(
-        // Shapes
-        "star", "circle", "square", "favorite", "diamond", "hexagon",
-        // Electronics
-        "smartphone", "tablet", "laptop", "watch", "headphones", "camera", "speaker", "videogame_asset", "game_controller",
-        "tv", "router", "power", "smart_button", "settings_remote", "mouse", "keyboard",
-        // Home
-        "lightbulb", "detector_smoke", "thermostat", "sensors", "lock", "garage_home",
-        // Tools/Utility
-        "flashlight_on", "drill", "brush", "scale", "straighten", "water_drop",
-        // Other
-        "car", "bike", "schedule", "location_on", "account_balance_wallet", "toys"
-    )
+    val AvailableIcons = DeviceIcons.AvailableIcons
 
     fun getIcon(iconName: String?): ImageVector =
         when (iconName) {

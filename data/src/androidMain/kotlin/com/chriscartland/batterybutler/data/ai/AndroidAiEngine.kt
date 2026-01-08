@@ -55,6 +55,7 @@ class AndroidAiEngine(
             Schema.str(AiToolParams.NAME, "Name of the device type"),
             Schema.str(AiToolParams.BATTERY_TYPE, "Type of battery used (e.g. AA, CR2032)"),
             Schema.int(AiToolParams.BATTERY_QUANTITY, "Number of batteries required"),
+            Schema.str(AiToolParams.ICON, "Icon for the device type. Available icons: ${com.chriscartland.batterybutler.domain.model.DeviceIcons.AvailableIcons.joinToString(", ")}"),
         ),
     )
 

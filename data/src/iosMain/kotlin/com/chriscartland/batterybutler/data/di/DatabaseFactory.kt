@@ -20,7 +20,6 @@ actual class DatabaseFactory {
             .addMigrations(MIGRATION_3_4, MIGRATION_4_5)
             .build()
     }
-    }
 
     @OptIn(ExperimentalForeignApi::class)
     private fun fileDirectory(): String {

@@ -15,4 +15,5 @@ object AiToolParams {
     const val DEVICE_TYPE = "deviceType"
     const val BATTERY_TYPE = "batteryType"
     const val BATTERY_QUANTITY = "batteryQuantity"
+    const val ICON = "icon"
 }

@@ -30,7 +30,7 @@ class BatchAddDeviceTypesUseCase(
                     when (name) {
                         AiToolNames.ADD_DEVICE_TYPE -> {
                             val name = args[AiToolParams.NAME] as? String ?: return@ToolHandler "Error: Missing name"
-                            val iconName = args["icon"] as? String ?: "default"
+                            val iconName = args[AiToolParams.ICON] as? String ?: "default"
 
                             try {
                                 // Smart deduplication
@@ -46,8 +46,8 @@ class BatchAddDeviceTypesUseCase(
                                             name = name,
                                             defaultIcon = iconName,
                                             batteryType = args[AiToolParams.BATTERY_TYPE] as? String ?: "AA",
-                                            batteryQuantity = (args[AiToolParams.BATTERY_QUANTITY] as? String)?.toIntOrNull() 
-                                                ?: (args[AiToolParams.BATTERY_QUANTITY] as? Number)?.toInt() 
+                                            batteryQuantity = (args[AiToolParams.BATTERY_QUANTITY] as? String)?.toIntOrNull()
+                                                ?: (args[AiToolParams.BATTERY_QUANTITY] as? Number)?.toInt()
                                                 ?: 1,
                                         ),
                                     )

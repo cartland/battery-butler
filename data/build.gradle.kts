@@ -58,7 +58,7 @@ android {
             .get()
             .toInt()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        
+
         val localProperties = Properties()
         val localPropertiesFile = rootProject.file("local.properties")
         if (localPropertiesFile.exists()) {
