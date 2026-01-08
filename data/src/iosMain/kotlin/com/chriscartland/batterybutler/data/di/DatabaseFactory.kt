@@ -4,6 +4,7 @@ import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.chriscartland.batterybutler.data.room.AppDatabase
 import com.chriscartland.batterybutler.data.room.MIGRATION_3_4
+import com.chriscartland.batterybutler.data.room.MIGRATION_4_5
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
@@ -16,8 +17,9 @@ actual class DatabaseFactory {
             .databaseBuilder<AppDatabase>(
                 name = dbFile,
             ).setDriver(BundledSQLiteDriver())
-            .addMigrations(MIGRATION_3_4)
+            .addMigrations(MIGRATION_3_4, MIGRATION_4_5)
             .build()
+    }
     }
 
     @OptIn(ExperimentalForeignApi::class)

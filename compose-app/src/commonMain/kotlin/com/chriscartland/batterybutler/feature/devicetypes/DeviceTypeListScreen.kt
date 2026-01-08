@@ -11,8 +11,6 @@ import com.chriscartland.batterybutler.ui.feature.devicetypes.DeviceTypeListUiSt
 fun DeviceTypeListScreen(
     viewModel: DeviceTypeListViewModel,
     onEditType: (String) -> Unit,
-    onAddType: () -> Unit,
-    onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -27,8 +25,6 @@ fun DeviceTypeListScreen(
     DeviceTypeListContent(
         state = coreUiState,
         onEditType = onEditType,
-        onAddType = onAddType,
-        onBack = onBack,
         modifier = modifier,
     )
 }

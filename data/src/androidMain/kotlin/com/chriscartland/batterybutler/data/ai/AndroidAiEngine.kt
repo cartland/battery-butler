@@ -1,10 +1,13 @@
-package com.chriscartland.batterybutler.feature.ai
+package com.chriscartland.batterybutler.data.ai
 
 import android.content.Context
-import com.chriscartland.batterybutler.BuildConfig
+import com.chriscartland.batterybutler.data.BuildConfig
+import com.chriscartland.batterybutler.domain.ai.AiConstants
 import com.chriscartland.batterybutler.domain.ai.AiEngine
 import com.chriscartland.batterybutler.domain.ai.AiMessage
 import com.chriscartland.batterybutler.domain.ai.AiRole
+import com.chriscartland.batterybutler.domain.ai.AiToolNames
+import com.chriscartland.batterybutler.domain.ai.AiToolParams
 import com.chriscartland.batterybutler.domain.ai.ToolHandler
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.FunctionResponsePart
@@ -28,42 +31,47 @@ class AndroidAiEngine(
     override val compatibility: Flow<Boolean> = flow { emit(true) }
 
     // Use API Key from local.properties via BuildConfig
+    // Note: ensure BuildConfig is generated for :data module and includes GEMINI_API_KEY if needed.
+    // If BuildConfig is only in :composeApp, we might need to pass it in or configure :data to have it.
+    // Assuming :data has it or we will fix it.
     private val apiKey = BuildConfig.GEMINI_API_KEY
 
     // Define Tools without execution blocks (manual execution)
     private val addDeviceTool = defineFunction(
-        name = "addDevice",
+        name = AiToolNames.ADD_DEVICE,
         description = "Add a new device to the inventory",
         parameters = listOf(
-            Schema.str("name", "Name of the device"),
-            Schema.str("location", "Location of the device (optional)"),
-            Schema.str("notes", "Notes about the device (optional)"),
-            Schema.str("type", "Type of the device (optional)"),
+            Schema.str(AiToolParams.NAME, "Name of the device"),
+            Schema.str(AiToolParams.LOCATION, "Location of the device (optional)"),
+            // notes removed as per request
+            Schema.str(AiToolParams.TYPE, "Type of the device (optional)"),
         ),
     )
 
     private val addDeviceTypeTool = defineFunction(
-        name = "addDeviceType",
+        name = AiToolNames.ADD_DEVICE_TYPE,
         description = "Add a new device type category",
         parameters = listOf(
-            Schema.str("name", "Name of the device type"),
+            Schema.str(AiToolParams.NAME, "Name of the device type"),
+            Schema.str(AiToolParams.BATTERY_TYPE, "Type of battery used (e.g. AA, CR2032)"),
+            Schema.int(AiToolParams.BATTERY_QUANTITY, "Number of batteries required"),
         ),
     )
 
     private val recordBatteryReplacementTool = defineFunction(
-        name = "recordBatteryReplacement",
+        name = AiToolNames.RECORD_BATTERY_REPLACEMENT,
         description = "Record a battery replacement event for a device. If the device does not exist, it will be created.",
         parameters = listOf(
-            Schema.str("deviceName", "Name of the device"),
-            Schema.str("date", "Date of replacement (YYYY-MM-DD)"),
-            Schema.str("deviceType", "Type of the device (optional, used if creating new device)"),
-            Schema.str("batteryType", "Type of battery used (optional)"),
-            Schema.str("location", "Location of the device (optional)"),
+            Schema.str(AiToolParams.DEVICE_NAME, "Name of the device"),
+            Schema.str(AiToolParams.DATE, "Date of replacement (YYYY-MM-DD)"),
+            Schema.str(AiToolParams.DEVICE_TYPE, "Type of the device (optional, used if creating new device)"),
+            Schema.str(AiToolParams.BATTERY_TYPE, "Type of battery used (optional)"),
+            Schema.str(AiToolParams.LOCATION, "Location of the device (optional)"),
         ),
     )
 
     private val generativeModel = GenerativeModel(
-        modelName = "gemini-1.5-flash",
+        modelName = AiConstants.GEMINI_MODEL_NAME,
         apiKey = apiKey,
         tools = listOf(Tool(listOf(addDeviceTool, addDeviceTypeTool, recordBatteryReplacementTool))),
         systemInstruction = content {

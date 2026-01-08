@@ -4,6 +4,8 @@ import com.benasher44.uuid.uuid4
 import com.chriscartland.batterybutler.domain.ai.AiEngine
 import com.chriscartland.batterybutler.domain.ai.AiMessage
 import com.chriscartland.batterybutler.domain.ai.AiRole
+import com.chriscartland.batterybutler.domain.ai.AiToolNames
+import com.chriscartland.batterybutler.domain.ai.AiToolParams
 import com.chriscartland.batterybutler.domain.ai.ToolHandler
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
@@ -30,9 +32,9 @@ class BatchAddDevicesUseCase(
 
                 val toolHandler = ToolHandler { name, args ->
                     when (name) {
-                        "addDevice" -> {
-                            val name = args["name"] as? String ?: return@ToolHandler "Error: Missing name"
-                            val typeName = args["type"] as? String
+                        AiToolNames.ADD_DEVICE -> {
+                            val name = args[AiToolParams.NAME] as? String ?: return@ToolHandler "Error: Missing name"
+                            val typeName = args[AiToolParams.TYPE] as? String
 
                             try {
                                 val typeId = if (!typeName.isNullOrBlank()) {
@@ -71,7 +73,7 @@ class BatchAddDevicesUseCase(
                                 "Error adding device: ${e.message}"
                             }
                         }
-                        else -> "Error: This tool is not supported in this context. Use 'addDevice' only." // Restrictive
+                        else -> "Error: This tool is not supported in this context. Use '${AiToolNames.ADD_DEVICE}' only." // Restrictive
                     }
                 }
 

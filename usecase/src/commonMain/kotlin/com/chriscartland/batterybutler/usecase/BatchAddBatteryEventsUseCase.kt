@@ -4,6 +4,8 @@ import com.benasher44.uuid.uuid4
 import com.chriscartland.batterybutler.domain.ai.AiEngine
 import com.chriscartland.batterybutler.domain.ai.AiMessage
 import com.chriscartland.batterybutler.domain.ai.AiRole
+import com.chriscartland.batterybutler.domain.ai.AiToolNames
+import com.chriscartland.batterybutler.domain.ai.AiToolParams
 import com.chriscartland.batterybutler.domain.ai.ToolHandler
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
@@ -29,10 +31,10 @@ class BatchAddBatteryEventsUseCase(
 
                 val toolHandler = ToolHandler { name, args ->
                     when (name) {
-                        "recordBatteryReplacement" -> {
-                            val deviceName = args["deviceName"] as? String ?: return@ToolHandler "Error: Missing deviceName"
-                            val dateStr = args["date"] as? String ?: return@ToolHandler "Error: Missing date"
-                            val deviceTypeName = args["deviceType"] as? String
+                        AiToolNames.RECORD_BATTERY_REPLACEMENT -> {
+                            val deviceName = args[AiToolParams.DEVICE_NAME] as? String ?: return@ToolHandler "Error: Missing deviceName"
+                            val dateStr = args[AiToolParams.DATE] as? String ?: return@ToolHandler "Error: Missing date"
+                            val deviceTypeName = args[AiToolParams.DEVICE_TYPE] as? String
 
                             try {
                                 // 1. Find or Create Device
@@ -79,7 +81,7 @@ class BatchAddBatteryEventsUseCase(
                                     id = uuid4().toString(),
                                     deviceId = targetDevice.id,
                                     date = instant,
-                                    batteryType = args["batteryType"] as? String ?: "Unknown",
+                                    batteryType = args[AiToolParams.BATTERY_TYPE] as? String ?: "Unknown",
                                     notes = "Imported via AI",
                                 )
                                 deviceRepository.addEvent(event)
@@ -94,7 +96,7 @@ class BatchAddBatteryEventsUseCase(
                                 "Error recording battery replacement: ${e.message}"
                             }
                         }
-                        else -> "Error: This tool is not supported in this context. Use 'recordBatteryReplacement' only."
+                        else -> "Error: This tool is not supported in this context. Use '${AiToolNames.RECORD_BATTERY_REPLACEMENT}' only."
                     }
                 }
 

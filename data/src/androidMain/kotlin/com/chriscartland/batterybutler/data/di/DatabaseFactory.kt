@@ -5,6 +5,7 @@ import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.chriscartland.batterybutler.data.room.AppDatabase
 import com.chriscartland.batterybutler.data.room.MIGRATION_3_4
+import com.chriscartland.batterybutler.data.room.MIGRATION_4_5
 
 actual class DatabaseFactory(
     private val context: Context,
@@ -16,7 +17,7 @@ actual class DatabaseFactory(
                 context = context,
                 name = dbFile.absolutePath,
             ).setDriver(BundledSQLiteDriver())
-            .addMigrations(MIGRATION_3_4)
+            .addMigrations(MIGRATION_3_4, MIGRATION_4_5)
             .build()
     }
 }

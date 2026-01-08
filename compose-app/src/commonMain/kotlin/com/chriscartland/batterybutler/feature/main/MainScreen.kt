@@ -105,8 +105,6 @@ fun MainScreen(
                 com.chriscartland.batterybutler.feature.devicetypes.DeviceTypeListScreen(
                     viewModel = deviceTypeListViewModel,
                     onEditType = onEditTypeClick,
-                    onAddType = onAddTypeClick,
-                    onBack = { /* Root tab, maybe invalid action or handled? */ },
                     modifier = Modifier.padding(innerPadding),
                 )
             }
