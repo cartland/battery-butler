@@ -28,6 +28,14 @@ dependencies {
     testImplementation(libs.kotlin.testJunit)
 }
 
+sourceSets {
+    main {
+        proto {
+            srcDir("../protos")
+        }
+    }
+}
+
 protobuf {
     protoc {
         artifact = "com.google.protobuf:protoc:${libs.versions.protobufVersion.get()}"
