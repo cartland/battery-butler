@@ -1,20 +1,61 @@
-*.iml
-.kotlin
-
-.gradle
-
+# Gradle files
+.gradle/
 **/build/
-xcuserdata
 !src/**/build/
+
+# Kotlin / IntelliJ
+.kotlin/
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Android Studio
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.ap_
+*.dex
+*.class
+bin/
+gen/
 local.properties
-.idea/*
-.DS_Store
-captures
-.externalNativeBuild
-.cxx
+
+# Android Profiling
+*.hprof
+
+# Kotlin Multiplatform
+*.kexe
+*.kexe.dSYM
+*.framework
+xcuserdata
+
+# iOS / Xcode
 *.xcodeproj/*
 !*.xcodeproj/project.pbxproj
 !*.xcodeproj/xcshareddata/
 !*.xcodeproj/project.xcworkspace/
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
+DerivedData/
+Pods/
+
+# Server
+server/bin/
+
+# Java
+*.log
+
+# Mac
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Misc
+.env
+.env.local
