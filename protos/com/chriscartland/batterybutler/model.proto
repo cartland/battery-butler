@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package com.chriscartland.batterybutler;
+
+option java_multiple_files = true;
+option java_package = "com.chriscartland.batterybutler.proto";
+
+message ProtoDeviceType {
+  string id = 1;
+  string name = 2;
+}
+
+message ProtoDevice {
+  string id = 1;
+  string name = 2;
+  string type_id = 3;
+  string location = 4; // Optional, empty string if null
+}
+
+message ProtoBatteryEvent {
+  string id = 1;
+  string device_id = 2;
+  int64 date_timestamp_ms = 3;
+  int64 created_timestamp_ms = 4;
+  string notes = 5;
+}

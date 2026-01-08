@@ -17,7 +17,12 @@ class MainActivity : ComponentActivity() {
 
         val databaseFactory = DatabaseFactory(applicationContext)
         val aiEngine = AndroidAiEngine(applicationContext)
-        val component = AppComponent::class.create(databaseFactory, aiEngine)
+        
+        val networkComponent = com.chriscartland.batterybutler.networking.NetworkComponent(applicationContext)
+        val syncService = networkComponent.grpcClient.create(com.chriscartland.batterybutler.proto.SyncServiceClient::class)
+        val remoteDataSource = com.chriscartland.batterybutler.networking.GrpcSyncDataSource(syncService)
+        
+        val component = AppComponent::class.create(databaseFactory, aiEngine, remoteDataSource)
         val shareHandler = com.chriscartland.batterybutler.ui.util
             .AndroidShareHandler(this)
         val fileSaver = com.chriscartland.batterybutler.ui.util

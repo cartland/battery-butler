@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package com.chriscartland.batterybutler;
+
+import "com/chriscartland/batterybutler/model.proto";
+import "google/protobuf/empty.proto";
+
+option java_multiple_files = true;
+option java_package = "com.chriscartland.batterybutler.proto";
+
+service SyncService {
+  // Subscribe to real-time updates. 
+  // The server will immediately send the current state, and then stream any changes.
+  rpc Subscribe(google.protobuf.Empty) returns (stream SyncUpdate);
+
+  // Push a local update to the server.
+  rpc PushUpdate(SyncUpdate) returns (PushResponse);
+}
+
+message SyncUpdate {
+  // If true, replace local data with this list (used for initial sync).
+  // If false, apply these as diffs (upsert/delete logic).
+  bool is_full_snapshot = 1;
+  
+  repeated ProtoDeviceType device_types = 2;
+  repeated ProtoDevice devices = 3;
+  repeated ProtoBatteryEvent events = 4;
+}
+
+message PushResponse {
+  bool success = 1;
+  string message = 2;
+}

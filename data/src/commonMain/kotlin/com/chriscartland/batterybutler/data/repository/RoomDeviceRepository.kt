@@ -7,15 +7,40 @@ import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
+import com.chriscartland.batterybutler.domain.repository.RemoteDataSource
+import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 
 @Inject
 class RoomDeviceRepository(
     private val dao: DeviceDao,
+    private val remoteDataSource: RemoteDataSource,
+    private val scope: CoroutineScope,
 ) : DeviceRepository {
+
+    init {
+        scope.launch {
+            try {
+                remoteDataSource.subscribe().collect { update ->
+                    if (update.isFullSnapshot) {
+                         // TODO: Clear local DB? For now, we just insert/update
+                    }
+                    update.deviceTypes.forEach { dao.insertDeviceType(it.toEntity()) } // Upsert
+                    update.devices.forEach { dao.insertDevice(it.toEntity()) }
+                    update.events.forEach { dao.insertEvent(it.toEntity()) }
+                }
+            } catch (e: Exception) {
+                // Log error
+                e.printStackTrace()
+            }
+        }
+    }
+
     override fun getAllDevices(): Flow<List<Device>> =
         dao.getAllDevices().map { entities ->
             entities.map { it.toDomain() }
@@ -25,10 +50,30 @@ class RoomDeviceRepository(
 
     override suspend fun addDevice(device: Device) {
         dao.insertDevice(device.toEntity())
+        scope.launch {
+            remoteDataSource.push(
+                RemoteUpdate(
+                    isFullSnapshot = false,
+                    deviceTypes = emptyList(),
+                    devices = listOf(device),
+                    events = emptyList()
+                )
+            )
+        }
     }
 
     override suspend fun updateDevice(device: Device) {
         dao.updateDevice(device.toEntity())
+        scope.launch {
+             remoteDataSource.push(
+                RemoteUpdate(
+                    isFullSnapshot = false,
+                    deviceTypes = emptyList(),
+                    devices = listOf(device),
+                    events = emptyList()
+                )
+            )
+        }
     }
 
     override suspend fun deleteDevice(id: String) {

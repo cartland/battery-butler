@@ -18,6 +18,10 @@ import com.chriscartland.batterybutler.viewmodel.eventdetail.EventDetailViewMode
 import com.chriscartland.batterybutler.viewmodel.history.HistoryListViewModel
 import com.chriscartland.batterybutler.viewmodel.home.HomeViewModel
 import com.chriscartland.batterybutler.viewmodel.settings.SettingsViewModel
+import com.chriscartland.batterybutler.domain.repository.RemoteDataSource
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
 import me.tatarka.inject.annotations.Scope
@@ -31,6 +35,7 @@ abstract class AppComponent(
     // We pass this through to DataComponent
     override val databaseFactory: DatabaseFactory,
     @get:Provides val aiEngine: AiEngine,
+    @get:Provides val remoteDataSource: RemoteDataSource,
 ) : UseCaseComponent(),
     DataComponent {
     abstract val homeViewModel: HomeViewModel
@@ -46,14 +51,6 @@ abstract class AppComponent(
     abstract val deviceRepository: DeviceRepository
     abstract val settingsViewModel: SettingsViewModel
 
-    // DataComponent provides AppDatabase, DeviceDao, and DeviceRepository
-    // We need to ensure that provideAppDatabase and provideDeviceRepository are scoped to Singleton.
-    // Since they are defined in the interface, we may need to override them to add the scope annotation,
-    // or we assume they are lightweight/stateless enough, OR we check if kotlin-inject supports scope on interface implementation.
-    //
-    // However, DataComponent methods are just default implementations.
-    // To enforcing Singleton scope on the Database instance:
-
     @Provides
     @Singleton
     override fun provideAppDatabase(): AppDatabase = super.provideAppDatabase()
@@ -61,4 +58,8 @@ abstract class AppComponent(
     @Provides
     @Singleton
     override fun provideDeviceRepository(repo: RoomDeviceRepository): DeviceRepository = super.provideDeviceRepository(repo)
+
+    @Provides
+    @Singleton
+    fun provideAppScope(): CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 }

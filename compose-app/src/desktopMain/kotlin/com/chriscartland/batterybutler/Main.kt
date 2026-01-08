@@ -15,7 +15,11 @@ fun main() =
             title = "Battery Butler",
         ) {
             val databaseFactory = DatabaseFactory()
-            val component = AppComponent::class.create(databaseFactory, NoOpAiEngine)
+            val noOpRemoteDataSource = object : com.chriscartland.batterybutler.domain.repository.RemoteDataSource {
+                override fun subscribe(): kotlinx.coroutines.flow.Flow<com.chriscartland.batterybutler.domain.repository.RemoteUpdate> = kotlinx.coroutines.flow.emptyFlow()
+                override suspend fun push(update: com.chriscartland.batterybutler.domain.repository.RemoteUpdate): Boolean = true
+            }
+            val component = AppComponent::class.create(databaseFactory, NoOpAiEngine, noOpRemoteDataSource)
             val shareHandler = DesktopShareHandler()
             val fileSaver = com.chriscartland.batterybutler.ui.util
                 .DesktopFileSaver()

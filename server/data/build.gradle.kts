@@ -1,0 +1,14 @@
+plugins {
+    alias(libs.plugins.kotlinJvm)
+}
+
+group = "com.chriscartland.batterybutler.data"
+version = "1.0.0"
+
+dependencies {
+    implementation(project(":server:domain"))
+    implementation(libs.kotlinx.coroutines.core)
+    testImplementation(libs.kotlin.test)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.kotlinx.datetime)
+}
