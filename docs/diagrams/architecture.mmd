@@ -1,0 +1,62 @@
+graph TD
+    subgraph "App & Entry Points"
+        ComposeApp[":compose-app"]
+        Shared[":shared"]
+        ServerApp[":server:app"]
+    end
+
+    subgraph "UI Layer"
+        UIFeature[":ui-feature"]
+        UICore[":ui-core"]
+    end
+
+    subgraph "Presentation Layer"
+        ViewModel[":viewmodel"]
+    end
+
+    subgraph "Domain Layer"
+        UseCase[":usecase"]
+        Domain[":domain"]
+        ServerDomain[":server:domain"]
+    end
+
+    subgraph "Data Layer"
+        Data[":data"]
+        Networking[":networking"]
+        ServerData[":server:data"]
+    end
+
+    %% Client / Shared Dependencies
+    ComposeApp --> UIFeature
+    ComposeApp --> UICore
+    ComposeApp --> ViewModel
+    ComposeApp --> UseCase
+    ComposeApp --> Data
+    ComposeApp --> Networking
+    ComposeApp --> Domain
+
+    UIFeature --> ViewModel
+    UIFeature --> UICore
+    UIFeature --> Domain
+
+    UICore --> Domain
+
+    ViewModel --> UseCase
+    ViewModel --> Domain
+
+    UseCase --> Domain
+
+    Data --> Domain
+    Networking --> Domain
+
+    Shared --> ViewModel
+    Shared --> UseCase
+    Shared --> Data
+    Shared --> Domain
+
+    %% Server Dependencies
+    ServerApp --> ServerDomain
+    ServerApp --> ServerData
+    
+    ServerData --> ServerDomain
+    ServerDomain --> Domain

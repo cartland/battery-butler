@@ -6,6 +6,11 @@ This project follows a strict **Clean Architecture** combined with **Kotlin Mult
 
 The following Mermaid graph illustrates the dependency structure between modules. Arrows indicate a dependency (e.g., `A --> B` means A depends on B).
 
+![Module Graph](docs/diagrams/architecture.svg)
+
+<details>
+<summary>Mermaid Source</summary>
+
 ```mermaid
 graph TD
     subgraph "App & Entry Points"
@@ -70,6 +75,7 @@ graph TD
     ServerData --> ServerDomain
     ServerDomain --> Domain
 ```
+</details>
 
 ## Module Descriptions
 
