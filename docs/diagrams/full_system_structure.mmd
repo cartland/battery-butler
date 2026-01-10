@@ -1,13 +1,15 @@
 graph TD
-    subgraph "iOS Native Apps"
+    subgraph "iOS Apps"
         Ios-app-compose-ui["ios-app-compose-ui"]
         Ios-app-swift-ui["ios-app-swift-ui"]
     end
 
-    subgraph "App & Entry Points"
+    subgraph "Compose Apps"
         ComposeApp[":compose-app"]
+    end
+
+    subgraph "Server"
         ServerApp[":server:app"]
-        Shared[":shared"]
     end
 
     subgraph "UI Layer"
@@ -29,6 +31,10 @@ graph TD
         Data[":data"]
         Networking[":networking"]
         ServerData[":server:data"]
+    end
+
+    subgraph "Deprecated"
+        Shared[":shared"]
     end
 
     %% Dependencies

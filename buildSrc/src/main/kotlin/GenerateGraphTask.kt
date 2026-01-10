@@ -88,9 +88,9 @@ abstract class GenerateGraphTask : DefaultTask() {
         includeIos: Boolean
     ) {
         val moduleGroups = mapOf(
-            ":compose-app" to "App & Entry Points",
-            ":shared" to "App & Entry Points",
-            ":server:app" to "App & Entry Points",
+            ":compose-app" to "Compose Apps",
+            ":shared" to "Deprecated",
+            ":server:app" to "Server",
             ":ui-feature" to "UI Layer",
             ":ui-core" to "UI Layer",
             ":viewmodel" to "Presentation Layer",
@@ -103,12 +103,14 @@ abstract class GenerateGraphTask : DefaultTask() {
         )
         
         val groupOrder = listOf(
-            "iOS Native Apps", // Will be empty if includeIos is false
-            "App & Entry Points",
+            "iOS Apps",
+            "Compose Apps",
+            "Server",
             "UI Layer",
             "Presentation Layer",
             "Domain Layer",
-            "Data Layer"
+            "Data Layer",
+            "Deprecated"
         )
 
         val sb = StringBuilder()
@@ -132,12 +134,12 @@ abstract class GenerateGraphTask : DefaultTask() {
             // Add fake iOS modules to the grouping
             // Check existence of directories
             if (project.rootProject.file("ios-app-swift-ui").exists()) {
-                 modulesByGroup.computeIfAbsent("iOS Native Apps") { mutableListOf() }
-                 (modulesByGroup["iOS Native Apps"] as MutableList).add("ios-app-swift-ui")
+                 modulesByGroup.computeIfAbsent("iOS Apps") { mutableListOf() }
+                 (modulesByGroup["iOS Apps"] as MutableList).add("ios-app-swift-ui")
             }
             if (project.rootProject.file("ios-app-compose-ui").exists()) {
-                 modulesByGroup.computeIfAbsent("iOS Native Apps") { mutableListOf() }
-                 (modulesByGroup["iOS Native Apps"] as MutableList).add("ios-app-compose-ui")
+                 modulesByGroup.computeIfAbsent("iOS Apps") { mutableListOf() }
+                 (modulesByGroup["iOS Apps"] as MutableList).add("ios-app-compose-ui")
             }
         }
 

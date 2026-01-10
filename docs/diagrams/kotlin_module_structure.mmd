@@ -1,8 +1,10 @@
 graph TD
-    subgraph "App & Entry Points"
+    subgraph "Compose Apps"
         ComposeApp[":compose-app"]
+    end
+
+    subgraph "Server"
         ServerApp[":server:app"]
-        Shared[":shared"]
     end
 
     subgraph "UI Layer"
@@ -24,6 +26,10 @@ graph TD
         Data[":data"]
         Networking[":networking"]
         ServerData[":server:data"]
+    end
+
+    subgraph "Deprecated"
+        Shared[":shared"]
     end
 
     %% Dependencies
