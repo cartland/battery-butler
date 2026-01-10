@@ -19,6 +19,14 @@ class BatchAddDeviceTypesUseCase(
     private val aiEngine: AiEngine,
     private val deviceRepository: DeviceRepository,
 ) {
+    private val systemInstructions =
+        """
+        Analyze the data below and call the ${AiToolNames.ADD_DEVICE_TYPE} tool for each item found.
+        - Ignore any header rows (e.g. "Device Name", "Battery Type").
+        - If 'Battery Quantity' is missing or empty, default to 1.
+        - If 'Battery Type' is missing, use "AA" as a placeholder or infer from context if possible.
+        """.trimIndent()
+
     operator fun invoke(input: String): Flow<AiMessage> =
         channelFlow {
             val modelMsgId = uuid4().toString()
@@ -62,10 +70,7 @@ class BatchAddDeviceTypesUseCase(
                 val prompt =
                     """
                     *** SYSTEM INSTRUCTIONS ***
-                    Analyze the data below and call the ${AiToolNames.ADD_DEVICE_TYPE} tool for each item found.
-                    - Ignore any header rows (e.g. "Device Name", "Battery Type").
-                    - If 'Battery Quantity' is missing or empty, default to 1.
-                    - If 'Battery Type' is missing, use "AA" as a placeholder or infer from context if possible.
+                    $systemInstructions
 
                     *** USER INPUT DATA ***
                     $input

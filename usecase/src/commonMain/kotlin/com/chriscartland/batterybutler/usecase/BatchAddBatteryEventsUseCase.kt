@@ -22,6 +22,14 @@ class BatchAddBatteryEventsUseCase(
     private val aiEngine: AiEngine,
     private val deviceRepository: DeviceRepository,
 ) {
+    private val systemInstructions =
+        """
+        Analyze the data below and call the ${AiToolNames.RECORD_BATTERY_REPLACEMENT} tool for each battery replacement event found.
+        - Ignore header rows (e.g. "Device", "Last Replaced").
+        - Date format expected: YYYY-MM-DD. If dates are in other formats, convert them.
+        - If the Device Type is implied or listed, include it.
+        """.trimIndent()
+
     operator fun invoke(input: String): Flow<AiMessage> =
         channelFlow {
             val modelMsgId = uuid4().toString()
@@ -101,10 +109,7 @@ class BatchAddBatteryEventsUseCase(
                 val prompt =
                     """
                     *** SYSTEM INSTRUCTIONS ***
-                    Analyze the data below and call the ${AiToolNames.RECORD_BATTERY_REPLACEMENT} tool for each battery replacement event found.
-                    - Ignore header rows (e.g. "Device", "Last Replaced").
-                    - Date format expected: YYYY-MM-DD. If dates are in other formats, convert them.
-                    - If the Device Type is implied or listed, include it.
+                    $systemInstructions
 
                     *** USER INPUT DATA ***
                     $input
