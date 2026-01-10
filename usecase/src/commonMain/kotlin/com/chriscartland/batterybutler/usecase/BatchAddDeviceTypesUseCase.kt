@@ -22,7 +22,7 @@ class BatchAddDeviceTypesUseCase(
     private val systemInstructions =
         """
         Analyze the data below and call the ${AiToolNames.ADD_DEVICE_TYPE} tool for each item found.
-        - Ignore any header rows (e.g. "Device Name", "Battery Type").
+        - Ignore header rows (e.g. "Device Name", "Battery Type").
         - If 'Battery Quantity' is missing or empty, default to 1.
         - If 'Battery Type' is missing, use "AA" as a placeholder or infer from context if possible.
         """.trimIndent()
