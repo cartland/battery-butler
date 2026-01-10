@@ -15,33 +15,32 @@ import kotlin.test.assertEquals
 class SyncMapperTest {
     @Test
     fun `toDomain maps Proto to Domain correctly`() {
-        val proto = SyncUpdate
-            .newBuilder()
-            .setIsFullSnapshot(true)
-            .addDeviceTypes(
-                ProtoDeviceType
-                    .newBuilder()
-                    .setId("type1")
-                    .setName("Type 1")
-                    .build(),
-            ).addDevices(
-                ProtoDevice
-                    .newBuilder()
-                    .setId("dev1")
-                    .setName("Device 1")
-                    .setTypeId("type1")
-                    .setLocation("Loc 1")
-                    .build(),
-            ).addEvents(
-                ProtoBatteryEvent
-                    .newBuilder()
-                    .setId("ev1")
-                    .setDeviceId("dev1")
-                    .setDateTimestampMs(1704067200000) // 2024-01-01 UTC
-                    .setCreatedTimestampMs(1704067200000)
-                    .setNotes("Note 1")
-                    .build(),
-            ).build()
+        val proto = SyncUpdate(
+            is_full_snapshot = true,
+            device_types = listOf(
+                ProtoDeviceType(
+                    id = "type1",
+                    name = "Type 1",
+                )
+            ),
+            devices = listOf(
+                ProtoDevice(
+                    id = "dev1",
+                    name = "Device 1",
+                    type_id = "type1",
+                    location = "Loc 1",
+                )
+            ),
+            events = listOf(
+                ProtoBatteryEvent(
+                    id = "ev1",
+                    device_id = "dev1",
+                    date_timestamp_ms = 1704067200000, // 2024-01-01 UTC
+                    created_timestamp_ms = 1704067200000,
+                    notes = "Note 1",
+                )
+            )
+        )
 
         val domain = SyncMapper.toDomain(proto)
 
@@ -89,14 +88,14 @@ class SyncMapperTest {
 
         val proto = SyncMapper.toProto(domain)
 
-        assertEquals(false, proto.isFullSnapshot)
-        assertEquals(1, proto.deviceTypesCount)
-        assertEquals("Type 1", proto.deviceTypesList[0].name)
-        assertEquals(1, proto.devicesCount)
-        assertEquals("Loc 1", proto.devicesList[0].location)
-        assertEquals(1, proto.eventsCount)
-        assertEquals(1704067200000, proto.eventsList[0].createdTimestampMs)
+        assertEquals(false, proto.is_full_snapshot)
+        assertEquals(1, proto.device_types.size)
+        assertEquals("Type 1", proto.device_types[0].name)
+        assertEquals(1, proto.devices.size)
+        assertEquals("Loc 1", proto.devices[0].location)
+        assertEquals(1, proto.events.size)
+        assertEquals(1704067200000, proto.events[0].created_timestamp_ms)
         // Date check: 2024-01-01 at start of day in UTC is 1704067200000
-        assertEquals(1704067200000, proto.eventsList[0].dateTimestampMs)
+        assertEquals(1704067200000, proto.events[0].date_timestamp_ms)
     }
 }
