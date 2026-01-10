@@ -29,3 +29,8 @@ allprojects {
         }
     }
 }
+
+tasks.register<GenerateGraphTask>("generateMermaidGraph") {
+    group = "documentation"
+    description = "Generates Mermaid architecture graph from project dependencies"
+}
