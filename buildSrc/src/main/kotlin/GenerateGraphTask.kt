@@ -19,73 +19,97 @@ abstract class GenerateGraphTask : DefaultTask() {
 
     @TaskAction
     fun generate() {
-        // Collect all subprojects
         val allProjects = project.rootProject.subprojects
+        val activeModules = scanModules(allProjects)
+        val dependencyEdges = scanDependencies(allProjects)
         
-        // Modules map for "clean" naming and grouping
+        // 1. Generate Standard Kotlin Graph
+        generateDiagram(
+            activeModules = activeModules,
+            dependencyEdges = dependencyEdges,
+            outputMmd = outputFile,
+            outputSvg = svgFile,
+            includeIos = false
+        )
+
+        // 2. Generate Full System Graph (with iOS)
+        val fullInfoMmd = project.file("docs/diagrams/full_system_structure.mmd")
+        val fullInfoSvg = project.file("docs/diagrams/full_system_structure.svg")
+        generateDiagram(
+            activeModules = activeModules,
+            dependencyEdges = dependencyEdges,
+            outputMmd = fullInfoMmd,
+            outputSvg = fullInfoSvg,
+            includeIos = true
+        )
+    }
+
+    private fun scanModules(allProjects: Set<Project>): Set<String> {
+        val activeModules = mutableSetOf<String>()
+        allProjects.forEach { subproject ->
+            val modulePath = subproject.path
+            if (modulePath != ":buildSrc" && modulePath != ":server") {
+                activeModules.add(modulePath)
+            }
+        }
+        return activeModules
+    }
+
+    private fun scanDependencies(allProjects: Set<Project>): Set<Pair<String, String>> {
+        val dependencyEdges = mutableSetOf<Pair<String, String>>()
+        val configurationsToCheck = listOf(
+            "implementation", "api", 
+            "commonMainImplementation", "commonMainApi",
+            "androidMainImplementation", "commonTestImplementation"
+        )
+        
+        allProjects.forEach { subproject ->
+             if (subproject.path == ":buildSrc" || subproject.path == ":server") return@forEach
+             
+             configurationsToCheck.forEach { configName ->
+                val config = subproject.configurations.findByName(configName)
+                if (config != null) {
+                    config.dependencies.forEach { dep ->
+                        if (dep is ProjectDependency) {
+                             dependencyEdges.add(subproject.path to dep.dependencyProject.path)
+                        }
+                    }
+                }
+            }
+        }
+        return dependencyEdges
+    }
+
+    private fun generateDiagram(
+        activeModules: Set<String>,
+        dependencyEdges: Set<Pair<String, String>>,
+        outputMmd: File,
+        outputSvg: File,
+        includeIos: Boolean
+    ) {
         val moduleGroups = mapOf(
             ":compose-app" to "App & Entry Points",
             ":shared" to "App & Entry Points",
             ":server:app" to "App & Entry Points",
-            
             ":ui-feature" to "UI Layer",
             ":ui-core" to "UI Layer",
-            
             ":viewmodel" to "Presentation Layer",
-            
             ":usecase" to "Domain Layer",
             ":domain" to "Domain Layer",
             ":server:domain" to "Domain Layer",
-            
             ":data" to "Data Layer",
             ":networking" to "Data Layer",
             ":server:data" to "Data Layer"
         )
         
         val groupOrder = listOf(
+            "iOS Native Apps", // Will be empty if includeIos is false
             "App & Entry Points",
             "UI Layer",
             "Presentation Layer",
             "Domain Layer",
             "Data Layer"
         )
-
-        val dependencyEdges = mutableSetOf<Pair<String, String>>()
-        val activeModules = mutableSetOf<String>()
-
-        allProjects.forEach { subproject ->
-            val modulePath = subproject.path
-            // Filter out buildSrc and container projects that don't have src/commonMain or src/main
-            if (modulePath == ":buildSrc") return@forEach
-            // :server is just a container, usually has no source or dependencies of its own relevant to architecture
-            if (modulePath == ":server") return@forEach
-            
-            activeModules.add(modulePath)
-
-            // Inspect dependencies
-            val configurationsToCheck = listOf(
-                "implementation", "api", 
-                "commonMainImplementation", "commonMainApi",
-                "androidMainImplementation", "commonTestImplementation"
-            )
-            
-            val projectDeps = mutableSetOf<String>()
-
-            configurationsToCheck.forEach { configName ->
-                val config = subproject.configurations.findByName(configName)
-                if (config != null) {
-                    config.dependencies.forEach { dep ->
-                        if (dep is ProjectDependency) {
-                             projectDeps.add(dep.dependencyProject.path)
-                        }
-                    }
-                }
-            }
-            
-            projectDeps.forEach { targetPath ->
-                dependencyEdges.add(modulePath to targetPath)
-            }
-        }
 
         val sb = StringBuilder()
         sb.appendLine("graph TD")
@@ -94,12 +118,26 @@ abstract class GenerateGraphTask : DefaultTask() {
         val modulesByGroup = activeModules.groupBy { modulePath ->
             val group = moduleGroups[modulePath]
             if (group == null) {
-                logger.warn("Architecture Diagram Warning: Module '$modulePath' is not explicitly mapped to a layer. " +
-                        "It will appear in 'Others'. " +
-                        "To fix this, add '$modulePath' to the 'moduleGroups' map in buildSrc/src/main/kotlin/GenerateGraphTask.kt.")
+                // Only log warning for the primary graph to avoid duplicate logs
+                if (!includeIos) {
+                    logger.warn("Architecture Diagram Warning: Module '$modulePath' is not explicitly mapped to a layer. It will appear in 'Others'.")
+                }
                 "Others"
             } else {
                 group
+            }
+        }.toMutableMap()
+        
+        if (includeIos) {
+            // Add fake iOS modules to the grouping
+            // Check existence of directories
+            if (project.rootProject.file("ios-app-swift-ui").exists()) {
+                 modulesByGroup.computeIfAbsent("iOS Native Apps") { mutableListOf() }
+                 (modulesByGroup["iOS Native Apps"] as MutableList).add("ios-app-swift-ui")
+            }
+            if (project.rootProject.file("ios-app-compose-ui").exists()) {
+                 modulesByGroup.computeIfAbsent("iOS Native Apps") { mutableListOf() }
+                 (modulesByGroup["iOS Native Apps"] as MutableList).add("ios-app-compose-ui")
             }
         }
 
@@ -128,8 +166,22 @@ abstract class GenerateGraphTask : DefaultTask() {
         // Edges
         sb.appendLine("    %% Dependencies")
         var previousSource: String? = null
-        dependencyEdges
-            .filter { activeModules.contains(it.first) && activeModules.contains(it.second) }
+        
+        val allEdges = dependencyEdges.toMutableSet()
+        if (includeIos) {
+             if (project.rootProject.file("ios-app-swift-ui").exists()) {
+                 allEdges.add("ios-app-swift-ui" to ":shared")
+             }
+             if (project.rootProject.file("ios-app-compose-ui").exists()) {
+                 allEdges.add("ios-app-compose-ui" to ":compose-app")
+             }
+        }
+
+        allEdges
+            .filter { 
+                (activeModules.contains(it.first) || (includeIos && it.first.startsWith("ios-app"))) && 
+                (activeModules.contains(it.second) || (includeIos && it.second.startsWith("ios-app")))
+             }
             .sortedWith(compareBy({ it.first }, { it.second }))
             .forEach { (source, target) ->
                 if (previousSource != null && previousSource != source) {
@@ -140,25 +192,23 @@ abstract class GenerateGraphTask : DefaultTask() {
             }
 
         val newContent = sb.toString()
-        val contentChanged = !outputFile.exists() || outputFile.readText() != newContent
-
-        val svgFile = project.file("docs/diagrams/architecture.svg")
+        val contentChanged = !outputMmd.exists() || outputMmd.readText() != newContent
         
         if (contentChanged) {
-            outputFile.parentFile.mkdirs()
-            outputFile.writeText(newContent)
-            println("Generated Architecture Graph at: ${outputFile.absolutePath}")
+            outputMmd.parentFile.mkdirs()
+            outputMmd.writeText(newContent)
+            println("Generated Graph at: ${outputMmd.absolutePath}")
         } else {
-             println("Architecture Graph content is unchanged.")
+             println("Graph content is unchanged: ${outputMmd.name}")
         }
 
-        if (contentChanged || !svgFile.exists()) {
-             println("Generating SVG...")
+        if (contentChanged || !outputSvg.exists()) {
+             println("Generating SVG for ${outputMmd.name}...")
              project.exec {
                  // Pass empty string as separate argument without quotes for Gradle to handle
-                 commandLine("npx", "-y", "@mermaid-js/mermaid-cli", "-i", outputFile.absolutePath, "-o", svgFile.absolutePath, "-t", "default", "--cssFile", "")
+                 commandLine("npx", "-y", "@mermaid-js/mermaid-cli", "-i", outputMmd.absolutePath, "-o", outputSvg.absolutePath, "-t", "default", "--cssFile", "")
              }
-             println("Generated SVG at: ${svgFile.absolutePath}")
+             println("Generated SVG at: ${outputSvg.absolutePath}")
         }
     }
 

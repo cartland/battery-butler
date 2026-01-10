@@ -22,8 +22,8 @@ post-commit-impl() {
         fi
     fi
     
-    # Check if ARCHITECTURE.md or architecture.mmd were modified
-    if echo "$changed_files" | grep -qE "ARCHITECTURE.md|docs/diagrams/kotlin_module_structure.mmd"; then
+    # Check if ARCHITECTURE.md or diagram sources were modified
+    if echo "$changed_files" | grep -qE "ARCHITECTURE.md|docs/diagrams/kotlin_module_structure.mmd|docs/diagrams/full_system_structure.mmd"; then
         echo "Architecture docs modified. Updating diagrams..."
         ./scripts/update-diagrams.sh
         echo "***************************************************************"
