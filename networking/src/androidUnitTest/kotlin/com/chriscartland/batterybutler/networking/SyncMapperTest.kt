@@ -21,7 +21,7 @@ class SyncMapperTest {
                 ProtoDeviceType(
                     id = "type1",
                     name = "Type 1",
-                )
+                ),
             ),
             devices = listOf(
                 ProtoDevice(
@@ -29,7 +29,7 @@ class SyncMapperTest {
                     name = "Device 1",
                     type_id = "type1",
                     location = "Loc 1",
-                )
+                ),
             ),
             events = listOf(
                 ProtoBatteryEvent(
@@ -38,8 +38,8 @@ class SyncMapperTest {
                     date_timestamp_ms = 1704067200000, // 2024-01-01 UTC
                     created_timestamp_ms = 1704067200000,
                     notes = "Note 1",
-                )
-            )
+                ),
+            ),
         )
 
         val domain = SyncMapper.toDomain(proto)
