@@ -21,4 +21,13 @@ post-commit-impl() {
             echo "spotlessCheck passed."
         fi
     fi
+    
+    # Check if ARCHITECTURE.md or architecture.mmd were modified
+    if echo "$changed_files" | grep -qE "ARCHITECTURE.md|docs/diagrams/architecture.mmd"; then
+        echo "Architecture docs modified. Updating diagrams..."
+        ./scripts/update-diagrams.sh
+        echo "***************************************************************"
+        echo "* Diagrams updated. Please 'git add' and 'git commit --amend' *"
+        echo "***************************************************************"
+    fi
 }
