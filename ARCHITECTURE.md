@@ -54,9 +54,12 @@ The following Mermaid graph illustrates the dependency structure between modules
     *   **Dependencies**: All modules (to perform Dependency Injection).
     *   **Role**: Bootstrap, DI Graph creation (`AppComponent`), Navigation host.
 
-*   **`:shared`**: The Logic Framework for iOS.
+*   **`:ios-integration`**: The Logic Framework for iOS.
     *   **Dependencies**: Exports `:domain`, `:viewmodel`. Dependencies on `:data`, `:usecase`.
-    *   **Role**: Bundles KMP code into an iOS Framework. Swift code interacts with this.
+    *   **Role**: Bundles KMP code into an iOS Framework (named `shared`). Swift code interacts with this.
+
+*   **`:shared`**: (Deprecated) Legacy Framework.
+    *   **Status**: Replaced by `:ios-integration`. Kept for backward compatibility references.
 
 ### Server Side
 

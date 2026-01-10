@@ -90,6 +90,7 @@ abstract class GenerateGraphTask : DefaultTask() {
         val moduleGroups = mapOf(
             ":compose-app" to "Compose Apps",
             ":shared" to "Deprecated",
+            ":ios-integration" to "iOS Apps",
             ":server:app" to "Server",
             ":ui-feature" to "UI Layer",
             ":ui-core" to "UI Layer",
@@ -172,7 +173,7 @@ abstract class GenerateGraphTask : DefaultTask() {
         val allEdges = dependencyEdges.toMutableSet()
         if (includeIos) {
              if (project.rootProject.file("ios-app-swift-ui").exists()) {
-                 allEdges.add("ios-app-swift-ui" to ":shared")
+                 allEdges.add("ios-app-swift-ui" to ":ios-integration")
              }
              if (project.rootProject.file("ios-app-compose-ui").exists()) {
                  allEdges.add("ios-app-compose-ui" to ":compose-app")
@@ -224,6 +225,7 @@ abstract class GenerateGraphTask : DefaultTask() {
         if (modulePath == ":ui-core") return "UICore"
         if (modulePath == ":viewmodel") return "ViewModel"
         if (modulePath == ":usecase") return "UseCase"
+        if (modulePath == ":ios-integration") return "IosIntegration"
         
         // Fallback: :group:module -> GroupModule
         return modulePath.split(":").joinToString("") { it.capitalize() }

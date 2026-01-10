@@ -38,6 +38,7 @@ include(":server:data")
 include(":server:app")
 include(":networking")
 include(":shared") // Legacy, to be removed or repurposed
+include(":ios-integration")
 include(":domain")
 include(":usecase")
 include(":data")
