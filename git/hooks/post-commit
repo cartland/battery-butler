@@ -1,0 +1,11 @@
+#!/bin/bash
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+IMPL_FILE="$REPO_ROOT/git/hooks/impl/post-commit-impl.sh"
+
+if [ ! -f "$IMPL_FILE" ]; then
+    exit 0
+fi
+
+source "$IMPL_FILE"
+post-commit-impl "$@"
