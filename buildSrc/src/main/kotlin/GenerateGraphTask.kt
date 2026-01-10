@@ -89,7 +89,15 @@ abstract class GenerateGraphTask : DefaultTask() {
 
         // Grouping
         val modulesByGroup = activeModules.groupBy { modulePath ->
-            moduleGroups[modulePath] ?: "Others"
+            val group = moduleGroups[modulePath]
+            if (group == null) {
+                logger.warn("Architecture Diagram Warning: Module '$modulePath' is not explicitly mapped to a layer. " +
+                        "It will appear in 'Others'. " +
+                        "To fix this, add '$modulePath' to the 'moduleGroups' map in buildSrc/src/main/kotlin/GenerateGraphTask.kt.")
+                "Others"
+            } else {
+                group
+            }
         }
 
         // Ordered Groups
