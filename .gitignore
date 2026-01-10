@@ -1,6 +1,8 @@
 *.iml
 .kotlin
+!/.idea/runConfigurations
 .gradle
+
 **/build/
 xcuserdata
 !src/**/build/
