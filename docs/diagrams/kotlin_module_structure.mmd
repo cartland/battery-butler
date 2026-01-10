@@ -1,4 +1,8 @@
 graph TD
+    subgraph "iOS Apps"
+        IosIntegration[":ios-integration"]
+    end
+
     subgraph "Compose Apps"
         ComposeApp[":compose-app"]
     end
@@ -42,6 +46,11 @@ graph TD
     ComposeApp --> ViewModel
 
     Data --> Domain
+
+    IosIntegration --> Data
+    IosIntegration --> Domain
+    IosIntegration --> UseCase
+    IosIntegration --> ViewModel
 
     Networking --> Domain
 
