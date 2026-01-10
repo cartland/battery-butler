@@ -10,72 +10,8 @@ The following Mermaid graph illustrates the dependency structure between modules
 
 <details>
   <summary>Click to see Mermaid Source</summary>
-  
-```mermaid
-render_diffs(file:///Users/cartland/github/cartland/battery-butler/docs/diagrams/kotlin_module_structure.mmd)
-graph TD
-    subgraph "App & Entry Points"
-        ComposeApp[":compose-app"]
-        ServerApp[":server:app"]
-        Shared[":shared"]
-    end
 
-    subgraph "UI Layer"
-        UICore[":ui-core"]
-        UIFeature[":ui-feature"]
-    end
-
-    subgraph "Presentation Layer"
-        ViewModel[":viewmodel"]
-    end
-
-    subgraph "Domain Layer"
-        Domain[":domain"]
-        ServerDomain[":server:domain"]
-        UseCase[":usecase"]
-    end
-
-    subgraph "Data Layer"
-        Data[":data"]
-        Networking[":networking"]
-        ServerData[":server:data"]
-    end
-
-    %% Dependencies
-    ComposeApp --> Data
-    ComposeApp --> Networking
-    ComposeApp --> UICore
-    ComposeApp --> UIFeature
-    ComposeApp --> UseCase
-    ComposeApp --> ViewModel
-
-    Data --> Domain
-
-    Networking --> Domain
-
-    ServerApp --> ServerData
-    ServerApp --> ServerDomain
-
-    ServerData --> ServerDomain
-
-    ServerDomain --> Domain
-
-    Shared --> Data
-    Shared --> Domain
-    Shared --> UseCase
-    Shared --> ViewModel
-
-    UICore --> Domain
-
-    UIFeature --> Domain
-    UIFeature --> UICore
-    UIFeature --> ViewModel
-
-    UseCase --> Domain
-
-    ViewModel --> Domain
-    ViewModel --> UseCase
-```
+  [Source File](docs/diagrams/kotlin_module_structure.mmd)
 </details>
 
 ## Module Descriptions
