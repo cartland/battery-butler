@@ -17,7 +17,7 @@ application {
 dependencies {
     implementation(project(":server:domain"))
     implementation(project(":server:data"))
-    
+
     implementation(libs.logback)
     implementation(libs.ktor.serverCore)
     implementation(libs.ktor.serverNetty)
@@ -28,7 +28,7 @@ dependencies {
     implementation(libs.grpc.kotlin.stub)
     implementation(libs.kotlin.stdlib)
     implementation(libs.kotlinx.datetime)
-    
+
     testImplementation(libs.ktor.serverTestHost)
     testImplementation(libs.kotlin.testJunit)
 }
