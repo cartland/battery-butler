@@ -10,10 +10,24 @@ import me.tatarka.inject.annotations.Inject
 class SuggestDeviceIconUseCase(
     private val aiEngine: AiEngine,
 ) {
+    private val systemInstructions =
+        """
+        Select the best matching icon for a device type from the provided list.
+        Return ONLY the icon name.
+        If no good match is found, return 'default'.
+        """.trimIndent()
+
     suspend operator fun invoke(typeName: String): String? {
         val availableIcons = DeviceIcons.AvailableIcons.joinToString(", ")
-        val prompt = "Select the best matching icon for a device type named '$typeName' from the following list: [$availableIcons]. " +
-            "Return ONLY the icon name from the list. If no good match is found, return 'default'."
+        val prompt =
+            """
+            *** SYSTEM INSTRUCTIONS ***
+            $systemInstructions
+            Available Icons: [$availableIcons]
+
+            *** USER INPUT DATA ***
+            Device Type: $typeName
+            """.trimIndent()
 
         return try {
             aiEngine
@@ -21,7 +35,7 @@ class SuggestDeviceIconUseCase(
                 .map { it.text }
                 .firstOrNull { it?.isNotBlank() == true }
                 ?.trim()
-                ?.filter { !it.isWhitespace() } // Simple cleanup
+                ?.filter { !it.isWhitespace() }
         } catch (e: Exception) {
             null
         }
