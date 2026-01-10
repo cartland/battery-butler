@@ -213,11 +213,15 @@ fun AddDeviceContent(
                             leadingIcon = if (selectedType != null) {
                                 {
                                     Icon(
-                                        imageVector = com.chriscartland.batterybutler.ui.components.DeviceIconMapper.getIcon(selectedType!!.defaultIcon),
+                                        imageVector = com.chriscartland.batterybutler.ui.components.DeviceIconMapper.getIcon(
+                                            selectedType!!.defaultIcon,
+                                        ),
                                         contentDescription = null,
                                     )
                                 }
-                            } else null,
+                            } else {
+                                null
+                            },
                             readOnly = true,
                             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                             modifier = Modifier
@@ -236,7 +240,9 @@ fun AddDeviceContent(
                                     text = { Text(type.name) },
                                     leadingIcon = {
                                         Icon(
-                                            imageVector = com.chriscartland.batterybutler.ui.components.DeviceIconMapper.getIcon(type.defaultIcon),
+                                            imageVector = com.chriscartland.batterybutler.ui.components.DeviceIconMapper.getIcon(
+                                                type.defaultIcon,
+                                            ),
                                             contentDescription = null,
                                         )
                                     },
