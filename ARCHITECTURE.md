@@ -15,13 +15,13 @@ The following Mermaid graph illustrates the dependency structure between modules
 graph TD
     subgraph "App & Entry Points"
         ComposeApp[":compose-app"]
-        Shared[":shared"]
         ServerApp[":server:app"]
+        Shared[":shared"]
     end
 
     subgraph "UI Layer"
-        UIFeature[":ui-feature"]
         UICore[":ui-core"]
+        UIFeature[":ui-feature"]
     end
 
     subgraph "Presentation Layer"
@@ -29,9 +29,9 @@ graph TD
     end
 
     subgraph "Domain Layer"
-        UseCase[":usecase"]
         Domain[":domain"]
         ServerDomain[":server:domain"]
+        UseCase[":usecase"]
     end
 
     subgraph "Data Layer"
@@ -40,40 +40,29 @@ graph TD
         ServerData[":server:data"]
     end
 
-    %% Client / Shared Dependencies
-    ComposeApp --> UIFeature
-    ComposeApp --> UICore
-    ComposeApp --> ViewModel
-    ComposeApp --> UseCase
+    %% Dependencies
     ComposeApp --> Data
-    ComposeApp --> Networking
     ComposeApp --> Domain
-
-    UIFeature --> ViewModel
-    UIFeature --> UICore
-    UIFeature --> Domain
-
-    UICore --> Domain
-
-    ViewModel --> UseCase
-    ViewModel --> Domain
-
-    UseCase --> Domain
-
+    ComposeApp --> Networking
+    ComposeApp --> UICore
+    ComposeApp --> UIFeature
+    ComposeApp --> UseCase
+    ComposeApp --> ViewModel
     Data --> Domain
     Networking --> Domain
-
-    Shared --> ViewModel
-    Shared --> UseCase
-    Shared --> Data
-    Shared --> Domain
-
-    %% Server Dependencies
-    ServerApp --> ServerDomain
     ServerApp --> ServerData
-    
+    ServerApp --> ServerDomain
     ServerData --> ServerDomain
     ServerDomain --> Domain
+    Shared --> Data
+    Shared --> Domain
+    Shared --> UseCase
+    Shared --> ViewModel
+    UICore --> Domain
+    UIFeature --> Domain
+    UIFeature --> UICore
+    UIFeature --> ViewModel
+    ViewModel --> Domain
 ```
 </details>
 
