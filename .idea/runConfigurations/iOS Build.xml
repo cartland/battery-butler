@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="unit_tests" type="GradleRunConfiguration" factoryName="Gradle">
+  <configuration default="false" name="iOS Build" type="GradleRunConfiguration" factoryName="Gradle">
     <ExternalSystemSettings>
       <option name="executionName" />
       <option name="externalProjectPath" value="$PROJECT_DIR$/composeApp" />
@@ -10,7 +10,7 @@
       </option>
       <option name="taskNames">
         <list>
-          <option value="testDebugUnitTest" />
+          <option value="linkDebugFrameworkIosX64" />
         </list>
       </option>
       <option name="vmOptions" value="" />
