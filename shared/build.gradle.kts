@@ -50,6 +50,7 @@ kotlin {
             api(project(":domain"))
             implementation(project(":data"))
             api(project(":viewmodel"))
+            implementation(project(":usecase"))
             implementation(libs.kotlin.inject.runtime)
         }
         commonTest.dependencies {

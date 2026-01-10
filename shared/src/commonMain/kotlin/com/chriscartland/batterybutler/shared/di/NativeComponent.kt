@@ -6,7 +6,11 @@ import com.chriscartland.batterybutler.data.room.AppDatabase
 import com.chriscartland.batterybutler.data.room.DeviceDao
 import com.chriscartland.batterybutler.domain.ai.AiEngine
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
+import com.chriscartland.batterybutler.domain.repository.RemoteDataSource
 import com.chriscartland.batterybutler.viewmodel.home.HomeViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
 import me.tatarka.inject.annotations.Scope
@@ -19,6 +23,7 @@ annotation class SharedSingleton
 abstract class NativeComponent(
     private val databaseFactory: DatabaseFactory,
     @get:Provides val aiEngine: AiEngine,
+    @get:Provides val remoteDataSource: RemoteDataSource,
 ) {
     abstract val homeViewModel: HomeViewModel
 
@@ -34,4 +39,8 @@ abstract class NativeComponent(
     @Provides
     @SharedSingleton
     fun provideDeviceRepository(repo: RoomDeviceRepository): DeviceRepository = repo
+
+    @Provides
+    @SharedSingleton
+    fun provideAppScope(): CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 }
