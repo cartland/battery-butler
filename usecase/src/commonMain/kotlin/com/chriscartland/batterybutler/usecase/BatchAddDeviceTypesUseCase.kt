@@ -59,7 +59,19 @@ class BatchAddDeviceTypesUseCase(
             }
 
             try {
-                aiEngine.generateResponse(input, toolHandler).collect { tokenMsg ->
+                val prompt =
+                    """
+                    *** SYSTEM INSTRUCTIONS ***
+                    Analyze the data below and call the ${AiToolNames.ADD_DEVICE_TYPE} tool for each item found.
+                    - Ignore any header rows (e.g. "Device Name", "Battery Type").
+                    - If 'Battery Quantity' is missing or empty, default to 1.
+                    - If 'Battery Type' is missing, use "AA" as a placeholder or infer from context if possible.
+
+                    *** USER INPUT DATA ***
+                    $input
+                    """.trimIndent()
+
+                aiEngine.generateResponse(prompt, toolHandler).collect { tokenMsg ->
                     send(AiMessage(modelMsgId, AiRole.MODEL, tokenMsg.text))
                 }
             } catch (e: Exception) {
