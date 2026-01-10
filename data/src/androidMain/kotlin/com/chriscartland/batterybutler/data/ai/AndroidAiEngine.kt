@@ -82,7 +82,7 @@ class AndroidAiEngine(
         tools = listOf(Tool(listOf(addDeviceTool, addDeviceTypeTool, recordBatteryReplacementTool))),
         systemInstruction = content {
             text(
-                "You are Battery Butler, a helpful home inventory assistant. You can add devices and device types. If the user provides a date for a device, use recordBatteryReplacement to log it.",
+                "You are Battery Butler, a helpful home inventory assistant. You can add devices and device types. If the user provides a date for a device, use recordBatteryReplacement to log it. When processing bulk data (like tables or CSVs), ignore header rows and only process lines containing valid data.",
             )
         },
     )

@@ -21,53 +21,49 @@ class BatchAddDeviceTypesUseCase(
 ) {
     operator fun invoke(input: String): Flow<AiMessage> =
         channelFlow {
-            val lines = input.lines().filter { it.isNotBlank() }
+            val modelMsgId = uuid4().toString()
 
-            for (line in lines) {
-                val modelMsgId = uuid4().toString()
+            val toolHandler = ToolHandler { name, args ->
+                when (name) {
+                    AiToolNames.ADD_DEVICE_TYPE -> {
+                        val name = args[AiToolParams.NAME] as? String ?: return@ToolHandler "Error: Missing name"
+                        val iconName = args[AiToolParams.ICON] as? String ?: "default"
 
-                val toolHandler = ToolHandler { name, args ->
-                    when (name) {
-                        AiToolNames.ADD_DEVICE_TYPE -> {
-                            val name = args[AiToolParams.NAME] as? String ?: return@ToolHandler "Error: Missing name"
-                            val iconName = args[AiToolParams.ICON] as? String ?: "default"
+                        try {
+                            // Smart deduplication
+                            val existingTypes: List<DeviceType> = deviceRepository.getAllDeviceTypes().first()
+                            val existingType = existingTypes.find { type -> type.name == name }
 
-                            try {
-                                // Smart deduplication
-                                val existingTypes: List<DeviceType> = deviceRepository.getAllDeviceTypes().first()
-                                val existingType = existingTypes.find { type -> type.name == name }
-
-                                if (existingType != null) {
-                                    "Success: Device type '$name' already exists."
-                                } else {
-                                    deviceRepository.addDeviceType(
-                                        DeviceType(
-                                            id = uuid4().toString(),
-                                            name = name,
-                                            defaultIcon = iconName,
-                                            batteryType = args[AiToolParams.BATTERY_TYPE] as? String ?: "AA",
-                                            batteryQuantity = (args[AiToolParams.BATTERY_QUANTITY] as? String)?.toIntOrNull()
-                                                ?: (args[AiToolParams.BATTERY_QUANTITY] as? Number)?.toInt()
-                                                ?: 1,
-                                        ),
-                                    )
-                                    "Success: Added device type '$name'"
-                                }
-                            } catch (e: Exception) {
-                                "Error adding device type: ${e.message}"
+                            if (existingType != null) {
+                                "Success: Device type '$name' already exists."
+                            } else {
+                                deviceRepository.addDeviceType(
+                                    DeviceType(
+                                        id = uuid4().toString(),
+                                        name = name,
+                                        defaultIcon = iconName,
+                                        batteryType = args[AiToolParams.BATTERY_TYPE] as? String ?: "AA",
+                                        batteryQuantity = (args[AiToolParams.BATTERY_QUANTITY] as? String)?.toIntOrNull()
+                                            ?: (args[AiToolParams.BATTERY_QUANTITY] as? Number)?.toInt()
+                                            ?: 1,
+                                    ),
+                                )
+                                "Success: Added device type '$name'"
                             }
+                        } catch (e: Exception) {
+                            "Error adding device type: ${e.message}"
                         }
-                        else -> "Error: This tool is not supported in this context. Use '${AiToolNames.ADD_DEVICE_TYPE}' only."
                     }
+                    else -> "Error: This tool is not supported in this context. Use '${AiToolNames.ADD_DEVICE_TYPE}' only."
                 }
+            }
 
-                try {
-                    aiEngine.generateResponse(line, toolHandler).collect { tokenMsg ->
-                        send(AiMessage(modelMsgId, AiRole.MODEL, tokenMsg.text))
-                    }
-                } catch (e: Exception) {
-                    send(AiMessage(uuid4().toString(), AiRole.SYSTEM, "Error processing '$line': ${e.message}"))
+            try {
+                aiEngine.generateResponse(input, toolHandler).collect { tokenMsg ->
+                    send(AiMessage(modelMsgId, AiRole.MODEL, tokenMsg.text))
                 }
+            } catch (e: Exception) {
+                send(AiMessage(uuid4().toString(), AiRole.SYSTEM, "Error processing input: ${e.message}"))
             }
         }
 }
