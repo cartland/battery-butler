@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="server" type="JetRunConfigurationType">
+    <option name="MAIN_CLASS_NAME" value="com.chriscartland.batterybutler.ApplicationKt" />
+    <module name="BatteryButler.server" />
+    <shortenClasspath name="NONE" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
