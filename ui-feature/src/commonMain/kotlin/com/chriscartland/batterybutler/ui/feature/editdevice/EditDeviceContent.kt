@@ -183,6 +183,14 @@ fun EditDeviceContent(
                                     value = selectedType?.name ?: "Select Type",
                                     onValueChange = {},
                                     label = { Text("Device Type") },
+                                    leadingIcon = if (selectedType != null) {
+                                        {
+                                            Icon(
+                                                imageVector = com.chriscartland.batterybutler.ui.components.DeviceIconMapper.getIcon(selectedType.defaultIcon),
+                                                contentDescription = null,
+                                            )
+                                        }
+                                    } else null,
                                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                                     colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
                                 )
@@ -193,6 +201,12 @@ fun EditDeviceContent(
                                     state.deviceTypes.forEach { type ->
                                         DropdownMenuItem(
                                             text = { Text(type.name) },
+                                            leadingIcon = {
+                                                Icon(
+                                                    imageVector = com.chriscartland.batterybutler.ui.components.DeviceIconMapper.getIcon(type.defaultIcon),
+                                                    contentDescription = null,
+                                                )
+                                            },
                                             onClick = {
                                                 selectedTypeId = type.id
                                                 expanded = false

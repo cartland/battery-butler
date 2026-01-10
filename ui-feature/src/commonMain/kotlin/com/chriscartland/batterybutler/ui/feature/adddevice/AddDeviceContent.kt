@@ -210,6 +210,14 @@ fun AddDeviceContent(
                             value = selectedType?.name ?: "",
                             onValueChange = {},
                             label = { Text("Device Type") },
+                            leadingIcon = if (selectedType != null) {
+                                {
+                                    Icon(
+                                        imageVector = com.chriscartland.batterybutler.ui.components.DeviceIconMapper.getIcon(selectedType!!.defaultIcon),
+                                        contentDescription = null,
+                                    )
+                                }
+                            } else null,
                             readOnly = true,
                             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                             modifier = Modifier
@@ -226,6 +234,12 @@ fun AddDeviceContent(
                             deviceTypes.forEach { type ->
                                 DropdownMenuItem(
                                     text = { Text(type.name) },
+                                    leadingIcon = {
+                                        Icon(
+                                            imageVector = com.chriscartland.batterybutler.ui.components.DeviceIconMapper.getIcon(type.defaultIcon),
+                                            contentDescription = null,
+                                        )
+                                    },
                                     onClick = {
                                         selectedType = type
                                         expanded = false
