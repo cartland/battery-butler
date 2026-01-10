@@ -31,8 +31,8 @@ jobs:
         with:
           name: blanket-android-builds
           path: |
-            composeApp/build/outputs/**/*.apk
-            composeApp/build/outputs/**/*.aab
+            compose-app/build/outputs/**/*.apk
+            compose-app/build/outputs/**/*.aab
 
   build_ios:
     needs: lint_and_test
@@ -59,7 +59,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: blanket-ios-app
-          path: iosApp/build/
+          path: ios-app-compose-ui/build/
 
   build_desktop:
     needs: lint_and_test
@@ -76,7 +76,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: blanket-desktop-dist-${{ matrix.os }}
-          path: composeApp/build/compose/binaries
+          path: compose-app/build/compose/binaries
 
   build_wasm:
     needs: lint_and_test
@@ -91,7 +91,7 @@ jobs:
         with:
           name: blanket-wasm-dist
           path: |
-            composeApp/build/dist/wasmJs/productionExecutable
+            compose-app/build/dist/wasmJs/productionExecutable
 
   build_server:
     needs: lint_and_test

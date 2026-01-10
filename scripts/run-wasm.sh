@@ -1,2 +1,2 @@
 #!/bin/bash
-./gradlew :composeApp:wasmJsBrowserDevelopmentRun
+./gradlew :compose-app:wasmJsBrowserDevelopmentRun

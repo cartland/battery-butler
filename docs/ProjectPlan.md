@@ -65,8 +65,8 @@ This phase involves building the foundational layers of the application.
 With the core modules in place, the main application modules can be updated to use them.
 
 1.  **`:composeApp`**:
-    *   [ ] Update `composeApp/build.gradle.kts` to depend on the necessary `feature` and `core` modules.
-    *   [ ] In `composeApp/src/commonMain/kotlin/.../App.kt`, implement the primary navigation host using `NavDisplay`, `rememberNavBackStack`, and the `entryProvider` pattern described in `docs/Navigation.md`.
+    *   [ ] Update `compose-app/build.gradle.kts` to depend on the necessary `feature` and `core` modules.
+    *   [ ] In `compose-app/src/commonMain/kotlin/.../App.kt`, implement the primary navigation host using `NavDisplay`, `rememberNavBackStack`, and the `entryProvider` pattern described in `docs/Navigation.md`.
     *   [ ] Add the `rememberViewModelStoreNavEntryDecorator()` to the `NavDisplay`.
     *   [ ] Call `initKoin()` in the Android (`MainActivity.kt`) and Desktop (`main.kt`) entry points.
 

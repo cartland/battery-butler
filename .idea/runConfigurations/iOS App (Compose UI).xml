@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="iOS App (Compose UI)" type="IosRunConfiguration" factoryName="iOS Application">
-    <option name="PROJECT_FILE_PATH" value="$PROJECT_DIR$/iosApp/iosApp.xcodeproj" />
+    <option name="PROJECT_FILE_PATH" value="$PROJECT_DIR$/ios-app-compose-ui/iosApp.xcodeproj" />
     <option name="SCHEME_NAME" value="iosApp" />
     <method v="2">
       <option name="Make" enabled="true" />

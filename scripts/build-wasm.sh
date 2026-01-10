@@ -3,4 +3,4 @@ set -ex
 
 # Builds the WebAssembly application.
 # This script builds the WebAssembly browser application.
-./gradlew :composeApp:wasmJsBrowserDistribution
+./gradlew :compose-app:wasmJsBrowserDistribution

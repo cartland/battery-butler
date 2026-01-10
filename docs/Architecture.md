@@ -25,7 +25,7 @@ The project uses a **granular, feature-based modularization** strategy, replacin
 │       ├── build-and-test.yml
 │       ├── internal-distribution.yml
 │       └── release-deploy.yml
-├── composeApp/
+├── compose-app/
 │   ├── build.gradle.kts
 │   └── src/
 │       ├── androidMain/kotlin/com/blanket/MainActivity.kt
@@ -42,8 +42,8 @@ The project uses a **granular, feature-based modularization** strategy, replacin
 │   └── impl/
 ├── gradle/
 │   └── libs.versions.toml
-├── iosApp/
-│   ├── iosApp/
+├── ios-app-compose-ui/
+│   ├── ios-app-compose-ui/
 │   │   ├── ContentView.swift
 │   │   └── iOSApp.swift
 │   └── iosApp.xcodeproj/
@@ -57,13 +57,13 @@ The project uses a **granular, feature-based modularization** strategy, replacin
 
 * **Pattern**: **Model-View-ViewModel (MVVM)**. A shared `ViewModel` resides in the `commonMain` of each `:feature:impl` module.
 * **UI Strategy (Hybrid)**:
-    * **Shared Compose UI**: The `:composeApp/src/commonMain` contains the shared Compose UI for Android and Desktop targets. The central `App.kt` will host the `NavDisplay`.
+    * **Shared Compose UI**: The `:compose-app/src/commonMain` contains the shared Compose UI for Android and Desktop targets. The central `App.kt` will host the `NavDisplay`.
     * **Native iOS UI**: The `:iosApp` module contains a completely separate **SwiftUI** implementation. It does not use the shared Compose UI.
 
 ## 5. Navigation
 
 A hybrid navigation model is used to support the hybrid UI.
-* **Compose Targets (in `:composeApp`)**: **Jetpack Navigation 3** is the primary navigation library. The `NavDisplay`, `rememberNavBackStack` call, and `entryProvider` are implemented in `composeApp/src/commonMain/kotlin/com/blanket/App.kt`.
+* **Compose Targets (in `:composeApp`)**: **Jetpack Navigation 3** is the primary navigation library. The `NavDisplay`, `rememberNavBackStack` call, and `entryProvider` are implemented in `compose-app/src/commonMain/kotlin/com/blanket/App.kt`.
 * **iOS Target (in `:iosApp`)**: **SwiftUI `NavigationStack`** is used for the native UI.
 * **Abstraction (`:core:navigation`)**: An `expect interface Navigator` is defined in `commonMain` and injected into ViewModels. This allows shared logic to trigger navigation events, which are then handled natively by either Navigation 3 or `NavigationStack`.
 

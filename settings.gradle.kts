@@ -32,7 +32,7 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
-include(":composeApp")
+include(":compose-app")
 include(":server")
 include(":shared") // Legacy, to be removed or repurposed
 include(":domain")

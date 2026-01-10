@@ -28,7 +28,7 @@ echo "Using simulator: $SIMULATOR_UDID"
 
 # Build the iOS application
 echo "Building iOS application..."
-./gradlew :composeApp:iosSimulatorArm64Binaries
+./gradlew :compose-app:iosSimulatorArm64Binaries
 
 # Uninstall the old application (if it exists)
 echo "Uninstalling old application..."
@@ -36,7 +36,7 @@ xcrun simctl uninstall "$SIMULATOR_UDID" "$BUNDLE_IDENTIFIER" || true
 
 # Install the application
 echo "Installing application..."
-xcrun simctl install "$SIMULATOR_UDID" "composeApp/build/bin/iosSimulatorArm64/debug/composeApp.app"
+xcrun simctl install "$SIMULATOR_UDID" "compose-app/build/bin/iosSimulatorArm64/debug/composeApp.app"
 
 # Launch the application
 echo "Launching application..."
