@@ -42,27 +42,38 @@ graph TD
 
     %% Dependencies
     ComposeApp --> Data
-    ComposeApp --> Domain
     ComposeApp --> Networking
     ComposeApp --> UICore
     ComposeApp --> UIFeature
     ComposeApp --> UseCase
     ComposeApp --> ViewModel
+
     Data --> Domain
+
     Networking --> Domain
+
     ServerApp --> ServerData
     ServerApp --> ServerDomain
+
     ServerData --> ServerDomain
+
     ServerDomain --> Domain
+
     Shared --> Data
     Shared --> Domain
     Shared --> UseCase
     Shared --> ViewModel
+
     UICore --> Domain
+
     UIFeature --> Domain
     UIFeature --> UICore
     UIFeature --> ViewModel
+
+    UseCase --> Domain
+
     ViewModel --> Domain
+    ViewModel --> UseCase
 ```
 </details>
 

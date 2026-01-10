@@ -116,11 +116,16 @@ abstract class GenerateGraphTask : DefaultTask() {
 
         // Edges
         sb.appendLine("    %% Dependencies")
+        var previousSource: String? = null
         dependencyEdges
             .filter { activeModules.contains(it.first) && activeModules.contains(it.second) }
-            .sortedBy { it.first + it.second }
+            .sortedWith(compareBy({ it.first }, { it.second }))
             .forEach { (source, target) ->
+                if (previousSource != null && previousSource != source) {
+                    sb.appendLine()
+                }
                 sb.appendLine("    ${getNodeId(source)} --> ${getNodeId(target)}")
+                previousSource = source
             }
 
         outputFile.parentFile.mkdirs()
