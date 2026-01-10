@@ -8,10 +8,10 @@ import java.io.File
 abstract class GenerateGraphTask : DefaultTask() {
 
     @get:OutputFile
-    val outputFile: File = project.file("docs/diagrams/architecture.mmd")
+    val outputFile: File = project.file("docs/diagrams/kotlin_module_structure.mmd")
 
     @get:OutputFile
-    val svgFile: File = project.file("docs/diagrams/architecture.svg")
+    val svgFile: File = project.file("docs/diagrams/kotlin_module_structure.svg")
 
     init {
         notCompatibleWithConfigurationCache("Accesses project instance at execution time")

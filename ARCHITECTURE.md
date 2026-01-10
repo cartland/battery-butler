@@ -6,12 +6,13 @@ This project follows a strict **Clean Architecture** combined with **Kotlin Mult
 
 The following Mermaid graph illustrates the dependency structure between modules. Arrows indicate a dependency (e.g., `A --> B` means A depends on B).
 
-![Module Graph](docs/diagrams/architecture.svg)
+![Architecture Diagram](docs/diagrams/kotlin_module_structure.svg)
 
 <details>
-<summary>Mermaid Source</summary>
-
+  <summary>Click to see Mermaid Source</summary>
+  
 ```mermaid
+render_diffs(file:///Users/cartland/github/cartland/battery-butler/docs/diagrams/kotlin_module_structure.mmd)
 graph TD
     subgraph "App & Entry Points"
         ComposeApp[":compose-app"]
