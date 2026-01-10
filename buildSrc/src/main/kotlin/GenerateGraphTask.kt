@@ -10,6 +10,9 @@ abstract class GenerateGraphTask : DefaultTask() {
     @get:OutputFile
     val outputFile: File = project.file("docs/diagrams/architecture.mmd")
 
+    @get:OutputFile
+    val svgFile: File = project.file("docs/diagrams/architecture.svg")
+
     init {
         notCompatibleWithConfigurationCache("Accesses project instance at execution time")
     }
@@ -136,9 +139,27 @@ abstract class GenerateGraphTask : DefaultTask() {
                 previousSource = source
             }
 
-        outputFile.parentFile.mkdirs()
-        outputFile.writeText(sb.toString())
-        println("Generated Architecture Graph at: ${outputFile.absolutePath}")
+        val newContent = sb.toString()
+        val contentChanged = !outputFile.exists() || outputFile.readText() != newContent
+
+        val svgFile = project.file("docs/diagrams/architecture.svg")
+        
+        if (contentChanged) {
+            outputFile.parentFile.mkdirs()
+            outputFile.writeText(newContent)
+            println("Generated Architecture Graph at: ${outputFile.absolutePath}")
+        } else {
+             println("Architecture Graph content is unchanged.")
+        }
+
+        if (contentChanged || !svgFile.exists()) {
+             println("Generating SVG...")
+             project.exec {
+                 // Pass empty string as separate argument without quotes for Gradle to handle
+                 commandLine("npx", "-y", "@mermaid-js/mermaid-cli", "-i", outputFile.absolutePath, "-o", svgFile.absolutePath, "-t", "default", "--cssFile", "")
+             }
+             println("Generated SVG at: ${svgFile.absolutePath}")
+        }
     }
 
     private fun getNodeId(modulePath: String): String {
