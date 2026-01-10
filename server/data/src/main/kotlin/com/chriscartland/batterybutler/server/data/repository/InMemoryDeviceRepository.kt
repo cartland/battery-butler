@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.flow
 import java.util.concurrent.ConcurrentHashMap
 
 class InMemoryDeviceRepository : ServerDeviceRepository {
-
     private val devices = ConcurrentHashMap<String, Device>()
     private val deviceTypes = ConcurrentHashMap<String, DeviceType>()
     private val events = ConcurrentHashMap<String, BatteryEvent>()
@@ -20,7 +19,9 @@ class InMemoryDeviceRepository : ServerDeviceRepository {
     private val updates = MutableSharedFlow<RemoteUpdate>(replay = 0)
 
     override fun getAllDevices(): Flow<List<Device>> = flow { emit(devices.values.toList()) }
+
     override fun getAllDeviceTypes(): Flow<List<DeviceType>> = flow { emit(deviceTypes.values.toList()) }
+
     override fun getAllEvents(): Flow<List<BatteryEvent>> = flow { emit(events.values.toList()) }
 
     override suspend fun addDevice(device: Device) {
@@ -71,7 +72,7 @@ class InMemoryDeviceRepository : ServerDeviceRepository {
             isFullSnapshot = true,
             deviceTypes = deviceTypes.values.toList(),
             devices = devices.values.toList(),
-            events = events.values.toList()
+            events = events.values.toList(),
         )
         updates.emit(snapshot)
     }

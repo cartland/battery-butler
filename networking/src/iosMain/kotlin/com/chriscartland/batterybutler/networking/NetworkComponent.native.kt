@@ -1,7 +1,7 @@
 package com.chriscartland.batterybutler.networking
 
-import com.squareup.wire.GrpcClient
 import com.squareup.wire.GrpcCall
+import com.squareup.wire.GrpcClient
 import com.squareup.wire.GrpcMethod
 import com.squareup.wire.GrpcStreamingCall
 import com.squareup.wire.MessageSink
@@ -41,13 +41,10 @@ class IosGrpcClient : GrpcClient() {
         }
     }
 
-    override fun <S : Any, R : Any> newCall(method: GrpcMethod<S, R>): GrpcCall<S, R> {
-        return IosGrpcCall(client, method)
-    }
+    override fun <S : Any, R : Any> newCall(method: GrpcMethod<S, R>): GrpcCall<S, R> = IosGrpcCall(client, method)
 
-    override fun <S : Any, R : Any> newStreamingCall(method: GrpcMethod<S, R>): GrpcStreamingCall<S, R> {
-        return IosGrpcStreamingCall(client, method)
-    }
+    override fun <S : Any, R : Any> newStreamingCall(method: GrpcMethod<S, R>): GrpcStreamingCall<S, R> =
+        IosGrpcStreamingCall(client, method)
 }
 
 private fun frameGrpcMessage(payload: ByteArray): ByteArray {
@@ -60,9 +57,8 @@ private fun frameGrpcMessage(payload: ByteArray): ByteArray {
 
 class IosGrpcCall<S : Any, R : Any>(
     private val client: HttpClient,
-    override val method: GrpcMethod<S, R>
+    override val method: GrpcMethod<S, R>,
 ) : GrpcCall<S, R> {
-
     override var requestMetadata: Map<String, String> = emptyMap()
     override val responseMetadata: Map<String, String>? = null
     override val timeout: okio.Timeout = okio.Timeout.NONE
@@ -70,7 +66,7 @@ class IosGrpcCall<S : Any, R : Any>(
     override suspend fun execute(request: S): R {
         val path = method.path
         val fullUrl = "http://localhost:50051/$path"
-        
+
         val requestBytes = method.requestAdapter.encode(request)
         val framedBytes = frameGrpcMessage(requestBytes)
 
@@ -89,13 +85,16 @@ class IosGrpcCall<S : Any, R : Any>(
         val buffer = Buffer().write(bytes)
 
         if (bytes.size >= 5) {
-             buffer.skip(5)
+            buffer.skip(5)
         }
 
         return method.responseAdapter.decode(buffer)
     }
 
-    override fun enqueue(request: S, callback: GrpcCall.Callback<S, R>) {
+    override fun enqueue(
+        request: S,
+        callback: GrpcCall.Callback<S, R>,
+    ) {
         val scope = CoroutineScope(kotlinx.coroutines.Dispatchers.Default)
         scope.launch {
             try {
@@ -108,21 +107,24 @@ class IosGrpcCall<S : Any, R : Any>(
         }
     }
 
-    override fun executeBlocking(request: S): R = runBlocking {
-        execute(request)
-    }
+    override fun executeBlocking(request: S): R =
+        runBlocking {
+            execute(request)
+        }
 
     override fun isCanceled(): Boolean = false
+
     override fun isExecuted(): Boolean = false
+
     override fun clone(): GrpcCall<S, R> = IosGrpcCall(client, method)
+
     override fun cancel() {}
 }
 
 class IosGrpcStreamingCall<S : Any, R : Any>(
     private val client: HttpClient,
-    override val method: GrpcMethod<S, R>
+    override val method: GrpcMethod<S, R>,
 ) : GrpcStreamingCall<S, R> {
-    
     override var requestMetadata: Map<String, String> = emptyMap()
     override val responseMetadata: Map<String, String>? = null
     override val timeout: okio.Timeout = okio.Timeout.NONE
@@ -140,7 +142,7 @@ class IosGrpcStreamingCall<S : Any, R : Any>(
             try {
                 // Wait for the first message (the subscription/request)
                 val request = sendChannel.receive()
-                
+
                 val path = method.path
                 val fullUrl = "http://localhost:50051/$path"
                 val requestBytes = method.requestAdapter.encode(request)
@@ -152,12 +154,12 @@ class IosGrpcStreamingCall<S : Any, R : Any>(
                     requestMetadata.forEach { (k, v) -> header(k, v) }
                     setBody(framedBytes)
                 }
-                
+
                 statement.execute { response: HttpResponse ->
                     if (response.status.value != 200) {
-                         throw IOException("gRPC stream failed: ${response.status}")
+                        throw IOException("gRPC stream failed: ${response.status}")
                     }
-                    
+
                     val channel = response.bodyAsChannel()
                     while (!channel.isClosedForRead) {
                         try {
@@ -168,13 +170,13 @@ class IosGrpcStreamingCall<S : Any, R : Any>(
                                 channel.readFully(headerBytes)
                             } catch (e: Exception) {
                                 // If EOF happens at start of message, it's normal closure
-                                break 
+                                break
                             }
-                            
+
                             val headerBuffer = Buffer().write(headerBytes)
                             headerBuffer.readByte() // Skip compression
                             val len = headerBuffer.readInt()
-                            
+
                             if (len > 0) {
                                 val msgBytes = ByteArray(len)
                                 channel.readFully(msgBytes)
@@ -185,31 +187,32 @@ class IosGrpcStreamingCall<S : Any, R : Any>(
                                 val msg = method.responseAdapter.decode(emptyBuffer)
                                 receiveChannel.send(msg)
                             }
-
                         } catch (e: io.ktor.utils.io.errors.IOException) {
-                             break 
+                            break
                         } catch (e: Exception) {
-                             if (channel.isClosedForRead) break
-                             throw e
+                            if (channel.isClosedForRead) break
+                            throw e
                         }
                     }
                 }
             } catch (t: Throwable) {
-                 receiveChannel.close(t)
+                receiveChannel.close(t)
             } finally {
-                 receiveChannel.close()
+                receiveChannel.close()
             }
         }
-        
+
         return sendChannel to receiveChannel
     }
 
-    override fun executeBlocking(): Pair<MessageSink<S>, MessageSource<R>> {
+    override fun executeBlocking(): Pair<MessageSink<S>, MessageSource<R>> =
         throw UnsupportedOperationException("Blocking streaming not supported")
-    }
 
     override fun isCanceled(): Boolean = false
+
     override fun isExecuted(): Boolean = true
+
     override fun clone(): GrpcStreamingCall<S, R> = IosGrpcStreamingCall(client, method)
+
     override fun cancel() {}
 }

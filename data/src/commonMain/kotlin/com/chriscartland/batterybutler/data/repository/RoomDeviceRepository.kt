@@ -22,13 +22,12 @@ class RoomDeviceRepository(
     private val remoteDataSource: RemoteDataSource,
     private val scope: CoroutineScope,
 ) : DeviceRepository {
-
     init {
         scope.launch {
             try {
                 remoteDataSource.subscribe().collect { update ->
                     if (update.isFullSnapshot) {
-                         // TODO: Clear local DB? For now, we just insert/update
+                        // TODO: Clear local DB? For now, we just insert/update
                     }
                     update.deviceTypes.forEach { dao.insertDeviceType(it.toEntity()) } // Upsert
                     update.devices.forEach { dao.insertDevice(it.toEntity()) }
@@ -56,8 +55,8 @@ class RoomDeviceRepository(
                     isFullSnapshot = false,
                     deviceTypes = emptyList(),
                     devices = listOf(device),
-                    events = emptyList()
-                )
+                    events = emptyList(),
+                ),
             )
         }
     }
@@ -65,13 +64,13 @@ class RoomDeviceRepository(
     override suspend fun updateDevice(device: Device) {
         dao.updateDevice(device.toEntity())
         scope.launch {
-             remoteDataSource.push(
+            remoteDataSource.push(
                 RemoteUpdate(
                     isFullSnapshot = false,
                     deviceTypes = emptyList(),
                     devices = listOf(device),
-                    events = emptyList()
-                )
+                    events = emptyList(),
+                ),
             )
         }
     }

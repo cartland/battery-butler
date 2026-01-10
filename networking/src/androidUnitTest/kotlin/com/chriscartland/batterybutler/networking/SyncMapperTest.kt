@@ -9,32 +9,39 @@ import com.chriscartland.batterybutler.proto.ProtoDevice
 import com.chriscartland.batterybutler.proto.ProtoDeviceType
 import com.chriscartland.batterybutler.proto.SyncUpdate
 import kotlinx.datetime.Instant
-import kotlinx.datetime.TimeZone
 import org.junit.Test
 import kotlin.test.assertEquals
 
 class SyncMapperTest {
-
     @Test
     fun `toDomain maps Proto to Domain correctly`() {
-        val proto = SyncUpdate.newBuilder()
+        val proto = SyncUpdate
+            .newBuilder()
             .setIsFullSnapshot(true)
             .addDeviceTypes(
-                ProtoDeviceType.newBuilder().setId("type1").setName("Type 1").build()
-            )
-            .addDevices(
-                ProtoDevice.newBuilder().setId("dev1").setName("Device 1").setTypeId("type1").setLocation("Loc 1").build()
-            )
-            .addEvents(
-                ProtoBatteryEvent.newBuilder()
+                ProtoDeviceType
+                    .newBuilder()
+                    .setId("type1")
+                    .setName("Type 1")
+                    .build(),
+            ).addDevices(
+                ProtoDevice
+                    .newBuilder()
+                    .setId("dev1")
+                    .setName("Device 1")
+                    .setTypeId("type1")
+                    .setLocation("Loc 1")
+                    .build(),
+            ).addEvents(
+                ProtoBatteryEvent
+                    .newBuilder()
                     .setId("ev1")
                     .setDeviceId("dev1")
                     .setDateTimestampMs(1704067200000) // 2024-01-01 UTC
                     .setCreatedTimestampMs(1704067200000)
                     .setNotes("Note 1")
-                    .build()
-            )
-            .build()
+                    .build(),
+            ).build()
 
         val domain = SyncMapper.toDomain(proto)
 
@@ -57,8 +64,8 @@ class SyncMapperTest {
                     name = "Type 1",
                     defaultIcon = "icon",
                     batteryType = "AA",
-                    batteryQuantity = 2
-                )
+                    batteryQuantity = 2,
+                ),
             ),
             devices = listOf(
                 Device(
@@ -67,17 +74,17 @@ class SyncMapperTest {
                     typeId = "type1",
                     batteryLastReplaced = Instant.fromEpochMilliseconds(0),
                     lastUpdated = Instant.fromEpochMilliseconds(0),
-                    location = "Loc 1"
-                )
+                    location = "Loc 1",
+                ),
             ),
             events = listOf(
                 BatteryEvent(
                     id = "ev1",
                     deviceId = "dev1",
                     date = Instant.fromEpochMilliseconds(1704067200000), // 2024-01-01 UTC
-                    notes = "Note 1"
-                )
-            )
+                    notes = "Note 1",
+                ),
+            ),
         )
 
         val proto = SyncMapper.toProto(domain)

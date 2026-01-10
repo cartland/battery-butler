@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface RemoteDataSource {
     fun subscribe(): Flow<RemoteUpdate>
+
     suspend fun push(update: RemoteUpdate): Boolean
 }
 

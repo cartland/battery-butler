@@ -1,6 +1,3 @@
-import org.gradle.api.plugins.ExtensionAware
-import org.gradle.api.file.SourceDirectorySet
-
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinMultiplatform)
@@ -10,17 +7,17 @@ plugins {
 kotlin {
     androidTarget()
     jvm("desktop")
-    
+
     listOf(
         iosX64(),
         iosArm64(),
-        iosSimulatorArm64()
+        iosSimulatorArm64(),
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = "Networking"
         }
     }
-    
+
     sourceSets {
         commonMain.dependencies {
             implementation(project(":domain"))
@@ -45,9 +42,13 @@ kotlin {
 
 android {
     namespace = "com.chriscartland.batterybutler.networking"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
+    compileSdk = libs.versions.android.compileSdk
+        .get()
+        .toInt()
     defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk
+            .get()
+            .toInt()
     }
 }
 
