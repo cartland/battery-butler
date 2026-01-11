@@ -34,13 +34,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.chriscartland.batterybutler.ui.components.ButlerCenteredTopAppBar
-import com.chriscartland.batterybutler.viewmodel.addbatteryevent.AddBatteryEventViewModel
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toLocalDateTime
+import com.chriscartland.batterybutler.ui.feature.addbatteryevent.AddBatteryEventContent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,173 +52,21 @@ fun AddBatteryEventScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val aiMessages by viewModel.aiMessages.collectAsStateWithLifecycle()
-    var aiInput by remember { mutableStateOf("") }
-    var deviceIdInput by remember { mutableStateOf("") }
-
-    // Note: Manual entry requires device selection. For MVP refactor,
-    // we focus on providing the AI Batch capability as primary requested feature,
-    // plus a simple placeholder for manual entry or just rely on AI.
-    // The requirements emphasized "Magic AI Button" and "Input fields".
-
-    Scaffold(
-        modifier = modifier,
-        topBar = {
-            ButlerCenteredTopAppBar(
-                title = "Add Battery Event",
-                onBack = onBack,
+    AddBatteryEventContent(
+        devices = devices,
+        aiMessages = aiMessages,
+        onAddEvent = { deviceId, date ->
+            viewModel.addEvent(
+                deviceId = deviceId,
+                date = date,
+                batteryType = null,
+                notes = null,
             )
+            onEventAdded()
         },
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            // AI Section
-            Text(
-                "Batch Import (AI)",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary,
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                OutlinedTextField(
-                    value = aiInput,
-                    onValueChange = { aiInput = it },
-                    modifier = Modifier.weight(1f),
-                    placeholder = { Text("E.g. Replaced remote battery today") },
-                    maxLines = 3,
-                )
-                IconButton(
-                    onClick = {
-                        if (aiInput.isNotBlank()) {
-                            viewModel.batchAddEvents(aiInput)
-                            aiInput = ""
-                        }
-                    },
-                    enabled = aiInput.isNotBlank(),
-                ) {
-                    Icon(Icons.Default.AutoAwesome, contentDescription = "Process with AI")
-                }
-            }
-
-            if (aiMessages.isNotEmpty()) {
-                Text("AI Output:", style = MaterialTheme.typography.labelMedium)
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp) // Limited height
-                        .padding(8.dp),
-                ) {
-                    items(aiMessages) { msg ->
-                        Text(
-                            text = "${msg.role}: ${msg.text}",
-                            style = MaterialTheme.typography.bodySmall,
-                            modifier = Modifier.padding(vertical = 4.dp),
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Manual Section
-            Text(
-                "Manual Entry",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary,
-            )
-
-            val devices by viewModel.devices.collectAsStateWithLifecycle()
-            var expanded by remember { mutableStateOf(false) }
-            val selectedDevice = devices.find { it.id == deviceIdInput }
-
-            // Date Selection
-            val today = remember {
-                Clock.System
-                    .now()
-                    .toLocalDateTime(kotlinx.datetime.TimeZone.currentSystemDefault())
-                    .date
-                    .toString()
-            }
-            var dateInput by remember { mutableStateOf(today) }
-
-            ExposedDropdownMenuBox(
-                expanded = expanded,
-                onExpandedChange = { expanded = !expanded },
-            ) {
-                OutlinedTextField(
-                    value = selectedDevice?.name ?: "Select Device",
-                    onValueChange = {}, // ReadOnly
-                    readOnly = true,
-                    label = { Text("Device") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                    modifier = Modifier.menuAnchor().fillMaxWidth(),
-                )
-                ExposedDropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false },
-                ) {
-                    devices.forEach { device ->
-                        DropdownMenuItem(
-                            text = { Text(device.name) },
-                            onClick = {
-                                deviceIdInput = device.id
-                                expanded = false
-                            },
-                        )
-                    }
-                    HorizontalDivider()
-                    DropdownMenuItem(
-                        text = { Text("Add New Device...", fontWeight = FontWeight.Bold) },
-                        onClick = {
-                            onAddDeviceClick()
-                            expanded = false
-                        },
-                    )
-                }
-            }
-
-            OutlinedTextField(
-                value = dateInput,
-                onValueChange = { dateInput = it },
-                label = { Text("Date (YYYY-MM-DD)") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-            )
-
-            Button(
-                onClick = {
-                    if (deviceIdInput.isNotBlank()) {
-                        // Validate Date
-                        val date = try {
-                            kotlinx.datetime.LocalDate
-                                .parse(dateInput)
-                                .atStartOfDayIn(kotlinx.datetime.TimeZone.currentSystemDefault())
-                        } catch (e: Exception) {
-                            Clock.System.now() // Fallback or handle error
-                        }
-
-                        viewModel.addEvent(
-                            deviceId = deviceIdInput,
-                            date = date,
-                            batteryType = null,
-                            notes = null,
-                        )
-                        onEventAdded()
-                    }
-                },
-                enabled = deviceIdInput.isNotBlank(),
-                modifier = Modifier.align(Alignment.End),
-            ) {
-                Text("Add Event")
-            }
-        }
-    }
+        onBatchAdd = viewModel::batchAddEvents,
+        onAddDeviceClick = onAddDeviceClick,
+        onBack = onBack,
+        modifier = modifier,
+    )
 }

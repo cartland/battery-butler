@@ -12,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.chriscartland.batterybutler.ui.components.HistoryListItem
+import com.chriscartland.batterybutler.ui.feature.history.HistoryListContent
 import com.chriscartland.batterybutler.viewmodel.history.HistoryListUiState
 import com.chriscartland.batterybutler.viewmodel.history.HistoryListViewModel
 
@@ -23,28 +24,9 @@ fun HistoryListScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    Box(modifier = modifier.fillMaxSize()) {
-        when (val state = uiState) {
-            HistoryListUiState.Loading -> {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            }
-            is HistoryListUiState.Success -> {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                ) {
-                    items(state.items) { item ->
-                        HistoryListItem(
-                            event = item.event,
-                            deviceName = item.deviceName,
-                            deviceTypeName = item.deviceTypeName,
-                            deviceLocation = item.deviceLocation,
-                            modifier = Modifier.clickable {
-                                onEventClick(item.event.id, item.event.deviceId)
-                            },
-                        )
-                    }
-                }
-            }
-        }
-    }
+    HistoryListContent(
+        state = uiState,
+        onEventClick = onEventClick,
+        modifier = modifier,
+    )
 }
