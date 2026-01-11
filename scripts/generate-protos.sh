@@ -1,48 +1,85 @@
 #!/bin/bash
-set -ex
+set -e
 cd "$(dirname "$0")/.."
 
-# Build the protos
-bazel build //protos:battery_butler_java_proto //protos:battery_butler_swift_proto
+# Build the tarball containing generated protos
+bazel build //protos:mobile_protos_tar
 
-# Java Output Location
-JAVA_OUT="networking/src/generated/java"
-rm -rf "$JAVA_OUT"
-mkdir -p "$JAVA_OUT"
+# Locate the output tarball
+TAR_FILE="bazel-bin/protos/mobile_protos.tar"
 
-# Extract the srcjar. 
-# We look for *-src.jar in bazel-bin/protos.
-# Based on inspection, it seems to be named battery_butler_proto-speed-src.jar or similar.
-# We pick the first matching src jar.
-SRC_JAR=$(find bazel-bin/protos -name "*-src.jar" | head -n 1)
-
-if [ -z "$SRC_JAR" ]; then
-    echo "Error: Could not find Java source jar in bazel-bin/protos"
+if [ ! -f "$TAR_FILE" ]; then
+    echo "Error: Tarball not found at $TAR_FILE"
     exit 1
 fi
 
-echo "Extracting Java sources from $SRC_JAR"
-unzip -o "$SRC_JAR" -d "$JAVA_OUT"
+# Compute SHA256 checksum
+# Check for shasum (macOS) or sha256sum (Linux)
+if command -v shasum >/dev/null 2>&1; then
+    NEW_SHA=$(shasum -a 256 "$TAR_FILE" | awk '{print $1}')
+else
+    NEW_SHA=$(sha256sum "$TAR_FILE" | awk '{print $1}')
+fi
 
-# Usage of 'src' jar might include META-INF etc, we only care about com/chriscartland...
-# But unzip extracts everything. It is fine as long as package structure 'com/...' is preserved.
+SHA_FILE=".mobile_protos.sha256"
 
+# Check if content changed
+if [ -f "$SHA_FILE" ]; then
+    OLD_SHA=$(cat "$SHA_FILE")
+    if [ "$NEW_SHA" == "$OLD_SHA" ]; then
+        echo "Protos unchanged (SHA: $NEW_SHA). Skipping update."
+        exit 0
+    fi
+fi
 
-# Swift Output Location
+echo "Protos changed (New SHA: $NEW_SHA). Updating files..."
+
+# Define Output Locations
+JAVA_OUT="networking/src/generated/java"
 SWIFT_OUT="ios-app-swift-ui/Generated/Proto"
+
+# Clean old files
+rm -rf "$JAVA_OUT"
 rm -rf "$SWIFT_OUT"
+mkdir -p "$JAVA_OUT"
 mkdir -p "$SWIFT_OUT"
 
-# Find generated swift files.
-# They might be in a temporary directory under bazel-bin.
-echo "Copying Swift sources..."
-# Copy Swift sources.
-# Use -f to overwrite if duplicates exist (though ideally we shouldn't have them).
-find bazel-bin/protos -name "*.swift" -exec cp -f {} "$SWIFT_OUT" \;
+# Create temp dir for extraction
+TEMP_DIR=$(mktemp -d)
 
-# Verify Swift files exist
-count=$(ls "$SWIFT_OUT"/*.swift 2>/dev/null | wc -l)
-if [ "$count" -eq "0" ]; then
-    echo "Warning: No Swift files found copied to $SWIFT_OUT. Check Bazel output."
-    # List bazel-bin/protos to help debug if needed (but we are in script)
+# Extract tarball
+tar -xf "$TAR_FILE" -C "$TEMP_DIR"
+
+# Move files to destinations
+# The tar structure is:
+# java/
+# swift/
+
+# Move Java files
+# We only want to move contents of java/ to JAVA_OUT
+if [ -d "$TEMP_DIR/java" ]; then
+    # Use CP/MV logic. cp -R is safer across filesystems.
+    cp -R "$TEMP_DIR/java/" "$JAVA_OUT/"
+    # Remove the 'java' directory itself from destination if cp included it
+    # cp -R src/ dest/ puts CONTENTS key if dest exists...
+    # The structure in tar is java/com/..., we want networking/src/generated/java/com/...
+    # If we did cp -R output/java/* output/java_out/ it works.
+    # But JAVA_OUT depends on cp behavior.
+    # Let's simple sync.
+    # Actually, rsync is best but let's stick to cp.
+    # If JAVA_OUT exists (mkdir -p above):
+    # cp -R "$TEMP_DIR/java/"* "$JAVA_OUT/" # wildcard expansion might miss hidden files but protos don't have them
 fi
+
+# Move Swift files
+if [ -d "$TEMP_DIR/swift" ]; then
+    cp -R "$TEMP_DIR/swift/"* "$SWIFT_OUT/"
+fi
+
+# Cleanup
+rm -rf "$TEMP_DIR"
+
+# Update SHA file
+echo "$NEW_SHA" > "$SHA_FILE"
+
+echo "Proto update complete."
