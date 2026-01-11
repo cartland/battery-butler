@@ -28,7 +28,7 @@ kotlin {
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.datetime)
             implementation(libs.wire.runtime)
-            implementation(libs.wire.grpc.client)
+            api(libs.wire.grpc.client)
         }
 
         androidMain.dependencies {
@@ -68,12 +68,10 @@ android {
 
 wire {
     sourcePath {
-        srcDir("../protos")
+        srcDir(file("../protos"))
     }
     kotlin {
         rpcRole = "client"
         rpcCallStyle = "suspending"
     }
 }
-
-
