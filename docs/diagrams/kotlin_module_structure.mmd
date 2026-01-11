@@ -45,6 +45,7 @@ graph TD
     ComposeApp --> Viewmodel
 
     Data --> Domain
+    Data --> Networking
 
     IosSwiftDi --> Data
     IosSwiftDi --> Domain
@@ -53,9 +54,11 @@ graph TD
 
     Networking --> Domain
 
+    ServerApp --> Domain
     ServerApp --> ServerData
     ServerApp --> ServerDomain
 
+    ServerData --> Domain
     ServerData --> ServerDomain
 
     ServerDomain --> Domain
@@ -64,7 +67,6 @@ graph TD
 
     UiFeature --> Domain
     UiFeature --> UiCore
-    UiFeature --> Viewmodel
 
     Usecase --> Domain
 
