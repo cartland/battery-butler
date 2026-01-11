@@ -5,9 +5,7 @@ import com.chriscartland.batterybutler.proto.ServerStatusRequest
 import com.chriscartland.batterybutler.proto.ServerStatusResponse
 
 class BatteryService : BatteryServiceGrpcKt.BatteryServiceCoroutineImplBase() {
-    override suspend fun getServerStatus(
-        request: ServerStatusRequest,
-    ): ServerStatusResponse =
+    override suspend fun getServerStatus(request: ServerStatusRequest): ServerStatusResponse =
         ServerStatusResponse
             .newBuilder()
             .setIsAlive(true)

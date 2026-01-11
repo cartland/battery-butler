@@ -39,7 +39,7 @@ include(":server:app")
 include(":networking")
 
 include(":ios-swift-di")
-include(":android-app")
+
 include(":android-screenshot-library")
 include(":domain")
 include(":usecase")

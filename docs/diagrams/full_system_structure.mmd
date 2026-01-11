@@ -1,4 +1,8 @@
 graph TD
+    subgraph "Screenshot Tests"
+        AndroidScreenshotLibrary[":android-screenshot-library"]
+    end
+
     subgraph "iOS Apps"
         IosSwiftDi[":ios-swift-di"]
         IosAppComposeUi["ios-app-compose-ui"]
@@ -35,10 +39,6 @@ graph TD
     subgraph "Data Layer"
         Data[":data"]
         Networking[":networking"]
-    end
-
-    subgraph "Others"
-        AndroidScreenshotLibrary[":android-screenshot-library"]
     end
 
     %% Dependencies

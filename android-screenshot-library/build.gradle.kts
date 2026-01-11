@@ -8,10 +8,14 @@ plugins {
 
 android {
     namespace = "com.chriscartland.screenshotlib"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
+    compileSdk = libs.versions.android.compileSdk
+        .get()
+        .toInt()
 
     defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk
+            .get()
+            .toInt()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -34,7 +38,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     debugImplementation("androidx.compose.ui:ui-tooling")
-    
+
     screenshotTestImplementation("androidx.compose.ui:ui-tooling")
     screenshotTestImplementation("com.android.tools.screenshot:screenshot-validation-api:0.0.1-alpha12")
     screenshotTestImplementation(libs.compose.ui.test.junit4)
