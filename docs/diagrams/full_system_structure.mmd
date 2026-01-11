@@ -1,4 +1,8 @@
 graph TD
+    subgraph "Android Apps"
+        AndroidApp[":android-app"]
+    end
+
     subgraph "iOS Apps"
         IosSwiftDi[":ios-swift-di"]
         IosAppComposeUi["ios-app-compose-ui"]
@@ -38,6 +42,15 @@ graph TD
     end
 
     %% Dependencies
+    AndroidApp --> ComposeApp
+    AndroidApp --> Data
+    AndroidApp --> Domain
+    AndroidApp --> Networking
+    AndroidApp --> UiCore
+    AndroidApp --> UiFeature
+    AndroidApp --> Usecase
+    AndroidApp --> Viewmodel
+
     ComposeApp --> Data
     ComposeApp --> Domain
     ComposeApp --> Networking

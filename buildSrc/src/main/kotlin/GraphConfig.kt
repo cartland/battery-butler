@@ -36,6 +36,7 @@ data class GraphConfig(
     companion object {
         val default = GraphConfig(
             moduleGroups = mapOf(
+                ":android-app" to "Android Apps",
                 ":compose-app" to "Compose Apps",
                 ":ios-swift-di" to "iOS Apps",
                 ":server:app" to "Server",
@@ -53,6 +54,7 @@ data class GraphConfig(
                 "ios-app" to "iOS Apps",
             ),
             groupOrder = listOf(
+                "Android Apps",
                 "iOS Apps",
                 "Compose Apps",
                 "Server",
