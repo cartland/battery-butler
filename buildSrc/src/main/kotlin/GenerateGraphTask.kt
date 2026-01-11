@@ -2,10 +2,8 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import java.io.File
-import javax.inject.Inject
 
 abstract class GenerateGraphTask : DefaultTask() {
-
     @get:OutputFile
     val kotlinModuleMmdFile: File = project.file("docs/diagrams/kotlin_module_structure.mmd")
 
@@ -32,7 +30,7 @@ abstract class GenerateGraphTask : DefaultTask() {
         val kotlinGraphData = scanner.scan(includeIos = false)
         val kotlinContent = generator.generateContent(kotlinGraphData, logger)
         val kotlinChanged = updateFile(kotlinModuleMmdFile, kotlinContent)
-        
+
         if (kotlinChanged || !kotlinModuleSvgFile.exists()) {
             generateSvg(kotlinModuleMmdFile, kotlinModuleSvgFile)
         }
@@ -41,13 +39,16 @@ abstract class GenerateGraphTask : DefaultTask() {
         val fullGraphData = scanner.scan(includeIos = true)
         val fullContent = generator.generateContent(fullGraphData, logger)
         val fullChanged = updateFile(fullSystemMmdFile, fullContent)
-        
+
         if (fullChanged || !fullSystemSvgFile.exists()) {
-             generateSvg(fullSystemMmdFile, fullSystemSvgFile)
+            generateSvg(fullSystemMmdFile, fullSystemSvgFile)
         }
     }
 
-    private fun updateFile(file: File, content: String): Boolean {
+    private fun updateFile(
+        file: File,
+        content: String,
+    ): Boolean {
         val currentContent = if (file.exists()) file.readText() else ""
         if (currentContent != content) {
             file.parentFile.mkdirs()
@@ -60,11 +61,26 @@ abstract class GenerateGraphTask : DefaultTask() {
         }
     }
 
-    private fun generateSvg(inputMmd: File, outputSvg: File) {
+    private fun generateSvg(
+        inputMmd: File,
+        outputSvg: File,
+    ) {
         println("Generating SVG for ${inputMmd.name}...")
         project.exec {
             // Pass empty string as separate argument without quotes for Gradle to handle
-            commandLine("npx", "-y", "@mermaid-js/mermaid-cli", "-i", inputMmd.absolutePath, "-o", outputSvg.absolutePath, "-t", "default", "--cssFile", "")
+            commandLine(
+                "npx",
+                "-y",
+                "@mermaid-js/mermaid-cli",
+                "-i",
+                inputMmd.absolutePath,
+                "-o",
+                outputSvg.absolutePath,
+                "-t",
+                "default",
+                "--cssFile",
+                "",
+            )
         }
         println("Generated SVG at: ${outputSvg.absolutePath}")
     }

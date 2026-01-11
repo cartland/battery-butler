@@ -3,16 +3,17 @@ import org.gradle.api.artifacts.ProjectDependency
 
 data class GraphData(
     val modules: Set<String>,
-    val edges: Set<Pair<String, String>>
+    val edges: Set<Pair<String, String>>,
 )
 
-class ProjectScanner(private val project: Project) {
-
+class ProjectScanner(
+    private val project: Project,
+) {
     private val xcodeScanner = XcodeProjectScanner(project.rootProject)
 
     fun scan(includeIos: Boolean): GraphData {
         val subprojects = project.rootProject.subprojects
-        
+
         // 1. Scan Kotlin Modules
         val modules = mutableSetOf<String>()
         subprojects.forEach { subproject ->
@@ -24,20 +25,23 @@ class ProjectScanner(private val project: Project) {
         // 2. Scan Kotlin Dependencies
         val edges = mutableSetOf<Pair<String, String>>()
         val configurationsToCheck = listOf(
-            "implementation", "api", 
-            "commonMainImplementation", "commonMainApi",
-            "androidMainImplementation", "commonTestImplementation"
+            "implementation",
+            "api",
+            "commonMainImplementation",
+            "commonMainApi",
+            "androidMainImplementation",
+            "commonTestImplementation",
         )
-        
+
         subprojects.forEach { subproject ->
-             if (!subproject.buildFile.exists()) return@forEach
-             
-             configurationsToCheck.forEach { configName ->
+            if (!subproject.buildFile.exists()) return@forEach
+
+            configurationsToCheck.forEach { configName ->
                 val config = subproject.configurations.findByName(configName)
                 if (config != null) {
                     config.dependencies.forEach { dep ->
                         if (dep is ProjectDependency) {
-                             edges.add(subproject.path to dep.dependencyProject.path)
+                            edges.add(subproject.path to dep.dependencyProject.path)
                         }
                     }
                 }
@@ -51,9 +55,10 @@ class ProjectScanner(private val project: Project) {
         }
 
         // Filter edges to ensure both nodes exist in the graph
-        val validEdges = edges.filter { (source, target) -> 
-            modules.contains(source) && modules.contains(target)
-        }.toSet()
+        val validEdges = edges
+            .filter { (source, target) ->
+                modules.contains(source) && modules.contains(target)
+            }.toSet()
 
         return GraphData(modules, validEdges)
     }

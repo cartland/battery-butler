@@ -1,7 +1,6 @@
 import org.gradle.api.logging.Logger
 
 class MermaidGenerator {
-
     private val moduleGroups = mapOf(
         ":compose-app" to "Compose Apps",
         ":ios-swift-di" to "iOS Apps",
@@ -14,9 +13,9 @@ class MermaidGenerator {
         ":server:domain" to "Server",
         ":data" to "Data Layer",
         ":networking" to "Data Layer",
-        ":server:data" to "Server"
+        ":server:data" to "Server",
     )
-    
+
     private val groupOrder = listOf(
         "iOS Apps",
         "Compose Apps",
@@ -26,53 +25,59 @@ class MermaidGenerator {
         "Presentation Layer",
         "Domain Layer",
         "Data Layer",
-        "Deprecated"
+        "Deprecated",
     )
 
-    fun generateContent(graphData: GraphData, logger: Logger? = null): String {
+    fun generateContent(
+        graphData: GraphData,
+        logger: Logger? = null,
+    ): String {
         val sb = StringBuilder()
         sb.appendLine("graph TD")
 
         // Grouping
-        val modulesByGroup = graphData.modules.groupBy { modulePath ->
-            val group = resolveGroup(modulePath)
-            if (group == "Others") {
-                 logger?.warn("Architecture Diagram Warning: Module '$modulePath' is not explicitly mapped to a layer. It will appear in 'Others'.")
-            }
-            group
-        }.toMutableMap()
-        
+        val modulesByGroup = graphData.modules
+            .groupBy { modulePath ->
+                val group = resolveGroup(modulePath)
+                if (group == "Others") {
+                    logger?.warn(
+                        "Architecture Diagram Warning: Module '$modulePath' is not explicitly mapped to a layer. It will appear in 'Others'.",
+                    )
+                }
+                group
+            }.toMutableMap()
+
         // Ensure manual iOS modules fall into correct groups if present (though map covers them usually, manual override just in case)
         // Actually, the resolveGroup function should handle them if we map them.
         // Let's add them to the map to be safe in resolveGroup, or explicit handling.
         // Since we decoupled, we trust graphData.modules contains them.
-        
+
         // Ordered Groups
         groupOrder.forEach { group ->
             val modules = modulesByGroup[group] ?: return@forEach
             sb.appendLine("    subgraph \"$group\"")
             modules.sorted().forEach { modulePath ->
-                 sb.appendLine("        ${getNodeId(modulePath)}[\"$modulePath\"]")
+                sb.appendLine("        ${getNodeId(modulePath)}[\"$modulePath\"]")
             }
             sb.appendLine("    end")
             sb.appendLine()
         }
-        
+
         // Others
         val otherModules = modulesByGroup["Others"]
         if (!otherModules.isNullOrEmpty()) {
-             sb.appendLine("    subgraph \"Others\"")
-             otherModules.sorted().forEach { modulePath ->
-                 sb.appendLine("        ${getNodeId(modulePath)}[\"$modulePath\"]")
-             }
-             sb.appendLine("    end")
-             sb.appendLine()
+            sb.appendLine("    subgraph \"Others\"")
+            otherModules.sorted().forEach { modulePath ->
+                sb.appendLine("        ${getNodeId(modulePath)}[\"$modulePath\"]")
+            }
+            sb.appendLine("    end")
+            sb.appendLine()
         }
 
         // Edges
         sb.appendLine("    %% Dependencies")
         var previousSource: String? = null
-        
+
         graphData.edges
             .sortedWith(compareBy({ it.first }, { it.second }))
             .forEach { (source, target) ->
@@ -86,12 +91,11 @@ class MermaidGenerator {
         return sb.toString()
     }
 
-    private fun resolveGroup(modulePath: String): String {
-        return moduleGroups[modulePath] ?: when {
+    private fun resolveGroup(modulePath: String): String =
+        moduleGroups[modulePath] ?: when {
             modulePath.startsWith("ios-app") -> "iOS Apps"
             else -> "Others"
         }
-    }
 
     private fun getNodeId(modulePath: String): String {
         // Custom overrides for naming consistency
@@ -104,12 +108,10 @@ class MermaidGenerator {
         if (modulePath == ":viewmodel") return "ViewModel"
         if (modulePath == ":usecase") return "UseCase"
         if (modulePath == ":ios-swift-di") return "IosSwiftDi"
-        
+
         // Fallback: :group:module -> GroupModule
         return modulePath.split(":").joinToString("") { it.capitalize() }
     }
-    
-    private fun String.capitalize(): String {
-        return this.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
-    }
+
+    private fun String.capitalize(): String = this.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
 }
