@@ -7,7 +7,7 @@ This directory contains the Swift source code for the native iOS application of 
 1.  **Generate the Framework**:
     Run the following Gradle command from the root of the repository to generate the debug framework for the simulator:
     ```bash
-    ./gradlew :shared:linkDebugFrameworkIosSimulatorArm64
+    ./gradlew :ios-swift-di:linkDebugFrameworkIosSimulatorArm64
     ```
     (Or `linkDebugFrameworkIosArm64` for physical device).
 
@@ -17,13 +17,13 @@ This directory contains the Swift source code for the native iOS application of 
     -   Product Name: `BlanketNative`.
     -   Interface: SwiftUI.
     -   Language: Swift.
-    -   Save it inside this `iosAppNative` directory (e.g., `iosAppNative/BlanketNative`).
+    -   Save it inside this `ios-app-swift-ui` directory (e.g., `ios-app-swift-ui/BlanketNative`).
 
 3.  **Link Framework**:
     -   In Xcode, select the project target.
     -   Go to "General" -> "Frameworks, Libraries, and Embedded Content".
     -   Click "+" -> "Add Other..." -> "Add Files...".
-    -   Navigate to `Blanket/shared/build/bin/iosSimulatorArm64/debugFramework/shared.framework`.
+    -   Navigate to `Blanket/ios-swift-di/build/bin/iosSimulatorArm64/debugFramework/shared.framework`.
     -   **Important**: Ensure "Embed & Sign" is selected.
     -   Also add "Search Paths" in Build Settings if necessary (search for "Framework Search Paths" and add the path to the debugFramework folder).
 
