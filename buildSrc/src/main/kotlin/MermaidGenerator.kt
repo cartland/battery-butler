@@ -13,9 +13,9 @@ class MermaidGenerator(
         val modulesByGroup = graphData.modules
             .groupBy { modulePath ->
                 val group = resolveGroup(modulePath)
-                if (group == "Others") {
+                if (group == config.defaultGroup) {
                     logger?.warn(
-                        "Architecture Diagram Warning: Module '$modulePath' is not explicitly mapped to a layer. It will appear in 'Others'.",
+                        "Architecture Diagram Warning: Module '$modulePath' is not explicitly mapped to a layer. It will appear in '${config.defaultGroup}'.",
                     )
                 }
                 group
@@ -31,9 +31,9 @@ class MermaidGenerator(
             sb.appendLine()
         }
 
-        val otherModules = modulesByGroup["Others"]
-        if (!otherModules.isNullOrEmpty() && !config.groupOrder.contains("Others")) {
-            sb.appendLine("    subgraph \"Others\"")
+        val otherModules = modulesByGroup[config.defaultGroup]
+        if (!otherModules.isNullOrEmpty() && !config.groupOrder.contains(config.defaultGroup)) {
+            sb.appendLine("    subgraph \"${config.defaultGroup}\"")
             otherModules.sorted().forEach { modulePath ->
                 sb.appendLine("        ${getNodeId(modulePath)}[\"$modulePath\"]")
             }
@@ -57,18 +57,21 @@ class MermaidGenerator(
         return sb.toString()
     }
 
-    private fun resolveGroup(modulePath: String): String =
-        config.moduleGroups[modulePath] ?: when {
-            modulePath.startsWith("ios-app") -> "iOS Apps"
-            else -> "Others"
+    private fun resolveGroup(modulePath: String): String {
+        config.moduleGroups[modulePath]?.let { return it }
+
+        config.groupPrefixes.forEach { (prefix, group) ->
+            if (modulePath.startsWith(prefix)) return group
         }
 
-    private fun getNodeId(modulePath: String): String {
-        return modulePath
+        return config.defaultGroup
+    }
+
+    private fun getNodeId(modulePath: String): String =
+        modulePath
             .split(':', '-')
             .filter { it.isNotEmpty() }
             .joinToString("") { it.capitalize() }
-    }
 
     private fun String.capitalize(): String = this.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
 }

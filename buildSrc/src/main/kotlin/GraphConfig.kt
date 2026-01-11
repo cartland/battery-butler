@@ -1,6 +1,8 @@
 data class GraphConfig(
     val moduleGroups: Map<String, String>,
+    val groupPrefixes: Map<String, String>,
     val groupOrder: List<String>,
+    val defaultGroup: String = "Others",
 ) {
     companion object {
         val default = GraphConfig(
@@ -17,6 +19,9 @@ data class GraphConfig(
                 ":data" to "Data Layer",
                 ":networking" to "Data Layer",
                 ":server:data" to "Server",
+            ),
+            groupPrefixes = mapOf(
+                "ios-app" to "iOS Apps",
             ),
             groupOrder = listOf(
                 "iOS Apps",
