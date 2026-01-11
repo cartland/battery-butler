@@ -80,7 +80,7 @@ fun App(
                                 when (tab) {
                                     MainTab.Devices -> backStack.add(Screen.AddDevice)
                                     MainTab.Types -> backStack.add(
-                                        Screen.AddDeviceType(returnScreen = Screen.Types),
+                                        Screen.AddDeviceType
                                     )
                                     MainTab.History -> backStack.add(Screen.AddBatteryEvent)
                                 }
@@ -119,7 +119,7 @@ fun App(
                             com.chriscartland.batterybutler.feature.history.HistoryListScreen(
                                 viewModel = historyListViewModel,
                                 onEventClick = { eventId, deviceId ->
-                                    backStack.add(Screen.EventDetail(eventId, deviceId))
+                                    backStack.add(Screen.EventDetail(eventId))
                                 },
                                 modifier = Modifier.padding(innerPadding),
                             )
@@ -161,7 +161,7 @@ fun App(
                             viewModel = viewModel,
                             onBack = { backStack.removeLastOrNull() },
                             onEdit = { backStack.add(Screen.EditDevice(args.deviceId)) },
-                            onEventClick = { eventId -> backStack.add(Screen.EventDetail(eventId, args.deviceId)) },
+                            onEventClick = { eventId -> backStack.add(Screen.EventDetail(eventId)) },
                         )
                     }
 
@@ -239,9 +239,7 @@ sealed interface Screen {
     data object AddBatteryEvent : Screen
 
     @Serializable
-    data class AddDeviceType(
-        val returnScreen: Screen,
-    ) : Screen
+    data object AddDeviceType : Screen
 
     @Serializable
     data class DeviceDetail(
@@ -256,7 +254,6 @@ sealed interface Screen {
     @Serializable
     data class EventDetail(
         val eventId: String,
-        val deviceId: String,
     ) : Screen
 
     @Serializable

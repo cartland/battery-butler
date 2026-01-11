@@ -56,7 +56,7 @@ fun MainScreen(
 ) {
     var currentTab by remember { mutableStateOf(initialTab) }
 
-    MainScreenContent(
+    MainScreenShell(
         currentTab = currentTab,
         onTabSelected = { currentTab = it },
         onSettingsClick = onSettingsClick,
