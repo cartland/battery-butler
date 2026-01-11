@@ -1,5 +1,6 @@
 #!/bin/bash
 set -ex
+cd "$(dirname "$0")/.."
 
 # Builds, installs, and runs the iOS application (SwiftUI) on a simulator.
 

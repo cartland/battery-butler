@@ -1,0 +1,7 @@
+module(
+    name = "battery_butler",
+    version = "1.0.0",
+)
+
+bazel_dep(name = "rules_proto", version = "6.0.2")
+bazel_dep(name = "protobuf", version = "29.0-rc3")

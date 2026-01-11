@@ -1,5 +1,6 @@
 #!/bin/bash
 set -ex
+cd "$(dirname "$0")/.."
 
 # Builds, installs, and runs the iOS application on a simulator.
 
