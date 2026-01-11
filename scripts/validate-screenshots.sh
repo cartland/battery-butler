@@ -6,6 +6,6 @@ else
   cd "$(dirname "$0")/.."
 fi
 
-echo "Validating screenshots for :android-app..."
-./gradlew :android-app:validateDebugScreenshotTest
+echo "Validating screenshots for :android-screenshot-library..."
+./gradlew :android-screenshot-library:validateDebugScreenshotTest
 echo "Screenshots validated."

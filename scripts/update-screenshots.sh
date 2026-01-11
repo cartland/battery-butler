@@ -7,8 +7,8 @@ else
 fi
 
 echo "Cleaning old screenshots..."
-rm -rf android-app/src/screenshotTestDebug/reference
+rm -rf android-screenshot-library/src/screenshotTestDebug/reference
 
-echo "Updating screenshots for :android-app..."
-./gradlew :android-app:updateDebugScreenshotTest
+echo "Updating screenshots for :android-screenshot-library..."
+./gradlew :android-screenshot-library:updateDebugScreenshotTest
 echo "Screenshots updated."
