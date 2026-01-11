@@ -35,7 +35,6 @@ kotlin {
             implementation(project(":usecase"))
             implementation(libs.kotlin.inject.runtime)
         }
-
     }
 }
 
