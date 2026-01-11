@@ -97,10 +97,10 @@ abstract class GenerateGraphTask : DefaultTask() {
             ":viewmodel" to "Presentation Layer",
             ":usecase" to "Domain Layer",
             ":domain" to "Domain Layer",
-            ":server:domain" to "Domain Layer",
+            ":server:domain" to "Server",
             ":data" to "Data Layer",
             ":networking" to "Data Layer",
-            ":server:data" to "Data Layer"
+            ":server:data" to "Server"
         )
         
         val groupOrder = listOf(

@@ -9,6 +9,8 @@ graph TD
 
     subgraph "Server"
         ServerApp[":server:app"]
+        ServerData[":server:data"]
+        ServerDomain[":server:domain"]
     end
 
     subgraph "UI Layer"
@@ -22,18 +24,12 @@ graph TD
 
     subgraph "Domain Layer"
         Domain[":domain"]
-        ServerDomain[":server:domain"]
         UseCase[":usecase"]
     end
 
     subgraph "Data Layer"
         Data[":data"]
         Networking[":networking"]
-        ServerData[":server:data"]
-    end
-
-    subgraph "Deprecated"
-        Shared[":shared"]
     end
 
     %% Dependencies
@@ -60,11 +56,6 @@ graph TD
     ServerData --> ServerDomain
 
     ServerDomain --> Domain
-
-    Shared --> Data
-    Shared --> Domain
-    Shared --> UseCase
-    Shared --> ViewModel
 
     UICore --> Domain
 

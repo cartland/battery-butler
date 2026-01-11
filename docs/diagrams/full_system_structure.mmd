@@ -15,11 +15,8 @@ graph TD
         ServerDomain[":server:domain"]
     end
 
-    subgraph "Compose UI"
+    subgraph "UI Layer"
         UICore[":ui-core"]
-    end
-
-    subgraph "Compose + ViewModel UI"
         UIFeature[":ui-feature"]
     end
 
@@ -61,8 +58,6 @@ graph TD
     ServerData --> ServerDomain
 
     ServerDomain --> Domain
-
-
 
     UICore --> Domain
 
