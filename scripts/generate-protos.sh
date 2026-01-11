@@ -6,7 +6,7 @@ cd "$(dirname "$0")/.."
 bazel build //protos:battery_butler_java_proto //protos:battery_butler_swift_proto
 
 # Java Output Location
-JAVA_OUT="data/src/generated/java"
+JAVA_OUT="networking/src/generated/java"
 rm -rf "$JAVA_OUT"
 mkdir -p "$JAVA_OUT"
 

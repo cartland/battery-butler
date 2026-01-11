@@ -15,19 +15,6 @@ kotlin {
         }
     }
 
-    // Task to run Bazel proto generation
-    val generateProtos by tasks.registering(Exec::class) {
-        commandLine(rootDir.resolve("scripts/generate-protos.sh"))
-    }
-
-    // Ensure generation runs before build
-    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-        dependsOn(generateProtos)
-    }
-    tasks.withType<com.android.build.gradle.tasks.GenerateBuildConfig>().configureEach {
-        dependsOn(generateProtos)
-    }
-
     jvm()
 
     iosX64()
@@ -37,6 +24,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(project(":domain"))
+            implementation(project(":networking"))
             implementation(libs.androidx.room.runtime)
             implementation(libs.sqlite.bundled)
             implementation(libs.kotlin.inject.runtime)
@@ -48,13 +36,6 @@ kotlin {
             implementation(libs.androidx.room.runtime)
             implementation(libs.generativeai)
         }
-        val androidMain by getting {
-            kotlin.srcDir("src/generated/java")
-        }
-        val jvmMain by getting {
-            kotlin.srcDir("src/generated/java")
-        }
-        val androidInstrumentedTest by getting {
             dependencies {
                 implementation(libs.junit)
                 implementation(libs.androidx.testExt.junit)

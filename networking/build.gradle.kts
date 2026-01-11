@@ -8,6 +8,19 @@ kotlin {
     androidTarget()
     jvm("desktop")
 
+    // Task to run Bazel proto generation
+    val generateProtos by tasks.registering(Exec::class) {
+        commandLine(rootDir.resolve("scripts/generate-protos.sh"))
+    }
+
+    // Ensure generation runs before build
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+        dependsOn(generateProtos)
+    }
+    tasks.withType<com.android.build.gradle.tasks.GenerateBuildConfig>().configureEach {
+        dependsOn(generateProtos)
+    }
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -29,6 +42,12 @@ kotlin {
         }
         androidMain.dependencies {
             implementation(libs.okhttp)
+        }
+        val androidMain by getting {
+            kotlin.srcDir("src/generated/java")
+        }
+        val desktopMain by getting {
+            kotlin.srcDir("src/generated/java")
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.core)
