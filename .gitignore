@@ -59,3 +59,7 @@ __pycache__/
 # Misc
 .env
 .env.local
+
+# Generated Protos
+data/src/generated/
+ios-app-swift-ui/Generated/Proto/

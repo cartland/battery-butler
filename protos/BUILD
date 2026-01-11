@@ -1,4 +1,6 @@
 load("@rules_proto//proto:defs.bzl", "proto_library")
+load("@rules_java//java:defs.bzl", "java_proto_library")
+load("@rules_swift//swift:swift.bzl", "swift_proto_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -14,4 +16,13 @@ proto_library(
         "@protobuf//:timestamp_proto",
         "@protobuf//:empty_proto",
     ],
+)
+java_proto_library(
+    name = "battery_butler_java_proto",
+    deps = [":battery_butler_proto"],
+)
+
+swift_proto_library(
+    name = "battery_butler_swift_proto",
+    deps = [":battery_butler_proto"],
 )
