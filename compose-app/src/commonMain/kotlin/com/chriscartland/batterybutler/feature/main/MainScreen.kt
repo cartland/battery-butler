@@ -56,48 +56,15 @@ fun MainScreen(
 ) {
     var currentTab by remember { mutableStateOf(initialTab) }
 
-    com.chriscartland.batterybutler.ui.components.BackHandler(enabled = currentTab != MainTab.Devices) {
-        currentTab = MainTab.Devices
-    }
-
-    Scaffold(
-        modifier = modifier,
-        topBar = {
-            ButlerCenteredTopAppBar(
-                title = currentTab.label,
-                actions = {
-                    androidx.compose.material3.IconButton(onClick = onSettingsClick) {
-                        Icon(
-                            imageVector = Icons.Default.Settings,
-                            contentDescription = "Settings",
-                        )
-                    }
-                },
-            )
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    when (currentTab) {
-                        MainTab.Devices -> onAddDeviceClick()
-                        MainTab.Types -> onAddTypeClick()
-                        MainTab.History -> onAddEventClick()
-                    }
-                },
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Add")
-            }
-        },
-        bottomBar = {
-            NavigationBar {
-                MainTab.entries.forEach { tab ->
-                    NavigationBarItem(
-                        selected = currentTab == tab,
-                        onClick = { currentTab = tab },
-                        icon = { Icon(tab.icon, contentDescription = tab.label) },
-                        label = { Text(tab.label) },
-                    )
-                }
+    MainScreenContent(
+        currentTab = currentTab,
+        onTabSelected = { currentTab = it },
+        onSettingsClick = onSettingsClick,
+        onAddClick = {
+            when (currentTab) {
+                MainTab.Devices -> onAddDeviceClick()
+                MainTab.Types -> onAddTypeClick()
+                MainTab.History -> onAddEventClick()
             }
         },
     ) { innerPadding ->
@@ -128,4 +95,56 @@ fun MainScreen(
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MainScreenContent(
+    currentTab: MainTab,
+    onTabSelected: (MainTab) -> Unit,
+    onSettingsClick: () -> Unit,
+    onAddClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable (androidx.compose.foundation.layout.PaddingValues) -> Unit,
+) {
+    com.chriscartland.batterybutler.ui.components.BackHandler(enabled = currentTab != MainTab.Devices) {
+        onTabSelected(MainTab.Devices)
+    }
+
+    Scaffold(
+        modifier = modifier,
+        topBar = {
+            ButlerCenteredTopAppBar(
+                title = currentTab.label,
+                actions = {
+                    androidx.compose.material3.IconButton(onClick = onSettingsClick) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = "Settings",
+                        )
+                    }
+                },
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onAddClick,
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Add")
+            }
+        },
+        bottomBar = {
+            NavigationBar {
+                MainTab.entries.forEach { tab ->
+                    NavigationBarItem(
+                        selected = currentTab == tab,
+                        onClick = { onTabSelected(tab) },
+                        icon = { Icon(tab.icon, contentDescription = tab.label) },
+                        label = { Text(tab.label) },
+                    )
+                }
+            }
+        },
+        content = content,
+    )
 }

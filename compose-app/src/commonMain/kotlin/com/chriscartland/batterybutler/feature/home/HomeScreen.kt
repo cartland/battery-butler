@@ -55,21 +55,32 @@ fun HomeScreen(
         }
     }
 
+    HomeScreenContent(
+        state = state,
+        onGroupOptionToggle = { viewModel.toggleGroupDirection() },
+        onGroupOptionSelected = { viewModel.onGroupOptionSelected(it) },
+        onSortOptionToggle = { viewModel.toggleSortDirection() },
+        onSortOptionSelected = { viewModel.onSortOptionSelected(it) },
+        onDeviceClick = onDeviceClick,
+        modifier = modifier,
+    )
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun HomeScreenContent(
+    state: com.chriscartland.batterybutler.viewmodel.home.HomeUiState,
+    onGroupOptionToggle: () -> Unit,
+    onGroupOptionSelected: (GroupOption) -> Unit,
+    onSortOptionToggle: () -> Unit,
+    onSortOptionSelected: (SortOption) -> Unit,
+    onDeviceClick: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
             Column {
-                // ButlerCenteredTopAppBar(
-                //     title = "Battery Butler",
-                //     actions = {
-                //         IconButton(onClick = { viewModel.onExportData() }) {
-                //             Icon(
-                //                 imageVector = Icons.Default.Download,
-                //                 contentDescription = "Export Data",
-                //             )
-                //         }
-                //     },
-                // )
                 // Filter Row
                 Row(
                     modifier = Modifier
@@ -83,11 +94,11 @@ fun HomeScreen(
                     // Group Button (First)
                     Box {
                         CompositeControl(
-                            label = "Group: ${coreUiState.groupOption.label}",
-                            isActive = coreUiState.groupOption != GroupOption.NONE,
-                            isAscending = coreUiState.isGroupAscending,
+                            label = "Group: ${state.groupOption.label}",
+                            isActive = state.groupOption != GroupOption.NONE,
+                            isAscending = state.isGroupAscending,
                             onClicked = { groupExpanded = true },
-                            onDirectionToggle = { viewModel.toggleGroupDirection() },
+                            onDirectionToggle = onGroupOptionToggle,
                         )
                         DropdownMenu(
                             expanded = groupExpanded,
@@ -97,7 +108,7 @@ fun HomeScreen(
                                 DropdownMenuItem(
                                     text = { Text(option.label) },
                                     onClick = {
-                                        viewModel.onGroupOptionSelected(option)
+                                        onGroupOptionSelected(option)
                                         groupExpanded = false
                                     },
                                 )
@@ -108,11 +119,11 @@ fun HomeScreen(
                     // Sort Button (Second)
                     Box {
                         CompositeControl(
-                            label = "Sort: ${coreUiState.sortOption.label}",
+                            label = "Sort: ${state.sortOption.label}",
                             isActive = true, // Sort is always active
-                            isAscending = coreUiState.isSortAscending,
+                            isAscending = state.isSortAscending,
                             onClicked = { sortExpanded = true },
-                            onDirectionToggle = { viewModel.toggleSortDirection() },
+                            onDirectionToggle = onSortOptionToggle,
                         )
                         DropdownMenu(
                             expanded = sortExpanded,
@@ -122,7 +133,7 @@ fun HomeScreen(
                                 DropdownMenuItem(
                                     text = { Text(option.label) },
                                     onClick = {
-                                        viewModel.onSortOptionSelected(option)
+                                        onSortOptionSelected(option)
                                         sortExpanded = false
                                     },
                                 )
@@ -137,8 +148,8 @@ fun HomeScreen(
             modifier = Modifier.fillMaxSize(),
             contentPadding = innerPadding,
         ) {
-            coreUiState.groupedDevices.forEach { (groupName, devices) ->
-                if (coreUiState.groupOption != GroupOption.NONE) {
+            state.groupedDevices.forEach { (groupName, devices) ->
+                if (state.groupOption != GroupOption.NONE) {
                     stickyHeader {
                         Surface(
                             modifier = Modifier.fillMaxWidth(),
@@ -158,7 +169,7 @@ fun HomeScreen(
                 items(devices) { device ->
                     DeviceListItem(
                         device = device,
-                        deviceType = coreUiState.deviceTypes[device.typeId],
+                        deviceType = state.deviceTypes[device.typeId],
                         onClick = { onDeviceClick(device.id) },
                     )
                 }
