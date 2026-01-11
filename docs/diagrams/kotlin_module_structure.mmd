@@ -14,20 +14,20 @@ graph TD
     end
 
     subgraph "Compose UI"
-        UICore[":ui-core"]
+        UiCore[":ui-core"]
     end
 
     subgraph "Compose + ViewModel UI"
-        UIFeature[":ui-feature"]
+        UiFeature[":ui-feature"]
     end
 
     subgraph "Presentation Layer"
-        ViewModel[":viewmodel"]
+        Viewmodel[":viewmodel"]
     end
 
     subgraph "Domain Layer"
         Domain[":domain"]
-        UseCase[":usecase"]
+        Usecase[":usecase"]
     end
 
     subgraph "Data Layer"
@@ -39,17 +39,17 @@ graph TD
     ComposeApp --> Data
     ComposeApp --> Domain
     ComposeApp --> Networking
-    ComposeApp --> UICore
-    ComposeApp --> UIFeature
-    ComposeApp --> UseCase
-    ComposeApp --> ViewModel
+    ComposeApp --> UiCore
+    ComposeApp --> UiFeature
+    ComposeApp --> Usecase
+    ComposeApp --> Viewmodel
 
     Data --> Domain
 
     IosSwiftDi --> Data
     IosSwiftDi --> Domain
-    IosSwiftDi --> UseCase
-    IosSwiftDi --> ViewModel
+    IosSwiftDi --> Usecase
+    IosSwiftDi --> Viewmodel
 
     Networking --> Domain
 
@@ -60,13 +60,13 @@ graph TD
 
     ServerDomain --> Domain
 
-    UICore --> Domain
+    UiCore --> Domain
 
-    UIFeature --> Domain
-    UIFeature --> UICore
-    UIFeature --> ViewModel
+    UiFeature --> Domain
+    UiFeature --> UiCore
+    UiFeature --> Viewmodel
 
-    UseCase --> Domain
+    Usecase --> Domain
 
-    ViewModel --> Domain
-    ViewModel --> UseCase
+    Viewmodel --> Domain
+    Viewmodel --> Usecase
