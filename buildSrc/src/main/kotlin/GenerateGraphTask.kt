@@ -26,7 +26,6 @@ abstract class GenerateGraphTask : DefaultTask() {
         val generator = MermaidGenerator()
         val logger = project.logger
 
-        // 1. Kotlin Module Graph
         val kotlinGraphData = scanner.scan(includeIos = false)
         val kotlinContent = generator.generateContent(kotlinGraphData, logger)
         val kotlinChanged = updateFile(kotlinModuleMmdFile, kotlinContent)
@@ -35,7 +34,6 @@ abstract class GenerateGraphTask : DefaultTask() {
             generateSvg(kotlinModuleMmdFile, kotlinModuleSvgFile)
         }
 
-        // 2. Full System Graph
         val fullGraphData = scanner.scan(includeIos = true)
         val fullContent = generator.generateContent(fullGraphData, logger)
         val fullChanged = updateFile(fullSystemMmdFile, fullContent)

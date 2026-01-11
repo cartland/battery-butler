@@ -14,7 +14,6 @@ class ProjectScanner(
     fun scan(includeIos: Boolean): GraphData {
         val subprojects = project.rootProject.subprojects
 
-        // 1. Scan Kotlin Modules
         val modules = mutableSetOf<String>()
         subprojects.forEach { subproject ->
             if (subproject.buildFile.exists()) {
@@ -22,7 +21,6 @@ class ProjectScanner(
             }
         }
 
-        // 2. Scan Kotlin Dependencies
         val edges = mutableSetOf<Pair<String, String>>()
         val configurationsToCheck = listOf(
             "implementation",
@@ -48,13 +46,11 @@ class ProjectScanner(
             }
         }
 
-        // 3. Merge iOS Data if requested
         if (includeIos) {
             modules.addAll(xcodeScanner.scanModules())
             edges.addAll(xcodeScanner.scanDependencies())
         }
 
-        // Filter edges to ensure both nodes exist in the graph
         val validEdges = edges
             .filter { (source, target) ->
                 modules.contains(source) && modules.contains(target)

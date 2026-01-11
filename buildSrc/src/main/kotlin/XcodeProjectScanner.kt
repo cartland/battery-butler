@@ -9,7 +9,6 @@ class XcodeProjectScanner(
         val xcodeProjects = findXcodeProjects()
 
         xcodeProjects.forEach { xcodeProj ->
-            // Assume the module name is the parent directory of the .xcodeproj
             val moduleName = getModuleNameFromXcodePath(xcodeProj)
             modules.add(moduleName)
         }
@@ -35,11 +34,10 @@ class XcodeProjectScanner(
     }
 
     private fun findXcodeProjects(): Set<File> {
-        // Find all directories ending in .xcodeproj
         val projects = mutableSetOf<File>()
         rootProject.rootDir
             .walkTopDown()
-            .maxDepth(3) // Constraint depth to verify performance and avoid deep node_modules or build dirs
+            .maxDepth(3)
             .filter { it.isDirectory && it.name.endsWith(".xcodeproj") }
             .filter { !it.path.contains("/build/") && !it.path.contains("/node_modules/") }
             .forEach { projects.add(it) }
@@ -47,7 +45,6 @@ class XcodeProjectScanner(
     }
 
     private fun getModuleNameFromXcodePath(xcodeProj: File): String {
-        // Strategy: Use the parent directory name relative to root project as the module name.
         val relativePath = xcodeProj.relativeTo(rootProject.rootDir)
         val parent = relativePath.parentFile
 
