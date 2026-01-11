@@ -11,4 +11,5 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun deviceDao(): DeviceDao
 }
 
+@Suppress("KotlinNoActualForExpect")
 expect object AppDatabaseConstructor : RoomDatabaseConstructor<AppDatabase>
