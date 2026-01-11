@@ -4,7 +4,7 @@ class MermaidGenerator {
 
     private val moduleGroups = mapOf(
         ":compose-app" to "Compose Apps",
-        ":ios-integration" to "iOS Apps",
+        ":ios-swift-di" to "iOS Apps",
         ":server:app" to "Server",
         ":ui-feature" to "Compose + ViewModel UI",
         ":ui-core" to "Compose UI",
@@ -103,7 +103,7 @@ class MermaidGenerator {
         if (modulePath == ":ui-core") return "UICore"
         if (modulePath == ":viewmodel") return "ViewModel"
         if (modulePath == ":usecase") return "UseCase"
-        if (modulePath == ":ios-integration") return "IosIntegration"
+        if (modulePath == ":ios-swift-di") return "IosSwiftDi"
         
         // Fallback: :group:module -> GroupModule
         return modulePath.split(":").joinToString("") { it.capitalize() }

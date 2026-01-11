@@ -38,7 +38,7 @@ include(":server:data")
 include(":server:app")
 include(":networking")
 
-include(":ios-integration")
+include(":ios-swift-di")
 include(":domain")
 include(":usecase")
 include(":data")

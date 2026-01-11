@@ -1,6 +1,6 @@
 graph TD
     subgraph "iOS Apps"
-        IosIntegration[":ios-integration"]
+        IosSwiftDi[":ios-swift-di"]
     end
 
     subgraph "Compose Apps"
@@ -46,10 +46,10 @@ graph TD
 
     Data --> Domain
 
-    IosIntegration --> Data
-    IosIntegration --> Domain
-    IosIntegration --> UseCase
-    IosIntegration --> ViewModel
+    IosSwiftDi --> Data
+    IosSwiftDi --> Domain
+    IosSwiftDi --> UseCase
+    IosSwiftDi --> ViewModel
 
     Networking --> Domain
 
