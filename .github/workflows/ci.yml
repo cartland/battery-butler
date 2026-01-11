@@ -7,9 +7,18 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  checks: write
+
 jobs:
   validation_spotless:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-java-gradle
@@ -20,6 +29,7 @@ jobs:
 
   validation_lint:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-java-gradle
@@ -28,6 +38,7 @@ jobs:
 
   validation_test:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-java-gradle
@@ -49,6 +60,7 @@ jobs:
           path: |
             compose-app/build/outputs/**/*.apk
             compose-app/build/outputs/**/*.aab
+          retention-days: 1
 
   build_ios_compose:
     needs: [validation_spotless, validation_lint, validation_test]
@@ -120,6 +132,7 @@ jobs:
         with:
           name: blanket-desktop-dist-${{ matrix.os }}
           path: compose-app/build/compose/binaries
+          retention-days: 1
 
 
   build_server:
@@ -135,3 +148,4 @@ jobs:
         with:
           name: blanket-server-jar
           path: server/build/libs/
+          retention-days: 1
