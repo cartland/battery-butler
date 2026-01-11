@@ -11,6 +11,4 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun deviceDao(): DeviceDao
 }
 
-expect object AppDatabaseConstructor : RoomDatabaseConstructor<AppDatabase> {
-    override fun initialize(): AppDatabase
-}
+expect object AppDatabaseConstructor : RoomDatabaseConstructor<AppDatabase>
