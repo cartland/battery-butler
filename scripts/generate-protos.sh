@@ -36,7 +36,9 @@ mkdir -p "$SWIFT_OUT"
 # Find generated swift files.
 # They might be in a temporary directory under bazel-bin.
 echo "Copying Swift sources..."
-find bazel-bin/protos -name "*.swift" -exec cp {} "$SWIFT_OUT" \;
+# Copy Swift sources.
+# Use -f to overwrite if duplicates exist (though ideally we shouldn't have them).
+find bazel-bin/protos -name "*.swift" -exec cp -f {} "$SWIFT_OUT" \;
 
 # Verify Swift files exist
 count=$(ls "$SWIFT_OUT"/*.swift 2>/dev/null | wc -l)

@@ -1,12 +1,9 @@
 syntax = "proto3";
 
-package com.chriscartland.batterybutler;
+package com.chriscartland.batterybutler.protos;
 
-import "com/chriscartland/batterybutler/model.proto";
+import "com/chriscartland/batterybutler/protos/model.proto";
 import "google/protobuf/empty.proto";
-
-option java_multiple_files = true;
-option java_package = "com.chriscartland.batterybutler.proto";
 
 service SyncService {
   // Subscribe to real-time updates. 

@@ -1,9 +1,7 @@
 syntax = "proto3";
 
-package com.chriscartland.batterybutler;
+package com.chriscartland.batterybutler.protos;
 
-option java_multiple_files = true;
-option java_package = "com.chriscartland.batterybutler.proto";
 
 message ProtoDeviceType {
   string id = 1;
