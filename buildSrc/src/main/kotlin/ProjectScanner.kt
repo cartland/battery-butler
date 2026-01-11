@@ -11,11 +11,11 @@ class ProjectScanner(private val project: Project) {
     private val iosScanner = IosProjectScanner(project.rootProject)
 
     fun scan(includeIos: Boolean): GraphData {
-        val allProjects = project.rootProject.subprojects
+        val subprojects = project.rootProject.subprojects
         
         // 1. Scan Kotlin Modules
         val modules = mutableSetOf<String>()
-        allProjects.forEach { subproject ->
+        subprojects.forEach { subproject ->
             if (subproject.buildFile.exists()) {
                 modules.add(subproject.path)
             }
@@ -29,7 +29,7 @@ class ProjectScanner(private val project: Project) {
             "androidMainImplementation", "commonTestImplementation"
         )
         
-        allProjects.forEach { subproject ->
+        subprojects.forEach { subproject ->
              if (!subproject.buildFile.exists()) return@forEach
              
              configurationsToCheck.forEach { configName ->
