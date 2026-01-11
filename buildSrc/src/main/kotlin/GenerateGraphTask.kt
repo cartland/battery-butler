@@ -7,10 +7,10 @@ import javax.inject.Inject
 abstract class GenerateGraphTask : DefaultTask() {
 
     @get:OutputFile
-    val outputFile: File = project.file("docs/diagrams/kotlin_module_structure.mmd")
+    val kotlinModuleMmdFile: File = project.file("docs/diagrams/kotlin_module_structure.mmd")
 
     @get:OutputFile
-    val svgFile: File = project.file("docs/diagrams/kotlin_module_structure.svg")
+    val kotlinModuleSvgFile: File = project.file("docs/diagrams/kotlin_module_structure.svg")
 
     @get:OutputFile
     val fullSystemMmdFile: File = project.file("docs/diagrams/full_system_structure.mmd")
@@ -36,8 +36,8 @@ abstract class GenerateGraphTask : DefaultTask() {
         generator.generateDiagram(
             activeModules = activeModules,
             dependencyEdges = dependencyEdges,
-            outputMmd = outputFile,
-            outputSvg = svgFile,
+            outputMmd = kotlinModuleMmdFile,
+            outputSvg = kotlinModuleSvgFile,
             includeIos = false
         )
 
