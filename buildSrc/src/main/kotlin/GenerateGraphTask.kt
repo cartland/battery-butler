@@ -12,6 +12,12 @@ abstract class GenerateGraphTask : DefaultTask() {
     @get:OutputFile
     val svgFile: File = project.file("docs/diagrams/kotlin_module_structure.svg")
 
+    @get:OutputFile
+    val fullSystemMmdFile: File = project.file("docs/diagrams/full_system_structure.mmd")
+
+    @get:OutputFile
+    val fullSystemSvgFile: File = project.file("docs/diagrams/full_system_structure.svg")
+
     init {
         notCompatibleWithConfigurationCache("Accesses project instance at execution time")
     }
@@ -36,13 +42,11 @@ abstract class GenerateGraphTask : DefaultTask() {
         )
 
         // 2. Generate Full System Graph (with iOS)
-        val fullInfoMmd = project.file("docs/diagrams/full_system_structure.mmd")
-        val fullInfoSvg = project.file("docs/diagrams/full_system_structure.svg")
         generator.generateDiagram(
             activeModules = activeModules,
             dependencyEdges = dependencyEdges,
-            outputMmd = fullInfoMmd,
-            outputSvg = fullInfoSvg,
+            outputMmd = fullSystemMmdFile,
+            outputSvg = fullSystemSvgFile,
             includeIos = true
         )
     }
