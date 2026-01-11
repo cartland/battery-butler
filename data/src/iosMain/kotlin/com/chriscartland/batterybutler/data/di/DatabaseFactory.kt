@@ -17,7 +17,7 @@ actual class DatabaseFactory {
         return Room
             .databaseBuilder<AppDatabase>(
                 name = dbFile,
-                factory = AppDatabaseConstructor,
+                factory = { AppDatabaseConstructor.initialize() },
             ).setDriver(BundledSQLiteDriver())
             .addMigrations(MIGRATION_3_4, MIGRATION_4_5)
             .build()
