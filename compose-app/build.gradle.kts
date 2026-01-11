@@ -5,7 +5,7 @@ import java.util.Properties
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
@@ -98,6 +98,7 @@ android {
             .toInt()
 
     defaultConfig {
+        applicationId = "com.chriscartland.batterybutler"
         minSdk =
             libs.versions.android.minSdk
                 .get()
@@ -106,6 +107,8 @@ android {
             libs.versions.android.targetSdk
                 .get()
                 .toInt()
+        versionCode = 1
+        versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         val localProperties = Properties()

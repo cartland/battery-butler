@@ -45,6 +45,6 @@ dependencies {
     implementation(project(":domain"))
     implementation(project(":viewmodel"))
     implementation(project(":usecase"))
-    implementation(project(":compose-app")) // For MainScreen/HomeScreen if they are there
+    // implementation(project(":compose-app")) // Disabled as compose-app is now an application
     implementation(libs.kotlinx.datetime)
 }
