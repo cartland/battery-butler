@@ -15,8 +15,11 @@ graph TD
         ServerDomain[":server:domain"]
     end
 
-    subgraph "UI Layer"
+    subgraph "Compose UI"
         UICore[":ui-core"]
+    end
+
+    subgraph "Compose + ViewModel UI"
         UIFeature[":ui-feature"]
     end
 
