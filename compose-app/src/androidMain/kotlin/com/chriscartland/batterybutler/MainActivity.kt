@@ -9,6 +9,12 @@ import com.chriscartland.batterybutler.data.ai.AndroidAiEngine
 import com.chriscartland.batterybutler.data.di.DatabaseFactory
 import com.chriscartland.batterybutler.di.AppComponent
 import com.chriscartland.batterybutler.di.create
+import com.chriscartland.batterybutler.networking.GrpcSyncDataSource
+import com.chriscartland.batterybutler.networking.NetworkComponent
+import com.chriscartland.batterybutler.proto.SyncServiceClient
+import com.chriscartland.batterybutler.ui.util.AndroidFileSaver
+import com.chriscartland.batterybutler.ui.util.AndroidShareHandler
+import com.chriscartland.batterybutler.ui.util.LocalFileSaver
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,21 +24,17 @@ class MainActivity : ComponentActivity() {
         val databaseFactory = DatabaseFactory(applicationContext)
         val aiEngine = AndroidAiEngine(applicationContext)
 
-        val networkComponent = com.chriscartland.batterybutler.networking
-            .NetworkComponent(applicationContext)
-        val syncService = networkComponent.grpcClient.create(com.chriscartland.batterybutler.proto.SyncServiceClient::class)
-        val remoteDataSource = com.chriscartland.batterybutler.networking
-            .GrpcSyncDataSource(syncService)
+        val networkComponent = NetworkComponent(applicationContext)
+        val syncService = networkComponent.grpcClient.create(SyncServiceClient::class)
+        val remoteDataSource = GrpcSyncDataSource(syncService)
 
         val component = AppComponent::class.create(databaseFactory, aiEngine, remoteDataSource)
-        val shareHandler = com.chriscartland.batterybutler.ui.util
-            .AndroidShareHandler(this)
-        val fileSaver = com.chriscartland.batterybutler.ui.util
-            .AndroidFileSaver(this)
+        val shareHandler = AndroidShareHandler(this)
+        val fileSaver = AndroidFileSaver(this)
 
         setContent {
             CompositionLocalProvider(
-                com.chriscartland.batterybutler.ui.util.LocalFileSaver provides fileSaver,
+                LocalFileSaver provides fileSaver,
             ) {
                 App(component, shareHandler)
             }

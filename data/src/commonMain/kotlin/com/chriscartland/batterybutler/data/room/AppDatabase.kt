@@ -11,7 +11,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun deviceDao(): DeviceDao
 }
 
-@Suppress("KotlinNoActualForExpect")
+@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA")
 expect object AppDatabaseConstructor : RoomDatabaseConstructor<AppDatabase> {
     override fun initialize(): AppDatabase
 }
