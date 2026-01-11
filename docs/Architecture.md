@@ -1,107 +1,94 @@
-# Blanket: Application Architecture Specification
+# Architecture & Dependency Graph
 
-This document outlines the architectural guidelines for the "Blanket" Kotlin Multiplatform (KMP) application, adapted from a standard KMP template.
+This project follows a strict **Clean Architecture** combined with **Kotlin Multiplatform (KMP)** best practices. The codebase is modularized to separate concerns, improve build times, and enforce unidirectional data flow.
 
 ## 1. Core Philosophy
 
 The architecture is designed to maximize code sharing for business logic and data, while embracing a hybrid UI approach. Key principles are high cohesion, low coupling, feature-based modularity, and a great developer experience.
 
-## 2. Modularization Strategy
+## 2. Module Graph
 
-The project uses a **flat, layer-based modularization** strategy for simplicity and clarity.
- 
- * **Application Modules**:
-     * `:composeApp`: The primary application module for Compose-based targets (Android, Desktop). It contains shared UI, platform-specific entry points, and the main navigation host.
-     * `:iosApp`: The dedicated application module for the iOS target, containing the native SwiftUI implementation.
- * **Feature Modules**:
-     * `:ui-feature`: Contains all feature-specific UI screens and content.
-     * `:viewmodel`: Contains all ViewModels and UI state management logic.
-     * `:usecase`: Contains business rule encapsulation.
- * **Core Modules**:
-     * `:domain`: Pure business entities and repository interfaces.
-     * `:data`: Repository implementations, database, and network logic.
-     * `:ui-core`: Reusable UI components and design system.
+The following Mermaid graph illustrates the dependency structure between modules. Arrows indicate a dependency (e.g., `A --> B` means A depends on B).
 
-## 3. Project Structure
- 
- ```sh
- .
- ├── .github/
- │   └── workflows/
- │       ├── build-and-test.yml
- │       ├── internal-distribution.yml
- │       └── release-deploy.yml
- ├── compose-app/
- │   ├── build.gradle.kts
- │   └── src/
- │       ├── androidMain/kotlin/com/blanket/MainActivity.kt
- │       ├── commonMain/kotlin/com/blanket/App.kt
- │       └── desktopMain/kotlin/com/blanket/main.kt
- ├── domain/
- ├── data/
- ├── usecase/
- ├── viewmodel/
- ├── ui-core/
- ├── ui-feature/
- ├── gradle/
- │   └── libs.versions.toml
- ├── ios-app-compose-ui/
- │   ├── iosApp/
- │   │   ├── ContentView.swift
- │   │   └── iOSApp.swift
- │   └── iosApp.xcodeproj/
- ├── ios-app-swift-ui/
- ├── scripts/
- │   └── ...
- ├── build.gradle.kts
- └── settings.gradle.kts
- ```
+![Architecture Diagram](diagrams/kotlin_module_structure.svg)
 
-## 4. UI and Presentation Layer
+<details>
+  <summary>Click to see Mermaid Source</summary>
 
-* **Pattern**: **Model-View-ViewModel (MVVM)**. A shared `ViewModel` resides in the `commonMain` of each `:feature:impl` module.
-* **UI Strategy (Hybrid)**:
-    * **Shared Compose UI**: The `:compose-app/src/commonMain` contains the shared Compose UI for Android and Desktop targets. The central `App.kt` will host the `NavDisplay`.
+  [Source File](diagrams/kotlin_module_structure.mmd)
+</details>
 
-## 5. Navigation
+## 3. Module Descriptions
 
-A hybrid navigation model is used to support the hybrid UI.
-* **Compose Targets (in `:composeApp`)**: **Jetpack Navigation 3** is the primary navigation library. The `NavDisplay`, `rememberNavBackStack` call, and `entryProvider` are implemented in `compose-app/src/commonMain/kotlin/com/blanket/App.kt`.
-* **iOS Target (in `:iosApp`)**: **SwiftUI `NavigationStack`** is used for the native UI.
-* **Abstraction (`:core:navigation`)**: An `expect interface Navigator` is defined in `commonMain` and injected into ViewModels. This allows shared logic to trigger navigation events, which are then handled natively by either Navigation 3 or `NavigationStack`.
+### Core Layers
 
-## 6. Core Technologies & Implementation
+*   **`:domain`**: The core of the application. Contains entities, repository interfaces, and pure business objects.
+    *   **Dependencies**: Zero dependencies on other modules. Pure Kotlin.
+    *   **Role**: Defines the "What" of the app.
 
-### 6.1. Data Persistence (`:core:data`)
-* **Database**: **Room for KMP** for SQL-backed storage. `@Database`, `@Dao`, and `@Entity` classes reside in `commonMain`.
-* **Preferences**: **DataStore Preferences** for simple key-value storage.
-* **Instantiation**: Uses an `expect`/`actual` factory pattern for platform-specific database and datastore builders.
+*   **`:usecase`**: specific business logic scenarios (Interactors).
+    *   **Dependencies**: `:domain`.
+    *   **Role**: Orchestrates data flow between Repositories and ViewModels. Encapsulates business rules.
 
-### 6.2. Networking (`:core:network`)
-* **Library**: **Ktor** for all remote API communication.
-* **Instantiation**: Uses an `expect`/`actual` factory to provide platform-specific HTTP engines (`OkHttp` for Android, `Darwin` for iOS).
+*   **`:data`**: Implementation of the Data Layer (Database, Preferences).
+    *   **Dependencies**: `:domain` (implements Repositories).
+    *   **Role**: Manages local data persistence (Room, SqlDelight, etc.).
 
-### 6.3. Dependency Injection (`:core:di`)
-* **Library**: **Koin** for its simplicity and strong KMP support.
-* **Implementation**: All modules are defined in `commonMain`, with each feature providing its own module. An `expect`/`actual` `initKoin()` function handles platform-specific startup.
+*   **`:networking`**: Implementation of remote data fetching.
+    *   **Dependencies**: `:domain` (implements Repositories or Data Sources).
+    *   **Role**: gRPC / REST clients (Wire, Ktor).
 
-## 7. Development Lifecycle & Automation
+### Presentation & UI Layers
 
-### 7.1. CI/CD (GitHub Actions)
-The project utilizes three distinct workflows for a secure and flexible pipeline:
-* **`build-and-test.yml`**: Triggered on pushes/PRs to `main`. Builds the project and runs all unit tests.
-* **`internal-distribution.yml`**: Triggered manually (`workflow_dispatch`). Builds signed artifacts for internal testing and uploads them to a service like Firebase App Distribution.
-* **`release-deploy.yml`**: Triggered by pushing a version tag (e.g., `v1.2.0`) or manually via `workflow_dispatch` with a `track` input (`alpha`, `beta`, `production`). Deploys the application to the appropriate track in Google Play or uploads it to TestFlight for App Store distribution.
+*   **`:viewmodel`**: KMP State Handling.
+    *   **Dependencies**: `:usecase`, `:domain`. (Scope: `androidx.lifecycle.viewmodel`).
+    *   **Role**: Manages UI state and handles user intents. Exposes `StateFlow` to UI.
 
-### 7.2. Automated Versioning
-* **Version Name** (`1.2.0`): Managed manually in source code (`build.gradle.kts`) to signify feature releases.
-* **Build Number** (`versionCode` / `CFBundleVersion`): **Managed automatically by CI/CD**. The `github.run_number` is used as the build number, ensuring every build artifact is uniquely traceable to the CI run that produced it. This number is passed as an environment variable to Gradle and set via command-line tools for Xcode.
+*   **`:ui-core`**: Reusable Design System elements.
+    *   **Dependencies**: `:domain` (for core models), Compose Runtime/Material3.
+    *   **Role**: Theming, common widgets, basic layout components.
 
-### 7.3. Developer Experience Scripts (`scripts/`)
-A collection of shell scripts is provided in the root `scripts/` directory to standardize and simplify common local development tasks.
-* **Convention**: All scripts begin with `set -ex` to exit on error and print each command before execution, ensuring clarity and safety.
-* **Key Scripts**:
-    * `validate.sh`: Mimics the main CI workflow by building and testing the entire project.
-    * `test-all.sh`: Runs all shared unit tests.
-    * `run-android.sh`: Installs the debug Android app on a connected device.
-    * `build-ios-framework.sh`: Builds the shared framework for Xcode.
+*   **`:ui-feature`**: Feature-specific screens and flows.
+    *   **Dependencies**: `:viewmodel`, `:ui-core`, `:domain`.
+    *   **Role**: Composable screens (e.g., `AddDeviceScreen`). Connects ViewModels to UI.
+
+### Application Entry Points
+
+*   **`:compose-app`**: The root Android & Desktop application.
+    *   **Dependencies**: All modules (to perform Dependency Injection).
+    *   **Role**: Bootstrap, DI Graph creation (`AppComponent`), Navigation host.
+
+*   **`:ios-swift-di`** (formerly `ios-integration`): The Logic Framework for iOS.
+    *   **Dependencies**: Exports `:domain`, `:viewmodel`. Dependencies on `:data`, `:usecase`.
+    *   **Role**: Bundles KMP code into an iOS Framework (named `shared`). Swift code interacts with this.
+
+### Server Side
+
+*   **`:server:domain`**: Server-specific business logic + Common Domain.
+    *   **Dependencies**: `:domain`.
+    *   **Role**: Server side business entities.
+
+*   **`:server:data`**: Server data persistence.
+    *   **Dependencies**: `:server:domain`.
+    *   **Role**: Database access for the server.
+
+*   **`:server:app`**: The gRPC Server application.
+    *   **Dependencies**: `:server:domain`, `:server:data`.
+    *   **Role**: Runs the gRPC service, handles requests.
+
+## 4. Strict Dependency Rules
+
+1.  **Vertical Separation**: `UI` never communicates directly with `Data`. It must go through `ViewModel`.
+2.  **Domain Purity**: `:domain` cannot see any other module.
+3.  **Data Hiding**: `:data` and `:networking` are implementation details. `:viewmodel` and `:ui-*` should not depend on them directly (only via `:domain` interfaces), except for the `:compose-app` root which needs them for DI.
+
+## 5. Technology Stack
+
+*   **Language**: Kotlin 2.0+
+*   **UI**: [Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform) (Android, Desktop), SwiftUI (iOS).
+*   **Dependency Injection**: [Kotlin Inject](https://github.com/evant/kotlin-inject).
+*   **Persistence**: [Room for KMP](https://developer.android.com/kotlin/multiplatform/room).
+*   **Concurrency**: Kotlin Coroutines & Flow.
+*   **AI**: Google AI Client SDK (Gemini) / ML Kit.
+*   **Networking**: Ktor / Wire (gRPC).
+*   **Date/Time**: `kotlinx-datetime`.

@@ -14,29 +14,19 @@
 
 ## 🏗 Architecture
 
-The project follows **Clean Architecture** principles adapted for Kotlin Multiplatform, with a focus on modularity and separation of concerns.
+The project follows **Clean Architecture** principles adapted for Kotlin Multiplatform.
 
-### Module Structure (Flat Hierarchy)
-
-The project is organized into the following Gradle modules:
-
-*   **`:composeApp`**: The main entry point for Android and Desktop applications. Contains the Navigation graph and platform-specific wiring.
-*   **`:iosApp`**: The native iOS application entry point (SwiftUI).
-*   **`:domain`**: Pure Kotlin module. Contains **Entities** (Data Classes), **Repository Interfaces**, and **Business Logic Objects**. No platform dependencies.
-*   **`:data`**: Implements the Repository interfaces. Handles data persistence using **Room** (SQLite) and **DataStore**.
-*   **`:usecase`**: Contains granular **Use Cases** that encapsulate specific business rules and orchestration logic (e.g., `AddDeviceUseCase`). Bridges the ViewModel and Repository.
-*   **`:viewmodel`**: Contains **ViewModels** (holding `UiState` via `StateFlow`). These use the UseCases to perform actions and expose state to the UI.
-*   **`:ui-core`**: Reusable UI components (Design System), formatting utilities, and base UI classes used across features.
-*   **`:ui-feature`**: Feature-specific UI Composables (Screens and Content). These depend on `:viewmodel` and `:ui-core`.
+For a detailed deep-dive into the module structure, dependency graph, and strict layer rules, please read the **[Architecture Documentation](docs/Architecture.md)**.
 
 ### Tech Stack
 
 *   **Language**: Kotlin 2.0+
 *   **UI**: [Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform) (Android, Desktop), SwiftUI (iOS).
-*   **Dependency Injection**: [Koin](https://insert-koin.io/) & [Kotlin Inject](https://github.com/evant/kotlin-inject).
+*   **Dependency Injection**: [Kotlin Inject](https://github.com/evant/kotlin-inject) (Koin was previously used but migrated).
 *   **Persistence**: [Room for KMP](https://developer.android.com/kotlin/multiplatform/room).
 *   **Concurrency**: Kotlin Coroutines & Flow.
 *   **AI**: Google AI Client SDK (Gemini) / ML Kit.
+*   **Networking**: Ktor & Wire (gRPC).
 *   **Date/Time**: `kotlinx-datetime`.
 
 ## 🛠 Building and Running
