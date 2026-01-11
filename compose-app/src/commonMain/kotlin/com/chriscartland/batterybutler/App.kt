@@ -80,7 +80,7 @@ fun App(
                                 when (tab) {
                                     MainTab.Devices -> backStack.add(Screen.AddDevice)
                                     MainTab.Types -> backStack.add(
-                                        Screen.AddDeviceType
+                                        Screen.AddDeviceType,
                                     )
                                     MainTab.History -> backStack.add(Screen.AddBatteryEvent)
                                 }
