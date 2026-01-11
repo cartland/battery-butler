@@ -36,6 +36,7 @@ kotlin {
             implementation(libs.androidx.room.runtime)
             implementation(libs.generativeai)
         }
+        val androidInstrumentedTest by getting {
             dependencies {
                 implementation(libs.junit)
                 implementation(libs.androidx.testExt.junit)

@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.wire)
 }
 
 kotlin {
@@ -71,12 +70,4 @@ android {
     }
 }
 
-wire {
-    sourcePath {
-        srcDir("../protos")
-    }
-    kotlin {
-        rpcRole = "client"
-        rpcCallStyle = "suspending"
-    }
-}
+

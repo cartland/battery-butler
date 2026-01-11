@@ -61,6 +61,6 @@ __pycache__/
 .env.local
 
 # Generated Protos
-data/src/generated/
+networking/src/generated/
 ios-app-swift-ui/Generated/Proto/
 .mobile_protos.sha256
