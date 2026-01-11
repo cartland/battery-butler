@@ -56,7 +56,7 @@ jobs:
       - name: Upload Android APKs and AABs
         uses: actions/upload-artifact@v4
         with:
-          name: blanket-android-builds
+          name: battery-butler-android-builds
           path: |
             compose-app/build/outputs/**/*.apk
             compose-app/build/outputs/**/*.aab
@@ -86,7 +86,7 @@ jobs:
       - name: Upload iOS App (Compose UI)
         uses: actions/upload-artifact@v4
         with:
-          name: blanket-ios-compose-app
+          name: battery-butler-ios-compose-app
           path: ios-app-compose-ui/build/
 
   build_ios_native:
@@ -113,7 +113,7 @@ jobs:
       - name: Upload iOS App (SwiftUI)
         uses: actions/upload-artifact@v4
         with:
-          name: blanket-ios-swiftui-app
+          name: battery-butler-ios-swiftui-app
           path: ios-app-swift-ui/build/
 
   build_desktop:
@@ -130,7 +130,7 @@ jobs:
       - name: Upload Desktop Binaries
         uses: actions/upload-artifact@v4
         with:
-          name: blanket-desktop-dist-${{ matrix.os }}
+          name: battery-butler-desktop-dist-${{ matrix.os }}
           path: compose-app/build/compose/binaries
           retention-days: 1
 
@@ -146,6 +146,6 @@ jobs:
       - name: Upload Server JAR
         uses: actions/upload-artifact@v4
         with:
-          name: blanket-server-jar
+          name: battery-butler-server-jar
           path: server/build/libs/
           retention-days: 1
