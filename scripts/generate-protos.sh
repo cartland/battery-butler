@@ -21,7 +21,7 @@ else
     NEW_SHA=$(sha256sum "$TAR_FILE" | awk '{print $1}')
 fi
 
-SHA_FILE=".mobile_protos.sha256"
+SHA_FILE="bazel-bin/protos/.mobile_protos.sha256"
 
 # Check if content changed
 if [ -f "$SHA_FILE" ]; then

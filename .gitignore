@@ -63,4 +63,3 @@ __pycache__/
 # Generated Protos
 networking/src/generated/
 ios-app-swift-ui/Generated/Proto/
-.mobile_protos.sha256
