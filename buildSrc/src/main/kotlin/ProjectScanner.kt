@@ -8,7 +8,7 @@ data class GraphData(
 
 class ProjectScanner(private val project: Project) {
 
-    private val iosScanner = IosProjectScanner(project.rootProject)
+    private val appleScanner = AppleProjectScanner(project.rootProject)
 
     fun scan(includeIos: Boolean): GraphData {
         val subprojects = project.rootProject.subprojects
@@ -46,8 +46,8 @@ class ProjectScanner(private val project: Project) {
 
         // 3. Merge iOS Data if requested
         if (includeIos) {
-            modules.addAll(iosScanner.scanModules())
-            edges.addAll(iosScanner.scanDependencies())
+            modules.addAll(appleScanner.scanModules())
+            edges.addAll(appleScanner.scanDependencies())
         }
 
         // Filter edges to ensure both nodes exist in the graph
