@@ -1,5 +1,4 @@
 import org.gradle.api.logging.Logger
-import java.io.File
 
 class MermaidGenerator {
 
@@ -30,46 +29,24 @@ class MermaidGenerator {
         "Deprecated"
     )
 
-    fun generateDiagram(
-        activeModules: Set<String>,
-        dependencyEdges: Set<Pair<String, String>>,
-        outputMmd: File,
-        outputSvg: File,
-        includeIos: Boolean,
-        iosAppSwiftUiExists: Boolean,
-        iosAppComposeUiExists: Boolean,
-        logger: Logger,
-        runMermaidCli: (File, File) -> Unit
-    ) {
+    fun generateContent(graphData: GraphData, logger: Logger? = null): String {
         val sb = StringBuilder()
         sb.appendLine("graph TD")
 
         // Grouping
-        val modulesByGroup = activeModules.groupBy { modulePath ->
-            val group = moduleGroups[modulePath]
-            if (group == null) {
-                // Only log warning for the primary graph to avoid duplicate logs
-                if (!includeIos) {
-                    logger.warn("Architecture Diagram Warning: Module '$modulePath' is not explicitly mapped to a layer. It will appear in 'Others'.")
-                }
-                "Others"
-            } else {
-                group
+        val modulesByGroup = graphData.modules.groupBy { modulePath ->
+            val group = resolveGroup(modulePath)
+            if (group == "Others") {
+                 logger?.warn("Architecture Diagram Warning: Module '$modulePath' is not explicitly mapped to a layer. It will appear in 'Others'.")
             }
+            group
         }.toMutableMap()
         
-        if (includeIos) {
-            // Add fake iOS modules to the grouping
-            if (iosAppSwiftUiExists) {
-                 modulesByGroup.computeIfAbsent("iOS Apps") { mutableListOf() }
-                 (modulesByGroup["iOS Apps"] as MutableList).add("ios-app-swift-ui")
-            }
-            if (iosAppComposeUiExists) {
-                 modulesByGroup.computeIfAbsent("iOS Apps") { mutableListOf() }
-                 (modulesByGroup["iOS Apps"] as MutableList).add("ios-app-compose-ui")
-            }
-        }
-
+        // Ensure manual iOS modules fall into correct groups if present (though map covers them usually, manual override just in case)
+        // Actually, the resolveGroup function should handle them if we map them.
+        // Let's add them to the map to be safe in resolveGroup, or explicit handling.
+        // Since we decoupled, we trust graphData.modules contains them.
+        
         // Ordered Groups
         groupOrder.forEach { group ->
             val modules = modulesByGroup[group] ?: return@forEach
@@ -96,21 +73,7 @@ class MermaidGenerator {
         sb.appendLine("    %% Dependencies")
         var previousSource: String? = null
         
-        val allEdges = dependencyEdges.toMutableSet()
-        if (includeIos) {
-             if (iosAppSwiftUiExists) {
-                 allEdges.add("ios-app-swift-ui" to ":ios-integration")
-             }
-             if (iosAppComposeUiExists) {
-                 allEdges.add("ios-app-compose-ui" to ":compose-app")
-             }
-        }
-
-        allEdges
-            .filter { 
-                (activeModules.contains(it.first) || (includeIos && it.first.startsWith("ios-app"))) && 
-                (activeModules.contains(it.second) || (includeIos && it.second.startsWith("ios-app")))
-             }
+        graphData.edges
             .sortedWith(compareBy({ it.first }, { it.second }))
             .forEach { (source, target) ->
                 if (previousSource != null && previousSource != source) {
@@ -120,21 +83,13 @@ class MermaidGenerator {
                 previousSource = source
             }
 
-        val newContent = sb.toString()
-        val contentChanged = !outputMmd.exists() || outputMmd.readText() != newContent
-        
-        if (contentChanged) {
-            outputMmd.parentFile.mkdirs()
-            outputMmd.writeText(newContent)
-            println("Generated Graph at: ${outputMmd.absolutePath}")
-        } else {
-             println("Graph content is unchanged: ${outputMmd.name}")
-        }
+        return sb.toString()
+    }
 
-        if (contentChanged || !outputSvg.exists()) {
-             println("Generating SVG for ${outputMmd.name}...")
-             runMermaidCli(outputMmd, outputSvg)
-             println("Generated SVG at: ${outputSvg.absolutePath}")
+    private fun resolveGroup(modulePath: String): String {
+        return moduleGroups[modulePath] ?: when {
+            modulePath.startsWith("ios-app") -> "iOS Apps"
+            else -> "Others"
         }
     }
 

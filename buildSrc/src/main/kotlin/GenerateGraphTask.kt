@@ -24,51 +24,48 @@ abstract class GenerateGraphTask : DefaultTask() {
 
     @TaskAction
     fun generate() {
-        // Helpers
         val scanner = ProjectScanner(project)
         val generator = MermaidGenerator()
-
-        val allProjects = project.rootProject.subprojects
-        val activeModules = scanner.scanModules(allProjects)
-        val dependencyEdges = scanner.scanDependencies(allProjects)
-        
-        // Environment Facts
-        val iosAppSwiftUiExists = project.rootProject.file("ios-app-swift-ui").exists()
-        val iosAppComposeUiExists = project.rootProject.file("ios-app-compose-ui").exists()
         val logger = project.logger
 
-        // Execution Logic
-        val runMermaidCli: (File, File) -> Unit = { inputMmd, outputSvg ->
-            project.exec {
-                 // Pass empty string as separate argument without quotes for Gradle to handle
-                 commandLine("npx", "-y", "@mermaid-js/mermaid-cli", "-i", inputMmd.absolutePath, "-o", outputSvg.absolutePath, "-t", "default", "--cssFile", "")
-             }
+        // 1. Kotlin Module Graph
+        val kotlinGraphData = scanner.scan(includeIos = false)
+        val kotlinContent = generator.generateContent(kotlinGraphData, logger)
+        val kotlinChanged = updateFile(kotlinModuleMmdFile, kotlinContent)
+        
+        if (kotlinChanged || !kotlinModuleSvgFile.exists()) {
+            generateSvg(kotlinModuleMmdFile, kotlinModuleSvgFile)
         }
 
-        // 1. Generate Standard Kotlin Graph
-        generator.generateDiagram(
-            activeModules = activeModules,
-            dependencyEdges = dependencyEdges,
-            outputMmd = kotlinModuleMmdFile,
-            outputSvg = kotlinModuleSvgFile,
-            includeIos = false,
-            iosAppSwiftUiExists = iosAppSwiftUiExists,
-            iosAppComposeUiExists = iosAppComposeUiExists,
-            logger = logger,
-            runMermaidCli = runMermaidCli
-        )
+        // 2. Full System Graph
+        val fullGraphData = scanner.scan(includeIos = true)
+        val fullContent = generator.generateContent(fullGraphData, logger)
+        val fullChanged = updateFile(fullSystemMmdFile, fullContent)
+        
+        if (fullChanged || !fullSystemSvgFile.exists()) {
+             generateSvg(fullSystemMmdFile, fullSystemSvgFile)
+        }
+    }
 
-        // 2. Generate Full System Graph (with iOS)
-        generator.generateDiagram(
-            activeModules = activeModules,
-            dependencyEdges = dependencyEdges,
-            outputMmd = fullSystemMmdFile,
-            outputSvg = fullSystemSvgFile,
-            includeIos = true,
-            iosAppSwiftUiExists = iosAppSwiftUiExists,
-            iosAppComposeUiExists = iosAppComposeUiExists,
-            logger = logger,
-            runMermaidCli = runMermaidCli
-        )
+    private fun updateFile(file: File, content: String): Boolean {
+        val currentContent = if (file.exists()) file.readText() else ""
+        if (currentContent != content) {
+            file.parentFile.mkdirs()
+            file.writeText(content)
+            println("Generated Graph at: ${file.absolutePath}")
+            return true
+        } else {
+            println("Graph content is unchanged: ${file.name}")
+            return false
+        }
+    }
+
+    private fun generateSvg(inputMmd: File, outputSvg: File) {
+        println("Generating SVG for ${inputMmd.name}...")
+        project.exec {
+            // Pass empty string as separate argument without quotes for Gradle to handle
+            commandLine("npx", "-y", "@mermaid-js/mermaid-cli", "-i", inputMmd.absolutePath, "-o", outputSvg.absolutePath, "-t", "default", "--cssFile", "")
+        }
+        println("Generated SVG at: ${outputSvg.absolutePath}")
     }
 }

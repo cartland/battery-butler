@@ -1,21 +1,29 @@
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ProjectDependency
 
-class ProjectScanner(private val rootProject: Project) {
+data class GraphData(
+    val modules: Set<String>,
+    val edges: Set<Pair<String, String>>
+)
 
-    fun scanModules(allProjects: Set<Project>): Set<String> {
-        val activeModules = mutableSetOf<String>()
+class ProjectScanner(private val project: Project) {
+
+    private val iosScanner = IosProjectScanner(project.rootProject)
+
+    fun scan(includeIos: Boolean): GraphData {
+        val allProjects = project.rootProject.subprojects
+        
+        // 1. Scan Kotlin Modules
+        val modules = mutableSetOf<String>()
         allProjects.forEach { subproject ->
             val modulePath = subproject.path
             if (modulePath != ":buildSrc" && modulePath != ":server") {
-                activeModules.add(modulePath)
+                modules.add(modulePath)
             }
         }
-        return activeModules
-    }
 
-    fun scanDependencies(allProjects: Set<Project>): Set<Pair<String, String>> {
-        val dependencyEdges = mutableSetOf<Pair<String, String>>()
+        // 2. Scan Kotlin Dependencies
+        val edges = mutableSetOf<Pair<String, String>>()
         val configurationsToCheck = listOf(
             "implementation", "api", 
             "commonMainImplementation", "commonMainApi",
@@ -30,12 +38,24 @@ class ProjectScanner(private val rootProject: Project) {
                 if (config != null) {
                     config.dependencies.forEach { dep ->
                         if (dep is ProjectDependency) {
-                             dependencyEdges.add(subproject.path to dep.dependencyProject.path)
+                             edges.add(subproject.path to dep.dependencyProject.path)
                         }
                     }
                 }
             }
         }
-        return dependencyEdges
+
+        // 3. Merge iOS Data if requested
+        if (includeIos) {
+            modules.addAll(iosScanner.scanModules())
+            edges.addAll(iosScanner.scanDependencies())
+        }
+
+        // Filter edges to ensure both nodes exist in the graph
+        val validEdges = edges.filter { (source, target) -> 
+            modules.contains(source) && modules.contains(target)
+        }.toSet()
+
+        return GraphData(modules, validEdges)
     }
 }
