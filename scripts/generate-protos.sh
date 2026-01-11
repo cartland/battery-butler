@@ -35,13 +35,12 @@ fi
 echo "Protos changed (New SHA: $NEW_SHA). Updating files..."
 
 # Define Output Locations
-JAVA_OUT="networking/src/generated/java"
+# Java/Kotlin generation is handled by Wire Gradle plugin for Networking module.
+# We only need to extract Swift files for iOS App.
 SWIFT_OUT="ios-app-swift-ui/Generated/Proto"
 
 # Clean old files
-rm -rf "$JAVA_OUT"
 rm -rf "$SWIFT_OUT"
-mkdir -p "$JAVA_OUT"
 mkdir -p "$SWIFT_OUT"
 
 # Create temp dir for extraction
@@ -49,27 +48,6 @@ TEMP_DIR=$(mktemp -d)
 
 # Extract tarball
 tar -xf "$TAR_FILE" -C "$TEMP_DIR"
-
-# Move files to destinations
-# The tar structure is:
-# java/
-# swift/
-
-# Move Java files
-# We only want to move contents of java/ to JAVA_OUT
-if [ -d "$TEMP_DIR/java" ]; then
-    # Use CP/MV logic. cp -R is safer across filesystems.
-    cp -R "$TEMP_DIR/java/" "$JAVA_OUT/"
-    # Remove the 'java' directory itself from destination if cp included it
-    # cp -R src/ dest/ puts CONTENTS key if dest exists...
-    # The structure in tar is java/com/..., we want networking/src/generated/java/com/...
-    # If we did cp -R output/java/* output/java_out/ it works.
-    # But JAVA_OUT depends on cp behavior.
-    # Let's simple sync.
-    # Actually, rsync is best but let's stick to cp.
-    # If JAVA_OUT exists (mkdir -p above):
-    # cp -R "$TEMP_DIR/java/"* "$JAVA_OUT/" # wildcard expansion might miss hidden files but protos don't have them
-fi
 
 # Move Swift files
 if [ -d "$TEMP_DIR/swift" ]; then

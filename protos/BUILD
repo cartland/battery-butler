@@ -23,7 +23,7 @@ proto_library(
 )
 
 java_proto_library(
-    name = "battery_butler_java_proto",
+    name = "battery_butler_jvm_proto",
     deps = [":battery_butler_proto"],
 )
 
@@ -35,15 +35,15 @@ swift_proto_library(
 genrule(
     name = "mobile_protos_tar",
     srcs = [
-        ":battery_butler_java_proto",
+        ":battery_butler_jvm_proto",
         ":battery_butler_swift_proto",
     ],
     outs = ["mobile_protos.tar"],
     cmd = """
         mkdir -p build/java build/swift
         
-        # Extract Java sources
-        for f in $(locations :battery_butler_java_proto); do
+        # Extract JVM sources (Java + Kotlin)
+        for f in $(locations :battery_butler_jvm_proto); do
             if [[ "$$f" == *"-src.jar" ]]; then
                 unzip -q -o "$$f" -d build/java
             fi

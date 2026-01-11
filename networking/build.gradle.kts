@@ -1,24 +1,15 @@
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.wire)
 }
 
 kotlin {
     androidTarget()
     jvm("desktop")
 
-    // Task to run Bazel proto generation
-    val generateProtos by tasks.registering(Exec::class) {
-        commandLine(rootDir.resolve("scripts/generate-protos.sh"))
-    }
-
-    // Ensure generation runs before build
-    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-        dependsOn(generateProtos)
-    }
-    tasks.withType<com.android.build.gradle.tasks.GenerateBuildConfig>().configureEach {
-        dependsOn(generateProtos)
-    }
+    // Wire Plugin generates code automatically. No custom task needed for Wire.
+    // Bazel is used for Swift generation optimization.
 
     listOf(
         iosX64(),
@@ -39,6 +30,7 @@ kotlin {
             implementation(libs.wire.runtime)
             implementation(libs.wire.grpc.client)
         }
+
         androidMain.dependencies {
             implementation(libs.okhttp)
         }
@@ -67,6 +59,16 @@ android {
         minSdk = libs.versions.android.minSdk
             .get()
             .toInt()
+    }
+}
+
+wire {
+    sourcePath {
+        srcDir("../protos")
+    }
+    kotlin {
+        rpcRole = "client"
+        rpcCallStyle = "suspending"
     }
 }
 

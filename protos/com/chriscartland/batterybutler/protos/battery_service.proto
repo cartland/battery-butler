@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package com.chriscartland.batterybutler.protos;
+package com.chriscartland.batterybutler.proto;
 
 service BatteryService {
   rpc GetServerStatus (ServerStatusRequest) returns (ServerStatusResponse);
