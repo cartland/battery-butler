@@ -7,6 +7,7 @@ version = "1.0.0"
 
 dependencies {
     implementation(project(":server:domain"))
+    implementation(project(":domain"))
     implementation(libs.kotlinx.coroutines.core)
     testImplementation(libs.kotlin.test)
     testImplementation(libs.kotlinx.coroutines.test)

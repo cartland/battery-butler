@@ -24,11 +24,11 @@ kotlin {
             implementation(libs.kotlin.stdlib)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.datetime)
-            api(libs.wire.runtime)
-            api(libs.wire.grpc.client)
+            implementation(libs.wire.runtime)
+            implementation(libs.wire.grpc.client)
         }
         androidMain.dependencies {
-            api(libs.okhttp)
+            implementation(libs.okhttp)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.core)

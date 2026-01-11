@@ -16,6 +16,7 @@ application {
 
 dependencies {
     implementation(project(":server:domain"))
+    implementation(project(":domain"))
     implementation(project(":server:data"))
 
     implementation(libs.logback)

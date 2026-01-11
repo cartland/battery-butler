@@ -6,6 +6,6 @@ group = "com.chriscartland.batterybutler.domain"
 version = "1.0.0"
 
 dependencies {
-    api(project(":domain"))
-    api(libs.kotlinx.coroutines.core)
+    implementation(project(":domain"))
+    implementation(libs.kotlinx.coroutines.core)
 }
