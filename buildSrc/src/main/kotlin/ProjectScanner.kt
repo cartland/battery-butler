@@ -16,9 +16,8 @@ class ProjectScanner(private val project: Project) {
         // 1. Scan Kotlin Modules
         val modules = mutableSetOf<String>()
         allProjects.forEach { subproject ->
-            val modulePath = subproject.path
-            if (modulePath != ":buildSrc" && modulePath != ":server") {
-                modules.add(modulePath)
+            if (subproject.buildFile.exists()) {
+                modules.add(subproject.path)
             }
         }
 
@@ -31,7 +30,7 @@ class ProjectScanner(private val project: Project) {
         )
         
         allProjects.forEach { subproject ->
-             if (subproject.path == ":buildSrc" || subproject.path == ":server") return@forEach
+             if (!subproject.buildFile.exists()) return@forEach
              
              configurationsToCheck.forEach { configName ->
                 val config = subproject.configurations.findByName(configName)
