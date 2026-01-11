@@ -9,7 +9,7 @@ import java.io.File
 
 actual class DatabaseFactory {
     actual fun createDatabase(): AppDatabase {
-        val dbFile = File(System.getProperty("java.io.tmpdir"), "blanket.db")
+        val dbFile = File(System.getProperty("java.io.tmpdir"), "battery-butler.db")
         return Room
             .databaseBuilder<AppDatabase>(
                 name = dbFile.absolutePath,

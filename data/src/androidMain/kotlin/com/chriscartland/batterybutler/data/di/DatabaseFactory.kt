@@ -12,7 +12,7 @@ actual class DatabaseFactory(
     private val context: Context,
 ) {
     actual fun createDatabase(): AppDatabase {
-        val dbFile = context.getDatabasePath("blanket.db")
+        val dbFile = context.getDatabasePath("battery-butler.db")
         return Room
             .databaseBuilder<AppDatabase>(
                 context = context,

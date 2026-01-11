@@ -13,7 +13,7 @@ import platform.Foundation.NSUserDomainMask
 
 actual class DatabaseFactory {
     actual fun createDatabase(): AppDatabase {
-        val dbFile = "${fileDirectory()}/blanket.db"
+        val dbFile = "${fileDirectory()}/battery-butler.db"
         return Room
             .databaseBuilder<AppDatabase>(
                 name = dbFile,

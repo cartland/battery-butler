@@ -1,6 +1,6 @@
-# Blanket iOS Native App
+# Battery Butler iOS Native App
 
-This directory contains the Swift source code for the native iOS application of Blanket, using Kotlin Multiplatform ViewModels and SwiftUI.
+This directory contains the Swift source code for the native iOS application of Battery Butler, using Kotlin Multiplatform ViewModels and SwiftUI.
 
 ## Setup Instructions
 
@@ -14,22 +14,22 @@ This directory contains the Swift source code for the native iOS application of 
 2.  **Create Xcode Project**:
     -   Open Xcode.
     -   Create a new Project -> iOS -> App.
-    -   Product Name: `BlanketNative`.
+    -   Product Name: `BatteryButlerNative`.
     -   Interface: SwiftUI.
     -   Language: Swift.
-    -   Save it inside this `ios-app-swift-ui` directory (e.g., `ios-app-swift-ui/BlanketNative`).
+    -   Save it inside this `ios-app-swift-ui` directory (e.g., `ios-app-swift-ui/BatteryButlerNative`).
 
 3.  **Link Framework**:
     -   In Xcode, select the project target.
     -   Go to "General" -> "Frameworks, Libraries, and Embedded Content".
     -   Click "+" -> "Add Other..." -> "Add Files...".
-    -   Navigate to `Blanket/ios-swift-di/build/bin/iosSimulatorArm64/debugFramework/shared.framework`.
+    -   Navigate to `BatteryButler/ios-swift-di/build/bin/iosSimulatorArm64/debugFramework/shared.framework`.
     -   **Important**: Ensure "Embed & Sign" is selected.
     -   Also add "Search Paths" in Build Settings if necessary (search for "Framework Search Paths" and add the path to the debugFramework folder).
 
 4.  **Add Source Files**:
-    -   Drag `BlanketApp.swift`, `ContentView.swift`, `DeviceRow.swift`, `ViewModelWrapper.swift`, and `FlowCollector.swift` into the Xcode project group.
-    -   Delete the default `BlanketNativeApp.swift` (or rename `BlanketApp` to match your project creation).
+    -   Drag `BatteryButlerApp.swift`, `ContentView.swift`, `DeviceRow.swift`, `ViewModelWrapper.swift`, and `FlowCollector.swift` into the Xcode project group.
+    -   Delete the default `BatteryButlerNativeApp.swift` (or rename `BatteryButlerApp` to match your project creation).
     -   Delete default `ContentView.swift` (replace with provided).
 
 5.  **Build and Run**:
@@ -38,6 +38,6 @@ This directory contains the Swift source code for the native iOS application of 
 
 ## Architecture
 
--   **DI**: Uses `kotlin-inject` via `IosNativeHelper` initialized in `BlanketApp`.
+-   **DI**: Uses `kotlin-inject` via `IosNativeHelper` initialized in `BatteryButlerApp`.
 -   **ViewModel**: `HomeViewModel` (KMP) is wrapped in `ViewModelWrapper` (Swift) to adapt `StateFlow` to SwiftUI's `ObservableObject`.
 -   **UI**: Pure SwiftUI.

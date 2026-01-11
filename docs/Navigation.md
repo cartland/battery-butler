@@ -1,6 +1,6 @@
 # Navigation 3: Official Project Guidance
 
-This document outlines the standard patterns and best practices for implementing screen navigation in the "Blanket" application.
+This document outlines the standard patterns and best practices for implementing screen navigation in the "Battery Butler" application.
 
 #### Core Principle
 

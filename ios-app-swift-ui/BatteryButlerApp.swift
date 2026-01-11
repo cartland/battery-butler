@@ -2,7 +2,7 @@ import SwiftUI
 import shared
 
 @main
-struct BlanketApp: App {
+struct BatteryButlerApp: App {
     // Initialize the KMP Component
     // IosNativeHelper is in shared module
     let component: NativeComponent

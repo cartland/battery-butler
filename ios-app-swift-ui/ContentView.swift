@@ -35,7 +35,7 @@ struct ContentView: View {
                     }
                 }
             }
-            .navigationTitle("Blanket Native")
+            .navigationTitle("Battery Butler Native")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
