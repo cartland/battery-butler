@@ -1,13 +1,14 @@
 package com.chriscartland.batterybutler.app
 
-import com.chriscartland.batterybutler.BatteryServiceGrpcKt
-import com.chriscartland.batterybutler.BatteryServiceOuterClass
+import com.chriscartland.batterybutler.proto.BatteryServiceGrpcKt
+import com.chriscartland.batterybutler.proto.ServerStatusRequest
+import com.chriscartland.batterybutler.proto.ServerStatusResponse
 
 class BatteryService : BatteryServiceGrpcKt.BatteryServiceCoroutineImplBase() {
     override suspend fun getServerStatus(
-        request: BatteryServiceOuterClass.ServerStatusRequest,
-    ): BatteryServiceOuterClass.ServerStatusResponse =
-        BatteryServiceOuterClass.ServerStatusResponse
+        request: ServerStatusRequest,
+    ): ServerStatusResponse =
+        ServerStatusResponse
             .newBuilder()
             .setIsAlive(true)
             .setVersion("1.0.0")
