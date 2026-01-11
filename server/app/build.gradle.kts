@@ -5,6 +5,10 @@ plugins {
     application
 }
 
+kotlin {
+    jvmToolchain(21)
+}
+
 group = "com.chriscartland.batterybutler.app"
 version = "1.0.0"
 

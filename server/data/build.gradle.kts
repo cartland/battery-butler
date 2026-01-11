@@ -2,6 +2,10 @@ plugins {
     alias(libs.plugins.kotlinJvm)
 }
 
+kotlin {
+    jvmToolchain(21)
+}
+
 group = "com.chriscartland.batterybutler.data"
 version = "1.0.0"
 
