@@ -4,17 +4,19 @@ import org.gradle.api.tasks.TaskAction
 import java.io.File
 
 abstract class GenerateGraphTask : DefaultTask() {
-    @get:OutputFile
-    val kotlinModuleMmdFile: File = project.file("docs/diagrams/kotlin_module_structure.mmd")
+    private val config = GraphConfig.default
 
     @get:OutputFile
-    val kotlinModuleSvgFile: File = project.file("docs/diagrams/kotlin_module_structure.svg")
+    val kotlinModuleMmdFile: File = project.file(config.outputPaths.kotlinGraphMmd)
 
     @get:OutputFile
-    val fullSystemMmdFile: File = project.file("docs/diagrams/full_system_structure.mmd")
+    val kotlinModuleSvgFile: File = project.file(config.outputPaths.kotlinGraphSvg)
 
     @get:OutputFile
-    val fullSystemSvgFile: File = project.file("docs/diagrams/full_system_structure.svg")
+    val fullSystemMmdFile: File = project.file(config.outputPaths.fullGraphMmd)
+
+    @get:OutputFile
+    val fullSystemSvgFile: File = project.file(config.outputPaths.fullGraphSvg)
 
     init {
         notCompatibleWithConfigurationCache("Accesses project instance at execution time")
@@ -22,8 +24,8 @@ abstract class GenerateGraphTask : DefaultTask() {
 
     @TaskAction
     fun generate() {
-        val scanner = ProjectScanner(project)
-        val generator = MermaidGenerator()
+        val scanner = ProjectScanner(project, config)
+        val generator = MermaidGenerator(config)
         val logger = project.logger
 
         val kotlinGraphData = scanner.scan(includeIos = false)
@@ -75,9 +77,9 @@ abstract class GenerateGraphTask : DefaultTask() {
                 "-o",
                 outputSvg.absolutePath,
                 "-t",
-                "default",
+                config.mermaidCli.theme,
                 "--cssFile",
-                "",
+                config.mermaidCli.cssFile,
             )
         }
         println("Generated SVG at: ${outputSvg.absolutePath}")

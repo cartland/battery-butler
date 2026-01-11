@@ -3,7 +3,36 @@ data class GraphConfig(
     val groupPrefixes: Map<String, String>,
     val groupOrder: List<String>,
     val defaultGroup: String = "Others",
+    val outputPaths: OutputPaths,
+    val mermaidCli: MermaidCli,
+    val scanner: ScannerConfig,
 ) {
+    data class OutputPaths(
+        val kotlinGraphMmd: String,
+        val kotlinGraphSvg: String,
+        val fullGraphMmd: String,
+        val fullGraphSvg: String,
+    )
+
+    data class MermaidCli(
+        val theme: String,
+        val cssFile: String,
+    )
+
+    data class ScannerConfig(
+        val gradleConfigurations: List<String>,
+        val xcode: XcodeConfig,
+    )
+
+    data class XcodeConfig(
+        val searchDepth: Int,
+        val ignoredDirs: List<String>,
+        val projectExtension: String,
+        val projectFile: String,
+        val embedFrameworkToken: String,
+        val gradleModuleRegex: String,
+    )
+
     companion object {
         val default = GraphConfig(
             moduleGroups = mapOf(
@@ -34,6 +63,34 @@ data class GraphConfig(
                 "Data Layer",
                 "Deprecated",
                 "Others",
+            ),
+            outputPaths = OutputPaths(
+                kotlinGraphMmd = "docs/diagrams/kotlin_module_structure.mmd",
+                kotlinGraphSvg = "docs/diagrams/kotlin_module_structure.svg",
+                fullGraphMmd = "docs/diagrams/full_system_structure.mmd",
+                fullGraphSvg = "docs/diagrams/full_system_structure.svg",
+            ),
+            mermaidCli = MermaidCli(
+                theme = "default",
+                cssFile = "",
+            ),
+            scanner = ScannerConfig(
+                gradleConfigurations = listOf(
+                    "implementation",
+                    "api",
+                    "commonMainImplementation",
+                    "commonMainApi",
+                    "androidMainImplementation",
+                    "commonTestImplementation",
+                ),
+                xcode = XcodeConfig(
+                    searchDepth = 3,
+                    ignoredDirs = listOf("/build/", "/node_modules/"),
+                    projectExtension = ".xcodeproj",
+                    projectFile = "project.pbxproj",
+                    embedFrameworkToken = "embedAndSignAppleFrameworkForXcode",
+                    gradleModuleRegex = "[:](.+):embedAndSignAppleFrameworkForXcode",
+                ),
             ),
         )
     }

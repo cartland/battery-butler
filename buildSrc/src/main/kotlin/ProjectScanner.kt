@@ -8,8 +8,9 @@ data class GraphData(
 
 class ProjectScanner(
     private val project: Project,
+    private val config: GraphConfig = GraphConfig.default,
 ) {
-    private val xcodeScanner = XcodeProjectScanner(project.rootProject)
+    private val xcodeScanner = XcodeProjectScanner(project.rootProject, config)
 
     fun scan(includeIos: Boolean): GraphData {
         val subprojects = project.rootProject.subprojects
@@ -22,14 +23,7 @@ class ProjectScanner(
         }
 
         val edges = mutableSetOf<Pair<String, String>>()
-        val configurationsToCheck = listOf(
-            "implementation",
-            "api",
-            "commonMainImplementation",
-            "commonMainApi",
-            "androidMainImplementation",
-            "commonTestImplementation",
-        )
+        val configurationsToCheck = config.scanner.gradleConfigurations
 
         subprojects.forEach { subproject ->
             if (!subproject.buildFile.exists()) return@forEach

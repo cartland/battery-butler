@@ -3,7 +3,10 @@ import java.io.File
 
 class XcodeProjectScanner(
     private val rootProject: Project,
+    private val config: GraphConfig = GraphConfig.default,
 ) {
+    private val xcodeConfig = config.scanner.xcode
+
     fun scanModules(): Set<String> {
         val modules = mutableSetOf<String>()
         val xcodeProjects = findXcodeProjects()
@@ -21,7 +24,7 @@ class XcodeProjectScanner(
 
         xcodeProjects.forEach { xcodeProj ->
             val sourceModule = getModuleNameFromXcodePath(xcodeProj)
-            val pbxProj = File(xcodeProj, "project.pbxproj")
+            val pbxProj = File(xcodeProj, xcodeConfig.projectFile)
 
             if (pbxProj.exists()) {
                 val dependencies = parseGradleDependencies(pbxProj)
@@ -37,10 +40,11 @@ class XcodeProjectScanner(
         val projects = mutableSetOf<File>()
         rootProject.rootDir
             .walkTopDown()
-            .maxDepth(3)
-            .filter { it.isDirectory && it.name.endsWith(".xcodeproj") }
-            .filter { !it.path.contains("/build/") && !it.path.contains("/node_modules/") }
-            .forEach { projects.add(it) }
+            .maxDepth(xcodeConfig.searchDepth)
+            .filter { it.isDirectory && it.name.endsWith(xcodeConfig.projectExtension) }
+            .filter { file ->
+                xcodeConfig.ignoredDirs.none { file.path.contains(it) }
+            }.forEach { projects.add(it) }
         return projects
     }
 
@@ -57,10 +61,10 @@ class XcodeProjectScanner(
 
     private fun parseGradleDependencies(pbxProj: File): Set<String> {
         val dependencies = mutableSetOf<String>()
-        val regex = Regex("[:](.+):embedAndSignAppleFrameworkForXcode")
+        val regex = Regex(xcodeConfig.gradleModuleRegex)
 
         pbxProj.readLines().forEach { line ->
-            if (line.contains("embedAndSignAppleFrameworkForXcode")) {
+            if (line.contains(xcodeConfig.embedFrameworkToken)) {
                 val match = regex.find(line)
                 if (match != null) {
                     val gradleModule = match.groupValues[1]
