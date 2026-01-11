@@ -12,7 +12,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-java-gradle
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'gradle'
       - name: Clean Project
         run: ./gradlew clean
       - name: Check Formatting (Spotless)
@@ -22,7 +26,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-java-gradle
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'gradle'
       - name: Run Lint
         run: ./gradlew lint --stacktrace
 
@@ -30,7 +38,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-java-gradle
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'gradle'
       - name: Run Unit Tests
         run: ./gradlew test --stacktrace
 
@@ -39,7 +51,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-java-gradle
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'gradle'
       - name: Build Android App
         run: ./gradlew :compose-app:assembleDebug
       - name: Upload Android APKs and AABs
@@ -112,7 +128,11 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-java-gradle
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'gradle'
       - name: Build Desktop App
         run: ./gradlew :compose-app:packageDistributionForCurrentOS
       - name: Upload Desktop Binaries
@@ -127,7 +147,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-java-gradle
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'gradle'
       - name: Build Server
         run: ./gradlew :server:app:build
       - name: Upload Server JAR
