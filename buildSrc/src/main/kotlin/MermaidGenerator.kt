@@ -64,17 +64,10 @@ class MermaidGenerator(
         }
 
     private fun getNodeId(modulePath: String): String {
-        if (modulePath == ":compose-app") return "ComposeApp"
-        if (modulePath == ":server:app") return "ServerApp"
-        if (modulePath == ":server:domain") return "ServerDomain"
-        if (modulePath == ":server:data") return "ServerData"
-        if (modulePath == ":ui-feature") return "UIFeature"
-        if (modulePath == ":ui-core") return "UICore"
-        if (modulePath == ":viewmodel") return "ViewModel"
-        if (modulePath == ":usecase") return "UseCase"
-        if (modulePath == ":ios-swift-di") return "IosSwiftDi"
-
-        return modulePath.split(":").joinToString("") { it.capitalize() }
+        return modulePath
+            .split(':', '-')
+            .filter { it.isNotEmpty() }
+            .joinToString("") { it.capitalize() }
     }
 
     private fun String.capitalize(): String = this.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
