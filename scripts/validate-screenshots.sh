@@ -1,7 +1,11 @@
 #!/bin/bash
 set -e
-cd "$(dirname "$0")/.."
+if [ -n "$BUILD_WORKSPACE_DIRECTORY" ]; then
+  cd "$BUILD_WORKSPACE_DIRECTORY"
+else
+  cd "$(dirname "$0")/.."
+fi
 
-echo "Validating screenshots for :ui-core and :ui-feature..."
-./gradlew :ui-core:validateDebugScreenshotTest :ui-feature:validateDebugScreenshotTest
+echo "Validating screenshots for :android-app..."
+./gradlew :android-app:validateDebugScreenshotTest
 echo "Screenshots validated."

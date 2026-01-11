@@ -33,7 +33,6 @@ kotlin {
 
             implementation(project(":domain"))
             implementation(project(":ui-core"))
-
         }
     }
 }

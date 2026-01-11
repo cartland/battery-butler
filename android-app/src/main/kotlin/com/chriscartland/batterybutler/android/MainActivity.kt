@@ -1,12 +1,11 @@
 package com.chriscartland.batterybutler.android
 
-import com.chriscartland.batterybutler.App
-
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.CompositionLocalProvider
+import com.chriscartland.batterybutler.App
 import com.chriscartland.batterybutler.data.ai.AndroidAiEngine
 import com.chriscartland.batterybutler.data.di.DatabaseFactory
 import com.chriscartland.batterybutler.di.AppComponent

@@ -41,9 +41,9 @@ kotlin {
 
     androidTarget {
         compilations.configureEach {
-             if (name == "debug") {
-                 defaultSourceSet.kotlin.srcDir("src/screenshotTest/kotlin")
-             }
+            if (name == "debug") {
+                defaultSourceSet.kotlin.srcDir("src/screenshotTest/kotlin")
+            }
         }
     }
 }
@@ -82,7 +82,7 @@ tasks.register("printCompilations") {
             println("Android SourceSet: ${ss.name}")
             println("  Java: ${ss.java.srcDirs}")
             println("  Kotlin: ${ss.java.srcDirs}") // AndroidSourceSet treats python/kotlin often as 'java' in old api or 'kotlin' in new.
-            // But let's just dump java srcDirs which usually includes kotlin in AGP 
+            // But let's just dump java srcDirs which usually includes kotlin in AGP
         }
     }
 }

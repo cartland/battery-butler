@@ -16,7 +16,7 @@ kotlin {
         }
     }
 
-    jvm() {
+    jvm {
         compilerOptions {
             freeCompilerArgs.add("-Xexpect-actual-classes")
         }

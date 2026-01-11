@@ -1,7 +1,14 @@
 #!/bin/bash
 set -e
-cd "$(dirname "$0")/.."
+if [ -n "$BUILD_WORKSPACE_DIRECTORY" ]; then
+  cd "$BUILD_WORKSPACE_DIRECTORY"
+else
+  cd "$(dirname "$0")/.."
+fi
 
-echo "Updating screenshots for :ui-core and :ui-feature..."
-./gradlew :ui-core:updateDebugScreenshotTest :ui-feature:updateDebugScreenshotTest
+echo "Cleaning old screenshots..."
+rm -rf android-app/src/screenshotTestDebug/reference
+
+echo "Updating screenshots for :android-app..."
+./gradlew :android-app:updateDebugScreenshotTest
 echo "Screenshots updated."

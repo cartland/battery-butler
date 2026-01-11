@@ -28,7 +28,7 @@ fun HomeScreenContentGroupedPreview() {
 
     val grouped = mapOf(
         "Light" to listOf(devices[0], devices[1]),
-        "Sensor" to listOf(devices[2])
+        "Sensor" to listOf(devices[2]),
     )
 
     val state = HomeUiState(

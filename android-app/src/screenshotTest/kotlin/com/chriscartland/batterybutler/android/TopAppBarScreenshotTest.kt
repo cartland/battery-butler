@@ -1,7 +1,6 @@
 package com.chriscartland.batterybutler.android
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -53,6 +52,6 @@ fun TopAppBarWithMenuActionsPreview() {
             IconButton(onClick = {}) {
                 Icon(Icons.Default.Settings, contentDescription = "Settings")
             }
-        }
+        },
     )
 }
