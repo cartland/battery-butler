@@ -26,19 +26,36 @@ abstract class GenerateGraphTask : DefaultTask() {
     fun generate() {
         // Helpers
         val scanner = ProjectScanner(project)
-        val generator = MermaidGenerator(project)
+        val generator = MermaidGenerator()
 
         val allProjects = project.rootProject.subprojects
         val activeModules = scanner.scanModules(allProjects)
         val dependencyEdges = scanner.scanDependencies(allProjects)
         
+        // Environment Facts
+        val iosAppSwiftUiExists = project.rootProject.file("ios-app-swift-ui").exists()
+        val iosAppComposeUiExists = project.rootProject.file("ios-app-compose-ui").exists()
+        val logger = project.logger
+
+        // Execution Logic
+        val runMermaidCli: (File, File) -> Unit = { inputMmd, outputSvg ->
+            project.exec {
+                 // Pass empty string as separate argument without quotes for Gradle to handle
+                 commandLine("npx", "-y", "@mermaid-js/mermaid-cli", "-i", inputMmd.absolutePath, "-o", outputSvg.absolutePath, "-t", "default", "--cssFile", "")
+             }
+        }
+
         // 1. Generate Standard Kotlin Graph
         generator.generateDiagram(
             activeModules = activeModules,
             dependencyEdges = dependencyEdges,
             outputMmd = kotlinModuleMmdFile,
             outputSvg = kotlinModuleSvgFile,
-            includeIos = false
+            includeIos = false,
+            iosAppSwiftUiExists = iosAppSwiftUiExists,
+            iosAppComposeUiExists = iosAppComposeUiExists,
+            logger = logger,
+            runMermaidCli = runMermaidCli
         )
 
         // 2. Generate Full System Graph (with iOS)
@@ -47,7 +64,11 @@ abstract class GenerateGraphTask : DefaultTask() {
             dependencyEdges = dependencyEdges,
             outputMmd = fullSystemMmdFile,
             outputSvg = fullSystemSvgFile,
-            includeIos = true
+            includeIos = true,
+            iosAppSwiftUiExists = iosAppSwiftUiExists,
+            iosAppComposeUiExists = iosAppComposeUiExists,
+            logger = logger,
+            runMermaidCli = runMermaidCli
         )
     }
 }
