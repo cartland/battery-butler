@@ -1,25 +1,9 @@
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.ksp)
 }
 
 kotlin {
-    androidLibrary {
-        namespace = "com.chriscartland.batterybutler.iosintegration"
-        compileSdk = libs.versions.android.compileSdk
-            .get()
-            .toInt()
-        minSdk = libs.versions.android.minSdk
-            .get()
-            .toInt()
-        withHostTestBuilder {
-        }
-        withDeviceTestBuilder {
-            sourceSetTreeName = "test"
-        }
-    }
-
     iosX64 {
         binaries.framework {
             baseName = "shared"
@@ -42,8 +26,6 @@ kotlin {
         }
     }
 
-    jvm()
-
     sourceSets {
         commonMain.dependencies {
             implementation(libs.kotlin.stdlib)
@@ -61,7 +43,6 @@ kotlin {
 
 dependencies {
     add("kspCommonMainMetadata", libs.kotlin.inject.compiler)
-    add("kspAndroid", libs.kotlin.inject.compiler)
     add("kspIosX64", libs.kotlin.inject.compiler)
     add("kspIosArm64", libs.kotlin.inject.compiler)
     add("kspIosSimulatorArm64", libs.kotlin.inject.compiler)
