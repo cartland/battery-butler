@@ -105,20 +105,6 @@ jobs:
           name: blanket-desktop-dist-${{ matrix.os }}
           path: compose-app/build/compose/binaries
 
-  build_wasm:
-    needs: lint_and_test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-java-gradle
-      - name: Build WasmJS
-        run: ./scripts/build-wasm.sh
-      - name: Upload WasmJS Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: blanket-wasm-dist
-          path: |
-            compose-app/build/dist/wasmJs/productionExecutable
 
   build_server:
     needs: lint_and_test
