@@ -89,7 +89,7 @@ abstract class GenerateGraphTask : DefaultTask() {
     ) {
         val moduleGroups = mapOf(
             ":compose-app" to "Compose Apps",
-            ":shared" to "Deprecated",
+
             ":ios-integration" to "iOS Apps",
             ":server:app" to "Server",
             ":ui-feature" to "UI Layer",
