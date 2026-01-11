@@ -22,12 +22,11 @@ kotlin {
 
     // Ensure generation runs before build
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-         dependsOn(generateProtos)
+        dependsOn(generateProtos)
     }
     tasks.withType<com.android.build.gradle.tasks.GenerateBuildConfig>().configureEach {
-         dependsOn(generateProtos)
+        dependsOn(generateProtos)
     }
-
 
     jvm()
 
@@ -49,7 +48,12 @@ kotlin {
             implementation(libs.androidx.room.runtime)
             implementation(libs.generativeai)
         }
-        androidMain.kotlin.srcDir("src/generated/java")
+        val androidMain by getting {
+            kotlin.srcDir("src/generated/java")
+        }
+        val jvmMain by getting {
+            kotlin.srcDir("src/generated/java")
+        }
         val androidInstrumentedTest by getting {
             dependencies {
                 implementation(libs.junit)
