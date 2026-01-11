@@ -5,7 +5,6 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
-    alias(libs.plugins.screenshot)
 }
 
 kotlin {
@@ -53,9 +52,4 @@ android {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
     }
-    experimentalProperties["android.experimental.enableScreenshotTest"] = true
-}
-
-dependencies {
-    add("screenshotTestImplementation", compose.uiTooling)
 }

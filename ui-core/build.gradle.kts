@@ -5,7 +5,6 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
-    alias(libs.plugins.screenshot)
 }
 
 kotlin {
@@ -39,6 +38,14 @@ kotlin {
             implementation(libs.androidx.core.ktx)
         }
     }
+
+    androidTarget {
+        compilations.configureEach {
+             if (name == "debug") {
+                 defaultSourceSet.kotlin.srcDir("src/screenshotTest/kotlin")
+             }
+        }
+    }
 }
 
 android {
@@ -55,9 +62,27 @@ android {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
     }
-    experimentalProperties["android.experimental.enableScreenshotTest"] = true
 }
 
-dependencies {
-    add("screenshotTestImplementation", compose.uiTooling)
+tasks.register("printCompilations") {
+    doLast {
+        println("--- Kotlin Android Target Compilations ---")
+        kotlin.targets.matching { it.name == "androidTarget" || it.name == "android" }.forEach { target ->
+            println("Target: ${target.name}")
+            target.compilations.forEach { compilation ->
+                println("  Compilation: ${compilation.name}")
+                compilation.kotlinSourceSets.forEach { ss ->
+                    println("    SourceSet: ${ss.name} (${ss.kotlin.srcDirs})")
+                }
+            }
+        }
+        println("\n--- Android SourceSets ---")
+        val android = project.extensions.getByType(com.android.build.gradle.LibraryExtension::class.java)
+        android.sourceSets.forEach { ss ->
+            println("Android SourceSet: ${ss.name}")
+            println("  Java: ${ss.java.srcDirs}")
+            println("  Kotlin: ${ss.java.srcDirs}") // AndroidSourceSet treats python/kotlin often as 'java' in old api or 'kotlin' in new.
+            // But let's just dump java srcDirs which usually includes kotlin in AGP 
+        }
+    }
 }
