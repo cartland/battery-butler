@@ -29,7 +29,7 @@ android {
 }
 
 dependencies {
-    implementation(platform("androidx.compose:compose-bom:2024.06.00")) // Using a recent BOM
+    implementation(platform("androidx.compose:compose-bom:2024.06.00"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
@@ -45,6 +45,5 @@ dependencies {
     implementation(project(":domain"))
     implementation(project(":viewmodel"))
     implementation(project(":usecase"))
-    // implementation(project(":compose-app")) // Disabled as compose-app is now an application
     implementation(libs.kotlinx.datetime)
 }
