@@ -1,28 +1,14 @@
 import org.gradle.api.Project
 import java.io.File
 
-class AppleProjectScanner(private val rootProject: Project) {
+class XcodeProjectScanner(private val rootProject: Project) {
 
     fun scanModules(): Set<String> {
         val modules = mutableSetOf<String>()
         val xcodeProjects = findXcodeProjects()
         
         xcodeProjects.forEach { xcodeProj ->
-            // Use directory name without .xcodeproj as module name
-            // e.g. ios-app-swift-ui/iosAppSwiftUI.xcodeproj -> iosAppSwiftUI
-            // OR use the parent directory? The previous logic used 'ios-app-swift-ui' (the parent dir).
-            // Let's stick to the directory name of the module that contains the .xcodeproj for now, 
-            // OR just use the xcodeproj name if it maps well.
-            // In the previous hardcoded version:
-            // "ios-app-swift-ui"
-            // "ios-app-compose-ui"
-            // These are the FOLDER names in the root project.
-            
-            // Let's assume the Xcode project lives inside the module folder we want to track.
-            // e.g. /path/to/root/ios-app-compose-ui/iosApp.xcodeproj
-            // relative path: ios-app-compose-ui/iosApp.xcodeproj
-            // module name: ios-app-compose-ui
-            
+            // Assume the module name is the parent directory of the .xcodeproj
             val moduleName = getModuleNameFromXcodePath(xcodeProj)
             modules.add(moduleName)
         }
@@ -60,17 +46,12 @@ class AppleProjectScanner(private val rootProject: Project) {
 
     private fun getModuleNameFromXcodePath(xcodeProj: File): String {
         // Strategy: Use the parent directory name relative to root project as the module name.
-        // e.g. root/ios-app-compose-ui/iosApp.xcodeproj -> ios-app-compose-ui
-        // But if the xcodeproj is in root, use its name?
-        
         val relativePath = xcodeProj.relativeTo(rootProject.rootDir)
         val parent = relativePath.parentFile
         
         return if (parent == null || parent.path == ".") {
              xcodeProj.nameWithoutExtension
         } else {
-             // If nested deeper? e.g. ios/app/My.xcodeproj
-             // For now, assuming standard structure: module/Project.xcodeproj
              parent.name
         }
     }

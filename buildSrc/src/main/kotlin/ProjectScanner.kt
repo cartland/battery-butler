@@ -8,7 +8,7 @@ data class GraphData(
 
 class ProjectScanner(private val project: Project) {
 
-    private val appleScanner = AppleProjectScanner(project.rootProject)
+    private val appleScanner = XcodeProjectScanner(project.rootProject)
 
     fun scan(includeIos: Boolean): GraphData {
         val subprojects = project.rootProject.subprojects
