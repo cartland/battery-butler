@@ -1,12 +1,7 @@
 package com.chriscartland.batterybutler
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateListOf
@@ -23,10 +18,8 @@ import com.chriscartland.batterybutler.feature.devicetypes.DeviceTypeListScreen
 import com.chriscartland.batterybutler.feature.devicetypes.EditDeviceTypeScreen
 import com.chriscartland.batterybutler.feature.editdevice.EditDeviceScreen
 import com.chriscartland.batterybutler.feature.eventdetail.EventDetailScreen
-import com.chriscartland.batterybutler.feature.main.MainScreen
 import com.chriscartland.batterybutler.feature.main.MainTab
 import com.chriscartland.batterybutler.feature.settings.SettingsScreen
-import com.chriscartland.batterybutler.ui.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.ui.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.ui.util.LocalShareHandler
 import com.chriscartland.batterybutler.ui.util.ShareHandler
@@ -41,50 +34,103 @@ fun App(
 ) {
     BatteryButlerTheme {
         CompositionLocalProvider(LocalShareHandler provides shareHandler) {
-            val backStack = remember { mutableStateListOf<Any>(Screen.Home()) }
+            val backStack = remember { mutableStateListOf<Any>(Screen.Devices) }
 
             NavDisplay(
                 backStack = backStack,
                 onBack = { backStack.removeLastOrNull() },
                 entryProvider = entryProvider {
-                    entry<Screen.Home> {
-                        val homeArgs = it
-                        val homeViewModel = remember { component.homeViewModel }
-                        val historyListViewModel = remember { component.historyListViewModel }
-                        val deviceTypeListViewModel = remember { component.deviceTypeListViewModel }
+                    // Shared navigation actions
+                    val navigateToDevices = {
+                        // Clear stack to root [Screen.Devices]
+                        if (backStack.last() != Screen.Devices) {
+                            backStack.clear()
+                            backStack.add(Screen.Devices)
+                        }
+                    }
+                    val navigateToTypes = {
+                        // Stack: [Devices, Types]
+                        backStack.clear()
+                        backStack.add(Screen.Devices)
+                        backStack.add(Screen.Types)
+                    }
+                    val navigateToHistory = {
+                        // Stack: [Devices, History]
+                        backStack.clear()
+                        backStack.add(Screen.Devices)
+                        backStack.add(Screen.History)
+                    }
 
-                        MainScreen(
-                            homeViewModel = homeViewModel,
-                            historyListViewModel = historyListViewModel,
-                            deviceTypeListViewModel = deviceTypeListViewModel,
-                            initialTab = homeArgs.initialTab,
-                            onAddDeviceClick = { backStack.add(Screen.AddDevice) },
-                            onDeviceClick = { deviceId -> backStack.add(Screen.DeviceDetail(deviceId)) },
-                            onEventClick = { eventId, deviceId ->
-                                backStack.add(Screen.EventDetail(eventId, deviceId))
+                    // Shell for main tabs
+                    val showShell: @Composable (
+                        MainTab,
+                        @Composable (androidx.compose.foundation.layout.PaddingValues) -> Unit,
+                    ) -> Unit = { tab, content ->
+                        com.chriscartland.batterybutler.feature.main.MainScreenShell(
+                            currentTab = tab,
+                            onTabSelected = { selectedTab ->
+                                when (selectedTab) {
+                                    MainTab.Devices -> navigateToDevices()
+                                    MainTab.Types -> navigateToTypes()
+                                    MainTab.History -> navigateToHistory()
+                                }
                             },
-                            // New Actions
-                            onAddTypeClick = {
-                                backStack.add(
-                                    Screen.AddDeviceType(
-                                        returnScreen = Screen.Home(initialTab = MainTab.Types),
-                                    ),
-                                )
-                            },
-                            onEditTypeClick = { typeId -> backStack.add(Screen.EditDeviceType(typeId)) },
-                            onAddEventClick = { backStack.add(Screen.AddBatteryEvent) },
-                            onManageTypesClick = { backStack.add(Screen.DeviceTypeList) }, // Fallback if Types tab exists?
                             onSettingsClick = { backStack.add(Screen.Settings) },
+                            onAddClick = {
+                                when (tab) {
+                                    MainTab.Devices -> backStack.add(Screen.AddDevice)
+                                    MainTab.Types -> backStack.add(
+                                        Screen.AddDeviceType(returnScreen = Screen.Types),
+                                    )
+                                    MainTab.History -> backStack.add(Screen.AddBatteryEvent)
+                                }
+                            },
+                            content = content,
                         )
+                    }
+
+                    entry<Screen.Devices> {
+                        val homeViewModel = remember { component.homeViewModel }
+                        showShell(MainTab.Devices) { innerPadding ->
+                            com.chriscartland.batterybutler.feature.home.HomeScreen(
+                                viewModel = homeViewModel,
+                                onAddDeviceClick = {}, // Handled by FAB
+                                onDeviceClick = { deviceId -> backStack.add(Screen.DeviceDetail(deviceId)) },
+                                onManageTypesClick = {}, // Removed
+                                modifier = Modifier.padding(innerPadding),
+                            )
+                        }
+                    }
+
+                    entry<Screen.Types> {
+                        val deviceTypeListViewModel = remember { component.deviceTypeListViewModel }
+                        showShell(MainTab.Types) { innerPadding ->
+                            DeviceTypeListScreen(
+                                viewModel = deviceTypeListViewModel,
+                                onEditType = { typeId -> backStack.add(Screen.EditDeviceType(typeId)) },
+                                modifier = Modifier.padding(innerPadding),
+                            )
+                        }
+                    }
+
+                    entry<Screen.History> {
+                        val historyListViewModel = remember { component.historyListViewModel }
+                        showShell(MainTab.History) { innerPadding ->
+                            com.chriscartland.batterybutler.feature.history.HistoryListScreen(
+                                viewModel = historyListViewModel,
+                                onEventClick = { eventId, deviceId ->
+                                    backStack.add(Screen.EventDetail(eventId, deviceId))
+                                },
+                                modifier = Modifier.padding(innerPadding),
+                            )
+                        }
                     }
 
                     entry<Screen.AddDevice> {
                         AddDeviceScreen(
                             viewModel = component.addDeviceViewModel,
-                            onDeviceAdded = {
-                                backStack.removeLastOrNull()
-                            },
-                            onManageDeviceTypesClick = { backStack.add(Screen.DeviceTypeList) },
+                            onDeviceAdded = { backStack.removeLastOrNull() },
+                            onManageDeviceTypesClick = { backStack.add(Screen.Types) },
                             onBack = { backStack.removeLastOrNull() },
                         )
                     }
@@ -98,40 +144,10 @@ fun App(
                         )
                     }
 
-                    entry<Screen.DeviceTypeList> {
-                        val viewModel = remember { component.deviceTypeListViewModel }
-                        Scaffold(
-                            topBar = {
-                                ButlerCenteredTopAppBar(
-                                    title = "Device Types",
-                                    onBack = { backStack.removeLastOrNull() },
-                                )
-                            },
-                            floatingActionButton = {
-                                FloatingActionButton(
-                                    onClick = {
-                                        backStack.add(Screen.AddDeviceType(returnScreen = Screen.DeviceTypeList))
-                                    },
-                                ) {
-                                    Icon(Icons.Default.Add, contentDescription = "Add Type")
-                                }
-                            },
-                        ) { innerPadding ->
-                            DeviceTypeListScreen(
-                                viewModel = viewModel,
-                                onEditType = { typeId -> backStack.add(Screen.EditDeviceType(typeId)) },
-                                modifier = Modifier.padding(innerPadding),
-                            )
-                        }
-                    }
-
                     entry<Screen.AddDeviceType> {
-                        val args = it
                         AddDeviceTypeScreen(
                             viewModel = component.addDeviceTypeViewModel,
-                            onDeviceTypeAdded = {
-                                backStack.removeLastOrNull()
-                            },
+                            onDeviceTypeAdded = { backStack.removeLastOrNull() },
                             onBack = { backStack.removeLastOrNull() },
                         )
                     }
@@ -174,7 +190,7 @@ fun App(
                                     backStack.removeLastOrNull()
                                 }
                             },
-                            onManageDeviceTypesClick = { backStack.add(Screen.DeviceTypeList) },
+                            onManageDeviceTypesClick = { backStack.add(Screen.Types) },
                         )
                     }
 
@@ -205,9 +221,13 @@ fun App(
 @Serializable
 sealed interface Screen {
     @Serializable
-    data class Home(
-        val initialTab: MainTab = MainTab.Devices,
-    ) : Screen
+    data object Devices : Screen
+
+    @Serializable
+    data object History : Screen
+
+    @Serializable
+    data object Types : Screen
 
     @Serializable
     data object Settings : Screen
@@ -243,7 +263,4 @@ sealed interface Screen {
     data class EditDeviceType(
         val typeId: String,
     ) : Screen
-
-    @Serializable
-    data object DeviceTypeList : Screen
 }

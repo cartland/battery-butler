@@ -99,7 +99,7 @@ fun MainScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreenContent(
+fun MainScreenShell(
     currentTab: MainTab,
     onTabSelected: (MainTab) -> Unit,
     onSettingsClick: () -> Unit,
@@ -107,10 +107,6 @@ fun MainScreenContent(
     modifier: Modifier = Modifier,
     content: @Composable (androidx.compose.foundation.layout.PaddingValues) -> Unit,
 ) {
-    com.chriscartland.batterybutler.ui.components.BackHandler(enabled = currentTab != MainTab.Devices) {
-        onTabSelected(MainTab.Devices)
-    }
-
     Scaffold(
         modifier = modifier,
         topBar = {
