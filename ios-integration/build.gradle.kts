@@ -35,9 +35,7 @@ kotlin {
             implementation(project(":usecase"))
             implementation(libs.kotlin.inject.runtime)
         }
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
-        }
+
     }
 }
 
