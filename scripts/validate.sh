@@ -44,7 +44,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         echo "Building iOS App (SwiftUI)..."
         # Using -target because the scheme might not be shared in the .xcodeproj
         # Disabling code signing to avoid 'requires a development team' error during local validation
-        xcodebuild -project ios-app-swift-ui/iosAppSwiftUI.xcodeproj -configuration Debug -target iosApp -destination 'generic/platform=iOS Simulator' build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+        xcodebuild -project ios-app-swift-ui/iosAppSwiftUI.xcodeproj -configuration Debug -target iosApp -destination 'generic/platform=iOS Simulator' build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO CONFIGURATION_BUILD_DIR=build/
     else
         echo "Warning: xcodebuild not found. Skipping iOS build checks."
     fi
