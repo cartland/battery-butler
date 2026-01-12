@@ -7,7 +7,8 @@ cd "$(dirname "$0")/.."
 # Use this to verify that your changes will likely pass CI.
 
 echo "--- 1. Clean Project ---"
-./gradlew clean
+echo "--- 1. Clean Project - SKIPPED (Relying on Incremental Build) ---"
+# ./gradlew clean
 
 echo "--- 2. Formatting (Spotless) ---"
 ./gradlew spotlessCheck --stacktrace

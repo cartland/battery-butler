@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-java-gradle
       - name: Clean Project
-        run: ./gradlew clean
+        run: echo "Skipping clean to use cache (if available) and speed up build"
       - name: Check Formatting (Spotless)
         run: ./gradlew spotlessCheck --stacktrace
 
