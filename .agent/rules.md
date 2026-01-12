@@ -4,7 +4,8 @@
 - **Always** update this file when adding new rules or best practices for the project.
 
 ## iOS Builds
-- **Always** use `-derivedDataPath build` when running `xcodebuild` in scripts or CI to ensure artifacts are output to a predictable location (`./build`) instead of the default system DerivedData path.
+- **Always** use `-derivedDataPath build/<target_name>` (e.g., `build/ios_compose`) when running multiple `xcodebuild` commands in a single script. This ensures **artifact isolation** between steps, mimicking CI parity, and prevents accidental cross-linking of frameworks.
+- **Always** use `-derivedDataPath build/...` generally to keep artifacts out of system locations.
 - **Always** use `-target` instead of `-scheme` if the scheme file is not shared (checked into git).
 - **Always** disable code signing for local simulator builds or CI builds without certificates using `CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO`.
 
