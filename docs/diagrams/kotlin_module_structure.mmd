@@ -17,12 +17,10 @@ graph TD
         ServerDomain[":server:domain"]
     end
 
-    subgraph "Compose UI"
-        UiCore[":ui-core"]
-        UiFeature[":ui-feature"]
-    end
-
-    subgraph "Presentation Layer"
+    subgraph "Presentation"
+        PresenterCore[":presenter-core"]
+        PresenterFeature[":presenter-feature"]
+        PresenterModels[":presenter-models"]
         Viewmodel[":viewmodel"]
     end
 
@@ -36,21 +34,17 @@ graph TD
         Networking[":networking"]
     end
 
-    subgraph "Others"
-        UiModels[":ui-models"]
-    end
-
     %% Dependencies
     AndroidScreenshotTests --> Domain
-    AndroidScreenshotTests --> UiCore
-    AndroidScreenshotTests --> UiFeature
+    AndroidScreenshotTests --> PresenterCore
+    AndroidScreenshotTests --> PresenterFeature
     AndroidScreenshotTests --> Usecase
 
     ComposeApp --> Data
     ComposeApp --> Domain
     ComposeApp --> Networking
-    ComposeApp --> UiCore
-    ComposeApp --> UiFeature
+    ComposeApp --> PresenterCore
+    ComposeApp --> PresenterFeature
     ComposeApp --> Usecase
     ComposeApp --> Viewmodel
 
@@ -63,6 +57,14 @@ graph TD
 
     Networking --> Domain
 
+    PresenterCore --> Domain
+
+    PresenterFeature --> Domain
+    PresenterFeature --> PresenterCore
+    PresenterFeature --> PresenterModels
+
+    PresenterModels --> Domain
+
     ServerApp --> Domain
     ServerApp --> ServerData
     ServerApp --> ServerDomain
@@ -72,16 +74,8 @@ graph TD
 
     ServerDomain --> Domain
 
-    UiCore --> Domain
-
-    UiFeature --> Domain
-    UiFeature --> UiCore
-    UiFeature --> UiModels
-
-    UiModels --> Domain
-
     Usecase --> Domain
 
     Viewmodel --> Domain
-    Viewmodel --> UiModels
+    Viewmodel --> PresenterModels
     Viewmodel --> Usecase
