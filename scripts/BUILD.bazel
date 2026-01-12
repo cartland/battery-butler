@@ -22,3 +22,42 @@ sh_binary(
     name = "run_android_app",
     srcs = ["run-android-app.sh"],
 )
+
+genrule(
+    name = "build_server",
+    srcs = ["//:server_srcs"],
+    outs = ["server.jar"],
+    cmd = "./scripts/build-server.sh && cp server/app/build/libs/app-all.jar $@",
+    tags = ["local"],
+    visibility = ["//visibility:public"],
+)
+
+genrule(
+    name = "build_android",
+    srcs = ["//:android_srcs"],
+    outs = ["app-debug.apk"],
+    cmd = "./scripts/build-android.sh && cp compose-app/build/outputs/apk/debug/*.apk $@",
+    tags = ["local"],
+    visibility = ["//visibility:public"],
+)
+
+genrule(
+    name = "build_desktop",
+    srcs = ["//:desktop_srcs"],
+    outs = ["desktop-dist.zip"],
+    # Zip the distributions directory for output
+    cmd = "./scripts/build-desktop.sh && zip -r $@ compose-app/build/compose/binaries",
+    tags = ["local"],
+    visibility = ["//visibility:public"],
+)
+
+genrule(
+    name = "build_ios_framework",
+    srcs = ["//:ios_framework_srcs"],
+    outs = ["ComposeApp.framework.zip"],
+    # Zip framework for output
+    cmd = "./scripts/build-ios-framework.sh && zip -r $@ compose-app/build/bin/iosX64/debugFramework/ComposeApp.framework",
+    tags = ["local"],
+    visibility = ["//visibility:public"],
+)
+

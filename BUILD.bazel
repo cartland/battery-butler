@@ -1,0 +1,91 @@
+
+package(default_visibility = ["//visibility:public"])
+
+# Source Groups for Bazel-ified scripts
+
+filegroup(
+    name = "gradle_wrapper",
+    srcs = [
+        "gradlew",
+        "gradle/wrapper/gradle-wrapper.jar",
+        "gradle/wrapper/gradle-wrapper.properties",
+    ],
+)
+
+filegroup(
+    name = "build_config",
+    srcs = [
+        "build.gradle.kts",
+        "settings.gradle.kts",
+        "gradle.properties",
+        "gradle/libs.versions.toml",
+        "local.properties", # Optional, but needed if present
+    ],
+)
+
+filegroup(
+    name = "server_srcs",
+    srcs = glob([
+        "server/**",
+        "domain/**",
+        "data/**",
+        "usecase/**",
+        "viewmodel/**",
+        "networking/**",
+    ]) + [
+        ":build_config",
+        ":gradle_wrapper",
+    ],
+)
+
+filegroup(
+    name = "android_srcs",
+    srcs = glob([
+        "compose-app/**",
+        "ui-core/**",
+        "ui-feature/**",
+        "domain/**",
+        "data/**",
+        "usecase/**",
+        "viewmodel/**",
+        "networking/**",
+        "android-screenshot-tests/**",
+    ]) + [
+        ":build_config",
+        ":gradle_wrapper",
+    ],
+)
+
+filegroup(
+    name = "desktop_srcs",
+    srcs = glob([
+        "compose-app/**",
+        "ui-core/**",
+        "ui-feature/**",
+        "domain/**",
+        "data/**",
+        "usecase/**",
+        "viewmodel/**",
+        "networking/**",
+    ]) + [
+        ":build_config",
+        ":gradle_wrapper",
+    ],
+)
+
+filegroup(
+    name = "ios_framework_srcs",
+    srcs = glob([
+        "compose-app/**",
+        "ui-core/**",
+        "ui-feature/**",
+        "domain/**",
+        "data/**",
+        "usecase/**",
+        "viewmodel/**",
+        "networking/**",
+    ]) + [
+        ":build_config",
+        ":gradle_wrapper",
+    ],
+)
