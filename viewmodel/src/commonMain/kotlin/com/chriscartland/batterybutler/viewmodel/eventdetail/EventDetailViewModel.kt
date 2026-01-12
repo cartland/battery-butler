@@ -20,6 +20,8 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
 import me.tatarka.inject.annotations.Inject
 
+import com.chriscartland.batterybutler.uimodels.eventdetail.EventDetailUiState
+
 @Inject
 class EventDetailViewModelFactory(
     private val getEventDetailUseCase: GetEventDetailUseCase,
@@ -85,16 +87,4 @@ class EventDetailViewModel(
             deleteBatteryEventUseCase(eventId)
         }
     }
-}
-
-sealed interface EventDetailUiState {
-    data object Loading : EventDetailUiState
-
-    data object NotFound : EventDetailUiState
-
-    data class Success(
-        val event: BatteryEvent,
-        val device: Device,
-        val deviceType: DeviceType?,
-    ) : EventDetailUiState
 }

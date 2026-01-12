@@ -47,17 +47,7 @@ import com.chriscartland.batterybutler.ui.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.ui.components.DeviceIconMapper
 import com.chriscartland.batterybutler.ui.components.HistoryListItem
 
-sealed interface DeviceDetailUiState {
-    data object Loading : DeviceDetailUiState
-
-    data object NotFound : DeviceDetailUiState
-
-    data class Success(
-        val device: Device,
-        val deviceType: DeviceType?,
-        val events: List<BatteryEvent>,
-    ) : DeviceDetailUiState
-}
+import com.chriscartland.batterybutler.uimodels.devicedetail.DeviceDetailUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

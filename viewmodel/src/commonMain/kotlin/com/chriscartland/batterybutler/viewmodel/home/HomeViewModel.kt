@@ -16,6 +16,10 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 
+import com.chriscartland.batterybutler.uimodels.home.GroupOption
+import com.chriscartland.batterybutler.uimodels.home.HomeUiState
+import com.chriscartland.batterybutler.uimodels.home.SortOption
+
 // Custom implementations to avoid JVM-specific dependencies in KMP
 private fun <K : Comparable<K>, V> Map<K, V>.toSortedMap(comparator: Comparator<K>): Map<K, V> =
     this.entries
@@ -65,6 +69,7 @@ class HomeViewModel(
             SortOption.NAME -> devices.sortedBy { it.name }
             SortOption.LOCATION -> devices.sortedWith(compareBy<Device> { it.location ?: "" }.thenBy { it.name })
             SortOption.BATTERY_AGE -> devices.sortedBy { it.batteryLastReplaced }
+            SortOption.TYPE -> devices.sortedBy { typeMap[it.typeId]?.name }
         }
         if (!config.isSortAsc) {
             sortedDevices = sortedDevices.reversed()
@@ -75,6 +80,7 @@ class HomeViewModel(
             GroupOption.NONE -> mapOf("All Devices" to sortedDevices)
             GroupOption.TYPE -> sortedDevices.groupBy { typeMap[it.typeId]?.name ?: "Unknown" }
             GroupOption.LOCATION -> sortedDevices.groupBy { it.location ?: "Unknown Location" }
+            else -> mapOf("All Devices" to sortedDevices)
         }
 
         val finalGroupedDevices = if (config.group != GroupOption.NONE) {
@@ -91,17 +97,12 @@ class HomeViewModel(
             groupOption = config.group,
             isSortAscending = config.isSortAsc,
             isGroupAscending = config.isGroupAsc,
-            exportData = config.exportData,
         )
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = HomeUiState(),
     )
-
-    // Helper for manual sorting since toSortedMap is generic and might need platform specific handling if not available.
-    // Actually, toSortedMap might be missing in older KMP stdlib. Let's use a safe fallback:
-    // Moved to top level private functions.
 
     fun onSortOptionSelected(option: SortOption) {
         sortOptionFlow.value = option
@@ -129,32 +130,6 @@ class HomeViewModel(
     fun onExportDataConsumed() {
         exportDataFlow.value = null
     }
-}
-
-data class HomeUiState(
-    val groupedDevices: Map<String, List<Device>> = emptyMap(),
-    val deviceTypes: Map<String, DeviceType> = emptyMap(),
-    val sortOption: SortOption = SortOption.NAME,
-    val groupOption: GroupOption = GroupOption.NONE,
-    val isSortAscending: Boolean = true,
-    val isGroupAscending: Boolean = true,
-    val exportData: String? = null,
-)
-
-enum class SortOption(
-    val label: String,
-) {
-    NAME("Name"),
-    LOCATION("Location"),
-    BATTERY_AGE("Battery Age"),
-}
-
-enum class GroupOption(
-    val label: String,
-) {
-    NONE("None"),
-    TYPE("Type"),
-    LOCATION("Location"),
 }
 
 private data class SortConfig(

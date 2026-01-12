@@ -1,4 +1,8 @@
 graph TD
+    subgraph "Screenshot Tests"
+        AndroidScreenshotTests[":android-screenshot-tests"]
+    end
+
     subgraph "iOS Apps"
         IosSwiftDi[":ios-swift-di"]
         IosAppComposeUi["ios-app-compose-ui"]
@@ -35,7 +39,7 @@ graph TD
     end
 
     subgraph "Others"
-        AndroidScreenshotTests[":android-screenshot-tests"]
+        UiModels[":ui-models"]
     end
 
     %% Dependencies
@@ -74,11 +78,15 @@ graph TD
 
     UiFeature --> Domain
     UiFeature --> UiCore
+    UiFeature --> UiModels
     UiFeature --> Viewmodel
+
+    UiModels --> Domain
 
     Usecase --> Domain
 
     Viewmodel --> Domain
+    Viewmodel --> UiModels
     Viewmodel --> Usecase
 
     IosAppComposeUi --> ComposeApp

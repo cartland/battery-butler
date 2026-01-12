@@ -51,15 +51,7 @@ import com.chriscartland.batterybutler.ui.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.ui.components.DeviceIconMapper
 import com.chriscartland.batterybutler.ui.components.DeviceTypeIconItem
 
-sealed interface EditDeviceTypeUiState {
-    data object Loading : EditDeviceTypeUiState
-
-    data object NotFound : EditDeviceTypeUiState
-
-    data class Success(
-        val deviceType: DeviceType,
-    ) : EditDeviceTypeUiState
-}
+import com.chriscartland.batterybutler.uimodels.devicetypes.EditDeviceTypeUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

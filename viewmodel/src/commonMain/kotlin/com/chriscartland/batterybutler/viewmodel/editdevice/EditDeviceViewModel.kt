@@ -17,6 +17,8 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import me.tatarka.inject.annotations.Inject
 
+import com.chriscartland.batterybutler.uimodels.editdevice.EditDeviceUiState
+
 @Inject
 class EditDeviceViewModelFactory(
     private val getDeviceDetailUseCase: GetDeviceDetailUseCase,
@@ -80,15 +82,4 @@ class EditDeviceViewModel(
             deleteDeviceUseCase(deviceId)
         }
     }
-}
-
-sealed interface EditDeviceUiState {
-    data object Loading : EditDeviceUiState
-
-    data object NotFound : EditDeviceUiState
-
-    data class Success(
-        val device: Device,
-        val deviceTypes: List<DeviceType>,
-    ) : EditDeviceUiState
 }

@@ -42,6 +42,8 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toLocalDateTime
 
+import androidx.compose.material3.MenuAnchorType
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddBatteryEventContent(
@@ -153,7 +155,7 @@ fun AddBatteryEventContent(
                     readOnly = true,
                     label = { Text("Device") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                    modifier = Modifier.menuAnchor().fillMaxWidth(),
+                    modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable, true).fillMaxWidth(),
                 )
                 ExposedDropdownMenu(
                     expanded = expanded,

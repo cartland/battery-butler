@@ -11,6 +11,10 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import me.tatarka.inject.annotations.Inject
 
+import com.chriscartland.batterybutler.uimodels.devicetypes.DeviceTypeGroupOption
+import com.chriscartland.batterybutler.uimodels.devicetypes.DeviceTypeListUiState
+import com.chriscartland.batterybutler.uimodels.devicetypes.DeviceTypeSortOption
+
 @Inject
 class DeviceTypeListViewModel(
     private val getDeviceTypesUseCase: GetDeviceTypesUseCase,
@@ -80,32 +84,6 @@ class DeviceTypeListViewModel(
     fun toggleGroupDirection() {
         isGroupAscendingFlow.value = !isGroupAscendingFlow.value
     }
-}
-
-sealed interface DeviceTypeListUiState {
-    data object Loading : DeviceTypeListUiState
-
-    data class Success(
-        val groupedTypes: Map<String, List<DeviceType>> = emptyMap(),
-        val sortOption: DeviceTypeSortOption = DeviceTypeSortOption.NAME,
-        val groupOption: DeviceTypeGroupOption = DeviceTypeGroupOption.NONE,
-        val isSortAscending: Boolean = true,
-        val isGroupAscending: Boolean = true,
-    ) : DeviceTypeListUiState
-}
-
-enum class DeviceTypeSortOption(
-    val label: String,
-) {
-    NAME("Name"),
-    BATTERY_TYPE("Battery Type"),
-}
-
-enum class DeviceTypeGroupOption(
-    val label: String,
-) {
-    NONE("None"),
-    BATTERY_TYPE("Battery Type"),
 }
 
 private data class DeviceTypeSortConfig(

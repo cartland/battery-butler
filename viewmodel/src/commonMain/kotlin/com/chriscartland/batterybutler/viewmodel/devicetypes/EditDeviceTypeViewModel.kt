@@ -14,6 +14,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 
+import com.chriscartland.batterybutler.uimodels.devicetypes.EditDeviceTypeUiState
+
 @Inject
 class EditDeviceTypeViewModelFactory(
     private val getDeviceTypesUseCase: GetDeviceTypesUseCase,
@@ -69,14 +71,4 @@ class EditDeviceTypeViewModel(
             deleteDeviceTypeUseCase(typeId)
         }
     }
-}
-
-sealed interface EditDeviceTypeUiState {
-    data object Loading : EditDeviceTypeUiState
-
-    data object NotFound : EditDeviceTypeUiState
-
-    data class Success(
-        val deviceType: DeviceType,
-    ) : EditDeviceTypeUiState
 }

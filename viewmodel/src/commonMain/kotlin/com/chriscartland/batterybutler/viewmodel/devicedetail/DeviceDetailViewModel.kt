@@ -19,6 +19,8 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import me.tatarka.inject.annotations.Inject
 
+import com.chriscartland.batterybutler.uimodels.devicedetail.DeviceDetailUiState
+
 @Inject
 class DeviceDetailViewModelFactory(
     private val getDeviceDetailUseCase: GetDeviceDetailUseCase,
@@ -82,16 +84,4 @@ class DeviceDetailViewModel(
             }
         }
     }
-}
-
-sealed interface DeviceDetailUiState {
-    data object Loading : DeviceDetailUiState
-
-    data object NotFound : DeviceDetailUiState
-
-    data class Success(
-        val device: Device,
-        val deviceType: DeviceType?,
-        val events: List<BatteryEvent>,
-    ) : DeviceDetailUiState
 }

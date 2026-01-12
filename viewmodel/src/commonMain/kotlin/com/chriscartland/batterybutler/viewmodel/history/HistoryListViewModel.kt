@@ -13,20 +13,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import me.tatarka.inject.annotations.Inject
 
-sealed interface HistoryListUiState {
-    data object Loading : HistoryListUiState
-
-    data class Success(
-        val items: List<HistoryItemUiModel>,
-    ) : HistoryListUiState
-}
-
-data class HistoryItemUiModel(
-    val event: BatteryEvent,
-    val deviceName: String,
-    val deviceTypeName: String,
-    val deviceLocation: String?,
-)
+import com.chriscartland.batterybutler.uimodels.history.HistoryItemUiModel
+import com.chriscartland.batterybutler.uimodels.history.HistoryListUiState
 
 @Inject
 class HistoryListViewModel(

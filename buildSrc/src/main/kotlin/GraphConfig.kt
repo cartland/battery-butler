@@ -37,7 +37,7 @@ data class GraphConfig(
         val default = GraphConfig(
             moduleGroups = mapOf(
                 ":android-app" to "Android App",
-                ":android-screenshot-library" to "Screenshot Tests",
+                ":android-screenshot-tests" to "Screenshot Tests",
                 ":compose-app" to "Compose Apps",
                 ":ios-swift-di" to "iOS Apps",
                 ":server:app" to "Server",

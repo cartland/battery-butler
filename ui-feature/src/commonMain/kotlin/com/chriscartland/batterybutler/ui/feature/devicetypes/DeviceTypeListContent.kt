@@ -34,39 +34,17 @@ import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.ui.components.CompositeControl
 import com.chriscartland.batterybutler.ui.components.DeviceIconMapper
 
-sealed interface DeviceTypeListUiState {
-    data object Loading : DeviceTypeListUiState
-
-    data class Success(
-        val groupedTypes: Map<String, List<DeviceType>>,
-        val sortOption: UiDeviceTypeSortOption,
-        val groupOption: UiDeviceTypeGroupOption,
-        val isSortAscending: Boolean,
-        val isGroupAscending: Boolean,
-    ) : DeviceTypeListUiState
-}
-
-enum class UiDeviceTypeSortOption(
-    val label: String,
-) {
-    NAME("Name"),
-    BATTERY_TYPE("Battery Type"),
-}
-
-enum class UiDeviceTypeGroupOption(
-    val label: String,
-) {
-    NONE("None"),
-    BATTERY_TYPE("Battery Type"),
-}
+import com.chriscartland.batterybutler.uimodels.devicetypes.DeviceTypeGroupOption
+import com.chriscartland.batterybutler.uimodels.devicetypes.DeviceTypeListUiState
+import com.chriscartland.batterybutler.uimodels.devicetypes.DeviceTypeSortOption
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun DeviceTypeListContent(
     state: DeviceTypeListUiState,
     onEditType: (String) -> Unit,
-    onSortOptionSelected: (UiDeviceTypeSortOption) -> Unit,
-    onGroupOptionSelected: (UiDeviceTypeGroupOption) -> Unit,
+    onSortOptionSelected: (DeviceTypeSortOption) -> Unit,
+    onGroupOptionSelected: (DeviceTypeGroupOption) -> Unit,
     onSortDirectionToggle: () -> Unit,
     onGroupDirectionToggle: () -> Unit,
     modifier: Modifier = Modifier,
@@ -92,7 +70,7 @@ fun DeviceTypeListContent(
                         Box {
                             CompositeControl(
                                 label = "Group: ${state.groupOption.label}",
-                                isActive = state.groupOption != UiDeviceTypeGroupOption.NONE,
+                                isActive = state.groupOption != DeviceTypeGroupOption.NONE,
                                 isAscending = state.isGroupAscending,
                                 onClicked = { groupExpanded = true },
                                 onDirectionToggle = { onGroupDirectionToggle() },
@@ -101,7 +79,7 @@ fun DeviceTypeListContent(
                                 expanded = groupExpanded,
                                 onDismissRequest = { groupExpanded = false },
                             ) {
-                                UiDeviceTypeGroupOption.values().forEach { option ->
+                                DeviceTypeGroupOption.entries.forEach { option ->
                                     DropdownMenuItem(
                                         text = { Text(option.label) },
                                         onClick = {
@@ -126,7 +104,7 @@ fun DeviceTypeListContent(
                                 expanded = sortExpanded,
                                 onDismissRequest = { sortExpanded = false },
                             ) {
-                                UiDeviceTypeSortOption.values().forEach { option ->
+                                DeviceTypeSortOption.entries.forEach { option ->
                                     DropdownMenuItem(
                                         text = { Text(option.label) },
                                         onClick = {
@@ -144,7 +122,7 @@ fun DeviceTypeListContent(
                         contentPadding = PaddingValues(16.dp),
                     ) {
                         state.groupedTypes.forEach { (groupName, types) ->
-                            if (state.groupOption != UiDeviceTypeGroupOption.NONE) {
+                            if (state.groupOption != DeviceTypeGroupOption.NONE) {
                                 stickyHeader {
                                     Surface(
                                         modifier = Modifier.fillMaxWidth(),
