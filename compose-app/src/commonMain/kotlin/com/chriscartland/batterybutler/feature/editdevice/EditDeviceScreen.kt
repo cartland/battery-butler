@@ -4,8 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import com.chriscartland.batterybutler.presenter.feature.editdevice.EditDeviceContent
-import com.chriscartland.batterybutler.presenter.models.editdevice.EditDeviceUiState
+import com.chriscartland.batterybutler.presentation.feature.editdevice.EditDeviceContent
+import com.chriscartland.batterybutler.presentation.models.editdevice.EditDeviceUiState
 import com.chriscartland.batterybutler.viewmodel.editdevice.EditDeviceViewModel
 
 @Composable

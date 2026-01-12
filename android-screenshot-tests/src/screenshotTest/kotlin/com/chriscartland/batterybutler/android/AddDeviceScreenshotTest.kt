@@ -6,7 +6,7 @@ import com.android.tools.screenshot.PreviewTest
 import com.chriscartland.batterybutler.domain.ai.AiMessage
 import com.chriscartland.batterybutler.domain.ai.AiRole
 import com.chriscartland.batterybutler.domain.model.DeviceType
-import com.chriscartland.batterybutler.presenter.feature.adddevice.AddDeviceContent
+import com.chriscartland.batterybutler.presentation.feature.adddevice.AddDeviceContent
 
 @PreviewTest
 @Preview(showBackground = true)

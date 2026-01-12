@@ -10,6 +10,7 @@ kotlin {
             baseName = "shared"
             export(project(":domain"))
             export(project(":viewmodel"))
+            export(project(":presentation-models"))
         }
     }
     iosArm64 {
@@ -17,6 +18,7 @@ kotlin {
             baseName = "shared"
             export(project(":domain"))
             export(project(":viewmodel"))
+            export(project(":presentation-models"))
         }
     }
     iosSimulatorArm64 {
@@ -24,6 +26,7 @@ kotlin {
             baseName = "shared"
             export(project(":domain"))
             export(project(":viewmodel"))
+            export(project(":presentation-models"))
         }
     }
 
@@ -33,6 +36,7 @@ kotlin {
             api(project(":domain"))
             implementation(project(":data"))
             api(project(":viewmodel"))
+            api(project(":presentation-models"))
             implementation(project(":usecase"))
             implementation(libs.kotlin.inject.runtime)
         }

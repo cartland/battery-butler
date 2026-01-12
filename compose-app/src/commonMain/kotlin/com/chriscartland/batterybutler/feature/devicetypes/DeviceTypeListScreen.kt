@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.chriscartland.batterybutler.presenter.feature.devicetypes.DeviceTypeListContent
+import com.chriscartland.batterybutler.presentation.feature.devicetypes.DeviceTypeListContent
 import com.chriscartland.batterybutler.viewmodel.devicetypes.DeviceTypeListViewModel
 
 @Composable

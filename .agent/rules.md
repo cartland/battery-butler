@@ -14,4 +14,5 @@
 
 ## Validation
 - **Always** run `./scripts/validate.sh` before pushing to main. This script is maintained to match `ci.yml` strictly.
+- **Always** run `./scripts/spotless-apply.sh` and fix errors before pushing to main.
 - **Avoid** `clean` steps in scripts and CI if possible, relying on Gradle's incremental build and caching for speed.

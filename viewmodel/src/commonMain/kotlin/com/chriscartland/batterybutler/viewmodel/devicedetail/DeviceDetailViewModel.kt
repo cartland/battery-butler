@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import me.tatarka.inject.annotations.Inject
 
-import com.chriscartland.batterybutler.presenter.models.devicedetail.DeviceDetailUiState
+import com.chriscartland.batterybutler.presentation.models.devicedetail.DeviceDetailUiState
 
 @Inject
 class DeviceDetailViewModelFactory(

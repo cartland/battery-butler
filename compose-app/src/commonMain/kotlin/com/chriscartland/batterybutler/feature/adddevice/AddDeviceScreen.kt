@@ -5,7 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.chriscartland.batterybutler.presenter.feature.adddevice.AddDeviceContent
+import com.chriscartland.batterybutler.presentation.feature.adddevice.AddDeviceContent
 import com.chriscartland.batterybutler.viewmodel.adddevice.AddDeviceViewModel
 
 @Composable

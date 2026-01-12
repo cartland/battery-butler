@@ -13,8 +13,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import me.tatarka.inject.annotations.Inject
 
-import com.chriscartland.batterybutler.presenter.models.history.HistoryItemUiModel
-import com.chriscartland.batterybutler.presenter.models.history.HistoryListUiState
+import com.chriscartland.batterybutler.presentation.models.history.HistoryItemUiModel
+import com.chriscartland.batterybutler.presentation.models.history.HistoryListUiState
 
 @Inject
 class HistoryListViewModel(

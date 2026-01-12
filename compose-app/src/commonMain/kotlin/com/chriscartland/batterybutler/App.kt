@@ -20,9 +20,9 @@ import com.chriscartland.batterybutler.feature.editdevice.EditDeviceScreen
 import com.chriscartland.batterybutler.feature.eventdetail.EventDetailScreen
 import com.chriscartland.batterybutler.feature.main.MainTab
 import com.chriscartland.batterybutler.feature.settings.SettingsScreen
-import com.chriscartland.batterybutler.presenter.core.theme.BatteryButlerTheme
-import com.chriscartland.batterybutler.presenter.core.util.LocalShareHandler
-import com.chriscartland.batterybutler.presenter.core.util.ShareHandler
+import com.chriscartland.batterybutler.presentation.core.theme.BatteryButlerTheme
+import com.chriscartland.batterybutler.presentation.core.util.LocalShareHandler
+import com.chriscartland.batterybutler.presentation.core.util.ShareHandler
 import kotlinx.serialization.Serializable
 
 // Preview removed as we can't easily preview with DI and Interfaces

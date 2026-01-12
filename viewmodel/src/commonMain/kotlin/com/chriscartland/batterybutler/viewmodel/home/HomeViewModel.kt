@@ -16,9 +16,9 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 
-import com.chriscartland.batterybutler.presenter.models.home.GroupOption
-import com.chriscartland.batterybutler.presenter.models.home.HomeUiState
-import com.chriscartland.batterybutler.presenter.models.home.SortOption
+import com.chriscartland.batterybutler.presentation.models.home.GroupOption
+import com.chriscartland.batterybutler.presentation.models.home.HomeUiState
+import com.chriscartland.batterybutler.presentation.models.home.SortOption
 
 // Custom implementations to avoid JVM-specific dependencies in KMP
 private fun <K : Comparable<K>, V> Map<K, V>.toSortedMap(comparator: Comparator<K>): Map<K, V> =
