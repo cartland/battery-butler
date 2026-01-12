@@ -13,8 +13,8 @@ struct BatteryButlerApp: App {
     
     var body: some Scene {
         WindowGroup {
-            // Inject the HomeViewModel into the ContentView
-            ContentView(viewModel: component.homeViewModel)
+            // Inject the Component into MainScreen
+            MainScreen(component: component)
         }
     }
 }

@@ -6,7 +6,38 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		246295A22F14EEF40047C600 /* AddDeviceScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2462958F2F14EEF40047C600 /* AddDeviceScreen.swift */; };
+		246295A32F14EEF40047C600 /* MainTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2462959C2F14EEF40047C600 /* MainTab.swift */; };
+		246295A42F14EEF40047C600 /* MainScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2462959B2F14EEF40047C600 /* MainScreen.swift */; };
+		246295A52F14EEF40047C600 /* ViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2462958D2F14EEF40047C600 /* ViewModelWrapper.swift */; };
+		246295A62F14EEF40047C600 /* DeviceRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 246295982F14EEF40047C600 /* DeviceRow.swift */; };
+		246295A72F14EEF40047C600 /* HistoryListScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 246295952F14EEF40047C600 /* HistoryListScreen.swift */; };
+		246295A82F14EEF40047C600 /* FlowCollector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2462958C2F14EEF40047C600 /* FlowCollector.swift */; };
+		246295A92F14EEF40047C600 /* SettingsViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2462959F2F14EEF40047C600 /* SettingsViewModelWrapper.swift */; };
+		246295AA2F14EEF40047C600 /* DeviceDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 246295922F14EEF40047C600 /* DeviceDetailScreen.swift */; };
+		246295AB2F14EEF40047C600 /* HistoryListViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 246295962F14EEF40047C600 /* HistoryListViewModelWrapper.swift */; };
+		246295AC2F14EEF40047C600 /* AddDeviceViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 246295902F14EEF40047C600 /* AddDeviceViewModelWrapper.swift */; };
+		246295AD2F14EEF40047C600 /* HomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 246295992F14EEF40047C600 /* HomeScreen.swift */; };
+		246295AE2F14EEF40047C600 /* SettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2462959E2F14EEF40047C600 /* SettingsScreen.swift */; };
+		246295AF2F14EEF40047C600 /* DeviceDetailViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 246295932F14EEF40047C600 /* DeviceDetailViewModelWrapper.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
+		2462958C2F14EEF40047C600 /* FlowCollector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowCollector.swift; sourceTree = "<group>"; };
+		2462958D2F14EEF40047C600 /* ViewModelWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModelWrapper.swift; sourceTree = "<group>"; };
+		2462958F2F14EEF40047C600 /* AddDeviceScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDeviceScreen.swift; sourceTree = "<group>"; };
+		246295902F14EEF40047C600 /* AddDeviceViewModelWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDeviceViewModelWrapper.swift; sourceTree = "<group>"; };
+		246295922F14EEF40047C600 /* DeviceDetailScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceDetailScreen.swift; sourceTree = "<group>"; };
+		246295932F14EEF40047C600 /* DeviceDetailViewModelWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceDetailViewModelWrapper.swift; sourceTree = "<group>"; };
+		246295952F14EEF40047C600 /* HistoryListScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryListScreen.swift; sourceTree = "<group>"; };
+		246295962F14EEF40047C600 /* HistoryListViewModelWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryListViewModelWrapper.swift; sourceTree = "<group>"; };
+		246295982F14EEF40047C600 /* DeviceRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceRow.swift; sourceTree = "<group>"; };
+		246295992F14EEF40047C600 /* HomeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeScreen.swift; sourceTree = "<group>"; };
+		2462959B2F14EEF40047C600 /* MainScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainScreen.swift; sourceTree = "<group>"; };
+		2462959C2F14EEF40047C600 /* MainTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTab.swift; sourceTree = "<group>"; };
+		2462959E2F14EEF40047C600 /* SettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScreen.swift; sourceTree = "<group>"; };
+		2462959F2F14EEF40047C600 /* SettingsViewModelWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModelWrapper.swift; sourceTree = "<group>"; };
 		B9DA97B12DC1472C00A4DA20 /* BatteryButler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BatteryButler.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -47,9 +78,87 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2462958E2F14EEF40047C600 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				2462958C2F14EEF40047C600 /* FlowCollector.swift */,
+				2462958D2F14EEF40047C600 /* ViewModelWrapper.swift */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		246295912F14EEF40047C600 /* AddDevice */ = {
+			isa = PBXGroup;
+			children = (
+				2462958F2F14EEF40047C600 /* AddDeviceScreen.swift */,
+				246295902F14EEF40047C600 /* AddDeviceViewModelWrapper.swift */,
+			);
+			path = AddDevice;
+			sourceTree = "<group>";
+		};
+		246295942F14EEF40047C600 /* DeviceDetail */ = {
+			isa = PBXGroup;
+			children = (
+				246295922F14EEF40047C600 /* DeviceDetailScreen.swift */,
+				246295932F14EEF40047C600 /* DeviceDetailViewModelWrapper.swift */,
+			);
+			path = DeviceDetail;
+			sourceTree = "<group>";
+		};
+		246295972F14EEF40047C600 /* History */ = {
+			isa = PBXGroup;
+			children = (
+				246295952F14EEF40047C600 /* HistoryListScreen.swift */,
+				246295962F14EEF40047C600 /* HistoryListViewModelWrapper.swift */,
+			);
+			path = History;
+			sourceTree = "<group>";
+		};
+		2462959A2F14EEF40047C600 /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				246295982F14EEF40047C600 /* DeviceRow.swift */,
+				246295992F14EEF40047C600 /* HomeScreen.swift */,
+			);
+			path = Home;
+			sourceTree = "<group>";
+		};
+		2462959D2F14EEF40047C600 /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				2462959B2F14EEF40047C600 /* MainScreen.swift */,
+				2462959C2F14EEF40047C600 /* MainTab.swift */,
+			);
+			path = Main;
+			sourceTree = "<group>";
+		};
+		246295A02F14EEF40047C600 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				2462959E2F14EEF40047C600 /* SettingsScreen.swift */,
+				2462959F2F14EEF40047C600 /* SettingsViewModelWrapper.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		246295A12F14EEF40047C600 /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				246295912F14EEF40047C600 /* AddDevice */,
+				246295942F14EEF40047C600 /* DeviceDetail */,
+				246295972F14EEF40047C600 /* History */,
+				2462959A2F14EEF40047C600 /* Home */,
+				2462959D2F14EEF40047C600 /* Main */,
+				246295A02F14EEF40047C600 /* Settings */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
 		B9DA97A82DC1472C00A4DA20 = {
 			isa = PBXGroup;
 			children = (
+				2462958E2F14EEF40047C600 /* Core */,
+				246295A12F14EEF40047C600 /* Features */,
 				B9DA98002DC14AA900A4DA20 /* Configuration */,
 				B9DA97B32DC1472C00A4DA20 /* iosApp */,
 				B9DA97B22DC1472C00A4DA20 /* Products */,
@@ -99,14 +208,14 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1620;
-				LastUpgradeCheck = 1620;
+				LastUpgradeCheck = 2620;
 				TargetAttributes = {
 					B9DA97B02DC1472C00A4DA20 = {
 						CreatedOnToolsVersion = 16.2;
 					};
 				};
 			};
-			buildConfigurationList = B9DA97AC2DC1472C00A4DA20 /* Build configuration list for PBXProject "iosApp" */;
+			buildConfigurationList = B9DA97AC2DC1472C00A4DA20 /* Build configuration list for PBXProject "iosAppSwiftUI" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -153,11 +262,8 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ \"YES\" = \"$OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED\" ]; then\n  echo \"Skipping Gradle build task invocation due to OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED environment variable set to \\\"YES\\\"\"\n  exit 0\nfi\ncd \"$SRCROOT/..\"\n./gradlew :compose-app:embedAndSignAppleFrameworkForXcode\n";
+			shellScript = "if [ \"YES\" = \"$OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED\" ]; then\n  echo \"Skipping Gradle build task invocation due to OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED environment variable set to \\\"YES\\\"\"\n  exit 0\nfi\ncd \"$SRCROOT/..\"\n./gradlew :ios-swift-di:embedAndSignAppleFrameworkForXcode\n";
 		};
-/* End PBXShellScriptBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
 		B9DA97F52DC1497100A4DA20 /* Generate Protos */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
@@ -177,12 +283,27 @@
 			shellPath = /bin/sh;
 			shellScript = "cd \"$SRCROOT/..\"\n./scripts/generate-protos.sh\n";
 		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		B9DA97AD2DC1472C00A4DA20 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				246295A22F14EEF40047C600 /* AddDeviceScreen.swift in Sources */,
+				246295A32F14EEF40047C600 /* MainTab.swift in Sources */,
+				246295A42F14EEF40047C600 /* MainScreen.swift in Sources */,
+				246295A52F14EEF40047C600 /* ViewModelWrapper.swift in Sources */,
+				246295A62F14EEF40047C600 /* DeviceRow.swift in Sources */,
+				246295A72F14EEF40047C600 /* HistoryListScreen.swift in Sources */,
+				246295A82F14EEF40047C600 /* FlowCollector.swift in Sources */,
+				246295A92F14EEF40047C600 /* SettingsViewModelWrapper.swift in Sources */,
+				246295AA2F14EEF40047C600 /* DeviceDetailScreen.swift in Sources */,
+				246295AB2F14EEF40047C600 /* HistoryListViewModelWrapper.swift in Sources */,
+				246295AC2F14EEF40047C600 /* AddDeviceViewModelWrapper.swift in Sources */,
+				246295AD2F14EEF40047C600 /* HomeScreen.swift in Sources */,
+				246295AE2F14EEF40047C600 /* SettingsScreen.swift in Sources */,
+				246295AF2F14EEF40047C600 /* DeviceDetailViewModelWrapper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -224,6 +345,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "${TEAM_ID}";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
@@ -247,6 +369,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -287,6 +410,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "${TEAM_ID}";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
@@ -303,6 +427,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -318,11 +443,10 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
-				DEVELOPMENT_TEAM = "${TEAM_ID}";
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/../ios-integration/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)\n$(SRCROOT)/../compose-app/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
+					"$(SRCROOT)/../ios-swift-di/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)\n$(SRCROOT)/../compose-app/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = iosApp/Info.plist;
@@ -351,11 +475,10 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
-				DEVELOPMENT_TEAM = "${TEAM_ID}";
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/../ios-integration/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)\n$(SRCROOT)/../compose-app/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
+					"$(SRCROOT)/../ios-swift-di/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)\n$(SRCROOT)/../compose-app/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = iosApp/Info.plist;
@@ -377,7 +500,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		B9DA97AC2DC1472C00A4DA20 /* Build configuration list for PBXProject "iosApp" */ = {
+		B9DA97AC2DC1472C00A4DA20 /* Build configuration list for PBXProject "iosAppSwiftUI" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B9DA97BD2DC1472D00A4DA20 /* Debug */,

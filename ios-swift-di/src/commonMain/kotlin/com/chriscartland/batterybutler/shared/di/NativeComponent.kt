@@ -7,6 +7,11 @@ import com.chriscartland.batterybutler.data.room.DeviceDao
 import com.chriscartland.batterybutler.domain.ai.AiEngine
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.domain.repository.RemoteDataSource
+import com.chriscartland.batterybutler.viewmodel.devicedetail.DeviceDetailViewModelFactory
+import com.chriscartland.batterybutler.viewmodel.settings.SettingsViewModel
+import com.chriscartland.batterybutler.viewmodel.adddevice.AddDeviceViewModel
+import com.chriscartland.batterybutler.viewmodel.devicetypes.DeviceTypeListViewModel
+import com.chriscartland.batterybutler.viewmodel.history.HistoryListViewModel
 import com.chriscartland.batterybutler.viewmodel.home.HomeViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -26,6 +31,11 @@ abstract class NativeComponent(
     @get:Provides val remoteDataSource: RemoteDataSource,
 ) {
     abstract val homeViewModel: HomeViewModel
+    abstract val addDeviceViewModel: AddDeviceViewModel
+    abstract val settingsViewModel: SettingsViewModel
+    abstract val historyListViewModel: HistoryListViewModel
+    abstract val deviceTypeListViewModel: DeviceTypeListViewModel
+    abstract val deviceDetailViewModelFactory: DeviceDetailViewModelFactory
 
     // Can add other ViewModels as needed for the native app
 
