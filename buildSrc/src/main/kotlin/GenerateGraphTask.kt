@@ -18,6 +18,18 @@ abstract class GenerateGraphTask : DefaultTask() {
     @get:OutputFile
     val fullSystemSvgFile: File = project.file(config.outputPaths.fullGraphSvg)
 
+    @get:org.gradle.api.tasks.InputFiles
+    @get:org.gradle.api.tasks.PathSensitive(org.gradle.api.tasks.PathSensitivity.RELATIVE)
+    val buildFiles: org.gradle.api.file.FileCollection = project.layout.files(
+        project.rootProject.file("settings.gradle.kts"),
+        project.rootProject.file("build.gradle.kts"),
+        project.rootProject.file("gradle/libs.versions.toml"),
+    ).plus(
+        project.rootProject.subprojects.map { it.buildFile }
+            .filter { it.exists() }
+            .let { project.files(it) }
+    )
+
     init {
         notCompatibleWithConfigurationCache("Accesses project instance at execution time")
     }

@@ -23,12 +23,11 @@ run_spotless_check() {
 
 update_diagrams() {
     changed_files="$1"
-    # Check if ARCHITECTURE.md or diagram sources were modified
-    if echo "$changed_files" | grep -qE "ARCHITECTURE.md|docs/diagrams/kotlin_module_structure.mmd|docs/diagrams/full_system_structure.mmd|\.kts$"; then
-        echo "Architecture docs modified. Updating diagrams..."
-        ./scripts/update-diagrams.sh
-        
-        # Check if any diagram files were actually modified by the script
+    # Always run because Gradle cache will handle UP-TO-DATE checks efficiently
+    echo "Updating diagrams..."
+    ./scripts/update-diagrams.sh
+    
+    # Check if any diagram files were actually modified by the script
         # specific files: docs/diagrams/*.mmd or docs/diagrams/*.svg
         # We use git status --porcelain because they are tracked files that would be modified.
         if git status --porcelain | grep -qE "docs/diagrams/.*(mmd|svg)"; then
@@ -38,7 +37,6 @@ update_diagrams() {
         else
              echo "Diagrams were up to date."
         fi
-    fi
 }
 
 post-commit-impl() {

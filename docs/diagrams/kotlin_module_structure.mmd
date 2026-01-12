@@ -1,8 +1,4 @@
 graph TD
-    subgraph "Screenshot Tests"
-        AndroidScreenshotLibrary[":android-screenshot-library"]
-    end
-
     subgraph "iOS Apps"
         IosSwiftDi[":ios-swift-di"]
     end
@@ -36,12 +32,16 @@ graph TD
         Networking[":networking"]
     end
 
+    subgraph "Others"
+        AndroidScreenshotTests[":android-screenshot-tests"]
+    end
+
     %% Dependencies
-    AndroidScreenshotLibrary --> Domain
-    AndroidScreenshotLibrary --> UiCore
-    AndroidScreenshotLibrary --> UiFeature
-    AndroidScreenshotLibrary --> Usecase
-    AndroidScreenshotLibrary --> Viewmodel
+    AndroidScreenshotTests --> Domain
+    AndroidScreenshotTests --> UiCore
+    AndroidScreenshotTests --> UiFeature
+    AndroidScreenshotTests --> Usecase
+    AndroidScreenshotTests --> Viewmodel
 
     ComposeApp --> Data
     ComposeApp --> Domain
@@ -52,7 +52,6 @@ graph TD
     ComposeApp --> Viewmodel
 
     Data --> Domain
-    Data --> Networking
 
     IosSwiftDi --> Data
     IosSwiftDi --> Domain
@@ -74,6 +73,7 @@ graph TD
 
     UiFeature --> Domain
     UiFeature --> UiCore
+    UiFeature --> Viewmodel
 
     Usecase --> Domain
 
