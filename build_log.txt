@@ -38,12 +38,14 @@ ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeD
 
 ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld -version_details
 
-Build description signature: 2ac903caffd51e0170ba8ff8043710ff
-Build description path: /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/XCBuildData/2ac903caffd51e0170ba8ff8043710ff.xcbuilddata
+Build description signature: ed168fc361f239961f234e38bb6a4b0b
+Build description path: /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/XCBuildData/ed168fc361f239961f234e38bb6a4b0b.xcbuilddata
 ClangStatCache /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.2.sdk /var/folders/h9/bv7130w94hq3wcb_fbtn5clm0000gn/C/com.apple.DeveloperTools/26.2-17C52/Xcode/SDKStatCaches.noindex/iphoneos26.2-23C53-3794476bd08197c3e2abd9bb477ef7f7.sdkstatcache
     cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/iosAppSwiftUI.xcodeproj
     /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.2.sdk -o /var/folders/h9/bv7130w94hq3wcb_fbtn5clm0000gn/C/com.apple.DeveloperTools/26.2-17C52/Xcode/SDKStatCaches.noindex/iphoneos26.2-23C53-3794476bd08197c3e2abd9bb477ef7f7.sdkstatcache
 
+note: Run script build phase 'Generate Protos' will be run during every build because the option to run the script phase "Based on dependency analysis" is unchecked. (in target 'iosApp' from project 'iosAppSwiftUI')
+note: Run script build phase 'Compile Kotlin Framework' will be run during every build because the option to run the script phase "Based on dependency analysis" is unchecked. (in target 'iosApp' from project 'iosAppSwiftUI')
 PhaseScriptExecution Generate\ Protos /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Script-B9DA97F52DC1497100A4DA20.sh (in target 'iosApp' from project 'iosAppSwiftUI')
     cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
     export ACTION\=build
@@ -632,10 +634,10 @@ INFO: Analyzed target //protos:mobile_protos_tar (0 packages loaded, 0 targets c
 INFO: Found 1 target...
 Target //protos:mobile_protos_tar up-to-date:
   .bazel/bin/protos/mobile_protos.tar
-INFO: Elapsed time: 0.234s, Critical Path: 0.00s
+INFO: Elapsed time: 0.246s, Critical Path: 0.00s
 INFO: 1 process: 1 internal.
 INFO: Build completed successfully, 1 total action
-Protos unchanged (SHA: dfe1149820aa1a25ebfef5b032ae4197541b0764fe17e6bb165f29b9ecec62ea). Skipping update.
+Protos unchanged (SHA: 341285b345f2b6d523945ebe05db3f36f14761078682ba4a21210b6ccab4fc66). Skipping update.
 
 PhaseScriptExecution Compile\ Kotlin\ Framework /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Script-B9DA97F42DC1497100A4DA20.sh (in target 'iosApp' from project 'iosAppSwiftUI')
     cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
@@ -1242,39 +1244,100 @@ The current default is 'false'.
 > Task :usecase:checkKotlinGradlePluginConfigurationErrors SKIPPED
 > Task :data:kmpPartiallyResolvedDependenciesChecker
 > Task :data:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :viewmodel:kmpPartiallyResolvedDependenciesChecker
+> Task :viewmodel:checkKotlinGradlePluginConfigurationErrors SKIPPED
 > Task :usecase:kspKotlinIosArm64 UP-TO-DATE
 > Task :data:kspKotlinIosArm64 UP-TO-DATE
 > Task :usecase:compileKotlinIosArm64 UP-TO-DATE
 > Task :data:compileKotlinIosArm64 UP-TO-DATE
-> Task :viewmodel:kmpPartiallyResolvedDependenciesChecker
-> Task :viewmodel:checkKotlinGradlePluginConfigurationErrors SKIPPED
 > Task :viewmodel:kspKotlinIosArm64 UP-TO-DATE
 > Task :viewmodel:compileKotlinIosArm64 UP-TO-DATE
-> Task :ios-swift-di:kspKotlinIosArm64 UP-TO-DATE
-> Task :ios-swift-di:compileKotlinIosArm64 UP-TO-DATE
-> Task :ios-swift-di:linkDebugFrameworkIosArm64 UP-TO-DATE
-> Task :ios-swift-di:assembleDebugAppleFrameworkForXcodeIosArm64 UP-TO-DATE
+> Task :ios-swift-di:kspKotlinIosArm64 FROM-CACHE
+> Task :ios-swift-di:compileKotlinIosArm64
+> Task :ios-swift-di:linkDebugFrameworkIosArm64
+> Task :ios-swift-di:assembleDebugAppleFrameworkForXcodeIosArm64
 > Task :ios-swift-di:copyDsymForEmbedAndSignAppleFrameworkForXcode SKIPPED
-> Task :ios-swift-di:embedAndSignAppleFrameworkForXcode UP-TO-DATE
+> Task :ios-swift-di:embedAndSignAppleFrameworkForXcode
 
-BUILD SUCCESSFUL in 688ms
-23 actionable tasks: 7 executed, 16 up-to-date
+BUILD SUCCESSFUL in 3s
+23 actionable tasks: 11 executed, 1 from cache, 11 up-to-date
 
 SwiftDriver iosApp normal arm64 com.apple.xcode.tools.swift.compiler (in target 'iosApp' from project 'iosAppSwiftUI')
     cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
     builtin-SwiftDriver -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name BatteryButler -Onone -enforce-exclusivity\=checked @/Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/BatteryButler.SwiftFileList -DDEBUG -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.2.sdk -target arm64-apple-ios18.2 -g -Xfrontend -serialize-debugging-options -enable-testing -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build -F /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build -F /Users/cartland/github/cartland/battery-butler/ios-swift-di/build/xcode-frameworks/Debug/iphoneos26.2 -F /Users/cartland/github/cartland/battery-butler/compose-app/build/xcode-frameworks/Debug/iphoneos26.2 -emit-localized-strings -emit-localized-strings-path /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64 -c -j16 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /var/folders/h9/bv7130w94hq3wcb_fbtn5clm0000gn/C/com.apple.DeveloperTools/26.2-17C52/Xcode/SDKStatCaches.noindex/iphoneos26.2-23C53-3794476bd08197c3e2abd9bb477ef7f7.sdkstatcache -output-file-map /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/iosApp-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/SwiftExplicitPrecompiledModules -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/BatteryButler.swiftmodule -validate-clang-modules-once -clang-build-session-file /var/folders/h9/bv7130w94hq3wcb_fbtn5clm0000gn/C/org.llvm.clang/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/iosApp_const_extract_protocols.json -Xcc -iquote -Xcc /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/BatteryButler-generated-files.hmap -Xcc -I/Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/BatteryButler-own-target-headers.hmap -Xcc -I/Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/BatteryButler-all-target-headers.hmap -Xcc -iquote -Xcc /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/BatteryButler-project-headers.hmap -Xcc -I/Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/include -Xcc -I/Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/DerivedSources-normal/arm64 -Xcc -I/Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/DerivedSources/arm64 -Xcc -I/Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/BatteryButler-Swift.h -working-directory /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui -experimental-emit-module-separately -disable-cmo
 
-ProcessInfoPlistFile /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/BatteryButler.app/Info.plist /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/iosApp/Info.plist (in target 'iosApp' from project 'iosAppSwiftUI')
-    cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
-    builtin-infoPlistUtility /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/iosApp/Info.plist -producttype com.apple.product-type.application -genpkginfo /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/BatteryButler.app/PkgInfo -expandbuildsettings -format binary -platform iphoneos -additionalcontentfile /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/assetcatalog_generated_info.plist -requiredArchitecture arm64 -o /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/BatteryButler.app/Info.plist
+SwiftExplicitDependencyGeneratePcm arm64 /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/SwiftExplicitPrecompiledModules/shared-BFBKIIE95RAAO5KMO0FFMXSCN.pcm
 
-SwiftCompile normal arm64 Compiling\ AddDeviceScreen.swift,\ MainTab.swift /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/AddDevice/AddDeviceScreen.swift /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/Main/MainTab.swift (in target 'iosApp' from project 'iosAppSwiftUI')
+SwiftEmitModule normal arm64 Emitting\ module\ for\ BatteryButler (in target 'iosApp' from project 'iosAppSwiftUI')
 
-SwiftCompile normal arm64 /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/AddDevice/AddDeviceScreen.swift (in target 'iosApp' from project 'iosAppSwiftUI')
+EmitSwiftModule normal arm64 (in target 'iosApp' from project 'iosAppSwiftUI')
     cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
     
 
-SwiftCompile normal arm64 /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/Main/MainTab.swift (in target 'iosApp' from project 'iosAppSwiftUI')
+SwiftCompile normal arm64 Compiling\ iOSApp.swift /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/iosApp/iOSApp.swift (in target 'iosApp' from project 'iosAppSwiftUI')
+
+SwiftCompile normal arm64 /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/iosApp/iOSApp.swift (in target 'iosApp' from project 'iosAppSwiftUI')
+    cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
+    
+
+SwiftCompile normal arm64 Compiling\ SettingsScreen.swift /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/Settings/SettingsScreen.swift (in target 'iosApp' from project 'iosAppSwiftUI')
+SwiftCompile normal arm64 /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/Settings/SettingsScreen.swift (in target 'iosApp' from project 'iosAppSwiftUI')
+    cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
+    
+/Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/Settings/SettingsScreen.swift:27:10: warning: 'onChange(of:perform:)' was deprecated in iOS 17.0: Use `onChange` with a two or zero parameter action closure instead.
+        .onChange(of: wrapper.exportData) { newData in
+         ^
+
+SwiftCompile normal arm64 Compiling\ DeviceDetailScreen.swift /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/DeviceDetail/DeviceDetailScreen.swift (in target 'iosApp' from project 'iosAppSwiftUI')
+SwiftCompile normal arm64 /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/DeviceDetail/DeviceDetailScreen.swift (in target 'iosApp' from project 'iosAppSwiftUI')
+    cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
+    
+
+SwiftCompile normal arm64 Compiling\ GeneratedAssetSymbols.swift /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/DerivedSources/GeneratedAssetSymbols.swift (in target 'iosApp' from project 'iosAppSwiftUI')
+
+SwiftCompile normal arm64 /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/DerivedSources/GeneratedAssetSymbols.swift (in target 'iosApp' from project 'iosAppSwiftUI')
+    cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
+    
+
+SwiftCompile normal arm64 Compiling\ HistoryListViewModelWrapper.swift /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/History/HistoryListViewModelWrapper.swift (in target 'iosApp' from project 'iosAppSwiftUI')
+
+SwiftCompile normal arm64 /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/History/HistoryListViewModelWrapper.swift (in target 'iosApp' from project 'iosAppSwiftUI')
+    cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
+    
+
+SwiftCompile normal arm64 Compiling\ HomeScreen.swift /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/Home/HomeScreen.swift (in target 'iosApp' from project 'iosAppSwiftUI')
+
+SwiftCompile normal arm64 /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/Home/HomeScreen.swift (in target 'iosApp' from project 'iosAppSwiftUI')
+    cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
+    
+
+SwiftCompile normal arm64 Compiling\ SettingsViewModelWrapper.swift /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/Settings/SettingsViewModelWrapper.swift (in target 'iosApp' from project 'iosAppSwiftUI')
+
+SwiftCompile normal arm64 /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/Settings/SettingsViewModelWrapper.swift (in target 'iosApp' from project 'iosAppSwiftUI')
+    cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
+    
+
+SwiftCompile normal arm64 Compiling\ DeviceDetailViewModelWrapper.swift /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/DeviceDetail/DeviceDetailViewModelWrapper.swift (in target 'iosApp' from project 'iosAppSwiftUI')
+
+SwiftCompile normal arm64 /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/DeviceDetail/DeviceDetailViewModelWrapper.swift (in target 'iosApp' from project 'iosAppSwiftUI')
+    cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
+    
+
+SwiftCompile normal arm64 Compiling\ FlowCollector.swift /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Core/FlowCollector.swift (in target 'iosApp' from project 'iosAppSwiftUI')
+
+SwiftCompile normal arm64 /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Core/FlowCollector.swift (in target 'iosApp' from project 'iosAppSwiftUI')
+    cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
+    
+
+SwiftCompile normal arm64 Compiling\ AddDeviceViewModelWrapper.swift /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/AddDevice/AddDeviceViewModelWrapper.swift (in target 'iosApp' from project 'iosAppSwiftUI')
+
+SwiftCompile normal arm64 /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/AddDevice/AddDeviceViewModelWrapper.swift (in target 'iosApp' from project 'iosAppSwiftUI')
+    cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
+    
+
+SwiftCompile normal arm64 Compiling\ HistoryListScreen.swift /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/History/HistoryListScreen.swift (in target 'iosApp' from project 'iosAppSwiftUI')
+
+SwiftCompile normal arm64 /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/History/HistoryListScreen.swift (in target 'iosApp' from project 'iosAppSwiftUI')
     cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
     
 
@@ -1296,133 +1359,42 @@ SwiftCompile normal arm64 /Users/cartland/github/cartland/battery-butler/ios-app
     cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
     
 
-SwiftCompile normal arm64 Compiling\ FlowCollector.swift /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Core/FlowCollector.swift (in target 'iosApp' from project 'iosAppSwiftUI')
+SwiftCompile normal arm64 Compiling\ AddDeviceScreen.swift,\ MainTab.swift /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/AddDevice/AddDeviceScreen.swift /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/Main/MainTab.swift (in target 'iosApp' from project 'iosAppSwiftUI')
 
-SwiftCompile normal arm64 /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Core/FlowCollector.swift (in target 'iosApp' from project 'iosAppSwiftUI')
+SwiftCompile normal arm64 /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/AddDevice/AddDeviceScreen.swift (in target 'iosApp' from project 'iosAppSwiftUI')
     cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
     
 
-SwiftCompile normal arm64 Compiling\ DeviceDetailScreen.swift /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/DeviceDetail/DeviceDetailScreen.swift (in target 'iosApp' from project 'iosAppSwiftUI')
-SwiftCompile normal arm64 /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/DeviceDetail/DeviceDetailScreen.swift (in target 'iosApp' from project 'iosAppSwiftUI')
-    cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
-    
-
-SwiftCompile normal arm64 Compiling\ SettingsViewModelWrapper.swift /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/Settings/SettingsViewModelWrapper.swift (in target 'iosApp' from project 'iosAppSwiftUI')
-
-SwiftCompile normal arm64 /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/Settings/SettingsViewModelWrapper.swift (in target 'iosApp' from project 'iosAppSwiftUI')
-    cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
-    
-
-SwiftCompile normal arm64 Compiling\ HistoryListScreen.swift /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/History/HistoryListScreen.swift (in target 'iosApp' from project 'iosAppSwiftUI')
-
-SwiftCompile normal arm64 /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/History/HistoryListScreen.swift (in target 'iosApp' from project 'iosAppSwiftUI')
-    cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
-    
-
-SwiftCompile normal arm64 Compiling\ DeviceDetailViewModelWrapper.swift /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/DeviceDetail/DeviceDetailViewModelWrapper.swift (in target 'iosApp' from project 'iosAppSwiftUI')
-
-SwiftCompile normal arm64 /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/DeviceDetail/DeviceDetailViewModelWrapper.swift (in target 'iosApp' from project 'iosAppSwiftUI')
-    cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
-    
-
-SwiftCompile normal arm64 Compiling\ AddDeviceViewModelWrapper.swift /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/AddDevice/AddDeviceViewModelWrapper.swift (in target 'iosApp' from project 'iosAppSwiftUI')
-
-SwiftCompile normal arm64 /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/AddDevice/AddDeviceViewModelWrapper.swift (in target 'iosApp' from project 'iosAppSwiftUI')
-    cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
-    
-
-SwiftCompile normal arm64 Compiling\ iOSApp.swift /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/iosApp/iOSApp.swift (in target 'iosApp' from project 'iosAppSwiftUI')
-
-SwiftCompile normal arm64 /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/iosApp/iOSApp.swift (in target 'iosApp' from project 'iosAppSwiftUI')
-    cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
-    
-
-SwiftEmitModule normal arm64 Emitting\ module\ for\ BatteryButler (in target 'iosApp' from project 'iosAppSwiftUI')
-
-EmitSwiftModule normal arm64 (in target 'iosApp' from project 'iosAppSwiftUI')
+SwiftCompile normal arm64 /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/Main/MainTab.swift (in target 'iosApp' from project 'iosAppSwiftUI')
     cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
     
 
 SwiftCompile normal arm64 Compiling\ ContentView.swift /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/iosApp/ContentView.swift (in target 'iosApp' from project 'iosAppSwiftUI')
-
 SwiftCompile normal arm64 /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/iosApp/ContentView.swift (in target 'iosApp' from project 'iosAppSwiftUI')
     cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
     
-
-SwiftCompile normal arm64 Compiling\ HomeScreen.swift /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/Home/HomeScreen.swift (in target 'iosApp' from project 'iosAppSwiftUI')
-
-SwiftCompile normal arm64 /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/Home/HomeScreen.swift (in target 'iosApp' from project 'iosAppSwiftUI')
-    cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
-    
-
-SwiftCompile normal arm64 Compiling\ HistoryListViewModelWrapper.swift /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/History/HistoryListViewModelWrapper.swift (in target 'iosApp' from project 'iosAppSwiftUI')
-
-SwiftCompile normal arm64 /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/History/HistoryListViewModelWrapper.swift (in target 'iosApp' from project 'iosAppSwiftUI')
-    cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
-    
-
-SwiftCompile normal arm64 Compiling\ SettingsScreen.swift /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/Settings/SettingsScreen.swift (in target 'iosApp' from project 'iosAppSwiftUI')
-
-SwiftCompile normal arm64 /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/Settings/SettingsScreen.swift (in target 'iosApp' from project 'iosAppSwiftUI')
-    cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
-    
-/Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/Features/Settings/SettingsScreen.swift:27:10: warning: 'onChange(of:perform:)' was deprecated in iOS 17.0: Use `onChange` with a two or zero parameter action closure instead.
-        .onChange(of: wrapper.exportData) { newData in
-         ^
-
-SwiftCompile normal arm64 Compiling\ GeneratedAssetSymbols.swift /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/DerivedSources/GeneratedAssetSymbols.swift (in target 'iosApp' from project 'iosAppSwiftUI')
-
-SwiftCompile normal arm64 /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/DerivedSources/GeneratedAssetSymbols.swift (in target 'iosApp' from project 'iosAppSwiftUI')
-    cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
-    
-
-SwiftDriverJobDiscovery normal arm64 Compiling ContentView.swift (in target 'iosApp' from project 'iosAppSwiftUI')
 
 SwiftDriverJobDiscovery normal arm64 Compiling FlowCollector.swift (in target 'iosApp' from project 'iosAppSwiftUI')
 
 SwiftDriverJobDiscovery normal arm64 Compiling iOSApp.swift (in target 'iosApp' from project 'iosAppSwiftUI')
 
+SwiftDriverJobDiscovery normal arm64 Compiling DeviceDetailViewModelWrapper.swift (in target 'iosApp' from project 'iosAppSwiftUI')
+
+SwiftDriverJobDiscovery normal arm64 Compiling ViewModelWrapper.swift (in target 'iosApp' from project 'iosAppSwiftUI')
+
+SwiftDriverJobDiscovery normal arm64 Compiling HistoryListViewModelWrapper.swift (in target 'iosApp' from project 'iosAppSwiftUI')
+
+SwiftDriverJobDiscovery normal arm64 Compiling SettingsViewModelWrapper.swift (in target 'iosApp' from project 'iosAppSwiftUI')
+
 SwiftDriverJobDiscovery normal arm64 Compiling DeviceRow.swift (in target 'iosApp' from project 'iosAppSwiftUI')
 
 SwiftDriverJobDiscovery normal arm64 Compiling MainScreen.swift (in target 'iosApp' from project 'iosAppSwiftUI')
 
-SwiftDriverJobDiscovery normal arm64 Compiling ViewModelWrapper.swift (in target 'iosApp' from project 'iosAppSwiftUI')
-
-SwiftDriverJobDiscovery normal arm64 Compiling SettingsViewModelWrapper.swift (in target 'iosApp' from project 'iosAppSwiftUI')
-
-SwiftDriverJobDiscovery normal arm64 Compiling DeviceDetailViewModelWrapper.swift (in target 'iosApp' from project 'iosAppSwiftUI')
-
-SwiftDriverJobDiscovery normal arm64 Compiling HistoryListScreen.swift (in target 'iosApp' from project 'iosAppSwiftUI')
-
-SwiftDriverJobDiscovery normal arm64 Emitting module for BatteryButler (in target 'iosApp' from project 'iosAppSwiftUI')
-
-SwiftDriver\ Compilation\ Requirements iosApp normal arm64 com.apple.xcode.tools.swift.compiler (in target 'iosApp' from project 'iosAppSwiftUI')
-    cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
-    builtin-Swift-Compilation-Requirements -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name BatteryButler -Onone -enforce-exclusivity\=checked @/Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/BatteryButler.SwiftFileList -DDEBUG -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.2.sdk -target arm64-apple-ios18.2 -g -Xfrontend -serialize-debugging-options -enable-testing -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build -F /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build -F /Users/cartland/github/cartland/battery-butler/ios-swift-di/build/xcode-frameworks/Debug/iphoneos26.2 -F /Users/cartland/github/cartland/battery-butler/compose-app/build/xcode-frameworks/Debug/iphoneos26.2 -emit-localized-strings -emit-localized-strings-path /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64 -c -j16 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /var/folders/h9/bv7130w94hq3wcb_fbtn5clm0000gn/C/com.apple.DeveloperTools/26.2-17C52/Xcode/SDKStatCaches.noindex/iphoneos26.2-23C53-3794476bd08197c3e2abd9bb477ef7f7.sdkstatcache -output-file-map /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/iosApp-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/SwiftExplicitPrecompiledModules -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/BatteryButler.swiftmodule -validate-clang-modules-once -clang-build-session-file /var/folders/h9/bv7130w94hq3wcb_fbtn5clm0000gn/C/org.llvm.clang/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/iosApp_const_extract_protocols.json -Xcc -iquote -Xcc /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/BatteryButler-generated-files.hmap -Xcc -I/Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/BatteryButler-own-target-headers.hmap -Xcc -I/Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/BatteryButler-all-target-headers.hmap -Xcc -iquote -Xcc /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/BatteryButler-project-headers.hmap -Xcc -I/Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/include -Xcc -I/Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/DerivedSources-normal/arm64 -Xcc -I/Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/DerivedSources/arm64 -Xcc -I/Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/BatteryButler-Swift.h -working-directory /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui -experimental-emit-module-separately -disable-cmo
-
 SwiftDriverJobDiscovery normal arm64 Compiling AddDeviceViewModelWrapper.swift (in target 'iosApp' from project 'iosAppSwiftUI')
 
-SwiftMergeGeneratedHeaders /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/DerivedSources/BatteryButler-Swift.h /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/BatteryButler-Swift.h (in target 'iosApp' from project 'iosAppSwiftUI')
-    cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
-    builtin-swiftHeaderTool -arch arm64 /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/BatteryButler-Swift.h -o /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/DerivedSources/BatteryButler-Swift.h
+SwiftDriverJobDiscovery normal arm64 Compiling GeneratedAssetSymbols.swift (in target 'iosApp' from project 'iosAppSwiftUI')
 
-Copy /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/BatteryButler.swiftmodule/arm64-apple-ios.swiftmodule /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/BatteryButler.swiftmodule (in target 'iosApp' from project 'iosAppSwiftUI')
-    cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
-    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/BatteryButler.swiftmodule /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/BatteryButler.swiftmodule/arm64-apple-ios.swiftmodule
-
-Copy /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/BatteryButler.swiftmodule/arm64-apple-ios.abi.json /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/BatteryButler.abi.json (in target 'iosApp' from project 'iosAppSwiftUI')
-    cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
-    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/BatteryButler.abi.json /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/BatteryButler.swiftmodule/arm64-apple-ios.abi.json
-
-Copy /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/BatteryButler.swiftmodule/arm64-apple-ios.swiftdoc /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/BatteryButler.swiftdoc (in target 'iosApp' from project 'iosAppSwiftUI')
-    cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
-    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/BatteryButler.swiftdoc /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/BatteryButler.swiftmodule/arm64-apple-ios.swiftdoc
-
-Copy /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/BatteryButler.swiftmodule/Project/arm64-apple-ios.swiftsourceinfo /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/BatteryButler.swiftsourceinfo (in target 'iosApp' from project 'iosAppSwiftUI')
-    cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
-    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/BatteryButler.swiftsourceinfo /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/BatteryButler.swiftmodule/Project/arm64-apple-ios.swiftsourceinfo
-
-SwiftDriverJobDiscovery normal arm64 Compiling HistoryListViewModelWrapper.swift (in target 'iosApp' from project 'iosAppSwiftUI')
+SwiftDriverJobDiscovery normal arm64 Compiling HistoryListScreen.swift (in target 'iosApp' from project 'iosAppSwiftUI')
 
 SwiftDriverJobDiscovery normal arm64 Compiling SettingsScreen.swift (in target 'iosApp' from project 'iosAppSwiftUI')
 
@@ -1430,48 +1402,42 @@ SwiftDriverJobDiscovery normal arm64 Compiling HomeScreen.swift (in target 'iosA
 
 SwiftDriverJobDiscovery normal arm64 Compiling AddDeviceScreen.swift, MainTab.swift (in target 'iosApp' from project 'iosAppSwiftUI')
 
-SwiftDriverJobDiscovery normal arm64 Compiling GeneratedAssetSymbols.swift (in target 'iosApp' from project 'iosAppSwiftUI')
-
 SwiftDriverJobDiscovery normal arm64 Compiling DeviceDetailScreen.swift (in target 'iosApp' from project 'iosAppSwiftUI')
+
+SwiftDriverJobDiscovery normal arm64 Compiling ContentView.swift (in target 'iosApp' from project 'iosAppSwiftUI')
 
 SwiftDriver\ Compilation iosApp normal arm64 com.apple.xcode.tools.swift.compiler (in target 'iosApp' from project 'iosAppSwiftUI')
     cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
     builtin-Swift-Compilation -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name BatteryButler -Onone -enforce-exclusivity\=checked @/Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/BatteryButler.SwiftFileList -DDEBUG -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.2.sdk -target arm64-apple-ios18.2 -g -Xfrontend -serialize-debugging-options -enable-testing -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build -F /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build -F /Users/cartland/github/cartland/battery-butler/ios-swift-di/build/xcode-frameworks/Debug/iphoneos26.2 -F /Users/cartland/github/cartland/battery-butler/compose-app/build/xcode-frameworks/Debug/iphoneos26.2 -emit-localized-strings -emit-localized-strings-path /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64 -c -j16 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /var/folders/h9/bv7130w94hq3wcb_fbtn5clm0000gn/C/com.apple.DeveloperTools/26.2-17C52/Xcode/SDKStatCaches.noindex/iphoneos26.2-23C53-3794476bd08197c3e2abd9bb477ef7f7.sdkstatcache -output-file-map /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/iosApp-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/SwiftExplicitPrecompiledModules -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/BatteryButler.swiftmodule -validate-clang-modules-once -clang-build-session-file /var/folders/h9/bv7130w94hq3wcb_fbtn5clm0000gn/C/org.llvm.clang/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/iosApp_const_extract_protocols.json -Xcc -iquote -Xcc /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/BatteryButler-generated-files.hmap -Xcc -I/Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/BatteryButler-own-target-headers.hmap -Xcc -I/Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/BatteryButler-all-target-headers.hmap -Xcc -iquote -Xcc /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/BatteryButler-project-headers.hmap -Xcc -I/Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/include -Xcc -I/Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/DerivedSources-normal/arm64 -Xcc -I/Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/DerivedSources/arm64 -Xcc -I/Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/BatteryButler-Swift.h -working-directory /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui -experimental-emit-module-separately -disable-cmo
 
+SwiftDriverJobDiscovery normal arm64 Emitting module for BatteryButler (in target 'iosApp' from project 'iosAppSwiftUI')
+
+SwiftDriver\ Compilation\ Requirements iosApp normal arm64 com.apple.xcode.tools.swift.compiler (in target 'iosApp' from project 'iosAppSwiftUI')
+    cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
+    builtin-Swift-Compilation-Requirements -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name BatteryButler -Onone -enforce-exclusivity\=checked @/Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/BatteryButler.SwiftFileList -DDEBUG -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.2.sdk -target arm64-apple-ios18.2 -g -Xfrontend -serialize-debugging-options -enable-testing -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build -F /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build -F /Users/cartland/github/cartland/battery-butler/ios-swift-di/build/xcode-frameworks/Debug/iphoneos26.2 -F /Users/cartland/github/cartland/battery-butler/compose-app/build/xcode-frameworks/Debug/iphoneos26.2 -emit-localized-strings -emit-localized-strings-path /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64 -c -j16 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /var/folders/h9/bv7130w94hq3wcb_fbtn5clm0000gn/C/com.apple.DeveloperTools/26.2-17C52/Xcode/SDKStatCaches.noindex/iphoneos26.2-23C53-3794476bd08197c3e2abd9bb477ef7f7.sdkstatcache -output-file-map /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/iosApp-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/SwiftExplicitPrecompiledModules -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/BatteryButler.swiftmodule -validate-clang-modules-once -clang-build-session-file /var/folders/h9/bv7130w94hq3wcb_fbtn5clm0000gn/C/org.llvm.clang/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/iosApp_const_extract_protocols.json -Xcc -iquote -Xcc /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/BatteryButler-generated-files.hmap -Xcc -I/Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/BatteryButler-own-target-headers.hmap -Xcc -I/Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/BatteryButler-all-target-headers.hmap -Xcc -iquote -Xcc /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/BatteryButler-project-headers.hmap -Xcc -I/Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/include -Xcc -I/Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/DerivedSources-normal/arm64 -Xcc -I/Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/DerivedSources/arm64 -Xcc -I/Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/BatteryButler-Swift.h -working-directory /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui -experimental-emit-module-separately -disable-cmo
+
 Ld /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/BatteryButler.app/BatteryButler normal (in target 'iosApp' from project 'iosAppSwiftUI')
     cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
     /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -Xlinker -reproducible -target arm64-apple-ios18.2 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.2.sdk -O0 -L/Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/EagerLinkingTBDs/Debug-iphoneos -L/Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build -F/Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/EagerLinkingTBDs/Debug-iphoneos -F/Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build -F/Users/cartland/github/cartland/battery-butler/ios-swift-di/build/xcode-frameworks/Debug/iphoneos26.2 -F/Users/cartland/github/cartland/battery-butler/compose-app/build/xcode-frameworks/Debug/iphoneos26.2 -filelist /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/BatteryButler.LinkFileList -Xlinker -rpath -Xlinker /usr/lib/swift -Xlinker -rpath -Xlinker @executable_path/Frameworks -dead_strip -Xlinker -object_path_lto -Xlinker /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/BatteryButler_lto.o -rdynamic -Xlinker -no_deduplicate -Xlinker -dependency_info -Xlinker /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/BatteryButler_dependency_info.dat -fobjc-link-runtime -L/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos -L/usr/lib/swift -Xlinker -add_ast_path -Xlinker /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/BatteryButler.swiftmodule @/Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/BatteryButler-linker-args.resp -o /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/BatteryButler.app/BatteryButler
+
+Copy /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/BatteryButler.swiftmodule/arm64-apple-ios.abi.json /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/BatteryButler.abi.json (in target 'iosApp' from project 'iosAppSwiftUI')
+    cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/BatteryButler.abi.json /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/BatteryButler.swiftmodule/arm64-apple-ios.abi.json
+
+ExtractAppIntentsMetadata (in target 'iosApp' from project 'iosAppSwiftUI')
+    cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsmetadataprocessor --toolchain-dir /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --module-name BatteryButler --sdk-root /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.2.sdk --xcode-version 17C52 --platform-family iOS --deployment-target 18.2 --bundle-identifier com.chriscartland.batterybutler.BatteryButler --output /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/BatteryButler.app --target-triple arm64-apple-ios18.2 --binary-file /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/BatteryButler.app/BatteryButler --dependency-file /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/BatteryButler_dependency_info.dat --stringsdata-file /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/ExtractedAppShortcutsMetadata.stringsdata --source-file-list /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/BatteryButler.SwiftFileList --metadata-file-list /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/BatteryButler.DependencyMetadataFileList --static-metadata-file-list /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/BatteryButler.DependencyStaticMetadataFileList --swift-const-vals-list /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/BatteryButler.SwiftConstValuesFileList --compile-time-extraction --deployment-aware-processing --validate-assistant-intents --no-app-shortcuts-localization
+2026-01-12 01:28:16.013 appintentsmetadataprocessor[1943:12814051] Starting appintentsmetadataprocessor export
+2026-01-12 01:28:16.014 appintentsmetadataprocessor[1943:12814051] warning: Metadata extraction skipped. No AppIntents.framework dependency found.
+
+ProcessInfoPlistFile /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/BatteryButler.app/Info.plist /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/iosApp/Info.plist (in target 'iosApp' from project 'iosAppSwiftUI')
+    cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
+    builtin-infoPlistUtility /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/iosApp/Info.plist -producttype com.apple.product-type.application -genpkginfo /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/BatteryButler.app/PkgInfo -expandbuildsettings -format binary -platform iphoneos -additionalcontentfile /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/assetcatalog_generated_info.plist -requiredArchitecture arm64 -o /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/BatteryButler.app/Info.plist
 
 CopySwiftLibs /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/BatteryButler.app (in target 'iosApp' from project 'iosAppSwiftUI')
     cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
     builtin-swiftStdLibTool --copy --verbose --scan-executable /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/BatteryButler.app/BatteryButler --scan-folder /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/BatteryButler.app/Frameworks --scan-folder /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/BatteryButler.app/PlugIns --scan-folder /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/BatteryButler.app/SystemExtensions --scan-folder /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/BatteryButler.app/Extensions --platform iphoneos --toolchain /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --destination /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/BatteryButler.app/Frameworks --strip-bitcode --strip-bitcode-tool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/bitcode_strip --emit-dependency-info /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/SwiftStdLibToolInputDependencies.dep --filter-for-swift-os --back-deploy-swift-span
 Ignoring --strip-bitcode because --sign was not passed
 
-ExtractAppIntentsMetadata (in target 'iosApp' from project 'iosAppSwiftUI')
-    cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
-    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsmetadataprocessor --toolchain-dir /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --module-name BatteryButler --sdk-root /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.2.sdk --xcode-version 17C52 --platform-family iOS --deployment-target 18.2 --bundle-identifier com.chriscartland.batterybutler.BatteryButler --output /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/BatteryButler.app --target-triple arm64-apple-ios18.2 --binary-file /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/BatteryButler.app/BatteryButler --dependency-file /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/BatteryButler_dependency_info.dat --stringsdata-file /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/ExtractedAppShortcutsMetadata.stringsdata --source-file-list /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/BatteryButler.SwiftFileList --metadata-file-list /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/BatteryButler.DependencyMetadataFileList --static-metadata-file-list /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/BatteryButler.DependencyStaticMetadataFileList --swift-const-vals-list /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/Objects-normal/arm64/BatteryButler.SwiftConstValuesFileList --compile-time-extraction --deployment-aware-processing --validate-assistant-intents --no-app-shortcuts-localization
-2026-01-12 01:21:06.584 appintentsmetadataprocessor[92370:12780136] Starting appintentsmetadataprocessor export
-2026-01-12 01:21:06.585 appintentsmetadataprocessor[92370:12780136] warning: Metadata extraction skipped. No AppIntents.framework dependency found.
-
-AppIntentsSSUTraining (in target 'iosApp' from project 'iosAppSwiftUI')
-    cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
-    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsnltrainingprocessor --infoplist-path /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/BatteryButler.app/Info.plist --temp-dir-path /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/ssu --bundle-id com.chriscartland.batterybutler.BatteryButler --product-path /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/BatteryButler.app --extracted-metadata-path /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/BatteryButler.app/Metadata.appintents --metadata-file-list /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/iosAppSwiftUI.build/Debug-iphoneos/iosApp.build/BatteryButler.DependencyMetadataFileList --archive-ssu-assets
-2026-01-12 01:21:06.597 appintentsnltrainingprocessor[92371:12780142] Parsing options for appintentsnltrainingprocessor
-2026-01-12 01:21:06.598 appintentsnltrainingprocessor[92371:12780142] No AppShortcuts found - Skipping.
-
-RegisterExecutionPolicyException /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/BatteryButler.app (in target 'iosApp' from project 'iosAppSwiftUI')
-    cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
-    builtin-RegisterExecutionPolicyException /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/BatteryButler.app
-
-Validate /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/BatteryButler.app (in target 'iosApp' from project 'iosAppSwiftUI')
-    cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
-    builtin-validationUtility /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/BatteryButler.app -shallow-bundle -infoplist-subpath Info.plist
-
-Touch /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/BatteryButler.app (in target 'iosApp' from project 'iosAppSwiftUI')
-    cd /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui
-    /usr/bin/touch -c /Users/cartland/github/cartland/battery-butler/ios-app-swift-ui/build/BatteryButler.app
-
-note: Run script build phase 'Compile Kotlin Framework' will be run during every build because the option to run the script phase "Based on dependency analysis" is unchecked. (in target 'iosApp' from project 'iosAppSwiftUI')
-note: Run script build phase 'Generate Protos' will be run during every build because the option to run the script phase "Based on dependency analysis" is unchecked. (in target 'iosApp' from project 'iosAppSwiftUI')
 ** BUILD SUCCEEDED **
 

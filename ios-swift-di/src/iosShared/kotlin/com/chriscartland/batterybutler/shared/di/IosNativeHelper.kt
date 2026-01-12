@@ -7,6 +7,9 @@ import com.chriscartland.batterybutler.domain.ai.ToolHandler
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
+import com.chriscartland.batterybutler.domain.repository.RemoteDataSource
+import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
+
 class IosNativeHelper {
     fun createComponent(): NativeComponent {
         val databaseFactory = DatabaseFactory()
@@ -20,8 +23,12 @@ class IosNativeHelper {
 
             override val compatibility: Flow<Boolean> = flowOf(false)
         }
-        // val component = InjectNativeComponent(databaseFactory, noOpAiEngine)
-        // return component
-        TODO("Run KSP to generate InjectNativeComponent")
+        val noOpRemoteDataSource = object : RemoteDataSource {
+            override fun subscribe(): Flow<RemoteUpdate> = flowOf()
+
+            override suspend fun push(update: RemoteUpdate): Boolean = true
+        }
+        val component = InjectNativeComponent(databaseFactory, noOpAiEngine, noOpRemoteDataSource)
+        return component
     }
 }

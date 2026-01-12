@@ -59,11 +59,11 @@ __pycache__/
 # Misc
 .env
 .env.local
+build_log.txt
 
 # Generated Protos
 networking/src/generated/
 ios-app-swift-ui/Generated/Proto/
 
-# Bazel
 # Bazel
 .bazel/

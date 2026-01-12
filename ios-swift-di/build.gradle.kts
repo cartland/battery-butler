@@ -4,6 +4,7 @@ plugins {
 }
 
 kotlin {
+    applyDefaultHierarchyTemplate()
     iosX64 {
         binaries.framework {
             baseName = "shared"
@@ -34,6 +35,18 @@ kotlin {
             api(project(":viewmodel"))
             implementation(project(":usecase"))
             implementation(libs.kotlin.inject.runtime)
+        }
+        
+        // Shared source code for iOS targets (to access KSP generated code)
+        val iosShared = "src/iosShared/kotlin"
+        val iosArm64Main by getting {
+            kotlin.srcDir(iosShared)
+        }
+        val iosSimulatorArm64Main by getting {
+            kotlin.srcDir(iosShared)
+        }
+        val iosX64Main by getting {
+            kotlin.srcDir(iosShared)
         }
     }
 }

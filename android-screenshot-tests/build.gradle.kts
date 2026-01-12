@@ -47,7 +47,7 @@ dependencies {
     implementation(project(":ui-core"))
     implementation(project(":ui-feature"))
     implementation(project(":domain"))
-    implementation(project(":viewmodel"))
+    // implementation(project(":viewmodel"))
     implementation(project(":usecase"))
     implementation(libs.kotlinx.datetime)
 }
