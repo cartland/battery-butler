@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 
-import com.chriscartland.batterybutler.uimodels.devicetypes.EditDeviceTypeUiState
+import com.chriscartland.batterybutler.presenter.models.devicetypes.EditDeviceTypeUiState
 
 @Inject
 class EditDeviceTypeViewModelFactory(

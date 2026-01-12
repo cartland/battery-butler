@@ -6,7 +6,7 @@ import com.chriscartland.batterybutler.data.di.DatabaseFactory
 import com.chriscartland.batterybutler.di.AppComponent
 import com.chriscartland.batterybutler.di.create
 import com.chriscartland.batterybutler.feature.ai.NoOpAiEngine
-import com.chriscartland.batterybutler.ui.util.DesktopShareHandler
+import com.chriscartland.batterybutler.presenter.core.util.DesktopShareHandler
 
 fun main() =
     application {
@@ -23,11 +23,11 @@ fun main() =
             }
             val component = AppComponent::class.create(databaseFactory, NoOpAiEngine, noOpRemoteDataSource)
             val shareHandler = DesktopShareHandler()
-            val fileSaver = com.chriscartland.batterybutler.ui.util
+            val fileSaver = com.chriscartland.batterybutler.presenter.core.util
                 .DesktopFileSaver()
 
             androidx.compose.runtime.CompositionLocalProvider(
-                com.chriscartland.batterybutler.ui.util.LocalFileSaver provides fileSaver,
+                com.chriscartland.batterybutler.presenter.core.util.LocalFileSaver provides fileSaver,
             ) {
                 App(component, shareHandler)
             }

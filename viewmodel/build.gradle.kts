@@ -36,7 +36,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.kotlin.inject.runtime)
             implementation(project(":domain"))
-            implementation(project(":ui-models"))
+            implementation(project(":presenter-models"))
             implementation(projects.usecase)
             implementation(libs.kotlinx.datetime)
             implementation(libs.uuid)

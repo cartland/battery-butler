@@ -22,9 +22,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.android.tools.screenshot.PreviewTest
-import com.chriscartland.batterybutler.ui.components.ButlerCenteredTopAppBar
-import com.chriscartland.batterybutler.ui.components.DeviceIconMapper
-import com.chriscartland.batterybutler.ui.theme.BatteryButlerTheme
+import com.chriscartland.batterybutler.presenter.core.components.ButlerCenteredTopAppBar
+import com.chriscartland.batterybutler.presenter.core.components.DeviceIconMapper
+import com.chriscartland.batterybutler.presenter.core.theme.BatteryButlerTheme
 
 @PreviewTest
 @Preview(showBackground = true)

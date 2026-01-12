@@ -49,8 +49,8 @@ dependencies {
     screenshotTestImplementation(libs.compose.ui.test.junit4)
     screenshotTestImplementation(libs.compose.ui.test.manifest)
 
-    implementation(project(":ui-core"))
-    implementation(project(":ui-feature"))
+    implementation(project(":presenter-core"))
+    implementation(project(":presenter-feature"))
     implementation(project(":domain"))
     implementation(project(":usecase"))
     implementation(libs.kotlinx.datetime)

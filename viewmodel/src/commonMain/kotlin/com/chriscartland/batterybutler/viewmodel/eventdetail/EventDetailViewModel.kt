@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
 import me.tatarka.inject.annotations.Inject
 
-import com.chriscartland.batterybutler.uimodels.eventdetail.EventDetailUiState
+import com.chriscartland.batterybutler.presenter.models.eventdetail.EventDetailUiState
 
 @Inject
 class EventDetailViewModelFactory(

@@ -4,8 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import com.chriscartland.batterybutler.ui.feature.settings.SettingsContent
-import com.chriscartland.batterybutler.ui.util.LocalFileSaver
+import com.chriscartland.batterybutler.presenter.feature.settings.SettingsContent
+import com.chriscartland.batterybutler.presenter.core.util.LocalFileSaver
 import com.chriscartland.batterybutler.viewmodel.settings.SettingsViewModel
 
 @Composable

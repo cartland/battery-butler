@@ -55,7 +55,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(project(":domain"))
             implementation(project(":data"))
-            implementation(project(":ui-core"))
+            implementation(project(":presenter-core"))
             implementation(project(":viewmodel"))
             implementation(project(":usecase"))
             implementation(project(":networking"))
@@ -67,7 +67,7 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             implementation(libs.uuid)
             implementation(libs.kotlinx.serialization.json)
-            implementation(project(":ui-feature"))
+            implementation(project(":presenter-feature"))
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

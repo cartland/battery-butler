@@ -16,9 +16,9 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 
-import com.chriscartland.batterybutler.uimodels.home.GroupOption
-import com.chriscartland.batterybutler.uimodels.home.HomeUiState
-import com.chriscartland.batterybutler.uimodels.home.SortOption
+import com.chriscartland.batterybutler.presenter.models.home.GroupOption
+import com.chriscartland.batterybutler.presenter.models.home.HomeUiState
+import com.chriscartland.batterybutler.presenter.models.home.SortOption
 
 // Custom implementations to avoid JVM-specific dependencies in KMP
 private fun <K : Comparable<K>, V> Map<K, V>.toSortedMap(comparator: Comparator<K>): Map<K, V> =
@@ -80,7 +80,6 @@ class HomeViewModel(
             GroupOption.NONE -> mapOf("All Devices" to sortedDevices)
             GroupOption.TYPE -> sortedDevices.groupBy { typeMap[it.typeId]?.name ?: "Unknown" }
             GroupOption.LOCATION -> sortedDevices.groupBy { it.location ?: "Unknown Location" }
-            else -> mapOf("All Devices" to sortedDevices)
         }
 
         val finalGroupedDevices = if (config.group != GroupOption.NONE) {
@@ -97,6 +96,7 @@ class HomeViewModel(
             groupOption = config.group,
             isSortAscending = config.isSortAsc,
             isGroupAscending = config.isGroupAsc,
+            exportData = config.exportData,
         )
     }.stateIn(
         scope = viewModelScope,

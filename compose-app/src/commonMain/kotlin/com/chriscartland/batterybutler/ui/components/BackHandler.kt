@@ -1,4 +1,4 @@
-package com.chriscartland.batterybutler.ui.components
+package com.chriscartland.batterybutler.presenter.core.components
 
 import androidx.compose.runtime.Composable
 

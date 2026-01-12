@@ -4,10 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.chriscartland.batterybutler.ui.feature.devicedetail.DeviceDetailContent
-import com.chriscartland.batterybutler.ui.feature.devicedetail.DeviceDetailUiState
+import com.chriscartland.batterybutler.presenter.feature.devicedetail.DeviceDetailContent
+import com.chriscartland.batterybutler.presenter.models.devicedetail.DeviceDetailUiState
 import com.chriscartland.batterybutler.viewmodel.devicedetail.DeviceDetailViewModel
-import com.chriscartland.batterybutler.viewmodel.devicedetail.DeviceDetailUiState as VmUiState
 
 @Composable
 fun DeviceDetailScreen(
@@ -19,18 +18,8 @@ fun DeviceDetailScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    val coreUiState = when (val state = uiState) {
-        VmUiState.Loading -> DeviceDetailUiState.Loading
-        VmUiState.NotFound -> DeviceDetailUiState.NotFound
-        is VmUiState.Success -> DeviceDetailUiState.Success(
-            device = state.device,
-            deviceType = state.deviceType,
-            events = state.events,
-        )
-    }
-
     DeviceDetailContent(
-        state = coreUiState,
+        state = uiState,
         onRecordReplacement = { viewModel.recordReplacement() },
         onBack = onBack,
         onEdit = onEdit,

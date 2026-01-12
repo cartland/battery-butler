@@ -9,7 +9,7 @@ fun MainViewController() =
     ComposeUIViewController {
         val databaseFactory = DatabaseFactory()
         val component = IosComponentHelper.create(databaseFactory)
-        val shareHandler = com.chriscartland.batterybutler.ui.util
+        val shareHandler = com.chriscartland.batterybutler.presenter.core.util
             .IosShareHandler()
         App(component, shareHandler)
     }
