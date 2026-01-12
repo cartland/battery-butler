@@ -6,7 +6,7 @@ cd "$(dirname "$0")/.."
 bazel build //protos:mobile_protos_tar
 
 # Locate the output tarball
-TAR_FILE="bazel-bin/protos/mobile_protos.tar"
+TAR_FILE=".bazel/bin/protos/mobile_protos.tar"
 
 if [ ! -f "$TAR_FILE" ]; then
     echo "Error: Tarball not found at $TAR_FILE"
@@ -21,7 +21,7 @@ else
     NEW_SHA=$(sha256sum "$TAR_FILE" | awk '{print $1}')
 fi
 
-SHA_FILE="bazel-bin/protos/.mobile_protos.sha256"
+SHA_FILE=".bazel/bin/protos/.mobile_protos.sha256"
 
 # Check if content changed
 if [ -f "$SHA_FILE" ]; then

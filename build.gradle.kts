@@ -25,10 +25,9 @@ allprojects {
                 "**/iosApp/**",
                 "ios-app-*/**",
                 "**/.gradle/**",
-                "bazel-bin/**",
-                "bazel-out/**",
-                "bazel-testlogs/**",
-                "bazel-battery-butler/**",
+                ".bazel",
+                "**/.bazel",
+                "**/.bazel/**",
             )
             ktlint()
         }
@@ -39,10 +38,9 @@ allprojects {
                 "**/iosApp/**",
                 "ios-app-*/**",
                 "**/.gradle/**",
-                "bazel-bin/**",
-                "bazel-out/**",
-                "bazel-testlogs/**",
-                "bazel-battery-butler/**",
+                ".bazel",
+                "**/.bazel",
+                "**/.bazel/**",
             )
             ktlint()
         }

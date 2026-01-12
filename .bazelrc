@@ -1,0 +1,2 @@
+build --symlink_prefix=.bazel/
+query --symlink_prefix=.bazel/

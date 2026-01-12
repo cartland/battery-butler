@@ -65,4 +65,5 @@ networking/src/generated/
 ios-app-swift-ui/Generated/Proto/
 
 # Bazel
-bazel-*
+# Bazel
+.bazel/
