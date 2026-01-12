@@ -2,6 +2,9 @@
 set -e
 cd "$(dirname "$0")/.."
 
+# Ensure Bazel is in PATH (Xcode environment fix)
+export PATH="$PATH:/opt/homebrew/bin:/usr/local/bin"
+
 # Build the tarball containing generated protos
 bazel build //protos:mobile_protos_tar
 
