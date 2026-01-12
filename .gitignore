@@ -63,3 +63,6 @@ __pycache__/
 # Generated Protos
 networking/src/generated/
 ios-app-swift-ui/Generated/Proto/
+
+# Bazel
+bazel-*
