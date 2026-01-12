@@ -1,10 +1,10 @@
 package com.chriscartland.batterybutler.feature.eventdetail
 
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.material3.ExperimentalMaterial3Api
 import com.chriscartland.batterybutler.ui.feature.eventdetail.EventDetailContent
 import com.chriscartland.batterybutler.viewmodel.eventdetail.EventDetailViewModel
 
@@ -27,4 +27,3 @@ fun EventDetailScreen(
         modifier = modifier,
     )
 }
-

@@ -21,16 +21,13 @@ import com.chriscartland.batterybutler.ui.feature.devicetypes.UiDeviceTypeSortOp
 import com.chriscartland.batterybutler.ui.feature.editdevice.EditDeviceContent
 import com.chriscartland.batterybutler.ui.feature.editdevice.EditDeviceUiState
 import com.chriscartland.batterybutler.ui.feature.eventdetail.EventDetailContent
-import com.chriscartland.batterybutler.viewmodel.eventdetail.EventDetailUiState
 import com.chriscartland.batterybutler.ui.feature.history.HistoryListContent
-import com.chriscartland.batterybutler.viewmodel.history.HistoryListUiState
 import com.chriscartland.batterybutler.ui.feature.home.HomeScreenContent
-import com.chriscartland.batterybutler.viewmodel.home.HomeUiState
 import com.chriscartland.batterybutler.ui.feature.settings.SettingsContent
-import com.chriscartland.batterybutler.viewmodel.home.GroupOption
-import com.chriscartland.batterybutler.viewmodel.home.SortOption
+import com.chriscartland.batterybutler.viewmodel.eventdetail.EventDetailUiState
+import com.chriscartland.batterybutler.viewmodel.history.HistoryListUiState
+import com.chriscartland.batterybutler.viewmodel.home.HomeUiState
 import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 
 // Shared Fakes
 val fakeDeviceType = DeviceType("type1", "Smoke Detector", "detector_smoke")
@@ -40,7 +37,7 @@ val fakeDevice = Device(
     typeId = "type1",
     batteryLastReplaced = Clock.System.now(),
     lastUpdated = Clock.System.now(),
-    location = "Kitchen"
+    location = "Kitchen",
 )
 val fakeEvent = BatteryEvent(
     id = "evt1",
@@ -97,7 +94,7 @@ fun HistoryListScreenPreview() {
     )
     HistoryListContent(
         state = HistoryListUiState.Success(
-            items = listOf(historyItem)
+            items = listOf(historyItem),
         ),
         onEventClick = { _, _ -> },
     )
@@ -174,7 +171,7 @@ fun EditDeviceScreenPreview() {
 fun EditDeviceTypeScreenPreview() {
     EditDeviceTypeContent(
         uiState = EditDeviceTypeUiState.Success(
-            deviceType = fakeDeviceType
+            deviceType = fakeDeviceType,
         ),
         onSave = {},
         onDelete = {},

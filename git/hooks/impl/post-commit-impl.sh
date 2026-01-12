@@ -24,7 +24,7 @@ run_spotless_check() {
 update_diagrams() {
     changed_files="$1"
     # Check if ARCHITECTURE.md or diagram sources were modified
-    if echo "$changed_files" | grep -qE "ARCHITECTURE.md|docs/diagrams/kotlin_module_structure.mmd|docs/diagrams/full_system_structure.mmd"; then
+    if echo "$changed_files" | grep -qE "ARCHITECTURE.md|docs/diagrams/kotlin_module_structure.mmd|docs/diagrams/full_system_structure.mmd|\.kts$"; then
         echo "Architecture docs modified. Updating diagrams..."
         ./scripts/update-diagrams.sh
         echo "***************************************************************"
