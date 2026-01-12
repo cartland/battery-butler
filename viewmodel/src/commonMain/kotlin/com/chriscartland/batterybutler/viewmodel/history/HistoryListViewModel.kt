@@ -2,7 +2,8 @@ package com.chriscartland.batterybutler.viewmodel.history
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.chriscartland.batterybutler.domain.model.BatteryEvent
+import com.chriscartland.batterybutler.presentation.models.history.HistoryItemUiModel
+import com.chriscartland.batterybutler.presentation.models.history.HistoryListUiState
 import com.chriscartland.batterybutler.usecase.GetBatteryEventsUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.GetDevicesUseCase
@@ -12,9 +13,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import me.tatarka.inject.annotations.Inject
-
-import com.chriscartland.batterybutler.presentation.models.history.HistoryItemUiModel
-import com.chriscartland.batterybutler.presentation.models.history.HistoryListUiState
 
 @Inject
 class HistoryListViewModel(

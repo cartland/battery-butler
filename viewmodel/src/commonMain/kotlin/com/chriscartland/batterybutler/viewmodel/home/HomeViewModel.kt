@@ -3,7 +3,9 @@ package com.chriscartland.batterybutler.viewmodel.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chriscartland.batterybutler.domain.model.Device
-import com.chriscartland.batterybutler.domain.model.DeviceType
+import com.chriscartland.batterybutler.presentation.models.home.GroupOption
+import com.chriscartland.batterybutler.presentation.models.home.HomeUiState
+import com.chriscartland.batterybutler.presentation.models.home.SortOption
 import com.chriscartland.batterybutler.usecase.EnsureDefaultDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.ExportDataUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
@@ -15,10 +17,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
-
-import com.chriscartland.batterybutler.presentation.models.home.GroupOption
-import com.chriscartland.batterybutler.presentation.models.home.HomeUiState
-import com.chriscartland.batterybutler.presentation.models.home.SortOption
 
 // Custom implementations to avoid JVM-specific dependencies in KMP
 private fun <K : Comparable<K>, V> Map<K, V>.toSortedMap(comparator: Comparator<K>): Map<K, V> =

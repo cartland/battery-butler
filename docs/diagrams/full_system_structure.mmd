@@ -20,9 +20,9 @@ graph TD
     end
 
     subgraph "Presentation"
-        PresenterCore[":presenter-core"]
-        PresenterFeature[":presenter-feature"]
-        PresenterModels[":presenter-models"]
+        PresentationCore[":presentation-core"]
+        PresentationFeature[":presentation-feature"]
+        PresentationModels[":presentation-models"]
         Viewmodel[":viewmodel"]
     end
 
@@ -38,15 +38,15 @@ graph TD
 
     %% Dependencies
     AndroidScreenshotTests --> Domain
-    AndroidScreenshotTests --> PresenterCore
-    AndroidScreenshotTests --> PresenterFeature
+    AndroidScreenshotTests --> PresentationCore
+    AndroidScreenshotTests --> PresentationFeature
     AndroidScreenshotTests --> Usecase
 
     ComposeApp --> Data
     ComposeApp --> Domain
     ComposeApp --> Networking
-    ComposeApp --> PresenterCore
-    ComposeApp --> PresenterFeature
+    ComposeApp --> PresentationCore
+    ComposeApp --> PresentationFeature
     ComposeApp --> Usecase
     ComposeApp --> Viewmodel
 
@@ -54,18 +54,19 @@ graph TD
 
     IosSwiftDi --> Data
     IosSwiftDi --> Domain
+    IosSwiftDi --> PresentationModels
     IosSwiftDi --> Usecase
     IosSwiftDi --> Viewmodel
 
     Networking --> Domain
 
-    PresenterCore --> Domain
+    PresentationCore --> Domain
 
-    PresenterFeature --> Domain
-    PresenterFeature --> PresenterCore
-    PresenterFeature --> PresenterModels
+    PresentationFeature --> Domain
+    PresentationFeature --> PresentationCore
+    PresentationFeature --> PresentationModels
 
-    PresenterModels --> Domain
+    PresentationModels --> Domain
 
     ServerApp --> Domain
     ServerApp --> ServerData
@@ -79,7 +80,7 @@ graph TD
     Usecase --> Domain
 
     Viewmodel --> Domain
-    Viewmodel --> PresenterModels
+    Viewmodel --> PresentationModels
     Viewmodel --> Usecase
 
     IosAppComposeUi --> ComposeApp

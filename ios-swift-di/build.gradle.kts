@@ -40,7 +40,7 @@ kotlin {
             implementation(project(":usecase"))
             implementation(libs.kotlin.inject.runtime)
         }
-        
+
         // Shared source code for iOS targets (to access KSP generated code)
         val iosShared = "src/iosShared/kotlin"
         val iosArm64Main by getting {

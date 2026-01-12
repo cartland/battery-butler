@@ -2,9 +2,7 @@ package com.chriscartland.batterybutler.viewmodel.eventdetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.chriscartland.batterybutler.domain.model.BatteryEvent
-import com.chriscartland.batterybutler.domain.model.Device
-import com.chriscartland.batterybutler.domain.model.DeviceType
+import com.chriscartland.batterybutler.presentation.models.eventdetail.EventDetailUiState
 import com.chriscartland.batterybutler.usecase.DeleteBatteryEventUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceDetailUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
@@ -19,8 +17,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
 import me.tatarka.inject.annotations.Inject
-
-import com.chriscartland.batterybutler.presentation.models.eventdetail.EventDetailUiState
 
 @Inject
 class EventDetailViewModelFactory(

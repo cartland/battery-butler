@@ -40,13 +40,9 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.chriscartland.batterybutler.domain.model.BatteryEvent
-import com.chriscartland.batterybutler.domain.model.Device
-import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentation.core.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.presentation.core.components.DeviceIconMapper
 import com.chriscartland.batterybutler.presentation.core.components.HistoryListItem
-
 import com.chriscartland.batterybutler.presentation.models.devicedetail.DeviceDetailUiState
 
 @OptIn(ExperimentalMaterial3Api::class)

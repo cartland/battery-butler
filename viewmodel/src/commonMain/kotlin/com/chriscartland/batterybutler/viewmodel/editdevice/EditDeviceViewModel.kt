@@ -2,9 +2,8 @@ package com.chriscartland.batterybutler.viewmodel.editdevice
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceInput
-import com.chriscartland.batterybutler.domain.model.DeviceType
+import com.chriscartland.batterybutler.presentation.models.editdevice.EditDeviceUiState
 import com.chriscartland.batterybutler.usecase.DeleteDeviceUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceDetailUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
@@ -16,8 +15,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import me.tatarka.inject.annotations.Inject
-
-import com.chriscartland.batterybutler.presentation.models.editdevice.EditDeviceUiState
 
 @Inject
 class EditDeviceViewModelFactory(

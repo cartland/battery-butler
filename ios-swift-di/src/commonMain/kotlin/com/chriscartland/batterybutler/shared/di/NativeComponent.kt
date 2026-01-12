@@ -7,12 +7,12 @@ import com.chriscartland.batterybutler.data.room.DeviceDao
 import com.chriscartland.batterybutler.domain.ai.AiEngine
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.domain.repository.RemoteDataSource
-import com.chriscartland.batterybutler.viewmodel.devicedetail.DeviceDetailViewModelFactory
-import com.chriscartland.batterybutler.viewmodel.settings.SettingsViewModel
 import com.chriscartland.batterybutler.viewmodel.adddevice.AddDeviceViewModel
+import com.chriscartland.batterybutler.viewmodel.devicedetail.DeviceDetailViewModelFactory
 import com.chriscartland.batterybutler.viewmodel.devicetypes.DeviceTypeListViewModel
 import com.chriscartland.batterybutler.viewmodel.history.HistoryListViewModel
 import com.chriscartland.batterybutler.viewmodel.home.HomeViewModel
+import com.chriscartland.batterybutler.viewmodel.settings.SettingsViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

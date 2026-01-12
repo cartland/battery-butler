@@ -3,6 +3,9 @@ package com.chriscartland.batterybutler.viewmodel.devicetypes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chriscartland.batterybutler.domain.model.DeviceType
+import com.chriscartland.batterybutler.presentation.models.devicetypes.DeviceTypeGroupOption
+import com.chriscartland.batterybutler.presentation.models.devicetypes.DeviceTypeListUiState
+import com.chriscartland.batterybutler.presentation.models.devicetypes.DeviceTypeSortOption
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -10,10 +13,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import me.tatarka.inject.annotations.Inject
-
-import com.chriscartland.batterybutler.presentation.models.devicetypes.DeviceTypeGroupOption
-import com.chriscartland.batterybutler.presentation.models.devicetypes.DeviceTypeListUiState
-import com.chriscartland.batterybutler.presentation.models.devicetypes.DeviceTypeSortOption
 
 @Inject
 class DeviceTypeListViewModel(

@@ -10,13 +10,13 @@ kotlin {
             jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
         }
     }
-    
+
     jvm()
-    
+
     iosX64()
     iosArm64()
     iosSimulatorArm64()
-    
+
     sourceSets {
         commonMain.dependencies {
             implementation(libs.kotlin.stdlib)
@@ -29,9 +29,13 @@ kotlin {
 
 android {
     namespace = "com.chriscartland.batterybutler.presentation.models"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
+    compileSdk = libs.versions.android.compileSdk
+        .get()
+        .toInt()
     defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk
+            .get()
+            .toInt()
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21

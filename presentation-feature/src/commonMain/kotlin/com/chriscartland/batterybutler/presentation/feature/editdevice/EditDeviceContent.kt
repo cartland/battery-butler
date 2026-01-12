@@ -48,11 +48,9 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceInput
-import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentation.core.components.ButlerCenteredTopAppBar
-
+import com.chriscartland.batterybutler.presentation.core.components.DeviceIconMapper
 import com.chriscartland.batterybutler.presentation.models.editdevice.EditDeviceUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -180,7 +178,7 @@ fun EditDeviceContent(
                                     leadingIcon = if (selectedType != null) {
                                         {
                                             Icon(
-                                                imageVector = com.chriscartland.batterybutler.presentation.core.components.DeviceIconMapper.getIcon(
+                                                imageVector = DeviceIconMapper.getIcon(
                                                     selectedType.defaultIcon,
                                                 ),
                                                 contentDescription = null,
@@ -201,7 +199,7 @@ fun EditDeviceContent(
                                             text = { Text(type.name) },
                                             leadingIcon = {
                                                 Icon(
-                                                    imageVector = com.chriscartland.batterybutler.presentation.core.components.DeviceIconMapper.getIcon(
+                                                    imageVector = DeviceIconMapper.getIcon(
                                                         type.defaultIcon,
                                                     ),
                                                     contentDescription = null,

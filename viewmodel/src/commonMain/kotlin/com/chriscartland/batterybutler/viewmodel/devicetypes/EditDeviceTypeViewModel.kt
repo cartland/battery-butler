@@ -2,8 +2,8 @@ package com.chriscartland.batterybutler.viewmodel.devicetypes
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.DeviceTypeInput
+import com.chriscartland.batterybutler.presentation.models.devicetypes.EditDeviceTypeUiState
 import com.chriscartland.batterybutler.usecase.DeleteDeviceTypeUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.UpdateDeviceTypeUseCase
@@ -13,8 +13,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
-
-import com.chriscartland.batterybutler.presentation.models.devicetypes.EditDeviceTypeUiState
 
 @Inject
 class EditDeviceTypeViewModelFactory(

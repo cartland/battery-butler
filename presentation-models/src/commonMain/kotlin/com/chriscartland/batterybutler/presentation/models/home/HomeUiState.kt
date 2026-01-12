@@ -15,14 +15,18 @@ data class HomeUiState(
     val exportData: String? = null,
 )
 
-enum class SortOption(val label: String) {
+enum class SortOption(
+    val label: String,
+) {
     NAME("Name"),
     LOCATION("Location"),
     BATTERY_AGE("Battery Age"),
     TYPE("Type"),
 }
 
-enum class GroupOption(val label: String) {
+enum class GroupOption(
+    val label: String,
+) {
     NONE("None"),
     TYPE("Type"),
     LOCATION("Location"),

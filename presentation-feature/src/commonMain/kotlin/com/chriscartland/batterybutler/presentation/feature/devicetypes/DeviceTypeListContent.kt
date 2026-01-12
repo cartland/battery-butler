@@ -30,10 +30,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentation.core.components.CompositeControl
 import com.chriscartland.batterybutler.presentation.core.components.DeviceIconMapper
-
 import com.chriscartland.batterybutler.presentation.models.devicetypes.DeviceTypeGroupOption
 import com.chriscartland.batterybutler.presentation.models.devicetypes.DeviceTypeListUiState
 import com.chriscartland.batterybutler.presentation.models.devicetypes.DeviceTypeSortOption

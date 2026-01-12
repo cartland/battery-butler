@@ -45,12 +45,10 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.DeviceTypeInput
 import com.chriscartland.batterybutler.presentation.core.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.presentation.core.components.DeviceIconMapper
 import com.chriscartland.batterybutler.presentation.core.components.DeviceTypeIconItem
-
 import com.chriscartland.batterybutler.presentation.models.devicetypes.EditDeviceTypeUiState
 
 @OptIn(ExperimentalMaterial3Api::class)

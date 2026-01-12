@@ -244,9 +244,10 @@ fun AddDeviceContent(
                                     text = { Text(type.name) },
                                     leadingIcon = {
                                         Icon(
-                                            imageVector = com.chriscartland.batterybutler.presentation.core.components.DeviceIconMapper.getIcon(
-                                                type.defaultIcon,
-                                            ),
+                                            imageVector = com.chriscartland.batterybutler.presentation.core.components.DeviceIconMapper
+                                                .getIcon(
+                                                    type.defaultIcon,
+                                                ),
                                             contentDescription = null,
                                         )
                                     },

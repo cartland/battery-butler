@@ -6,7 +6,9 @@ import com.chriscartland.batterybutler.domain.model.DeviceType
 
 sealed interface DeviceDetailUiState {
     data object Loading : DeviceDetailUiState
+
     data object NotFound : DeviceDetailUiState
+
     data class Success(
         val device: Device,
         val deviceType: DeviceType?,

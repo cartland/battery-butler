@@ -25,7 +25,7 @@ android {
     }
     // kotlinOptions block removed, moved to extension level or specific target level if needed.
     // In kotlin-android plugin (single target), it's kotlin { compilerOptions { ... } }
-    
+
     buildFeatures {
         compose = true
     }
