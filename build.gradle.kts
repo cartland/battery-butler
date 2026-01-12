@@ -20,12 +20,30 @@ allprojects {
 
         kotlin {
             target("src/**/*.kt")
-            targetExclude("**/build/**", "**/iosApp/**", "**/.gradle/**")
+            targetExclude(
+                "**/build/**",
+                "**/iosApp/**",
+                "ios-app-*/**",
+                "**/.gradle/**",
+                "bazel-bin/**",
+                "bazel-out/**",
+                "bazel-testlogs/**",
+                "bazel-battery-butler/**",
+            )
             ktlint()
         }
         kotlinGradle {
             target("*.gradle.kts", "**/build.gradle.kts", "buildSrc/**/*.kts")
-            targetExclude("**/build/**", "**/iosApp/**", "**/.gradle/**")
+            targetExclude(
+                "**/build/**",
+                "**/iosApp/**",
+                "ios-app-*/**",
+                "**/.gradle/**",
+                "bazel-bin/**",
+                "bazel-out/**",
+                "bazel-testlogs/**",
+                "bazel-battery-butler/**",
+            )
             ktlint()
         }
     }
