@@ -103,7 +103,7 @@ jobs:
       - name: Build iOS App (SwiftUI)
         run: |
           cd ios-app-swift-ui
-          xcodebuild -project iosAppSwiftUI.xcodeproj -configuration Debug -target iosApp -destination 'generic/platform=iOS Simulator' build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO -derivedDataPath build
+          xcodebuild -project iosAppSwiftUI.xcodeproj -configuration Debug -target iosApp -destination 'generic/platform=iOS Simulator' build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
 
       - name: Upload iOS App (SwiftUI)
         uses: actions/upload-artifact@v4

@@ -18,29 +18,31 @@ allprojects {
     apply(plugin = "com.diffplug.spotless")
     configure<com.diffplug.gradle.spotless.SpotlessExtension> {
 
-        kotlin {
-            target("src/**/*.kt")
-            targetExclude(
-                "**/build/**",
-                "**/iosApp/**",
-                "ios-app-*/**",
-                "**/.gradle/**",
-                ".bazel",
-                "**/.bazel",
-                "**/.bazel/**",
-            )
-            ktlint()
+        if (project != rootProject) {
+            kotlin {
+                target(fileTree(mapOf("dir" to "src", "include" to "**/*.kt")))
+                targetExclude(
+                    "**/build/**",
+                    "**/iosApp/**",
+                    "ios-app-*/**",
+                    "**/.gradle/**",
+                    ".bazel",
+                )
+                ktlint()
+            }
         }
         kotlinGradle {
-            target("*.gradle.kts", "**/build.gradle.kts", "buildSrc/**/*.kts")
+            target(
+                fileTree(projectDir) {
+                    include("*.gradle.kts", "**/build.gradle.kts", "buildSrc/**/*.kts")
+                    exclude(".bazel", "**/.bazel")
+                },
+            )
             targetExclude(
                 "**/build/**",
                 "**/iosApp/**",
                 "ios-app-*/**",
                 "**/.gradle/**",
-                ".bazel",
-                "**/.bazel",
-                "**/.bazel/**",
             )
             ktlint()
         }

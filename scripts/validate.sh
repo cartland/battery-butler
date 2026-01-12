@@ -1,6 +1,10 @@
 #!/bin/bash
 set -ex
-cd "$(dirname "$0")/.."
+if [ -n "$BUILD_WORKSPACE_DIRECTORY" ]; then
+  cd "$BUILD_WORKSPACE_DIRECTORY"
+else
+  cd "$(dirname "$0")/.."
+fi
 
 # CI Parity Validation Script
 # This script mimics the steps defined in .github/workflows/ci.yml
@@ -40,7 +44,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         echo "Building iOS App (SwiftUI)..."
         # Using -target because the scheme might not be shared in the .xcodeproj
         # Disabling code signing to avoid 'requires a development team' error during local validation
-        xcodebuild -project ios-app-swift-ui/iosAppSwiftUI.xcodeproj -configuration Debug -target iosApp -destination 'generic/platform=iOS Simulator' build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO -derivedDataPath build
+        xcodebuild -project ios-app-swift-ui/iosAppSwiftUI.xcodeproj -configuration Debug -target iosApp -destination 'generic/platform=iOS Simulator' build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
     else
         echo "Warning: xcodebuild not found. Skipping iOS build checks."
     fi

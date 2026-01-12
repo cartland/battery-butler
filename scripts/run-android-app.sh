@@ -1,6 +1,10 @@
 #!/bin/bash
 set -ex
-cd "$(dirname "$0")/.."
+if [ -n "$BUILD_WORKSPACE_DIRECTORY" ]; then
+  cd "$BUILD_WORKSPACE_DIRECTORY"
+else
+  cd "$(dirname "$0")/.."
+fi
 set -ex
 
 # Installs and runs the Android application on a connected device or emulator.
