@@ -1,9 +1,7 @@
 #!/bin/bash
 
-post-commit-impl() {
-    # Get list of changed files in the latest commit
-    changed_files=$(git show --name-only --format="" HEAD)
-
+run_spotless_check() {
+    changed_files="$1"
     # Check if any .kt or .kts files were modified
     if echo "$changed_files" | grep -qE "\.kt$|\.kts$"; then
         echo "Kotlin files modified in this commit. Running spotlessCheck..."
@@ -21,7 +19,10 @@ post-commit-impl() {
             echo "spotlessCheck passed."
         fi
     fi
-    
+}
+
+update_diagrams() {
+    changed_files="$1"
     # Check if ARCHITECTURE.md or diagram sources were modified
     if echo "$changed_files" | grep -qE "ARCHITECTURE.md|docs/diagrams/kotlin_module_structure.mmd|docs/diagrams/full_system_structure.mmd"; then
         echo "Architecture docs modified. Updating diagrams..."
@@ -30,4 +31,12 @@ post-commit-impl() {
         echo "* Diagrams updated. Please 'git add' and 'git commit --amend' *"
         echo "***************************************************************"
     fi
+}
+
+post-commit-impl() {
+    # Get list of changed files in the latest commit
+    changed_files=$(git show --name-only --format="" HEAD)
+
+    run_spotless_check "$changed_files"
+    update_diagrams "$changed_files"
 }
