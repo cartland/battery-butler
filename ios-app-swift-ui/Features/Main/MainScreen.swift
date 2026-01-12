@@ -9,7 +9,7 @@ struct MainScreen: View {
     var body: some View {
         TabView(selection: $selectedTab) {
             // Devices Tab
-            NavigationView {
+            NavigationStack {
                 HomeScreen(component: component)
                     .navigationTitle(MainTab.devices.rawValue)
             }
@@ -19,7 +19,7 @@ struct MainScreen: View {
             .tag(MainTab.devices)
             
             // Types Tab
-            NavigationView {
+            NavigationStack {
                 Text("Types Coming Soon")
                     .navigationTitle(MainTab.types.rawValue)
             }
@@ -29,7 +29,7 @@ struct MainScreen: View {
             .tag(MainTab.types)
             
             // History Tab
-            NavigationView {
+            NavigationStack {
                 HistoryListScreen(viewModel: component.historyListViewModel)
                     .navigationTitle(MainTab.history.rawValue)
             }
