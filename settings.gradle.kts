@@ -40,7 +40,7 @@ include(":networking")
 
 include(":ios-swift-di")
 
-include(":android-screenshot-library")
+include(":android-screenshot-tests")
 include(":domain")
 include(":usecase")
 include(":data")
