@@ -6,8 +6,8 @@
 - **Always** disable code signing for local simulator builds or CI builds without certificates using `CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO`.
 
 ## Bazel
-- **Never** commit `bazel-*` symlinks (e.g., `bazel-bin`, `bazel-out`).
-- **Always** ensure `bazel-*` is in `.gitignore`.
+- **Bazel Outputs:** All Bazel outputs are consolidated in `.bazel/` (e.g. `.bazel/bin`) via `.bazelrc`. This directory is gitignored and excluded from Spotless.
+- **Spotless vs Bazel:** If Spotless fails with "Couldn't follow symbolic link", run `rm -rf .bazel` before `spotlessApply`. Bazel will recreate it on next build.
 
 ## Validation
 - **Always** run `./scripts/validate.sh` before pushing to main. This script is maintained to match `ci.yml` strictly.

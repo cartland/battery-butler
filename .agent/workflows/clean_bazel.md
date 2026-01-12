@@ -9,8 +9,8 @@ description: Clean up Bazel generated artifacts and symlinks
    // turbo
    `git rm --cached bazel-*`
 
-3. Verify they are in .gitignore
-   `grep -q "bazel-\*" .gitignore || echo "bazel-*" >> .gitignore`
+3. Verify .bazel/ is in .gitignore
+   `grep -q "\.bazel/" .gitignore || echo ".bazel/" >> .gitignore`
 
 4. Commit the cleanup
    `git commit -m "Stop tracking generated bazel symlinks"`
