@@ -1,0 +1,16 @@
+---
+description: Clean up Bazel generated artifacts and symlinks
+---
+
+1. List any tracked bazel files to verify if they were accidentally committed
+   `git ls-files "bazel-*"`
+
+2. Remove them from git tracking (but keep on disk)
+   // turbo
+   `git rm --cached bazel-*`
+
+3. Verify they are in .gitignore
+   `grep -q "bazel-\*" .gitignore || echo "bazel-*" >> .gitignore`
+
+4. Commit the cleanup
+   `git commit -m "Stop tracking generated bazel symlinks"`
