@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="iOS App (SwiftUI)" type="IosRunConfiguration" factoryName="iOS Application">
+    <option name="PROJECT_FILE_PATH" value="$PROJECT_DIR$/ios-app-swift-ui/iosAppSwiftUI.xcodeproj" />
+    <option name="SCHEME_NAME" value="iosAppSwiftUI" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
