@@ -6,6 +6,7 @@
 # Kotlin / IntelliJ
 .kotlin/
 .idea/
+!.idea/runConfigurations/
 *.iml
 *.iws
 *.ipr
