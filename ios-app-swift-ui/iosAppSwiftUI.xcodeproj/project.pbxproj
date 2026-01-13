@@ -193,10 +193,10 @@
 			fileSystemSynchronizedGroups = (
 				B9DA97B32DC1472C00A4DA20 /* iosApp */,
 			);
-			name = iosApp;
+			name = iosAppSwiftUI;
 			packageProductDependencies = (
 			);
-			productName = iosApp;
+			productName = iosAppSwiftUI;
 			productReference = B9DA97B12DC1472C00A4DA20 /* BatteryButler.app */;
 			productType = "com.apple.product-type.application";
 		};

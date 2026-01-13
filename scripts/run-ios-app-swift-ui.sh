@@ -29,7 +29,7 @@ echo "Using simulator: $SIMULATOR_UDID"
 
 # Build the iOS application (SwiftUI scheme)
 echo "Building iOS application (SwiftUI)..."
-xcodebuild -scheme iosApp -project ios-app-swift-ui/iosAppSwiftUI.xcodeproj -configuration Debug -sdk iphonesimulator build -derivedDataPath ios-app-swift-ui/build
+xcodebuild -project ios-app-swift-ui/iosAppSwiftUI.xcodeproj -configuration Debug -target iosAppSwiftUI -sdk iphonesimulator build -derivedDataPath ios-app-swift-ui/build
 
 # Uninstall the old application (if it exists)
 echo "Uninstalling old application..."
@@ -38,7 +38,7 @@ xcrun simctl uninstall "$SIMULATOR_UDID" "$BUNDLE_IDENTIFIER" || true
 # Install the application
 echo "Installing application..."
 # Note: Path depends on Xcode build output structure
-xcrun simctl install "$SIMULATOR_UDID" "ios-app-swift-ui/build/Build/Products/Debug-iphonesimulator/iosAppSwiftUI.app"
+xcrun simctl install "$SIMULATOR_UDID" "ios-app-swift-ui/build/Build/Products/Debug-iphonesimulator/BatteryButler.app"
 
 # Launch the application
 echo "Launching application..."
