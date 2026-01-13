@@ -57,15 +57,15 @@ data class GraphConfig(
             ),
             groupOrder = listOf(
                 "Android App",
-                "Screenshot Tests",
                 "iOS Apps",
                 "Compose Apps",
                 "Server",
                 "Presentation",
                 "Domain Layer",
                 "Data Layer",
-                "Deprecated",
+                "Screenshot Tests",
                 "Others",
+                "Deprecated",
             ),
             outputPaths = OutputPaths(
                 kotlinGraphMmd = "docs/diagrams/kotlin_module_structure.mmd",
