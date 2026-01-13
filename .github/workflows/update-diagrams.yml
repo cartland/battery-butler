@@ -1,0 +1,74 @@
+name: Update Diagrams
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  update-diagrams:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Generate Diagrams
+        run: ./scripts/update-diagrams.sh
+
+      - name: Check for Changes
+        id: check_changes
+        run: |
+          if [[ -n $(git status --porcelain) ]]; then
+            echo "changes_detected=true" >> $GITHUB_OUTPUT
+            echo "Changes detected in diagrams."
+          else
+            echo "changes_detected=false" >> $GITHUB_OUTPUT
+            echo "No changes detected."
+          fi
+
+      - name: Commit and Push
+        if: steps.check_changes.outputs.changes_detected == 'true'
+        run: |
+          # Configure Git
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Loop Prevention Logic
+          LAST_AUTHOR=$(git log -1 --pretty=format:'%an')
+          PREV_AUTHOR=$(git log -1 --skip=1 --pretty=format:'%an')
+          BOT_NAME="github-actions[bot]"
+          
+          echo "Last Author: $LAST_AUTHOR"
+          echo "Prev Author: $PREV_AUTHOR"
+          
+          if [[ "$LAST_AUTHOR" == "$BOT_NAME" ]] && [[ "$PREV_AUTHOR" == "$BOT_NAME" ]]; then
+            echo "⚠️ Avoiding commit loop: Last 2 commits were made by the bot. Aborting update."
+            exit 0
+          fi
+          
+          # Commit Changes
+          git add .
+          git commit -m "Docs: Auto-update architecture diagrams (${{ matrix.os }})"
+          git pull --rebase origin main
+          git push origin main

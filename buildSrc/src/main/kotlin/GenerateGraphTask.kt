@@ -83,7 +83,7 @@ abstract class GenerateGraphTask : DefaultTask() {
             commandLine(
                 "npx",
                 "-y",
-                "@mermaid-js/mermaid-cli",
+                "@mermaid-js/mermaid-cli@11.4.2",
                 "-i",
                 inputMmd.absolutePath,
                 "-o",
