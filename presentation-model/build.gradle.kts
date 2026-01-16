@@ -22,7 +22,7 @@ kotlin {
             implementation(libs.kotlin.stdlib)
             implementation(libs.kotlinx.datetime)
             implementation(libs.kotlinx.serialization.json)
-            api(project(":domain")) // Likely need domain models (Device, BatteryEvent)
+            api(project(":domain"))
         }
     }
 }
