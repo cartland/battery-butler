@@ -21,4 +21,4 @@ echo "Running instrumented tests..."
 ./gradlew :compose-app:pixel5api34Check || true
 
 echo "Stopping server..."
-kill $SERVER_PID
+kill $SERVER_PID || true
