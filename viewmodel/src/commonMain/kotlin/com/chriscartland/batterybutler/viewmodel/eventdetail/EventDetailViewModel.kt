@@ -2,7 +2,7 @@ package com.chriscartland.batterybutler.viewmodel.eventdetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.chriscartland.batterybutler.presentationmodels.eventdetail.EventDetailUiState
+import com.chriscartland.batterybutler.presentationmodel.eventdetail.EventDetailUiState
 import com.chriscartland.batterybutler.usecase.DeleteBatteryEventUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceDetailUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase

@@ -28,7 +28,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.chriscartland.batterybutler.presentationmodels"
+    namespace = "com.chriscartland.batterybutler.presentationmodel"
     compileSdk = libs.versions.android.compileSdk
         .get()
         .toInt()

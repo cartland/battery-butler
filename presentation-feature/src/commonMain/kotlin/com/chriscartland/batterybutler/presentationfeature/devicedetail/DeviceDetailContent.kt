@@ -43,7 +43,7 @@ import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMapper
 import com.chriscartland.batterybutler.presentationcore.components.HistoryListItem
-import com.chriscartland.batterybutler.presentationmodels.devicedetail.DeviceDetailUiState
+import com.chriscartland.batterybutler.presentationmodel.devicedetail.DeviceDetailUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

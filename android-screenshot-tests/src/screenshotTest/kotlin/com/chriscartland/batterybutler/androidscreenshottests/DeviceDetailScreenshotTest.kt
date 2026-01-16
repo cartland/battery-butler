@@ -7,7 +7,7 @@ import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationfeature.devicedetail.DeviceDetailContent
-import com.chriscartland.batterybutler.presentationmodels.devicedetail.DeviceDetailUiState
+import com.chriscartland.batterybutler.presentationmodel.devicedetail.DeviceDetailUiState
 import kotlinx.datetime.Clock
 import kotlin.time.Duration.Companion.days
 

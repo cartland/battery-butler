@@ -53,6 +53,6 @@ dependencies {
     implementation(project(":presentation-feature"))
     implementation(project(":domain"))
     implementation(project(":usecase"))
-    implementation(project(":presentation-models"))
+    implementation(project(":presentation-model"))
     implementation(libs.kotlinx.datetime)
 }

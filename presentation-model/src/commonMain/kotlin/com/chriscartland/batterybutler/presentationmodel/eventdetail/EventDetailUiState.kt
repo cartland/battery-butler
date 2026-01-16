@@ -1,17 +1,17 @@
-package com.chriscartland.batterybutler.presentationmodels.devicedetail
+package com.chriscartland.batterybutler.presentationmodel.eventdetail
 
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 
-sealed interface DeviceDetailUiState {
-    data object Loading : DeviceDetailUiState
+sealed interface EventDetailUiState {
+    data object Loading : EventDetailUiState
 
-    data object NotFound : DeviceDetailUiState
+    data object NotFound : EventDetailUiState
 
     data class Success(
+        val event: BatteryEvent,
         val device: Device,
         val deviceType: DeviceType?,
-        val events: List<BatteryEvent>,
-    ) : DeviceDetailUiState
+    ) : EventDetailUiState
 }

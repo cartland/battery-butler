@@ -49,7 +49,7 @@ import com.chriscartland.batterybutler.domain.model.DeviceTypeInput
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMapper
 import com.chriscartland.batterybutler.presentationcore.components.DeviceTypeIconItem
-import com.chriscartland.batterybutler.presentationmodels.devicetypes.EditDeviceTypeUiState
+import com.chriscartland.batterybutler.presentationmodel.devicetypes.EditDeviceTypeUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

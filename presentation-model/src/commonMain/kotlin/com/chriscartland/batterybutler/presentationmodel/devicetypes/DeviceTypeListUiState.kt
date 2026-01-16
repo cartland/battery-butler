@@ -1,4 +1,4 @@
-package com.chriscartland.batterybutler.presentationmodels.devicetypes
+package com.chriscartland.batterybutler.presentationmodel.devicetypes
 
 import com.chriscartland.batterybutler.domain.model.DeviceType
 

@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.chriscartland.batterybutler.presentationcore.components.HistoryListItem
-import com.chriscartland.batterybutler.presentationmodels.history.HistoryListUiState
+import com.chriscartland.batterybutler.presentationmodel.history.HistoryListUiState
 
 @Composable
 fun HistoryListContent(

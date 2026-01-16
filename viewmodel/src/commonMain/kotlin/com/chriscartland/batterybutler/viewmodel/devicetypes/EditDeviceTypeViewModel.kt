@@ -3,7 +3,7 @@ package com.chriscartland.batterybutler.viewmodel.devicetypes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chriscartland.batterybutler.domain.model.DeviceTypeInput
-import com.chriscartland.batterybutler.presentationmodels.devicetypes.EditDeviceTypeUiState
+import com.chriscartland.batterybutler.presentationmodel.devicetypes.EditDeviceTypeUiState
 import com.chriscartland.batterybutler.usecase.DeleteDeviceTypeUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.UpdateDeviceTypeUseCase

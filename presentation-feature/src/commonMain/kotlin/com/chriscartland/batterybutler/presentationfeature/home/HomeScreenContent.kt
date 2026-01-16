@@ -27,9 +27,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.presentationcore.components.CompositeControl
 import com.chriscartland.batterybutler.presentationcore.components.DeviceListItem
-import com.chriscartland.batterybutler.presentationmodels.home.GroupOption
-import com.chriscartland.batterybutler.presentationmodels.home.HomeUiState
-import com.chriscartland.batterybutler.presentationmodels.home.SortOption
+import com.chriscartland.batterybutler.presentationmodel.home.GroupOption
+import com.chriscartland.batterybutler.presentationmodel.home.HomeUiState
+import com.chriscartland.batterybutler.presentationmodel.home.SortOption
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable

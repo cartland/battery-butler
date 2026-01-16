@@ -33,7 +33,7 @@ kotlin {
 
             implementation(project(":domain"))
             implementation(project(":presentation-core"))
-            api(project(":presentation-models"))
+            api(project(":presentation-model"))
         }
     }
 }

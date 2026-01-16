@@ -32,9 +32,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.presentationcore.components.CompositeControl
 import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMapper
-import com.chriscartland.batterybutler.presentationmodels.devicetypes.DeviceTypeGroupOption
-import com.chriscartland.batterybutler.presentationmodels.devicetypes.DeviceTypeListUiState
-import com.chriscartland.batterybutler.presentationmodels.devicetypes.DeviceTypeSortOption
+import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeGroupOption
+import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeListUiState
+import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeSortOption
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable

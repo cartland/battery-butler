@@ -51,7 +51,7 @@ import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.domain.model.DeviceInput
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMapper
-import com.chriscartland.batterybutler.presentationmodels.editdevice.EditDeviceUiState
+import com.chriscartland.batterybutler.presentationmodel.editdevice.EditDeviceUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

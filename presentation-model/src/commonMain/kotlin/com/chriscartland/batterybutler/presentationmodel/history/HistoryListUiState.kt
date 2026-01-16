@@ -1,4 +1,4 @@
-package com.chriscartland.batterybutler.presentationmodels.history
+package com.chriscartland.batterybutler.presentationmodel.history
 
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 
