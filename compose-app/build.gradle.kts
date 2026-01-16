@@ -90,7 +90,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.chriscartland.batterybutler"
+    namespace = "com.chriscartland.batterybutler.composeapp"
     compileSdk =
         libs.versions.android.compileSdk
             .get()

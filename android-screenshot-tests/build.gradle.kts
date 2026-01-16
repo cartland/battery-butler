@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.chriscartland.screenshottests"
+    namespace = "com.chriscartland.batterybutler.androidscreenshottests"
     compileSdk = libs.versions.android.compileSdk
         .get()
         .toInt()

@@ -1,0 +1,14 @@
+package com.chriscartland.batterybutler.composeapp
+
+import com.chriscartland.batterybutler.composeapp.di.IosComponentHelper
+import com.chriscartland.batterybutler.data.di.DatabaseFactory
+
+@Suppress("ktlint:standard:function-naming")
+fun MainViewController() =
+    _root_ide_package_.androidx.compose.ui.window.ComposeUIViewController {
+        val databaseFactory = DatabaseFactory()
+        val component = IosComponentHelper.create(databaseFactory)
+        val shareHandler = com.chriscartland.batterybutler.presentation.core.util
+            .IosShareHandler()
+        App(component, shareHandler)
+    }
