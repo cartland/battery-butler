@@ -1,2 +1,2 @@
 #!/bin/bash
-./gradlew :server:run
+./gradlew :server:app:run
