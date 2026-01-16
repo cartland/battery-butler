@@ -14,16 +14,12 @@ sealed interface DeviceTypeListUiState {
     ) : DeviceTypeListUiState
 }
 
-enum class DeviceTypeSortOption(
-    val label: String,
-) {
-    NAME("Name"),
-    BATTERY_TYPE("Battery Type"),
+enum class DeviceTypeSortOption {
+    NAME,
+    BATTERY_TYPE,
 }
 
-enum class DeviceTypeGroupOption(
-    val label: String,
-) {
-    NONE("None"),
-    BATTERY_TYPE("Battery Type"),
+enum class DeviceTypeGroupOption {
+    NONE,
+    BATTERY_TYPE,
 }

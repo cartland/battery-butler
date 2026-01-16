@@ -1,0 +1,16 @@
+<resources>
+    <!-- SortOption -->
+    <string name="sort_name">Name</string>
+    <string name="sort_location">Location</string>
+    <string name="sort_battery_age">Battery Age</string>
+    <string name="sort_type">Type</string>
+
+    <!-- GroupOption -->
+    <string name="group_none">None</string>
+    <string name="group_type">Type</string>
+    <string name="group_location">Location</string>
+    
+    <!-- DeviceTypeSort/Group -->
+    <string name="sort_battery_type">Battery Type</string>
+    <string name="group_battery_type">Battery Type</string>
+</resources>

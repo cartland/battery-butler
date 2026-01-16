@@ -27,7 +27,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.presentationcore.components.CompositeControl
 import com.chriscartland.batterybutler.presentationcore.components.DeviceListItem
+import com.chriscartland.batterybutler.presentationfeature.util.labelRes
 import com.chriscartland.batterybutler.presentationmodel.home.GroupOption
+import org.jetbrains.compose.resources.stringResource
 import com.chriscartland.batterybutler.presentationmodel.home.HomeUiState
 import com.chriscartland.batterybutler.presentationmodel.home.SortOption
 
@@ -59,7 +61,7 @@ fun HomeScreenContent(
                     // Group Button (First)
                     Box {
                         CompositeControl(
-                            label = "Group: ${state.groupOption.label}",
+                            label = "Group: ${stringResource(state.groupOption.labelRes())}",
                             isActive = state.groupOption != GroupOption.NONE,
                             isAscending = state.isGroupAscending,
                             onClicked = { groupExpanded = true },
@@ -71,7 +73,7 @@ fun HomeScreenContent(
                         ) {
                             GroupOption.values().forEach { option ->
                                 DropdownMenuItem(
-                                    text = { Text(option.label) },
+                                    text = { Text(stringResource(option.labelRes())) },
                                     onClick = {
                                         onGroupOptionSelected(option)
                                         groupExpanded = false
@@ -84,7 +86,7 @@ fun HomeScreenContent(
                     // Sort Button (Second)
                     Box {
                         CompositeControl(
-                            label = "Sort: ${state.sortOption.label}",
+                            label = "Sort: ${stringResource(state.sortOption.labelRes())}",
                             isActive = true, // Sort is always active
                             isAscending = state.isSortAscending,
                             onClicked = { sortExpanded = true },
@@ -96,7 +98,7 @@ fun HomeScreenContent(
                         ) {
                             SortOption.values().forEach { option ->
                                 DropdownMenuItem(
-                                    text = { Text(option.label) },
+                                    text = { Text(stringResource(option.labelRes())) },
                                     onClick = {
                                         onSortOptionSelected(option)
                                         sortExpanded = false

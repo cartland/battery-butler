@@ -20,8 +20,8 @@ echo "--- 2. Formatting (Spotless) ---"
 echo "--- 3. Lint ---"
 ./gradlew lint --stacktrace
 
-echo "--- 4. Unit Tests ---"
-./gradlew test --stacktrace
+echo "--- 4. Tests (Unit & Instrumented) ---"
+./scripts/test.sh
 
 echo "--- 5. Build Android App ---"
 ./gradlew :compose-app:assembleDebug
