@@ -1,7 +1,9 @@
 package com.chriscartland.batterybutler.composeapp
 
+import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -19,25 +21,23 @@ class ComposeUITest {
         // App launches automatically with createAndroidComposeRule
         composeTestRule.waitForIdle()
 
-        // Check if "Devices" title is displayed (from MainTab.Devices)
-        composeTestRule.onNodeWithText("Devices").assertExists()
+        // Check if "Devices" title is displayed (Tag ensures we check TopAppBar)
+        composeTestRule.onNodeWithTag("TopBarTitle").assertTextEquals("Devices")
         
-        // Navigate to Types
-        composeTestRule.onNodeWithText("Types").performClick()
+        // Navigate to Types (Click the Bottom Navigation Item specifically)
+        composeTestRule.onNodeWithTag("BottomNav_Types").performClick()
         composeTestRule.waitForIdle()
-        // Check if "Types" title is displayed (Title matches Tab label)
-        // Since both Tab item and Title have text "Types", we might hit multiple nodes.
-        // We assert checking existence is enough for now, or refine by Tag/Parent if needed.
-        composeTestRule.onNodeWithText("Types").assertExists()
+        // Check if "Types" title is displayed in TopAppBar
+        composeTestRule.onNodeWithTag("TopBarTitle").assertTextEquals("Types")
 
         // Navigate to History
-        composeTestRule.onNodeWithText("History").performClick()
+        composeTestRule.onNodeWithTag("BottomNav_History").performClick()
         composeTestRule.waitForIdle()
-        composeTestRule.onNodeWithText("History").assertExists()
+        composeTestRule.onNodeWithTag("TopBarTitle").assertTextEquals("History")
 
         // Navigate back to Devices
-        composeTestRule.onNodeWithText("Devices").performClick()
+        composeTestRule.onNodeWithTag("BottomNav_Devices").performClick()
         composeTestRule.waitForIdle()
-        composeTestRule.onNodeWithText("Devices").assertExists()
+        composeTestRule.onNodeWithTag("TopBarTitle").assertTextEquals("Devices")
     }
 }

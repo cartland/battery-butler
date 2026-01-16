@@ -22,6 +22,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.chriscartland.batterybutler.composeapp.feature.devicetypes.DeviceTypeListScreen
 import com.chriscartland.batterybutler.composeapp.feature.history.HistoryListScreen
@@ -142,6 +143,7 @@ fun MainScreenShell(
                         onClick = { onTabSelected(tab) },
                         icon = { Icon(tab.icon, contentDescription = tab.label) },
                         label = { Text(tab.label) },
+                        modifier = Modifier.testTag("BottomNav_${tab.label}"),
                     )
                 }
             }

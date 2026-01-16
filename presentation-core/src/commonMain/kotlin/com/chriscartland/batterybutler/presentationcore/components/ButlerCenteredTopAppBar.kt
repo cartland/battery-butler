@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import com.chriscartland.batterybutler.presentationcore.theme.LocalAiAction
 import com.chriscartland.batterybutler.presentationcore.theme.LocalAiAvailable
 
@@ -31,7 +32,7 @@ fun ButlerCenteredTopAppBar(
     val onAiClick = LocalAiAction.current
 
     CenterAlignedTopAppBar(
-        title = { Text(title) },
+        title = { Text(title, modifier = Modifier.testTag("TopBarTitle")) },
         navigationIcon = {
             if (navigationIcon != null) {
                 navigationIcon()
