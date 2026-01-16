@@ -92,6 +92,8 @@ abstract class GenerateGraphTask : DefaultTask() {
                 config.mermaidCli.theme,
                 "--cssFile",
                 config.mermaidCli.cssFile,
+                "-p",
+                project.rootProject.file("scripts/puppeteer-config.json").absolutePath,
             )
         }
         println("Generated SVG at: ${outputSvg.absolutePath}")
