@@ -1,4 +1,4 @@
-package com.chriscartland.batterybutler.shared.di
+package com.chriscartland.batterybutler.iosswiftdi
 
 import com.chriscartland.batterybutler.data.di.DatabaseFactory
 import com.chriscartland.batterybutler.domain.ai.AiEngine
