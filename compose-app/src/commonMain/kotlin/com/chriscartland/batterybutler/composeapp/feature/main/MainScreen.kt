@@ -2,6 +2,12 @@ package com.chriscartland.batterybutler.composeapp.feature.main
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
+import batterybutler.compose_app.generated.resources.Res
+import batterybutler.compose_app.generated.resources.tab_devices
+import batterybutler.compose_app.generated.resources.tab_history
+import batterybutler.compose_app.generated.resources.tab_types
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.History
@@ -40,10 +46,10 @@ enum class MainTab {
     History,
 }
 
-fun MainTab.label(): String = when (this) {
-    MainTab.Devices -> "Devices"
-    MainTab.Types -> "Types"
-    MainTab.History -> "History"
+fun MainTab.labelRes(): StringResource = when (this) {
+    MainTab.Devices -> Res.string.tab_devices
+    MainTab.Types -> Res.string.tab_types
+    MainTab.History -> Res.string.tab_history
 }
 
 fun MainTab.icon(): ImageVector = when (this) {
@@ -126,7 +132,7 @@ fun MainScreenShell(
         modifier = modifier,
         topBar = {
             ButlerCenteredTopAppBar(
-                title = currentTab.label(),
+                title = stringResource(currentTab.labelRes()),
                 actions = {
                     IconButton(onClick = onSettingsClick) {
                         Icon(
@@ -150,9 +156,10 @@ fun MainScreenShell(
                     NavigationBarItem(
                         selected = currentTab == tab,
                         onClick = { onTabSelected(tab) },
-                        icon = { Icon(tab.icon(), contentDescription = tab.label()) },
-                        label = { Text(tab.label()) },
-                        modifier = Modifier.testTag("BottomNav_${tab.label()}"),
+                        icon = { Icon(tab.icon(), contentDescription = stringResource(tab.labelRes())) },
+                        label = { Text(stringResource(tab.labelRes())) },
+                        // Tag uses raw enum name or we can use the resource key if we want, but name is safer for tests not running UI
+                        modifier = Modifier.testTag("BottomNav_${tab.name}"), 
                     )
                 }
             }
