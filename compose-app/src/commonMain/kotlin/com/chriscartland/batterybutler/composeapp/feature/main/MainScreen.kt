@@ -2,17 +2,11 @@ package com.chriscartland.batterybutler.composeapp.feature.main
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
-import batterybutler.compose_app.generated.resources.Res
-import batterybutler.compose_app.generated.resources.tab_devices
-import batterybutler.compose_app.generated.resources.tab_history
-import batterybutler.compose_app.generated.resources.tab_types
-import org.jetbrains.compose.resources.StringResource
-import org.jetbrains.compose.resources.stringResource
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -28,8 +22,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
+import batterybutler.compose_app.generated.resources.Res
+import batterybutler.compose_app.generated.resources.tab_devices
+import batterybutler.compose_app.generated.resources.tab_history
+import batterybutler.compose_app.generated.resources.tab_types
 import com.chriscartland.batterybutler.composeapp.feature.devicetypes.DeviceTypeListScreen
 import com.chriscartland.batterybutler.composeapp.feature.history.HistoryListScreen
 import com.chriscartland.batterybutler.composeapp.feature.home.HomeScreen
@@ -38,6 +36,8 @@ import com.chriscartland.batterybutler.viewmodel.devicetypes.DeviceTypeListViewM
 import com.chriscartland.batterybutler.viewmodel.history.HistoryListViewModel
 import com.chriscartland.batterybutler.viewmodel.home.HomeViewModel
 import kotlinx.serialization.Serializable
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
 
 @Serializable
 enum class MainTab {
@@ -46,17 +46,19 @@ enum class MainTab {
     History,
 }
 
-fun MainTab.labelRes(): StringResource = when (this) {
-    MainTab.Devices -> Res.string.tab_devices
-    MainTab.Types -> Res.string.tab_types
-    MainTab.History -> Res.string.tab_history
-}
+fun MainTab.labelRes(): StringResource =
+    when (this) {
+        MainTab.Devices -> Res.string.tab_devices
+        MainTab.Types -> Res.string.tab_types
+        MainTab.History -> Res.string.tab_history
+    }
 
-fun MainTab.icon(): ImageVector = when (this) {
-    MainTab.Devices -> Icons.Default.Home
-    MainTab.Types -> Icons.AutoMirrored.Filled.List
-    MainTab.History -> Icons.Default.History
-}
+fun MainTab.icon(): ImageVector =
+    when (this) {
+        MainTab.Devices -> Icons.Default.Home
+        MainTab.Types -> Icons.AutoMirrored.Filled.List
+        MainTab.History -> Icons.Default.History
+    }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -159,7 +161,7 @@ fun MainScreenShell(
                         icon = { Icon(tab.icon(), contentDescription = stringResource(tab.labelRes())) },
                         label = { Text(stringResource(tab.labelRes())) },
                         // Tag uses raw enum name or we can use the resource key if we want, but name is safer for tests not running UI
-                        modifier = Modifier.testTag("BottomNav_${tab.name}"), 
+                        modifier = Modifier.testTag("BottomNav_${tab.name}"),
                     )
                 }
             }

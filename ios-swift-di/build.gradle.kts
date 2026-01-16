@@ -33,11 +33,11 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(libs.kotlin.stdlib)
-            api(project(":domain"))
+
             implementation(project(":data"))
             api(project(":viewmodel"))
             api(project(":presentation-model"))
-            implementation(project(":usecase"))
+
             implementation(libs.kotlin.inject.runtime)
         }
 

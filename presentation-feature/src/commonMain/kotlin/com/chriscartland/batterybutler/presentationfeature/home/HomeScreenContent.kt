@@ -29,9 +29,9 @@ import com.chriscartland.batterybutler.presentationcore.components.CompositeCont
 import com.chriscartland.batterybutler.presentationcore.components.DeviceListItem
 import com.chriscartland.batterybutler.presentationfeature.util.labelRes
 import com.chriscartland.batterybutler.presentationmodel.home.GroupOption
-import org.jetbrains.compose.resources.stringResource
 import com.chriscartland.batterybutler.presentationmodel.home.HomeUiState
 import com.chriscartland.batterybutler.presentationmodel.home.SortOption
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable

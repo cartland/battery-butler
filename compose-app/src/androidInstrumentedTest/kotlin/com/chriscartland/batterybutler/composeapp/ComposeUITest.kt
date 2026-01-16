@@ -2,9 +2,7 @@ package com.chriscartland.batterybutler.composeapp
 
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Rule
@@ -23,7 +21,7 @@ class ComposeUITest {
 
         // Check if "Devices" title is displayed (Tag ensures we check TopAppBar)
         composeTestRule.onNodeWithTag("TopBarTitle").assertTextEquals("Devices")
-        
+
         // Navigate to Types (Click the Bottom Navigation Item specifically)
         composeTestRule.onNodeWithTag("BottomNav_Types").performClick()
         composeTestRule.waitForIdle()

@@ -31,8 +31,8 @@ kotlin {
             implementation(compose.materialIconsExtended)
             implementation(libs.kotlinx.datetime)
 
-
             implementation(project(":presentation-core"))
+
             api(project(":presentation-model"))
         }
     }

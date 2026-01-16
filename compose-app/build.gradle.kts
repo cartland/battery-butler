@@ -53,7 +53,7 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtimeCompose)
-            implementation(project(":domain"))
+
             implementation(project(":data"))
             implementation(project(":presentation-core"))
             implementation(project(":viewmodel"))
