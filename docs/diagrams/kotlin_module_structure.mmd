@@ -41,7 +41,6 @@ graph TD
     AndroidScreenshotTests --> PresentationModel
 
     ComposeApp --> Data
-    ComposeApp --> Domain
     ComposeApp --> Networking
     ComposeApp --> PresentationCore
     ComposeApp --> PresentationFeature
@@ -51,9 +50,7 @@ graph TD
     Data --> Domain
 
     IosSwiftDi --> Data
-    IosSwiftDi --> Domain
     IosSwiftDi --> PresentationModel
-    IosSwiftDi --> Usecase
     IosSwiftDi --> Viewmodel
 
     Networking --> Domain
