@@ -13,8 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.android.tools.screenshot.PreviewTest
 
-class LazyColumnBugReportTest {
-
+class LazyScreenshotTest {
     // ✅ This renders correctly
     @PreviewTest
     @Preview(widthDp = 300, heightDp = 400)
