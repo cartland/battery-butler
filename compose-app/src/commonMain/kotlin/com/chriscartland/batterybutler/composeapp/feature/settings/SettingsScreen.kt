@@ -5,8 +5,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import com.chriscartland.batterybutler.presentation.core.util.LocalFileSaver
-import com.chriscartland.batterybutler.presentation.feature.settings.SettingsContent
+import com.chriscartland.batterybutler.presentationcore.util.LocalFileSaver
+import com.chriscartland.batterybutler.presentationfeature.settings.SettingsContent
 import com.chriscartland.batterybutler.viewmodel.settings.SettingsViewModel
 
 @Composable

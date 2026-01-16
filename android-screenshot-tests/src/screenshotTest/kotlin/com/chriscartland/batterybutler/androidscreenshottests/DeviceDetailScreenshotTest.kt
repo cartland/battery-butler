@@ -6,8 +6,8 @@ import com.android.tools.screenshot.PreviewTest
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
-import com.chriscartland.batterybutler.presentation.feature.devicedetail.DeviceDetailContent
-import com.chriscartland.batterybutler.presentation.models.devicedetail.DeviceDetailUiState
+import com.chriscartland.batterybutler.presentationfeature.devicedetail.DeviceDetailContent
+import com.chriscartland.batterybutler.presentationmodels.devicedetail.DeviceDetailUiState
 import kotlinx.datetime.Clock
 import kotlin.time.Duration.Companion.days
 

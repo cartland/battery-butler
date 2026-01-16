@@ -11,9 +11,9 @@ import com.chriscartland.batterybutler.data.ai.AndroidAiEngine
 import com.chriscartland.batterybutler.data.di.DatabaseFactory
 import com.chriscartland.batterybutler.networking.GrpcSyncDataSource
 import com.chriscartland.batterybutler.networking.NetworkComponent
-import com.chriscartland.batterybutler.presentation.core.util.AndroidFileSaver
-import com.chriscartland.batterybutler.presentation.core.util.AndroidShareHandler
-import com.chriscartland.batterybutler.presentation.core.util.LocalFileSaver
+import com.chriscartland.batterybutler.presentationcore.util.AndroidFileSaver
+import com.chriscartland.batterybutler.presentationcore.util.AndroidShareHandler
+import com.chriscartland.batterybutler.presentationcore.util.LocalFileSaver
 import com.chriscartland.batterybutler.proto.SyncServiceClient
 
 class MainActivity : ComponentActivity() {

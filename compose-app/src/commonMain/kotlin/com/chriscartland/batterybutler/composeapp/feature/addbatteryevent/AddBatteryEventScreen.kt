@@ -6,7 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.chriscartland.batterybutler.presentation.feature.addbatteryevent.AddBatteryEventContent
+import com.chriscartland.batterybutler.presentationfeature.addbatteryevent.AddBatteryEventContent
 import com.chriscartland.batterybutler.viewmodel.addbatteryevent.AddBatteryEventViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)

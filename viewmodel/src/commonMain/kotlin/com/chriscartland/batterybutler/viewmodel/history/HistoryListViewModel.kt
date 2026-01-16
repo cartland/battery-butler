@@ -2,8 +2,8 @@ package com.chriscartland.batterybutler.viewmodel.history
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.chriscartland.batterybutler.presentation.models.history.HistoryItemUiModel
-import com.chriscartland.batterybutler.presentation.models.history.HistoryListUiState
+import com.chriscartland.batterybutler.presentationmodels.history.HistoryItemUiModel
+import com.chriscartland.batterybutler.presentationmodels.history.HistoryListUiState
 import com.chriscartland.batterybutler.usecase.GetBatteryEventsUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.GetDevicesUseCase

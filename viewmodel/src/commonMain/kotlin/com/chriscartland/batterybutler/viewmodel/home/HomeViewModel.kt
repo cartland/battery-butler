@@ -3,9 +3,9 @@ package com.chriscartland.batterybutler.viewmodel.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chriscartland.batterybutler.domain.model.Device
-import com.chriscartland.batterybutler.presentation.models.home.GroupOption
-import com.chriscartland.batterybutler.presentation.models.home.HomeUiState
-import com.chriscartland.batterybutler.presentation.models.home.SortOption
+import com.chriscartland.batterybutler.presentationmodels.home.GroupOption
+import com.chriscartland.batterybutler.presentationmodels.home.HomeUiState
+import com.chriscartland.batterybutler.presentationmodels.home.SortOption
 import com.chriscartland.batterybutler.usecase.EnsureDefaultDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.ExportDataUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase

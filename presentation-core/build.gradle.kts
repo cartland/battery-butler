@@ -49,7 +49,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.chriscartland.batterybutler.presentation.core"
+    namespace = "com.chriscartland.batterybutler.presentationcore"
     compileSdk = libs.versions.android.compileSdk
         .get()
         .toInt()

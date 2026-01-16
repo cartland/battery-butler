@@ -8,7 +8,7 @@ fun MainViewController() =
     _root_ide_package_.androidx.compose.ui.window.ComposeUIViewController {
         val databaseFactory = DatabaseFactory()
         val component = IosComponentHelper.create(databaseFactory)
-        val shareHandler = com.chriscartland.batterybutler.presentation.core.util
+        val shareHandler = com.chriscartland.batterybutler.presentationcore.util
             .IosShareHandler()
         App(component, shareHandler)
     }

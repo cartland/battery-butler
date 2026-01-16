@@ -9,9 +9,9 @@ import com.chriscartland.batterybutler.data.di.DatabaseFactory
 import com.chriscartland.batterybutler.di.create
 import com.chriscartland.batterybutler.domain.repository.RemoteDataSource
 import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
-import com.chriscartland.batterybutler.presentation.core.util.DesktopFileSaver
-import com.chriscartland.batterybutler.presentation.core.util.DesktopShareHandler
-import com.chriscartland.batterybutler.presentation.core.util.LocalFileSaver
+import com.chriscartland.batterybutler.presentationcore.util.DesktopFileSaver
+import com.chriscartland.batterybutler.presentationcore.util.DesktopShareHandler
+import com.chriscartland.batterybutler.presentationcore.util.LocalFileSaver
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 

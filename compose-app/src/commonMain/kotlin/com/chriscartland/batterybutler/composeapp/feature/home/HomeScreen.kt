@@ -8,8 +8,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.chriscartland.batterybutler.presentation.core.util.LocalShareHandler
-import com.chriscartland.batterybutler.presentation.feature.home.HomeScreenContent
+import com.chriscartland.batterybutler.presentationcore.util.LocalShareHandler
+import com.chriscartland.batterybutler.presentationfeature.home.HomeScreenContent
 import com.chriscartland.batterybutler.viewmodel.home.HomeViewModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)

@@ -5,7 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import com.chriscartland.batterybutler.presentation.feature.devicetypes.EditDeviceTypeContent
+import com.chriscartland.batterybutler.presentationfeature.devicetypes.EditDeviceTypeContent
 import com.chriscartland.batterybutler.viewmodel.devicetypes.EditDeviceTypeViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
