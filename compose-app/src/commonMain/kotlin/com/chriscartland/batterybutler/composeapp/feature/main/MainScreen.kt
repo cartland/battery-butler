@@ -6,7 +6,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -34,13 +34,22 @@ import com.chriscartland.batterybutler.viewmodel.home.HomeViewModel
 import kotlinx.serialization.Serializable
 
 @Serializable
-enum class MainTab(
-    val label: String,
-    val icon: ImageVector,
-) {
-    Devices("Devices", Icons.Default.Home),
-    Types("Types", Icons.Default.List),
-    History("History", Icons.Default.History),
+enum class MainTab {
+    Devices,
+    Types,
+    History,
+}
+
+fun MainTab.label(): String = when (this) {
+    MainTab.Devices -> "Devices"
+    MainTab.Types -> "Types"
+    MainTab.History -> "History"
+}
+
+fun MainTab.icon(): ImageVector = when (this) {
+    MainTab.Devices -> Icons.Default.Home
+    MainTab.Types -> Icons.AutoMirrored.Filled.List
+    MainTab.History -> Icons.Default.History
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -117,7 +126,7 @@ fun MainScreenShell(
         modifier = modifier,
         topBar = {
             ButlerCenteredTopAppBar(
-                title = currentTab.label,
+                title = currentTab.label(),
                 actions = {
                     IconButton(onClick = onSettingsClick) {
                         Icon(
@@ -141,9 +150,9 @@ fun MainScreenShell(
                     NavigationBarItem(
                         selected = currentTab == tab,
                         onClick = { onTabSelected(tab) },
-                        icon = { Icon(tab.icon, contentDescription = tab.label) },
-                        label = { Text(tab.label) },
-                        modifier = Modifier.testTag("BottomNav_${tab.label}"),
+                        icon = { Icon(tab.icon(), contentDescription = tab.label()) },
+                        label = { Text(tab.label()) },
+                        modifier = Modifier.testTag("BottomNav_${tab.label()}"),
                     )
                 }
             }
