@@ -60,7 +60,7 @@ jobs:
           path: |
             compose-app/build/outputs/**/*.apk
             compose-app/build/outputs/**/*.aab
-          retention-days: 1
+          retention-days: 90
 
   build_ios_compose:
 
@@ -82,6 +82,7 @@ jobs:
         with:
           name: battery-butler-ios-compose-app
           path: ios-app-compose-ui/build/
+          retention-days: 90
 
   build_ios_native:
 
@@ -104,6 +105,7 @@ jobs:
         with:
           name: battery-butler-ios-swiftui-app
           path: ios-app-swift-ui/build/
+          retention-days: 90
 
   build_desktop:
 
@@ -121,8 +123,7 @@ jobs:
         with:
           name: battery-butler-desktop-dist-${{ matrix.os }}
           path: compose-app/build/compose/binaries
-          retention-days: 1
-
+          retention-days: 90
 
   build_server:
 
@@ -137,4 +138,4 @@ jobs:
         with:
           name: battery-butler-server-jar
           path: server/build/libs/
-          retention-days: 1
+          retention-days: 90
