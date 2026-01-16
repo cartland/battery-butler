@@ -9,5 +9,5 @@ fi
 echo "Running unit tests..."
 ./gradlew test
 
-# echo "Running instrumented tests..."
-# ./gradlew connectedAndroidTest # Uncomment when ready/if needed locally
+echo "Running instrumented tests..."
+./gradlew :compose-app:pixel5api34Check
