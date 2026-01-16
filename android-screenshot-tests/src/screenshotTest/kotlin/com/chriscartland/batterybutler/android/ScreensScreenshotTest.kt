@@ -11,22 +11,22 @@ import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentation.feature.addbatteryevent.AddBatteryEventContent
 import com.chriscartland.batterybutler.presentation.feature.adddevicetype.AddDeviceTypeContent
 import com.chriscartland.batterybutler.presentation.feature.devicedetail.DeviceDetailContent
-import com.chriscartland.batterybutler.presentation.feature.devicedetail.DeviceDetailUiState
+import com.chriscartland.batterybutler.presentation.models.devicedetail.DeviceDetailUiState
 import com.chriscartland.batterybutler.presentation.feature.devicetypes.DeviceTypeListContent
-import com.chriscartland.batterybutler.presentation.feature.devicetypes.DeviceTypeListUiState
+import com.chriscartland.batterybutler.presentation.models.devicetypes.DeviceTypeListUiState
 import com.chriscartland.batterybutler.presentation.feature.devicetypes.EditDeviceTypeContent
-import com.chriscartland.batterybutler.presentation.feature.devicetypes.EditDeviceTypeUiState
-import com.chriscartland.batterybutler.presentation.feature.devicetypes.UiDeviceTypeGroupOption
-import com.chriscartland.batterybutler.presentation.feature.devicetypes.UiDeviceTypeSortOption
+import com.chriscartland.batterybutler.presentation.models.devicetypes.EditDeviceTypeUiState
+import com.chriscartland.batterybutler.presentation.models.devicetypes.DeviceTypeGroupOption
+import com.chriscartland.batterybutler.presentation.models.devicetypes.DeviceTypeSortOption
 import com.chriscartland.batterybutler.presentation.feature.editdevice.EditDeviceContent
-import com.chriscartland.batterybutler.presentation.feature.editdevice.EditDeviceUiState
+import com.chriscartland.batterybutler.presentation.models.editdevice.EditDeviceUiState
 import com.chriscartland.batterybutler.presentation.feature.eventdetail.EventDetailContent
 import com.chriscartland.batterybutler.presentation.feature.history.HistoryListContent
 import com.chriscartland.batterybutler.presentation.feature.home.HomeScreenContent
 import com.chriscartland.batterybutler.presentation.feature.settings.SettingsContent
-import com.chriscartland.batterybutler.viewmodel.eventdetail.EventDetailUiState
-import com.chriscartland.batterybutler.viewmodel.history.HistoryListUiState
-import com.chriscartland.batterybutler.viewmodel.home.HomeUiState
+import com.chriscartland.batterybutler.presentation.models.eventdetail.EventDetailUiState
+import com.chriscartland.batterybutler.presentation.models.history.HistoryListUiState
+import com.chriscartland.batterybutler.presentation.models.home.HomeUiState
 import kotlinx.datetime.Clock
 
 // Shared Fakes
@@ -69,8 +69,8 @@ fun DeviceTypeListScreenPreview() {
     DeviceTypeListContent(
         state = DeviceTypeListUiState.Success(
             groupedTypes = mapOf("All" to listOf(fakeDeviceType)),
-            sortOption = UiDeviceTypeSortOption.NAME,
-            groupOption = UiDeviceTypeGroupOption.NONE,
+            sortOption = DeviceTypeSortOption.NAME,
+            groupOption = DeviceTypeGroupOption.NONE,
             isSortAscending = true,
             isGroupAscending = true,
         ),
@@ -86,7 +86,7 @@ fun DeviceTypeListScreenPreview() {
 @Preview(showBackground = true)
 @Composable
 fun HistoryListScreenPreview() {
-    val historyItem = com.chriscartland.batterybutler.viewmodel.history.HistoryItemUiModel(
+    val historyItem = com.chriscartland.batterybutler.presentation.models.history.HistoryItemUiModel(
         event = fakeEvent,
         deviceName = fakeDevice.name,
         deviceTypeName = fakeDeviceType.name,
