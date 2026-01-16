@@ -9,11 +9,11 @@ kotlin {
     jvmToolchain(21)
 }
 
-group = "com.chriscartland.batterybutler.app"
+group = "com.chriscartland.batterybutler.server"
 version = "1.0.0"
 
 application {
-    mainClass.set("com.chriscartland.batterybutler.app.ApplicationKt")
+    mainClass.set("com.chriscartland.batterybutler.server.app.ApplicationKt")
     val isDevelopment: Boolean = project.ext.has("development")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
 }

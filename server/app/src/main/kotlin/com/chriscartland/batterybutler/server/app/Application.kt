@@ -1,4 +1,4 @@
-package com.chriscartland.batterybutler.app
+package com.chriscartland.batterybutler.server.app
 
 import com.chriscartland.batterybutler.server.data.repository.InMemoryDeviceRepository
 import io.grpc.Server

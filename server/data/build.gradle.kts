@@ -6,7 +6,7 @@ kotlin {
     jvmToolchain(21)
 }
 
-group = "com.chriscartland.batterybutler.data"
+group = "com.chriscartland.batterybutler.server"
 version = "1.0.0"
 
 dependencies {

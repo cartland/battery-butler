@@ -1,4 +1,4 @@
-package com.chriscartland.batterybutler.app
+package com.chriscartland.batterybutler.server.app
 
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText

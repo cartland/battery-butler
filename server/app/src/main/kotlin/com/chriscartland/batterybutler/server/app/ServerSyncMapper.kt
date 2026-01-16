@@ -1,4 +1,4 @@
-package com.chriscartland.batterybutler.app
+package com.chriscartland.batterybutler.server.app
 
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.Device
