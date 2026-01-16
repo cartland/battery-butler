@@ -75,7 +75,7 @@ jobs:
 
       - name: Build iOS App (Compose UI)
         run: |
-          xcodebuild -project ios-app-compose-ui/iosAppComposeUI.xcodeproj -configuration Debug -target iosAppComposeUI -destination 'generic/platform=iOS Simulator' build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO CONFIGURATION_BUILD_DIR=build/ios-compose/
+          xcodebuild -project ios-app-compose-ui/iosAppComposeUI.xcodeproj -configuration Debug -scheme iosAppComposeUI -destination 'generic/platform=iOS Simulator' build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO CONFIGURATION_BUILD_DIR=build/ios-compose/
 
       - name: Upload iOS App (Compose UI)
         uses: actions/upload-artifact@v4
@@ -97,7 +97,7 @@ jobs:
       - name: Build iOS App (SwiftUI)
         run: |
           cd ios-app-swift-ui
-          xcodebuild -project iosAppSwiftUI.xcodeproj -configuration Debug -target iosAppSwiftUI -destination 'generic/platform=iOS Simulator' build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO CONFIGURATION_BUILD_DIR=build/
+          xcodebuild -project iosAppSwiftUI.xcodeproj -configuration Debug -scheme iosAppSwiftUI -destination 'generic/platform=iOS Simulator' build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO CONFIGURATION_BUILD_DIR=build/
 
       - name: Upload iOS App (SwiftUI)
         uses: actions/upload-artifact@v4
