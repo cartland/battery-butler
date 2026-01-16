@@ -29,7 +29,7 @@ echo "Using simulator: $SIMULATOR_UDID"
 
 # Build the iOS application (SwiftUI scheme)
 echo "Building iOS application (SwiftUI)..."
-xcodebuild -project ios-app-swift-ui/iosAppSwiftUI.xcodeproj -configuration Debug -target iosAppSwiftUI -sdk iphonesimulator build -derivedDataPath ios-app-swift-ui/build
+xcodebuild -project ios-app-swift-ui/iosAppSwiftUI.xcodeproj -configuration Debug -scheme iosAppSwiftUI -sdk iphonesimulator build -derivedDataPath ios-app-swift-ui/build
 
 # Uninstall the old application (if it exists)
 echo "Uninstalling old application..."

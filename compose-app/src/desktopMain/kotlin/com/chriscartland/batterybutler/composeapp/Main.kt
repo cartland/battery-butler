@@ -4,9 +4,9 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import com.chriscartland.batterybutler.composeapp.di.AppComponent
+import com.chriscartland.batterybutler.composeapp.di.create
 import com.chriscartland.batterybutler.composeapp.feature.ai.NoOpAiEngine
 import com.chriscartland.batterybutler.data.di.DatabaseFactory
-import com.chriscartland.batterybutler.di.create
 import com.chriscartland.batterybutler.domain.repository.RemoteDataSource
 import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
 import com.chriscartland.batterybutler.presentationcore.util.DesktopFileSaver

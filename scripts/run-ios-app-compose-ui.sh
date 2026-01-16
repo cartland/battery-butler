@@ -29,7 +29,7 @@ echo "Using simulator: $SIMULATOR_UDID"
 
 # Build the iOS application
 echo "Building iOS application..."
-./gradlew :compose-app:iosSimulatorArm64Binaries
+xcodebuild -project ios-app-compose-ui/iosAppComposeUI.xcodeproj -configuration Debug -scheme iosAppComposeUI -sdk iphonesimulator build -derivedDataPath ios-app-compose-ui/build
 
 # Uninstall the old application (if it exists)
 echo "Uninstalling old application..."
@@ -37,7 +37,8 @@ xcrun simctl uninstall "$SIMULATOR_UDID" "$BUNDLE_IDENTIFIER" || true
 
 # Install the application
 echo "Installing application..."
-xcrun simctl install "$SIMULATOR_UDID" "compose-app/build/bin/iosSimulatorArm64/debug/composeApp.app"
+# Note: Path depends on Xcode build output structure
+xcrun simctl install "$SIMULATOR_UDID" "ios-app-compose-ui/build/Build/Products/Debug-iphonesimulator/BatteryButler.app"
 
 # Launch the application
 echo "Launching application..."
