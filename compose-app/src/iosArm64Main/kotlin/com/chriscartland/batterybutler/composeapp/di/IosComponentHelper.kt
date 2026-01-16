@@ -1,8 +1,8 @@
 package com.chriscartland.batterybutler.composeapp.di
 
+import com.chriscartland.batterybutler.composeapp.di.create
 import com.chriscartland.batterybutler.composeapp.feature.ai.NoOpAiEngine
 import com.chriscartland.batterybutler.data.di.DatabaseFactory
-import com.chriscartland.batterybutler.composeapp.di.create
 import com.chriscartland.batterybutler.domain.repository.RemoteDataSource
 import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
 import kotlinx.coroutines.flow.Flow
