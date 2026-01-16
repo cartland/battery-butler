@@ -159,7 +159,7 @@ dependencies {
 
 compose.desktop {
     application {
-        mainClass = "com.chriscartland.batterybutler.MainKt"
+        mainClass = "com.chriscartland.batterybutler.composeapp.MainKt"
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
