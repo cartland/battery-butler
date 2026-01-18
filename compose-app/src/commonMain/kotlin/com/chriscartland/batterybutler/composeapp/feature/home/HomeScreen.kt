@@ -8,10 +8,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.chriscartland.batterybutler.domain.util.SystemTime
 import com.chriscartland.batterybutler.presentationcore.util.LocalFileSaver
 import com.chriscartland.batterybutler.presentationfeature.home.HomeScreenContent
 import com.chriscartland.batterybutler.viewmodel.home.HomeViewModel
-import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
@@ -32,7 +32,7 @@ fun HomeScreen(
     // Handle Export Data
     LaunchedEffect(coreUiState.exportData) {
         coreUiState.exportData?.let { data ->
-            val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+            val now = SystemTime.now().toLocalDateTime(TimeZone.currentSystemDefault())
             val timestamp = "${now.year}_${now.monthNumber.toString().padStart(
                 2,
                 '0',

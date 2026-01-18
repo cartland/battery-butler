@@ -36,6 +36,10 @@ kotlin {
             api(project(":presentation-model"))
         }
     }
+
+    sourceSets.all {
+        languageSettings.optIn("kotlin.time.ExperimentalTime")
+    }
 }
 
 android {

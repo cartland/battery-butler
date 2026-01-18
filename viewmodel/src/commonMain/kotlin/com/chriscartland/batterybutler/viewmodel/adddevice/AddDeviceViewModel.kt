@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceInput
 import com.chriscartland.batterybutler.domain.model.DeviceType
+import com.chriscartland.batterybutler.domain.util.SystemTime
 import com.chriscartland.batterybutler.usecase.AddDeviceUseCase
 import com.chriscartland.batterybutler.usecase.BatchAddDevicesUseCase
 import com.chriscartland.batterybutler.usecase.EnsureDefaultDeviceTypesUseCase
@@ -13,7 +14,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import me.tatarka.inject.annotations.Inject
 import kotlin.uuid.ExperimentalUuidApi
@@ -43,7 +43,7 @@ class AddDeviceViewModel(
                 typeId = input.typeId,
                 imagePath = input.imagePath,
                 batteryLastReplaced = Instant.fromEpochMilliseconds(0),
-                lastUpdated = Clock.System.now(),
+                lastUpdated = SystemTime.now(),
             )
             addDeviceUseCase(newDevice)
         }

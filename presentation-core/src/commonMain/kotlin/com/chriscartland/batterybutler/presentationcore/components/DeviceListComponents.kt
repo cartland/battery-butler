@@ -28,8 +28,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
-import kotlinx.datetime.Clock
+import com.chriscartland.batterybutler.domain.util.SystemTime
 
+@OptIn(kotlin.time.ExperimentalTime::class)
 @Composable
 fun DeviceListItem(
     device: Device,
@@ -41,7 +42,7 @@ fun DeviceListItem(
         if (device.batteryLastReplaced.toEpochMilliseconds() == 0L) {
             "N/A"
         } else {
-            val now = Clock.System.now()
+            val now = SystemTime.now()
             "${now.minus(device.batteryLastReplaced).inWholeDays} days"
         }
     }

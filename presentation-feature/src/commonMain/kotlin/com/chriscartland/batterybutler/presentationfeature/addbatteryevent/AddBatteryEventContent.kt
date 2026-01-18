@@ -36,8 +36,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.domain.ai.AiMessage
 import com.chriscartland.batterybutler.domain.model.Device
+import com.chriscartland.batterybutler.domain.util.SystemTime
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
-import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
@@ -136,7 +136,7 @@ fun AddBatteryEventContent(
 
             // Date Selection
             val today = remember {
-                Clock.System
+                SystemTime
                     .now()
                     .toLocalDateTime(TimeZone.currentSystemDefault())
                     .date
@@ -197,7 +197,7 @@ fun AddBatteryEventContent(
                                 .parse(dateInput)
                                 .atStartOfDayIn(TimeZone.currentSystemDefault())
                         } catch (e: Exception) {
-                            Clock.System.now() // Fallback or handle error
+                            SystemTime.now() // Fallback or handle error
                         }
 
                         onAddEvent(deviceIdInput, date)

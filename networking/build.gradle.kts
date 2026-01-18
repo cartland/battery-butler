@@ -48,6 +48,10 @@ kotlin {
             implementation(libs.kotlin.test)
         }
     }
+
+    sourceSets.all {
+        languageSettings.optIn("kotlin.time.ExperimentalTime")
+    }
 }
 
 android {

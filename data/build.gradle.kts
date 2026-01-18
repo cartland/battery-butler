@@ -52,6 +52,10 @@ kotlin {
             }
         }
     }
+
+    sourceSets.all {
+        languageSettings.optIn("kotlin.time.ExperimentalTime")
+    }
 }
 
 android {

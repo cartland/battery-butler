@@ -5,7 +5,6 @@ import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import kotlinx.coroutines.flow.first
-import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -57,7 +56,7 @@ class ExportDataUseCase(
         val id: String,
         val name: String,
         val typeId: String,
-        val batteryLastReplaced: Instant?,
+        val batteryLastReplaced: String?,
         val location: String?,
     )
 
@@ -74,7 +73,7 @@ class ExportDataUseCase(
     private data class BatteryEventDto(
         val id: String,
         val deviceId: String,
-        val date: Instant,
+        val date: String,
         val batteryType: String?,
         val notes: String?,
     )
@@ -84,7 +83,7 @@ class ExportDataUseCase(
             id = id,
             name = name,
             typeId = typeId,
-            batteryLastReplaced = batteryLastReplaced,
+            batteryLastReplaced = batteryLastReplaced.toString(),
             location = location,
         )
 
@@ -101,7 +100,7 @@ class ExportDataUseCase(
         BatteryEventDto(
             id = id,
             deviceId = deviceId,
-            date = date,
+            date = date.toString(),
             batteryType = batteryType,
             notes = notes,
         )
