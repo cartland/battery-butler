@@ -6,24 +6,25 @@ class HistoryListViewModelWrapper: ObservableObject {
     @Published var state: HistoryListUiState
     
     private let viewModel: HistoryListViewModel
-    private let viewModelStore = ViewModelStore()
-    private var collector: FlowCollector<HistoryListUiState>?
+    private let viewModelStore = KmpViewModelStore()
+    private var task: Task<Void, Never>?
     
     init(_ viewModel: HistoryListViewModel) {
         self.viewModel = viewModel
         viewModelStore.put(key: "vm", viewModel: viewModel)
         self.state = viewModel.uiState.value as! HistoryListUiState
         
-        let col = FlowCollector<HistoryListUiState> { [weak self] newState in
-            DispatchQueue.main.async {
-                self?.state = newState
+        self.task = Task { @MainActor [weak self] in
+            for await newState in viewModel.uiState {
+                if let state = newState as? HistoryListUiState {
+                    self?.state = state
+                }
             }
         }
-        self.collector = col
-        viewModel.uiState.collect(collector: col) { _ in }
     }
     
     deinit {
+        task?.cancel()
         viewModelStore.clear()
     }
 }

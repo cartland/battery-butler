@@ -1,32 +1,22 @@
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.skie)
 }
 
 kotlin {
     applyDefaultHierarchyTemplate()
-    iosX64 {
-        binaries.framework {
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64(),
+    ).forEach {
+        it.binaries.framework {
             baseName = "shared"
             export(project(":domain"))
             export(project(":viewmodel"))
             export(project(":presentation-model"))
-        }
-    }
-    iosArm64 {
-        binaries.framework {
-            baseName = "shared"
-            export(project(":domain"))
-            export(project(":viewmodel"))
-            export(project(":presentation-model"))
-        }
-    }
-    iosSimulatorArm64 {
-        binaries.framework {
-            baseName = "shared"
-            export(project(":domain"))
-            export(project(":viewmodel"))
-            export(project(":presentation-model"))
+            export(libs.androidx.lifecycle.viewmodel)
         }
     }
 

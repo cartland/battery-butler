@@ -7,41 +7,34 @@ class AddDeviceViewModelWrapper: ObservableObject {
     @Published var aiMessages: [AiMessage] = []
     
     private let viewModel: AddDeviceViewModel
-    private let viewModelStore = ViewModelStore()
+    private let viewModelStore = KmpViewModelStore()
     
-    // Holders for our FlowCollectors to prevent deallocation
-    private var typesCollector: FlowCollector<[DeviceType]>?
-    private var aiCollector: FlowCollector<[AiMessage]>?
+    // Holders for our Tasks to prevent deallocation
+    private var typesTask: Task<Void, Never>?
+    private var aiTask: Task<Void, Never>?
     
     init(_ viewModel: AddDeviceViewModel) {
         self.viewModel = viewModel
         viewModelStore.put(key: "vm", viewModel: viewModel)
         
-        // Subscribe to deviceTypes
-        // We need to cast the initial value or handle it. 
-        // StateFlow usually exposes .value, but verify type casting.
-        // Assuming [DeviceType] comes through.
-        
         // Types Subscription
-        let tCollector = FlowCollector<[DeviceType]> { [weak self] types in
-            DispatchQueue.main.async {
+        self.typesTask = Task { @MainActor [weak self] in
+            for await types in viewModel.deviceTypes {
                 self?.deviceTypes = types
             }
         }
-        self.typesCollector = tCollector
-        viewModel.deviceTypes.collect(collector: tCollector) { _ in }
         
         // AI Messages Subscription
-        let aCollector = FlowCollector<[AiMessage]> { [weak self] msgs in
-            DispatchQueue.main.async {
+        self.aiTask = Task { @MainActor [weak self] in
+            for await msgs in viewModel.aiMessages {
                 self?.aiMessages = msgs
             }
         }
-        self.aiCollector = aCollector
-        viewModel.aiMessages.collect(collector: aCollector) { _ in }
     }
     
     deinit {
+        typesTask?.cancel()
+        aiTask?.cancel()
         viewModelStore.clear()
     }
     

@@ -6,8 +6,8 @@ class DeviceDetailViewModelWrapper: ObservableObject {
     @Published var state: DeviceDetailUiState
     
     private let viewModel: DeviceDetailViewModel
-    private let viewModelStore = ViewModelStore()
-    private var collector: FlowCollector<DeviceDetailUiState>?
+    private let viewModelStore = KmpViewModelStore()
+    private var task: Task<Void, Never>?
     
     // Factory method wrapper or direct init if we have the VM
     init(_ viewModel: DeviceDetailViewModel) {
@@ -17,16 +17,17 @@ class DeviceDetailViewModelWrapper: ObservableObject {
         // Initial state
         self.state = viewModel.uiState.value as! DeviceDetailUiState
         
-        let col = FlowCollector<DeviceDetailUiState> { [weak self] newState in
-            DispatchQueue.main.async {
-                self?.state = newState
+        self.task = Task { @MainActor [weak self] in
+            for await newState in viewModel.uiState {
+                if let state = newState as? DeviceDetailUiState {
+                    self?.state = state
+                }
             }
         }
-        self.collector = col
-        viewModel.uiState.collect(collector: col) { _ in }
     }
     
     deinit {
+        task?.cancel()
         viewModelStore.clear()
     }
     

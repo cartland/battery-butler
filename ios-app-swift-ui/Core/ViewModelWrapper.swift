@@ -1,34 +1,33 @@
-import Foundation
 import SwiftUI
 import shared
 import Combine
 
-/// A Generic Wrapper that observes a KMP StateFlow and publishes changes to SwiftUI
-class ViewModelWrapper<State>: ObservableObject {
-    @Published var state: State
+// This file is referenced by Xcode project.
+// Ideally should be renamed/moved to Features/Home/HomeViewModelWrapper.swift.
+
+class HomeViewModelWrapper: ObservableObject {
+    @Published var state: HomeUiState
     
-    private let viewModelStore = ViewModelStore()
+    private let viewModel: HomeViewModel
+    private let viewModelStore = KmpViewModelStore()
+    private var task: Task<Void, Never>?
     
-    init(_ viewModel: ViewModel, _ initialState: State, _ flow: Kotlinx_coroutines_coreFlow) {
-        self.state = initialState
+    init(_ viewModel: HomeViewModel) {
+        self.viewModel = viewModel
+        self.state = viewModel.uiState.value as! HomeUiState
         viewModelStore.put(key: "vm", viewModel: viewModel)
         
-        // Subscribe to the flow
-        let collector = FlowCollector<State> { [weak self] newState in
-            DispatchQueue.main.async {
-                self?.state = newState
-            }
-        }
-        
-        // Launch collection
-        flow.collect(collector: collector) { error in
-            if let error = error {
-                print("Error collecting flow: \(error)")
+        self.task = Task { @MainActor [weak self] in
+            for await newState in viewModel.uiState {
+                if let state = newState as? HomeUiState {
+                    self?.state = state
+                }
             }
         }
     }
     
     deinit {
+        task?.cancel()
         viewModelStore.clear()
     }
 }

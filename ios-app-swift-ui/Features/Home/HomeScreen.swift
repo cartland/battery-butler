@@ -2,18 +2,13 @@ import SwiftUI
 import shared
 
 struct HomeScreen: View {
-    @StateObject var viewModelWrapper: ViewModelWrapper<HomeUiState>
+    @StateObject var viewModelWrapper: HomeViewModelWrapper
     private let component: NativeComponent // Using Component to access other VMs
     @State private var isAddDevicePresented = false
     
     init(component: NativeComponent) {
         self.component = component
-        let viewModel = component.homeViewModel
-        _viewModelWrapper = StateObject(wrappedValue: ViewModelWrapper(
-            viewModel,
-            viewModel.uiState.value as! HomeUiState,
-            viewModel.uiState
-        ))
+        _viewModelWrapper = StateObject(wrappedValue: HomeViewModelWrapper(component.homeViewModel))
     }
     
     var body: some View {

@@ -40,6 +40,7 @@ grpcJava = "1.63.0"
 grpc-kotlin = "1.4.1"
 wire = "5.0.0"
 screenshot = "0.0.1-alpha12"
+skie = "0.10.9"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -108,9 +109,9 @@ kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref =
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 androidKotlinMultiplatformLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 room = { id = "androidx.room", version.ref = "androidx-room" }
+skie = { id = "co.touchlab.skie", version.ref = "skie" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 protobuf = { id = "com.google.protobuf", version = "0.9.4" }
 wire = { id = "com.squareup.wire", version.ref = "wire" }
 screenshot = { id = "com.android.compose.screenshot", version.ref = "screenshot" }
-

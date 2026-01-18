@@ -33,7 +33,7 @@ kotlin {
         commonMain.dependencies {
             implementation(libs.kotlin.stdlib)
             implementation(libs.kotlinx.coroutines.core)
-            implementation(libs.androidx.lifecycle.viewmodel)
+            api(libs.androidx.lifecycle.viewmodel)
             implementation(libs.kotlin.inject.runtime)
 
             api(project(":presentation-model"))
