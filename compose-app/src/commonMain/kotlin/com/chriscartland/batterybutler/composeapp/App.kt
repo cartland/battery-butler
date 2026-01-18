@@ -8,7 +8,10 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.chriscartland.batterybutler.composeapp.di.AppComponent
 import com.chriscartland.batterybutler.composeapp.feature.addbatteryevent.AddBatteryEventScreen
@@ -49,6 +52,10 @@ fun App(
             NavDisplay(
                 backStack = backStack,
                 onBack = { backStack.removeLastOrNull() },
+                entryDecorators = listOf(
+                    rememberSaveableStateHolderNavEntryDecorator(),
+                    rememberViewModelStoreNavEntryDecorator(),
+                ),
                 entryProvider = entryProvider {
                     // Shared navigation actions
                     val navigateToDevices = {
@@ -101,7 +108,7 @@ fun App(
                     }
 
                     entry<Screen.Devices> {
-                        val homeViewModel = remember { component.homeViewModel }
+                        val homeViewModel = viewModel { component.homeViewModel }
                         showShell(MainTab.Devices) { innerPadding ->
                             HomeScreen(
                                 viewModel = homeViewModel,
@@ -120,7 +127,7 @@ fun App(
                     }
 
                     entry<Screen.Types> {
-                        val deviceTypeListViewModel = remember { component.deviceTypeListViewModel }
+                        val deviceTypeListViewModel = viewModel { component.deviceTypeListViewModel }
                         showShell(MainTab.Types) { innerPadding ->
                             DeviceTypeListScreen(
                                 viewModel = deviceTypeListViewModel,
@@ -131,7 +138,7 @@ fun App(
                     }
 
                     entry<Screen.History> {
-                        val historyListViewModel = remember { component.historyListViewModel }
+                        val historyListViewModel = viewModel { component.historyListViewModel }
                         showShell(MainTab.History) { innerPadding ->
                             HistoryListScreen(
                                 viewModel = historyListViewModel,
@@ -145,7 +152,7 @@ fun App(
 
                     entry<Screen.AddDevice> {
                         AddDeviceScreen(
-                            viewModel = component.addDeviceViewModel,
+                            viewModel = viewModel { component.addDeviceViewModel },
                             onDeviceAdded = { backStack.removeLastOrNull() },
                             onManageDeviceTypesClick = { backStack.add(Screen.Types) },
                             onBack = { backStack.removeLastOrNull() },
@@ -154,7 +161,7 @@ fun App(
 
                     entry<Screen.AddBatteryEvent> {
                         AddBatteryEventScreen(
-                            viewModel = component.addBatteryEventViewModel,
+                            viewModel = viewModel { component.addBatteryEventViewModel },
                             onEventAdded = { backStack.removeLastOrNull() },
                             onAddDeviceClick = { backStack.add(Screen.AddDevice) },
                             onBack = { backStack.removeLastOrNull() },
@@ -163,7 +170,7 @@ fun App(
 
                     entry<Screen.AddDeviceType> {
                         AddDeviceTypeScreen(
-                            viewModel = component.addDeviceTypeViewModel,
+                            viewModel = viewModel { component.addDeviceTypeViewModel },
                             onDeviceTypeAdded = { backStack.removeLastOrNull() },
                             onBack = { backStack.removeLastOrNull() },
                         )
@@ -171,7 +178,7 @@ fun App(
 
                     entry<Screen.DeviceDetail> {
                         val args = it
-                        val viewModel = remember(args.deviceId) {
+                        val viewModel = viewModel(key = args.deviceId) {
                             component.deviceDetailViewModelFactory.create(args.deviceId)
                         }
                         DeviceDetailScreen(
@@ -184,7 +191,7 @@ fun App(
 
                     entry<Screen.EventDetail> {
                         val args = it
-                        val viewModel = remember(args.eventId) {
+                        val viewModel = viewModel(key = args.eventId) {
                             component.eventDetailViewModelFactory.create(args.eventId)
                         }
                         EventDetailScreen(
@@ -195,7 +202,7 @@ fun App(
 
                     entry<Screen.EditDevice> {
                         val args = it
-                        val viewModel = remember(args.deviceId) {
+                        val viewModel = viewModel(key = args.deviceId) {
                             component.editDeviceViewModelFactory.create(args.deviceId)
                         }
                         EditDeviceScreen(
@@ -213,7 +220,7 @@ fun App(
 
                     entry<Screen.EditDeviceType> {
                         val args = it
-                        val viewModel = remember(args.typeId) {
+                        val viewModel = viewModel(key = args.typeId) {
                             component.editDeviceTypeViewModelFactory.create(args.typeId)
                         }
                         EditDeviceTypeScreen(
@@ -225,7 +232,7 @@ fun App(
 
                     entry<Screen.Settings> {
                         SettingsScreen(
-                            viewModel = component.settingsViewModel,
+                            viewModel = viewModel { component.settingsViewModel },
                             onBack = { backStack.removeLastOrNull() },
                         )
                     }
