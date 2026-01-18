@@ -32,10 +32,6 @@ fun main() =
             val shareHandler = DesktopShareHandler()
             val fileSaver = DesktopFileSaver()
 
-            CompositionLocalProvider(
-                LocalFileSaver provides fileSaver,
-            ) {
-                App(component, shareHandler)
-            }
+            App(component, shareHandler, fileSaver)
         }
     }

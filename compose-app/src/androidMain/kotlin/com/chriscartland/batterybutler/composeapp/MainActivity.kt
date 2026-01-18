@@ -33,11 +33,7 @@ class MainActivity : ComponentActivity() {
         val fileSaver = AndroidFileSaver(this)
 
         setContent {
-            CompositionLocalProvider(
-                LocalFileSaver provides fileSaver,
-            ) {
-                App(component, shareHandler)
-            }
+            App(component, shareHandler, fileSaver)
         }
     }
 }

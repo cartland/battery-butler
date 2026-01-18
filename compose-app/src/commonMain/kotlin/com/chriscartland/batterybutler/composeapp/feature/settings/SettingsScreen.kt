@@ -8,6 +8,9 @@ import androidx.compose.ui.Modifier
 import com.chriscartland.batterybutler.presentationcore.util.LocalFileSaver
 import com.chriscartland.batterybutler.presentationfeature.settings.SettingsContent
 import com.chriscartland.batterybutler.viewmodel.settings.SettingsViewModel
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 @Composable
 fun SettingsScreen(
@@ -20,7 +23,10 @@ fun SettingsScreen(
 
     LaunchedEffect(exportData) {
         exportData?.let { data ->
-            fileSaver.saveFile("battery_butler_data.json", data.encodeToByteArray())
+            val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+            val timestamp = "${now.year}_${now.monthNumber.toString().padStart(2, '0')}_${now.dayOfMonth.toString().padStart(2, '0')}_${now.hour.toString().padStart(2, '0')}_${now.minute.toString().padStart(2, '0')}_${now.second.toString().padStart(2, '0')}"
+            val filename = "Battery_Butler_Backup_$timestamp.json"
+            fileSaver.saveFile(filename, data.encodeToByteArray())
             viewModel.onExportDataConsumed()
         }
     }

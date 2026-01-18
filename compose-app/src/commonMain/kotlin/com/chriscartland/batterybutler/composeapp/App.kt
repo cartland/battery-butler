@@ -25,6 +25,8 @@ import com.chriscartland.batterybutler.composeapp.feature.main.MainScreenShell
 import com.chriscartland.batterybutler.composeapp.feature.main.MainTab
 import com.chriscartland.batterybutler.composeapp.feature.settings.SettingsScreen
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import com.chriscartland.batterybutler.presentationcore.util.FileSaver
+import com.chriscartland.batterybutler.presentationcore.util.LocalFileSaver
 import com.chriscartland.batterybutler.presentationcore.util.LocalShareHandler
 import com.chriscartland.batterybutler.presentationcore.util.ShareHandler
 import kotlinx.serialization.Serializable
@@ -35,9 +37,13 @@ import kotlinx.serialization.Serializable
 fun App(
     component: AppComponent,
     shareHandler: ShareHandler,
+    fileSaver: FileSaver,
 ) {
     BatteryButlerTheme {
-        CompositionLocalProvider(LocalShareHandler provides shareHandler) {
+        CompositionLocalProvider(
+            LocalShareHandler provides shareHandler,
+            LocalFileSaver provides fileSaver,
+        ) {
             val backStack = remember { mutableStateListOf<Any>(Screen.Devices) }
 
             NavDisplay(

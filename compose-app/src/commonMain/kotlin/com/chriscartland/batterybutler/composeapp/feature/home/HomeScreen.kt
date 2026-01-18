@@ -8,9 +8,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.chriscartland.batterybutler.presentationcore.util.LocalFileSaver
 import com.chriscartland.batterybutler.presentationcore.util.LocalShareHandler
 import com.chriscartland.batterybutler.presentationfeature.home.HomeScreenContent
 import com.chriscartland.batterybutler.viewmodel.home.HomeViewModel
+
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -25,11 +30,14 @@ fun HomeScreen(
 
     val coreUiState = state
 
-    val shareHandler = LocalShareHandler.current
+    val fileSaver = LocalFileSaver.current
     // Handle Export Data
     LaunchedEffect(coreUiState.exportData) {
         coreUiState.exportData?.let { data ->
-            shareHandler.shareText(data)
+            val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+            val timestamp = "${now.year}_${now.monthNumber.toString().padStart(2, '0')}_${now.dayOfMonth.toString().padStart(2, '0')}_${now.hour.toString().padStart(2, '0')}_${now.minute.toString().padStart(2, '0')}_${now.second.toString().padStart(2, '0')}"
+            val filename = "Battery_Butler_Backup_$timestamp.json"
+            fileSaver.saveFile(filename, data.encodeToByteArray())
             viewModel.onExportDataConsumed()
         }
     }

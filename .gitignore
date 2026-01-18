@@ -68,3 +68,6 @@ ios-app-swift-ui/Generated/Proto/
 
 # Bazel
 .bazel/
+
+# Local plans
+*.local.md
