@@ -31,8 +31,19 @@ class ExportDataUseCase(
             events = events.map { it.toDto() },
         )
 
-        return json.encodeToString(exportData)
+        val container = ExportContainer(
+            data = exportData,
+        )
+
+        return json.encodeToString(container)
     }
+
+    @Serializable
+    private data class ExportContainer(
+        val formatVersion: Int = 1,
+        val type: String = "battery_butler_backup",
+        val data: ExportData,
+    )
 
     @Serializable
     private data class ExportData(

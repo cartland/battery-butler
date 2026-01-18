@@ -1,4 +1,5 @@
 import SwiftUI
+import Foundation
 import shared
 
 struct SettingsScreen: View {
@@ -33,8 +34,29 @@ struct SettingsScreen: View {
             wrapper.onExportDataConsumed()
         }) {
             if let data = wrapper.exportData {
-                ShareSheet(activityItems: [data])
+                if let fileUrl = saveToTempFile(content: data) {
+                    ShareSheet(activityItems: [fileUrl])
+                } else {
+                    ShareSheet(activityItems: [data])
+                }
             }
+        }
+    }
+
+    private func saveToTempFile(content: String) -> URL? {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy_MM_dd_HH_mm_ss"
+        let timestamp = formatter.string(from: Date())
+        let filename = "Battery_Butler_Backup_\(timestamp).json"
+        let tempDir = FileManager.default.temporaryDirectory
+        let fileUrl = tempDir.appendingPathComponent(filename)
+
+        do {
+            try content.write(to: fileUrl, atomically: true, encoding: .utf8)
+            return fileUrl
+        } catch {
+            print("Failed to save file: \(error)")
+            return nil
         }
     }
 }
