@@ -1,6 +1,5 @@
 package com.chriscartland.batterybutler.composeapp
 
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import com.chriscartland.batterybutler.composeapp.di.AppComponent
@@ -11,7 +10,6 @@ import com.chriscartland.batterybutler.domain.repository.RemoteDataSource
 import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
 import com.chriscartland.batterybutler.presentationcore.util.DesktopFileSaver
 import com.chriscartland.batterybutler.presentationcore.util.DesktopShareHandler
-import com.chriscartland.batterybutler.presentationcore.util.LocalFileSaver
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 

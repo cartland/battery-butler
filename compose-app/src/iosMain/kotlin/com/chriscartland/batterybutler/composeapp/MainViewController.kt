@@ -10,6 +10,7 @@ fun MainViewController() =
         val component = IosComponentHelper.create(databaseFactory)
         val shareHandler = com.chriscartland.batterybutler.presentationcore.util
             .IosShareHandler()
-        val fileSaver = com.chriscartland.batterybutler.presentationcore.util.IosFileSaver()
+        val fileSaver = com.chriscartland.batterybutler.presentationcore.util
+            .IosFileSaver()
         App(component, shareHandler, fileSaver)
     }
