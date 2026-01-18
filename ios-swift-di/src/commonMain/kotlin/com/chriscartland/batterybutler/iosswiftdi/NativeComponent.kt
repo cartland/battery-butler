@@ -8,8 +8,10 @@ import com.chriscartland.batterybutler.domain.ai.AiEngine
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.domain.repository.RemoteDataSource
 import com.chriscartland.batterybutler.viewmodel.adddevice.AddDeviceViewModel
+import com.chriscartland.batterybutler.viewmodel.adddevicetype.AddDeviceTypeViewModel
 import com.chriscartland.batterybutler.viewmodel.devicedetail.DeviceDetailViewModelFactory
 import com.chriscartland.batterybutler.viewmodel.devicetypes.DeviceTypeListViewModel
+import com.chriscartland.batterybutler.viewmodel.devicetypes.EditDeviceTypeViewModelFactory
 import com.chriscartland.batterybutler.viewmodel.history.HistoryListViewModel
 import com.chriscartland.batterybutler.viewmodel.home.HomeViewModel
 import com.chriscartland.batterybutler.viewmodel.settings.SettingsViewModel
@@ -36,6 +38,8 @@ abstract class NativeComponent(
     abstract val historyListViewModel: HistoryListViewModel
     abstract val deviceTypeListViewModel: DeviceTypeListViewModel
     abstract val deviceDetailViewModelFactory: DeviceDetailViewModelFactory
+    abstract val addDeviceTypeViewModel: AddDeviceTypeViewModel
+    abstract val editDeviceTypeViewModelFactory: EditDeviceTypeViewModelFactory
 
     // Can add other ViewModels as needed for the native app
 

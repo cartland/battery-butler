@@ -13,7 +13,6 @@
 		246295A52F14EEF40047C600 /* ViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2462958D2F14EEF40047C600 /* ViewModelWrapper.swift */; };
 		246295A62F14EEF40047C600 /* DeviceRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 246295982F14EEF40047C600 /* DeviceRow.swift */; };
 		246295A72F14EEF40047C600 /* HistoryListScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 246295952F14EEF40047C600 /* HistoryListScreen.swift */; };
-
 		246295A92F14EEF40047C600 /* SettingsViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2462959F2F14EEF40047C600 /* SettingsViewModelWrapper.swift */; };
 		246295AA2F14EEF40047C600 /* DeviceDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 246295922F14EEF40047C600 /* DeviceDetailScreen.swift */; };
 		246295AB2F14EEF40047C600 /* HistoryListViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 246295962F14EEF40047C600 /* HistoryListViewModelWrapper.swift */; };
@@ -21,10 +20,16 @@
 		246295AD2F14EEF40047C600 /* HomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 246295992F14EEF40047C600 /* HomeScreen.swift */; };
 		246295AE2F14EEF40047C600 /* SettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2462959E2F14EEF40047C600 /* SettingsScreen.swift */; };
 		246295AF2F14EEF40047C600 /* DeviceDetailViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 246295932F14EEF40047C600 /* DeviceDetailViewModelWrapper.swift */; };
+		24ABD5782F1CEC230036E1DD /* EditDeviceTypeViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24ABD5762F1CEC230036E1DD /* EditDeviceTypeViewModelWrapper.swift */; };
+		24ABD5792F1CEC230036E1DD /* DeviceTypeListViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24ABD5732F1CEC230036E1DD /* DeviceTypeListViewModelWrapper.swift */; };
+		24ABD57A2F1CEC230036E1DD /* EditDeviceTypeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24ABD5752F1CEC230036E1DD /* EditDeviceTypeScreen.swift */; };
+		24ABD57B2F1CEC230036E1DD /* AddDeviceTypeViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24ABD5712F1CEC230036E1DD /* AddDeviceTypeViewModelWrapper.swift */; };
+		24ABD57C2F1CEC230036E1DD /* DeviceTypeListScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24ABD5722F1CEC230036E1DD /* DeviceTypeListScreen.swift */; };
+		24ABD57D2F1CEC230036E1DD /* AddDeviceTypeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24ABD5702F1CEC230036E1DD /* AddDeviceTypeScreen.swift */; };
+		24ABD57E2F1CEC230036E1DD /* DeviceTypeRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24ABD5742F1CEC230036E1DD /* DeviceTypeRow.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-
 		2462958D2F14EEF40047C600 /* ViewModelWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModelWrapper.swift; sourceTree = "<group>"; };
 		2462958F2F14EEF40047C600 /* AddDeviceScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDeviceScreen.swift; sourceTree = "<group>"; };
 		246295902F14EEF40047C600 /* AddDeviceViewModelWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDeviceViewModelWrapper.swift; sourceTree = "<group>"; };
@@ -38,16 +43,23 @@
 		2462959C2F14EEF40047C600 /* MainTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTab.swift; sourceTree = "<group>"; };
 		2462959E2F14EEF40047C600 /* SettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScreen.swift; sourceTree = "<group>"; };
 		2462959F2F14EEF40047C600 /* SettingsViewModelWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModelWrapper.swift; sourceTree = "<group>"; };
+		24ABD5702F1CEC230036E1DD /* AddDeviceTypeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDeviceTypeScreen.swift; sourceTree = "<group>"; };
+		24ABD5712F1CEC230036E1DD /* AddDeviceTypeViewModelWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDeviceTypeViewModelWrapper.swift; sourceTree = "<group>"; };
+		24ABD5722F1CEC230036E1DD /* DeviceTypeListScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceTypeListScreen.swift; sourceTree = "<group>"; };
+		24ABD5732F1CEC230036E1DD /* DeviceTypeListViewModelWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceTypeListViewModelWrapper.swift; sourceTree = "<group>"; };
+		24ABD5742F1CEC230036E1DD /* DeviceTypeRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceTypeRow.swift; sourceTree = "<group>"; };
+		24ABD5752F1CEC230036E1DD /* EditDeviceTypeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDeviceTypeScreen.swift; sourceTree = "<group>"; };
+		24ABD5762F1CEC230036E1DD /* EditDeviceTypeViewModelWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDeviceTypeViewModelWrapper.swift; sourceTree = "<group>"; };
 		B9DA97B12DC1472C00A4DA20 /* BatteryButler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BatteryButler.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		B99700CA2DC9B8D800C7335B /* Exceptions for "iosApp" folder in "iosApp" target */ = {
+		B99700CA2DC9B8D800C7335B /* Exceptions for "iosApp" folder in "iosAppSwiftUI" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = B9DA97B02DC1472C00A4DA20 /* iosApp */;
+			target = B9DA97B02DC1472C00A4DA20 /* iosAppSwiftUI */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -55,7 +67,7 @@
 		B9DA97B32DC1472C00A4DA20 /* iosApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				B99700CA2DC9B8D800C7335B /* Exceptions for "iosApp" folder in "iosApp" target */,
+				B99700CA2DC9B8D800C7335B /* Exceptions for "iosApp" folder in "iosAppSwiftUI" target */,
 			);
 			path = iosApp;
 			sourceTree = "<group>";
@@ -81,7 +93,6 @@
 		2462958E2F14EEF40047C600 /* Core */ = {
 			isa = PBXGroup;
 			children = (
-
 				2462958D2F14EEF40047C600 /* ViewModelWrapper.swift */,
 			);
 			path = Core;
@@ -146,12 +157,27 @@
 			children = (
 				246295912F14EEF40047C600 /* AddDevice */,
 				246295942F14EEF40047C600 /* DeviceDetail */,
+				24ABD5772F1CEC230036E1DD /* DeviceTypes */,
 				246295972F14EEF40047C600 /* History */,
 				2462959A2F14EEF40047C600 /* Home */,
 				2462959D2F14EEF40047C600 /* Main */,
 				246295A02F14EEF40047C600 /* Settings */,
 			);
 			path = Features;
+			sourceTree = "<group>";
+		};
+		24ABD5772F1CEC230036E1DD /* DeviceTypes */ = {
+			isa = PBXGroup;
+			children = (
+				24ABD5702F1CEC230036E1DD /* AddDeviceTypeScreen.swift */,
+				24ABD5712F1CEC230036E1DD /* AddDeviceTypeViewModelWrapper.swift */,
+				24ABD5722F1CEC230036E1DD /* DeviceTypeListScreen.swift */,
+				24ABD5732F1CEC230036E1DD /* DeviceTypeListViewModelWrapper.swift */,
+				24ABD5742F1CEC230036E1DD /* DeviceTypeRow.swift */,
+				24ABD5752F1CEC230036E1DD /* EditDeviceTypeScreen.swift */,
+				24ABD5762F1CEC230036E1DD /* EditDeviceTypeViewModelWrapper.swift */,
+			);
+			path = DeviceTypes;
 			sourceTree = "<group>";
 		};
 		B9DA97A82DC1472C00A4DA20 = {
@@ -176,9 +202,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		B9DA97B02DC1472C00A4DA20 /* iosApp */ = {
+		B9DA97B02DC1472C00A4DA20 /* iosAppSwiftUI */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B9DA97BF2DC1472D00A4DA20 /* Build configuration list for PBXNativeTarget "iosApp" */;
+			buildConfigurationList = B9DA97BF2DC1472D00A4DA20 /* Build configuration list for PBXNativeTarget "iosAppSwiftUI" */;
 			buildPhases = (
 				B9DA97F52DC1497100A4DA20 /* Generate Protos */,
 				B9DA97F42DC1497100A4DA20 /* Compile Kotlin Framework */,
@@ -229,7 +255,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				B9DA97B02DC1472C00A4DA20 /* iosApp */,
+				B9DA97B02DC1472C00A4DA20 /* iosAppSwiftUI */,
 			);
 		};
 /* End PBXProject section */
@@ -290,13 +316,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				24ABD5782F1CEC230036E1DD /* EditDeviceTypeViewModelWrapper.swift in Sources */,
+				24ABD5792F1CEC230036E1DD /* DeviceTypeListViewModelWrapper.swift in Sources */,
+				24ABD57A2F1CEC230036E1DD /* EditDeviceTypeScreen.swift in Sources */,
+				24ABD57B2F1CEC230036E1DD /* AddDeviceTypeViewModelWrapper.swift in Sources */,
+				24ABD57C2F1CEC230036E1DD /* DeviceTypeListScreen.swift in Sources */,
+				24ABD57D2F1CEC230036E1DD /* AddDeviceTypeScreen.swift in Sources */,
+				24ABD57E2F1CEC230036E1DD /* DeviceTypeRow.swift in Sources */,
 				246295A22F14EEF40047C600 /* AddDeviceScreen.swift in Sources */,
 				246295A32F14EEF40047C600 /* MainTab.swift in Sources */,
 				246295A42F14EEF40047C600 /* MainScreen.swift in Sources */,
 				246295A52F14EEF40047C600 /* ViewModelWrapper.swift in Sources */,
 				246295A62F14EEF40047C600 /* DeviceRow.swift in Sources */,
 				246295A72F14EEF40047C600 /* HistoryListScreen.swift in Sources */,
-
 				246295A92F14EEF40047C600 /* SettingsViewModelWrapper.swift in Sources */,
 				246295AA2F14EEF40047C600 /* DeviceDetailScreen.swift in Sources */,
 				246295AB2F14EEF40047C600 /* HistoryListViewModelWrapper.swift in Sources */,
@@ -509,7 +541,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B9DA97BF2DC1472D00A4DA20 /* Build configuration list for PBXNativeTarget "iosApp" */ = {
+		B9DA97BF2DC1472D00A4DA20 /* Build configuration list for PBXNativeTarget "iosAppSwiftUI" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B9DA97C02DC1472D00A4DA20 /* Debug */,

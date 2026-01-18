@@ -20,8 +20,7 @@ struct MainScreen: View {
             
             // Types Tab
             NavigationStack {
-                Text("Types Coming Soon")
-                    .navigationTitle(MainTab.types.rawValue)
+                DeviceTypeListScreen(component: component)
             }
             .tabItem {
                 Label(MainTab.types.rawValue, systemImage: MainTab.types.iconName)
