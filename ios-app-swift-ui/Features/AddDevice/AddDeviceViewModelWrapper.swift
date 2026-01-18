@@ -7,6 +7,7 @@ class AddDeviceViewModelWrapper: ObservableObject {
     @Published var aiMessages: [AiMessage] = []
     
     private let viewModel: AddDeviceViewModel
+    private let viewModelStore = ViewModelStore()
     
     // Holders for our FlowCollectors to prevent deallocation
     private var typesCollector: FlowCollector<[DeviceType]>?
@@ -14,6 +15,7 @@ class AddDeviceViewModelWrapper: ObservableObject {
     
     init(_ viewModel: AddDeviceViewModel) {
         self.viewModel = viewModel
+        viewModelStore.put(key: "vm", viewModel: viewModel)
         
         // Subscribe to deviceTypes
         // We need to cast the initial value or handle it. 
@@ -37,6 +39,10 @@ class AddDeviceViewModelWrapper: ObservableObject {
         }
         self.aiCollector = aCollector
         viewModel.aiMessages.collect(collector: aCollector) { _ in }
+    }
+    
+    deinit {
+        viewModelStore.clear()
     }
     
     func addDevice(name: String, typeId: String) {

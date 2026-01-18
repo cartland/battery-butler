@@ -10,6 +10,7 @@ struct HomeScreen: View {
         self.component = component
         let viewModel = component.homeViewModel
         _viewModelWrapper = StateObject(wrappedValue: ViewModelWrapper(
+            viewModel,
             viewModel.uiState.value as! HomeUiState,
             viewModel.uiState
         ))

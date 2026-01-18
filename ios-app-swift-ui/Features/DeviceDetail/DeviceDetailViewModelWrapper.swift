@@ -6,11 +6,14 @@ class DeviceDetailViewModelWrapper: ObservableObject {
     @Published var state: DeviceDetailUiState
     
     private let viewModel: DeviceDetailViewModel
+    private let viewModelStore = ViewModelStore()
     private var collector: FlowCollector<DeviceDetailUiState>?
     
     // Factory method wrapper or direct init if we have the VM
     init(_ viewModel: DeviceDetailViewModel) {
         self.viewModel = viewModel
+        viewModelStore.put(key: "vm", viewModel: viewModel)
+        
         // Initial state
         self.state = viewModel.uiState.value as! DeviceDetailUiState
         
@@ -21,6 +24,10 @@ class DeviceDetailViewModelWrapper: ObservableObject {
         }
         self.collector = col
         viewModel.uiState.collect(collector: col) { _ in }
+    }
+    
+    deinit {
+        viewModelStore.clear()
     }
     
     // Actions

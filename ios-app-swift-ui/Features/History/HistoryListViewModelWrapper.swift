@@ -6,10 +6,12 @@ class HistoryListViewModelWrapper: ObservableObject {
     @Published var state: HistoryListUiState
     
     private let viewModel: HistoryListViewModel
+    private let viewModelStore = ViewModelStore()
     private var collector: FlowCollector<HistoryListUiState>?
     
     init(_ viewModel: HistoryListViewModel) {
         self.viewModel = viewModel
+        viewModelStore.put(key: "vm", viewModel: viewModel)
         self.state = viewModel.uiState.value as! HistoryListUiState
         
         let col = FlowCollector<HistoryListUiState> { [weak self] newState in
@@ -19,5 +21,9 @@ class HistoryListViewModelWrapper: ObservableObject {
         }
         self.collector = col
         viewModel.uiState.collect(collector: col) { _ in }
+    }
+    
+    deinit {
+        viewModelStore.clear()
     }
 }

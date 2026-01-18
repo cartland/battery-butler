@@ -7,8 +7,11 @@ import Combine
 class ViewModelWrapper<State>: ObservableObject {
     @Published var state: State
     
-    init(_ initialState: State, _ flow: Kotlinx_coroutines_coreFlow) {
+    private let viewModelStore = ViewModelStore()
+    
+    init(_ viewModel: ViewModel, _ initialState: State, _ flow: Kotlinx_coroutines_coreFlow) {
         self.state = initialState
+        viewModelStore.put(key: "vm", viewModel: viewModel)
         
         // Subscribe to the flow
         let collector = FlowCollector<State> { [weak self] newState in
@@ -26,6 +29,6 @@ class ViewModelWrapper<State>: ObservableObject {
     }
     
     deinit {
-        // Job cancellation would go here if we had a handle
+        viewModelStore.clear()
     }
 }
