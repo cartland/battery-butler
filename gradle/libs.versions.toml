@@ -13,7 +13,7 @@ androidx-espresso = "3.6.1"
 androidx-lifecycle = "2.8.4" # Stable base
 androidx-lifecycle-jb = "2.8.4" # JetBrains fork often matches or is slightly different, but try stable first OR utilize the alpha from recipe if needed. 
 # Recipe used 2.10.0-alpha05. Let's try that to be safe for Nav3.
-androidx-lifecycle-alpha = "2.10.0-alpha05"
+androidx-lifecycle-alpha = "2.10.0-alpha07"
 androidx-testExt = "1.2.1"
 composeHotReload = "1.0.0-alpha11"
 composeMultiplatform = "1.10.0-beta02"
@@ -23,9 +23,9 @@ kotlinx-coroutines = "1.10.2"
 ktor = "3.2.0"
 logback = "1.5.18"
 spotless = "7.0.4"
-kotlinStdlib = "2.2.20"
-runner = "1.5.2"
-core = "1.5.0"
+kotlinStdlib = "2.2.21"
+runner = "1.7.0"
+core = "1.7.0"
 androidx-room = "2.7.0-alpha12"
 sqlite = "2.5.0-alpha12"
 ksp = "2.2.20-2.0.4"
@@ -41,6 +41,10 @@ grpc-kotlin = "1.4.1"
 wire = "5.0.0"
 screenshot = "0.0.1-alpha12"
 skie = "0.10.9"
+generativeai = "0.9.0"
+okhttp = "4.12.0"
+serializationJson = "1.8.0"
+protobufPlugin = "0.9.4"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -73,7 +77,6 @@ sqlite-bundled = { group = "androidx.sqlite", name = "sqlite-bundled", version.r
 androidx-room-testing = { group = "androidx.room", name = "room-testing", version.ref = "androidx-room" }
 androidx-nav3-ui = { group = "org.jetbrains.androidx.navigation3", name = "navigation3-ui", version.ref = "androidx-nav3" }
 androidx-nav3-runtime = { group = "androidx.navigation3", name = "navigation3-runtime", version.ref = "androidx-nav3" }
-androidx-lifecycle-viewmodel-nav3 = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel-navigation3", version.ref = "androidx-lifecycle-alpha" }
 kotlin-inject-runtime = { group = "me.tatarka.inject", name = "kotlin-inject-runtime", version.ref = "kotlin-inject" }
 kotlin-inject-compiler = { group = "me.tatarka.inject", name = "kotlin-inject-compiler-ksp", version.ref = "kotlin-inject" }
 kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinx-datetime" }
@@ -81,8 +84,8 @@ kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-cor
 uuid = { group = "com.benasher44", name = "uuid", version.ref = "uuid" }
 compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "composeMultiplatform" }
 compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "composeMultiplatform" }
-kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version = "1.8.0" }
-generativeai = { group = "com.google.ai.client.generativeai", name = "generativeai", version = "0.9.0" }
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serializationJson" }
+generativeai = { group = "com.google.ai.client.generativeai", name = "generativeai", version.ref = "generativeai" }
 kotlinx-coroutines-play-services = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-play-services", version.ref = "kotlinx-coroutines" }
 protobuf-java = { group = "com.google.protobuf", name = "protobuf-java", version.ref = "protobufVersion" }
 protobuf-kotlin = { group = "com.google.protobuf", name = "protobuf-kotlin", version.ref = "protobufVersion" }
@@ -93,7 +96,7 @@ grpc-okhttp = { group = "io.grpc", name = "grpc-okhttp", version.ref = "grpcJava
 grpc-stub = { group = "io.grpc", name = "grpc-stub", version.ref = "grpcJava" }
 wire-runtime = { group = "com.squareup.wire", name = "wire-runtime", version.ref = "wire" }
 wire-grpc-client = { group = "com.squareup.wire", name = "wire-grpc-client", version.ref = "wire" }
-okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version = "4.12.0" }
+okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 screenshot-validation-api = { group = "com.android.tools.screenshot", name = "screenshot-validation-api", version.ref = "screenshot" }
 
 [plugins]
@@ -112,6 +115,6 @@ room = { id = "androidx.room", version.ref = "androidx-room" }
 skie = { id = "co.touchlab.skie", version.ref = "skie" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-protobuf = { id = "com.google.protobuf", version = "0.9.4" }
+protobuf = { id = "com.google.protobuf", version.ref = "protobufPlugin" }
 wire = { id = "com.squareup.wire", version.ref = "wire" }
 screenshot = { id = "com.android.compose.screenshot", version.ref = "screenshot" }

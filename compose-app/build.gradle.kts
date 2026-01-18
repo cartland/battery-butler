@@ -64,7 +64,7 @@ kotlin {
 
             implementation(libs.androidx.nav3.ui)
             implementation(libs.androidx.nav3.runtime)
-            implementation(libs.androidx.lifecycle.viewmodel.nav3)
+            implementation(libs.androidx.lifecycle.viewmodel.navigation3)
             implementation(libs.kotlin.inject.runtime)
             implementation(libs.kotlinx.datetime)
             implementation(libs.uuid)
