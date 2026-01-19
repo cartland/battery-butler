@@ -75,7 +75,7 @@ data class GraphConfig(
             ),
             mermaidCli = MermaidCli(
                 theme = "default",
-                cssFile = "",
+                cssFile = "buildSrc/config/mermaid/mermaid.css",
             ),
             scanner = ScannerConfig(
                 gradleConfigurations = listOf(

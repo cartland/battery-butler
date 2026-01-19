@@ -91,7 +91,11 @@ abstract class GenerateGraphTask : DefaultTask() {
                 "-t",
                 config.mermaidCli.theme,
                 "--cssFile",
-                config.mermaidCli.cssFile,
+                if (config.mermaidCli.cssFile.isNotEmpty()) {
+                     project.rootProject.file(config.mermaidCli.cssFile).absolutePath
+                } else {
+                     ""
+                },
                 "-p",
                 project.rootProject.file("scripts/puppeteer-config.json").absolutePath,
             )

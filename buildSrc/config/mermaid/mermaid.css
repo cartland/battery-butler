@@ -1,0 +1,12 @@
+/* CSS to fix font truncation in Mermaid CLI Generation */
+.node text {
+    font-family: 'Arial', sans-serif !important;
+}
+
+.cluster text {
+    font-family: 'Arial', sans-serif !important;
+}
+
+text {
+    font-family: 'Arial', sans-serif !important;
+}
