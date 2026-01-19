@@ -45,6 +45,14 @@ import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMap
 import com.chriscartland.batterybutler.presentationcore.components.HistoryListItem
 import com.chriscartland.batterybutler.presentationmodel.devicedetail.DeviceDetailUiState
 
+import androidx.compose.ui.tooling.preview.Preview
+import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import com.chriscartland.batterybutler.domain.model.Device
+import com.chriscartland.batterybutler.domain.model.DeviceType
+import com.chriscartland.batterybutler.domain.model.BatteryEvent
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DeviceDetailContent(
@@ -301,5 +309,29 @@ fun StatCard(
             )
         }
         Text(value, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+    }
+}
+
+@OptIn(ExperimentalTime::class)
+@Preview
+@Composable
+fun DeviceDetailContentPreview() {
+    BatteryButlerTheme {
+        val now = Clock.System.now()
+        val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
+        val device = Device("dev1", "Kitchen Smoke", "type1", now, now, "Kitchen")
+        val event = BatteryEvent("evt1", "dev1", now)
+        val state = DeviceDetailUiState.Success(
+            device = device,
+            deviceType = type,
+            events = listOf(event),
+        )
+        DeviceDetailContent(
+            state = state,
+            onRecordReplacement = {},
+            onBack = {},
+            onEdit = {},
+            onEventClick = {},
+        )
     }
 }

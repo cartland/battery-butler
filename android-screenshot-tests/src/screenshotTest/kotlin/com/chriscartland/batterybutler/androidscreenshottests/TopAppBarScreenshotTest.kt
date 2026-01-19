@@ -9,15 +9,14 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.tooling.preview.Preview
 import com.android.tools.screenshot.PreviewTest
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
+import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBarPreview
 import com.chriscartland.batterybutler.presentationcore.theme.LocalAiAvailable
 
 @PreviewTest
 @Preview(showBackground = true)
 @Composable
-fun TopAppBarDefaultPreview() {
-    ButlerCenteredTopAppBar(
-        title = "Battery Butler",
-    )
+fun TopAppBarDefaultPreviewTest() {
+    ButlerCenteredTopAppBarPreview()
 }
 
 @PreviewTest

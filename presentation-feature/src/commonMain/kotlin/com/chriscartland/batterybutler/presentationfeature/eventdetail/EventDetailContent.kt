@@ -46,6 +46,14 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Instant
 
+import androidx.compose.ui.tooling.preview.Preview
+import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import com.chriscartland.batterybutler.domain.model.BatteryEvent
+import com.chriscartland.batterybutler.domain.model.Device
+import com.chriscartland.batterybutler.domain.model.DeviceType
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EventDetailContent(
@@ -193,5 +201,28 @@ fun EventDetailContent(
                 }
             }
         }
+    }
+}
+
+@OptIn(ExperimentalTime::class)
+@Preview
+@Composable
+fun EventDetailContentPreview() {
+    BatteryButlerTheme {
+        val now = Clock.System.now()
+        val event = BatteryEvent("evt1", "dev1", now)
+        val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
+        val device = Device("dev1", "Kitchen Smoke", "type1", now, now, "Kitchen")
+        val state = EventDetailUiState.Success(
+            event = event,
+            device = device,
+            deviceType = type,
+        )
+        EventDetailContent(
+            uiState = state,
+            onUpdateDate = {},
+            onDeleteEvent = {},
+            onBack = {},
+        )
     }
 }

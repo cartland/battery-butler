@@ -43,6 +43,11 @@ import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
 import kotlin.time.Instant
 
+import androidx.compose.ui.tooling.preview.Preview
+import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import com.chriscartland.batterybutler.domain.ai.AiRole
+import kotlin.time.ExperimentalTime
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddBatteryEventContent(
@@ -210,5 +215,23 @@ fun AddBatteryEventContent(
                 Text("Add Event")
             }
         }
+    }
+}
+
+@OptIn(ExperimentalTime::class)
+@Preview
+@Composable
+fun AddBatteryEventContentPreview() {
+    BatteryButlerTheme {
+        val now = Clock.System.now()
+        val device = Device("dev1", "Kitchen Smoke", "type1", now, now, "Kitchen")
+        AddBatteryEventContent(
+            devices = listOf(device),
+            aiMessages = emptyList(),
+            onAddEvent = { _, _ -> },
+            onBatchAdd = {},
+            onAddDeviceClick = {},
+            onBack = {},
+        )
     }
 }

@@ -201,8 +201,9 @@ fun HistoryScreen(
 }
 
 @Preview
+@Preview
 @Composable
-private fun DevicesScreenPreview() {
+fun DevicesScreenPreview() {
     BatteryButlerTheme { // Wrap the preview in the theme
         val now = Clock.System.now()
         val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
@@ -227,7 +228,7 @@ private fun DevicesScreenPreview() {
 
 @Preview
 @Composable
-private fun TypesScreenPreview() {
+fun TypesScreenPreview() {
     BatteryButlerTheme { // Wrap the preview in the theme
         val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
         val state = DeviceTypeListUiState.Success(
@@ -250,7 +251,7 @@ private fun TypesScreenPreview() {
 @OptIn(ExperimentalTime::class)
 @Preview
 @Composable
-private fun HistoryScreenPreview() {
+fun HistoryScreenPreview() {
     BatteryButlerTheme { // Wrap the preview in the theme
         val now = Clock.System.now()
         val event = BatteryEvent("evt1", "dev1", now)

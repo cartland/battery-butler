@@ -25,6 +25,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
+import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 
 @Composable
 fun CompositeControl(
@@ -94,5 +96,19 @@ fun CompositeControl(
                 )
             }
         }
+    }
+}
+
+@Preview
+@Composable
+fun CompositeControlPreview() {
+    BatteryButlerTheme {
+        CompositeControl(
+            label = "Battery Level",
+            isActive = true,
+            isAscending = true,
+            onClicked = {},
+            onDirectionToggle = {},
+        )
     }
 }

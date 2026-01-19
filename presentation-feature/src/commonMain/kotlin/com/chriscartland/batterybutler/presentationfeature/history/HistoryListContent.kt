@@ -12,6 +12,13 @@ import androidx.compose.ui.Modifier
 import com.chriscartland.batterybutler.presentationcore.components.HistoryListItem
 import com.chriscartland.batterybutler.presentationmodel.history.HistoryListUiState
 
+import androidx.compose.ui.tooling.preview.Preview
+import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import com.chriscartland.batterybutler.domain.model.BatteryEvent
+import com.chriscartland.batterybutler.presentationmodel.history.HistoryItemUiModel
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+
 @Composable
 fun HistoryListContent(
     state: HistoryListUiState,
@@ -41,5 +48,23 @@ fun HistoryListContent(
                 }
             }
         }
+    }
+}
+
+@OptIn(ExperimentalTime::class)
+@Preview
+@Composable
+fun HistoryListContentPreview() {
+    BatteryButlerTheme {
+        val now = Clock.System.now()
+        val event = BatteryEvent("evt1", "dev1", now)
+        val item = HistoryItemUiModel(event, "Kitchen Smoke", "Smoke Alarm", "Kitchen")
+        val state = HistoryListUiState.Success(
+            items = listOf(item),
+        )
+        HistoryListContent(
+            state = state,
+            onEventClick = { _, _ -> },
+        )
     }
 }

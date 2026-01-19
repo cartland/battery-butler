@@ -36,6 +36,9 @@ import com.chriscartland.batterybutler.presentationfeature.util.labelRes
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeGroupOption
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeListUiState
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeSortOption
+import androidx.compose.ui.tooling.preview.Preview
+import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import com.chriscartland.batterybutler.domain.model.DeviceType
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -158,5 +161,28 @@ fun DeviceTypeListContent(
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+fun DeviceTypeListContentPreview() {
+    BatteryButlerTheme {
+        val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
+        val state = DeviceTypeListUiState.Success(
+            groupedTypes = mapOf("All" to listOf(type)),
+            sortOption = DeviceTypeSortOption.NAME,
+            groupOption = DeviceTypeGroupOption.NONE,
+            isSortAscending = true,
+            isGroupAscending = true,
+        )
+        DeviceTypeListContent(
+            state = state,
+            onEditType = {},
+            onSortOptionSelected = {},
+            onGroupOptionSelected = {},
+            onSortDirectionToggle = {},
+            onGroupDirectionToggle = {},
+        )
     }
 }

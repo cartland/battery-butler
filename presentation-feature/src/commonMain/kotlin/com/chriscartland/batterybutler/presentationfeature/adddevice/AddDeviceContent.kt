@@ -47,6 +47,10 @@ import com.chriscartland.batterybutler.domain.ai.AiMessage
 import com.chriscartland.batterybutler.domain.model.DeviceInput
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
+import androidx.compose.ui.tooling.preview.Preview
+import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import com.chriscartland.batterybutler.domain.ai.AiRole
+import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -306,5 +310,54 @@ fun AddDeviceManualSection(
                 Icon(Icons.Default.DevicesOther, contentDescription = "Manage Types")
             }
         }
+    }
+}
+
+@Preview
+@Composable
+fun AddDeviceAiSectionPreview() {
+    BatteryButlerTheme {
+        AddDeviceAiSection(
+            aiMessages = listOf(
+                AiMessage("1", AiRole.USER, "Example prompt"),
+                AiMessage("2", AiRole.MODEL, "Example response")
+            ),
+            onBatchAdd = {},
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+fun AddDeviceManualSectionPreview() {
+    BatteryButlerTheme {
+        AddDeviceManualSection(
+            name = "My Device",
+            onNameChange = {},
+            location = "Kitchen",
+            onLocationChange = {},
+            deviceTypes = listOf(
+                DeviceType("1", "Smoke Detector", "detector_smoke"),
+            ),
+            selectedType = DeviceType("1", "Smoke Detector", "detector_smoke"),
+            onTypeSelected = {},
+            onManageDeviceTypesClick = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+fun AddDeviceContentPreview() {
+    BatteryButlerTheme {
+        AddDeviceContent(
+            deviceTypes = emptyList(),
+            aiMessages = emptyList(),
+            onAddDevice = {},
+            onBatchAdd = {},
+            onManageDeviceTypesClick = {},
+            onBack = {},
+        )
     }
 }

@@ -31,6 +31,12 @@ import com.chriscartland.batterybutler.presentationfeature.util.labelRes
 import com.chriscartland.batterybutler.presentationmodel.home.GroupOption
 import com.chriscartland.batterybutler.presentationmodel.home.HomeUiState
 import com.chriscartland.batterybutler.presentationmodel.home.SortOption
+import androidx.compose.ui.tooling.preview.Preview
+import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import com.chriscartland.batterybutler.domain.model.Device
+import com.chriscartland.batterybutler.domain.model.DeviceType
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
@@ -173,5 +179,63 @@ fun HomeScreenList(
                 )
             }
         }
+    }
+}
+
+@OptIn(ExperimentalTime::class)
+@Preview
+@Composable
+fun HomeScreenPreview() {
+    BatteryButlerTheme {
+        val now = Clock.System.now()
+        val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
+        val device = Device("dev1", "Kitchen Smoke", "type1", now, now, "Kitchen")
+        val state = HomeUiState(
+            groupedDevices = mapOf("All" to listOf(device)),
+            deviceTypes = mapOf("type1" to type),
+        )
+        HomeScreenContent(
+            state = state,
+            onGroupOptionToggle = {},
+            onGroupOptionSelected = {},
+            onSortOptionToggle = {},
+            onSortOptionSelected = {},
+            onDeviceClick = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+fun HomeScreenFilterRowPreview() {
+    BatteryButlerTheme {
+        HomeScreenFilterRow(
+            state = HomeUiState(
+                groupedDevices = emptyMap(),
+                deviceTypes = emptyMap(),
+            ),
+            onGroupOptionToggle = {},
+            onGroupOptionSelected = {},
+            onSortOptionToggle = {},
+            onSortOptionSelected = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+fun HomeScreenListPreview() {
+    BatteryButlerTheme {
+        val now = Clock.System.now()
+        val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
+        val device = Device("dev1", "Kitchen Smoke", "type1", now, now, "Kitchen")
+        HomeScreenList(
+            state = HomeUiState(
+                groupedDevices = mapOf("All" to listOf(device)),
+                deviceTypes = mapOf("type1" to type),
+            ),
+            onDeviceClick = {},
+            contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
+        )
     }
 }

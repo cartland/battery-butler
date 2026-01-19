@@ -22,51 +22,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.android.tools.screenshot.PreviewTest
-import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
-import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMapper
+import com.chriscartland.batterybutler.presentationcore.components.DeviceIconsPreview
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 
 @PreviewTest
 @Preview(showBackground = true)
 @Composable
-fun DeviceIconsPreview() {
-    BatteryButlerTheme {
-        Scaffold(
-            topBar = { ButlerCenteredTopAppBar(title = "Device Icons", onBack = {}) },
-        ) { innerPadding ->
-            LazyVerticalGrid(
-                columns = GridCells.Adaptive(minSize = 80.dp),
-                contentPadding = PaddingValues(16.dp),
-                modifier = Modifier.padding(innerPadding).fillMaxSize(),
-            ) {
-                items(DeviceIconMapper.AvailableIcons) { iconName ->
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(8.dp),
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(56.dp)
-                                .clip(CircleShape)
-                                .background(DeviceIconMapper.getContainerColor(iconName)),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Icon(
-                                imageVector = DeviceIconMapper.getIcon(iconName),
-                                contentDescription = iconName,
-                                tint = DeviceIconMapper.getContentColor(iconName),
-                                modifier = Modifier.size(24.dp),
-                            )
-                        }
-                        Text(
-                            text = iconName,
-                            style = MaterialTheme.typography.bodySmall,
-                            modifier = Modifier.padding(top = 4.dp),
-                            maxLines = 1,
-                        )
-                    }
-                }
-            }
-        }
-    }
+fun DeviceIconsPreviewTest() {
+    DeviceIconsPreview()
 }

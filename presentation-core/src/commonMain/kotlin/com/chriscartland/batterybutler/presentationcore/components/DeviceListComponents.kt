@@ -28,6 +28,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
+import androidx.compose.ui.tooling.preview.Preview
+import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import kotlin.time.Clock
 
 @OptIn(kotlin.time.ExperimentalTime::class)
@@ -161,5 +163,33 @@ fun DeviceTypeIconItem(
                 modifier = Modifier.size(32.dp),
             )
         }
+    }
+}
+
+@OptIn(kotlin.time.ExperimentalTime::class)
+@Preview
+@Composable
+fun DeviceListItemPreview() {
+    BatteryButlerTheme {
+        val now = Clock.System.now()
+        val device = Device("dev1", "Kitchen Smoke", "type1", now, now, "Kitchen")
+        val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
+        DeviceListItem(
+            device = device,
+            deviceType = type,
+            onClick = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+fun DeviceTypeIconItemPreview() {
+    BatteryButlerTheme {
+        DeviceTypeIconItem(
+            iconName = "detector_smoke",
+            isSelected = true,
+            onClick = {},
+        )
     }
 }

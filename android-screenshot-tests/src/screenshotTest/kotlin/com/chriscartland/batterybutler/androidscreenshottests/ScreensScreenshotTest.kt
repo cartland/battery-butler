@@ -20,6 +20,16 @@ import com.chriscartland.batterybutler.presentationfeature.eventdetail.EventDeta
 import com.chriscartland.batterybutler.presentationfeature.history.HistoryListContent
 import com.chriscartland.batterybutler.presentationfeature.home.HomeScreenContent
 import com.chriscartland.batterybutler.presentationfeature.settings.SettingsContent
+import com.chriscartland.batterybutler.presentationfeature.home.HomeScreenPreview
+import com.chriscartland.batterybutler.presentationfeature.devicetypes.DeviceTypeListContentPreview
+import com.chriscartland.batterybutler.presentationfeature.history.HistoryListContentPreview
+import com.chriscartland.batterybutler.presentationfeature.adddevicetype.AddDeviceTypeContentPreview
+import com.chriscartland.batterybutler.presentationfeature.addbatteryevent.AddBatteryEventContentPreview
+import com.chriscartland.batterybutler.presentationfeature.devicedetail.DeviceDetailContentPreview
+import com.chriscartland.batterybutler.presentationfeature.editdevice.EditDeviceContentPreview
+import com.chriscartland.batterybutler.presentationfeature.devicetypes.EditDeviceTypeContentPreview
+import com.chriscartland.batterybutler.presentationfeature.eventdetail.EventDetailContentPreview
+import com.chriscartland.batterybutler.presentationfeature.settings.SettingsContentPreview
 import com.chriscartland.batterybutler.presentationmodel.devicedetail.DeviceDetailUiState
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeGroupOption
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeListUiState
@@ -124,168 +134,69 @@ private fun TestMainScreenShell(
 @PreviewTest
 @Preview(showBackground = true)
 @Composable
-fun HomeScreenPreview() {
-    TestMainScreenShell(TestMainTab.Devices, title = "Devices") { innerPadding ->
-        HomeScreenContent(
-            state = HomeUiState(
-                groupedDevices = mapOf("All" to listOf(fakeDevice)),
-                deviceTypes = mapOf(fakeDeviceType.id to fakeDeviceType),
-            ),
-            onGroupOptionToggle = {},
-            onGroupOptionSelected = {},
-            onSortOptionToggle = {},
-            onSortOptionSelected = {},
-            onDeviceClick = {},
-            modifier = Modifier.padding(innerPadding)
-        )
-    }
+fun HomeScreenPreviewTest() {
+    HomeScreenPreview()
 }
 
 @PreviewTest
 @Preview(showBackground = true)
 @Composable
-fun DeviceTypeListScreenPreview() {
-    TestMainScreenShell(TestMainTab.Types, title = "Device Types") { innerPadding ->
-        DeviceTypeListContent(
-            state = DeviceTypeListUiState.Success(
-                groupedTypes = mapOf("All" to listOf(fakeDeviceType)),
-                sortOption = DeviceTypeSortOption.NAME,
-                groupOption = DeviceTypeGroupOption.NONE,
-                isSortAscending = true,
-                isGroupAscending = true,
-            ),
-            onEditType = {},
-            onSortDirectionToggle = {},
-            onGroupDirectionToggle = {},
-            onSortOptionSelected = {},
-            onGroupOptionSelected = {},
-            modifier = Modifier.padding(innerPadding)
-        )
-    }
+fun DeviceTypeListScreenPreviewTest() {
+    DeviceTypeListContentPreview()
 }
 
 @PreviewTest
 @Preview(showBackground = true)
 @Composable
-fun HistoryListScreenPreview() {
-    val historyItem = HistoryItemUiModel(
-        event = fakeEvent,
-        deviceName = fakeDevice.name,
-        deviceTypeName = fakeDeviceType.name,
-        deviceLocation = "Kitchen",
-    )
-    TestMainScreenShell(TestMainTab.History, title = "History") { innerPadding ->
-        HistoryListContent(
-            state = HistoryListUiState.Success(
-                items = listOf(historyItem),
-            ),
-            onEventClick = { _, _ -> },
-            modifier = Modifier.padding(innerPadding)
-        )
-    }
+fun HistoryListScreenPreviewTest() {
+    HistoryListContentPreview()
 }
 
 @PreviewTest
 @Preview(showBackground = true)
 @Composable
-fun AddDeviceTypeScreenPreview() {
-    AddDeviceTypeContent(
-        aiMessages = listOf(
-            AiMessage("1", AiRole.USER, "Add Smoke Detector"),
-            AiMessage("2", AiRole.MODEL, "Confirmed."),
-        ),
-        suggestedIcon = "detector_smoke",
-        onSuggestIcon = {},
-        onConsumeSuggestedIcon = {},
-        onDeviceTypeAdded = {},
-        onBatchAdd = {},
-        onBack = {},
-    )
+fun AddDeviceTypeScreenPreviewTest() {
+    AddDeviceTypeContentPreview()
 }
 
 @PreviewTest
 @Preview(showBackground = true)
 @Composable
-fun AddBatteryEventScreenPreview() {
-    AddBatteryEventContent(
-        devices = listOf(fakeDevice),
-        aiMessages = emptyList(),
-        onAddEvent = { _, _ -> },
-        onBatchAdd = {},
-        onAddDeviceClick = {},
-        onBack = {},
-    )
+fun AddBatteryEventScreenPreviewTest() {
+    AddBatteryEventContentPreview()
 }
 
 @PreviewTest
 @Preview(showBackground = true)
 @Composable
-fun DeviceDetailScreenPreview() {
-    DeviceDetailContent(
-        state = DeviceDetailUiState.Success(
-            device = fakeDevice,
-            deviceType = fakeDeviceType,
-            events = listOf(fakeEvent),
-        ),
-        onRecordReplacement = {},
-        onBack = {},
-        onEdit = {},
-        onEventClick = {},
-    )
+fun DeviceDetailScreenPreviewTest() {
+    DeviceDetailContentPreview()
 }
 
 @PreviewTest
 @Preview(showBackground = true)
 @Composable
-fun EditDeviceScreenPreview() {
-    EditDeviceContent(
-        uiState = EditDeviceUiState.Success(
-            device = fakeDevice,
-            deviceTypes = listOf(fakeDeviceType),
-        ),
-        onSave = {},
-        onDelete = {},
-        onManageDeviceTypesClick = {},
-        onBack = {},
-    )
+fun EditDeviceScreenPreviewTest() {
+    EditDeviceContentPreview()
 }
 
 @PreviewTest
 @Preview(showBackground = true)
 @Composable
-fun EditDeviceTypeScreenPreview() {
-    EditDeviceTypeContent(
-        uiState = EditDeviceTypeUiState.Success(
-            deviceType = fakeDeviceType,
-        ),
-        onSave = {},
-        onDelete = {},
-        onBack = {},
-    )
+fun EditDeviceTypeScreenPreviewTest() {
+    EditDeviceTypeContentPreview()
 }
 
 @PreviewTest
 @Preview(showBackground = true)
 @Composable
-fun EventDetailScreenPreview() {
-    EventDetailContent(
-        uiState = EventDetailUiState.Success(
-            event = fakeEvent,
-            device = fakeDevice,
-            deviceType = fakeDeviceType,
-        ),
-        onUpdateDate = {},
-        onDeleteEvent = {},
-        onBack = {},
-    )
+fun EventDetailScreenPreviewTest() {
+    EventDetailContentPreview()
 }
 
 @PreviewTest
 @Preview(showBackground = true)
 @Composable
-fun SettingsScreenPreview() {
-    SettingsContent(
-        onExportData = {},
-        onBack = {},
-    )
+fun SettingsScreenPreviewTest() {
+    SettingsContentPreview()
 }

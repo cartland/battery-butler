@@ -51,6 +51,10 @@ import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMap
 import com.chriscartland.batterybutler.presentationcore.components.DeviceTypeIconItem
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.EditDeviceTypeUiState
 
+import androidx.compose.ui.tooling.preview.Preview
+import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import com.chriscartland.batterybutler.domain.model.DeviceType
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditDeviceTypeContent(
@@ -201,5 +205,19 @@ fun EditDeviceTypeContent(
                 dismissButton = { TextButton(onClick = { showDeleteDialog = false }) { Text("Cancel") } },
             )
         }
+    }
+}
+
+@Preview
+@Composable
+fun EditDeviceTypeContentPreview() {
+    BatteryButlerTheme {
+        val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
+        EditDeviceTypeContent(
+            uiState = EditDeviceTypeUiState.Success(type),
+            onSave = {},
+            onDelete = {},
+            onBack = {},
+        )
     }
 }

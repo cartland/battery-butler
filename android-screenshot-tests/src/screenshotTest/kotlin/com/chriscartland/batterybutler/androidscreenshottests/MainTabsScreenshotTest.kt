@@ -6,9 +6,9 @@ import com.android.tools.screenshot.PreviewTest
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
-import com.chriscartland.batterybutler.presentationfeature.main.DevicesScreen
-import com.chriscartland.batterybutler.presentationfeature.main.HistoryScreen
-import com.chriscartland.batterybutler.presentationfeature.main.TypesScreen
+import com.chriscartland.batterybutler.presentationfeature.main.DevicesScreenPreview
+import com.chriscartland.batterybutler.presentationfeature.main.HistoryScreenPreview
+import com.chriscartland.batterybutler.presentationfeature.main.TypesScreenPreview
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeListUiState
 import com.chriscartland.batterybutler.presentationmodel.history.HistoryItemUiModel
 import com.chriscartland.batterybutler.presentationmodel.history.HistoryListUiState
@@ -29,61 +29,22 @@ private val fakeHistoryItem = HistoryItemUiModel(
 @PreviewTest
 @Preview(device = "id:pixel_5", showBackground = true)
 @Composable
-fun DevicesScreenPreview() {
-    BatteryButlerTheme {
-        DevicesScreen(
-            state = HomeUiState(
-                groupedDevices = mapOf("All" to listOf(fakeDevice)),
-                deviceTypes = mapOf(fakeDeviceType.id to fakeDeviceType),
-            ),
-            onTabSelected = {},
-            onSettingsClick = {},
-            onAddDeviceClick = {},
-            onDeviceClick = {},
-            onGroupOptionToggle = {},
-            onGroupOptionSelected = {},
-            onSortOptionToggle = {},
-            onSortOptionSelected = {},
-        )
-    }
+fun DevicesScreenPreviewTest() {
+    DevicesScreenPreview()
 }
 
 @OptIn(ExperimentalTime::class)
 @PreviewTest
 @Preview(device = "id:pixel_5", showBackground = true)
 @Composable
-fun TypesScreenPreview() {
-    BatteryButlerTheme {
-        TypesScreen(
-            state = DeviceTypeListUiState.Success(
-                groupedTypes = mapOf("All" to listOf(fakeDeviceType)),
-            ),
-            onTabSelected = {},
-            onSettingsClick = {},
-            onAddTypeClick = {},
-            onEditType = {},
-            onSortOptionSelected = {},
-            onGroupOptionSelected = {},
-            onSortDirectionToggle = {},
-            onGroupDirectionToggle = {},
-        )
-    }
+fun TypesScreenPreviewTest() {
+    TypesScreenPreview()
 }
 
 @OptIn(ExperimentalTime::class)
 @PreviewTest
 @Preview(device = "id:pixel_5", showBackground = true)
 @Composable
-fun HistoryScreenPreview() {
-    BatteryButlerTheme {
-        HistoryScreen(
-            state = HistoryListUiState.Success(
-                items = listOf(fakeHistoryItem),
-            ),
-            onTabSelected = {},
-            onSettingsClick = {},
-            onAddEventClick = {},
-            onEventClick = { _, _ -> },
-        )
-    }
+fun HistoryScreenPreviewTest() {
+    HistoryScreenPreview()
 }

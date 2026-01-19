@@ -50,6 +50,10 @@ import com.chriscartland.batterybutler.presentationcore.components.ButlerCentere
 import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMapper
 import com.chriscartland.batterybutler.presentationcore.components.DeviceTypeIconItem
 
+import androidx.compose.ui.tooling.preview.Preview
+import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import com.chriscartland.batterybutler.domain.ai.AiRole
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddDeviceTypeContent(
@@ -290,5 +294,22 @@ fun AddDeviceTypeContent(
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+fun AddDeviceTypeContentPreview() {
+    BatteryButlerTheme {
+        AddDeviceTypeContent(
+            aiMessages = listOf(
+                AiMessage("1", AiRole.USER, "Add Smoke Detector"),
+                AiMessage("2", AiRole.MODEL, "Confirmed."),
+            ),
+            suggestedIcon = "detector_smoke",
+            onDeviceTypeAdded = {},
+            onBatchAdd = {},
+            onBack = {},
+        )
     }
 }

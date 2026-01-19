@@ -53,6 +53,13 @@ import com.chriscartland.batterybutler.presentationcore.components.ButlerCentere
 import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMapper
 import com.chriscartland.batterybutler.presentationmodel.editdevice.EditDeviceUiState
 
+import androidx.compose.ui.tooling.preview.Preview
+import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import com.chriscartland.batterybutler.domain.model.Device
+import com.chriscartland.batterybutler.domain.model.DeviceType
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditDeviceContent(
@@ -270,5 +277,26 @@ fun EditDeviceContent(
                 },
             )
         }
+    }
+}
+
+@OptIn(ExperimentalTime::class)
+@Preview
+@Composable
+fun EditDeviceContentPreview() {
+    BatteryButlerTheme {
+        val now = Clock.System.now()
+        val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
+        val device = Device("dev1", "Kitchen Smoke", "type1", now, now, "Kitchen")
+        EditDeviceContent(
+            uiState = EditDeviceUiState.Success(
+                device = device,
+                deviceTypes = listOf(type),
+            ),
+            onSave = {},
+            onDelete = {},
+            onManageDeviceTypesClick = {},
+            onBack = {},
+        )
     }
 }

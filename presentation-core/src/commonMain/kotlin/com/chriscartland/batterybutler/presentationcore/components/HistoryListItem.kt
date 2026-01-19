@@ -23,6 +23,8 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.daysUntil
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
+import androidx.compose.ui.tooling.preview.Preview
+import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 
 @OptIn(kotlin.time.ExperimentalTime::class)
 @Composable
@@ -128,5 +130,21 @@ fun HistoryListItem(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
+    }
+}
+
+@OptIn(kotlin.time.ExperimentalTime::class)
+@Preview
+@Composable
+fun HistoryListItemPreview() {
+    BatteryButlerTheme {
+        val now = Clock.System.now()
+        val event = BatteryEvent("evt1", "dev1", now)
+        HistoryListItem(
+            event = event,
+            deviceName = "Kitchen Smoke",
+            deviceTypeName = "Smoke Alarm",
+            deviceLocation = "Kitchen",
+        )
     }
 }

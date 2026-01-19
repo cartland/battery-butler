@@ -5,11 +5,12 @@ import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+@OptIn(kotlin.time.ExperimentalTime::class)
 class InMemoryDeviceRepositoryTest {
     @Test
     fun `addDevice broadcasts update`() =

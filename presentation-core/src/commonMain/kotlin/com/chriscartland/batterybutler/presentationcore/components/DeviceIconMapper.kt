@@ -45,6 +45,29 @@ import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.chriscartland.batterybutler.domain.model.DeviceIcons
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.runtime.Composable
+import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import androidx.compose.material3.Scaffold
+import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.ui.Modifier
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.layout.Column
+import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.background
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.layout.fillMaxSize
 
 object DeviceIconMapper {
     val AvailableIcons = DeviceIcons.AvailableIcons
@@ -159,5 +182,49 @@ object DeviceIconMapper {
             "location_on" -> Color(0xFF137FEC) // blue-600
             "account_balance_wallet" -> Color(0xFF059669) // emerald-600
             else -> Color(0xFF475569)
+                }
+}
+
+@Preview
+@Composable
+fun DeviceIconsPreview() {
+    BatteryButlerTheme {
+        Scaffold(
+            topBar = { ButlerCenteredTopAppBar(title = "Device Icons", onBack = {}) },
+        ) { innerPadding ->
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(minSize = 80.dp),
+                contentPadding = PaddingValues(16.dp),
+                modifier = Modifier.padding(innerPadding).fillMaxSize(),
+            ) {
+                items(DeviceIconMapper.AvailableIcons) { iconName ->
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(8.dp),
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(56.dp)
+                                .clip(CircleShape)
+                                .background(DeviceIconMapper.getContainerColor(iconName)),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Icon(
+                                imageVector = DeviceIconMapper.getIcon(iconName),
+                                contentDescription = iconName,
+                                tint = DeviceIconMapper.getContentColor(iconName),
+                                modifier = Modifier.size(24.dp),
+                            )
+                        }
+                        Text(
+                            text = iconName,
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.padding(top = 4.dp),
+                            maxLines = 1,
+                        )
+                    }
+                }
+            }
         }
+    }
 }
