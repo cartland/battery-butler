@@ -30,7 +30,6 @@ import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
-import kotlin.time.Clock
 import kotlin.time.Instant
 
 @OptIn(kotlin.time.ExperimentalTime::class)

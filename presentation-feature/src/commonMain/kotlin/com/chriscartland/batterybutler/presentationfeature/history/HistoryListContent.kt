@@ -15,7 +15,6 @@ import com.chriscartland.batterybutler.presentationcore.components.HistoryListIt
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationmodel.history.HistoryItemUiModel
 import com.chriscartland.batterybutler.presentationmodel.history.HistoryListUiState
-import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
