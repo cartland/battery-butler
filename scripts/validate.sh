@@ -38,6 +38,9 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     
     # Check for Xcode and xcodebuild
     if command -v xcodebuild >/dev/null 2>&1; then
+        echo "Strict Linkage Verification..."
+        ./scripts/verify-ios-linkage.sh
+
         echo "Building iOS App (Compose UI)..."
         xcodebuild -project ios-app-compose-ui/iosAppComposeUI.xcodeproj -configuration Debug -scheme iosAppComposeUI -destination 'generic/platform=iOS Simulator' build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO CONFIGURATION_BUILD_DIR=build/ios-compose/
         
