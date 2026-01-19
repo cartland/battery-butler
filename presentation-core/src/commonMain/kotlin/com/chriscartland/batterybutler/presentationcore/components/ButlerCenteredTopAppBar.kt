@@ -69,7 +69,7 @@ fun ButlerCenteredTopAppBar(
     )
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun ButlerCenteredTopAppBarPreview() {
     BatteryButlerTheme {

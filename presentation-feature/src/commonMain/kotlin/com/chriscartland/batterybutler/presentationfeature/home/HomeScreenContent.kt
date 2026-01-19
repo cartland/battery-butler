@@ -183,7 +183,7 @@ fun HomeScreenList(
 }
 
 @OptIn(ExperimentalTime::class)
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
     BatteryButlerTheme {
@@ -205,7 +205,7 @@ fun HomeScreenPreview() {
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun HomeScreenFilterRowPreview() {
     BatteryButlerTheme {
@@ -222,7 +222,7 @@ fun HomeScreenFilterRowPreview() {
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun HomeScreenListPreview() {
     BatteryButlerTheme {

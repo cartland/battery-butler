@@ -87,7 +87,7 @@ fun SettingsContent(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun SettingsContentPreview() {
     BatteryButlerTheme {

@@ -185,7 +185,7 @@ object DeviceIconMapper {
         }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun DeviceIconsPreview() {
     BatteryButlerTheme {

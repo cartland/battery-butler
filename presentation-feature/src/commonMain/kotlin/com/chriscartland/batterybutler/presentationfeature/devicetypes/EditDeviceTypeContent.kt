@@ -207,7 +207,7 @@ fun EditDeviceTypeContent(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun EditDeviceTypeContentPreview() {
     BatteryButlerTheme {

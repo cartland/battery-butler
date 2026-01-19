@@ -99,7 +99,7 @@ fun CompositeControl(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun CompositeControlPreview() {
     BatteryButlerTheme {

@@ -312,7 +312,7 @@ fun StatCard(
 }
 
 @OptIn(ExperimentalTime::class)
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun DeviceDetailContentPreview() {
     BatteryButlerTheme {

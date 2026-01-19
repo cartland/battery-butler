@@ -167,7 +167,7 @@ fun DeviceTypeIconItem(
 }
 
 @OptIn(kotlin.time.ExperimentalTime::class)
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun DeviceListItemPreview() {
     BatteryButlerTheme {
@@ -182,7 +182,7 @@ fun DeviceListItemPreview() {
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun DeviceTypeIconItemPreview() {
     BatteryButlerTheme {
