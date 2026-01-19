@@ -1,24 +1,21 @@
 package com.chriscartland.batterybutler.composeapp.feature.main
 
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.chriscartland.batterybutler.presentationcore.util.LocalFileSaver
 import com.chriscartland.batterybutler.presentationfeature.main.DevicesScreen
 import com.chriscartland.batterybutler.presentationfeature.main.HistoryScreen
 import com.chriscartland.batterybutler.presentationfeature.main.MainTab
 import com.chriscartland.batterybutler.presentationfeature.main.TypesScreen
-import com.chriscartland.batterybutler.presentationcore.util.LocalFileSaver
 import com.chriscartland.batterybutler.viewmodel.devicetypes.DeviceTypeListViewModel
 import com.chriscartland.batterybutler.viewmodel.history.HistoryListViewModel
 import com.chriscartland.batterybutler.viewmodel.home.HomeViewModel
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
-
 
 @Composable
 fun DevicesScreenRoot(
@@ -31,7 +28,7 @@ fun DevicesScreenRoot(
     val state by viewModel.uiState.collectAsState()
     val coreUiState = state
     val fileSaver = LocalFileSaver.current
-    
+
     // Handle Export Data (Moved from HomeScreen.kt)
     LaunchedEffect(coreUiState.exportData) {
         coreUiState.exportData?.let { data ->

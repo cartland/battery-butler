@@ -42,8 +42,6 @@ kotlin {
     }
 }
 
-
-
 android {
     namespace = "com.chriscartland.batterybutler.presentationfeature"
     compileSdk = libs.versions.android.compileSdk

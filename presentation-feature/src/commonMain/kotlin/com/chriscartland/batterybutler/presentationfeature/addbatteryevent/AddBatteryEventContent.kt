@@ -33,20 +33,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.domain.ai.AiMessage
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
+import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
-import kotlin.time.Instant
-
-import androidx.compose.ui.tooling.preview.Preview
-import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
-import com.chriscartland.batterybutler.domain.ai.AiRole
 import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -38,21 +38,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
-import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMapper
-import com.chriscartland.batterybutler.presentationmodel.eventdetail.EventDetailUiState
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
-import kotlin.time.Instant
-
 import androidx.compose.ui.tooling.preview.Preview
-import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
+import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
+import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMapper
+import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import com.chriscartland.batterybutler.presentationmodel.eventdetail.EventDetailUiState
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

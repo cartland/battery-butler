@@ -3,9 +3,6 @@ package com.chriscartland.batterybutler.androidscreenshottests
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.android.tools.screenshot.PreviewTest
-import com.chriscartland.batterybutler.domain.ai.AiMessage
-import com.chriscartland.batterybutler.domain.ai.AiRole
-import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationfeature.adddevice.AddDeviceContentPreview
 
 @PreviewTest

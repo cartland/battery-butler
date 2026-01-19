@@ -5,10 +5,10 @@ import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import kotlin.time.Instant
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlin.time.Instant
 
 @OptIn(kotlin.time.ExperimentalTime::class)
 class InMemoryDeviceRepositoryTest {

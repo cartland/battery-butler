@@ -43,16 +43,15 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.domain.ai.AiMessage
+import com.chriscartland.batterybutler.domain.ai.AiRole
 import com.chriscartland.batterybutler.domain.model.DeviceTypeInput
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMapper
 import com.chriscartland.batterybutler.presentationcore.components.DeviceTypeIconItem
-
-import androidx.compose.ui.tooling.preview.Preview
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
-import com.chriscartland.batterybutler.domain.ai.AiRole
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

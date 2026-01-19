@@ -16,10 +16,10 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import com.chriscartland.batterybutler.presentationcore.theme.LocalAiAction
-import com.chriscartland.batterybutler.presentationcore.theme.LocalAiAvailable
 import androidx.compose.ui.tooling.preview.Preview
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import com.chriscartland.batterybutler.presentationcore.theme.LocalAiAction
+import com.chriscartland.batterybutler.presentationcore.theme.LocalAiAvailable
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

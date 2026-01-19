@@ -42,15 +42,14 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.domain.ai.AiMessage
+import com.chriscartland.batterybutler.domain.ai.AiRole
 import com.chriscartland.batterybutler.domain.model.DeviceInput
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
-import androidx.compose.ui.tooling.preview.Preview
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
-import com.chriscartland.batterybutler.domain.ai.AiRole
-import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -320,7 +319,7 @@ fun AddDeviceAiSectionPreview() {
         AddDeviceAiSection(
             aiMessages = listOf(
                 AiMessage("1", AiRole.USER, "Example prompt"),
-                AiMessage("2", AiRole.MODEL, "Example response")
+                AiMessage("2", AiRole.MODEL, "Example response"),
             ),
             onBatchAdd = {},
         )

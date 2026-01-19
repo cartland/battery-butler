@@ -49,8 +49,6 @@ dependencies {
     debugImplementation(compose.uiTooling)
     implementation(compose.materialIconsExtended)
 
-
-
     screenshotTestImplementation(libs.screenshot.validation.api)
     screenshotTestImplementation(libs.compose.ui.test.junit4)
     screenshotTestImplementation(libs.compose.ui.test.manifest)

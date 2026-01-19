@@ -1,47 +1,6 @@
 package com.chriscartland.batterybutler.androidscreenshottests
 
-
-
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
-import com.android.tools.screenshot.PreviewTest
-import com.chriscartland.batterybutler.domain.ai.AiMessage
-import com.chriscartland.batterybutler.domain.ai.AiRole
-import com.chriscartland.batterybutler.domain.model.BatteryEvent
-import com.chriscartland.batterybutler.domain.model.Device
-import com.chriscartland.batterybutler.domain.model.DeviceType
-import com.chriscartland.batterybutler.presentationfeature.addbatteryevent.AddBatteryEventContent
-import com.chriscartland.batterybutler.presentationfeature.adddevicetype.AddDeviceTypeContent
-import com.chriscartland.batterybutler.presentationfeature.devicedetail.DeviceDetailContent
-import com.chriscartland.batterybutler.presentationfeature.devicetypes.DeviceTypeListContent
-import com.chriscartland.batterybutler.presentationfeature.devicetypes.EditDeviceTypeContent
-import com.chriscartland.batterybutler.presentationfeature.editdevice.EditDeviceContent
-import com.chriscartland.batterybutler.presentationfeature.eventdetail.EventDetailContent
-import com.chriscartland.batterybutler.presentationfeature.history.HistoryListContent
-import com.chriscartland.batterybutler.presentationfeature.home.HomeScreenContent
-import com.chriscartland.batterybutler.presentationfeature.settings.SettingsContent
-import com.chriscartland.batterybutler.presentationfeature.home.HomeScreenPreview
-import com.chriscartland.batterybutler.presentationfeature.devicetypes.DeviceTypeListContentPreview
-import com.chriscartland.batterybutler.presentationfeature.history.HistoryListContentPreview
-import com.chriscartland.batterybutler.presentationfeature.adddevicetype.AddDeviceTypeContentPreview
-import com.chriscartland.batterybutler.presentationfeature.addbatteryevent.AddBatteryEventContentPreview
-import com.chriscartland.batterybutler.presentationfeature.devicedetail.DeviceDetailContentPreview
-import com.chriscartland.batterybutler.presentationfeature.editdevice.EditDeviceContentPreview
-import com.chriscartland.batterybutler.presentationfeature.devicetypes.EditDeviceTypeContentPreview
-import com.chriscartland.batterybutler.presentationfeature.eventdetail.EventDetailContentPreview
-import com.chriscartland.batterybutler.presentationfeature.settings.SettingsContentPreview
-import com.chriscartland.batterybutler.presentationmodel.devicedetail.DeviceDetailUiState
-import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeGroupOption
-import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeListUiState
-import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeSortOption
-import com.chriscartland.batterybutler.presentationmodel.devicetypes.EditDeviceTypeUiState
-import com.chriscartland.batterybutler.presentationmodel.editdevice.EditDeviceUiState
-import com.chriscartland.batterybutler.presentationmodel.eventdetail.EventDetailUiState
-import com.chriscartland.batterybutler.presentationmodel.history.HistoryItemUiModel
-import com.chriscartland.batterybutler.presentationmodel.history.HistoryListUiState
-import com.chriscartland.batterybutler.presentationmodel.home.HomeUiState
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
@@ -56,8 +15,23 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
+import com.android.tools.screenshot.PreviewTest
+import com.chriscartland.batterybutler.domain.model.BatteryEvent
+import com.chriscartland.batterybutler.domain.model.Device
+import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
+import com.chriscartland.batterybutler.presentationfeature.addbatteryevent.AddBatteryEventContentPreview
+import com.chriscartland.batterybutler.presentationfeature.adddevicetype.AddDeviceTypeContentPreview
+import com.chriscartland.batterybutler.presentationfeature.devicedetail.DeviceDetailContentPreview
+import com.chriscartland.batterybutler.presentationfeature.devicetypes.DeviceTypeListContentPreview
+import com.chriscartland.batterybutler.presentationfeature.devicetypes.EditDeviceTypeContentPreview
+import com.chriscartland.batterybutler.presentationfeature.editdevice.EditDeviceContentPreview
+import com.chriscartland.batterybutler.presentationfeature.eventdetail.EventDetailContentPreview
+import com.chriscartland.batterybutler.presentationfeature.history.HistoryListContentPreview
+import com.chriscartland.batterybutler.presentationfeature.home.HomeScreenPreview
+import com.chriscartland.batterybutler.presentationfeature.settings.SettingsContentPreview
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -81,7 +55,9 @@ val fakeEvent = BatteryEvent(
 
 // region Test Shell
 enum class TestMainTab {
-    Devices, Types, History
+    Devices,
+    Types,
+    History,
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -89,7 +65,7 @@ enum class TestMainTab {
 private fun TestMainScreenShell(
     currentTab: TestMainTab,
     title: String,
-    content: @Composable (PaddingValues) -> Unit
+    content: @Composable (PaddingValues) -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -99,7 +75,7 @@ private fun TestMainScreenShell(
                     IconButton(onClick = {}) {
                         Icon(Icons.Filled.Settings, contentDescription = "Settings")
                     }
-                }
+                },
             )
         },
         floatingActionButton = {
@@ -121,12 +97,12 @@ private fun TestMainScreenShell(
                             }
                             Icon(icon, contentDescription = tab.name)
                         },
-                        label = { Text(tab.name) }
+                        label = { Text(tab.name) },
                     )
                 }
             }
         },
-        content = content
+        content = content,
     )
 }
 // endregion

@@ -1,13 +1,10 @@
 package com.chriscartland.batterybutler.composeapp
 
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
@@ -24,13 +21,13 @@ import com.chriscartland.batterybutler.composeapp.feature.eventdetail.EventDetai
 import com.chriscartland.batterybutler.composeapp.feature.main.DevicesScreenRoot
 import com.chriscartland.batterybutler.composeapp.feature.main.HistoryScreenRoot
 import com.chriscartland.batterybutler.composeapp.feature.main.TypesScreenRoot
-import com.chriscartland.batterybutler.presentationfeature.main.MainTab
 import com.chriscartland.batterybutler.composeapp.feature.settings.SettingsScreen
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationcore.util.FileSaver
 import com.chriscartland.batterybutler.presentationcore.util.LocalFileSaver
 import com.chriscartland.batterybutler.presentationcore.util.LocalShareHandler
 import com.chriscartland.batterybutler.presentationcore.util.ShareHandler
+import com.chriscartland.batterybutler.presentationfeature.main.MainTab
 import kotlinx.serialization.Serializable
 
 // Preview removed as we can't easily preview with DI and Interfaces

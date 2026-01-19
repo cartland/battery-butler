@@ -8,9 +8,11 @@ import com.chriscartland.batterybutler.proto.ProtoBatteryEvent
 import com.chriscartland.batterybutler.proto.ProtoDevice
 import com.chriscartland.batterybutler.proto.ProtoDeviceType
 import com.chriscartland.batterybutler.proto.SyncUpdate
-import kotlinx.datetime.Instant
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 // Duplicated from Networking module for now, as Server doesn't depend on Networking
+@OptIn(ExperimentalTime::class)
 internal object ServerSyncMapper {
     fun toDomain(proto: SyncUpdate): RemoteUpdate =
         RemoteUpdate(

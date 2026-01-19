@@ -8,9 +8,9 @@ import com.chriscartland.batterybutler.proto.ProtoBatteryEvent
 import com.chriscartland.batterybutler.proto.ProtoDevice
 import com.chriscartland.batterybutler.proto.ProtoDeviceType
 import com.chriscartland.batterybutler.proto.SyncUpdate
-import kotlin.time.Instant
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.time.Instant
 
 class SyncMapperTest {
     @Test

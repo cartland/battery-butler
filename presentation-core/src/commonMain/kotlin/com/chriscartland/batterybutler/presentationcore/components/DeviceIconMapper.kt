@@ -1,5 +1,16 @@
 package com.chriscartland.batterybutler.presentationcore.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.Brush
@@ -42,32 +53,21 @@ import androidx.compose.material.icons.filled.Tv
 import androidx.compose.material.icons.filled.VideogameAsset
 import androidx.compose.material.icons.filled.Watch
 import androidx.compose.material.icons.filled.WaterDrop
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.chriscartland.batterybutler.domain.model.DeviceIcons
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.runtime.Composable
-import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
-import androidx.compose.material3.Scaffold
-import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.ui.Modifier
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.layout.Column
-import androidx.compose.ui.Alignment
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.size
-import androidx.compose.ui.draw.clip
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.background
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.foundation.layout.fillMaxSize
+import com.chriscartland.batterybutler.domain.model.DeviceIcons
+import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
+import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 
 object DeviceIconMapper {
     val AvailableIcons = DeviceIcons.AvailableIcons
@@ -182,7 +182,7 @@ object DeviceIconMapper {
             "location_on" -> Color(0xFF137FEC) // blue-600
             "account_balance_wallet" -> Color(0xFF059669) // emerald-600
             else -> Color(0xFF475569)
-                }
+        }
 }
 
 @Preview

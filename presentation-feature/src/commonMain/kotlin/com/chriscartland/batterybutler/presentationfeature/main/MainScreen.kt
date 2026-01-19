@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.tooling.preview.Preview
 import batterybutler.presentation_feature.generated.resources.Res
 import batterybutler.presentation_feature.generated.resources.tab_devices
 import batterybutler.presentation_feature.generated.resources.tab_history
@@ -45,11 +46,9 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
-import androidx.compose.ui.tooling.preview.Preview
 
 @Serializable
 enum class MainTab {
-
     Devices,
     Types,
     History,
@@ -204,7 +203,8 @@ fun HistoryScreen(
 @Preview
 @Composable
 fun DevicesScreenPreview() {
-    BatteryButlerTheme { // Wrap the preview in the theme
+    BatteryButlerTheme {
+        // Wrap the preview in the theme
         val now = Clock.System.now()
         val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
         val device = Device("dev1", "Kitchen Smoke", "type1", now, now, "Kitchen")
@@ -229,7 +229,8 @@ fun DevicesScreenPreview() {
 @Preview
 @Composable
 fun TypesScreenPreview() {
-    BatteryButlerTheme { // Wrap the preview in the theme
+    BatteryButlerTheme {
+        // Wrap the preview in the theme
         val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
         val state = DeviceTypeListUiState.Success(
             groupedTypes = mapOf("All" to listOf(type)),
@@ -252,7 +253,8 @@ fun TypesScreenPreview() {
 @Preview
 @Composable
 fun HistoryScreenPreview() {
-    BatteryButlerTheme { // Wrap the preview in the theme
+    BatteryButlerTheme {
+        // Wrap the preview in the theme
         val now = Clock.System.now()
         val event = BatteryEvent("evt1", "dev1", now)
         val item = HistoryItemUiModel(event, "Kitchen Smoke", "Smoke Alarm", "Kitchen")
