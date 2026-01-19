@@ -27,7 +27,7 @@ kotlin {
             implementation(compose.material3)
             implementation(compose.ui)
             implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
+            implementation(libs.compose.ui.tooling.preview)
             implementation(compose.materialIconsExtended)
             implementation(libs.kotlinx.datetime)
 
@@ -42,6 +42,8 @@ kotlin {
     }
 }
 
+
+
 android {
     namespace = "com.chriscartland.batterybutler.presentationfeature"
     compileSdk = libs.versions.android.compileSdk
@@ -55,5 +57,10 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
+    }
+
+    // Add Android-specific dependencies here
+    dependencies {
+        debugImplementation(compose.uiTooling)
     }
 }

@@ -47,99 +47,130 @@ fun HomeScreenContent(
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
-            Column {
-                // Filter Row
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+            HomeScreenFilterRow(
+                state = state,
+                onGroupOptionToggle = onGroupOptionToggle,
+                onGroupOptionSelected = onGroupOptionSelected,
+                onSortOptionToggle = onSortOptionToggle,
+                onSortOptionSelected = onSortOptionSelected,
+            )
+        },
+    ) { innerPadding ->
+        HomeScreenList(
+            state = state,
+            onDeviceClick = onDeviceClick,
+            contentPadding = innerPadding,
+        )
+    }
+}
+
+@Composable
+fun HomeScreenFilterRow(
+    state: HomeUiState,
+    onGroupOptionToggle: () -> Unit,
+    onGroupOptionSelected: (GroupOption) -> Unit,
+    onSortOptionToggle: () -> Unit,
+    onSortOptionSelected: (SortOption) -> Unit,
+) {
+    Column {
+        // Filter Row
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            var sortExpanded by remember { mutableStateOf(false) }
+            var groupExpanded by remember { mutableStateOf(false) }
+
+            // Group Button (First)
+            Box {
+                CompositeControl(
+                    label = "Group: ${stringResource(state.groupOption.labelRes())}",
+                    isActive = state.groupOption != GroupOption.NONE,
+                    isAscending = state.isGroupAscending,
+                    onClicked = { groupExpanded = true },
+                    onDirectionToggle = onGroupOptionToggle,
+                )
+                DropdownMenu(
+                    expanded = groupExpanded,
+                    onDismissRequest = { groupExpanded = false },
                 ) {
-                    var sortExpanded by remember { mutableStateOf(false) }
-                    var groupExpanded by remember { mutableStateOf(false) }
-
-                    // Group Button (First)
-                    Box {
-                        CompositeControl(
-                            label = "Group: ${stringResource(state.groupOption.labelRes())}",
-                            isActive = state.groupOption != GroupOption.NONE,
-                            isAscending = state.isGroupAscending,
-                            onClicked = { groupExpanded = true },
-                            onDirectionToggle = onGroupOptionToggle,
+                    GroupOption.values().forEach { option ->
+                        DropdownMenuItem(
+                            text = { Text(stringResource(option.labelRes())) },
+                            onClick = {
+                                onGroupOptionSelected(option)
+                                groupExpanded = false
+                            },
                         )
-                        DropdownMenu(
-                            expanded = groupExpanded,
-                            onDismissRequest = { groupExpanded = false },
-                        ) {
-                            GroupOption.values().forEach { option ->
-                                DropdownMenuItem(
-                                    text = { Text(stringResource(option.labelRes())) },
-                                    onClick = {
-                                        onGroupOptionSelected(option)
-                                        groupExpanded = false
-                                    },
-                                )
-                            }
-                        }
-                    }
-
-                    // Sort Button (Second)
-                    Box {
-                        CompositeControl(
-                            label = "Sort: ${stringResource(state.sortOption.labelRes())}",
-                            isActive = true, // Sort is always active
-                            isAscending = state.isSortAscending,
-                            onClicked = { sortExpanded = true },
-                            onDirectionToggle = onSortOptionToggle,
-                        )
-                        DropdownMenu(
-                            expanded = sortExpanded,
-                            onDismissRequest = { sortExpanded = false },
-                        ) {
-                            SortOption.values().forEach { option ->
-                                DropdownMenuItem(
-                                    text = { Text(stringResource(option.labelRes())) },
-                                    onClick = {
-                                        onSortOptionSelected(option)
-                                        sortExpanded = false
-                                    },
-                                )
-                            }
-                        }
                     }
                 }
             }
-        },
-    ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = innerPadding,
-        ) {
-            state.groupedDevices.forEach { (groupName, devices) ->
-                if (state.groupOption != GroupOption.NONE) {
-                    stickyHeader {
-                        Surface(
-                            modifier = Modifier.fillMaxWidth(),
-                            color = MaterialTheme.colorScheme.surfaceVariant,
-                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        ) {
-                            Text(
-                                text = groupName,
-                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                                style = MaterialTheme.typography.labelLarge,
-                                fontWeight = FontWeight.Bold,
-                            )
-                        }
+
+            // Sort Button (Second)
+            Box {
+                CompositeControl(
+                    label = "Sort: ${stringResource(state.sortOption.labelRes())}",
+                    isActive = true, // Sort is always active
+                    isAscending = state.isSortAscending,
+                    onClicked = { sortExpanded = true },
+                    onDirectionToggle = onSortOptionToggle,
+                )
+                DropdownMenu(
+                    expanded = sortExpanded,
+                    onDismissRequest = { sortExpanded = false },
+                ) {
+                    SortOption.values().forEach { option ->
+                        DropdownMenuItem(
+                            text = { Text(stringResource(option.labelRes())) },
+                            onClick = {
+                                onSortOptionSelected(option)
+                                sortExpanded = false
+                            },
+                        )
                     }
                 }
+            }
+        }
+    }
+}
 
-                items(devices) { device ->
-                    DeviceListItem(
-                        device = device,
-                        deviceType = state.deviceTypes[device.typeId],
-                        onClick = { onDeviceClick(device.id) },
-                    )
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun HomeScreenList(
+    state: HomeUiState,
+    onDeviceClick: (String) -> Unit,
+    contentPadding: androidx.compose.foundation.layout.PaddingValues,
+) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = contentPadding,
+    ) {
+        state.groupedDevices.forEach { (groupName, devices) ->
+            if (state.groupOption != GroupOption.NONE) {
+                stickyHeader {
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    ) {
+                        Text(
+                            text = groupName,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
                 }
+            }
+
+            items(devices) { device ->
+                DeviceListItem(
+                    device = device,
+                    deviceType = state.deviceTypes[device.typeId],
+                    onClick = { onDeviceClick(device.id) },
+                )
             }
         }
     }

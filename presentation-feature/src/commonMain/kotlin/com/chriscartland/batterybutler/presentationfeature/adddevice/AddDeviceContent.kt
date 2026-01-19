@@ -112,164 +112,198 @@ fun AddDeviceContent(
             verticalArrangement = Arrangement.spacedBy(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            // AI Section
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    "Batch Import (AI)",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(bottom = 8.dp),
-                )
+            AddDeviceAiSection(aiMessages = aiMessages, onBatchAdd = onBatchAdd)
+            AddDeviceManualSection(
+                name = name,
+                onNameChange = { name = it },
+                location = location,
+                onLocationChange = { location = it },
+                deviceTypes = deviceTypes,
+                selectedType = selectedType,
+                onTypeSelected = { selectedType = it },
+                onManageDeviceTypesClick = onManageDeviceTypesClick,
+            )
+        }
+    }
+}
 
-                var aiInput by remember { mutableStateOf("") }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    OutlinedTextField(
-                        value = aiInput,
-                        onValueChange = { aiInput = it },
-                        modifier = Modifier.weight(1f),
-                        placeholder = { Text("E.g. Add Fire Alarm in Hallway") },
-                        maxLines = 3,
-                    )
-                    androidx.compose.material3.IconButton(
-                        onClick = {
-                            if (aiInput.isNotBlank()) {
-                                onBatchAdd(aiInput)
-                                aiInput = ""
-                            }
-                        },
-                        enabled = aiInput.isNotBlank(),
-                    ) {
-                        Icon(Icons.Default.AutoAwesome, contentDescription = "Process with AI")
+@Composable
+fun AddDeviceAiSection(
+    aiMessages: List<AiMessage>,
+    onBatchAdd: (String) -> Unit,
+) {
+    // AI Section
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            "Batch Import (AI)",
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(bottom = 8.dp),
+        )
+
+        var aiInput by remember { mutableStateOf("") }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            OutlinedTextField(
+                value = aiInput,
+                onValueChange = { aiInput = it },
+                modifier = Modifier.weight(1f),
+                placeholder = { Text("E.g. Add Fire Alarm in Hallway") },
+                maxLines = 3,
+            )
+            androidx.compose.material3.IconButton(
+                onClick = {
+                    if (aiInput.isNotBlank()) {
+                        onBatchAdd(aiInput)
+                        aiInput = ""
                     }
-                }
+                },
+                enabled = aiInput.isNotBlank(),
+            ) {
+                Icon(Icons.Default.AutoAwesome, contentDescription = "Process with AI")
+            }
+        }
 
-                if (aiMessages.isNotEmpty()) {
-                    Text("AI Output:", style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(top = 8.dp))
-                    androidx.compose.foundation.lazy.LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(150.dp)
-                            .padding(8.dp),
-                    ) {
-                        items(aiMessages) { msg ->
-                            Text(
-                                text = "${msg.role}: ${msg.text}",
-                                style = MaterialTheme.typography.bodySmall,
-                                modifier = Modifier.padding(vertical = 4.dp),
+        if (aiMessages.isNotEmpty()) {
+            Text("AI Output:", style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(top = 8.dp))
+            androidx.compose.foundation.lazy.LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(150.dp)
+                    .padding(8.dp),
+            ) {
+                items(aiMessages) { msg ->
+                    Text(
+                        text = "${msg.role}: ${msg.text}",
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(vertical = 4.dp),
+                    )
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AddDeviceManualSection(
+    name: String,
+    onNameChange: (String) -> Unit,
+    location: String,
+    onLocationChange: (String) -> Unit,
+    deviceTypes: List<DeviceType>,
+    selectedType: DeviceType?,
+    onTypeSelected: (DeviceType) -> Unit,
+    onManageDeviceTypesClick: () -> Unit,
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val focusManager = LocalFocusManager.current
+
+    // Manual Section
+    Column(
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Text(
+            "Manual Entry",
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.primary,
+        )
+        OutlinedTextField(
+            value = name,
+            onValueChange = onNameChange,
+            label = { Text("Device Name") },
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            keyboardActions = KeyboardActions(
+                onNext = { focusManager.moveFocus(FocusDirection.Next) },
+            ),
+        )
+
+        OutlinedTextField(
+            value = location,
+            onValueChange = onLocationChange,
+            label = { Text("Location") },
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(
+                onDone = { focusManager.clearFocus() },
+            ),
+        )
+
+        // Device Type Selection
+        Row(
+            modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.Bottom,
+        ) {
+            ExposedDropdownMenuBox(
+                expanded = expanded,
+                onExpandedChange = { expanded = !expanded },
+                modifier = Modifier.weight(1f),
+            ) {
+                OutlinedTextField(
+                    value = selectedType?.name ?: "",
+                    onValueChange = {},
+                    label = { Text("Device Type") },
+                    leadingIcon = if (selectedType != null) {
+                        {
+                            Icon(
+                                imageVector = com.chriscartland.batterybutler.presentationcore.components.DeviceIconMapper.getIcon(
+                                    selectedType.defaultIcon,
+                                ),
+                                contentDescription = null,
                             )
                         }
+                    } else {
+                        null
+                    },
+                    readOnly = true,
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                    modifier = Modifier
+                        .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                        .fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                )
+
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false },
+                ) {
+                    deviceTypes.forEach { type ->
+                        DropdownMenuItem(
+                            text = { Text(type.name) },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = com.chriscartland.batterybutler.presentationcore.components.DeviceIconMapper
+                                        .getIcon(
+                                            type.defaultIcon,
+                                        ),
+                                    contentDescription = null,
+                                )
+                            },
+                            onClick = {
+                                onTypeSelected(type)
+                                expanded = false
+                            },
+                        )
                     }
                 }
             }
 
-            // Manual Section
-            Column(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.fillMaxWidth(),
+            // Manage Button
+            OutlinedButton(
+                onClick = onManageDeviceTypesClick,
+                shape = RoundedCornerShape(12.dp),
+                contentPadding = PaddingValues(0.dp),
+                modifier = Modifier.size(56.dp),
             ) {
-                Text(
-                    "Manual Entry",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                )
-                OutlinedTextField(
-                    value = name,
-                    onValueChange = { name = it },
-                    label = { Text("Device Name") },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                    keyboardActions = KeyboardActions(
-                        onNext = { focusManager.moveFocus(FocusDirection.Next) },
-                    ),
-                )
-
-                OutlinedTextField(
-                    value = location,
-                    onValueChange = { location = it },
-                    label = { Text("Location") },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                    keyboardActions = KeyboardActions(
-                        onDone = { focusManager.clearFocus() },
-                    ),
-                )
-
-                // Device Type Selection
-                Row(
-                    modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.Bottom,
-                ) {
-                    ExposedDropdownMenuBox(
-                        expanded = expanded,
-                        onExpandedChange = { expanded = !expanded },
-                        modifier = Modifier.weight(1f),
-                    ) {
-                        OutlinedTextField(
-                            value = selectedType?.name ?: "",
-                            onValueChange = {},
-                            label = { Text("Device Type") },
-                            leadingIcon = if (selectedType != null) {
-                                {
-                                    Icon(
-                                        imageVector = com.chriscartland.batterybutler.presentationcore.components.DeviceIconMapper.getIcon(
-                                            selectedType!!.defaultIcon,
-                                        ),
-                                        contentDescription = null,
-                                    )
-                                }
-                            } else {
-                                null
-                            },
-                            readOnly = true,
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                            modifier = Modifier
-                                .menuAnchor(MenuAnchorType.PrimaryNotEditable)
-                                .fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
-                        )
-
-                        ExposedDropdownMenu(
-                            expanded = expanded,
-                            onDismissRequest = { expanded = false },
-                        ) {
-                            deviceTypes.forEach { type ->
-                                DropdownMenuItem(
-                                    text = { Text(type.name) },
-                                    leadingIcon = {
-                                        Icon(
-                                            imageVector = com.chriscartland.batterybutler.presentationcore.components.DeviceIconMapper
-                                                .getIcon(
-                                                    type.defaultIcon,
-                                                ),
-                                            contentDescription = null,
-                                        )
-                                    },
-                                    onClick = {
-                                        selectedType = type
-                                        expanded = false
-                                    },
-                                )
-                            }
-                        }
-                    }
-
-                    // Manage Button
-                    OutlinedButton(
-                        onClick = onManageDeviceTypesClick,
-                        shape = RoundedCornerShape(12.dp),
-                        contentPadding = PaddingValues(0.dp),
-                        modifier = Modifier.size(56.dp),
-                    ) {
-                        Icon(Icons.Default.DevicesOther, contentDescription = "Manage Types")
-                    }
-                }
+                Icon(Icons.Default.DevicesOther, contentDescription = "Manage Types")
             }
         }
     }

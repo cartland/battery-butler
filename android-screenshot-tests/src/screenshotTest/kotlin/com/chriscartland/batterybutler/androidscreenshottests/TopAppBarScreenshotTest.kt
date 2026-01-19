@@ -50,7 +50,7 @@ fun TopAppBarWithMenuActionsPreview() {
         title = "With Actions",
         actions = {
             IconButton(onClick = {}) {
-                Icon(Icons.Default.Settings, contentDescription = "Settings")
+                Icon(Icons.Filled.Settings, contentDescription = "Settings")
             }
         },
     )

@@ -1,5 +1,7 @@
 package com.chriscartland.batterybutler.androidscreenshottests
 
+
+
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.android.tools.screenshot.PreviewTest
@@ -8,7 +10,7 @@ import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationfeature.devicedetail.DeviceDetailContent
 import com.chriscartland.batterybutler.presentationmodel.devicedetail.DeviceDetailUiState
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
 
 @PreviewTest

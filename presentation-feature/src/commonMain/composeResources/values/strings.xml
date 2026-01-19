@@ -13,4 +13,9 @@
     <!-- DeviceTypeSort/Group -->
     <string name="sort_battery_type">Battery Type</string>
     <string name="group_battery_type">Battery Type</string>
+
+    <!-- Main Tabs -->
+    <string name="tab_devices">Devices</string>
+    <string name="tab_types">Types</string>
+    <string name="tab_history">History</string>
 </resources>

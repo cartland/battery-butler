@@ -38,13 +38,19 @@ kotlin {
     }
 }
 
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    compilerOptions.freeCompilerArgs.add("-opt-in=kotlin.time.ExperimentalTime")
+}
+
 dependencies {
     implementation(compose.ui)
     implementation(compose.components.uiToolingPreview)
     implementation(compose.material3)
     debugImplementation(compose.uiTooling)
+    implementation(compose.materialIconsExtended)
 
-    screenshotTestImplementation(compose.uiTooling)
+
+
     screenshotTestImplementation(libs.screenshot.validation.api)
     screenshotTestImplementation(libs.compose.ui.test.junit4)
     screenshotTestImplementation(libs.compose.ui.test.manifest)
