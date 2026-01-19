@@ -10,11 +10,11 @@ import com.chriscartland.batterybutler.domain.ai.ToolHandler
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
-import com.chriscartland.batterybutler.domain.util.SystemTime
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.first
 import me.tatarka.inject.annotations.Inject
+import kotlin.time.Clock
 
 @Inject
 class BatchAddDevicesUseCase(
@@ -66,8 +66,8 @@ class BatchAddDevicesUseCase(
                                     id = uuid4().toString(),
                                     name = name,
                                     typeId = typeId,
-                                    batteryLastReplaced = kotlinx.datetime.Instant.fromEpochMilliseconds(0),
-                                    lastUpdated = SystemTime.now(),
+                                    batteryLastReplaced = kotlin.time.Instant.fromEpochMilliseconds(0),
+                                    lastUpdated = Clock.System.now(),
                                 ),
                             )
                             "Success: Added device '$name' (Type: ${typeName ?: "Default"})"

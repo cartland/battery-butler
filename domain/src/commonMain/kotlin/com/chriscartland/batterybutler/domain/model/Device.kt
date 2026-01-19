@@ -1,6 +1,6 @@
 package com.chriscartland.batterybutler.domain.model
 
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 @OptIn(kotlin.time.ExperimentalTime::class)
 data class Device(

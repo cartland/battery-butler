@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.benasher44.uuid.uuid4
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
-import com.chriscartland.batterybutler.domain.util.SystemTime
 import com.chriscartland.batterybutler.presentationmodel.devicedetail.DeviceDetailUiState
 import com.chriscartland.batterybutler.usecase.AddBatteryEventUseCase
 import com.chriscartland.batterybutler.usecase.GetBatteryEventsUseCase
@@ -17,6 +16,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
+import kotlin.time.Clock
 
 @Inject
 class DeviceDetailViewModelFactory(
@@ -71,7 +71,7 @@ class DeviceDetailViewModel(
             val event = BatteryEvent(
                 id = uuid4().toString(),
                 deviceId = deviceId,
-                date = SystemTime.now(),
+                date = Clock.System.now(),
             )
             addBatteryEventUseCase(event)
             // Also update the device's last replaced date for quick access

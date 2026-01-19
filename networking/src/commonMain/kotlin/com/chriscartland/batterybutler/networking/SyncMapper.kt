@@ -44,8 +44,8 @@ internal object SyncMapper {
             name = name,
             typeId = type_id,
             location = location,
-            batteryLastReplaced = kotlinx.datetime.Instant.fromEpochMilliseconds(0),
-            lastUpdated = kotlinx.datetime.Instant.fromEpochMilliseconds(0),
+            batteryLastReplaced = kotlin.time.Instant.fromEpochMilliseconds(0),
+            lastUpdated = kotlin.time.Instant.fromEpochMilliseconds(0),
         )
 
     private fun Device.toProto(): ProtoDevice =
@@ -60,7 +60,7 @@ internal object SyncMapper {
         BatteryEvent(
             id = id,
             deviceId = device_id,
-            date = kotlinx.datetime.Instant.fromEpochMilliseconds(date_timestamp_ms),
+            date = kotlin.time.Instant.fromEpochMilliseconds(date_timestamp_ms),
             notes = notes,
         )
 

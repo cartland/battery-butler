@@ -3,7 +3,7 @@ package com.chriscartland.batterybutler.data.room
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.chriscartland.batterybutler.domain.model.Device
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 @Entity(tableName = "devices")
 data class DeviceEntity(

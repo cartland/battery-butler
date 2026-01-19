@@ -16,8 +16,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Instant
 import me.tatarka.inject.annotations.Inject
+import kotlin.time.Instant
 
 @Inject
 class AddBatteryEventViewModel(

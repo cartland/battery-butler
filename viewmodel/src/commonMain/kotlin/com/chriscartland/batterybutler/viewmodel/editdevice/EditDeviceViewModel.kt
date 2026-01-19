@@ -3,7 +3,6 @@ package com.chriscartland.batterybutler.viewmodel.editdevice
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chriscartland.batterybutler.domain.model.DeviceInput
-import com.chriscartland.batterybutler.domain.util.SystemTime
 import com.chriscartland.batterybutler.presentationmodel.editdevice.EditDeviceUiState
 import com.chriscartland.batterybutler.usecase.DeleteDeviceUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceDetailUseCase
@@ -15,6 +14,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
+import kotlin.time.Clock
 
 @Inject
 class EditDeviceViewModelFactory(
@@ -67,7 +67,7 @@ class EditDeviceViewModel(
                     location = input.location,
                     typeId = input.typeId,
                     imagePath = input.imagePath ?: currentState.device.imagePath,
-                    lastUpdated = SystemTime.now(),
+                    lastUpdated = Clock.System.now(),
                 )
                 updateDeviceUseCase(updatedDevice)
             }
