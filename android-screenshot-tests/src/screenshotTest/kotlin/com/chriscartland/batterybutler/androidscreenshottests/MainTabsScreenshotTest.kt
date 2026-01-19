@@ -17,14 +17,6 @@ import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
-// Local Fakes for this test file
-private val fakeHistoryItem = HistoryItemUiModel(
-    event = fakeEvent,
-    deviceName = fakeDevice.name,
-    deviceTypeName = fakeDeviceType.name,
-    deviceLocation = "Kitchen",
-)
-
 @OptIn(ExperimentalTime::class)
 @PreviewTest
 @Preview(device = "id:pixel_5", showBackground = true)
