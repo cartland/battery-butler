@@ -34,6 +34,7 @@ import com.chriscartland.batterybutler.presentationfeature.home.HomeScreenPrevie
 import com.chriscartland.batterybutler.presentationfeature.settings.SettingsContentPreview
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 // Shared Fakes
 // Shared Fakes
@@ -43,14 +44,14 @@ val fakeDevice = Device(
     id = "dev1",
     name = "Kitchen Smoke Alarm",
     typeId = "type1",
-    batteryLastReplaced = Clock.System.now(),
-    lastUpdated = Clock.System.now(),
+    batteryLastReplaced = Instant.parse("2026-01-18T17:00:00Z"),
+    lastUpdated = Instant.parse("2026-01-18T17:00:00Z"),
     location = "Kitchen",
 )
 val fakeEvent = BatteryEvent(
     id = "evt1",
     deviceId = "dev1",
-    date = Clock.System.now(),
+    date = Instant.parse("2026-01-18T17:00:00Z"),
 )
 
 // region Test Shell

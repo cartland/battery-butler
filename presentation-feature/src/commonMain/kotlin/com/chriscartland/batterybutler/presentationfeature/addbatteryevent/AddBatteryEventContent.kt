@@ -221,7 +221,7 @@ fun AddBatteryEventContent(
 @Composable
 fun AddBatteryEventContentPreview() {
     BatteryButlerTheme {
-        val now = Clock.System.now()
+        val now = Instant.parse("2026-01-18T17:00:00Z")
         val device = Device("dev1", "Kitchen Smoke", "type1", now, now, "Kitchen")
         AddBatteryEventContent(
             devices = listOf(device),

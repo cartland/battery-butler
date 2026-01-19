@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlin.time.Instant
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import kotlinx.datetime.TimeZone
@@ -138,7 +139,7 @@ fun HistoryListItem(
 @Composable
 fun HistoryListItemPreview() {
     BatteryButlerTheme {
-        val now = Clock.System.now()
+        val now = Instant.parse("2026-01-18T17:00:00Z")
         val event = BatteryEvent("evt1", "dev1", now)
         HistoryListItem(
             event = event,

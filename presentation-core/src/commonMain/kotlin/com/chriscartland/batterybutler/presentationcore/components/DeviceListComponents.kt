@@ -31,6 +31,7 @@ import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import kotlin.time.Clock
+import kotlin.time.Instant
 
 @OptIn(kotlin.time.ExperimentalTime::class)
 @Composable
@@ -44,7 +45,7 @@ fun DeviceListItem(
         if (device.batteryLastReplaced.toEpochMilliseconds() == 0L) {
             "N/A"
         } else {
-            val now = Clock.System.now()
+            val now = Instant.parse("2026-01-18T17:00:00Z")
             "${now.minus(device.batteryLastReplaced).inWholeDays} days"
         }
     }
@@ -171,7 +172,7 @@ fun DeviceTypeIconItem(
 @Composable
 fun DeviceListItemPreview() {
     BatteryButlerTheme {
-        val now = Clock.System.now()
+        val now = Instant.parse("2026-01-18T17:00:00Z")
         val device = Device("dev1", "Kitchen Smoke", "type1", now, now, "Kitchen")
         val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
         DeviceListItem(

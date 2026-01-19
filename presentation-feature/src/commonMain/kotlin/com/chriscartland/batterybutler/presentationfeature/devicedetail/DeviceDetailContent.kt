@@ -51,6 +51,7 @@ import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationmodel.devicedetail.DeviceDetailUiState
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -316,7 +317,7 @@ fun StatCard(
 @Composable
 fun DeviceDetailContentPreview() {
     BatteryButlerTheme {
-        val now = Clock.System.now()
+        val now = Instant.parse("2026-01-18T17:00:00Z")
         val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
         val device = Device("dev1", "Kitchen Smoke", "type1", now, now, "Kitchen")
         val event = BatteryEvent("evt1", "dev1", now)

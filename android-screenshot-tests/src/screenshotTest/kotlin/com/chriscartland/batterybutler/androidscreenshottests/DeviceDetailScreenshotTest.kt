@@ -10,12 +10,13 @@ import com.chriscartland.batterybutler.presentationfeature.devicedetail.DeviceDe
 import com.chriscartland.batterybutler.presentationmodel.devicedetail.DeviceDetailUiState
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
+import kotlin.time.Instant
 
 @PreviewTest
 @Preview(showBackground = true)
 @Composable
 fun DeviceDetailSuccessPreview() {
-    val now = Clock.System.now()
+    val now = Instant.parse("2026-01-18T17:00:00Z")
     val device = Device(
         id = "1",
         name = "Living Room Smoke Detector",

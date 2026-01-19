@@ -46,6 +46,7 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 @Serializable
 enum class MainTab {
@@ -205,7 +206,7 @@ fun HistoryScreen(
 fun DevicesScreenPreview() {
     BatteryButlerTheme {
         // Wrap the preview in the theme
-        val now = Clock.System.now()
+        val now = Instant.parse("2026-01-18T17:00:00Z")
         val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
         val device = Device("dev1", "Kitchen Smoke", "type1", now, now, "Kitchen")
         val state = HomeUiState(
@@ -255,7 +256,7 @@ fun TypesScreenPreview() {
 fun HistoryScreenPreview() {
     BatteryButlerTheme {
         // Wrap the preview in the theme
-        val now = Clock.System.now()
+        val now = Instant.parse("2026-01-18T17:00:00Z")
         val event = BatteryEvent("evt1", "dev1", now)
         val item = HistoryItemUiModel(event, "Kitchen Smoke", "Smoke Alarm", "Kitchen")
         val state = HistoryListUiState.Success(

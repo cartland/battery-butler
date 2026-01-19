@@ -17,6 +17,7 @@ import com.chriscartland.batterybutler.presentationmodel.history.HistoryItemUiMo
 import com.chriscartland.batterybutler.presentationmodel.history.HistoryListUiState
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 @Composable
 fun HistoryListContent(
@@ -55,7 +56,7 @@ fun HistoryListContent(
 @Composable
 fun HistoryListContentPreview() {
     BatteryButlerTheme {
-        val now = Clock.System.now()
+        val now = Instant.parse("2026-01-18T17:00:00Z")
         val event = BatteryEvent("evt1", "dev1", now)
         val item = HistoryItemUiModel(event, "Kitchen Smoke", "Smoke Alarm", "Kitchen")
         val state = HistoryListUiState.Success(
