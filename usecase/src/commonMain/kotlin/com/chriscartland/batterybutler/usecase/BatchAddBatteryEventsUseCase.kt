@@ -7,6 +7,7 @@ import com.chriscartland.batterybutler.domain.ai.AiRole
 import com.chriscartland.batterybutler.domain.ai.AiToolNames
 import com.chriscartland.batterybutler.domain.ai.AiToolParams
 import com.chriscartland.batterybutler.domain.ai.ToolHandler
+import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
@@ -17,6 +18,7 @@ import kotlinx.datetime.atStartOfDayIn
 import me.tatarka.inject.annotations.Inject
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Clock
+import kotlin.time.Instant
 
 @Inject
 class BatchAddBatteryEventsUseCase(
@@ -68,7 +70,7 @@ class BatchAddBatteryEventsUseCase(
                                     id = uuid4().toString(),
                                     name = deviceName,
                                     typeId = typeId,
-                                    batteryLastReplaced = kotlin.time.Instant.fromEpochMilliseconds(0),
+                                    batteryLastReplaced = Instant.fromEpochMilliseconds(0),
                                     lastUpdated = Clock.System.now(),
                                 )
                                 deviceRepository.addDevice(newDevice)
@@ -84,7 +86,7 @@ class BatchAddBatteryEventsUseCase(
                             val instant = kotlin.time.Instant.fromEpochMilliseconds(kxInstant.toEpochMilliseconds())
 
                             // 3. Add Battery Event
-                            val event = com.chriscartland.batterybutler.domain.model.BatteryEvent(
+                            val event = BatteryEvent(
                                 id = uuid4().toString(),
                                 deviceId = targetDevice.id,
                                 date = instant,

@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.composeresources.generated.resources.Res
 import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_grpc_local
 import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_mock
+import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.presentationcore.components.ExpandableSelectionControl
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
@@ -31,8 +32,8 @@ import org.jetbrains.compose.resources.stringResource as composeStringResource
 
 @Composable
 fun SettingsContent(
-    networkMode: com.chriscartland.batterybutler.domain.model.NetworkMode,
-    onNetworkModeSelected: (com.chriscartland.batterybutler.domain.model.NetworkMode) -> Unit,
+    networkMode: NetworkMode,
+    onNetworkModeSelected: (NetworkMode) -> Unit,
     onExportData: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
@@ -57,12 +58,12 @@ fun SettingsContent(
             ExpandableSelectionControl(
                 title = "Network Mode",
                 currentSelection = networkMode,
-                options = com.chriscartland.batterybutler.domain.model.NetworkMode.entries,
+                options = NetworkMode.entries,
                 onOptionSelected = onNetworkModeSelected,
                 optionLabel = { mode ->
                     when (mode) {
-                        com.chriscartland.batterybutler.domain.model.NetworkMode.MOCK -> composeStringResource(Res.string.network_mode_mock)
-                        com.chriscartland.batterybutler.domain.model.NetworkMode.GRPC_LOCAL -> composeStringResource(
+                        NetworkMode.MOCK -> composeStringResource(Res.string.network_mode_mock)
+                        NetworkMode.GRPC_LOCAL -> composeStringResource(
                             Res.string.network_mode_grpc_local,
                         )
                     }
@@ -115,7 +116,7 @@ fun SettingsContent(
 fun SettingsContentPreview() {
     BatteryButlerTheme {
         SettingsContent(
-            networkMode = com.chriscartland.batterybutler.domain.model.NetworkMode.MOCK,
+            networkMode = NetworkMode.MOCK,
             onNetworkModeSelected = {},
             onExportData = {},
             onBack = {},

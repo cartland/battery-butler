@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.first
 import me.tatarka.inject.annotations.Inject
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Clock
+import kotlin.time.Instant
 
 @Inject
 class BatchAddDevicesUseCase(
@@ -67,7 +68,7 @@ class BatchAddDevicesUseCase(
                                     id = uuid4().toString(),
                                     name = name,
                                     typeId = typeId,
-                                    batteryLastReplaced = kotlin.time.Instant.fromEpochMilliseconds(0),
+                                    batteryLastReplaced = Instant.fromEpochMilliseconds(0),
                                     lastUpdated = Clock.System.now(),
                                 ),
                             )

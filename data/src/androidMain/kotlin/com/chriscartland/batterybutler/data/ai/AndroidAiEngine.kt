@@ -9,6 +9,7 @@ import com.chriscartland.batterybutler.domain.ai.AiRole
 import com.chriscartland.batterybutler.domain.ai.AiToolNames
 import com.chriscartland.batterybutler.domain.ai.AiToolParams
 import com.chriscartland.batterybutler.domain.ai.ToolHandler
+import com.chriscartland.batterybutler.domain.model.DeviceIcons
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.FunctionResponsePart
 import com.google.ai.client.generativeai.type.Schema
@@ -59,7 +60,7 @@ class AndroidAiEngine(
             Schema.str(
                 AiToolParams.ICON,
                 "Icon for the device type. Available icons: " +
-                    com.chriscartland.batterybutler.domain.model.DeviceIcons.AvailableIcons
+                    DeviceIcons.AvailableIcons
                         .joinToString(", "),
             ),
         ),

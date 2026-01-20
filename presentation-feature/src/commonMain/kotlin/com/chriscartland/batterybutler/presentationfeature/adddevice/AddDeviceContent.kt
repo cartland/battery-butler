@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,6 +25,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedButton
@@ -49,6 +51,7 @@ import com.chriscartland.batterybutler.domain.ai.AiRole
 import com.chriscartland.batterybutler.domain.model.DeviceInput
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
+import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMapper
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -156,7 +159,7 @@ fun AddDeviceAiSection(
                 placeholder = { Text("E.g. Add Fire Alarm in Hallway") },
                 maxLines = 3,
             )
-            androidx.compose.material3.IconButton(
+            IconButton(
                 onClick = {
                     if (aiInput.isNotBlank()) {
                         onBatchAdd(aiInput)
@@ -171,7 +174,7 @@ fun AddDeviceAiSection(
 
         if (aiMessages.isNotEmpty()) {
             Text("AI Output:", style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(top = 8.dp))
-            androidx.compose.foundation.lazy.LazyColumn(
+            LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(150.dp)
@@ -256,7 +259,7 @@ fun AddDeviceManualSection(
                     leadingIcon = if (selectedType != null) {
                         {
                             Icon(
-                                imageVector = com.chriscartland.batterybutler.presentationcore.components.DeviceIconMapper.getIcon(
+                                imageVector = DeviceIconMapper.getIcon(
                                     selectedType.defaultIcon,
                                 ),
                                 contentDescription = null,
@@ -283,7 +286,7 @@ fun AddDeviceManualSection(
                             text = { Text(type.name) },
                             leadingIcon = {
                                 Icon(
-                                    imageVector = com.chriscartland.batterybutler.presentationcore.components.DeviceIconMapper
+                                    imageVector = DeviceIconMapper
                                         .getIcon(
                                             type.defaultIcon,
                                         ),

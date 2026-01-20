@@ -5,6 +5,8 @@ import com.chriscartland.batterybutler.domain.ai.AiMessage
 import com.chriscartland.batterybutler.domain.ai.AiRole
 import com.chriscartland.batterybutler.domain.ai.ToolHandler
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
+import com.chriscartland.batterybutler.domain.model.Device
+import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -29,23 +31,29 @@ class StructuredPromptTest {
     }
 
     class MockRepository : DeviceRepository {
-        override fun getAllDevices() = flowOf(emptyList<com.chriscartland.batterybutler.domain.model.Device>())
+        override fun getAllDevices() = flowOf(emptyList<Device>())
 
         override fun getDeviceById(id: String) = flowOf(null)
 
-        override suspend fun addDevice(device: com.chriscartland.batterybutler.domain.model.Device) {}
+        override suspend fun addDevice(device: Device) {}
 
-        override suspend fun updateDevice(device: com.chriscartland.batterybutler.domain.model.Device) {}
+        override suspend fun updateDevice(device: Device) {}
 
-        override suspend fun deleteDevice(id: String) {}
+        override suspend fun deleteDevice(deviceId: String) {}
 
-        override fun getAllDeviceTypes() = flowOf(emptyList<com.chriscartland.batterybutler.domain.model.DeviceType>())
+        override suspend fun addBatteryEvent(event: BatteryEvent) {}
+
+        override suspend fun getDevices(): List<Device> = emptyList()
+
+        override suspend fun getDeviceTypes(): List<DeviceType> = emptyList()
+
+        override fun getAllDeviceTypes() = flowOf(emptyList<DeviceType>())
 
         override fun getDeviceTypeById(id: String) = flowOf(null)
 
-        override suspend fun addDeviceType(type: com.chriscartland.batterybutler.domain.model.DeviceType) {}
+        override suspend fun addDeviceType(type: DeviceType) {}
 
-        override suspend fun updateDeviceType(type: com.chriscartland.batterybutler.domain.model.DeviceType) {}
+        override suspend fun updateDeviceType(type: DeviceType) {}
 
         override suspend fun deleteDeviceType(id: String) {}
 

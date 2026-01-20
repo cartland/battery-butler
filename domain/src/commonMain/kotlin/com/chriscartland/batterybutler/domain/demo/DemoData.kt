@@ -1,5 +1,7 @@
 package com.chriscartland.batterybutler.domain.demo
 
+import com.chriscartland.batterybutler.domain.model.BatteryEvent
+import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import kotlin.time.Instant
 
@@ -86,13 +88,13 @@ object DemoData {
             ),
         )
 
-    fun getDefaultDevices(deviceTypes: List<DeviceType>): List<com.chriscartland.batterybutler.domain.model.Device> {
+    fun getDefaultDevices(deviceTypes: List<DeviceType>): List<Device> {
         val typeMap = deviceTypes.associateBy { it.name }
         val now = Instant.fromEpochMilliseconds(1767225600000) // 2026-01-01
 
         // Deterministic UUIDs for devices
         val devices = listOf(
-            com.chriscartland.batterybutler.domain.model.Device(
+            Device(
                 id = "device-living-room-smoke",
                 name = "Living Room Smoke Detector",
                 typeId = typeMap["1-9V Smoke Detector"]?.id ?: return emptyList(),
@@ -100,7 +102,7 @@ object DemoData {
                 lastUpdated = now,
                 location = "Living Room",
             ),
-            com.chriscartland.batterybutler.domain.model.Device(
+            Device(
                 id = "device-kitchen-smoke",
                 name = "Kitchen Smoke Detector",
                 typeId = typeMap["2-AA Smoke Detector"]?.id ?: return emptyList(),
@@ -108,7 +110,7 @@ object DemoData {
                 lastUpdated = now,
                 location = "Kitchen",
             ),
-            com.chriscartland.batterybutler.domain.model.Device(
+            Device(
                 id = "device-front-door-lock",
                 name = "Front Door Lock",
                 typeId = typeMap["ULTRALOQ U-Bolt Pro Lock"]?.id ?: return emptyList(),
@@ -116,7 +118,7 @@ object DemoData {
                 lastUpdated = now,
                 location = "Front Door",
             ),
-            com.chriscartland.batterybutler.domain.model.Device(
+            Device(
                 id = "device-car-keys-tile",
                 name = "Car Keys Tile",
                 typeId = typeMap["Tile Mate"]?.id ?: return emptyList(),
@@ -128,16 +130,14 @@ object DemoData {
         return devices
     }
 
-    fun getDefaultEvents(
-        devices: List<com.chriscartland.batterybutler.domain.model.Device>,
-    ): List<com.chriscartland.batterybutler.domain.model.BatteryEvent> {
+    fun getDefaultEvents(devices: List<Device>): List<BatteryEvent> {
         val deviceMap = devices.associateBy { it.name }
-        val events = mutableListOf<com.chriscartland.batterybutler.domain.model.BatteryEvent>()
+        val events = mutableListOf<BatteryEvent>()
 
         // Living Room Smoke Detector Events
         deviceMap["Living Room Smoke Detector"]?.let { device ->
             events.add(
-                com.chriscartland.batterybutler.domain.model.BatteryEvent(
+                BatteryEvent(
                     id = "${device.id}-event-1",
                     deviceId = device.id,
                     date = Instant.fromEpochMilliseconds(1672531200000), // 2023-01-01
@@ -146,7 +146,7 @@ object DemoData {
                 ),
             )
             events.add(
-                com.chriscartland.batterybutler.domain.model.BatteryEvent(
+                BatteryEvent(
                     id = "${device.id}-event-2",
                     deviceId = device.id,
                     date = Instant.fromEpochMilliseconds(1704067200000), // 2024-01-01
@@ -159,7 +159,7 @@ object DemoData {
         // Kitchen Smoke Detector Events
         deviceMap["Kitchen Smoke Detector"]?.let { device ->
             events.add(
-                com.chriscartland.batterybutler.domain.model.BatteryEvent(
+                BatteryEvent(
                     id = "${device.id}-event-1",
                     deviceId = device.id,
                     date = Instant.fromEpochMilliseconds(1718409600000), // 2024-06-15
@@ -168,7 +168,7 @@ object DemoData {
                 ),
             )
             events.add(
-                com.chriscartland.batterybutler.domain.model.BatteryEvent(
+                BatteryEvent(
                     id = "${device.id}-event-2",
                     deviceId = device.id,
                     date = Instant.fromEpochMilliseconds(1750032000000), // 2025-06-15
@@ -181,7 +181,7 @@ object DemoData {
         // Front Door Lock Events
         deviceMap["Front Door Lock"]?.let { device ->
             events.add(
-                com.chriscartland.batterybutler.domain.model.BatteryEvent(
+                BatteryEvent(
                     id = "${device.id}-event-1",
                     deviceId = device.id,
                     date = Instant.fromEpochMilliseconds(1763683200000), // 2025-11-20
@@ -194,7 +194,7 @@ object DemoData {
         // Car Keys Tile
         deviceMap["Car Keys Tile"]?.let { device ->
             events.add(
-                com.chriscartland.batterybutler.domain.model.BatteryEvent(
+                BatteryEvent(
                     id = "${device.id}-event-1",
                     deviceId = device.id,
                     date = Instant.fromEpochMilliseconds(1736467200000), // 2025-01-10

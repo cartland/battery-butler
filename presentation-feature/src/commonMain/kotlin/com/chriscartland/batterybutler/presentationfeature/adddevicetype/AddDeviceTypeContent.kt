@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -26,12 +27,14 @@ import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.BatteryFull
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -87,12 +90,12 @@ fun AddDeviceTypeContent(
                 title = "New Device Type",
                 onBack = onBack,
                 navigationIcon = {
-                    androidx.compose.material3.TextButton(onClick = onBack) {
+                    TextButton(onClick = onBack) {
                         Text("Cancel", color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 },
                 actions = {
-                    androidx.compose.material3.TextButton(onClick = {
+                    TextButton(onClick = {
                         if (name.isNotBlank()) {
                             onDeviceTypeAdded(
                                 DeviceTypeInput(
@@ -165,7 +168,7 @@ fun AddDeviceTypeContent(
 
                 if (aiMessages.isNotEmpty()) {
                     Text("AI Output:", style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(top = 8.dp))
-                    androidx.compose.foundation.lazy.LazyColumn(
+                    LazyColumn(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(150.dp)
@@ -201,7 +204,7 @@ fun AddDeviceTypeContent(
                 }
             }
 
-            androidx.compose.material3.HorizontalDivider()
+            HorizontalDivider()
 
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 Text("Device Details", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
