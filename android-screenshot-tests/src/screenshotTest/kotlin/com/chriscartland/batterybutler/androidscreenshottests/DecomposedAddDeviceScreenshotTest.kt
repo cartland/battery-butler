@@ -3,6 +3,7 @@ package com.chriscartland.batterybutler.androidscreenshottests
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.android.tools.screenshot.PreviewTest
+import com.chriscartland.batterybutler.androidscreenshottests.util.ScreenshotTestTheme
 import com.chriscartland.batterybutler.presentationfeature.adddevice.AddDeviceAiSectionPreview
 import com.chriscartland.batterybutler.presentationfeature.adddevice.AddDeviceManualSectionPreview
 import kotlin.time.ExperimentalTime
@@ -12,7 +13,9 @@ import kotlin.time.ExperimentalTime
 @Preview(showBackground = true)
 @Composable
 fun AddDeviceAiSectionPreviewTest() {
-    AddDeviceAiSectionPreview()
+    ScreenshotTestTheme {
+        AddDeviceAiSectionPreview()
+    }
 }
 
 @OptIn(ExperimentalTime::class)
@@ -20,5 +23,7 @@ fun AddDeviceAiSectionPreviewTest() {
 @Preview(showBackground = true)
 @Composable
 fun AddDeviceManualSectionPreviewTest() {
-    AddDeviceManualSectionPreview()
+    ScreenshotTestTheme {
+        AddDeviceManualSectionPreview()
+    }
 }

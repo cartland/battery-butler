@@ -22,6 +22,7 @@ import com.chriscartland.batterybutler.composeapp.feature.main.DevicesScreenRoot
 import com.chriscartland.batterybutler.composeapp.feature.main.HistoryScreenRoot
 import com.chriscartland.batterybutler.composeapp.feature.main.TypesScreenRoot
 import com.chriscartland.batterybutler.composeapp.feature.settings.SettingsScreen
+import com.chriscartland.batterybutler.presentationcore.resources.LocalAppStrings
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationcore.util.FileSaver
 import com.chriscartland.batterybutler.presentationcore.util.LocalFileSaver
@@ -42,6 +43,7 @@ fun App(
         CompositionLocalProvider(
             LocalShareHandler provides shareHandler,
             LocalFileSaver provides fileSaver,
+            LocalAppStrings provides ComposeAppStrings(),
         ) {
             val backStack = remember { mutableStateListOf<Any>(Screen.Devices) }
 
@@ -186,7 +188,6 @@ fun App(
                             onManageDeviceTypesClick = { backStack.add(Screen.Types) },
                         )
                     }
-
                     entry<Screen.EditDeviceType> {
                         val args = it
                         val viewModel = viewModel(key = args.typeId) {

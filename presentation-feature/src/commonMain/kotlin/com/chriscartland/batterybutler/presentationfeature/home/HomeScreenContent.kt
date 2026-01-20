@@ -30,12 +30,12 @@ import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationcore.components.CompositeControl
 import com.chriscartland.batterybutler.presentationcore.components.DeviceListItem
+import com.chriscartland.batterybutler.presentationcore.resources.composeStringResource
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationfeature.util.labelRes
 import com.chriscartland.batterybutler.presentationmodel.home.GroupOption
 import com.chriscartland.batterybutler.presentationmodel.home.HomeUiState
 import com.chriscartland.batterybutler.presentationmodel.home.SortOption
-import org.jetbrains.compose.resources.stringResource
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -92,7 +92,7 @@ fun HomeScreenFilterRow(
             // Group Button (First)
             Box {
                 CompositeControl(
-                    label = "Group: ${stringResource(state.groupOption.labelRes())}",
+                    label = "Group: ${composeStringResource(state.groupOption.labelRes())}",
                     isActive = state.groupOption != GroupOption.NONE,
                     isAscending = state.isGroupAscending,
                     onClicked = { groupExpanded = true },
@@ -104,7 +104,7 @@ fun HomeScreenFilterRow(
                 ) {
                     GroupOption.values().forEach { option ->
                         DropdownMenuItem(
-                            text = { Text(stringResource(option.labelRes())) },
+                            text = { Text(composeStringResource(option.labelRes())) },
                             onClick = {
                                 onGroupOptionSelected(option)
                                 groupExpanded = false
@@ -117,7 +117,7 @@ fun HomeScreenFilterRow(
             // Sort Button (Second)
             Box {
                 CompositeControl(
-                    label = "Sort: ${stringResource(state.sortOption.labelRes())}",
+                    label = "Sort: ${composeStringResource(state.sortOption.labelRes())}",
                     isActive = true, // Sort is always active
                     isAscending = state.isSortAscending,
                     onClicked = { sortExpanded = true },
@@ -129,7 +129,7 @@ fun HomeScreenFilterRow(
                 ) {
                     SortOption.values().forEach { option ->
                         DropdownMenuItem(
-                            text = { Text(stringResource(option.labelRes())) },
+                            text = { Text(composeStringResource(option.labelRes())) },
                             onClick = {
                                 onSortOptionSelected(option)
                                 sortExpanded = false

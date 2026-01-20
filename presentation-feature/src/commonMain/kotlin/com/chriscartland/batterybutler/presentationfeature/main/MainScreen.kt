@@ -29,6 +29,7 @@ import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
+import com.chriscartland.batterybutler.presentationcore.resources.composeStringResource
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationfeature.devicetypes.DeviceTypeListContent
 import com.chriscartland.batterybutler.presentationfeature.history.HistoryListContent
@@ -43,7 +44,6 @@ import com.chriscartland.batterybutler.presentationmodel.home.HomeUiState
 import com.chriscartland.batterybutler.presentationmodel.home.SortOption
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.StringResource
-import org.jetbrains.compose.resources.stringResource
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -82,7 +82,7 @@ fun MainScreenShell(
         modifier = modifier,
         topBar = {
             ButlerCenteredTopAppBar(
-                title = stringResource(currentTab.labelRes()),
+                title = composeStringResource(currentTab.labelRes()),
                 actions = {
                     IconButton(onClick = onSettingsClick) {
                         Icon(
@@ -106,8 +106,8 @@ fun MainScreenShell(
                     NavigationBarItem(
                         selected = currentTab == tab,
                         onClick = { onTabSelected(tab) },
-                        icon = { Icon(tab.icon(), contentDescription = stringResource(tab.labelRes())) },
-                        label = { Text(stringResource(tab.labelRes())) },
+                        icon = { Icon(tab.icon(), contentDescription = composeStringResource(tab.labelRes())) },
+                        label = { Text(composeStringResource(tab.labelRes())) },
                         modifier = Modifier.testTag("BottomNav_${tab.name}"),
                     )
                 }

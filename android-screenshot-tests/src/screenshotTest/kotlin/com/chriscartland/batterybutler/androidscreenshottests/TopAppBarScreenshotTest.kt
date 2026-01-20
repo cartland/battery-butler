@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.tooling.preview.Preview
 import com.android.tools.screenshot.PreviewTest
+import com.chriscartland.batterybutler.androidscreenshottests.util.ScreenshotTestTheme
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBarPreview
 import com.chriscartland.batterybutler.presentationcore.theme.LocalAiAvailable
@@ -16,26 +17,18 @@ import com.chriscartland.batterybutler.presentationcore.theme.LocalAiAvailable
 @Preview(showBackground = true)
 @Composable
 fun TopAppBarDefaultPreviewTest() {
-    ButlerCenteredTopAppBarPreview()
+    ScreenshotTestTheme {
+        ButlerCenteredTopAppBarPreview()
+    }
 }
 
 @PreviewTest
 @Preview(showBackground = true)
 @Composable
 fun TopAppBarWithBackPreview() {
-    ButlerCenteredTopAppBar(
-        title = "Detail Screen",
-        onBack = {},
-    )
-}
-
-@PreviewTest
-@Preview(showBackground = true)
-@Composable
-fun TopAppBarWithAiActionPreview() {
-    CompositionLocalProvider(LocalAiAvailable provides true) {
+    ScreenshotTestTheme {
         ButlerCenteredTopAppBar(
-            title = "AI Enabled",
+            title = "Detail Screen",
             onBack = {},
         )
     }
@@ -44,13 +37,29 @@ fun TopAppBarWithAiActionPreview() {
 @PreviewTest
 @Preview(showBackground = true)
 @Composable
+fun TopAppBarWithAiActionPreview() {
+    ScreenshotTestTheme {
+        CompositionLocalProvider(LocalAiAvailable provides true) {
+            ButlerCenteredTopAppBar(
+                title = "AI Enabled",
+                onBack = {},
+            )
+        }
+    }
+}
+
+@PreviewTest
+@Preview(showBackground = true)
+@Composable
 fun TopAppBarWithMenuActionsPreview() {
-    ButlerCenteredTopAppBar(
-        title = "With Actions",
-        actions = {
-            IconButton(onClick = {}) {
-                Icon(Icons.Filled.Settings, contentDescription = "Settings")
-            }
-        },
-    )
+    ScreenshotTestTheme {
+        ButlerCenteredTopAppBar(
+            title = "With Actions",
+            actions = {
+                IconButton(onClick = {}) {
+                    Icon(Icons.Filled.Settings, contentDescription = "Settings")
+                }
+            },
+        )
+    }
 }

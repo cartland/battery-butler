@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.android.tools.screenshot.PreviewTest
+import com.chriscartland.batterybutler.androidscreenshottests.util.ScreenshotTestTheme
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
@@ -111,68 +112,88 @@ private fun TestMainScreenShell(
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreviewTest() {
-    HomeScreenPreview()
+    ScreenshotTestTheme {
+        HomeScreenPreview()
+    }
 }
 
 @PreviewTest
 @Preview(showBackground = true)
 @Composable
 fun DeviceTypeListScreenPreviewTest() {
-    DeviceTypeListContentPreview()
+    ScreenshotTestTheme {
+        DeviceTypeListContentPreview()
+    }
 }
 
 @PreviewTest
 @Preview(showBackground = true)
 @Composable
 fun HistoryListScreenPreviewTest() {
-    HistoryListContentPreview()
+    ScreenshotTestTheme {
+        HistoryListContentPreview()
+    }
 }
 
 @PreviewTest
 @Preview(showBackground = true)
 @Composable
 fun AddDeviceTypeScreenPreviewTest() {
-    AddDeviceTypeContentPreview()
+    ScreenshotTestTheme {
+        AddDeviceTypeContentPreview()
+    }
 }
 
 @PreviewTest
 @Preview(showBackground = true)
 @Composable
 fun AddBatteryEventScreenPreviewTest() {
-    AddBatteryEventContentPreview()
+    ScreenshotTestTheme {
+        AddBatteryEventContentPreview()
+    }
 }
 
 @PreviewTest
 @Preview(showBackground = true)
 @Composable
 fun DeviceDetailScreenPreviewTest() {
-    DeviceDetailContentPreview()
+    ScreenshotTestTheme {
+        DeviceDetailContentPreview()
+    }
 }
 
 @PreviewTest
 @Preview(showBackground = true)
 @Composable
 fun EditDeviceScreenPreviewTest() {
-    EditDeviceContentPreview()
+    ScreenshotTestTheme {
+        EditDeviceContentPreview()
+    }
 }
 
 @PreviewTest
 @Preview(showBackground = true)
 @Composable
 fun EditDeviceTypeScreenPreviewTest() {
-    EditDeviceTypeContentPreview()
+    ScreenshotTestTheme {
+        EditDeviceTypeContentPreview()
+    }
 }
 
 @PreviewTest
 @Preview(showBackground = true)
 @Composable
 fun EventDetailScreenPreviewTest() {
-    EventDetailContentPreview()
+    ScreenshotTestTheme {
+        EventDetailContentPreview()
+    }
 }
 
 @PreviewTest
 @Preview(showBackground = true)
 @Composable
 fun SettingsScreenPreviewTest() {
-    SettingsContentPreview()
+    ScreenshotTestTheme {
+        SettingsContentPreview()
+    }
 }

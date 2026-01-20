@@ -45,6 +45,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
 dependencies {
     implementation(compose.ui)
     implementation(compose.components.uiToolingPreview)
+    implementation(compose.components.resources)
     implementation(compose.material3)
     debugImplementation(compose.uiTooling)
     implementation(compose.materialIconsExtended)

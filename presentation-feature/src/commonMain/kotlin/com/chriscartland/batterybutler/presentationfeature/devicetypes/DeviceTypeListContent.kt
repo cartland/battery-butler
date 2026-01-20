@@ -34,12 +34,12 @@ import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationcore.components.CompositeControl
 import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMapper
+import com.chriscartland.batterybutler.presentationcore.resources.composeStringResource
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationfeature.util.labelRes
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeGroupOption
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeListUiState
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeSortOption
-import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -72,7 +72,7 @@ fun DeviceTypeListContent(
                         // Group Button (First)
                         Box {
                             CompositeControl(
-                                label = "Group: ${stringResource(state.groupOption.labelRes())}",
+                                label = "Group: ${composeStringResource(state.groupOption.labelRes())}",
                                 isActive = state.groupOption != DeviceTypeGroupOption.NONE,
                                 isAscending = state.isGroupAscending,
                                 onClicked = { groupExpanded = true },
@@ -84,7 +84,7 @@ fun DeviceTypeListContent(
                             ) {
                                 DeviceTypeGroupOption.entries.forEach { option ->
                                     DropdownMenuItem(
-                                        text = { Text(stringResource(option.labelRes())) },
+                                        text = { Text(composeStringResource(option.labelRes())) },
                                         onClick = {
                                             onGroupOptionSelected(option)
                                             groupExpanded = false
@@ -97,7 +97,7 @@ fun DeviceTypeListContent(
                         // Sort Button (Second)
                         Box {
                             CompositeControl(
-                                label = "Sort: ${stringResource(state.sortOption.labelRes())}",
+                                label = "Sort: ${composeStringResource(state.sortOption.labelRes())}",
                                 isActive = true, // Sort is always active
                                 isAscending = state.isSortAscending,
                                 onClicked = { sortExpanded = true },
@@ -109,7 +109,7 @@ fun DeviceTypeListContent(
                             ) {
                                 DeviceTypeSortOption.entries.forEach { option ->
                                     DropdownMenuItem(
-                                        text = { Text(stringResource(option.labelRes())) },
+                                        text = { Text(composeStringResource(option.labelRes())) },
                                         onClick = {
                                             onSortOptionSelected(option)
                                             sortExpanded = false
