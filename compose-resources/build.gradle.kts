@@ -38,8 +38,8 @@ android {
         .toInt()
     defaultConfig {
         minSdk = libs.versions.android.minSdk
-        .get()
-        .toInt()
+            .get()
+            .toInt()
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
