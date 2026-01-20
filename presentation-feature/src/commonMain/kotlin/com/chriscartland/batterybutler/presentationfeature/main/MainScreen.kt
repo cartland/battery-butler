@@ -17,10 +17,17 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.composeresources.composeStringResource
 import com.chriscartland.batterybutler.composeresources.generated.resources.Res
 import com.chriscartland.batterybutler.composeresources.generated.resources.tab_devices
@@ -76,8 +83,11 @@ fun MainScreenShell(
     onSettingsClick: () -> Unit,
     onAddClick: () -> Unit,
     modifier: Modifier = Modifier,
-    content: @Composable (PaddingValues) -> Unit,
+    content: @Composable (PaddingValues, PaddingValues) -> Unit,
 ) {
+    var fabHeightPx by remember { mutableIntStateOf(0) }
+    val density = LocalDensity.current
+
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -96,6 +106,11 @@ fun MainScreenShell(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onAddClick,
+                modifier = Modifier.onGloballyPositioned { coordinates ->
+                    if (coordinates.size.height > 0) {
+                        fabHeightPx = coordinates.size.height
+                    }
+                },
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Add")
             }
@@ -113,7 +128,12 @@ fun MainScreenShell(
                 }
             }
         },
-        content = content,
+        content = { innerPadding ->
+            val fabPaddingDp = with(density) { fabHeightPx.toDp() }
+            val extraBottomPadding = if (fabHeightPx > 0) fabPaddingDp + 24.dp else 0.dp
+            val fabPadding = PaddingValues(bottom = extraBottomPadding)
+            content(innerPadding, fabPadding)
+        },
     )
 }
 
@@ -134,7 +154,7 @@ fun DevicesScreen(
         onTabSelected = onTabSelected,
         onSettingsClick = onSettingsClick,
         onAddClick = onAddDeviceClick,
-    ) { innerPadding ->
+    ) { innerPadding, fabPadding ->
         HomeScreenContent(
             state = state,
             onGroupOptionToggle = onGroupOptionToggle,
@@ -143,6 +163,7 @@ fun DevicesScreen(
             onSortOptionSelected = onSortOptionSelected,
             onDeviceClick = onDeviceClick,
             modifier = Modifier.padding(innerPadding),
+            contentPadding = fabPadding,
         )
     }
 }
@@ -164,7 +185,7 @@ fun TypesScreen(
         onTabSelected = onTabSelected,
         onSettingsClick = onSettingsClick,
         onAddClick = onAddTypeClick,
-    ) { innerPadding ->
+    ) { innerPadding, fabPadding ->
         DeviceTypeListContent(
             state = state,
             onEditType = onEditType,
@@ -173,6 +194,7 @@ fun TypesScreen(
             onSortDirectionToggle = onSortDirectionToggle,
             onGroupDirectionToggle = onGroupDirectionToggle,
             modifier = Modifier.padding(innerPadding),
+            contentPadding = fabPadding,
         )
     }
 }
@@ -190,11 +212,12 @@ fun HistoryScreen(
         onTabSelected = onTabSelected,
         onSettingsClick = onSettingsClick,
         onAddClick = onAddEventClick,
-    ) { innerPadding ->
+    ) { innerPadding, fabPadding ->
         HistoryListContent(
             state = state,
             onEventClick = onEventClick,
             modifier = Modifier.padding(innerPadding),
+            contentPadding = fabPadding,
         )
     }
 }

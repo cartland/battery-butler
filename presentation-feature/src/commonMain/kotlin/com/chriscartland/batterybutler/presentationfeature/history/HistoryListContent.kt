@@ -2,6 +2,7 @@ package com.chriscartland.batterybutler.presentationfeature.history
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -10,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.presentationcore.components.HistoryListItem
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
@@ -23,6 +25,7 @@ fun HistoryListContent(
     state: HistoryListUiState,
     onEventClick: (String, String) -> Unit,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         when (state) {
@@ -32,6 +35,7 @@ fun HistoryListContent(
             is HistoryListUiState.Success -> {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
+                    contentPadding = contentPadding,
                 ) {
                     items(state.items) { item ->
                         HistoryListItem(

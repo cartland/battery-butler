@@ -88,10 +88,10 @@ fun EventDetailContent(
                 is EventDetailUiState.Success -> {
                     val event = uiState.event
                     val date = event.date.toLocalDateTime(TimeZone.currentSystemDefault())
-                    val dateString = "${date.year}-${date.monthNumber.toString().padStart(
+                    val dateString = "${date.year}-${(date.month.ordinal + 1).toString().padStart(
                         2,
                         '0',
-                    )}-${date.dayOfMonth.toString().padStart(2, '0')}"
+                    )}-${date.day.toString().padStart(2, '0')}"
 
                     if (showDatePicker) {
                         val datePickerState = rememberDatePickerState(

@@ -51,6 +51,7 @@ fun DeviceTypeListContent(
     onSortDirectionToggle: () -> Unit,
     onGroupDirectionToggle: () -> Unit,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         when (state) {
@@ -122,7 +123,12 @@ fun DeviceTypeListContent(
 
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(16.dp),
+                        contentPadding = PaddingValues(
+                            top = 16.dp,
+                            start = 16.dp,
+                            end = 16.dp,
+                            bottom = 16.dp + contentPadding.calculateBottomPadding(),
+                        ),
                     ) {
                         state.groupedTypes.forEach { (groupName, types) ->
                             if (state.groupOption != DeviceTypeGroupOption.NONE) {
