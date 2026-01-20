@@ -57,6 +57,7 @@ dependencies {
     implementation(project(":presentation-core"))
     implementation(project(":presentation-feature"))
     implementation(project(":domain"))
+    implementation(project(":compose-resources"))
 
     implementation(project(":presentation-model"))
     implementation(libs.kotlinx.datetime)
