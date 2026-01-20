@@ -1,15 +1,15 @@
 package com.chriscartland.batterybutler.presentationfeature.util
 
-import batterybutler.presentation_feature.generated.resources.Res
-import batterybutler.presentation_feature.generated.resources.group_battery_type
-import batterybutler.presentation_feature.generated.resources.group_location
-import batterybutler.presentation_feature.generated.resources.group_none
-import batterybutler.presentation_feature.generated.resources.group_type
-import batterybutler.presentation_feature.generated.resources.sort_battery_age
-import batterybutler.presentation_feature.generated.resources.sort_battery_type
-import batterybutler.presentation_feature.generated.resources.sort_location
-import batterybutler.presentation_feature.generated.resources.sort_name
-import batterybutler.presentation_feature.generated.resources.sort_type
+import batterybutler.presentation_core.generated.resources.Res
+import batterybutler.presentation_core.generated.resources.group_battery_type
+import batterybutler.presentation_core.generated.resources.group_location
+import batterybutler.presentation_core.generated.resources.group_none
+import batterybutler.presentation_core.generated.resources.group_type
+import batterybutler.presentation_core.generated.resources.sort_battery_age
+import batterybutler.presentation_core.generated.resources.sort_battery_type
+import batterybutler.presentation_core.generated.resources.sort_location
+import batterybutler.presentation_core.generated.resources.sort_name
+import batterybutler.presentation_core.generated.resources.sort_type
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeGroupOption
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeSortOption
 import com.chriscartland.batterybutler.presentationmodel.home.GroupOption

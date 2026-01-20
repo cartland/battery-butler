@@ -12,11 +12,11 @@ import org.jetbrains.compose.resources.StringResource
  * I/O during test class initialization.
  *
  * @param provider A lambda that returns the map of string resources. Defaults to loading from the
- * standard relative path: `../presentation-feature/src/commonMain/composeResources/values/strings.xml`.
+ * standard relative path: `../presentation-core/src/commonMain/composeResources/values/strings.xml`.
  */
 class ScreenshotAppStrings(
     provider: () -> Map<String, String> = {
-        XmlStringLoader.loadStrings("../presentation-feature/src/commonMain/composeResources/values/strings.xml")
+        XmlStringLoader.loadStrings("../presentation-core/src/commonMain/composeResources/values/strings.xml")
     },
 ) : AppStrings {
     private val strings: Map<String, String> by lazy { provider() }

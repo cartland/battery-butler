@@ -64,6 +64,11 @@ android {
     }
 }
 
+compose.resources {
+    publicResClass = true
+    packageOfResClass = "batterybutler.presentation_core.generated.resources"
+}
+
 tasks.register("printCompilations") {
     doLast {
         println("--- Kotlin Android Target Compilations ---")
