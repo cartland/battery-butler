@@ -63,7 +63,9 @@ fun App(
                     try {
                         val jsonString = restoredList.first()
                         val list: List<Screen> = Json.decodeFromString(jsonString)
-                        list.toMutableStateList() as SnapshotStateList<Any>
+                        val snapshotList = mutableStateListOf<Any>()
+                        snapshotList.addAll(list)
+                        snapshotList
                     } catch (e: Exception) {
                         mutableStateListOf(Screen.Devices)
                     }
