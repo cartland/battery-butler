@@ -61,7 +61,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -121,68 +121,6 @@ object DeviceIconMapper {
             "toys" -> Icons.Default.Toys
             else -> Icons.Default.DevicesOther
         }
-
-    fun getContainerColor(iconName: String?): Color =
-        when (iconName) {
-            // Shapes
-            "star" -> Color(0xFFFEF9C3) // yellow-100
-            "circle", "square", "hexagon" -> Color(0xFFF3F4F6) // gray-100
-            "favorite" -> Color(0xFFFEE2E2) // red-100
-            "diamond" -> Color(0xFFE0F2FE) // sky-100
-            // Electronics
-            "smartphone", "tablet", "laptop", "watch", "headphones", "camera", "speaker", "router", "power" -> Color(0xFFE0F2FE) // sky-100
-            "videogame_asset", "game_controller", "toys" -> Color(0xFFE0F2FE) // sky-100
-            "tv", "mouse", "keyboard", "settings_remote" -> Color(0xFFF1F5F9) // slate-100
-            "smart_button" -> Color(0xFFF3E8FF) // purple-100
-            // Home
-            "lightbulb" -> Color(0xFFFEF9C3) // yellow-100
-            "detector_smoke" -> Color(0xFFFEE2E2) // red-100
-            "thermostat" -> Color(0xFFCCFBF1) // teal-100
-            "sensors" -> Color(0xFFFFEDD5) // orange-100
-            "lock" -> Color(0xFFDBEAFE) // blue-100
-            "garage_home" -> Color(0xFFF1F5F9) // slate-100
-            // Tools/Utility
-            "flashlight_on" -> Color(0xFFFEF9C3) // yellow-100
-            "drill", "brush", "straighten", "scale" -> Color(0xFFF3F4F6) // gray-100
-            "water_drop" -> Color(0xFFE0F2FE) // sky-100
-            // Other
-            "car", "bike" -> Color(0xFFDBEAFE) // blue-100
-            "schedule" -> Color(0xFFEDE9FE) // violet-100
-            "location_on" -> Color(0xFFDBEAFE) // blue-100
-            "account_balance_wallet" -> Color(0xFFD1FAE5) // emerald-100
-            else -> Color(0xFFF1F5F9)
-        }
-
-    fun getContentColor(iconName: String?): Color =
-        when (iconName) {
-            // Shapes
-            "star" -> Color(0xFFCA8A04) // yellow-600
-            "circle", "square", "hexagon" -> Color(0xFF4B5563) // gray-600
-            "favorite" -> Color(0xFFDC2626) // red-600
-            "diamond" -> Color(0xFF0284C7) // sky-600
-            // Electronics
-            "smartphone", "tablet", "laptop", "watch", "headphones", "camera", "speaker", "router", "power" -> Color(0xFF0284C7) // sky-600
-            "videogame_asset", "game_controller", "toys" -> Color(0xFF0284C7) // sky-600
-            "tv", "mouse", "keyboard", "settings_remote" -> Color(0xFF475569) // slate-600
-            "smart_button" -> Color(0xFF9333EA) // purple-600
-            // Home
-            "lightbulb" -> Color(0xFFCA8A04) // yellow-600
-            "detector_smoke" -> Color(0xFFDC2626) // red-600
-            "thermostat" -> Color(0xFF0D9488) // teal-600
-            "sensors" -> Color(0xFFEA580C) // orange-600
-            "lock" -> Color(0xFF137FEC) // primary blue
-            "garage_home" -> Color(0xFF475569) // slate-600
-            // Tools/Utility
-            "flashlight_on" -> Color(0xFFCA8A04) // yellow-600
-            "drill", "brush", "straighten", "scale" -> Color(0xFF4B5563) // gray-600
-            "water_drop" -> Color(0xFF0284C7) // sky-600
-            // Other
-            "car", "bike" -> Color(0xFF137FEC) // blue-600
-            "schedule" -> Color(0xFF7C3AED) // violet-600
-            "location_on" -> Color(0xFF137FEC) // blue-600
-            "account_balance_wallet" -> Color(0xFF059669) // emerald-600
-            else -> Color(0xFF475569)
-        }
 }
 
 @Preview(showBackground = true)
@@ -206,13 +144,13 @@ fun DeviceIconsPreview() {
                             modifier = Modifier
                                 .size(56.dp)
                                 .clip(CircleShape)
-                                .background(DeviceIconMapper.getContainerColor(iconName)),
+                                .background(MaterialTheme.colorScheme.primaryContainer),
                             contentAlignment = Alignment.Center,
                         ) {
                             Icon(
                                 imageVector = DeviceIconMapper.getIcon(iconName),
                                 contentDescription = iconName,
-                                tint = DeviceIconMapper.getContentColor(iconName),
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer,
                                 modifier = Modifier.size(24.dp),
                             )
                         }

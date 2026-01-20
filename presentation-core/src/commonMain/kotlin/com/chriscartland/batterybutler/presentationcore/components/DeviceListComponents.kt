@@ -76,13 +76,13 @@ fun DeviceListItem(
                 modifier = Modifier
                     .size(48.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(DeviceIconMapper.getContainerColor(iconName)),
+                    .background(MaterialTheme.colorScheme.primaryContainer),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
                     imageVector = DeviceIconMapper.getIcon(iconName),
                     contentDescription = deviceType?.name,
-                    tint = DeviceIconMapper.getContentColor(iconName),
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
                     modifier = Modifier.size(24.dp),
                 )
             }

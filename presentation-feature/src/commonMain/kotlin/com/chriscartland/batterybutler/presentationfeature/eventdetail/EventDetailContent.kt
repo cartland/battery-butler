@@ -132,14 +132,14 @@ fun EventDetailContent(
                                 .padding(vertical = 24.dp)
                                 .size(96.dp)
                                 .clip(CircleShape)
-                                .background(DeviceIconMapper.getContainerColor(iconName)),
+                                .background(MaterialTheme.colorScheme.primaryContainer),
                             contentAlignment = Alignment.Center,
                         ) {
                             Icon(
                                 imageVector = DeviceIconMapper.getIcon(iconName),
                                 contentDescription = null,
                                 modifier = Modifier.size(48.dp),
-                                tint = DeviceIconMapper.getContentColor(iconName),
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer,
                             )
                         }
 

@@ -122,14 +122,14 @@ fun DeviceDetailBody(
                         modifier = Modifier
                             .size(112.dp)
                             .clip(CircleShape)
-                            .background(DeviceIconMapper.getContainerColor(iconName)),
+                            .background(MaterialTheme.colorScheme.primaryContainer),
                         contentAlignment = Alignment.Center,
                     ) {
                         Icon(
                             imageVector = DeviceIconMapper.getIcon(iconName),
                             contentDescription = null,
                             modifier = Modifier.size(64.dp),
-                            tint = DeviceIconMapper.getContentColor(iconName),
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
                         )
                     }
                 }
