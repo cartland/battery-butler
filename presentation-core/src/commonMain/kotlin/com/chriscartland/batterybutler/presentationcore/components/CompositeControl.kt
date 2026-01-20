@@ -37,9 +37,9 @@ fun CompositeControl(
     onDirectionToggle: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val borderColor = if (isActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
-    val containerColor = if (isActive) MaterialTheme.colorScheme.primaryContainer else Color.Transparent
-    val contentColor = if (isActive) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface
+    val borderColor = MaterialTheme.colorScheme.outline
+    val containerColor = Color.Transparent
+    val contentColor = MaterialTheme.colorScheme.onSurface
 
     Surface(
         modifier = modifier

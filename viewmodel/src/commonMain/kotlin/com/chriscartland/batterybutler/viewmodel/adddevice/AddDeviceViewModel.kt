@@ -49,7 +49,6 @@ class AddDeviceViewModel(
 
     // seedDeviceTypes removed
 
-
     private val _aiMessages = kotlinx.coroutines.flow.MutableStateFlow<List<com.chriscartland.batterybutler.domain.ai.AiMessage>>(
         emptyList(),
     )

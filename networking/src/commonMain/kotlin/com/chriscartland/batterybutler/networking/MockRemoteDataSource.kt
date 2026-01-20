@@ -1,8 +1,6 @@
 package com.chriscartland.batterybutler.networking
 
 import com.chriscartland.batterybutler.domain.demo.DemoData
-import com.chriscartland.batterybutler.domain.model.BatteryEvent
-import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.repository.RemoteDataSource
 import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
 import kotlinx.coroutines.flow.Flow
@@ -16,8 +14,8 @@ class MockRemoteDataSource : RemoteDataSource {
     private val state = MutableStateFlow<RemoteUpdate?>(null)
 
     private val deviceTypes = DemoData.getDefaultDeviceTypes().toMutableList()
-    private val devices = mutableListOf<Device>()
-    private val events = mutableListOf<BatteryEvent>()
+    private val devices = DemoData.getDefaultDevices(deviceTypes).toMutableList()
+    private val events = DemoData.getDefaultEvents(devices).toMutableList()
 
     init {
         // Initial snapshot

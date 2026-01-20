@@ -18,7 +18,6 @@ import io.ktor.client.statement.bodyAsChannel
 import io.ktor.client.statement.readBytes
 import io.ktor.utils.io.core.readBytes
 import io.ktor.utils.io.readFully
-import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
@@ -27,6 +26,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okio.Buffer
 import okio.IOException
+import kotlin.coroutines.cancellation.CancellationException
 
 actual class NetworkComponent {
     actual val grpcClient: GrpcClient by lazy {

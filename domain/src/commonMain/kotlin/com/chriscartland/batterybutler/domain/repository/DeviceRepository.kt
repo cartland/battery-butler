@@ -39,5 +39,4 @@ interface DeviceRepository {
     suspend fun deleteEvent(id: String)
 
     // method removed
-
 }

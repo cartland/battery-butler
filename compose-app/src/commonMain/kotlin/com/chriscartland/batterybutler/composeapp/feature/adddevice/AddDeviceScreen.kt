@@ -1,7 +1,6 @@
 package com.chriscartland.batterybutler.composeapp.feature.adddevice
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -19,7 +18,6 @@ fun AddDeviceScreen(
     val deviceTypes by viewModel.deviceTypes.collectAsStateWithLifecycle()
 
     // Seed types block removed
-
 
     val aiMessages by viewModel.aiMessages.collectAsStateWithLifecycle()
 

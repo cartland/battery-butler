@@ -54,8 +54,6 @@ class FakeDeviceRepository : DeviceRepository {
         deviceTypes.removeAll { it.id == id }
     }
 
-    override suspend fun ensureDefaultDeviceTypes() {}
-
     override fun getEventsForDevice(deviceId: String): Flow<List<BatteryEvent>> = flowOf(emptyList())
 
     override fun getAllEvents(): Flow<List<BatteryEvent>> = flowOf(emptyList())

@@ -35,7 +35,6 @@ class HomeViewModel(
 ) : ViewModel() {
     // init block removed
 
-
     private val sortOptionFlow = MutableStateFlow(SortOption.NAME)
     private val groupOptionFlow = MutableStateFlow(GroupOption.NONE)
     private val isSortAscendingFlow = MutableStateFlow(true)

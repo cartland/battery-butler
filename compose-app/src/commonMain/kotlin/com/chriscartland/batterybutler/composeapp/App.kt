@@ -2,8 +2,6 @@ package com.chriscartland.batterybutler.composeapp
 
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
@@ -213,15 +211,7 @@ fun App(
                     }
                 },
                 transitionSpec = {
-                    val tabs = listOf(Screen.Devices, Screen.Types, Screen.History)
-                    val initialKey = initialState.key
-                    val targetKey = targetState.key
-                    if (initialKey in tabs && targetKey in tabs) {
-                        fadeIn() togetherWith fadeOut()
-                    } else {
-                        // Default slide transition
-                        slideInHorizontally { it } togetherWith slideOutHorizontally { -it }
-                    }
+                    fadeIn() togetherWith fadeOut()
                 },
             )
         }

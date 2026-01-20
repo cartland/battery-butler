@@ -69,32 +69,7 @@ fun DeviceTypeListContent(
                         var sortExpanded by remember { mutableStateOf(false) }
                         var groupExpanded by remember { mutableStateOf(false) }
 
-                        // Group Button (First)
-                        Box {
-                            CompositeControl(
-                                label = "Group: ${composeStringResource(state.groupOption.labelRes())}",
-                                isActive = state.groupOption != DeviceTypeGroupOption.NONE,
-                                isAscending = state.isGroupAscending,
-                                onClicked = { groupExpanded = true },
-                                onDirectionToggle = { onGroupDirectionToggle() },
-                            )
-                            DropdownMenu(
-                                expanded = groupExpanded,
-                                onDismissRequest = { groupExpanded = false },
-                            ) {
-                                DeviceTypeGroupOption.entries.forEach { option ->
-                                    DropdownMenuItem(
-                                        text = { Text(composeStringResource(option.labelRes())) },
-                                        onClick = {
-                                            onGroupOptionSelected(option)
-                                            groupExpanded = false
-                                        },
-                                    )
-                                }
-                            }
-                        }
-
-                        // Sort Button (Second)
+                        // Sort Button (First)
                         Box {
                             CompositeControl(
                                 label = "Sort: ${composeStringResource(state.sortOption.labelRes())}",
@@ -113,6 +88,31 @@ fun DeviceTypeListContent(
                                         onClick = {
                                             onSortOptionSelected(option)
                                             sortExpanded = false
+                                        },
+                                    )
+                                }
+                            }
+                        }
+
+                        // Group Button (Second)
+                        Box {
+                            CompositeControl(
+                                label = "Group: ${composeStringResource(state.groupOption.labelRes())}",
+                                isActive = state.groupOption != DeviceTypeGroupOption.NONE,
+                                isAscending = state.isGroupAscending,
+                                onClicked = { groupExpanded = true },
+                                onDirectionToggle = { onGroupDirectionToggle() },
+                            )
+                            DropdownMenu(
+                                expanded = groupExpanded,
+                                onDismissRequest = { groupExpanded = false },
+                            ) {
+                                DeviceTypeGroupOption.entries.forEach { option ->
+                                    DropdownMenuItem(
+                                        text = { Text(composeStringResource(option.labelRes())) },
+                                        onClick = {
+                                            onGroupOptionSelected(option)
+                                            groupExpanded = false
                                         },
                                     )
                                 }

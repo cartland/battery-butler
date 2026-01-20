@@ -89,32 +89,7 @@ fun HomeScreenFilterRow(
             var sortExpanded by remember { mutableStateOf(false) }
             var groupExpanded by remember { mutableStateOf(false) }
 
-            // Group Button (First)
-            Box {
-                CompositeControl(
-                    label = "Group: ${composeStringResource(state.groupOption.labelRes())}",
-                    isActive = state.groupOption != GroupOption.NONE,
-                    isAscending = state.isGroupAscending,
-                    onClicked = { groupExpanded = true },
-                    onDirectionToggle = onGroupOptionToggle,
-                )
-                DropdownMenu(
-                    expanded = groupExpanded,
-                    onDismissRequest = { groupExpanded = false },
-                ) {
-                    GroupOption.values().forEach { option ->
-                        DropdownMenuItem(
-                            text = { Text(composeStringResource(option.labelRes())) },
-                            onClick = {
-                                onGroupOptionSelected(option)
-                                groupExpanded = false
-                            },
-                        )
-                    }
-                }
-            }
-
-            // Sort Button (Second)
+            // Sort Button (First)
             Box {
                 CompositeControl(
                     label = "Sort: ${composeStringResource(state.sortOption.labelRes())}",
@@ -133,6 +108,31 @@ fun HomeScreenFilterRow(
                             onClick = {
                                 onSortOptionSelected(option)
                                 sortExpanded = false
+                            },
+                        )
+                    }
+                }
+            }
+
+            // Group Button (Second)
+            Box {
+                CompositeControl(
+                    label = "Group: ${composeStringResource(state.groupOption.labelRes())}",
+                    isActive = state.groupOption != GroupOption.NONE,
+                    isAscending = state.isGroupAscending,
+                    onClicked = { groupExpanded = true },
+                    onDirectionToggle = onGroupOptionToggle,
+                )
+                DropdownMenu(
+                    expanded = groupExpanded,
+                    onDismissRequest = { groupExpanded = false },
+                ) {
+                    GroupOption.values().forEach { option ->
+                        DropdownMenuItem(
+                            text = { Text(composeStringResource(option.labelRes())) },
+                            onClick = {
+                                onGroupOptionSelected(option)
+                                groupExpanded = false
                             },
                         )
                     }
