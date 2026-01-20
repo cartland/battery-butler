@@ -30,6 +30,10 @@ import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.daysUntil
+import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Instant
 
 @OptIn(kotlin.time.ExperimentalTime::class)
@@ -44,8 +48,14 @@ fun DeviceListItem(
         if (device.batteryLastReplaced.toEpochMilliseconds() == 0L) {
             "N/A"
         } else {
-            val now = Instant.parse("2026-01-18T17:00:00Z")
-            "${now.minus(device.batteryLastReplaced).inWholeDays} days"
+            val timeZone = TimeZone.currentSystemDefault()
+            val now = Clock.System
+                .now()
+                .toLocalDateTime(timeZone)
+                .date
+            val eventDate = device.batteryLastReplaced.toLocalDateTime(timeZone).date
+            val days = eventDate.daysUntil(now)
+            "$days days"
         }
     }
 

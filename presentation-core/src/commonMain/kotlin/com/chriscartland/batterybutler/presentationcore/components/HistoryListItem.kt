@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.daysUntil
 import kotlinx.datetime.toLocalDateTime
@@ -73,8 +74,8 @@ fun HistoryListItem(
             modifier = Modifier.weight(1f).padding(horizontal = 16.dp),
         ) {
             val timeZone = TimeZone.currentSystemDefault()
-            val now = Instant
-                .parse("2026-01-18T17:00:00Z")
+            val now = Clock.System
+                .now()
                 .toLocalDateTime(timeZone)
                 .date
             val eventDate = event.date.toLocalDateTime(timeZone).date
@@ -121,8 +122,8 @@ fun HistoryListItem(
             // Re-calculate relative time for the right side or just use the days?
             // "Right side should also be a battery with the age in days"
             val timeZone = TimeZone.currentSystemDefault()
-            val now = Instant
-                .parse("2026-01-18T17:00:00Z")
+            val now = Clock.System
+                .now()
                 .toLocalDateTime(timeZone)
                 .date
             val eventDate = event.date.toLocalDateTime(timeZone).date
