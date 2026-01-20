@@ -69,6 +69,7 @@ struct DeviceDetailScreen: View {
                             }
                         }
                     }
+                    .padding()
                 }
             } else if wrapper.state is DeviceDetailUiStateNotFound {
                 Text("Device not found")
