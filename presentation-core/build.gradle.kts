@@ -32,6 +32,7 @@ kotlin {
             implementation(libs.kotlinx.datetime)
 
             implementation(project(":domain"))
+            api(project(":compose-resources"))
         }
 
         androidMain.dependencies {
@@ -64,10 +65,7 @@ android {
     }
 }
 
-compose.resources {
-    publicResClass = true
-    packageOfResClass = "batterybutler.presentation_core.generated.resources"
-}
+
 
 tasks.register("printCompilations") {
     doLast {

@@ -1,7 +1,7 @@
 package com.chriscartland.batterybutler.androidscreenshottests.util
 
 import androidx.compose.runtime.Composable
-import com.chriscartland.batterybutler.presentationcore.resources.AppStrings
+import com.chriscartland.batterybutler.composeresources.AppStrings
 import org.jetbrains.compose.resources.StringResource
 
 /**
@@ -12,11 +12,11 @@ import org.jetbrains.compose.resources.StringResource
  * I/O during test class initialization.
  *
  * @param provider A lambda that returns the map of string resources. Defaults to loading from the
- * standard relative path: `../presentation-core/src/commonMain/composeResources/values/strings.xml`.
+ * standard relative path: `../compose-resources/src/commonMain/composeResources/values/strings.xml`.
  */
 class ScreenshotAppStrings(
     provider: () -> Map<String, String> = {
-        XmlStringLoader.loadStrings("../presentation-core/src/commonMain/composeResources/values/strings.xml")
+        XmlStringLoader.loadStrings("../compose-resources/src/commonMain/composeResources/values/strings.xml")
     },
 ) : AppStrings {
     private val strings: Map<String, String> by lazy { provider() }

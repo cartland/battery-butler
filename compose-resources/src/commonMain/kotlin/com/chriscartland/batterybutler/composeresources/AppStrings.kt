@@ -1,4 +1,4 @@
-package com.chriscartland.batterybutler.presentationcore.resources
+package com.chriscartland.batterybutler.composeresources
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.staticCompositionLocalOf

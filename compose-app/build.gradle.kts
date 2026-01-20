@@ -61,6 +61,7 @@ kotlin {
             implementation(project(":viewmodel"))
             implementation(project(":usecase"))
             implementation(project(":networking"))
+            implementation(project(":compose-resources"))
 
             implementation(libs.androidx.nav3.ui)
             implementation(libs.androidx.nav3.runtime)

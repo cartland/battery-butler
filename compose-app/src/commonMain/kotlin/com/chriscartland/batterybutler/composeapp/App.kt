@@ -22,7 +22,7 @@ import com.chriscartland.batterybutler.composeapp.feature.main.DevicesScreenRoot
 import com.chriscartland.batterybutler.composeapp.feature.main.HistoryScreenRoot
 import com.chriscartland.batterybutler.composeapp.feature.main.TypesScreenRoot
 import com.chriscartland.batterybutler.composeapp.feature.settings.SettingsScreen
-import com.chriscartland.batterybutler.presentationcore.resources.LocalAppStrings
+import com.chriscartland.batterybutler.composeresources.LocalAppStrings
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationcore.util.FileSaver
 import com.chriscartland.batterybutler.presentationcore.util.LocalFileSaver

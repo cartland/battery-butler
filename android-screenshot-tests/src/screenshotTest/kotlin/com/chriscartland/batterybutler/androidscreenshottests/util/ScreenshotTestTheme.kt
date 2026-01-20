@@ -2,7 +2,7 @@ package com.chriscartland.batterybutler.androidscreenshottests.util
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import com.chriscartland.batterybutler.presentationcore.resources.LocalAppStrings
+import com.chriscartland.batterybutler.composeresources.LocalAppStrings
 
 /**
  * Theme wrapper for screenshot tests.

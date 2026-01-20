@@ -1,4 +1,4 @@
-package com.chriscartland.batterybutler.presentationcore.resources
+package com.chriscartland.batterybutler.composeresources
 
 import androidx.compose.runtime.Composable
 import org.jetbrains.compose.resources.StringResource

@@ -1,7 +1,7 @@
 package com.chriscartland.batterybutler.composeapp
 
 import androidx.compose.runtime.Composable
-import com.chriscartland.batterybutler.presentationcore.resources.AppStrings
+import com.chriscartland.batterybutler.composeresources.AppStrings
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 

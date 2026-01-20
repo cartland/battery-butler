@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationcore.components.CompositeControl
 import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMapper
-import com.chriscartland.batterybutler.presentationcore.resources.composeStringResource
+import com.chriscartland.batterybutler.composeresources.composeStringResource
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationfeature.util.labelRes
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeGroupOption
