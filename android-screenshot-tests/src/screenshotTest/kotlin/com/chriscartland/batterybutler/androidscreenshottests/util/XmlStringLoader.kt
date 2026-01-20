@@ -3,6 +3,14 @@ package com.chriscartland.batterybutler.androidscreenshottests.util
 import java.io.File
 import javax.xml.parsers.DocumentBuilderFactory
 
+/**
+ * Utility for loading string resources from an XML file for use in screenshot tests.
+ *
+ * This loader handles:
+ * 1. Resolving the file from a relative path (relative to the module root).
+ * 2. Parsing the XML to extract <string name="...">value</string> pairs.
+ * 3. Caching the results to optimize performance for repeated lookups.
+ */
 object XmlStringLoader {
     private val cache = mutableMapOf<String, Map<String, String>>()
 
