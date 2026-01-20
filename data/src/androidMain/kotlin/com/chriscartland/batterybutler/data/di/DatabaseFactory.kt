@@ -11,8 +11,8 @@ import com.chriscartland.batterybutler.data.room.MIGRATION_4_5
 actual class DatabaseFactory(
     private val context: Context,
 ) {
-    actual fun createDatabase(): AppDatabase {
-        val dbFile = context.getDatabasePath("battery-butler.db")
+    actual fun createDatabase(name: String): AppDatabase {
+        val dbFile = context.getDatabasePath(name)
         return Room
             .databaseBuilder<AppDatabase>(
                 context = context,

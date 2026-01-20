@@ -14,6 +14,7 @@ graph TD
     end
 
     subgraph "Presentation"
+        ComposeResources[":compose-resources"]
         PresentationCore[":presentation-core"]
         PresentationFeature[":presentation-feature"]
         PresentationModel[":presentation-model"]
@@ -34,10 +35,6 @@ graph TD
         AndroidScreenshotTests[":android-screenshot-tests"]
     end
 
-    subgraph "Others"
-        ComposeResources[":compose-resources"]
-    end
-
     %% Dependencies
     AndroidScreenshotTests --> ComposeResources
     AndroidScreenshotTests --> Domain
@@ -54,6 +51,7 @@ graph TD
     ComposeApp --> Viewmodel
 
     Data --> Domain
+    Data --> Networking
 
     IosSwiftDi --> Data
     IosSwiftDi --> PresentationModel

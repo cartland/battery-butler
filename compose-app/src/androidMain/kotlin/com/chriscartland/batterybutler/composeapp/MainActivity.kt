@@ -8,11 +8,9 @@ import com.chriscartland.batterybutler.composeapp.di.AppComponent
 import com.chriscartland.batterybutler.composeapp.di.create
 import com.chriscartland.batterybutler.data.ai.AndroidAiEngine
 import com.chriscartland.batterybutler.data.di.DatabaseFactory
-import com.chriscartland.batterybutler.networking.GrpcSyncDataSource
 import com.chriscartland.batterybutler.networking.NetworkComponent
 import com.chriscartland.batterybutler.presentationcore.util.AndroidFileSaver
 import com.chriscartland.batterybutler.presentationcore.util.AndroidShareHandler
-import com.chriscartland.batterybutler.proto.SyncServiceClient
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,10 +21,8 @@ class MainActivity : ComponentActivity() {
         val aiEngine = AndroidAiEngine(applicationContext)
 
         val networkComponent = NetworkComponent(applicationContext)
-        val syncService = networkComponent.grpcClient.create(SyncServiceClient::class)
-        val remoteDataSource = GrpcSyncDataSource(syncService)
 
-        val component = AppComponent::class.create(databaseFactory, aiEngine, remoteDataSource)
+        val component = AppComponent::class.create(databaseFactory, aiEngine, networkComponent.grpcClient)
         val shareHandler = AndroidShareHandler(this)
         val fileSaver = AndroidFileSaver(this)
 

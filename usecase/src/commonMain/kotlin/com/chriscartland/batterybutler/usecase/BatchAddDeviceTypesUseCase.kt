@@ -9,6 +9,7 @@ import com.chriscartland.batterybutler.domain.ai.AiToolParams
 import com.chriscartland.batterybutler.domain.ai.ToolHandler
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
+import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.first
@@ -59,6 +60,7 @@ class BatchAddDeviceTypesUseCase(
                                 "Success: Added device type '$name'"
                             }
                         } catch (e: Exception) {
+                            if (e is CancellationException) throw e
                             "Error adding device type: ${e.message}"
                         }
                     }
@@ -80,6 +82,7 @@ class BatchAddDeviceTypesUseCase(
                     send(AiMessage(modelMsgId, AiRole.MODEL, tokenMsg.text))
                 }
             } catch (e: Exception) {
+                if (e is CancellationException) throw e
                 send(AiMessage(uuid4().toString(), AiRole.SYSTEM, "Error processing input: ${e.message}"))
             }
         }

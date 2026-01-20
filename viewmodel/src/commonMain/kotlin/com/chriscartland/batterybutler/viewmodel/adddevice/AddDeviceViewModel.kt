@@ -7,7 +7,6 @@ import com.chriscartland.batterybutler.domain.model.DeviceInput
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.usecase.AddDeviceUseCase
 import com.chriscartland.batterybutler.usecase.BatchAddDevicesUseCase
-import com.chriscartland.batterybutler.usecase.EnsureDefaultDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -23,7 +22,6 @@ import kotlin.uuid.Uuid
 class AddDeviceViewModel(
     private val addDeviceUseCase: AddDeviceUseCase,
     private val getDeviceTypesUseCase: GetDeviceTypesUseCase,
-    private val ensureDefaultDeviceTypesUseCase: EnsureDefaultDeviceTypesUseCase,
     private val batchAddDevicesUseCase: BatchAddDevicesUseCase,
 ) : ViewModel() {
     val deviceTypes: StateFlow<List<DeviceType>> = getDeviceTypesUseCase()
@@ -49,12 +47,8 @@ class AddDeviceViewModel(
         }
     }
 
-    // Helper to seed types if empty (temporary for testing)
-    fun seedDeviceTypes() {
-        viewModelScope.launch {
-            ensureDefaultDeviceTypesUseCase()
-        }
-    }
+    // seedDeviceTypes removed
+
 
     private val _aiMessages = kotlinx.coroutines.flow.MutableStateFlow<List<com.chriscartland.batterybutler.domain.ai.AiMessage>>(
         emptyList(),

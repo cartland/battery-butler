@@ -6,12 +6,9 @@ import com.chriscartland.batterybutler.composeapp.di.AppComponent
 import com.chriscartland.batterybutler.composeapp.di.create
 import com.chriscartland.batterybutler.composeapp.feature.ai.NoOpAiEngine
 import com.chriscartland.batterybutler.data.di.DatabaseFactory
-import com.chriscartland.batterybutler.domain.repository.RemoteDataSource
-import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
+import com.chriscartland.batterybutler.networking.NetworkComponent
 import com.chriscartland.batterybutler.presentationcore.util.DesktopFileSaver
 import com.chriscartland.batterybutler.presentationcore.util.DesktopShareHandler
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
 
 fun main() =
     application {
@@ -20,13 +17,9 @@ fun main() =
             title = "Battery Butler",
         ) {
             val databaseFactory = DatabaseFactory()
-            val noOpRemoteDataSource = object : RemoteDataSource {
-                override fun subscribe(): Flow<RemoteUpdate> = emptyFlow()
-
-                override suspend fun push(update: RemoteUpdate): Boolean = true
-            }
+            val networkComponent = NetworkComponent()
             val component =
-                AppComponent::class.create(databaseFactory, NoOpAiEngine, noOpRemoteDataSource)
+                AppComponent::class.create(databaseFactory, NoOpAiEngine, networkComponent.grpcClient)
             val shareHandler = DesktopShareHandler()
             val fileSaver = DesktopFileSaver()
 

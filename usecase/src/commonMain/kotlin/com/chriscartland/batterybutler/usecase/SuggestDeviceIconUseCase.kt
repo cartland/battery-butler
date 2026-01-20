@@ -2,6 +2,7 @@ package com.chriscartland.batterybutler.usecase
 
 import com.chriscartland.batterybutler.domain.ai.AiEngine
 import com.chriscartland.batterybutler.domain.model.DeviceIcons
+import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import me.tatarka.inject.annotations.Inject
@@ -37,6 +38,7 @@ class SuggestDeviceIconUseCase(
                 ?.trim()
                 ?.filter { !it.isWhitespace() }
         } catch (e: Exception) {
+            if (e is CancellationException) throw e
             null
         }
     }

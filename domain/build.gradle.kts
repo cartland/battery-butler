@@ -24,6 +24,7 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             implementation(libs.kotlin.inject.runtime)
             implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.uuid)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))

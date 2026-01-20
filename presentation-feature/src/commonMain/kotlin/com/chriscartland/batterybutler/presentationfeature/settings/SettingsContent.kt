@@ -26,6 +26,8 @@ import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 
 @Composable
 fun SettingsContent(
+    networkMode: com.chriscartland.batterybutler.domain.model.NetworkMode,
+    onNetworkModeSelected: (com.chriscartland.batterybutler.domain.model.NetworkMode) -> Unit,
     onExportData: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
@@ -46,6 +48,47 @@ fun SettingsContent(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
+            // Network Mode Card
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                ),
+                shape = MaterialTheme.shapes.medium,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    Text(
+                        text = "Network Mode",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    com.chriscartland.batterybutler.domain.model.NetworkMode.entries.forEach { mode ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { onNetworkModeSelected(mode) }
+                                .padding(vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            androidx.compose.material3.RadioButton(
+                                selected = (mode == networkMode),
+                                onClick = { onNetworkModeSelected(mode) },
+                            )
+                            Text(
+                                text = mode.name,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(start = 8.dp),
+                            )
+                        }
+                    }
+                }
+            }
+
             // Export Data Card
             Card(
                 colors = CardDefaults.cardColors(
@@ -92,6 +135,8 @@ fun SettingsContent(
 fun SettingsContentPreview() {
     BatteryButlerTheme {
         SettingsContent(
+            networkMode = com.chriscartland.batterybutler.domain.model.NetworkMode.MOCK,
+            onNetworkModeSelected = {},
             onExportData = {},
             onBack = {},
         )

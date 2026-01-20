@@ -29,6 +29,7 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             implementation(libs.wire.runtime)
             api(libs.wire.grpc.client)
+            implementation(libs.kotlin.inject.runtime)
         }
 
         androidMain.dependencies {

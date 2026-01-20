@@ -18,6 +18,7 @@ import io.ktor.client.statement.bodyAsChannel
 import io.ktor.client.statement.readBytes
 import io.ktor.utils.io.core.readBytes
 import io.ktor.utils.io.readFully
+import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
@@ -101,6 +102,7 @@ class IosGrpcCall<S : Any, R : Any>(
                 val result = execute(request)
                 callback.onSuccess(this@IosGrpcCall, result)
             } catch (t: Throwable) {
+                if (t is CancellationException) throw t
                 val ioException = if (t is IOException) t else IOException(t.message)
                 callback.onFailure(this@IosGrpcCall, ioException)
             }
@@ -169,6 +171,7 @@ class IosGrpcStreamingCall<S : Any, R : Any>(
                             try {
                                 channel.readFully(headerBytes)
                             } catch (e: Exception) {
+                                if (e is CancellationException) throw e
                                 // If EOF happens at start of message, it's normal closure
                                 break
                             }
@@ -190,12 +193,14 @@ class IosGrpcStreamingCall<S : Any, R : Any>(
                         } catch (e: io.ktor.utils.io.errors.IOException) {
                             break
                         } catch (e: Exception) {
+                            if (e is CancellationException) throw e
                             if (channel.isClosedForRead) break
                             throw e
                         }
                     }
                 }
             } catch (t: Throwable) {
+                if (t is CancellationException) throw t
                 receiveChannel.close(t)
             } finally {
                 receiveChannel.close()

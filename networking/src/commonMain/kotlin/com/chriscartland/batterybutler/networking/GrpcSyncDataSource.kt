@@ -3,11 +3,14 @@ package com.chriscartland.batterybutler.networking
 import com.chriscartland.batterybutler.domain.repository.RemoteDataSource
 import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
 import com.chriscartland.batterybutler.proto.SyncServiceClient
+import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.map
+import me.tatarka.inject.annotations.Inject
 
+@Inject
 class GrpcSyncDataSource(
     private val client: SyncServiceClient,
 ) : RemoteDataSource {
@@ -27,6 +30,7 @@ class GrpcSyncDataSource(
             val response = client.PushUpdate().execute(SyncMapper.toProto(update))
             response.success
         } catch (e: Exception) {
+            if (e is CancellationException) throw e
             e.printStackTrace()
             false
         }

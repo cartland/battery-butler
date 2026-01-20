@@ -1,14 +1,23 @@
 package com.chriscartland.batterybutler.data.di
 
+import com.chriscartland.batterybutler.data.repository.InMemoryNetworkModeRepository
 import com.chriscartland.batterybutler.data.repository.RoomDeviceRepository
 import com.chriscartland.batterybutler.data.room.AppDatabase
-import com.chriscartland.batterybutler.data.room.DeviceDao
+import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
+import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
+import com.chriscartland.batterybutler.domain.repository.RemoteDataSource
+import com.chriscartland.batterybutler.networking.DelegatingRemoteDataSource
+import com.chriscartland.batterybutler.proto.GrpcSyncServiceClient
+import com.chriscartland.batterybutler.proto.SyncServiceClient
+import com.squareup.wire.GrpcClient
+import kotlinx.coroutines.flow.Flow
 import me.tatarka.inject.annotations.Provides
 
 interface DataComponent {
     // Requirements from the platform/app
     val databaseFactory: DatabaseFactory
+    val grpcClient: GrpcClient
 
     // Scope is managed by the Component using this interface (e.g. Singleton in AppComponent)
     // We cannot use @Singleton here because it's an interface, but we can rely on the implementation scope.
@@ -22,8 +31,17 @@ interface DataComponent {
     fun provideAppDatabase(): AppDatabase = databaseFactory.createDatabase()
 
     @Provides
-    fun provideDeviceDao(database: AppDatabase): DeviceDao = database.deviceDao()
+    fun provideDeviceRepository(repo: RoomDeviceRepository): DeviceRepository = repo
 
     @Provides
-    fun provideDeviceRepository(repo: RoomDeviceRepository): DeviceRepository = repo
+    fun provideNetworkModeRepository(repo: InMemoryNetworkModeRepository): NetworkModeRepository = repo
+
+    @Provides
+    fun provideNetworkModeFlow(repo: NetworkModeRepository): Flow<NetworkMode> = repo.networkMode
+
+    @Provides
+    fun provideRemoteDataSource(dataSource: DelegatingRemoteDataSource): RemoteDataSource = dataSource
+
+    @Provides
+    fun provideSyncServiceClient(client: GrpcClient): SyncServiceClient = GrpcSyncServiceClient(client)
 }

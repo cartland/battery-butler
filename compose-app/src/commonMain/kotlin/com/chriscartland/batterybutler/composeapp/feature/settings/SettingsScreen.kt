@@ -36,7 +36,10 @@ fun SettingsScreen(
             viewModel.onExportDataConsumed()
         }
     }
+    val networkMode by viewModel.networkMode.collectAsState()
     SettingsContent(
+        networkMode = networkMode,
+        onNetworkModeSelected = viewModel::onNetworkModeSelected,
         onExportData = viewModel::onExportData,
         onBack = onBack,
         modifier = modifier,

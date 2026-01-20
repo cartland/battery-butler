@@ -45,6 +45,7 @@ data class GraphConfig(
                 ":presentation-core" to "Presentation",
                 ":viewmodel" to "Presentation",
                 ":presentation-model" to "Presentation",
+                ":compose-resources" to "Presentation",
                 ":usecase" to "Domain Layer",
                 ":domain" to "Domain Layer",
                 ":server:domain" to "Server",

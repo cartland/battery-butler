@@ -29,6 +29,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(project(":domain"))
+            implementation(project(":networking"))
 
             implementation(libs.androidx.room.runtime)
             implementation(libs.sqlite.bundled)

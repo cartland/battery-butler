@@ -77,11 +77,18 @@ abstract class GenerateGraphTask : DefaultTask() {
         inputMmd: File,
         outputSvg: File,
     ) {
-        println("Generating SVG for ${inputMmd.name}...")
+        val npxPath = listOf(
+            "/Users/cartland/.nvm/versions/node/v24.2.0/bin/npx",
+            "/usr/local/bin/npx",
+            "/opt/homebrew/bin/npx",
+            "/usr/bin/npx"
+        ).firstOrNull { File(it).exists() } ?: "npx"
+
+        println("Generating SVG for ${inputMmd.name} using $npxPath...")
         project.exec {
             // Pass empty string as separate argument without quotes for Gradle to handle
             commandLine(
-                "npx",
+                npxPath,
                 "-y",
                 "@mermaid-js/mermaid-cli@11.4.2",
                 "-i",

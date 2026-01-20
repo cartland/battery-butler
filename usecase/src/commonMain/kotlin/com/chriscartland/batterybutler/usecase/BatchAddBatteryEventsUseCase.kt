@@ -10,6 +10,7 @@ import com.chriscartland.batterybutler.domain.ai.ToolHandler
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
+import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.first
@@ -99,6 +100,7 @@ class BatchAddBatteryEventsUseCase(
 
                             "Success: Recorded battery replacement for '$deviceName' on $dateStr"
                         } catch (e: Exception) {
+                            if (e is CancellationException) throw e
                             "Error recording battery replacement: ${e.message}"
                         }
                     }
@@ -120,6 +122,7 @@ class BatchAddBatteryEventsUseCase(
                     send(AiMessage(modelMsgId, AiRole.MODEL, tokenMsg.text))
                 }
             } catch (e: Exception) {
+                if (e is CancellationException) throw e
                 send(AiMessage(uuid4().toString(), AiRole.SYSTEM, "Error processing input: ${e.message}"))
             }
         }

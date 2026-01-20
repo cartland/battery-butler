@@ -12,8 +12,8 @@ import platform.Foundation.NSFileManager
 import platform.Foundation.NSUserDomainMask
 
 actual class DatabaseFactory {
-    actual fun createDatabase(): AppDatabase {
-        val dbFile = "${fileDirectory()}/battery-butler.db"
+    actual fun createDatabase(name: String): AppDatabase {
+        val dbFile = "${fileDirectory()}/$name"
         return Room
             .databaseBuilder<AppDatabase>(
                 name = dbFile,

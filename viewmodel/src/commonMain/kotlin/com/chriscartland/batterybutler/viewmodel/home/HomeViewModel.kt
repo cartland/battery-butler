@@ -6,7 +6,6 @@ import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.presentationmodel.home.GroupOption
 import com.chriscartland.batterybutler.presentationmodel.home.HomeUiState
 import com.chriscartland.batterybutler.presentationmodel.home.SortOption
-import com.chriscartland.batterybutler.usecase.EnsureDefaultDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.ExportDataUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.GetDevicesUseCase
@@ -32,14 +31,10 @@ private fun <T : Comparable<T>> reverseOrder(): Comparator<T> = Comparator { a, 
 class HomeViewModel(
     private val getDevicesUseCase: GetDevicesUseCase,
     private val getDeviceTypesUseCase: GetDeviceTypesUseCase,
-    private val ensureDefaultDeviceTypesUseCase: EnsureDefaultDeviceTypesUseCase,
     private val exportDataUseCase: ExportDataUseCase,
 ) : ViewModel() {
-    init {
-        viewModelScope.launch {
-            ensureDefaultDeviceTypesUseCase()
-        }
-    }
+    // init block removed
+
 
     private val sortOptionFlow = MutableStateFlow(SortOption.NAME)
     private val groupOptionFlow = MutableStateFlow(GroupOption.NONE)

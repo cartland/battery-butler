@@ -18,10 +18,8 @@ fun AddDeviceScreen(
 ) {
     val deviceTypes by viewModel.deviceTypes.collectAsStateWithLifecycle()
 
-    // Seed types if empty
-    LaunchedEffect(Unit) {
-        viewModel.seedDeviceTypes()
-    }
+    // Seed types block removed
+
 
     val aiMessages by viewModel.aiMessages.collectAsStateWithLifecycle()
 

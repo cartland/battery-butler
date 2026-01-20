@@ -15,6 +15,7 @@ import com.google.ai.client.generativeai.type.Schema
 import com.google.ai.client.generativeai.type.Tool
 import com.google.ai.client.generativeai.type.content
 import com.google.ai.client.generativeai.type.defineFunction
+import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -135,6 +136,7 @@ class AndroidAiEngine(
                 val text = response.text
                 emit(AiMessage("resp_${System.currentTimeMillis()}", AiRole.MODEL, text ?: "No text response", false))
             } catch (e: Exception) {
+                if (e is CancellationException) throw e
                 e.printStackTrace()
                 emit(AiMessage("error", AiRole.MODEL, "Error: ${e.message}", false))
             }
