@@ -41,12 +41,6 @@ class StructuredPromptTest {
 
         override suspend fun deleteDevice(deviceId: String) {}
 
-        override suspend fun addBatteryEvent(event: BatteryEvent) {}
-
-        override suspend fun getDevices(): List<Device> = emptyList()
-
-        override suspend fun getDeviceTypes(): List<DeviceType> = emptyList()
-
         override fun getAllDeviceTypes() = flowOf(emptyList<DeviceType>())
 
         override fun getDeviceTypeById(id: String) = flowOf(null)

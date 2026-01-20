@@ -10,6 +10,8 @@ import com.chriscartland.batterybutler.usecase.SuggestDeviceIconUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 import kotlin.uuid.ExperimentalUuidApi
@@ -20,9 +22,19 @@ class AddDeviceTypeViewModel(
     private val addDeviceTypeUseCase: AddDeviceTypeUseCase,
     private val batchAddDeviceTypesUseCase: BatchAddDeviceTypesUseCase,
     private val suggestDeviceIconUseCase: SuggestDeviceIconUseCase,
+    private val getDeviceTypesUseCase: com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase,
 ) : ViewModel() {
     private val _suggestedIcon = MutableStateFlow<String?>(null)
     val suggestedIcon = _suggestedIcon.asStateFlow()
+
+    val usedIcons: StateFlow<List<String>> = getDeviceTypesUseCase()
+        .map { types -> types.mapNotNull { it.defaultIcon }.distinct() }
+        .stateIn(
+            scope = viewModelScope,
+            started = kotlinx.coroutines.flow.SharingStarted
+                .WhileSubscribed(5000),
+            initialValue = emptyList(),
+        )
 
     fun suggestIcon(name: String) {
         if (name.isBlank()) return

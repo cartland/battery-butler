@@ -9,5 +9,6 @@ sealed interface EditDeviceTypeUiState {
 
     data class Success(
         val deviceType: DeviceType,
+        val usedIcons: List<String>,
     ) : EditDeviceTypeUiState
 }

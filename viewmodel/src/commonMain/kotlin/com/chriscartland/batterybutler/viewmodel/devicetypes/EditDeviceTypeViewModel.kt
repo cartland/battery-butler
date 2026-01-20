@@ -41,7 +41,8 @@ class EditDeviceTypeViewModel(
             if (type == null) {
                 EditDeviceTypeUiState.NotFound
             } else {
-                EditDeviceTypeUiState.Success(type)
+                val usedIcons = types.mapNotNull { it.defaultIcon }.distinct()
+                EditDeviceTypeUiState.Success(type, usedIcons)
             }
         }.stateIn(
             scope = viewModelScope,

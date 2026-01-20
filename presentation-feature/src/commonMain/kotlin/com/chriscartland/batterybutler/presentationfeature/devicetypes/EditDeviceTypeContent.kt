@@ -12,11 +12,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
@@ -112,7 +110,6 @@ fun EditDeviceTypeContent(
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .verticalScroll(rememberScrollState())
                             .padding(16.dp),
                     ) {
                         OutlinedTextField(
@@ -155,13 +152,15 @@ fun EditDeviceTypeContent(
                         Spacer(modifier = Modifier.height(24.dp))
 
                         // Icon Selection
-                        Text("Default Icon", style = MaterialTheme.typography.labelLarge)
-                        val icons = DeviceIconMapper.AvailableIcons
+                        Text("Icon", style = MaterialTheme.typography.labelLarge)
+                        val icons = remember(uiState.usedIcons) {
+                            DeviceIconMapper.AvailableIcons.sortedByDescending { it in uiState.usedIcons }
+                        }
                         LazyVerticalGrid(
                             columns = GridCells.Fixed(4),
                             horizontalArrangement = Arrangement.spacedBy(12.dp),
                             verticalArrangement = Arrangement.spacedBy(12.dp),
-                            modifier = Modifier.height(160.dp),
+                            modifier = Modifier.weight(1f).padding(vertical = 8.dp),
                         ) {
                             items(icons) { iconName ->
                                 val isSelected = defaultIcon == iconName
@@ -173,7 +172,7 @@ fun EditDeviceTypeContent(
                             }
                         }
 
-                        Spacer(modifier = Modifier.height(24.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
 
                         Button(
                             onClick = { showDeleteDialog = true },
@@ -213,7 +212,7 @@ fun EditDeviceTypeContentPreview() {
     BatteryButlerTheme {
         val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
         EditDeviceTypeContent(
-            uiState = EditDeviceTypeUiState.Success(type),
+            uiState = EditDeviceTypeUiState.Success(type, usedIcons = emptyList()),
             onSave = {},
             onDelete = {},
             onBack = {},

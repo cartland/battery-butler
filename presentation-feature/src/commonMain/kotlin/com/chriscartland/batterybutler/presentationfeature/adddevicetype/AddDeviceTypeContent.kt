@@ -61,6 +61,7 @@ import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 fun AddDeviceTypeContent(
     aiMessages: List<AiMessage>,
     suggestedIcon: String? = null,
+    usedIcons: List<String> = emptyList(),
     onSuggestIcon: (String) -> Unit = {},
     onConsumeSuggestedIcon: () -> Unit = {},
     onDeviceTypeAdded: (DeviceTypeInput) -> Unit,
@@ -81,7 +82,9 @@ fun AddDeviceTypeContent(
         }
     }
 
-    val icons = DeviceIconMapper.AvailableIcons
+    val icons = remember(usedIcons) {
+        DeviceIconMapper.AvailableIcons.sortedByDescending { it in usedIcons }
+    }
 
     Scaffold(
         modifier = modifier,
@@ -186,7 +189,7 @@ fun AddDeviceTypeContent(
             }
 
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                Text("Choose an Icon", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Text("Icon", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(4),
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
