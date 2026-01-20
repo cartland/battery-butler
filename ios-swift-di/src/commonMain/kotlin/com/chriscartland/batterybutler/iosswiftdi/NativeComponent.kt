@@ -1,11 +1,13 @@
 package com.chriscartland.batterybutler.iosswiftdi
 
 import com.chriscartland.batterybutler.data.di.DatabaseFactory
+import com.chriscartland.batterybutler.data.repository.InMemoryNetworkModeRepository
 import com.chriscartland.batterybutler.data.repository.RoomDeviceRepository
 import com.chriscartland.batterybutler.data.room.AppDatabase
 import com.chriscartland.batterybutler.data.room.DeviceDao
 import com.chriscartland.batterybutler.domain.ai.AiEngine
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
+import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
 import com.chriscartland.batterybutler.domain.repository.RemoteDataSource
 import com.chriscartland.batterybutler.viewmodel.adddevice.AddDeviceViewModel
 import com.chriscartland.batterybutler.viewmodel.adddevicetype.AddDeviceTypeViewModel
@@ -28,7 +30,7 @@ annotation class SharedSingleton
 @Component
 @SharedSingleton
 abstract class NativeComponent(
-    private val databaseFactory: DatabaseFactory,
+    @get:Provides val databaseFactory: DatabaseFactory,
     @get:Provides val aiEngine: AiEngine,
     @get:Provides val remoteDataSource: RemoteDataSource,
 ) {
@@ -53,6 +55,10 @@ abstract class NativeComponent(
     @Provides
     @SharedSingleton
     fun provideDeviceRepository(repo: RoomDeviceRepository): DeviceRepository = repo
+
+    @Provides
+    @SharedSingleton
+    fun provideNetworkModeRepository(impl: InMemoryNetworkModeRepository): NetworkModeRepository = impl
 
     @Provides
     @SharedSingleton

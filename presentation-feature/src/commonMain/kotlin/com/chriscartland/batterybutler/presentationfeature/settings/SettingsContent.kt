@@ -21,8 +21,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.chriscartland.batterybutler.composeresources.generated.resources.Res
+import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_grpc_local
+import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_mock
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
+import com.chriscartland.batterybutler.presentationcore.components.ExpandableSelectionControl
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import org.jetbrains.compose.resources.stringResource as composeStringResource
 
 @Composable
 fun SettingsContent(
@@ -49,45 +54,20 @@ fun SettingsContent(
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             // Network Mode Card
-            Card(
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                ),
-                shape = MaterialTheme.shapes.medium,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    Text(
-                        text = "Network Mode",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    com.chriscartland.batterybutler.domain.model.NetworkMode.entries.forEach { mode ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { onNetworkModeSelected(mode) }
-                                .padding(vertical = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            androidx.compose.material3.RadioButton(
-                                selected = (mode == networkMode),
-                                onClick = { onNetworkModeSelected(mode) },
-                            )
-                            Text(
-                                text = mode.name,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.padding(start = 8.dp),
-                            )
-                        }
+            ExpandableSelectionControl(
+                title = "Network Mode",
+                currentSelection = networkMode,
+                options = com.chriscartland.batterybutler.domain.model.NetworkMode.entries,
+                onOptionSelected = onNetworkModeSelected,
+                optionLabel = { mode ->
+                    when (mode) {
+                        com.chriscartland.batterybutler.domain.model.NetworkMode.MOCK -> composeStringResource(Res.string.network_mode_mock)
+                        com.chriscartland.batterybutler.domain.model.NetworkMode.GRPC_LOCAL -> composeStringResource(
+                            Res.string.network_mode_grpc_local,
+                        )
                     }
-                }
-            }
+                },
+            )
 
             // Export Data Card
             Card(
