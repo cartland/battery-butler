@@ -7,11 +7,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
@@ -29,6 +25,7 @@ import com.chriscartland.batterybutler.composeapp.feature.main.DevicesScreenRoot
 import com.chriscartland.batterybutler.composeapp.feature.main.HistoryScreenRoot
 import com.chriscartland.batterybutler.composeapp.feature.main.TypesScreenRoot
 import com.chriscartland.batterybutler.composeapp.feature.settings.SettingsScreen
+import com.chriscartland.batterybutler.composeapp.util.ScreenListSaver
 import com.chriscartland.batterybutler.composeresources.LocalAppStrings
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationcore.util.FileSaver
@@ -37,8 +34,6 @@ import com.chriscartland.batterybutler.presentationcore.util.LocalShareHandler
 import com.chriscartland.batterybutler.presentationcore.util.ShareHandler
 import com.chriscartland.batterybutler.presentationfeature.main.MainTab
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 
 // Preview removed as we can't easily preview with DI and Interfaces
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,25 +49,9 @@ fun App(
             LocalFileSaver provides fileSaver,
             LocalAppStrings provides ComposeAppStrings(),
         ) {
-            val backStackSaver = listSaver<SnapshotStateList<Any>, String>(
-                save = { stateList ->
-                    val screens = stateList.filterIsInstance<Screen>()
-                    listOf(Json.encodeToString(screens))
-                },
-                restore = { restoredList ->
-                    try {
-                        val jsonString = restoredList.first()
-                        val list: List<Screen> = Json.decodeFromString(jsonString)
-                        val snapshotList = mutableStateListOf<Any>()
-                        snapshotList.addAll(list)
-                        snapshotList
-                    } catch (e: Exception) {
-                        mutableStateListOf(Screen.Devices)
-                    }
-                },
-            )
+// Replaced by ScreenListSaver in NavigationSavers.kt
 
-            val backStack = rememberSaveable(saver = backStackSaver) {
+            val backStack = rememberSaveable(saver = ScreenListSaver) {
                 mutableStateListOf<Any>(Screen.Devices)
             }
 

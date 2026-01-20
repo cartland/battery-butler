@@ -6,6 +6,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chriscartland.batterybutler.presentationcore.util.LocalFileSaver
+import com.chriscartland.batterybutler.presentationcore.util.generateFileTimestamp
 import com.chriscartland.batterybutler.presentationfeature.main.DevicesScreen
 import com.chriscartland.batterybutler.presentationfeature.main.HistoryScreen
 import com.chriscartland.batterybutler.presentationfeature.main.MainTab
@@ -33,13 +34,7 @@ fun DevicesScreenRoot(
     LaunchedEffect(coreUiState.exportData) {
         coreUiState.exportData?.let { data ->
             val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
-            val timestamp = "${now.year}_${now.monthNumber.toString().padStart(
-                2,
-                '0',
-            )}_${now.dayOfMonth.toString().padStart(
-                2,
-                '0',
-            )}_${now.hour.toString().padStart(2, '0')}_${now.minute.toString().padStart(2, '0')}_${now.second.toString().padStart(2, '0')}"
+            val timestamp = generateFileTimestamp(now)
             val filename = "Battery_Butler_Backup_$timestamp.json"
             fileSaver.saveFile(filename, data.encodeToByteArray())
             viewModel.onExportDataConsumed()
