@@ -9,6 +9,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.navigation3.ui.NavDisplay
 import com.chriscartland.batterybutler.composeapp.di.AppComponent
 import com.chriscartland.batterybutler.composeapp.feature.addbatteryevent.AddBatteryEventScreen
@@ -205,6 +210,17 @@ fun App(
                             viewModel = viewModel { component.settingsViewModel },
                             onBack = { backStack.removeLastOrNull() },
                         )
+                    }
+                },
+                transitionSpec = {
+                    val tabs = listOf(Screen.Devices, Screen.Types, Screen.History)
+                    val initialKey = initialState.key
+                    val targetKey = targetState.key
+                    if (initialKey in tabs && targetKey in tabs) {
+                        fadeIn() togetherWith fadeOut()
+                    } else {
+                        // Default slide transition
+                        slideInHorizontally { it } togetherWith slideOutHorizontally { -it }
                     }
                 },
             )
