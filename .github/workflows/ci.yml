@@ -138,6 +138,7 @@ jobs:
           name: battery-butler-desktop-dist-${{ matrix.os }}
           path: compose-app/build/compose/binaries
           retention-days: 90
+          compression-level: 0
 
   build_server:
 
@@ -151,5 +152,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: battery-butler-server-jar
-          path: server/build/libs/
+          path: server/app/build/libs/
           retention-days: 90

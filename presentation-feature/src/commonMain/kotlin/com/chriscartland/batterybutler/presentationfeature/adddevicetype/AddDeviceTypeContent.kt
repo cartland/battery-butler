@@ -39,6 +39,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -69,10 +70,10 @@ fun AddDeviceTypeContent(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var name by remember { mutableStateOf("") }
-    var selectedIcon by remember { mutableStateOf<String?>("videogame_asset") }
-    var batteryType by remember { mutableStateOf("AA") }
-    var batteryQuantity by remember { mutableStateOf(1) }
+    var name by rememberSaveable { mutableStateOf("") }
+    var selectedIcon by rememberSaveable { mutableStateOf<String?>("videogame_asset") }
+    var batteryType by rememberSaveable { mutableStateOf("AA") }
+    var batteryQuantity by rememberSaveable { mutableStateOf(1) }
     val focusManager = LocalFocusManager.current
 
     androidx.compose.runtime.LaunchedEffect(suggestedIcon) {
@@ -144,7 +145,7 @@ fun AddDeviceTypeContent(
                     modifier = Modifier.padding(bottom = 8.dp),
                 )
 
-                var aiInput by remember { mutableStateOf("") }
+                var aiInput by rememberSaveable { mutableStateOf("") }
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,

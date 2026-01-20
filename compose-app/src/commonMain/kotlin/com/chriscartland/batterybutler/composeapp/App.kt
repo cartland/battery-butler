@@ -152,7 +152,7 @@ fun App(
 
                     entry<Screen.DeviceDetail> {
                         val args = it
-                        val viewModel = viewModel(key = args.deviceId) {
+                        val viewModel = viewModel(key = "DeviceDetail-${args.deviceId}") {
                             component.deviceDetailViewModelFactory.create(args.deviceId)
                         }
                         DeviceDetailScreen(
@@ -165,7 +165,7 @@ fun App(
 
                     entry<Screen.EventDetail> {
                         val args = it
-                        val viewModel = viewModel(key = args.eventId) {
+                        val viewModel = viewModel(key = "EventDetail-${args.eventId}") {
                             component.eventDetailViewModelFactory.create(args.eventId)
                         }
                         EventDetailScreen(
@@ -176,7 +176,7 @@ fun App(
 
                     entry<Screen.EditDevice> {
                         val args = it
-                        val viewModel = viewModel(key = args.deviceId) {
+                        val viewModel = viewModel(key = "EditDevice-${args.deviceId}") {
                             component.editDeviceViewModelFactory.create(args.deviceId)
                         }
                         EditDeviceScreen(
@@ -193,7 +193,7 @@ fun App(
                     }
                     entry<Screen.EditDeviceType> {
                         val args = it
-                        val viewModel = viewModel(key = args.typeId) {
+                        val viewModel = viewModel(key = "EditDeviceType-${args.typeId}") {
                             component.editDeviceTypeViewModelFactory.create(args.typeId)
                         }
                         EditDeviceTypeScreen(

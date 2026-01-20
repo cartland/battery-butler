@@ -4,7 +4,9 @@ import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -19,23 +21,24 @@ class ExportDataUseCase(
         ignoreUnknownKeys = true
     }
 
-    suspend operator fun invoke(): String {
-        val devices = deviceRepository.getAllDevices().first()
-        val types = deviceRepository.getAllDeviceTypes().first()
-        val events = deviceRepository.getAllEvents().first()
+    suspend operator fun invoke(): String =
+        withContext(Dispatchers.Default) {
+            val devices = deviceRepository.getAllDevices().first()
+            val types = deviceRepository.getAllDeviceTypes().first()
+            val events = deviceRepository.getAllEvents().first()
 
-        val exportData = ExportData(
-            devices = devices.map { it.toDto() },
-            deviceTypes = types.map { it.toDto() },
-            events = events.map { it.toDto() },
-        )
+            val exportData = ExportData(
+                devices = devices.map { it.toDto() },
+                deviceTypes = types.map { it.toDto() },
+                events = events.map { it.toDto() },
+            )
 
-        val container = ExportContainer(
-            data = exportData,
-        )
+            val container = ExportContainer(
+                data = exportData,
+            )
 
-        return json.encodeToString(container)
-    }
+            json.encodeToString(container)
+        }
 
     @Serializable
     private data class ExportContainer(

@@ -48,7 +48,4 @@ class AddDeviceViewModelWrapper: ObservableObject {
         viewModel.addDevice(input: input)
     }
     
-    func seedDeviceTypes() {
-        viewModel.seedDeviceTypes()
-    }
 }
