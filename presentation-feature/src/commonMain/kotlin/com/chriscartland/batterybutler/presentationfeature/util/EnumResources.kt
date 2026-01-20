@@ -1,15 +1,15 @@
 package com.chriscartland.batterybutler.presentationfeature.util
 
-import batterybutler.compose_resources.generated.resources.Res
-import batterybutler.compose_resources.generated.resources.group_battery_type
-import batterybutler.compose_resources.generated.resources.group_location
-import batterybutler.compose_resources.generated.resources.group_none
-import batterybutler.compose_resources.generated.resources.group_type
-import batterybutler.compose_resources.generated.resources.sort_battery_age
-import batterybutler.compose_resources.generated.resources.sort_battery_type
-import batterybutler.compose_resources.generated.resources.sort_location
-import batterybutler.compose_resources.generated.resources.sort_name
-import batterybutler.compose_resources.generated.resources.sort_type
+import com.chriscartland.batterybutler.composeresources.generated.resources.Res
+import com.chriscartland.batterybutler.composeresources.generated.resources.group_battery_type
+import com.chriscartland.batterybutler.composeresources.generated.resources.group_location
+import com.chriscartland.batterybutler.composeresources.generated.resources.group_none
+import com.chriscartland.batterybutler.composeresources.generated.resources.group_type
+import com.chriscartland.batterybutler.composeresources.generated.resources.sort_battery_age
+import com.chriscartland.batterybutler.composeresources.generated.resources.sort_battery_type
+import com.chriscartland.batterybutler.composeresources.generated.resources.sort_location
+import com.chriscartland.batterybutler.composeresources.generated.resources.sort_name
+import com.chriscartland.batterybutler.composeresources.generated.resources.sort_type
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeGroupOption
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeSortOption
 import com.chriscartland.batterybutler.presentationmodel.home.GroupOption

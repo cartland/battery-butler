@@ -21,10 +21,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
-import batterybutler.compose_resources.generated.resources.Res
-import batterybutler.compose_resources.generated.resources.tab_devices
-import batterybutler.compose_resources.generated.resources.tab_history
-import batterybutler.compose_resources.generated.resources.tab_types
+import com.chriscartland.batterybutler.composeresources.generated.resources.Res
+import com.chriscartland.batterybutler.composeresources.generated.resources.tab_devices
+import com.chriscartland.batterybutler.composeresources.generated.resources.tab_history
+import com.chriscartland.batterybutler.composeresources.generated.resources.tab_types
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType

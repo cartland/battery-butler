@@ -49,5 +49,5 @@ android {
 
 compose.resources {
     publicResClass = true
-    packageOfResClass = "batterybutler.compose_resources.generated.resources"
+    packageOfResClass = "com.chriscartland.batterybutler.composeresources.generated.resources"
 }
