@@ -43,7 +43,7 @@ struct AddDeviceScreen: View {
                 }
             }
             .onAppear {
-                wrapper.seedDeviceTypes()
+                // No-op or equivalent if needed, but seedDeviceTypes is removed.
             }
         }
     }
