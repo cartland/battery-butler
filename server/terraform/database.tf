@@ -49,8 +49,13 @@ resource "aws_db_instance" "main" {
   vpc_security_group_ids = [aws_security_group.db.id]
 }
 
+# Generate random suffix for secret name to prevent collision with soft-deleted secrets
+resource "random_id" "secret_suffix" {
+  byte_length = 4
+}
+
 resource "aws_secretsmanager_secret" "db_credentials" {
-  name = "battery-butler-db-credentials"
+  name = "battery-butler-db-credentials-${random_id.secret_suffix.hex}"
 }
 
 resource "aws_secretsmanager_secret_version" "db_credentials" {
