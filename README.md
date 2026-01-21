@@ -47,7 +47,7 @@ This project uses Gradle for build and test orchestration.
 *   Run the Gradle task: `./gradlew :compose-app:run`
 
 ### iOS
-*   Open `iosApp/iosApp.xcodeproj` in **Xcode**.
+*   Open `ios-app-swift-ui/iosAppSwiftUI.xcodeproj` in **Xcode**.
 *   Ensure you have built the KMP framework at least once (`./gradlew :compose-app:embedAndSignAppleFrameworkForXcode`).
 *   Run on an iPhone Simulator or Device.
 

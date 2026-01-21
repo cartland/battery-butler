@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.kotlinJvm)
     alias(libs.plugins.ktor)
     alias(libs.plugins.protobuf)
+    alias(libs.plugins.jib)
     application
 }
 
@@ -69,5 +70,19 @@ protobuf {
                 create("kotlin")
             }
         }
+    }
+}
+
+jib {
+    from {
+        image = "eclipse-temurin:21-jre-alpine"
+    }
+    to {
+        image = "vince/battery-butler-server"
+    }
+    container {
+        creationTime = "USE_CURRENT_TIMESTAMP"
+        jvmFlags = listOf("-Djava.security.egd=file:/dev/./urandom")
+        ports = listOf("50051")
     }
 }

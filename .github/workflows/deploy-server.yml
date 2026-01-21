@@ -1,0 +1,56 @@
+name: Deploy Server
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'server/**'
+      - 'gradle/**'
+      - 'build.gradle.kts'
+      - '.github/workflows/deploy-server.yml'
+
+jobs:
+  deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # Required for configuring AWS credentials
+      contents: read
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - name: Terraform Init
+      working-directory: server/terraform
+      run: terraform init
+
+    - name: Terraform Apply
+      working-directory: server/terraform
+      run: terraform apply -auto-approve
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+      
+    - name: Build and Push Container (Jib)
+      run: ./gradlew :server:app:jib
+      
+    - name: Force ECS Deployment
+      run: |
+        aws ecs update-service --cluster battery-butler-cluster --service battery-butler-service --force-new-deployment
