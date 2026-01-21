@@ -19,7 +19,7 @@ val ScreenListSaver = listSaver<SnapshotStateList<Any>, String>(
             val snapshotList = mutableStateListOf<Any>()
             snapshotList.addAll(list)
             snapshotList
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             mutableStateListOf(Screen.Devices)
         }
     },

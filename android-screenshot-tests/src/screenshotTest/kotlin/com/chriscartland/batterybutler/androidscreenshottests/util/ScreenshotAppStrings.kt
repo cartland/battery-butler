@@ -33,7 +33,7 @@ class ScreenshotAppStrings(
         return if (args.isNotEmpty()) {
             try {
                 template.format(*args)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 template
             }
         } else {

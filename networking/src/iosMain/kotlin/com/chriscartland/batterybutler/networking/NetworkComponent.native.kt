@@ -168,8 +168,8 @@ class IosGrpcStreamingCall<S : Any, R : Any>(
                             // readFully suspends until all bytes read or EOF
                             try {
                                 channel.readFully(headerBytes)
-                            } catch (e: Exception) {
-                                if (e is CancellationException) throw e
+                            } catch (_e: Exception) {
+                                if (_e is CancellationException) throw _e
                                 // If EOF happens at start of message, it's normal closure
                                 break
                             }
@@ -188,7 +188,7 @@ class IosGrpcStreamingCall<S : Any, R : Any>(
                                 val msg = method.responseAdapter.decode(emptyBuffer)
                                 receiveChannel.send(msg)
                             }
-                        } catch (e: io.ktor.utils.io.errors.IOException) {
+                        } catch (_: io.ktor.utils.io.errors.IOException) {
                             break
                         } catch (e: Exception) {
                             if (e is CancellationException) throw e

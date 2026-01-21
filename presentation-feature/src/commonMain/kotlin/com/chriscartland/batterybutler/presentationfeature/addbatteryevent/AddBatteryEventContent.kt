@@ -200,7 +200,7 @@ fun AddBatteryEventContent(
                                 .parse(dateInput)
                                 .atStartOfDayIn(TimeZone.currentSystemDefault())
                                 .let { Instant.fromEpochMilliseconds(it.toEpochMilliseconds()) }
-                        } catch (e: Exception) {
+                        } catch (_: Exception) {
                             Clock.System.now() // Fallback or handle error
                         }
 

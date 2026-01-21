@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
-import kotlin.coroutines.cancellation.CancellationException
 
 @Inject
 class DynamicDatabaseProvider(
@@ -34,7 +33,7 @@ class DynamicDatabaseProvider(
                     try {
                         oldDb.close()
                     } catch (e: Exception) {
-                        if (e is CancellationException) throw e
+                        // if (e is CancellationException) throw e
                         e.printStackTrace()
                     }
                     val newDb = factory.createDatabase(targetName)

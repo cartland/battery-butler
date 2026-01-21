@@ -35,7 +35,7 @@ class AndroidFileSaver(
                 "${activity.packageName}.fileprovider",
                 file,
             )
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             null
         }
 
