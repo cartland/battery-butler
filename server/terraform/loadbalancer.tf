@@ -40,7 +40,7 @@ resource "aws_lb_target_group" "grpc" {
   name        = "battery-butler-grpc-tg"
   port        = 50051
   protocol    = "HTTP"
-  protocol_version = "GRPC"
+  protocol_version = "HTTP2"
   target_type = "ip"
   vpc_id      = aws_vpc.main.id
 
