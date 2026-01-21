@@ -31,17 +31,7 @@ graph TD
         Networking[":networking"]
     end
 
-    subgraph "Screenshot Tests"
-        AndroidScreenshotTests[":android-screenshot-tests"]
-    end
-
     %% Dependencies
-    AndroidScreenshotTests --> ComposeResources
-    AndroidScreenshotTests --> Domain
-    AndroidScreenshotTests --> PresentationCore
-    AndroidScreenshotTests --> PresentationFeature
-    AndroidScreenshotTests --> PresentationModel
-
     ComposeApp --> ComposeResources
     ComposeApp --> Data
     ComposeApp --> Networking
