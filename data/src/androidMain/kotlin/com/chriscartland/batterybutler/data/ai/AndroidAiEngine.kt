@@ -35,7 +35,7 @@ class AndroidAiEngine(
     // Use API Key from local.properties via BuildConfig
     // Note: ensure BuildConfig is generated for :data module and includes GEMINI_API_KEY if needed.
     // If BuildConfig is only in :composeApp, we might need to pass it in or configure :data to have it.
-    // Assuming :data has it or we will fix it.
+
     private val apiKey = BuildConfig.GEMINI_API_KEY
 
     // Define Tools without execution blocks (manual execution)

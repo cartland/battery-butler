@@ -13,7 +13,7 @@ class SyncService(
     private val repository: ServerDeviceRepository,
 ) : SyncServiceGrpcKt.SyncServiceCoroutineImplBase() {
     init {
-        // Kept for debug_flow.sh verification
+        // Kept for run-e2e-debug-flow.sh verification
         // AppLogger.d("BatteryButlerDebug", "SyncService Created")
     }
 

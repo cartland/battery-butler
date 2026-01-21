@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -ex
 
 # Links the Debug Framework for iOS X64 (Simulator)
 # Matches 'iOS Build (Compose UI)' Run Configuration

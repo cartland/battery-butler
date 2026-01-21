@@ -3,7 +3,7 @@ description: Validate changes locally with CI parity
 ---
 
 1. Run the validation script defined in the scripts directory
-   `bazel run //scripts:validate`
+   `./scripts/validate.sh`
 
 2. If any step fails, check the specific output section (e.g. "iOS Checks").
 

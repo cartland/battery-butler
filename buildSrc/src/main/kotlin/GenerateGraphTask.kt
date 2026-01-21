@@ -104,7 +104,7 @@ abstract class GenerateGraphTask : DefaultTask() {
                      ""
                 },
                 "-p",
-                project.rootProject.file("scripts/puppeteer-config.json").absolutePath,
+                project.rootProject.file(".config/puppeteer-config.json").absolutePath,
             )
         }
         println("Generated SVG at: ${outputSvg.absolutePath}")

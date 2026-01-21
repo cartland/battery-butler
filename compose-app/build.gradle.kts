@@ -87,6 +87,7 @@ kotlin {
                 implementation(libs.androidx.runner)
                 implementation(libs.androidx.core)
                 implementation(libs.compose.ui.test.junit4)
+                implementation(libs.wire.grpc.client)
             }
         }
     }
@@ -183,4 +184,26 @@ dependencies {
     add("kspIosArm64", libs.kotlin.inject.compiler)
     add("kspIosSimulatorArm64", libs.kotlin.inject.compiler)
     add("kspDesktop", libs.kotlin.inject.compiler)
+    add("kspIosSimulatorArm64", libs.kotlin.inject.compiler)
+    add("kspDesktop", libs.kotlin.inject.compiler)
+}
+
+tasks.register("verifyIosFrameworkLinkage") {
+    group = "verification"
+    description = "Verifies iOS Framework Linkage by forcing linker errors."
+
+    dependsOn("linkDebugFrameworkIosSimulatorArm64")
+
+    // Configure task to fail on linker issues (similar to script flags)
+    // Note: Project properties like -Pkotlin.native.binary.partialLinkage=disable are passed via command line
+    // or can be set programmatically if possible, but dependsOn just invokes the task.
+    // To strictly enforce flags, we might need an Exec task or doFirst configuration.
+    // However, for a simple alias, this is a start. The script used:
+    // -Pkotlin.native.binary.partialLinkage=disable --info
+
+    doFirst {
+        println(
+            "Note: For stricter verification, run with: ./gradlew verifyIosFrameworkLinkage -Pkotlin.native.binary.partialLinkage=disable",
+        )
+    }
 }

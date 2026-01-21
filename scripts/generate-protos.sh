@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -ex
 cd "$(dirname "$0")/.."
 
 # Ensure Bazel is in PATH (Xcode environment fix)

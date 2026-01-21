@@ -1,12 +1,5 @@
-sh_binary(
-    name = "update_screenshots",
-    srcs = ["update-screenshots.sh"],
-)
 
-sh_binary(
-    name = "validate_screenshots",
-    srcs = ["validate-screenshots.sh"],
-)
+
 
 sh_binary(
     name = "validate",

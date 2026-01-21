@@ -30,7 +30,6 @@ abstract class UseCaseComponent {
     abstract val batchAddDevicesUseCase: BatchAddDevicesUseCase
     abstract val deleteDeviceTypeUseCase: DeleteDeviceTypeUseCase
     abstract val deleteDeviceUseCase: DeleteDeviceUseCase
-    // property removed
 
     abstract val exportDataUseCase: ExportDataUseCase
     abstract val getBatteryEventsUseCase: GetBatteryEventsUseCase

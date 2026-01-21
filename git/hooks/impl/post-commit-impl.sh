@@ -25,7 +25,7 @@ update_diagrams() {
     changed_files="$1"
     # Always run because Gradle cache will handle UP-TO-DATE checks efficiently
     echo "Updating diagrams..."
-    ./scripts/update-diagrams.sh
+    ./gradlew generateMermaidGraph
     
     # Check if any diagram files were actually modified by the script
         # specific files: docs/diagrams/*.mmd or docs/diagrams/*.svg

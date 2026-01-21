@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -ex
 
 # 1. Kill potentially conflicting processes
 echo "[DEBUG] Killing old server processes..."

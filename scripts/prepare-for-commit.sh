@@ -1,11 +1,11 @@
 #!/bin/bash
-set -e
+set -ex
 
 echo "--- 1. Spotless Apply ---"
-./scripts/spotless-apply.sh
+./gradlew spotlessApply
 
 echo "--- 2. Update Screenshots ---"
-./scripts/update-screenshots.sh
+./gradlew :android-screenshot-tests:updateDebugScreenshotTest
 
 echo "--- 3. Validate ---"
 ./scripts/validate.sh

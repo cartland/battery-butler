@@ -30,6 +30,13 @@ For a detailed deep-dive into the module structure, dependency graph, and strict
 *   **Date/Time**: `kotlinx-datetime`.
 
 ## 🛠 Building and Running
+This project uses Gradle for build and test orchestration.
+
+### Common Commands
+*   **Format Code**: `./scripts/format.sh` (runs `spotlessApply`)
+*   **Run Tests**: `./gradlew test` (Unit) or `./gradlew pixel5api34Check` (Android Instrumented)
+*   **Debug Flow**: `./scripts/run-e2e-debug-flow.sh` (Starts Server, App, and monitors logs)
+*   **Update Diagram**: `./gradlew generateMermaidGraph`
 
 ### Android
 *   Open the project in **Android Studio**.
@@ -37,12 +44,16 @@ For a detailed deep-dive into the module structure, dependency graph, and strict
 *   Run on an Emulator or connected Device.
 
 ### Desktop (JVM)
-*   Run the Gradle task: `./gradlew :composeApp:run`
+*   Run the Gradle task: `./gradlew :compose-app:run`
 
 ### iOS
 *   Open `iosApp/iosApp.xcodeproj` in **Xcode**.
-*   Ensure you have built the KMP framework at least once (`./gradlew :composeApp:embedAndSignAppleFrameworkForXcode`).
+*   Ensure you have built the KMP framework at least once (`./gradlew :compose-app:embedAndSignAppleFrameworkForXcode`).
 *   Run on an iPhone Simulator or Device.
+
+### Server (gRPC)
+*   Run locally: `./gradlew :server:app:run`
+*   The server listens on port `50051` by default.
 
 ## 🔑 AI Configuration (Optional)
 
@@ -56,4 +67,5 @@ To enable the AI features (Gemini), you need an API Key.
 ## 🤝 Contributing
 
 This project uses `Spotless` for code formatting.
-Run `./gradlew spotlessApply` before committing to ensure your code follows the style guidelines.
+Run `./scripts/format.sh` before committing to ensure your code follows the style guidelines.
+Use `./scripts/prepare-for-commit.sh` to validate your changes before pushing.

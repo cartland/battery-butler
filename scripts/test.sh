@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -ex
 if [ -n "$BUILD_WORKSPACE_DIRECTORY" ]; then
   cd "$BUILD_WORKSPACE_DIRECTORY"
 else

@@ -62,3 +62,21 @@ dependencies {
     implementation(project(":presentation-model"))
     implementation(libs.kotlinx.datetime)
 }
+
+tasks.register("cleanReferenceScreenshots") {
+    group = "screenshot"
+    description = "Cleans the reference screenshots directory."
+    doLast {
+        val referenceDir = file("src/screenshotTestDebug/reference")
+        if (referenceDir.exists()) {
+            referenceDir.deleteRecursively()
+            println("Deleted reference screenshots: $referenceDir")
+        }
+    }
+}
+
+tasks.whenTaskAdded {
+    if (name == "updateDebugScreenshotTest") {
+        dependsOn("cleanReferenceScreenshots")
+    }
+}
