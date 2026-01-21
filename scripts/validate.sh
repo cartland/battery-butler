@@ -20,6 +20,9 @@ echo "--- 2. Formatting (Spotless) ---"
 echo "--- 3. Lint ---"
 ./gradlew lint --stacktrace
 
+echo "--- 3b. Detekt ---"
+./gradlew detekt --stacktrace
+
 echo "--- 4. Tests (Unit & Instrumented) ---"
 ./scripts/test.sh
 

@@ -1,0 +1,46 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>CyclomaticComplexMethod:DeviceIconMapper.kt$DeviceIconMapper$fun getIcon(iconName: String?): ImageVector</ID>
+    <ID>FunctionNaming:ButlerCenteredTopAppBar.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun ButlerCenteredTopAppBar( title: String, onBack: (() -&gt; Unit)? = null, navigationIcon: @Composable (() -&gt; Unit)? = null, actions: @Composable RowScope.() -&gt; Unit = {}, modifier: Modifier = Modifier, )</ID>
+    <ID>FunctionNaming:ButlerCenteredTopAppBar.kt$@Preview(showBackground = true) @Composable fun ButlerCenteredTopAppBarPreview()</ID>
+    <ID>FunctionNaming:CompositeControl.kt$@Composable fun CompositeControl( label: String, isActive: Boolean, isAscending: Boolean, onClicked: () -&gt; Unit, onDirectionToggle: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>FunctionNaming:CompositeControl.kt$@Preview(showBackground = true) @Composable fun CompositeControlPreview()</ID>
+    <ID>FunctionNaming:DeviceIconMapper.kt$@Preview(showBackground = true) @Composable fun DeviceIconsPreview()</ID>
+    <ID>FunctionNaming:DeviceListComponents.kt$@Composable fun DeviceTypeIconItem( iconName: String, isSelected: Boolean, onClick: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:DeviceListComponents.kt$@OptIn(kotlin.time.ExperimentalTime::class) @Composable fun DeviceListItem( device: Device, deviceType: DeviceType?, onClick: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>FunctionNaming:DeviceListComponents.kt$@OptIn(kotlin.time.ExperimentalTime::class) @Preview(showBackground = true) @Composable fun DeviceListItemPreview()</ID>
+    <ID>FunctionNaming:DeviceListComponents.kt$@Preview(showBackground = true) @Composable fun DeviceTypeIconItemPreview()</ID>
+    <ID>FunctionNaming:ExpandableSelectionControl.kt$@Composable fun &lt;T&gt; ExpandableSelectionControl( title: String, currentSelection: T, options: List&lt;T&gt;, onOptionSelected: (T) -&gt; Unit, optionLabel: @Composable (T) -&gt; String, modifier: Modifier = Modifier, containerColor: Color = MaterialTheme.colorScheme.surfaceVariant, )</ID>
+    <ID>FunctionNaming:HistoryListItem.kt$@OptIn(kotlin.time.ExperimentalTime::class) @Composable fun HistoryListItem( event: BatteryEvent, deviceName: String, deviceTypeName: String, deviceLocation: String?, modifier: Modifier = Modifier, )</ID>
+    <ID>FunctionNaming:HistoryListItem.kt$@OptIn(kotlin.time.ExperimentalTime::class) @Preview(showBackground = true) @Composable fun HistoryListItemPreview()</ID>
+    <ID>FunctionNaming:Theme.kt$@Composable fun BatteryButlerTheme( darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -&gt; Unit, )</ID>
+    <ID>LongMethod:DeviceListComponents.kt$@OptIn(kotlin.time.ExperimentalTime::class) @Composable fun DeviceListItem( device: Device, deviceType: DeviceType?, onClick: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>LongMethod:ExpandableSelectionControl.kt$@Composable fun &lt;T&gt; ExpandableSelectionControl( title: String, currentSelection: T, options: List&lt;T&gt;, onOptionSelected: (T) -&gt; Unit, optionLabel: @Composable (T) -&gt; String, modifier: Modifier = Modifier, containerColor: Color = MaterialTheme.colorScheme.surfaceVariant, )</ID>
+    <ID>LongMethod:HistoryListItem.kt$@OptIn(kotlin.time.ExperimentalTime::class) @Composable fun HistoryListItem( event: BatteryEvent, deviceName: String, deviceTypeName: String, deviceLocation: String?, modifier: Modifier = Modifier, )</ID>
+    <ID>LongParameterList:CompositeControl.kt$( label: String, isActive: Boolean, isAscending: Boolean, onClicked: () -&gt; Unit, onDirectionToggle: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>LongParameterList:ExpandableSelectionControl.kt$( title: String, currentSelection: T, options: List&lt;T&gt;, onOptionSelected: (T) -&gt; Unit, optionLabel: @Composable (T) -&gt; String, modifier: Modifier = Modifier, containerColor: Color = MaterialTheme.colorScheme.surfaceVariant, )</ID>
+    <ID>MagicNumber:Color.kt$0xFF191C1A</ID>
+    <ID>MagicNumber:Color.kt$0xFF252927</ID>
+    <ID>MagicNumber:Color.kt$0xFF2D2926</ID>
+    <ID>MagicNumber:Color.kt$0xFF537A66</ID>
+    <ID>MagicNumber:Color.kt$0xFF8B7355</ID>
+    <ID>MagicNumber:Color.kt$0xFFBA1A1A</ID>
+    <ID>MagicNumber:Color.kt$0xFFE3E2E6</ID>
+    <ID>MagicNumber:Color.kt$0xFFF7F5EF</ID>
+    <ID>MagicNumber:Color.kt$0xFFFEFCF8</ID>
+    <ID>MagicNumber:ExpandableSelectionControl.kt$180f</ID>
+    <ID>MagicNumber:HistoryListItem.kt$3</ID>
+    <ID>MagicNumber:HistoryListItem.kt$30</ID>
+    <ID>MagicNumber:HistoryListItem.kt$365</ID>
+    <ID>MaxLineLength:AndroidFileSaver.kt$AndroidFileSaver$// Actually, to support "Download", we can use Intent.ACTION_CREATE_DOCUMENT, but that requires activity result handling.</ID>
+    <ID>MaxLineLength:DeviceListComponents.kt$.</ID>
+    <ID>MaxLineLength:DeviceListComponents.kt$tint = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant</ID>
+    <ID>MaxLineLength:Theme.kt$// Depending on design, might want dark text on primary in dark mode, but keeping white for now as Primary is dark-ish blue</ID>
+    <ID>SwallowedException:AndroidFileSaver.kt$AndroidFileSaver$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:AndroidFileSaver.kt$AndroidFileSaver$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:DesktopShareHandler.kt$DesktopShareHandler$e: Exception</ID>
+    <ID>UnusedPrivateProperty:HistoryListItem.kt$val relativeTime = when { daysAgo == 0 -&gt; "Today" daysAgo == 1 -&gt; "Yesterday" daysAgo &lt; 30 -&gt; "$daysAgo days ago" daysAgo &lt; 365 -&gt; { val months = daysAgo / 30 if (months &lt;= 1) "1 month ago" else "$months months ago" } else -&gt; { val years = daysAgo / 365 if (years &lt;= 1) "1 year ago" else "$years years ago" } }</ID>
+  </CurrentIssues>
+</SmellBaseline>

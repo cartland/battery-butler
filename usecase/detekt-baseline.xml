@@ -1,0 +1,24 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>EmptyFunctionBlock:BatchAddDevicesUseCaseTest.kt$FakeDeviceRepository${}</ID>
+    <ID>EmptyFunctionBlock:StructuredPromptTest.kt$StructuredPromptTest.MockRepository${}</ID>
+    <ID>InstanceOfCheckForException:BatchAddBatteryEventsUseCase.kt$BatchAddBatteryEventsUseCase$e is CancellationException</ID>
+    <ID>InstanceOfCheckForException:BatchAddDeviceTypesUseCase.kt$BatchAddDeviceTypesUseCase$e is CancellationException</ID>
+    <ID>InstanceOfCheckForException:BatchAddDevicesUseCase.kt$BatchAddDevicesUseCase$e is CancellationException</ID>
+    <ID>InstanceOfCheckForException:SuggestDeviceIconUseCase.kt$SuggestDeviceIconUseCase$e is CancellationException</ID>
+    <ID>LongMethod:BatchAddBatteryEventsUseCase.kt$BatchAddBatteryEventsUseCase$operator fun invoke(input: String): Flow&lt;AiMessage&gt;</ID>
+    <ID>LongMethod:BatchAddDevicesUseCase.kt$BatchAddDevicesUseCase$operator fun invoke(input: String): Flow&lt;AiMessage&gt;</ID>
+    <ID>MaxLineLength:BatchAddBatteryEventsUseCase.kt$BatchAddBatteryEventsUseCase$else -&gt; "Error: This tool is not supported in this context. Use '${AiToolNames.RECORD_BATTERY_REPLACEMENT}' only."</ID>
+    <ID>MaxLineLength:BatchAddBatteryEventsUseCase.kt$BatchAddBatteryEventsUseCase$val deviceName = args[AiToolParams.DEVICE_NAME] as? String ?: return@ToolHandler "Error: Missing deviceName"</ID>
+    <ID>MaxLineLength:BatchAddDeviceTypesUseCase.kt$BatchAddDeviceTypesUseCase$batteryQuantity</ID>
+    <ID>MaxLineLength:BatchAddDeviceTypesUseCase.kt$BatchAddDeviceTypesUseCase$else -&gt; "Error: This tool is not supported in this context. Use '${AiToolNames.ADD_DEVICE_TYPE}' only."</ID>
+    <ID>MaxLineLength:StructuredPromptTest.kt$StructuredPromptTest$assertTrue(prompt.contains("*** SYSTEM INSTRUCTIONS ***"), "Prompt should contain system instructions header")</ID>
+    <ID>MaxLineLength:StructuredPromptTest.kt$StructuredPromptTest$assertTrue(prompt.contains("Ignore header rows"), "Prompt should contain specific instructions. Actual prompt: $prompt")</ID>
+    <ID>TooGenericExceptionCaught:BatchAddBatteryEventsUseCase.kt$BatchAddBatteryEventsUseCase$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:BatchAddDeviceTypesUseCase.kt$BatchAddDeviceTypesUseCase$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:BatchAddDevicesUseCase.kt$BatchAddDevicesUseCase$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:SuggestDeviceIconUseCase.kt$SuggestDeviceIconUseCase$e: Exception</ID>
+  </CurrentIssues>
+</SmellBaseline>

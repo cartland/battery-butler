@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>FunctionNaming:AddBatteryEventScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun AddBatteryEventScreen( viewModel: AddBatteryEventViewModel, onEventAdded: () -&gt; Unit, onAddDeviceClick: () -&gt; Unit, onBack: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>FunctionNaming:AddDeviceScreen.kt$@Composable fun AddDeviceScreen( viewModel: AddDeviceViewModel, onDeviceAdded: () -&gt; Unit, onManageDeviceTypesClick: () -&gt; Unit, onBack: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>FunctionNaming:AddDeviceTypeScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun AddDeviceTypeScreen( viewModel: AddDeviceTypeViewModel, onDeviceTypeAdded: () -&gt; Unit, onBack: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>FunctionNaming:App.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun App( component: AppComponent, shareHandler: ShareHandler, fileSaver: FileSaver, )</ID>
+    <ID>FunctionNaming:BackHandler.kt$@Composable actual fun BackHandler( enabled: Boolean, onBack: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:BackHandler.kt$@Composable expect fun BackHandler( enabled: Boolean = true, onBack: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:DeviceDetailScreen.kt$@Composable fun DeviceDetailScreen( viewModel: DeviceDetailViewModel, onBack: () -&gt; Unit, onEdit: () -&gt; Unit, onEventClick: (String) -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>FunctionNaming:EditDeviceScreen.kt$@Composable fun EditDeviceScreen( viewModel: EditDeviceViewModel, onBack: () -&gt; Unit, onDelete: () -&gt; Unit, onManageDeviceTypesClick: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>FunctionNaming:EditDeviceTypeScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun EditDeviceTypeScreen( viewModel: EditDeviceTypeViewModel, onBack: () -&gt; Unit, onDelete: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>FunctionNaming:EventDetailScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun EventDetailScreen( viewModel: EventDetailViewModel, onBack: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>FunctionNaming:MainTabsScreens.kt$@Composable fun DevicesScreenRoot( viewModel: HomeViewModel, onTabSelected: (MainTab) -&gt; Unit, onSettingsClick: () -&gt; Unit, onAddDeviceClick: () -&gt; Unit, onDeviceClick: (String) -&gt; Unit, )</ID>
+    <ID>FunctionNaming:MainTabsScreens.kt$@Composable fun HistoryScreenRoot( viewModel: HistoryListViewModel, onTabSelected: (MainTab) -&gt; Unit, onSettingsClick: () -&gt; Unit, onAddEventClick: () -&gt; Unit, onEventClick: (String, String) -&gt; Unit, )</ID>
+    <ID>FunctionNaming:MainTabsScreens.kt$@Composable fun TypesScreenRoot( viewModel: DeviceTypeListViewModel, onTabSelected: (MainTab) -&gt; Unit, onSettingsClick: () -&gt; Unit, onAddTypeClick: () -&gt; Unit, onEditType: (String) -&gt; Unit, )</ID>
+    <ID>FunctionNaming:MainViewController.kt$@Suppress("ktlint:standard:function-naming") fun MainViewController()</ID>
+    <ID>FunctionNaming:SettingsScreen.kt$@Composable fun SettingsScreen( viewModel: SettingsViewModel, onBack: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>LongMethod:App.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun App( component: AppComponent, shareHandler: ShareHandler, fileSaver: FileSaver, )</ID>
+    <ID>MaxLineLength:AppComponent.kt$AppComponent$override</ID>
+    <ID>SwallowedException:NavigationSavers.kt$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:NavigationSavers.kt$e: Exception</ID>
+  </CurrentIssues>
+</SmellBaseline>

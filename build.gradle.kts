@@ -12,6 +12,7 @@ plugins {
     alias(libs.plugins.spotless) apply false
     alias(libs.plugins.androidKotlinMultiplatformLibrary) apply false
     alias(libs.plugins.kotlinSerialization) apply false
+    alias(libs.plugins.detekt) apply false
 }
 
 allprojects {
@@ -28,6 +29,13 @@ allprojects {
                 target("*.gradle.kts", "settings.gradle.kts", "buildSrc/**/*.kts")
             }
             ktlint()
+        }
+        apply(plugin = "io.gitlab.arturbosch.detekt")
+        configure<io.gitlab.arturbosch.detekt.extensions.DetektExtension> {
+            config.setFrom(files("$rootDir/detekt.yml"))
+            buildUponDefaultConfig = true
+            // KMP source compatibility
+            source.setFrom(files("src"))
         }
     }
 }

@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>LongMethod:DemoData.kt$DemoData$fun getDefaultDeviceTypes(existingTypes: Map&lt;String, DeviceType&gt; = emptyMap()): List&lt;DeviceType&gt;</ID>
+    <ID>LongMethod:DemoData.kt$DemoData$fun getDefaultEvents(devices: List&lt;Device&gt;): List&lt;BatteryEvent&gt;</ID>
+    <ID>MagicNumber:DemoData.kt$DemoData$1672531200000</ID>
+    <ID>MagicNumber:DemoData.kt$DemoData$1704067200000</ID>
+    <ID>MagicNumber:DemoData.kt$DemoData$1718409600000</ID>
+    <ID>MagicNumber:DemoData.kt$DemoData$1736467200000</ID>
+    <ID>MagicNumber:DemoData.kt$DemoData$1750032000000</ID>
+    <ID>MagicNumber:DemoData.kt$DemoData$1763683200000</ID>
+    <ID>MagicNumber:DemoData.kt$DemoData$1767225600000</ID>
+    <ID>ReturnCount:DemoData.kt$DemoData$fun getDefaultDevices(deviceTypes: List&lt;DeviceType&gt;): List&lt;Device&gt;</ID>
+    <ID>UnusedPrivateProperty:DeviceIconsTest.kt$DeviceIconsTest$val commonIcons = listOf("smartphone", "laptop", "battery_charging_full")</ID>
+  </CurrentIssues>
+</SmellBaseline>
