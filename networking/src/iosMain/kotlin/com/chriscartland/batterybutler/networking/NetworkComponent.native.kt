@@ -29,9 +29,7 @@ import okio.IOException
 import kotlin.coroutines.cancellation.CancellationException
 
 actual class NetworkComponent {
-    actual val grpcClient: GrpcClient by lazy {
-        IosGrpcClient()
-    }
+    actual fun createGrpcClient(): GrpcClient = IosGrpcClient()
 }
 
 class IosGrpcClient : GrpcClient() {

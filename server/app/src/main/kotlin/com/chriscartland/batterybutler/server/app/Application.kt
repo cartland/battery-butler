@@ -1,5 +1,6 @@
 package com.chriscartland.batterybutler.server.app
 
+import com.chriscartland.batterybutler.domain.AppLogger
 import com.chriscartland.batterybutler.server.data.repository.InMemoryDeviceRepository
 import io.grpc.Server
 import io.grpc.ServerBuilder
@@ -24,15 +25,15 @@ fun main() {
     )
 }
 
-fun startGrpcServer(): Server {
+fun startGrpcServer(port: Int = 50051): Server {
     val repository = InMemoryDeviceRepository()
     val grpcServer = ServerBuilder
-        .forPort(50051)
+        .forPort(port)
         .addService(BatteryService())
-        .addService(SyncService(repository))
+        .addService(SyncService(repository).also { AppLogger.d("BatteryButlerApp", "SyncService Registered") })
         .build()
     grpcServer.start()
-    println("gRPC server started on port 50051")
+    println("gRPC server started on port $port")
     return grpcServer
 }
 

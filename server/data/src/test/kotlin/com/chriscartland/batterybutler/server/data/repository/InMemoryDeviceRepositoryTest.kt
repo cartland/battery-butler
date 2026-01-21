@@ -31,9 +31,13 @@ class InMemoryDeviceRepositoryTest {
 
             repo.addDevice(device)
 
-            assertEquals(1, updates.size)
-            assertTrue(updates[0].isFullSnapshot)
-            assertEquals(1, updates[0].devices.size)
-            assertEquals("Test Device", updates[0].devices[0].name)
+            // Expect 2 updates: 1. Initial Snapshot (DemoData), 2. New Snapshot (DemoData + New Device)
+            assertEquals(2, updates.size)
+            assertTrue(updates[1].isFullSnapshot)
+
+            // Check that our device is in the list
+            val foundDevice = updates[1].devices.find { it.id == "d1" }
+            assertTrue(foundDevice != null)
+            assertEquals("Test Device", foundDevice.name)
         }
 }

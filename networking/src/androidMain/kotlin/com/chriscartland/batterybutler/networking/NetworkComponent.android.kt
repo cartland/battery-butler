@@ -7,7 +7,7 @@ import okhttp3.OkHttpClient
 actual class NetworkComponent(
     private val context: Context,
 ) {
-    actual val grpcClient: GrpcClient by lazy {
+    actual fun createGrpcClient(): GrpcClient =
         GrpcClient
             .Builder()
             .client(
@@ -15,7 +15,10 @@ actual class NetworkComponent(
                     .Builder()
                     .protocols(listOf(okhttp3.Protocol.H2_PRIOR_KNOWLEDGE))
                     .build(),
-            ).baseUrl("http://10.0.2.2:50051")
+            ).baseUrl(LOCAL_GRPC_ADDRESS)
             .build()
+
+    companion object {
+        private const val LOCAL_GRPC_ADDRESS = "http://10.0.2.2:50051"
     }
 }

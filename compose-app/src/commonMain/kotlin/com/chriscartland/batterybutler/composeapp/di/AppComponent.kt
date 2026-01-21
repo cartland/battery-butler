@@ -2,10 +2,17 @@ package com.chriscartland.batterybutler.composeapp.di
 
 import com.chriscartland.batterybutler.data.di.DataComponent
 import com.chriscartland.batterybutler.data.di.DatabaseFactory
+import com.chriscartland.batterybutler.data.repository.InMemoryNetworkModeRepository
 import com.chriscartland.batterybutler.data.repository.RoomDeviceRepository
 import com.chriscartland.batterybutler.data.room.AppDatabase
 import com.chriscartland.batterybutler.domain.ai.AiEngine
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
+import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
+import com.chriscartland.batterybutler.domain.repository.RemoteDataSource
+import com.chriscartland.batterybutler.networking.DelegatingGrpcClient
+import com.chriscartland.batterybutler.networking.DelegatingRemoteDataSource
+import com.chriscartland.batterybutler.networking.NetworkComponent
+import com.chriscartland.batterybutler.usecase.SetNetworkModeUseCase
 import com.chriscartland.batterybutler.usecase.di.UseCaseComponent
 import com.chriscartland.batterybutler.viewmodel.addbatteryevent.AddBatteryEventViewModel
 import com.chriscartland.batterybutler.viewmodel.adddevice.AddDeviceViewModel
@@ -35,7 +42,7 @@ abstract class AppComponent(
     // We pass this through to DataComponent
     override val databaseFactory: DatabaseFactory,
     @get:Provides val aiEngine: AiEngine,
-    override val grpcClient: GrpcClient,
+    override val networkComponent: NetworkComponent,
 ) : UseCaseComponent(),
     DataComponent {
     abstract val homeViewModel: HomeViewModel
@@ -50,10 +57,22 @@ abstract class AppComponent(
     abstract val editDeviceTypeViewModelFactory: EditDeviceTypeViewModelFactory
     abstract val deviceRepository: DeviceRepository
     abstract val settingsViewModel: SettingsViewModel
+    abstract val networkModeRepository: NetworkModeRepository
+    abstract val setNetworkModeUseCase: SetNetworkModeUseCase
 
     @Provides
     @Singleton
     override fun provideAppDatabase(): AppDatabase = super.provideAppDatabase()
+
+    @Provides
+    @Singleton
+    override fun provideNetworkModeRepository(repo: InMemoryNetworkModeRepository): NetworkModeRepository =
+        super.provideNetworkModeRepository(repo)
+
+    @Provides
+    @Singleton
+    override fun provideRemoteDataSource(dataSource: DelegatingRemoteDataSource): RemoteDataSource =
+        super.provideRemoteDataSource(dataSource)
 
     @Provides
     @Singleton
@@ -67,5 +86,18 @@ abstract class AppComponent(
     fun provideDatabaseFactory(): DatabaseFactory = databaseFactory
 
     @Provides
-    fun provideGrpcClient(): GrpcClient = grpcClient
+    @Singleton
+    fun provideDelegatingGrpcClient(
+        networkModeRepository: NetworkModeRepository,
+        scope: CoroutineScope,
+    ): DelegatingGrpcClient =
+        DelegatingGrpcClient(
+            factory = networkComponent::createGrpcClient,
+            networkModeRepository = networkModeRepository,
+            scope = scope,
+        )
+
+    @Provides
+    @Singleton
+    fun provideGrpcClient(impl: DelegatingGrpcClient): GrpcClient = impl
 }

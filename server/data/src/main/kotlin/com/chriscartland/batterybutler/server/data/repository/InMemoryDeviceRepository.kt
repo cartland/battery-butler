@@ -1,22 +1,48 @@
 package com.chriscartland.batterybutler.server.data.repository
 
+import com.chriscartland.batterybutler.domain.demo.DemoData
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
 import com.chriscartland.batterybutler.server.domain.repository.ServerDeviceRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flow
 import java.util.concurrent.ConcurrentHashMap
 
+@OptIn(kotlin.time.ExperimentalTime::class)
 class InMemoryDeviceRepository : ServerDeviceRepository {
-    private val devices = ConcurrentHashMap<String, Device>()
-    private val deviceTypes = ConcurrentHashMap<String, DeviceType>()
-    private val events = ConcurrentHashMap<String, BatteryEvent>()
+    private val deviceTypes: ConcurrentHashMap<String, DeviceType>
+    private val devices: ConcurrentHashMap<String, Device>
+    private val events: ConcurrentHashMap<String, BatteryEvent>
 
-    private val updates = MutableSharedFlow<RemoteUpdate>(replay = 0)
+    private val updates: MutableStateFlow<RemoteUpdate>
+
+    init {
+        println("InMemoryDeviceRepository: Initializing...")
+        // Initialize with deterministic DemoData
+        val initialDeviceTypes = DemoData.getDefaultDeviceTypes()
+        val initialDevices = DemoData.getDefaultDevices(initialDeviceTypes).map {
+            it.copy(name = "${it.name} [Server]")
+        }
+        val initialEvents = DemoData.getDefaultEvents(initialDevices)
+
+        deviceTypes = ConcurrentHashMap(initialDeviceTypes.associateBy { it.id })
+        devices = ConcurrentHashMap(initialDevices.associateBy { it.id })
+        events = ConcurrentHashMap(initialEvents.associateBy { it.id })
+
+        // Initialize StateFlow with the initial snapshot
+        updates = MutableStateFlow(
+            RemoteUpdate(
+                isFullSnapshot = true,
+                deviceTypes = initialDeviceTypes,
+                devices = initialDevices,
+                events = initialEvents,
+            ),
+        )
+    }
 
     override fun getAllDevices(): Flow<List<Device>> = flow { emit(devices.values.toList()) }
 
@@ -64,7 +90,7 @@ class InMemoryDeviceRepository : ServerDeviceRepository {
         broadcastUpdate()
     }
 
-    override fun getUpdates(): Flow<RemoteUpdate> = updates.asSharedFlow()
+    override fun getUpdates(): Flow<RemoteUpdate> = updates.asStateFlow()
 
     private suspend fun broadcastUpdate() {
         // MVP: Send full snapshot on every update

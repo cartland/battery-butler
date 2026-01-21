@@ -8,6 +8,6 @@ import com.chriscartland.batterybutler.networking.NetworkComponent
 actual object IosComponentHelper {
     actual fun create(databaseFactory: DatabaseFactory): AppComponent {
         val networkComponent = NetworkComponent()
-        return AppComponent::class.create(databaseFactory, NoOpAiEngine, networkComponent.grpcClient)
+        return AppComponent::class.create(databaseFactory, NoOpAiEngine, networkComponent)
     }
 }

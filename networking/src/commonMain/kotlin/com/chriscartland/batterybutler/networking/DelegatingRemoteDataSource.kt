@@ -3,11 +3,13 @@ package com.chriscartland.batterybutler.networking
 import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.repository.RemoteDataSource
 import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
+import com.squareup.wire.GrpcClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import me.tatarka.inject.annotations.Inject
@@ -16,6 +18,7 @@ import me.tatarka.inject.annotations.Inject
 class DelegatingRemoteDataSource(
     private val mockDataSource: MockRemoteDataSource,
     private val grpcDataSource: GrpcSyncDataSource,
+    private val delegatingGrpcClient: DelegatingGrpcClient,
     private val networkMode: Flow<NetworkMode>,
     private val scope: CoroutineScope,
 ) : RemoteDataSource {
@@ -24,7 +27,12 @@ class DelegatingRemoteDataSource(
         networkMode.flatMapLatest { mode ->
             when (mode) {
                 NetworkMode.MOCK -> mockDataSource.subscribe()
-                NetworkMode.GRPC_LOCAL -> grpcDataSource.subscribe()
+                NetworkMode.GRPC_LOCAL -> {
+                    // Wait for the client to be ready
+                    delegatingGrpcClient.clientState
+                        .filterNotNull()
+                        .flatMapLatest<GrpcClient, RemoteUpdate> { grpcDataSource.subscribe() }
+                }
             }
         }
 

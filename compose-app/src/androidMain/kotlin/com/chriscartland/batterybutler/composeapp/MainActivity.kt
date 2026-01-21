@@ -1,9 +1,11 @@
 package com.chriscartland.batterybutler.composeapp
 
+import android.content.IntentFilter
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import com.chriscartland.batterybutler.composeapp.debug.DebugNetworkReceiver
 import com.chriscartland.batterybutler.composeapp.di.AppComponent
 import com.chriscartland.batterybutler.composeapp.di.create
 import com.chriscartland.batterybutler.data.ai.AndroidAiEngine
@@ -22,12 +24,23 @@ class MainActivity : ComponentActivity() {
 
         val networkComponent = NetworkComponent(applicationContext)
 
-        val component = AppComponent::class.create(databaseFactory, aiEngine, networkComponent.grpcClient)
+        val component = AppComponent::class.create(databaseFactory, aiEngine, networkComponent)
         val shareHandler = AndroidShareHandler(this)
         val fileSaver = AndroidFileSaver(this)
 
         setContent {
             App(component, shareHandler, fileSaver)
         }
+
+        // DEBUG: Register receiver for ADB control
+        // adb shell am broadcast -a com.chriscartland.batterybutler.SET_NETWORK_MODE --es mode "GRPC_LOCAL"
+        val receiver = DebugNetworkReceiver(component.setNetworkModeUseCase)
+        val filter = IntentFilter(DebugNetworkReceiver.ACTION_SET_NETWORK_MODE)
+        androidx.core.content.ContextCompat.registerReceiver(
+            this,
+            receiver,
+            filter,
+            androidx.core.content.ContextCompat.RECEIVER_EXPORTED,
+        )
     }
 }
