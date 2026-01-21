@@ -94,9 +94,7 @@ complexity:
   active: false
 # ... (complexity rules omitted for brevity, they are inactive)
 
-naming:
-  active: false
-    threshold: 15
+
   ComplexCondition:
     active: true
     threshold: 4
@@ -307,7 +305,7 @@ exceptions:
       - 'Throwable'
 
 naming:
-  active: true
+  active: false
   BooleanPropertyNaming:
     active: false
     allowedPattern: '^(is|has|are)'
