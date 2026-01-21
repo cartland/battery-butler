@@ -1,3 +1,10 @@
+buildscript {
+    dependencies {
+        // Force newer commons-compress to resolve conflict between AGP (uses 1.21) and Jib
+        classpath("org.apache.commons:commons-compress:1.26.0")
+    }
+}
+
 plugins {
     // this is necessary to avoid the plugins to be loaded multiple times
     // in each subproject's classloader

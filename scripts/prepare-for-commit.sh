@@ -5,7 +5,7 @@ echo "--- 1. Spotless Apply ---"
 ./gradlew spotlessApply
 
 echo "--- 2. Update Screenshots ---"
-./gradlew :android-screenshot-tests:updateDebugScreenshotTest
+# ./gradlew :android-screenshot-tests:updateDebugScreenshotTest
 
 echo "--- 3. Validate ---"
 ./scripts/validate.sh
