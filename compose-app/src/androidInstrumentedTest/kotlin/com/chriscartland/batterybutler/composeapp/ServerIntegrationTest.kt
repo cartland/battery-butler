@@ -5,6 +5,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.chriscartland.batterybutler.networking.NetworkComponent
 import com.chriscartland.batterybutler.proto.SyncServiceClient
 import com.chriscartland.batterybutler.proto.SyncUpdate
+import com.squareup.wire.executeIn
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -19,7 +20,7 @@ class ServerIntegrationTest {
             // Context of the app under test.
             val appContext = InstrumentationRegistry.getInstrumentation().targetContext
             val networkComponent = NetworkComponent(appContext)
-            val client = networkComponent.grpcClient.create(SyncServiceClient::class)
+            val client = networkComponent.createGrpcClient().create(SyncServiceClient::class)
 
             // 1. Push an update
             val update = SyncUpdate(

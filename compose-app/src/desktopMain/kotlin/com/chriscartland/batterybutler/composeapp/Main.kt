@@ -19,7 +19,7 @@ fun main() =
             val databaseFactory = DatabaseFactory()
             val networkComponent = NetworkComponent()
             val component =
-                AppComponent::class.create(databaseFactory, NoOpAiEngine, networkComponent.grpcClient)
+                AppComponent::class.create(databaseFactory, NoOpAiEngine, networkComponent)
             val shareHandler = DesktopShareHandler()
             val fileSaver = DesktopFileSaver()
 
