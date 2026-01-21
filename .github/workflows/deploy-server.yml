@@ -75,7 +75,8 @@ jobs:
         ./gradlew :server:app:jib \
           -Djib.to.image=$ECR_REPO_URL \
           -Djib.to.auth.username=$ECR_USERNAME \
-          -Djib.to.auth.password=$ECR_PASSWORD
+          -Djib.to.auth.password=$ECR_PASSWORD \
+          --stacktrace --info
       
     - name: Force ECS Deployment
       run: |
