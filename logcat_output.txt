@@ -1,7 +1,0 @@
---------- beginning of main
-01-20 22:26:34.216 D/BatteryButlerRepo( 9940): RoomDeviceRepository received update! Size=4
-01-20 22:26:48.382 D/BatteryButlerReceiver( 9940): Broadcast received. Mode: GRPC_LOCAL
-01-20 22:26:48.384 D/BatteryButlerReceiver( 9940): Network mode set to GRPC_LOCAL via UseCase
-01-20 22:26:48.408 D/BatteryButlerGrpc( 9940): GrpcSyncDataSource starting subscribe...
-01-20 22:26:48.472 D/BatteryButlerGrpc( 9940): GrpcSyncDataSource emitting update from server
-01-20 22:26:48.474 D/BatteryButlerRepo( 9940): RoomDeviceRepository received update! Size=4
