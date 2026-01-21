@@ -72,11 +72,11 @@ jobs:
         ECR_PASSWORD: ${{ steps.login-ecr.outputs.password }}
         ECR_REPO_URL: ${{ steps.tf-outputs.outputs.ECR_URL }}
       run: |
-        ./gradlew :server:app:jib \
+        ./gradlew :server:app:jibDockerBuild \
           -Djib.to.image=$ECR_REPO_URL \
-          -Djib.to.auth.username=$ECR_USERNAME \
-          -Djib.to.auth.password=$ECR_PASSWORD \
           --stacktrace --info
+        
+        docker push $ECR_REPO_URL:latest
       
     - name: Force ECS Deployment
       run: |
