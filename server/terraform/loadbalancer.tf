@@ -29,9 +29,9 @@ resource "aws_security_group" "alb" {
 }
 
 resource "aws_lb" "main" {
-  name               = "battery-butler-alb"
+  name               = "battery-butler-nlb"
   internal           = false
-  load_balancer_type = "application"
+  load_balancer_type = "network"
   security_groups    = [aws_security_group.alb.id]
   subnets            = [aws_subnet.public_a.id, aws_subnet.public_b.id]
 }
@@ -39,28 +39,23 @@ resource "aws_lb" "main" {
 resource "aws_lb_target_group" "grpc" {
   name        = "battery-butler-grpc-tg"
   port        = 50051
-  protocol    = "HTTP"
-  protocol_version = "HTTP2"
+  protocol    = "TCP"
   target_type = "ip"
   vpc_id      = aws_vpc.main.id
 
   health_check {
     enabled             = true
-    path                = "/grpc.health.v1.Health/Check" # Standard gRPC health check path if implemented
+    protocol            = "TCP"
     port                = "traffic-port"
-    protocol            = "HTTP"
-    matcher             = "200" # Success code for HTTP/2 health check
   }
 }
 
-# NOTE: For real gRPC over ALB, HTTPS (port 443) is highly recommended/required for many clients.
-# We will setup a dummy listener on 80 for now redirecting or simple setup, 
-# but mostly we want HTTP/2 support.
-
-resource "aws_lb_listener" "http" {
+# NLB Listener (TCP)
+# Expose port 80 to the world, forward to container port 50051
+resource "aws_lb_listener" "tcp" {
   load_balancer_arn = aws_lb.main.arn
   port              = "80"
-  protocol          = "HTTP"
+  protocol          = "TCP"
 
   default_action {
     type             = "forward"
