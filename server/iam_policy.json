@@ -28,7 +28,8 @@
                 "ec2:RevokeSecurityGroupEgress",
                 "ec2:CreateTags",
                 "ec2:ModifyVpcAttribute",
-                "ec2:ModifySubnetAttribute"
+                "ec2:ModifySubnetAttribute",
+                "ec2:GetSecurityGroupsForVpc"
             ],
             "Resource": "*"
         },

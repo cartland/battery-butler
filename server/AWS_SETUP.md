@@ -10,10 +10,9 @@ Since we are deploying via **GitHub Actions**, Terraform cannot store its "state
    - **Option A (Easiest)**: Attach `AdministratorAccess` (Recommended for initial setup/learning).
    - **Option B (Least Privilege)**: Click **Create policy**, select the **JSON** tab.
    - **Copy and paste the content** from the file included in this repository: `server/iam_policy.json`.
-   - This policy allows Terraform to manage specific resources (VPC, ECS, RDS, etc.) without full admin rights.
-5. Create an **Access Key**:
-   - Go to the user > **Security credentials**.
-   - **Create access key** > **CLI**.
+   - This policy allows Terraform to manage specific resources                     "ec2:AuthorizeSecurityGroupIngress", "ec2:AuthorizeSecurityGroupEgress", "ec2:RevokeSecurityGroupIngress",
+                     "ec2:RevokeSecurityGroupEgress", "ec2:CreateTags", "ec2:ModifyVpcAttribute", "ec2:ModifySubnetAttribute", "ec2:GetSecurityGroupsForVpc"
+                 ],access key** > **CLI**.
    - **Save** the `Access Key ID` and `Secret Access Key`.
 
 ## Step 2: Create S3 Bucket for Terraform State
