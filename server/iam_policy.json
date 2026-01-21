@@ -84,6 +84,7 @@
                 "rds:AddTagsToResource",
                 "rds:ModifyDBInstance",
                 "rds:ListTagsForResource",
+                "rds:ModifyDBSubnetGroup",
                 "secretsmanager:CreateSecret",
                 "secretsmanager:DeleteSecret",
                 "secretsmanager:GetSecretValue",

@@ -15,10 +15,6 @@ actual class NetworkComponent(
                     .Builder()
                     .protocols(listOf(okhttp3.Protocol.H2_PRIOR_KNOWLEDGE))
                     .build(),
-            ).baseUrl(LOCAL_GRPC_ADDRESS)
+            ).baseUrl(SharedServerConfig.PRODUCTION_SERVER_URL)
             .build()
-
-    companion object {
-        private const val LOCAL_GRPC_ADDRESS = "http://10.0.2.2:50051"
-    }
 }

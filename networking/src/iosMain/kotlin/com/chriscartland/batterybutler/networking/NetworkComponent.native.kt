@@ -64,7 +64,7 @@ class IosGrpcCall<S : Any, R : Any>(
 
     override suspend fun execute(request: S): R {
         val path = method.path
-        val fullUrl = "http://localhost:50051/$path"
+        val fullUrl = "${SharedServerConfig.PRODUCTION_SERVER_URL}/$path"
 
         val requestBytes = method.requestAdapter.encode(request)
         val framedBytes = frameGrpcMessage(requestBytes)
@@ -144,7 +144,7 @@ class IosGrpcStreamingCall<S : Any, R : Any>(
                 val request = sendChannel.receive()
 
                 val path = method.path
-                val fullUrl = "http://localhost:50051/$path"
+                val fullUrl = "${SharedServerConfig.PRODUCTION_SERVER_URL}/$path"
                 val requestBytes = method.requestAdapter.encode(request)
                 val framedBytes = frameGrpcMessage(requestBytes)
 
