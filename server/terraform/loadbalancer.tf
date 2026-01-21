@@ -49,7 +49,7 @@ resource "aws_lb_target_group" "grpc" {
     path                = "/grpc.health.v1.Health/Check" # Standard gRPC health check path if implemented
     port                = "traffic-port"
     protocol            = "HTTP"
-    matcher             = "0" # gRPC success codes (0=OK)
+    matcher             = "200" # Success code for HTTP/2 health check
   }
 }
 
