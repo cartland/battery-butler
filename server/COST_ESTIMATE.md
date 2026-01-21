@@ -1,7 +1,7 @@
 # AWS Cost Estimate (Development Environment)
 
 This document provides a monthly cost estimate for running the **Battery Butler** server on AWS using the provided Terraform configuration.
-Estimates are based on **us-east-1** (N. Virginia) on-demand pricing as of Jan 2026.
+Estimates are based on **us-west-1** (N. California) on-demand pricing as of Jan 2026.
 
 ### Summary
 **Total Estimated Monthly Cost: ~$41.00**
