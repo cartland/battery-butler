@@ -55,12 +55,27 @@ jobs:
       working-directory: server/terraform
       run: terraform apply -auto-approve
 
+    - name: Get ECR Repo URL
+      id: tf-outputs
+      working-directory: server/terraform
+      run: |
+        echo "ECR_URL=$(terraform output -raw ecr_repository_url)" >> $GITHUB_OUTPUT
+
     - name: Login to Amazon ECR
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v2
       
     - name: Build and Push Container (Jib)
-      run: ./gradlew :server:app:jib
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_USERNAME: ${{ steps.login-ecr.outputs.username }}
+        ECR_PASSWORD: ${{ steps.login-ecr.outputs.password }}
+        ECR_REPO_URL: ${{ steps.tf-outputs.outputs.ECR_URL }}
+      run: |
+        ./gradlew :server:app:jib \
+          -Djib.to.image=$ECR_REPO_URL \
+          -Djib.to.auth.username=$ECR_USERNAME \
+          -Djib.to.auth.password=$ECR_PASSWORD
       
     - name: Force ECS Deployment
       run: |
