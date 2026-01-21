@@ -43,7 +43,7 @@ Since we are deploying via **GitHub Actions**, Terraform cannot store its "state
                  "Sid": "ContainerRegistryAndService",
                  "Effect": "Allow",
                  "Action": [
-                     "ecr:CreateRepository", "ecr:DeleteRepository", "ecr:DescribeRepositories", "ecr:PutLifecyclePolicy", "ecr:GetAuthorizationToken",
+                     "ecr:CreateRepository", "ecr:DeleteRepository", "ecr:DescribeRepositories", "ecr:PutLifecyclePolicy", "ecr:GetAuthorizationToken", "ecr:ListTagsForResource",
                      "ecs:CreateCluster", "ecs:DeleteCluster", "ecs:Describe*", "ecs:RegisterTaskDefinition", "ecs:DeregisterTaskDefinition",
                      "ecs:CreateService", "ecs:DeleteService", "ecs:UpdateService", "ecs:TagResource"
                  ],
@@ -56,7 +56,7 @@ Since we are deploying via **GitHub Actions**, Terraform cannot store its "state
                      "rds:CreateDBInstance", "rds:DeleteDBInstance", "rds:Describe*", "rds:CreateDBSubnetGroup", "rds:DeleteDBSubnetGroup",
                      "rds:AddTagsToResource", "rds:ModifyDBInstance",
                      "secretsmanager:CreateSecret", "secretsmanager:DeleteSecret", "secretsmanager:GetSecretValue",
-                     "secretsmanager:PutSecretValue", "secretsmanager:DescribeSecret"
+                     "secretsmanager:PutSecretValue", "secretsmanager:DescribeSecret", "secretsmanager:GetResourcePolicy"
                  ],
                  "Resource": "*"
              },
