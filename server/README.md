@@ -55,3 +55,17 @@ This project uses [Jib](https://github.com/GoogleContainerTools/jib) to build op
 - **Check Configuration**: `server/app/build.gradle.kts`
 - **Build to Daemon (Local)**: `./gradlew :server:app:jibDockerBuild`
 - **Build to Registry (Remote)**: `./gradlew :server:app:jib`
+
+## 📚 AWS Glossary
+
+Here is a quick reference for the AWS resources created by Terraform:
+
+- **VPC (Virtual Private Cloud)**: A private network for your resources, isolated from the rest of the internet.
+- **ECS (Elastic Container Service)**: The orchestrator that runs your Docker containers.
+- **Fargate**: A serverless compute engine for ECS (runs containers without managing servers/EC2).
+- **ECR (Elastic Container Registry)**: Where your Docker images are stored (like GitHub for Docker).
+- **RDS (Relational Database Service)**: Managed SQL database service (hosting our PostgreSQL DB).
+- **ALB (Application Load Balancer)**: Distributes incoming network traffic across multiple targets (our ECS tasks). It handles the HTTP/2 and gRPC connections.
+- **IAM (Identity and Access Management)**: Manages permissions (roles, users) securely.
+- **AZ (Availability Zone)**: Distinct data centers within an AWS Region (e.g., `us-west-1a`) for redundancy.
+- **S3 (Simple Storage Service)**: Object storage (used here to store the "State" of Terraform infrastructure).
