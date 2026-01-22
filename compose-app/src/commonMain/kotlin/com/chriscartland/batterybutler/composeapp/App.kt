@@ -1,18 +1,13 @@
 package com.chriscartland.batterybutler.composeapp
 
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
-import androidx.navigation3.runtime.entryProvider
-import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
-import androidx.navigation3.ui.NavDisplay
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.chriscartland.batterybutler.composeapp.di.AppComponent
 import com.chriscartland.batterybutler.composeapp.feature.addbatteryevent.AddBatteryEventScreen
 import com.chriscartland.batterybutler.composeapp.feature.adddevice.AddDeviceScreen
@@ -25,7 +20,6 @@ import com.chriscartland.batterybutler.composeapp.feature.main.DevicesScreenRoot
 import com.chriscartland.batterybutler.composeapp.feature.main.HistoryScreenRoot
 import com.chriscartland.batterybutler.composeapp.feature.main.TypesScreenRoot
 import com.chriscartland.batterybutler.composeapp.feature.settings.SettingsScreen
-import com.chriscartland.batterybutler.composeapp.util.ScreenListSaver
 import com.chriscartland.batterybutler.composeresources.LocalAppStrings
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationcore.util.FileSaver
@@ -51,174 +45,175 @@ fun App(
         ) {
 // Replaced by ScreenListSaver in NavigationSavers.kt
 
-            val backStack = rememberSaveable(saver = ScreenListSaver) {
-                mutableStateListOf<Any>(Screen.Devices)
+            val navController = rememberNavController()
+
+            NavHost(
+                navController = navController,
+                startDestination = Screen.Devices,
+            ) {
+                // Shared navigation actions
+                val navigateToDevices = {
+                    navController.navigate(Screen.Devices) {
+                        popUpTo(navController.graph.startDestinationId) {
+                            inclusive = true
+                            saveState = false // Reset state for main tabs
+                        }
+                        launchSingleTop = true
+                    }
+                }
+                val navigateToTypes = {
+                    navController.navigate(Screen.Types) {
+                        popUpTo(navController.graph.startDestinationId) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
+                val navigateToHistory = {
+                    navController.navigate(Screen.History) {
+                        popUpTo(navController.graph.startDestinationId) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
+
+                val onTabSelected: (MainTab) -> Unit = { selectedTab ->
+                    when (selectedTab) {
+                        MainTab.Devices -> navigateToDevices()
+                        MainTab.Types -> navigateToTypes()
+                        MainTab.History -> navigateToHistory()
+                    }
+                }
+
+                composable<Screen.Devices> {
+                    val homeViewModel = viewModel { component.homeViewModel }
+                    DevicesScreenRoot(
+                        viewModel = homeViewModel,
+                        onTabSelected = onTabSelected,
+                        onSettingsClick = { navController.navigate(Screen.Settings) },
+                        onAddDeviceClick = { navController.navigate(Screen.AddDevice) },
+                        onDeviceClick = { deviceId ->
+                            navController.navigate(Screen.DeviceDetail(deviceId))
+                        },
+                    )
+                }
+
+                composable<Screen.Types> {
+                    val deviceTypeListViewModel = viewModel { component.deviceTypeListViewModel }
+                    TypesScreenRoot(
+                        viewModel = deviceTypeListViewModel,
+                        onTabSelected = onTabSelected,
+                        onSettingsClick = { navController.navigate(Screen.Settings) },
+                        onAddTypeClick = { navController.navigate(Screen.AddDeviceType) },
+                        onEditType = { typeId -> navController.navigate(Screen.EditDeviceType(typeId)) },
+                    )
+                }
+
+                composable<Screen.History> {
+                    val historyListViewModel = viewModel { component.historyListViewModel }
+                    HistoryScreenRoot(
+                        viewModel = historyListViewModel,
+                        onTabSelected = onTabSelected,
+                        onSettingsClick = { navController.navigate(Screen.Settings) },
+                        onAddEventClick = { navController.navigate(Screen.AddBatteryEvent) },
+                        onEventClick = { eventId, deviceId ->
+                            navController.navigate(Screen.EventDetail(eventId))
+                        },
+                    )
+                }
+
+                composable<Screen.AddDevice> {
+                    AddDeviceScreen(
+                        viewModel = viewModel { component.addDeviceViewModel },
+                        onDeviceAdded = { navController.popBackStack() },
+                        onManageDeviceTypesClick = { navController.navigate(Screen.Types) },
+                        onBack = { navController.popBackStack() },
+                    )
+                }
+
+                composable<Screen.AddBatteryEvent> {
+                    AddBatteryEventScreen(
+                        viewModel = viewModel { component.addBatteryEventViewModel },
+                        onEventAdded = { navController.popBackStack() },
+                        onAddDeviceClick = { navController.navigate(Screen.AddDevice) },
+                        onBack = { navController.popBackStack() },
+                    )
+                }
+
+                composable<Screen.AddDeviceType> {
+                    AddDeviceTypeScreen(
+                        viewModel = viewModel { component.addDeviceTypeViewModel },
+                        onDeviceTypeAdded = { navController.popBackStack() },
+                        onBack = { navController.popBackStack() },
+                    )
+                }
+
+                composable<Screen.DeviceDetail> { backStackEntry ->
+                    val args = backStackEntry.toRoute<Screen.DeviceDetail>()
+                    val viewModel = viewModel(key = "DeviceDetail-${args.deviceId}") {
+                        component.deviceDetailViewModelFactory.create(args.deviceId)
+                    }
+                    DeviceDetailScreen(
+                        viewModel = viewModel,
+                        onBack = { navController.popBackStack() },
+                        onEdit = { navController.navigate(Screen.EditDevice(args.deviceId)) },
+                        onEventClick = { eventId -> navController.navigate(Screen.EventDetail(eventId)) },
+                    )
+                }
+
+                composable<Screen.EventDetail> { backStackEntry ->
+                    val args = backStackEntry.toRoute<Screen.EventDetail>()
+                    val viewModel = viewModel(key = "EventDetail-${args.eventId}") {
+                        component.eventDetailViewModelFactory.create(args.eventId)
+                    }
+                    EventDetailScreen(
+                        viewModel = viewModel,
+                        onBack = { navController.popBackStack() },
+                    )
+                }
+
+                composable<Screen.EditDevice> { backStackEntry ->
+                    val args = backStackEntry.toRoute<Screen.EditDevice>()
+                    val viewModel = viewModel(key = "EditDevice-${args.deviceId}") {
+                        component.editDeviceViewModelFactory.create(args.deviceId)
+                    }
+                    EditDeviceScreen(
+                        viewModel = viewModel,
+                        onBack = { navController.popBackStack() },
+                        onDelete = {
+                            navController.popBackStack()
+                            // If we came from detail, pop again? Or handle navigation stack structure properly?
+                            // Nav2 handles backstack automatically, but if we want to ensure we don't go back to deleted device...
+                            // Actually, standard behavior is fine for now. If user navigates back to list, it's fine.
+                            // If stack was List -> Detail -> Edit, jumping back to List is:
+                            navController.popBackStack(Screen.Devices, inclusive = false)
+                        },
+                        onManageDeviceTypesClick = { navController.navigate(Screen.Types) },
+                    )
+                }
+
+                composable<Screen.EditDeviceType> { backStackEntry ->
+                    val args = backStackEntry.toRoute<Screen.EditDeviceType>()
+                    val viewModel = viewModel(key = "EditDeviceType-${args.typeId}") {
+                        component.editDeviceTypeViewModelFactory.create(args.typeId)
+                    }
+                    EditDeviceTypeScreen(
+                        viewModel = viewModel,
+                        onBack = { navController.popBackStack() },
+                        onDelete = { navController.popBackStack() },
+                    )
+                }
+
+                composable<Screen.Settings> {
+                    SettingsScreen(
+                        viewModel = viewModel { component.settingsViewModel },
+                        onBack = { navController.popBackStack() },
+                    )
+                }
             }
-
-            NavDisplay(
-                backStack = backStack,
-                onBack = { backStack.removeLastOrNull() },
-                entryDecorators = listOf(
-                    rememberSaveableStateHolderNavEntryDecorator(),
-                    rememberViewModelStoreNavEntryDecorator(),
-                ),
-                entryProvider = entryProvider {
-                    // Shared navigation actions
-                    val navigateToDevices = {
-                        // Clear stack to root [Screen.Devices]
-                        if (backStack.last() != Screen.Devices) {
-                            backStack.clear()
-                            backStack.add(Screen.Devices)
-                        }
-                    }
-                    val navigateToTypes = {
-                        // Stack: [Devices, Types]
-                        backStack.clear()
-                        backStack.add(Screen.Devices)
-                        backStack.add(Screen.Types)
-                    }
-                    val navigateToHistory = {
-                        // Stack: [Devices, History]
-                        backStack.clear()
-                        backStack.add(Screen.Devices)
-                        backStack.add(Screen.History)
-                    }
-
-                    val onTabSelected: (MainTab) -> Unit = { selectedTab ->
-                        when (selectedTab) {
-                            MainTab.Devices -> navigateToDevices()
-                            MainTab.Types -> navigateToTypes()
-                            MainTab.History -> navigateToHistory()
-                        }
-                    }
-
-                    entry<Screen.Devices> {
-                        val homeViewModel = viewModel { component.homeViewModel }
-                        DevicesScreenRoot(
-                            viewModel = homeViewModel,
-                            onTabSelected = onTabSelected,
-                            onSettingsClick = { backStack.add(Screen.Settings) },
-                            onAddDeviceClick = { backStack.add(Screen.AddDevice) },
-                            onDeviceClick = { deviceId ->
-                                backStack.add(Screen.DeviceDetail(deviceId))
-                            },
-                        )
-                    }
-
-                    entry<Screen.Types> {
-                        val deviceTypeListViewModel = viewModel { component.deviceTypeListViewModel }
-                        TypesScreenRoot(
-                            viewModel = deviceTypeListViewModel,
-                            onTabSelected = onTabSelected,
-                            onSettingsClick = { backStack.add(Screen.Settings) },
-                            onAddTypeClick = { backStack.add(Screen.AddDeviceType) },
-                            onEditType = { typeId -> backStack.add(Screen.EditDeviceType(typeId)) },
-                        )
-                    }
-
-                    entry<Screen.History> {
-                        val historyListViewModel = viewModel { component.historyListViewModel }
-                        HistoryScreenRoot(
-                            viewModel = historyListViewModel,
-                            onTabSelected = onTabSelected,
-                            onSettingsClick = { backStack.add(Screen.Settings) },
-                            onAddEventClick = { backStack.add(Screen.AddBatteryEvent) },
-                            onEventClick = { eventId, deviceId ->
-                                backStack.add(Screen.EventDetail(eventId))
-                            },
-                        )
-                    }
-
-                    entry<Screen.AddDevice> {
-                        AddDeviceScreen(
-                            viewModel = viewModel { component.addDeviceViewModel },
-                            onDeviceAdded = { backStack.removeLastOrNull() },
-                            onManageDeviceTypesClick = { backStack.add(Screen.Types) },
-                            onBack = { backStack.removeLastOrNull() },
-                        )
-                    }
-
-                    entry<Screen.AddBatteryEvent> {
-                        AddBatteryEventScreen(
-                            viewModel = viewModel { component.addBatteryEventViewModel },
-                            onEventAdded = { backStack.removeLastOrNull() },
-                            onAddDeviceClick = { backStack.add(Screen.AddDevice) },
-                            onBack = { backStack.removeLastOrNull() },
-                        )
-                    }
-
-                    entry<Screen.AddDeviceType> {
-                        AddDeviceTypeScreen(
-                            viewModel = viewModel { component.addDeviceTypeViewModel },
-                            onDeviceTypeAdded = { backStack.removeLastOrNull() },
-                            onBack = { backStack.removeLastOrNull() },
-                        )
-                    }
-
-                    entry<Screen.DeviceDetail> {
-                        val args = it
-                        val viewModel = viewModel(key = "DeviceDetail-${args.deviceId}") {
-                            component.deviceDetailViewModelFactory.create(args.deviceId)
-                        }
-                        DeviceDetailScreen(
-                            viewModel = viewModel,
-                            onBack = { backStack.removeLastOrNull() },
-                            onEdit = { backStack.add(Screen.EditDevice(args.deviceId)) },
-                            onEventClick = { eventId -> backStack.add(Screen.EventDetail(eventId)) },
-                        )
-                    }
-
-                    entry<Screen.EventDetail> {
-                        val args = it
-                        val viewModel = viewModel(key = "EventDetail-${args.eventId}") {
-                            component.eventDetailViewModelFactory.create(args.eventId)
-                        }
-                        EventDetailScreen(
-                            viewModel = viewModel,
-                            onBack = { backStack.removeLastOrNull() },
-                        )
-                    }
-
-                    entry<Screen.EditDevice> {
-                        val args = it
-                        val viewModel = viewModel(key = "EditDevice-${args.deviceId}") {
-                            component.editDeviceViewModelFactory.create(args.deviceId)
-                        }
-                        EditDeviceScreen(
-                            viewModel = viewModel,
-                            onBack = { backStack.removeLastOrNull() },
-                            onDelete = {
-                                backStack.removeLastOrNull()
-                                if (backStack.lastOrNull() is Screen.DeviceDetail) {
-                                    backStack.removeLastOrNull()
-                                }
-                            },
-                            onManageDeviceTypesClick = { backStack.add(Screen.Types) },
-                        )
-                    }
-                    entry<Screen.EditDeviceType> {
-                        val args = it
-                        val viewModel = viewModel(key = "EditDeviceType-${args.typeId}") {
-                            component.editDeviceTypeViewModelFactory.create(args.typeId)
-                        }
-                        EditDeviceTypeScreen(
-                            viewModel = viewModel,
-                            onBack = { backStack.removeLastOrNull() },
-                            onDelete = { backStack.removeLastOrNull() },
-                        )
-                    }
-
-                    entry<Screen.Settings> {
-                        SettingsScreen(
-                            viewModel = viewModel { component.settingsViewModel },
-                            onBack = { backStack.removeLastOrNull() },
-                        )
-                    }
-                },
-                transitionSpec = {
-                    fadeIn() togetherWith fadeOut()
-                },
-            )
         }
     }
 }

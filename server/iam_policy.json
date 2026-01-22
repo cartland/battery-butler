@@ -123,7 +123,9 @@
                 "logs:CreateLogGroup",
                 "logs:DeleteLogGroup",
                 "logs:PutRetentionPolicy",
-                "logs:DescribeLogGroups"
+                "logs:DescribeLogGroups",
+                "logs:ListTagsForResource",
+                "logs:TagResource"
             ],
             "Resource": "*"
         },

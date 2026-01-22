@@ -27,6 +27,14 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+        <receiver
+            android:name=".ServerUrlReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.chriscartland.batterybutler.SET_SERVER_URL" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

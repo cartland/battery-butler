@@ -21,6 +21,9 @@ kotlin {
         }
     }
 
+    // Force downgrade of dependencies that require AGP 8.9.1+
+    // Removed as we are migrating to Nav2 which is compatible with stable AGP.
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -53,8 +56,8 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.viewmodel.compose)
-            implementation(libs.androidx.lifecycle.viewmodel.navigation3)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+            implementation(libs.androidx.navigation.compose)
 
             implementation(project(":data"))
             implementation(project(":presentation-core"))
@@ -63,9 +66,6 @@ kotlin {
             implementation(project(":networking"))
             implementation(project(":compose-resources"))
 
-            implementation(libs.androidx.nav3.ui)
-            implementation(libs.androidx.nav3.runtime)
-            implementation(libs.androidx.lifecycle.viewmodel.navigation3)
             implementation(libs.kotlin.inject.runtime)
             implementation(libs.kotlinx.datetime)
             implementation(libs.uuid)

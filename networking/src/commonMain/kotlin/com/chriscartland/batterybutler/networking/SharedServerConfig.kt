@@ -5,7 +5,23 @@ object SharedServerConfig {
     const val LOCAL_GRPC_ADDRESS_DESKTOP = "http://0.0.0.0:50051"
     const val LOCAL_GRPC_ADDRESS_IOS = "http://localhost:50051"
 
-    // Placeholder until deployment completes.
-    // Once we have the ALB DNS name, we will update this value.
-    const val PRODUCTION_SERVER_URL = "http://battery-butler-nlb-847feaa773351518.elb.us-west-1.amazonaws.com:80"
+    private const val DEFAULT_PRODUCTION_URL = "http://battery-butler-nlb-847feaa773351518.elb.us-west-1.amazonaws.com:80"
+
+    // Runtime configuration
+    private var configuredServerUrl: String? = null
+
+    val PRODUCTION_SERVER_URL: String
+        get() = configuredServerUrl ?: DEFAULT_PRODUCTION_URL
+
+    /**
+     * Updates the server URL at runtime.
+     * Useful for end-to-end testing with adb broadcast commands.
+     */
+    fun setServerUrl(url: String) {
+        configuredServerUrl = url
+    }
+
+    fun resetServerUrl() {
+        configuredServerUrl = null
+    }
 }
