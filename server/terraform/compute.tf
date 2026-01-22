@@ -10,6 +10,11 @@ resource "aws_ecs_cluster" "main" {
   name = "battery-butler-cluster"
 }
 
+resource "aws_cloudwatch_log_group" "ecs_log_group" {
+  name              = "/ecs/battery-butler"
+  retention_in_days = 30
+}
+
 resource "aws_iam_role" "ecs_task_execution_role" {
   name = "battery-butler-execution-role"
 
@@ -78,7 +83,6 @@ resource "aws_ecs_task_definition" "server" {
           "awslogs-group"         = "/ecs/battery-butler"
           "awslogs-region"        = "us-west-1"
           "awslogs-stream-prefix" = "ecs"
-          "awslogs-create-group"  = "true"
         }
       }
     }
