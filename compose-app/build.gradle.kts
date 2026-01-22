@@ -56,8 +56,8 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.viewmodel.compose)
+            implementation(libs.androidx.lifecycle.viewmodel.navigation3)
             implementation(libs.androidx.lifecycle.runtimeCompose)
-            implementation(libs.androidx.navigation.compose)
 
             implementation(project(":data"))
             implementation(project(":presentation-core"))
@@ -66,6 +66,8 @@ kotlin {
             implementation(project(":networking"))
             implementation(project(":compose-resources"))
 
+            implementation(libs.androidx.nav3.ui)
+            implementation(libs.androidx.nav3.runtime)
             implementation(libs.kotlin.inject.runtime)
             implementation(libs.kotlinx.datetime)
             implementation(libs.uuid)
