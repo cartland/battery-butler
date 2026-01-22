@@ -23,7 +23,7 @@ To enable deployment, set the following Secrets in your GitHub Repository settin
 
 | Secret Name | Description |
 | :--- | :--- |
-| `AWS_ACCESS_KEY_ID` | IAM User Access Key with permissions for ECS, ECR, RDS, VPC. |
+| `AWS_ACCESS_KEY_ID` | IAM User Access Key. **MUST have `AmazonEC2ContainerRegistryPowerUser` attached.** |
 | `AWS_SECRET_ACCESS_KEY` | IAM User Secret Key. |
 
 ### Manual Deployment (Local)
@@ -55,6 +55,7 @@ This project uses [Jib](https://github.com/GoogleContainerTools/jib) to build op
 - **Check Configuration**: `server/app/build.gradle.kts`
 - **Build to Daemon (Local)**: `./gradlew :server:app:jibDockerBuild`
 - **Build to Registry (Remote)**: `./gradlew :server:app:jib`
+- **Build to Tarball (Local Debug)**: `./gradlew :server:app:jibBuildTar` (Useful for verifying build without Docker or Credentials).
 
 ## 📚 AWS Glossary
 
