@@ -1,7 +1,7 @@
 package com.chriscartland.batterybutler.data.ai
 
 import android.content.Context
-import com.chriscartland.batterybutler.data.BuildConfig
+import com.chriscartland.batterybutler.datalocal.BuildConfig
 import com.chriscartland.batterybutler.domain.ai.AiConstants
 import com.chriscartland.batterybutler.domain.ai.AiEngine
 import com.chriscartland.batterybutler.domain.ai.AiMessage

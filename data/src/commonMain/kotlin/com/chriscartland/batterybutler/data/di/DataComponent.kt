@@ -1,14 +1,15 @@
 package com.chriscartland.batterybutler.data.di
 
 import com.chriscartland.batterybutler.data.repository.InMemoryNetworkModeRepository
-import com.chriscartland.batterybutler.data.repository.RoomDeviceRepository
-import com.chriscartland.batterybutler.data.room.AppDatabase
+import com.chriscartland.batterybutler.datalocal.di.DatabaseFactory
+import com.chriscartland.batterybutler.datalocal.repository.RoomDeviceRepository
+import com.chriscartland.batterybutler.datalocal.room.AppDatabase
+import com.chriscartland.batterybutler.datanetwork.DelegatingRemoteDataSource
+import com.chriscartland.batterybutler.datanetwork.NetworkComponent
 import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
 import com.chriscartland.batterybutler.domain.repository.RemoteDataSource
-import com.chriscartland.batterybutler.networking.DelegatingRemoteDataSource
-import com.chriscartland.batterybutler.networking.NetworkComponent
 import com.chriscartland.batterybutler.proto.GrpcSyncServiceClient
 import com.chriscartland.batterybutler.proto.SyncServiceClient
 import com.squareup.wire.GrpcClient

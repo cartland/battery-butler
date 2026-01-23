@@ -1,7 +1,7 @@
 package com.chriscartland.batterybutler.composeapp
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.chriscartland.batterybutler.networking.SharedServerConfig
+import com.chriscartland.batterybutler.datanetwork.SharedServerConfig
 import com.squareup.wire.GrpcClient
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient

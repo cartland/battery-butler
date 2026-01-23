@@ -1,6 +1,6 @@
 package com.chriscartland.batterybutler.iosswiftdi
 
-import com.chriscartland.batterybutler.data.di.DatabaseFactory
+import com.chriscartland.batterybutler.datalocal.di.DatabaseFactory
 import com.chriscartland.batterybutler.domain.ai.AiEngine
 import com.chriscartland.batterybutler.domain.ai.AiMessage
 import com.chriscartland.batterybutler.domain.ai.ToolHandler
