@@ -5,10 +5,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import com.chriscartland.batterybutler.ai.AndroidAiEngine
 import com.chriscartland.batterybutler.composeapp.debug.DebugNetworkReceiver
 import com.chriscartland.batterybutler.composeapp.di.AppComponent
 import com.chriscartland.batterybutler.composeapp.di.create
-import com.chriscartland.batterybutler.data.ai.AndroidAiEngine
 import com.chriscartland.batterybutler.datalocal.di.DatabaseFactory
 import com.chriscartland.batterybutler.datanetwork.NetworkComponent
 import com.chriscartland.batterybutler.presentationcore.util.AndroidFileSaver

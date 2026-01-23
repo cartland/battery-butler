@@ -38,13 +38,20 @@ graph TD
         AndroidScreenshotTests[":android-screenshot-tests"]
     end
 
+    subgraph "Others"
+        Ai[":ai"]
+    end
+
     %% Dependencies
+    Ai --> Domain
+
     AndroidScreenshotTests --> ComposeResources
     AndroidScreenshotTests --> Domain
     AndroidScreenshotTests --> PresentationCore
     AndroidScreenshotTests --> PresentationFeature
     AndroidScreenshotTests --> PresentationModel
 
+    ComposeApp --> Ai
     ComposeApp --> ComposeResources
     ComposeApp --> Data
     ComposeApp --> PresentationCore

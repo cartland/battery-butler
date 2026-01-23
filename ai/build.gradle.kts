@@ -29,39 +29,16 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(project(":domain"))
-            api(project(":data-network"))
-            api(project(":data-local"))
-
-            // implementation(libs.androidx.room.runtime) // Moved to data-local
-            // implementation(libs.sqlite.bundled) // Moved to data-local
-            implementation(libs.kotlin.inject.runtime)
             implementation(libs.kotlinx.coroutines.core)
-            implementation(libs.kotlinx.datetime)
-            implementation(libs.uuid)
         }
         androidMain.dependencies {
-            // implementation(libs.androidx.room.runtime) // Moved
-            // implementation(libs.generativeai) // Moved to :ai
+            implementation(libs.generativeai)
         }
-        val androidInstrumentedTest by getting {
-            dependencies {
-                implementation(libs.junit)
-                implementation(libs.androidx.testExt.junit)
-                implementation(libs.androidx.runner)
-                implementation(libs.androidx.core)
-                // implementation(libs.androidx.room.testing)
-                implementation(libs.kotlinx.coroutines.test)
-            }
-        }
-    }
-
-    sourceSets.all {
-        languageSettings.optIn("kotlin.time.ExperimentalTime")
     }
 }
 
 android {
-    namespace = "com.chriscartland.batterybutler.data"
+    namespace = "com.chriscartland.batterybutler.ai"
     compileSdk = libs.versions.android.compileSdk
         .get()
         .toInt()

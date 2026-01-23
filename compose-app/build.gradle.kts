@@ -62,6 +62,7 @@ kotlin {
             implementation(project(":data"))
             implementation(project(":presentation-core"))
             implementation(project(":viewmodel"))
+            implementation(project(":ai"))
             implementation(project(":usecase"))
             implementation(project(":usecase"))
             // implementation(project(":networking")) // Provided by :data
