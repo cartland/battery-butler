@@ -1,3 +1,6 @@
+package modulegraph
+
+
 data class GraphConfig(
     val moduleGroups: Map<String, String>,
     val groupPrefixes: Map<String, String>,

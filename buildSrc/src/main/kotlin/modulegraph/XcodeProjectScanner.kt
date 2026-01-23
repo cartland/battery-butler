@@ -1,5 +1,7 @@
-import org.gradle.api.Project
+package modulegraph
+
 import java.io.File
+import org.gradle.api.Project
 
 class XcodeProjectScanner(
     private val rootProject: Project,
@@ -44,7 +46,7 @@ class XcodeProjectScanner(
             .filter { it.isDirectory && it.name.endsWith(xcodeConfig.projectExtension) }
             .filter { file ->
                 xcodeConfig.ignoredDirs.none { file.path.contains(it) }
-            }.forEach { projects.add(it) }
+            }.forEach { projFile -> projects.add(projFile) }
         return projects
     }
 

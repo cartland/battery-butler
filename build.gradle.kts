@@ -47,7 +47,12 @@ allprojects {
     }
 }
 
-tasks.register<GenerateGraphTask>("generateMermaidGraph") {
+tasks.register<modulegraph.GenerateGraphTask>("generateMermaidGraph") {
     group = "documentation"
     description = "Generates Mermaid architecture graph from project dependencies"
+}
+
+tasks.register<codeshareanalysis.CodeShareAnalysisTask>("analyzeCodeShare") {
+    group = "documentation"
+    description = "Generates a code sharing analysis report."
 }
