@@ -27,7 +27,11 @@ allprojects {
     configure<com.diffplug.gradle.spotless.SpotlessExtension> {
 
         kotlin {
-            target("src/**/*.kt")
+            if (project == rootProject) {
+                target("src/**/*.kt", "buildSrc/src/**/*.kt")
+            } else {
+                target("src/**/*.kt")
+            }
             ktlint()
         }
         kotlinGradle {

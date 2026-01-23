@@ -1,7 +1,7 @@
 package modulegraph
 
-import java.io.File
 import org.gradle.api.Project
+import java.io.File
 
 class XcodeProjectScanner(
     private val rootProject: Project,

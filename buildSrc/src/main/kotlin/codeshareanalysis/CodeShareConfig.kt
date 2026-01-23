@@ -7,7 +7,7 @@ data class CodeShareConfig(
 ) {
     data class Bucket(
         val name: String,
-        val regex: Regex
+        val regex: Regex,
     )
 
     companion object {
@@ -24,11 +24,15 @@ data class CodeShareConfig(
                 // Wait, "Shared Code" in user request is 68%. This likely includes all core modules.
                 // Let's list known shared modules or regex for root level modules.
                 // Matches: /domain/, /data/, /usecase/, /viewmodel/, /presentation-core/, /networking/, /compose-resources/
-                Bucket("Shared Code", Regex(".*[/\\\\](domain|data|usecase|viewmodel|presentation-core|presentation-feature|networking|compose-resources)[/\\\\].*")),
-                
+                Bucket(
+                    "Shared Code",
+                    Regex(
+                        ".*[/\\\\](domain|data|usecase|viewmodel|presentation-core|presentation-feature|networking|compose-resources)[/\\\\].*",
+                    ),
+                ),
                 // Catch all "Other" - e.g. buildSrc itself, or gradle scripts (if we counted kts, but we default to kt)
-                Bucket("Other", Regex(".*")), 
-            )
+                Bucket("Other", Regex(".*")),
+            ),
         )
     }
 }

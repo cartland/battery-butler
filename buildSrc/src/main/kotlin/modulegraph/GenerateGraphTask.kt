@@ -22,15 +22,17 @@ abstract class GenerateGraphTask : DefaultTask() {
 
     @get:org.gradle.api.tasks.InputFiles
     @get:org.gradle.api.tasks.PathSensitive(org.gradle.api.tasks.PathSensitivity.RELATIVE)
-    val buildFiles: org.gradle.api.file.FileCollection = project.layout.files(
-        project.rootProject.file("settings.gradle.kts"),
-        project.rootProject.file("build.gradle.kts"),
-        project.rootProject.file("gradle/libs.versions.toml"),
-    ).plus(
-        project.rootProject.subprojects.map { it.buildFile }
-            .filter { it.exists() }
-            .let { project.files(it) }
-    )
+    val buildFiles: org.gradle.api.file.FileCollection = project.layout
+        .files(
+            project.rootProject.file("settings.gradle.kts"),
+            project.rootProject.file("build.gradle.kts"),
+            project.rootProject.file("gradle/libs.versions.toml"),
+        ).plus(
+            project.rootProject.subprojects
+                .map { it.buildFile }
+                .filter { it.exists() }
+                .let { project.files(it) },
+        )
 
     init {
         notCompatibleWithConfigurationCache("Accesses project instance at execution time")
@@ -83,7 +85,7 @@ abstract class GenerateGraphTask : DefaultTask() {
             "/Users/cartland/.nvm/versions/node/v24.2.0/bin/npx",
             "/usr/local/bin/npx",
             "/opt/homebrew/bin/npx",
-            "/usr/bin/npx"
+            "/usr/bin/npx",
         ).firstOrNull { File(it).exists() } ?: "npx"
 
         println("Generating SVG for ${inputMmd.name} using $npxPath...")
@@ -101,9 +103,9 @@ abstract class GenerateGraphTask : DefaultTask() {
                 config.mermaidCli.theme,
                 "--cssFile",
                 if (config.mermaidCli.cssFile.isNotEmpty()) {
-                     project.rootProject.file(config.mermaidCli.cssFile).absolutePath
+                    project.rootProject.file(config.mermaidCli.cssFile).absolutePath
                 } else {
-                     ""
+                    ""
                 },
                 "-p",
                 project.rootProject.file(".config/puppeteer-config.json").absolutePath,

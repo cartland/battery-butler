@@ -2,7 +2,6 @@ package modulegraph
 
 import org.gradle.api.logging.Logger
 
-
 class MermaidGenerator(
     private val config: GraphConfig = GraphConfig.default,
 ) {

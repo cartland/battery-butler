@@ -1,17 +1,16 @@
 package codeshareanalysis
 
-import java.io.File
 import org.gradle.api.Project
+import java.io.File
 
 class CodeScanner(
     private val project: Project,
-    private val config: CodeShareConfig = CodeShareConfig.default
+    private val config: CodeShareConfig = CodeShareConfig.default,
 ) {
-
     data class ScanResult(
         val totalLines: Int,
         val bucketCounts: Map<String, Int>,
-        val moduleCounts: Map<String, Int>
+        val moduleCounts: Map<String, Int>,
     )
 
     fun scan(): ScanResult {
@@ -21,17 +20,16 @@ class CodeScanner(
         var totalLines = 0
 
         // 1. Walk entire project tree
-        rootDir.walkTopDown()
-            .onEnter { file -> 
-                config.ignoredDirs.none { file.path.contains(it) } 
-            }
-            .filter { file ->
+        rootDir
+            .walkTopDown()
+            .onEnter { file ->
+                config.ignoredDirs.none { file.path.contains(it) }
+            }.filter { file ->
                 file.isFile && config.fileExtensions.any { file.extension == it }
-            }
-            .forEach { file ->
+            }.forEach { file ->
                 val lines = countLines(file)
                 totalLines += lines
-                
+
                 // Bucket Attribution
                 val bucket = config.buckets.firstOrNull { it.regex.matches(file.path) }
                 val bucketName = bucket?.name ?: "Other"
@@ -49,13 +47,16 @@ class CodeScanner(
     }
 
     private fun countLines(file: File): Int {
-        // Simple line count, ignoring empty lines maybe? 
+        // Simple line count, ignoring empty lines maybe?
         // User didn't specify, but standard LOC usually implies non-empty or just raw lines.
         // Let's do raw lines for simplicity and predictability.
         return file.readLines().size
     }
 
-    private fun findModuleForFile(file: File, rootDir: File): String? {
+    private fun findModuleForFile(
+        file: File,
+        rootDir: File,
+    ): String? {
         // Iterate up until we hit root or find a build.gradle.kts
         var current = file.parentFile
         while (current != null && current != rootDir && current.path.startsWith(rootDir.path)) {
@@ -64,21 +65,24 @@ class CodeScanner(
                 return getGradleProjectPath(current, rootDir)
             }
             // Also handle Xcode projects?
-            // "This must handle Xcode projects... described by their Gradle module name :domain etc... 
-            // wait, Xcode projects are NOT gradle modules usually. 
+            // "This must handle Xcode projects... described by their Gradle module name :domain etc...
+            // wait, Xcode projects are NOT gradle modules usually.
             // But the user sample said: ":<module_name>".
             // For Xcode projects like "ios-app-swift-ui", maybe we just use that folder name as the module name?
             if (File(current, "project.pbxproj").exists() || current.name.endsWith(".xcodeproj")) {
-                 // return pseudo module path
-                 return ":" + current.name.removeSuffix(".xcodeproj")
+                // return pseudo module path
+                return ":" + current.name.removeSuffix(".xcodeproj")
             }
-            
+
             current = current.parentFile
         }
         return null
     }
 
-    private fun getGradleProjectPath(moduleDir: File, rootDir: File): String {
+    private fun getGradleProjectPath(
+        moduleDir: File,
+        rootDir: File,
+    ): String {
         val relative = moduleDir.relativeTo(rootDir).path
         return ":" + relative.replace(File.separator, ":")
     }
