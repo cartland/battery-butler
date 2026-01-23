@@ -27,7 +27,7 @@ data class CodeShareConfig(
                 Bucket(
                     "Shared Code",
                     Regex(
-                        ".*[/\\\\](domain|data|usecase|viewmodel|presentation-core|presentation-feature|networking|compose-resources)[/\\\\].*",
+                        ".*[/\\\\](domain|data|data-local|data-network|usecase|viewmodel|presentation-core|presentation-feature|networking|compose-resources)[/\\\\].*",
                     ),
                 ),
                 // Catch all "Other" - e.g. buildSrc itself, or gradle scripts (if we counted kts, but we default to kt)

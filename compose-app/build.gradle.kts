@@ -63,7 +63,9 @@ kotlin {
             implementation(project(":presentation-core"))
             implementation(project(":viewmodel"))
             implementation(project(":usecase"))
-            implementation(project(":networking"))
+            implementation(project(":usecase"))
+            // implementation(project(":networking")) // Provided by :data
+            implementation(project(":compose-resources"))
             implementation(project(":compose-resources"))
 
             implementation(libs.androidx.nav3.ui)

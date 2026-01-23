@@ -52,7 +52,8 @@ data class GraphConfig(
                 ":domain" to "Domain Layer",
                 ":server:domain" to "Server",
                 ":data" to "Data Layer",
-                ":networking" to "Data Layer",
+                ":data-network" to "Data Layer",
+                ":data-local" to "Data Layer",
                 ":server:data" to "Server",
             ),
             groupPrefixes = mapOf(

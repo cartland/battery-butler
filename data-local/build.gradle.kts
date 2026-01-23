@@ -4,7 +4,7 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
-    // alias(libs.plugins.room) // Removed
+    alias(libs.plugins.room)
     alias(libs.plugins.ksp)
 }
 
@@ -29,18 +29,17 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(project(":domain"))
-            api(project(":data-network"))
-            api(project(":data-local"))
+            // implementation(project(":networking")) // Removed
 
-            // implementation(libs.androidx.room.runtime) // Moved to data-local
-            // implementation(libs.sqlite.bundled) // Moved to data-local
+            implementation(libs.androidx.room.runtime)
+            implementation(libs.sqlite.bundled)
             implementation(libs.kotlin.inject.runtime)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.datetime)
             implementation(libs.uuid)
         }
         androidMain.dependencies {
-            // implementation(libs.androidx.room.runtime) // Moved
+            implementation(libs.androidx.room.runtime)
             implementation(libs.generativeai)
         }
         val androidInstrumentedTest by getting {
@@ -49,7 +48,7 @@ kotlin {
                 implementation(libs.androidx.testExt.junit)
                 implementation(libs.androidx.runner)
                 implementation(libs.androidx.core)
-                // implementation(libs.androidx.room.testing)
+                implementation(libs.androidx.room.testing)
                 implementation(libs.kotlinx.coroutines.test)
             }
         }
@@ -61,7 +60,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.chriscartland.batterybutler.data"
+    namespace = "com.chriscartland.batterybutler.datalocal"
     compileSdk = libs.versions.android.compileSdk
         .get()
         .toInt()
@@ -99,30 +98,37 @@ android {
     }
 }
 
-// Room block removed
+room {
+    schemaDirectory("$projectDir/schemas")
+}
 
 ksp {
-    // Room schema arg removed
+    arg("room.schemaLocation", "$projectDir/schemas")
 }
 
 dependencies {
-    // Room KSP processors removed
-
+    // Room: Use platform-specific KSP. Room generates 'actual' implementation.
+    // add("kspCommonMainMetadata", libs.androidx.room.compiler)
     add("kspCommonMainMetadata", libs.kotlin.inject.compiler)
 
+    add("kspAndroid", libs.androidx.room.compiler)
     add("kspAndroid", libs.kotlin.inject.compiler)
     add("kspAndroid", libs.kotlin.inject.compiler)
 
+    add("kspIosX64", libs.androidx.room.compiler)
     add("kspIosX64", libs.kotlin.inject.compiler)
 
+    add("kspIosArm64", libs.androidx.room.compiler)
     add("kspIosArm64", libs.kotlin.inject.compiler)
 
+    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
     add("kspIosSimulatorArm64", libs.kotlin.inject.compiler)
 
     // Add JVM KSP for Desktop support
+    add("kspJvm", libs.androidx.room.compiler)
     add("kspJvm", libs.kotlin.inject.compiler)
 }
 
 configurations.named("kspCommonMainMetadata") {
-    // exclude(group = "androidx.room", module = "room-compiler")
+    exclude(group = "androidx.room", module = "room-compiler")
 }

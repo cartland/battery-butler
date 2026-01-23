@@ -30,11 +30,15 @@ graph TD
 
     subgraph "Data Layer"
         Data[":data"]
-        Networking[":networking"]
     end
 
     subgraph "Screenshot Tests"
         AndroidScreenshotTests[":android-screenshot-tests"]
+    end
+
+    subgraph "Others"
+        DataLocal[":data-local"]
+        DataNetwork[":data-network"]
     end
 
     %% Dependencies
@@ -46,20 +50,22 @@ graph TD
 
     ComposeApp --> ComposeResources
     ComposeApp --> Data
-    ComposeApp --> Networking
     ComposeApp --> PresentationCore
     ComposeApp --> PresentationFeature
     ComposeApp --> Usecase
     ComposeApp --> Viewmodel
 
+    Data --> DataLocal
+    Data --> DataNetwork
     Data --> Domain
-    Data --> Networking
+
+    DataLocal --> Domain
+
+    DataNetwork --> Domain
 
     IosSwiftDi --> Data
     IosSwiftDi --> PresentationModel
     IosSwiftDi --> Viewmodel
-
-    Networking --> Domain
 
     PresentationCore --> ComposeResources
     PresentationCore --> Domain

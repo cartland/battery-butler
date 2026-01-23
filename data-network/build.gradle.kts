@@ -56,7 +56,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.chriscartland.batterybutler.networking"
+    namespace = "com.chriscartland.batterybutler.datanetwork"
     compileSdk = libs.versions.android.compileSdk
         .get()
         .toInt()
