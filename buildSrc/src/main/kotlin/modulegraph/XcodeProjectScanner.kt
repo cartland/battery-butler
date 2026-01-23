@@ -55,9 +55,9 @@ class XcodeProjectScanner(
         val parent = relativePath.parentFile
 
         return if (parent == null || parent.path == ".") {
-            xcodeProj.nameWithoutExtension
+            xcodeProj.name
         } else {
-            parent.name
+            parent.name + ".xcodeproj"
         }
     }
 

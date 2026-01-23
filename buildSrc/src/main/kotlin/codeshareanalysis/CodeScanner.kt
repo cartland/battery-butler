@@ -19,10 +19,12 @@ class CodeScanner(
         val moduleMap = mutableMapOf<String, Int>()
         var totalLines = 0
 
-        // 1. Walk entire project tree
-        rootDir
-            .walkTopDown()
-            .onEnter { file ->
+        // 1. Get all git tracked files
+        val files = getGitTrackedFiles(rootDir)
+
+        files
+            .filter { file ->
+                // Still respect ignored dirs if defined in config, just in case
                 config.ignoredDirs.none { file.path.contains(it) }
             }.filter { file ->
                 file.isFile && config.fileExtensions.any { file.extension == it }
@@ -70,12 +72,13 @@ class CodeScanner(
             // But the user sample said: ":<module_name>".
             // For Xcode projects like "ios-app-swift-ui", maybe we just use that folder name as the module name?
             // Check for Xcode project in this directory
+            // Check for Xcode project in this directory
             val xcodeProj = current.listFiles()?.firstOrNull { it.name.endsWith(".xcodeproj") }
             if (xcodeProj != null) {
-                return ":" + xcodeProj.name.removeSuffix(".xcodeproj")
+                return ":" + xcodeProj.name
             }
             if (File(current, "project.pbxproj").exists()) {
-                return ":" + current.parentFile.name.removeSuffix(".xcodeproj")
+                return ":" + current.parentFile.name + ".xcodeproj"
             }
 
             current = current.parentFile
@@ -89,5 +92,32 @@ class CodeScanner(
     ): String {
         val relative = moduleDir.relativeTo(rootDir).path
         return ":" + relative.replace(File.separator, ":")
+    }
+
+    private fun getGitTrackedFiles(rootDir: File): List<File> {
+        try {
+            // Use -z to separate filenames with null bytes to handle spaces/special chars safely
+            val process = ProcessBuilder("git", "ls-files", "-z")
+                .directory(rootDir)
+                .start()
+
+            val content = process.inputStream.bufferedReader().use { it.readText() }
+            val exitCode = process.waitFor()
+
+            if (exitCode != 0) {
+                // If git fails (e.g. not a git repo), we might want to fallback or just warn.
+                // For now, returning empty list is safer than crashing, but we log to stderr.
+                System.err.println("Warning: 'git ls-files' failed with exit code $exitCode. Analysis strictly requires a git repository.")
+                return emptyList()
+            }
+
+            return content
+                .split('\u0000')
+                .filter { it.isNotBlank() }
+                .map { File(rootDir, it) }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return emptyList()
+        }
     }
 }

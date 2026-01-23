@@ -1,8 +1,8 @@
 graph TD
     subgraph "iOS Apps"
         IosSwiftDi[":ios-swift-di"]
-        IosAppComposeUi["ios-app-compose-ui"]
-        IosAppSwiftUi["ios-app-swift-ui"]
+        IosAppComposeUi.xcodeproj["ios-app-compose-ui.xcodeproj"]
+        IosAppSwiftUi.xcodeproj["ios-app-swift-ui.xcodeproj"]
     end
 
     subgraph "Compose Apps"
@@ -84,6 +84,6 @@ graph TD
     Viewmodel --> PresentationModel
     Viewmodel --> Usecase
 
-    IosAppComposeUi --> ComposeApp
+    IosAppComposeUi.xcodeproj --> ComposeApp
 
-    IosAppSwiftUi --> IosSwiftDi
+    IosAppSwiftUi.xcodeproj --> IosSwiftDi
