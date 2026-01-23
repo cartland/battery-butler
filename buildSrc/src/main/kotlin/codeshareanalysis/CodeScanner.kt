@@ -69,9 +69,13 @@ class CodeScanner(
             // wait, Xcode projects are NOT gradle modules usually.
             // But the user sample said: ":<module_name>".
             // For Xcode projects like "ios-app-swift-ui", maybe we just use that folder name as the module name?
-            if (File(current, "project.pbxproj").exists() || current.name.endsWith(".xcodeproj")) {
-                // return pseudo module path
-                return ":" + current.name.removeSuffix(".xcodeproj")
+            // Check for Xcode project in this directory
+            val xcodeProj = current.listFiles()?.firstOrNull { it.name.endsWith(".xcodeproj") }
+            if (xcodeProj != null) {
+                return ":" + xcodeProj.name.removeSuffix(".xcodeproj")
+            }
+            if (File(current, "project.pbxproj").exists()) {
+                return ":" + current.parentFile.name.removeSuffix(".xcodeproj")
             }
 
             current = current.parentFile
