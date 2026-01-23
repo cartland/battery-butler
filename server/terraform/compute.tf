@@ -89,6 +89,10 @@ resource "aws_ecs_task_definition" "server" {
         {
           name  = "SERVER_LABEL"
           value = "AWS Cloud"
+        },
+        {
+          name  = "DB_SECRET_NAME"
+          value = aws_secretsmanager_secret.db_credentials.name
         }
       ]
     }

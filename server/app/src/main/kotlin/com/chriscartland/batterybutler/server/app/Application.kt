@@ -1,7 +1,8 @@
 package com.chriscartland.batterybutler.server.app
 
 import com.chriscartland.batterybutler.domain.AppLogger
-import com.chriscartland.batterybutler.server.data.repository.InMemoryDeviceRepository
+import com.chriscartland.batterybutler.server.app.db.DatabaseFactory
+import com.chriscartland.batterybutler.server.app.repository.PostgresDeviceRepository
 import io.grpc.Server
 import io.grpc.ServerBuilder
 import io.ktor.server.application.Application
@@ -12,6 +13,7 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
 
 fun main() {
+    DatabaseFactory.init()
     val grpcServer = startGrpcServer()
     startHttpServer()
 
@@ -26,7 +28,7 @@ fun main() {
 }
 
 fun startGrpcServer(port: Int = 50051): Server {
-    val repository = InMemoryDeviceRepository()
+    val repository = PostgresDeviceRepository()
     val grpcServer = ServerBuilder
         .forPort(port)
         .addService(BatteryService())

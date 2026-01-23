@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.ktor)
     alias(libs.plugins.protobuf)
     alias(libs.plugins.jib)
+    alias(libs.plugins.kotlinSerialization)
     application
 }
 
@@ -38,6 +39,17 @@ dependencies {
     testImplementation(libs.ktor.serverTestHost)
     testImplementation(libs.kotlin.testJunit)
     testImplementation(libs.grpc.inprocess)
+
+    implementation(libs.aws.secretsmanager)
+    implementation(libs.aws.sts)
+    implementation(libs.postgresql)
+    implementation(libs.hikari)
+    implementation(libs.exposed.core)
+    implementation(libs.exposed.jdbc)
+    implementation(libs.exposed.dao)
+    implementation(libs.exposed.java.time)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.h2)
 }
 
 sourceSets {
