@@ -24,13 +24,16 @@ class InMemoryDeviceRepository : ServerDeviceRepository {
         println("InMemoryDeviceRepository: Initializing...")
         // Initialize with deterministic DemoData
         val initialDeviceTypes = DemoData.getDefaultDeviceTypes()
-        val initialDevices = DemoData.getDefaultDevices(initialDeviceTypes).map {
-            it.copy(name = "${it.name} [Server]")
-        }
+        val serverLabel = System.getenv("SERVER_LABEL") ?: "AWS Cloud"
+        val initialDevices = DemoData.getDefaultDevices(initialDeviceTypes)
         val initialEvents = DemoData.getDefaultEvents(initialDevices)
 
+        val renamedDevices = initialDevices.map {
+            it.copy(name = "${it.name} [$serverLabel]")
+        }
+
         deviceTypes = ConcurrentHashMap(initialDeviceTypes.associateBy { it.id })
-        devices = ConcurrentHashMap(initialDevices.associateBy { it.id })
+        devices = ConcurrentHashMap(renamedDevices.associateBy { it.id })
         events = ConcurrentHashMap(initialEvents.associateBy { it.id })
 
         // Initialize StateFlow with the initial snapshot
@@ -38,7 +41,7 @@ class InMemoryDeviceRepository : ServerDeviceRepository {
             RemoteUpdate(
                 isFullSnapshot = true,
                 deviceTypes = initialDeviceTypes,
-                devices = initialDevices,
+                devices = renamedDevices,
                 events = initialEvents,
             ),
         )

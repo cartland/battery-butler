@@ -7,7 +7,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -53,15 +52,15 @@ fun App(
 // Replaced by ScreenListSaver in NavigationSavers.kt
 
             val backStack = rememberSaveable(saver = ScreenListSaver) {
-                mutableStateListOf<Any>(Screen.Devices)
+                mutableStateListOf<Screen>(Screen.Devices)
             }
 
             NavDisplay(
                 backStack = backStack,
                 onBack = { backStack.removeLastOrNull() },
                 entryDecorators = listOf(
-                    rememberSaveableStateHolderNavEntryDecorator(),
-                    rememberViewModelStoreNavEntryDecorator(),
+                    rememberSaveableStateHolderNavEntryDecorator<Screen>(),
+                    rememberViewModelStoreNavEntryDecorator<Screen>(),
                 ),
                 entryProvider = entryProvider {
                     // Shared navigation actions

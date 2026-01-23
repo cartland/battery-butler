@@ -1,0 +1,3029 @@
++ echo '--- 1. Spotless Apply ---'
+--- 1. Spotless Apply ---
++ ./gradlew spotlessApply
+Type-safe project accessors is an incubating feature.
+> Task :buildSrc:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :buildSrc:compileKotlin UP-TO-DATE
+> Task :buildSrc:compileJava NO-SOURCE
+> Task :buildSrc:compileGroovy NO-SOURCE
+> Task :buildSrc:pluginDescriptors UP-TO-DATE
+> Task :buildSrc:processResources NO-SOURCE
+> Task :buildSrc:classes UP-TO-DATE
+> Task :buildSrc:jar UP-TO-DATE
+
+> Configure project :compose-app
+WARNING: The option setting 'android.experimental.enableScreenshotTest=true' is experimental.
+The current default is 'false'.
+
+> Task :spotlessInternalRegisterDependencies UP-TO-DATE
+> Task :server:spotlessKotlin UP-TO-DATE
+> Task :domain:spotlessKotlin UP-TO-DATE
+> Task :domain:spotlessKotlinApply UP-TO-DATE
+> Task :server:spotlessKotlinApply UP-TO-DATE
+> Task :ios-swift-di:spotlessKotlin UP-TO-DATE
+> Task :ios-swift-di:spotlessKotlinApply UP-TO-DATE
+> Task :server:data:spotlessKotlin UP-TO-DATE
+> Task :server:data:spotlessKotlinApply UP-TO-DATE
+> Task :compose-resources:spotlessKotlin UP-TO-DATE
+> Task :compose-resources:spotlessKotlinApply UP-TO-DATE
+> Task :presentation-model:spotlessKotlin UP-TO-DATE
+> Task :presentation-model:spotlessKotlinApply UP-TO-DATE
+> Task :compose-app:spotlessKotlin UP-TO-DATE
+> Task :data:spotlessKotlin UP-TO-DATE
+> Task :compose-app:spotlessKotlinApply UP-TO-DATE
+> Task :data:spotlessKotlinApply UP-TO-DATE
+> Task :networking:spotlessKotlin UP-TO-DATE
+> Task :networking:spotlessKotlinApply UP-TO-DATE
+> Task :spotlessKotlin UP-TO-DATE
+> Task :spotlessKotlinApply UP-TO-DATE
+> Task :usecase:spotlessKotlin UP-TO-DATE
+> Task :usecase:spotlessKotlinApply UP-TO-DATE
+> Task :presentation-core:spotlessKotlin UP-TO-DATE
+> Task :presentation-core:spotlessKotlinApply UP-TO-DATE
+> Task :server:app:spotlessKotlin UP-TO-DATE
+> Task :server:app:spotlessKotlinApply UP-TO-DATE
+> Task :server:domain:spotlessKotlin UP-TO-DATE
+> Task :server:domain:spotlessKotlinApply UP-TO-DATE
+> Task :presentation-feature:spotlessKotlin UP-TO-DATE
+> Task :networking:spotlessKotlinGradle UP-TO-DATE
+> Task :presentation-feature:spotlessKotlinApply UP-TO-DATE
+> Task :networking:spotlessKotlinGradleApply UP-TO-DATE
+> Task :networking:spotlessApply UP-TO-DATE
+> Task :compose-app:spotlessKotlinGradle UP-TO-DATE
+> Task :compose-app:spotlessKotlinGradleApply UP-TO-DATE
+> Task :compose-app:spotlessApply UP-TO-DATE
+> Task :data:spotlessKotlinGradle UP-TO-DATE
+> Task :data:spotlessKotlinGradleApply UP-TO-DATE
+> Task :data:spotlessApply UP-TO-DATE
+> Task :compose-resources:spotlessKotlinGradle UP-TO-DATE
+> Task :compose-resources:spotlessKotlinGradleApply UP-TO-DATE
+> Task :compose-resources:spotlessApply UP-TO-DATE
+> Task :server:data:spotlessKotlinGradle UP-TO-DATE
+> Task :server:data:spotlessKotlinGradleApply UP-TO-DATE
+> Task :server:data:spotlessApply UP-TO-DATE
+> Task :viewmodel:spotlessKotlin UP-TO-DATE
+> Task :viewmodel:spotlessKotlinApply UP-TO-DATE
+> Task :ios-swift-di:spotlessKotlinGradle UP-TO-DATE
+> Task :ios-swift-di:spotlessKotlinGradleApply UP-TO-DATE
+> Task :ios-swift-di:spotlessApply UP-TO-DATE
+> Task :domain:spotlessKotlinGradle UP-TO-DATE
+> Task :domain:spotlessKotlinGradleApply UP-TO-DATE
+> Task :domain:spotlessApply UP-TO-DATE
+> Task :presentation-model:spotlessKotlinGradle UP-TO-DATE
+> Task :server:spotlessKotlinGradle UP-TO-DATE
+> Task :spotlessKotlinGradle UP-TO-DATE
+> Task :presentation-model:spotlessKotlinGradleApply UP-TO-DATE
+> Task :server:spotlessKotlinGradleApply UP-TO-DATE
+> Task :server:spotlessApply UP-TO-DATE
+> Task :presentation-model:spotlessApply UP-TO-DATE
+> Task :spotlessKotlinGradleApply UP-TO-DATE
+> Task :spotlessApply UP-TO-DATE
+> Task :presentation-feature:spotlessKotlinGradle UP-TO-DATE
+> Task :presentation-feature:spotlessKotlinGradleApply UP-TO-DATE
+> Task :presentation-feature:spotlessApply UP-TO-DATE
+> Task :server:domain:spotlessKotlinGradle UP-TO-DATE
+> Task :server:domain:spotlessKotlinGradleApply UP-TO-DATE
+> Task :server:domain:spotlessApply UP-TO-DATE
+> Task :presentation-core:spotlessKotlinGradle UP-TO-DATE
+> Task :presentation-core:spotlessKotlinGradleApply UP-TO-DATE
+> Task :presentation-core:spotlessApply UP-TO-DATE
+> Task :server:app:spotlessKotlinGradle UP-TO-DATE
+> Task :server:app:spotlessKotlinGradleApply UP-TO-DATE
+> Task :server:app:spotlessApply UP-TO-DATE
+> Task :usecase:spotlessKotlinGradle UP-TO-DATE
+> Task :usecase:spotlessKotlinGradleApply UP-TO-DATE
+> Task :usecase:spotlessApply UP-TO-DATE
+> Task :viewmodel:spotlessKotlinGradle UP-TO-DATE
+> Task :viewmodel:spotlessKotlinGradleApply UP-TO-DATE
+> Task :viewmodel:spotlessApply UP-TO-DATE
+
+BUILD SUCCESSFUL in 1s
+68 actionable tasks: 68 up-to-date
++ echo '--- 2. Update Screenshots ---'
+--- 2. Update Screenshots ---
++ echo '--- 3. Validate ---'
+--- 3. Validate ---
++ ./scripts/validate.sh
++ '[' -n '' ']'
+++ dirname ./scripts/validate.sh
++ cd ./scripts/..
++ echo '--- 1. Clean Project ---'
+--- 1. Clean Project ---
++ echo '--- 1. Clean Project - SKIPPED (Relying on Incremental Build) ---'
+--- 1. Clean Project - SKIPPED (Relying on Incremental Build) ---
++ echo '--- 2. Formatting (Spotless) ---'
+--- 2. Formatting (Spotless) ---
++ ./gradlew spotlessCheck --stacktrace
+Type-safe project accessors is an incubating feature.
+> Task :buildSrc:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :buildSrc:compileKotlin UP-TO-DATE
+> Task :buildSrc:compileJava NO-SOURCE
+> Task :buildSrc:compileGroovy NO-SOURCE
+> Task :buildSrc:pluginDescriptors UP-TO-DATE
+> Task :buildSrc:processResources NO-SOURCE
+> Task :buildSrc:classes UP-TO-DATE
+> Task :buildSrc:jar UP-TO-DATE
+
+> Configure project :compose-app
+WARNING: The option setting 'android.experimental.enableScreenshotTest=true' is experimental.
+The current default is 'false'.
+
+> Task :spotlessInternalRegisterDependencies UP-TO-DATE
+> Task :presentation-model:spotlessKotlin UP-TO-DATE
+> Task :presentation-model:spotlessKotlinCheck UP-TO-DATE
+> Task :domain:spotlessKotlin UP-TO-DATE
+> Task :server:domain:spotlessKotlin UP-TO-DATE
+> Task :domain:spotlessKotlinCheck UP-TO-DATE
+> Task :server:domain:spotlessKotlinCheck UP-TO-DATE
+> Task :server:data:spotlessKotlin UP-TO-DATE
+> Task :ios-swift-di:spotlessKotlin UP-TO-DATE
+> Task :server:data:spotlessKotlinCheck UP-TO-DATE
+> Task :ios-swift-di:spotlessKotlinCheck UP-TO-DATE
+> Task :compose-app:spotlessKotlin UP-TO-DATE
+> Task :compose-app:spotlessKotlinCheck UP-TO-DATE
+> Task :server:app:spotlessKotlin UP-TO-DATE
+> Task :server:app:spotlessKotlinCheck UP-TO-DATE
+> Task :server:spotlessKotlin UP-TO-DATE
+> Task :server:spotlessKotlinCheck UP-TO-DATE
+> Task :spotlessKotlin UP-TO-DATE
+> Task :spotlessKotlinCheck UP-TO-DATE
+> Task :networking:spotlessKotlin UP-TO-DATE
+> Task :networking:spotlessKotlinCheck UP-TO-DATE
+> Task :usecase:spotlessKotlin UP-TO-DATE
+> Task :usecase:spotlessKotlinCheck UP-TO-DATE
+> Task :presentation-core:spotlessKotlin UP-TO-DATE
+> Task :compose-resources:spotlessKotlin UP-TO-DATE
+> Task :presentation-core:spotlessKotlinCheck UP-TO-DATE
+> Task :compose-resources:spotlessKotlinCheck UP-TO-DATE
+> Task :viewmodel:spotlessKotlin UP-TO-DATE
+> Task :viewmodel:spotlessKotlinCheck UP-TO-DATE
+> Task :data:spotlessKotlin UP-TO-DATE
+> Task :usecase:spotlessKotlinGradle UP-TO-DATE
+> Task :usecase:spotlessKotlinGradleCheck UP-TO-DATE
+> Task :data:spotlessKotlinCheck UP-TO-DATE
+> Task :usecase:spotlessCheck UP-TO-DATE
+> Task :networking:spotlessKotlinGradle UP-TO-DATE
+> Task :networking:spotlessKotlinGradleCheck UP-TO-DATE
+> Task :networking:spotlessCheck UP-TO-DATE
+> Task :server:spotlessKotlinGradle UP-TO-DATE
+> Task :server:spotlessKotlinGradleCheck UP-TO-DATE
+> Task :server:spotlessCheck UP-TO-DATE
+> Task :server:app:spotlessKotlinGradle UP-TO-DATE
+> Task :server:app:spotlessKotlinGradleCheck UP-TO-DATE
+> Task :server:app:spotlessCheck UP-TO-DATE
+> Task :compose-app:spotlessKotlinGradle UP-TO-DATE
+> Task :compose-app:spotlessKotlinGradleCheck UP-TO-DATE
+> Task :compose-app:spotlessCheck UP-TO-DATE
+> Task :ios-swift-di:spotlessKotlinGradle UP-TO-DATE
+> Task :ios-swift-di:spotlessKotlinGradleCheck UP-TO-DATE
+> Task :ios-swift-di:spotlessCheck UP-TO-DATE
+> Task :server:domain:spotlessKotlinGradle UP-TO-DATE
+> Task :server:domain:spotlessKotlinGradleCheck UP-TO-DATE
+> Task :server:domain:spotlessCheck UP-TO-DATE
+> Task :domain:spotlessKotlinGradle UP-TO-DATE
+> Task :domain:spotlessKotlinGradleCheck UP-TO-DATE
+> Task :domain:spotlessCheck UP-TO-DATE
+> Task :presentation-model:spotlessKotlinGradle UP-TO-DATE
+> Task :presentation-model:spotlessKotlinGradleCheck UP-TO-DATE
+> Task :presentation-model:spotlessCheck UP-TO-DATE
+> Task :presentation-feature:spotlessKotlin UP-TO-DATE
+> Task :server:data:spotlessKotlinGradle UP-TO-DATE
+> Task :presentation-feature:spotlessKotlinCheck UP-TO-DATE
+> Task :server:data:spotlessKotlinGradleCheck UP-TO-DATE
+> Task :server:data:spotlessCheck UP-TO-DATE
+> Task :data:spotlessKotlinGradle UP-TO-DATE
+> Task :data:spotlessKotlinGradleCheck UP-TO-DATE
+> Task :data:spotlessCheck UP-TO-DATE
+> Task :presentation-feature:spotlessKotlinGradle UP-TO-DATE
+> Task :presentation-feature:spotlessKotlinGradleCheck UP-TO-DATE
+> Task :presentation-feature:spotlessCheck UP-TO-DATE
+> Task :compose-resources:spotlessKotlinGradle UP-TO-DATE
+> Task :compose-resources:spotlessKotlinGradleCheck UP-TO-DATE
+> Task :compose-resources:spotlessCheck UP-TO-DATE
+> Task :presentation-core:spotlessKotlinGradle UP-TO-DATE
+> Task :presentation-core:spotlessKotlinGradleCheck UP-TO-DATE
+> Task :presentation-core:spotlessCheck UP-TO-DATE
+> Task :viewmodel:spotlessKotlinGradle UP-TO-DATE
+> Task :viewmodel:spotlessKotlinGradleCheck UP-TO-DATE
+> Task :viewmodel:spotlessCheck UP-TO-DATE
+> Task :spotlessKotlinGradle UP-TO-DATE
+> Task :spotlessKotlinGradleCheck UP-TO-DATE
+> Task :spotlessCheck UP-TO-DATE
+
+BUILD SUCCESSFUL in 884ms
+68 actionable tasks: 68 up-to-date
++ echo '--- 3. Lint ---'
+--- 3. Lint ---
++ ./gradlew lint --stacktrace
+Type-safe project accessors is an incubating feature.
+> Task :buildSrc:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :buildSrc:compileKotlin UP-TO-DATE
+> Task :buildSrc:compileJava NO-SOURCE
+> Task :buildSrc:compileGroovy NO-SOURCE
+> Task :buildSrc:pluginDescriptors UP-TO-DATE
+> Task :buildSrc:processResources NO-SOURCE
+> Task :buildSrc:classes UP-TO-DATE
+> Task :buildSrc:jar UP-TO-DATE
+
+> Configure project :compose-app
+WARNING: The option setting 'android.experimental.enableScreenshotTest=true' is experimental.
+The current default is 'false'.
+
+> Task :data:preBuild UP-TO-DATE
+> Task :presentation-core:preBuild UP-TO-DATE
+> Task :viewmodel:preBuild UP-TO-DATE
+> Task :presentation-feature:preBuild UP-TO-DATE
+> Task :data:preDebugBuild UP-TO-DATE
+> Task :compose-app:convertXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :presentation-core:preDebugBuild UP-TO-DATE
+> Task :viewmodel:preDebugBuild UP-TO-DATE
+> Task :compose-app:copyNonXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :presentation-feature:preDebugBuild UP-TO-DATE
+> Task :presentation-core:mergeDebugJniLibFolders UP-TO-DATE
+> Task :data:mergeDebugJniLibFolders UP-TO-DATE
+> Task :compose-app:prepareComposeResourcesTaskForAndroidDebug NO-SOURCE
+> Task :viewmodel:mergeDebugJniLibFolders UP-TO-DATE
+> Task :presentation-core:mergeDebugNativeLibs NO-SOURCE
+> Task :presentation-feature:mergeDebugJniLibFolders UP-TO-DATE
+> Task :viewmodel:mergeDebugNativeLibs NO-SOURCE
+> Task :data:mergeDebugNativeLibs NO-SOURCE
+> Task :compose-app:convertXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :presentation-feature:mergeDebugNativeLibs NO-SOURCE
+> Task :compose-app:copyNonXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :presentation-core:stripDebugDebugSymbols NO-SOURCE
+> Task :data:stripDebugDebugSymbols NO-SOURCE
+> Task :viewmodel:stripDebugDebugSymbols NO-SOURCE
+> Task :compose-app:prepareComposeResourcesTaskForAndroidMain NO-SOURCE
+> Task :presentation-feature:stripDebugDebugSymbols NO-SOURCE
+> Task :viewmodel:copyDebugJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :presentation-feature:copyDebugJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :presentation-core:copyDebugJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :data:copyDebugJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :compose-app:convertXmlValueResourcesForCommonMain UP-TO-DATE
+> Task :compose-app:copyNonXmlValueResourcesForCommonMain UP-TO-DATE
+> Task :compose-app:prepareComposeResourcesTaskForCommonMain UP-TO-DATE
+> Task :compose-app:copyDebugComposeResourcesToAndroidAssets UP-TO-DATE
+> Task :compose-app:generateResourceAccessorsForAndroidDebug NO-SOURCE
+> Task :compose-app:generateResourceAccessorsForAndroidMain NO-SOURCE
+> Task :compose-app:generateResourceAccessorsForCommonMain UP-TO-DATE
+> Task :domain:kmpPartiallyResolvedDependenciesChecker
+> Task :domain:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :domain:preBuild UP-TO-DATE
+> Task :domain:preDebugBuild UP-TO-DATE
+> Task :domain:generateDebugResValues UP-TO-DATE
+> Task :domain:generateDebugResources UP-TO-DATE
+> Task :domain:packageDebugResources UP-TO-DATE
+> Task :domain:parseDebugLocalResources UP-TO-DATE
+> Task :domain:generateDebugRFile UP-TO-DATE
+> Task :domain:kspDebugKotlinAndroid SKIPPED
+> Task :domain:compileDebugKotlinAndroid UP-TO-DATE
+> Task :domain:javaPreCompileDebug UP-TO-DATE
+> Task :domain:compileDebugJavaWithJavac NO-SOURCE
+> Task :domain:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :domain:mergeDebugJniLibFolders UP-TO-DATE
+> Task :domain:mergeDebugNativeLibs NO-SOURCE
+> Task :domain:stripDebugDebugSymbols NO-SOURCE
+> Task :domain:copyDebugJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :domain:extractDebugAnnotations UP-TO-DATE
+> Task :domain:extractDeepLinksForAarDebug UP-TO-DATE
+> Task :domain:mergeDebugShaders UP-TO-DATE
+> Task :domain:compileDebugShaders NO-SOURCE
+> Task :domain:debugAssetsCopyForAGP NO-SOURCE
+> Task :domain:generateDebugAssets UP-TO-DATE
+> Task :domain:mergeDebugAssets UP-TO-DATE
+> Task :domain:mergeDebugGeneratedProguardFiles UP-TO-DATE
+> Task :compose-resources:kmpPartiallyResolvedDependenciesChecker
+> Task :compose-resources:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :domain:mergeDebugConsumerProguardFiles UP-TO-DATE
+> Task :compose-resources:convertXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :compose-resources:copyNonXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :domain:prepareDebugArtProfile UP-TO-DATE
+> Task :compose-resources:prepareComposeResourcesTaskForAndroidMain NO-SOURCE
+> Task :compose-resources:generateResourceAccessorsForAndroidMain NO-SOURCE
+> Task :domain:prepareLintJarForPublish UP-TO-DATE
+> Task :compose-resources:convertXmlValueResourcesForCommonMain UP-TO-DATE
+> Task :compose-resources:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :domain:processDebugManifest UP-TO-DATE
+> Task :compose-resources:prepareComposeResourcesTaskForCommonMain UP-TO-DATE
+> Task :compose-resources:generateResourceAccessorsForCommonMain UP-TO-DATE
+> Task :domain:processDebugJavaRes UP-TO-DATE
+> Task :compose-resources:generateActualResourceCollectorsForAndroidMain UP-TO-DATE
+> Task :compose-resources:generateComposeResClass UP-TO-DATE
+> Task :compose-resources:convertXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :compose-resources:copyNonXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :compose-resources:prepareComposeResourcesTaskForAndroidDebug NO-SOURCE
+> Task :domain:mergeDebugJavaResource UP-TO-DATE
+> Task :compose-resources:copyDebugComposeResourcesToAndroidAssets UP-TO-DATE
+> Task :compose-resources:preBuild UP-TO-DATE
+> Task :compose-resources:preDebugBuild UP-TO-DATE
+> Task :compose-resources:generateDebugResValues UP-TO-DATE
+> Task :compose-resources:generateDebugResources UP-TO-DATE
+> Task :domain:syncDebugLibJars UP-TO-DATE
+> Task :compose-resources:packageDebugResources UP-TO-DATE
+> Task :domain:writeDebugAarMetadata UP-TO-DATE
+> Task :domain:bundleDebugLocalLintAar UP-TO-DATE
+> Task :compose-resources:parseDebugLocalResources UP-TO-DATE
+> Task :domain:extractDeepLinksDebug UP-TO-DATE
+> Task :domain:compileDebugLibraryResources UP-TO-DATE
+> Task :compose-resources:generateDebugRFile UP-TO-DATE
+> Task :compose-resources:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :domain:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :compose-resources:generateResourceAccessorsForAndroidDebug NO-SOURCE
+> Task :domain:createFullJarDebug UP-TO-DATE
+> Task :presentation-model:kmpPartiallyResolvedDependenciesChecker
+> Task :presentation-model:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :presentation-model:preBuild UP-TO-DATE
+> Task :networking:kmpPartiallyResolvedDependenciesChecker
+> Task :domain:writeDebugLintModelMetadata UP-TO-DATE
+> Task :viewmodel:kmpPartiallyResolvedDependenciesChecker
+> Task :usecase:kmpPartiallyResolvedDependenciesChecker
+> Task :presentation-model:preDebugBuild UP-TO-DATE
+> Task :networking:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :usecase:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :viewmodel:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :viewmodel:generateDebugResValues UP-TO-DATE
+> Task :presentation-model:generateDebugResValues UP-TO-DATE
+> Task :usecase:preBuild UP-TO-DATE
+> Task :usecase:preDebugBuild UP-TO-DATE
+> Task :presentation-model:generateDebugResources UP-TO-DATE
+> Task :domain:extractProguardFiles UP-TO-DATE
+> Task :usecase:generateDebugResValues UP-TO-DATE
+> Task :viewmodel:generateDebugResources UP-TO-DATE
+> Task :networking:generateCommonMainProtos UP-TO-DATE
+> Task :presentation-model:packageDebugResources UP-TO-DATE
+> Task :usecase:generateDebugResources UP-TO-DATE
+> Task :networking:preBuild UP-TO-DATE
+> Task :viewmodel:packageDebugResources UP-TO-DATE
+> Task :networking:preDebugBuild UP-TO-DATE
+> Task :presentation-model:parseDebugLocalResources UP-TO-DATE
+> Task :usecase:packageDebugResources UP-TO-DATE
+> Task :networking:generateDebugResValues UP-TO-DATE
+> Task :networking:generateDebugResources UP-TO-DATE
+> Task :viewmodel:parseDebugLocalResources UP-TO-DATE
+> Task :presentation-model:generateDebugRFile UP-TO-DATE
+> Task :viewmodel:generateDebugRFile UP-TO-DATE
+> Task :networking:packageDebugResources UP-TO-DATE
+> Task :usecase:parseDebugLocalResources UP-TO-DATE
+> Task :viewmodel:extractDeepLinksForAarDebug UP-TO-DATE
+> Task :usecase:generateDebugRFile UP-TO-DATE
+> Task :viewmodel:mergeDebugShaders UP-TO-DATE
+> Task :networking:parseDebugLocalResources UP-TO-DATE
+> Task :viewmodel:compileDebugShaders NO-SOURCE
+> Task :viewmodel:debugAssetsCopyForAGP NO-SOURCE
+> Task :viewmodel:generateDebugAssets UP-TO-DATE
+> Task :viewmodel:mergeDebugAssets UP-TO-DATE
+> Task :networking:generateDebugRFile UP-TO-DATE
+> Task :viewmodel:javaPreCompileDebug UP-TO-DATE
+> Task :viewmodel:prepareDebugArtProfile UP-TO-DATE
+> Task :viewmodel:prepareLintJarForPublish UP-TO-DATE
+> Task :viewmodel:processDebugManifest UP-TO-DATE
+> Task :viewmodel:writeDebugAarMetadata UP-TO-DATE
+> Task :viewmodel:extractDeepLinksDebug UP-TO-DATE
+> Task :viewmodel:compileDebugLibraryResources UP-TO-DATE
+> Task :data:kmpPartiallyResolvedDependenciesChecker
+> Task :viewmodel:writeDebugLintModelMetadata UP-TO-DATE
+> Task :data:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :data:generateDebugBuildConfig UP-TO-DATE
+> Task :data:generateDebugResValues UP-TO-DATE
+> Task :usecase:kspDebugKotlinAndroid UP-TO-DATE
+> Task :data:generateDebugResources UP-TO-DATE
+> Task :data:packageDebugResources UP-TO-DATE
+> Task :viewmodel:extractProguardFiles UP-TO-DATE
+> Task :viewmodel:preDebugAndroidTestBuild UP-TO-DATE
+> Task :presentation-model:compileDebugKotlinAndroid UP-TO-DATE
+> Task :domain:generateDebugLintModel UP-TO-DATE
+> Task :networking:compileDebugKotlinAndroid UP-TO-DATE
+> Task :data:parseDebugLocalResources UP-TO-DATE
+> Task :presentation-model:javaPreCompileDebug UP-TO-DATE
+> Task :viewmodel:generateDebugAndroidTestResValues UP-TO-DATE
+> Task :viewmodel:preDebugUnitTestBuild UP-TO-DATE
+> Task :data:generateDebugRFile UP-TO-DATE
+> Task :networking:javaPreCompileDebug UP-TO-DATE
+> Task :networking:compileDebugJavaWithJavac NO-SOURCE
+> Task :networking:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :networking:mergeDebugJniLibFolders UP-TO-DATE
+> Task :data:extractDeepLinksForAarDebug UP-TO-DATE
+> Task :networking:mergeDebugNativeLibs NO-SOURCE
+> Task :presentation-model:compileDebugJavaWithJavac NO-SOURCE
+> Task :domain:lintAnalyzeDebug UP-TO-DATE
+> Task :domain:preDebugAndroidTestBuild UP-TO-DATE
+> Task :networking:stripDebugDebugSymbols NO-SOURCE
+> Task :presentation-model:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :presentation-model:mergeDebugJniLibFolders UP-TO-DATE
+> Task :usecase:compileDebugKotlinAndroid UP-TO-DATE
+> Task :domain:generateDebugAndroidTestResValues UP-TO-DATE
+> Task :presentation-model:mergeDebugNativeLibs NO-SOURCE
+> Task :networking:copyDebugJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :presentation-model:stripDebugDebugSymbols NO-SOURCE
+> Task :usecase:javaPreCompileDebug UP-TO-DATE
+> Task :usecase:compileDebugJavaWithJavac NO-SOURCE
+> Task :presentation-model:copyDebugJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :usecase:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :usecase:mergeDebugJniLibFolders UP-TO-DATE
+> Task :usecase:mergeDebugNativeLibs NO-SOURCE
+> Task :compose-resources:compileDebugKotlinAndroid UP-TO-DATE
+> Task :compose-resources:javaPreCompileDebug UP-TO-DATE
+> Task :compose-resources:compileDebugJavaWithJavac NO-SOURCE
+> Task :compose-resources:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :networking:extractDebugAnnotations UP-TO-DATE
+> Task :compose-resources:mergeDebugJniLibFolders UP-TO-DATE
+> Task :usecase:stripDebugDebugSymbols NO-SOURCE
+> Task :presentation-model:extractDebugAnnotations UP-TO-DATE
+> Task :domain:generateDebugAndroidTestLintModel UP-TO-DATE
+> Task :compose-resources:mergeDebugNativeLibs NO-SOURCE
+> Task :domain:preDebugUnitTestBuild UP-TO-DATE
+> Task :usecase:copyDebugJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :networking:extractDeepLinksForAarDebug UP-TO-DATE
+> Task :networking:mergeDebugShaders UP-TO-DATE
+> Task :compose-resources:stripDebugDebugSymbols NO-SOURCE
+> Task :presentation-model:extractDeepLinksForAarDebug UP-TO-DATE
+> Task :networking:compileDebugShaders NO-SOURCE
+> Task :networking:debugAssetsCopyForAGP NO-SOURCE
+> Task :viewmodel:kspDebugKotlinAndroid UP-TO-DATE
+> Task :networking:generateDebugAssets UP-TO-DATE
+> Task :presentation-model:mergeDebugShaders UP-TO-DATE
+> Task :networking:mergeDebugAssets UP-TO-DATE
+> Task :compose-resources:copyDebugJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :presentation-model:compileDebugShaders NO-SOURCE
+> Task :presentation-model:debugAssetsCopyForAGP NO-SOURCE
+> Task :presentation-model:generateDebugAssets UP-TO-DATE
+> Task :presentation-model:mergeDebugAssets UP-TO-DATE
+> Task :usecase:extractDebugAnnotations UP-TO-DATE
+> Task :networking:mergeDebugGeneratedProguardFiles UP-TO-DATE
+> Task :networking:mergeDebugConsumerProguardFiles UP-TO-DATE
+> Task :usecase:extractDeepLinksForAarDebug UP-TO-DATE
+> Task :presentation-model:mergeDebugGeneratedProguardFiles UP-TO-DATE
+> Task :usecase:mergeDebugShaders UP-TO-DATE
+> Task :networking:prepareDebugArtProfile UP-TO-DATE
+> Task :usecase:compileDebugShaders NO-SOURCE
+> Task :compose-resources:extractDebugAnnotations UP-TO-DATE
+> Task :presentation-model:mergeDebugConsumerProguardFiles UP-TO-DATE
+> Task :usecase:debugAssetsCopyForAGP NO-SOURCE
+> Task :usecase:generateDebugAssets UP-TO-DATE
+> Task :networking:prepareLintJarForPublish UP-TO-DATE
+> Task :presentation-model:prepareDebugArtProfile UP-TO-DATE
+> Task :usecase:mergeDebugAssets UP-TO-DATE
+> Task :compose-resources:extractDeepLinksForAarDebug UP-TO-DATE
+> Task :domain:generateDebugUnitTestLintModel UP-TO-DATE
+> Task :compose-resources:mergeDebugShaders UP-TO-DATE
+> Task :compose-resources:compileDebugShaders NO-SOURCE
+> Task :compose-resources:debugAssetsCopyForAGP NO-SOURCE
+> Task :networking:processDebugManifest UP-TO-DATE
+> Task :presentation-model:prepareLintJarForPublish UP-TO-DATE
+> Task :usecase:mergeDebugGeneratedProguardFiles UP-TO-DATE
+> Task :compose-resources:generateDebugAssets UP-TO-DATE
+> Task :networking:processDebugJavaRes UP-TO-DATE
+> Task :compose-resources:mergeDebugAssets UP-TO-DATE
+> Task :usecase:mergeDebugConsumerProguardFiles UP-TO-DATE
+> Task :viewmodel:compileDebugKotlinAndroid UP-TO-DATE
+> Task :presentation-model:processDebugManifest UP-TO-DATE
+> Task :domain:lintAnalyzeDebugAndroidTest UP-TO-DATE
+> Task :usecase:prepareDebugArtProfile UP-TO-DATE
+> Task :networking:mergeDebugJavaResource UP-TO-DATE
+> Task :compose-resources:mergeDebugGeneratedProguardFiles UP-TO-DATE
+> Task :presentation-model:processDebugJavaRes UP-TO-DATE
+> Task :usecase:prepareLintJarForPublish UP-TO-DATE
+> Task :usecase:processDebugManifest UP-TO-DATE
+> Task :networking:syncDebugLibJars UP-TO-DATE
+> Task :presentation-model:mergeDebugJavaResource UP-TO-DATE
+> Task :compose-resources:mergeDebugConsumerProguardFiles UP-TO-DATE
+> Task :networking:writeDebugAarMetadata UP-TO-DATE
+> Task :usecase:processDebugJavaRes UP-TO-DATE
+> Task :viewmodel:extractDebugAnnotations UP-TO-DATE
+> Task :domain:lintAnalyzeDebugUnitTest UP-TO-DATE
+> Task :compose-resources:prepareDebugArtProfile UP-TO-DATE
+> Task :viewmodel:compileDebugJavaWithJavac NO-SOURCE
+> Task :presentation-model:syncDebugLibJars UP-TO-DATE
+> Task :networking:bundleDebugLocalLintAar UP-TO-DATE
+> Task :presentation-model:writeDebugAarMetadata UP-TO-DATE
+> Task :data:kspDebugKotlinAndroid UP-TO-DATE
+> Task :networking:extractDeepLinksDebug UP-TO-DATE
+> Task :usecase:mergeDebugJavaResource UP-TO-DATE
+> Task :viewmodel:mergeDebugGeneratedProguardFiles UP-TO-DATE
+> Task :networking:compileDebugLibraryResources UP-TO-DATE
+> Task :networking:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :viewmodel:mergeDebugConsumerProguardFiles UP-TO-DATE
+> Task :compose-resources:prepareLintJarForPublish UP-TO-DATE
+> Task :presentation-model:bundleDebugLocalLintAar UP-TO-DATE
+> Task :domain:generateDebugLintReportModel UP-TO-DATE
+> Task :networking:createFullJarDebug UP-TO-DATE
+> Task :usecase:syncDebugLibJars UP-TO-DATE
+> Task :usecase:writeDebugAarMetadata UP-TO-DATE
+> Task :viewmodel:processDebugJavaRes UP-TO-DATE
+> Task :presentation-model:extractDeepLinksDebug UP-TO-DATE
+> Task :compose-resources:processDebugManifest UP-TO-DATE
+> Task :networking:writeDebugLintModelMetadata UP-TO-DATE
+> Task :presentation-model:compileDebugLibraryResources UP-TO-DATE
+> Task :presentation-model:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :networking:extractProguardFiles UP-TO-DATE
+> Task :compose-resources:processDebugJavaRes UP-TO-DATE
+> Task :usecase:bundleDebugLocalLintAar UP-TO-DATE
+> Task :viewmodel:mergeDebugJavaResource UP-TO-DATE
+> Task :presentation-model:createFullJarDebug UP-TO-DATE
+> Task :compose-resources:mergeDebugJavaResource UP-TO-DATE
+> Task :usecase:extractDeepLinksDebug UP-TO-DATE
+> Task :presentation-model:writeDebugLintModelMetadata UP-TO-DATE
+> Task :usecase:compileDebugLibraryResources UP-TO-DATE
+> Task :usecase:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :viewmodel:syncDebugLibJars UP-TO-DATE
+> Task :presentation-model:extractProguardFiles UP-TO-DATE
+> Task :usecase:createFullJarDebug UP-TO-DATE
+> Task :compose-resources:syncDebugLibJars UP-TO-DATE
+> Task :viewmodel:bundleDebugLocalLintAar UP-TO-DATE
+> Task :compose-resources:writeDebugAarMetadata UP-TO-DATE
+> Task :usecase:writeDebugLintModelMetadata UP-TO-DATE
+> Task :viewmodel:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :data:compileDebugKotlinAndroid UP-TO-DATE
+> Task :viewmodel:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :compose-resources:bundleDebugLocalLintAar UP-TO-DATE
+> Task :usecase:extractProguardFiles UP-TO-DATE
+> Task :viewmodel:createFullJarDebug UP-TO-DATE
+> Task :domain:lintReportDebug UP-TO-DATE
+> Task :compose-resources:extractDeepLinksDebug UP-TO-DATE
+> Task :compose-resources:compileDebugLibraryResources UP-TO-DATE
+> Task :compose-resources:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :compose-resources:createFullJarDebug UP-TO-DATE
+> Task :compose-resources:writeDebugLintModelMetadata UP-TO-DATE
+> Task :compose-resources:extractProguardFiles UP-TO-DATE
+> Task :domain:lintDebug
+> Task :domain:lint
+> Task :data:extractDebugAnnotations UP-TO-DATE
+> Task :data:mergeDebugShaders UP-TO-DATE
+> Task :data:compileDebugShaders NO-SOURCE
+> Task :data:debugAssetsCopyForAGP NO-SOURCE
+> Task :data:generateDebugAssets UP-TO-DATE
+> Task :presentation-model:generateDebugLintModel UP-TO-DATE
+> Task :data:mergeDebugAssets UP-TO-DATE
+> Task :networking:generateDebugLintModel UP-TO-DATE
+> Task :data:javaPreCompileDebug UP-TO-DATE
+> Task :data:compileDebugJavaWithJavac UP-TO-DATE
+> Task :usecase:generateDebugLintModel UP-TO-DATE
+> Task :presentation-model:lintAnalyzeDebug UP-TO-DATE
+> Task :presentation-model:preDebugAndroidTestBuild UP-TO-DATE
+> Task :data:copyRoomSchemas NO-SOURCE
+> Task :networking:lintAnalyzeDebug UP-TO-DATE
+> Task :networking:preDebugAndroidTestBuild UP-TO-DATE
+> Task :presentation-model:generateDebugAndroidTestResValues UP-TO-DATE
+> Task :data:mergeDebugGeneratedProguardFiles UP-TO-DATE
+> Task :networking:generateDebugAndroidTestResValues UP-TO-DATE
+> Task :usecase:lintAnalyzeDebug UP-TO-DATE
+> Task :usecase:preDebugAndroidTestBuild UP-TO-DATE
+> Task :usecase:generateDebugAndroidTestResValues UP-TO-DATE
+> Task :data:mergeDebugConsumerProguardFiles UP-TO-DATE
+> Task :presentation-model:generateDebugAndroidTestLintModel UP-TO-DATE
+> Task :presentation-model:preDebugUnitTestBuild UP-TO-DATE
+> Task :viewmodel:generateDebugAndroidTestLintModel UP-TO-DATE
+> Task :data:prepareDebugArtProfile UP-TO-DATE
+> Task :networking:generateDebugAndroidTestLintModel UP-TO-DATE
+> Task :networking:preDebugUnitTestBuild UP-TO-DATE
+> Task :usecase:generateDebugAndroidTestLintModel UP-TO-DATE
+> Task :data:prepareLintJarForPublish UP-TO-DATE
+> Task :usecase:preDebugUnitTestBuild UP-TO-DATE
+> Task :data:processDebugManifest UP-TO-DATE
+> Task :presentation-model:generateDebugUnitTestLintModel UP-TO-DATE
+> Task :viewmodel:generateDebugLintModel UP-TO-DATE
+> Task :data:processDebugJavaRes UP-TO-DATE
+> Task :networking:generateDebugUnitTestLintModel UP-TO-DATE
+> Task :data:mergeDebugJavaResource UP-TO-DATE
+> Task :presentation-model:lintAnalyzeDebugAndroidTest UP-TO-DATE
+> Task :viewmodel:lintAnalyzeDebug UP-TO-DATE
+> Task :usecase:generateDebugUnitTestLintModel UP-TO-DATE
+> Task :data:syncDebugLibJars UP-TO-DATE
+> Task :data:writeDebugAarMetadata UP-TO-DATE
+> Task :networking:lintAnalyzeDebugAndroidTest UP-TO-DATE
+> Task :presentation-model:lintAnalyzeDebugUnitTest UP-TO-DATE
+> Task :usecase:lintAnalyzeDebugAndroidTest UP-TO-DATE
+> Task :data:bundleDebugLocalLintAar UP-TO-DATE
+> Task :data:extractDeepLinksDebug UP-TO-DATE
+> Task :data:compileDebugLibraryResources UP-TO-DATE
+> Task :viewmodel:generateDebugUnitTestLintModel UP-TO-DATE
+> Task :presentation-model:generateDebugLintReportModel UP-TO-DATE
+> Task :data:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :data:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :networking:lintAnalyzeDebugUnitTest UP-TO-DATE
+> Task :data:createFullJarDebug UP-TO-DATE
+> Task :usecase:lintAnalyzeDebugUnitTest UP-TO-DATE
+> Task :data:writeDebugLintModelMetadata UP-TO-DATE
+> Task :viewmodel:lintAnalyzeDebugAndroidTest UP-TO-DATE
+> Task :networking:generateDebugLintReportModel UP-TO-DATE
+> Task :presentation-model:lintReportDebug UP-TO-DATE
+> Task :data:extractProguardFiles UP-TO-DATE
+> Task :presentation-model:lintDebug
+> Task :presentation-model:lint
+> Task :usecase:generateDebugLintReportModel UP-TO-DATE
+> Task :viewmodel:lintAnalyzeDebugUnitTest UP-TO-DATE
+> Task :viewmodel:generateDebugLintReportModel UP-TO-DATE
+> Task :networking:lintReportDebug UP-TO-DATE
+> Task :usecase:lintReportDebug UP-TO-DATE
+> Task :viewmodel:lintReportDebug UP-TO-DATE
+> Task :networking:lintDebug
+> Task :usecase:lintDebug
+> Task :networking:lint
+> Task :usecase:lint
+> Task :viewmodel:lintDebug
+> Task :viewmodel:lint
+> Task :compose-resources:generateDebugLintModel UP-TO-DATE
+> Task :presentation-core:kmpPartiallyResolvedDependenciesChecker
+> Task :presentation-core:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :presentation-core:convertXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :presentation-core:copyNonXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :presentation-core:prepareComposeResourcesTaskForAndroidMain NO-SOURCE
+> Task :presentation-core:generateResourceAccessorsForAndroidMain NO-SOURCE
+> Task :presentation-core:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :presentation-core:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :presentation-core:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :presentation-core:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :presentation-core:generateActualResourceCollectorsForAndroidMain UP-TO-DATE
+> Task :presentation-core:generateComposeResClass UP-TO-DATE
+> Task :presentation-core:convertXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :compose-resources:lintAnalyzeDebug UP-TO-DATE
+> Task :compose-resources:preDebugAndroidTestBuild UP-TO-DATE
+> Task :presentation-core:copyNonXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :presentation-core:prepareComposeResourcesTaskForAndroidDebug NO-SOURCE
+> Task :compose-resources:generateDebugAndroidTestResValues UP-TO-DATE
+> Task :presentation-core:copyDebugComposeResourcesToAndroidAssets UP-TO-DATE
+> Task :presentation-core:generateDebugResValues UP-TO-DATE
+> Task :presentation-core:generateDebugResources UP-TO-DATE
+> Task :presentation-core:packageDebugResources UP-TO-DATE
+> Task :presentation-core:parseDebugLocalResources UP-TO-DATE
+> Task :presentation-core:generateDebugRFile UP-TO-DATE
+> Task :presentation-core:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :presentation-core:generateResourceAccessorsForAndroidDebug NO-SOURCE
+> Task :compose-resources:generateDebugAndroidTestLintModel UP-TO-DATE
+> Task :compose-resources:preDebugUnitTestBuild UP-TO-DATE
+> Task :presentation-core:compileDebugKotlinAndroid UP-TO-DATE
+> Task :presentation-core:extractDebugAnnotations UP-TO-DATE
+> Task :presentation-core:extractDeepLinksForAarDebug UP-TO-DATE
+> Task :presentation-core:mergeDebugShaders UP-TO-DATE
+> Task :presentation-core:compileDebugShaders NO-SOURCE
+> Task :presentation-core:debugAssetsCopyForAGP NO-SOURCE
+> Task :presentation-core:generateDebugAssets UP-TO-DATE
+> Task :presentation-core:mergeDebugAssets UP-TO-DATE
+> Task :presentation-core:javaPreCompileDebug UP-TO-DATE
+> Task :presentation-core:compileDebugJavaWithJavac NO-SOURCE
+> Task :presentation-core:mergeDebugGeneratedProguardFiles UP-TO-DATE
+> Task :presentation-core:mergeDebugConsumerProguardFiles UP-TO-DATE
+> Task :data:generateDebugLintModel UP-TO-DATE
+> Task :presentation-core:prepareDebugArtProfile UP-TO-DATE
+> Task :presentation-core:prepareLintJarForPublish UP-TO-DATE
+> Task :presentation-core:processDebugManifest UP-TO-DATE
+> Task :presentation-core:processDebugJavaRes UP-TO-DATE
+> Task :presentation-core:mergeDebugJavaResource UP-TO-DATE
+> Task :data:lintAnalyzeDebug UP-TO-DATE
+> Task :data:preDebugAndroidTestBuild UP-TO-DATE
+> Task :data:generateDebugAndroidTestResValues UP-TO-DATE
+> Task :presentation-core:syncDebugLibJars UP-TO-DATE
+> Task :presentation-core:writeDebugAarMetadata UP-TO-DATE
+> Task :compose-resources:generateDebugUnitTestLintModel UP-TO-DATE
+> Task :presentation-core:bundleDebugLocalLintAar UP-TO-DATE
+> Task :presentation-core:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :presentation-core:extractDeepLinksDebug UP-TO-DATE
+> Task :presentation-core:compileDebugLibraryResources UP-TO-DATE
+> Task :presentation-core:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :presentation-core:createFullJarDebug UP-TO-DATE
+> Task :presentation-core:writeDebugLintModelMetadata UP-TO-DATE
+> Task :compose-resources:lintAnalyzeDebugAndroidTest UP-TO-DATE
+> Task :presentation-core:extractProguardFiles UP-TO-DATE
+> Task :compose-resources:lintAnalyzeDebugUnitTest UP-TO-DATE
+> Task :compose-resources:generateDebugLintReportModel UP-TO-DATE
+> Task :presentation-feature:kmpPartiallyResolvedDependenciesChecker
+> Task :presentation-feature:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :presentation-feature:convertXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :presentation-feature:copyNonXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :presentation-feature:prepareComposeResourcesTaskForAndroidMain NO-SOURCE
+> Task :presentation-feature:generateResourceAccessorsForAndroidMain NO-SOURCE
+> Task :compose-resources:lintReportDebug UP-TO-DATE
+> Task :presentation-feature:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :presentation-feature:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :presentation-feature:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :compose-resources:lintDebug
+> Task :presentation-feature:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :compose-resources:lint
+> Task :data:generateDebugAndroidTestLintModel UP-TO-DATE
+> Task :presentation-feature:generateActualResourceCollectorsForAndroidMain UP-TO-DATE
+> Task :data:preDebugUnitTestBuild UP-TO-DATE
+> Task :presentation-feature:generateComposeResClass UP-TO-DATE
+> Task :presentation-feature:convertXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :presentation-feature:copyNonXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :presentation-feature:prepareComposeResourcesTaskForAndroidDebug NO-SOURCE
+> Task :presentation-feature:copyDebugComposeResourcesToAndroidAssets UP-TO-DATE
+> Task :presentation-feature:generateDebugResValues UP-TO-DATE
+> Task :presentation-feature:generateDebugResources UP-TO-DATE
+> Task :presentation-feature:packageDebugResources UP-TO-DATE
+> Task :presentation-feature:parseDebugLocalResources UP-TO-DATE
+> Task :presentation-feature:generateDebugRFile UP-TO-DATE
+> Task :presentation-feature:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :presentation-feature:generateResourceAccessorsForAndroidDebug NO-SOURCE
+> Task :data:generateDebugUnitTestLintModel UP-TO-DATE
+> Task :presentation-core:generateDebugLintModel UP-TO-DATE
+> Task :data:lintAnalyzeDebugAndroidTest UP-TO-DATE
+> Task :presentation-core:lintAnalyzeDebug UP-TO-DATE
+> Task :presentation-core:preDebugAndroidTestBuild UP-TO-DATE
+> Task :presentation-core:generateDebugAndroidTestResValues UP-TO-DATE
+> Task :data:lintAnalyzeDebugUnitTest UP-TO-DATE
+> Task :data:generateDebugLintReportModel UP-TO-DATE
+> Task :data:lintReportDebug UP-TO-DATE
+> Task :compose-app:kmpPartiallyResolvedDependenciesChecker
+> Task :compose-app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :data:lintDebug
+> Task :data:lint
+> Task :compose-app:generateActualResourceCollectorsForAndroidMain UP-TO-DATE
+> Task :compose-app:generateComposeResClass UP-TO-DATE
+> Task :compose-app:preBuild UP-TO-DATE
+> Task :compose-app:preDebugBuild UP-TO-DATE
+> Task :compose-app:generateDebugBuildConfig UP-TO-DATE
+> Task :compose-app:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :presentation-feature:compileDebugKotlinAndroid UP-TO-DATE
+> Task :compose-app:generateDebugResValues UP-TO-DATE
+> Task :presentation-core:generateDebugAndroidTestLintModel UP-TO-DATE
+> Task :presentation-core:preDebugUnitTestBuild UP-TO-DATE
+> Task :presentation-feature:extractDebugAnnotations UP-TO-DATE
+> Task :presentation-feature:extractDeepLinksForAarDebug UP-TO-DATE
+> Task :presentation-feature:mergeDebugShaders UP-TO-DATE
+> Task :presentation-feature:compileDebugShaders NO-SOURCE
+> Task :presentation-feature:debugAssetsCopyForAGP NO-SOURCE
+> Task :presentation-feature:generateDebugAssets UP-TO-DATE
+> Task :presentation-feature:mergeDebugAssets UP-TO-DATE
+> Task :presentation-feature:javaPreCompileDebug UP-TO-DATE
+> Task :presentation-feature:compileDebugJavaWithJavac NO-SOURCE
+> Task :presentation-feature:mergeDebugGeneratedProguardFiles UP-TO-DATE
+> Task :presentation-feature:mergeDebugConsumerProguardFiles UP-TO-DATE
+> Task :presentation-feature:prepareDebugArtProfile UP-TO-DATE
+> Task :presentation-feature:prepareLintJarForPublish UP-TO-DATE
+> Task :presentation-feature:processDebugManifest UP-TO-DATE
+> Task :presentation-feature:processDebugJavaRes UP-TO-DATE
+> Task :presentation-feature:mergeDebugJavaResource UP-TO-DATE
+> Task :presentation-core:generateDebugUnitTestLintModel UP-TO-DATE
+> Task :presentation-feature:syncDebugLibJars UP-TO-DATE
+> Task :presentation-feature:writeDebugAarMetadata UP-TO-DATE
+> Task :presentation-feature:bundleDebugLocalLintAar UP-TO-DATE
+> Task :presentation-feature:extractDeepLinksDebug UP-TO-DATE
+> Task :presentation-feature:compileDebugLibraryResources UP-TO-DATE
+> Task :presentation-feature:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :presentation-feature:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :presentation-feature:createFullJarDebug UP-TO-DATE
+> Task :presentation-core:lintAnalyzeDebugAndroidTest UP-TO-DATE
+> Task :presentation-feature:writeDebugLintModelMetadata UP-TO-DATE
+> Task :presentation-feature:extractProguardFiles UP-TO-DATE
+> Task :compose-app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :presentation-core:lintAnalyzeDebugUnitTest UP-TO-DATE
+> Task :presentation-core:generateDebugLintReportModel UP-TO-DATE
+> Task :presentation-core:lintReportDebug UP-TO-DATE
+> Task :presentation-core:lintDebug
+> Task :presentation-core:lint
+> Task :compose-app:checkDebugAarMetadata UP-TO-DATE
+> Task :presentation-feature:generateDebugLintModel UP-TO-DATE
+> Task :compose-app:generateDebugResources UP-TO-DATE
+> Task :compose-app:mergeDebugResources UP-TO-DATE
+> Task :compose-app:packageDebugResources UP-TO-DATE
+> Task :compose-app:parseDebugLocalResources UP-TO-DATE
+> Task :compose-app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :compose-app:extractDeepLinksDebug UP-TO-DATE
+> Task :presentation-feature:lintAnalyzeDebug UP-TO-DATE
+> Task :presentation-feature:preDebugAndroidTestBuild UP-TO-DATE
+> Task :presentation-feature:generateDebugAndroidTestResValues UP-TO-DATE
+> Task :presentation-feature:generateDebugAndroidTestLintModel UP-TO-DATE
+> Task :presentation-feature:preDebugUnitTestBuild UP-TO-DATE
+> Task :presentation-feature:generateDebugUnitTestLintModel UP-TO-DATE
+> Task :compose-app:processDebugMainManifest UP-TO-DATE
+> Task :compose-app:processDebugManifest UP-TO-DATE
+> Task :compose-app:processDebugManifestForPackage UP-TO-DATE
+> Task :presentation-feature:lintAnalyzeDebugAndroidTest UP-TO-DATE
+> Task :presentation-feature:lintAnalyzeDebugUnitTest UP-TO-DATE
+> Task :presentation-feature:generateDebugLintReportModel UP-TO-DATE
+> Task :presentation-feature:lintReportDebug UP-TO-DATE
+> Task :presentation-feature:lintDebug
+> Task :presentation-feature:lint
+> Task :compose-app:processDebugResources UP-TO-DATE
+> Task :compose-app:kspDebugKotlinAndroid UP-TO-DATE
+> Task :compose-app:compileDebugKotlinAndroid UP-TO-DATE
+> Task :compose-app:javaPreCompileDebug UP-TO-DATE
+> Task :compose-app:compileDebugJavaWithJavac UP-TO-DATE
+> Task :compose-app:bundleDebugClassesToCompileJar UP-TO-DATE
+> Task :compose-app:preDebugAndroidTestBuild SKIPPED
+> Task :compose-app:generateDebugAndroidTestResValues UP-TO-DATE
+> Task :compose-app:generateDebugAndroidTestLintModel UP-TO-DATE
+> Task :compose-app:extractProguardFiles UP-TO-DATE
+> Task :compose-app:generateDebugLintReportModel UP-TO-DATE
+> Task :compose-app:preDebugUnitTestBuild UP-TO-DATE
+> Task :compose-app:generateDebugUnitTestLintModel UP-TO-DATE
+> Task :compose-app:lintAnalyzeDebug UP-TO-DATE
+> Task :compose-app:lintAnalyzeDebugAndroidTest UP-TO-DATE
+> Task :compose-app:lintAnalyzeDebugUnitTest UP-TO-DATE
+> Task :compose-app:lintReportDebug UP-TO-DATE
+> Task :compose-app:lintDebug
+> Task :compose-app:lint
+
+BUILD SUCCESSFUL in 1s
+431 actionable tasks: 20 executed, 411 up-to-date
++ echo '--- 3b. Detekt ---'
+--- 3b. Detekt ---
++ ./gradlew detekt --stacktrace
+Type-safe project accessors is an incubating feature.
+> Task :buildSrc:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :buildSrc:compileKotlin UP-TO-DATE
+> Task :buildSrc:compileJava NO-SOURCE
+> Task :buildSrc:compileGroovy NO-SOURCE
+> Task :buildSrc:pluginDescriptors UP-TO-DATE
+> Task :buildSrc:processResources NO-SOURCE
+> Task :buildSrc:classes UP-TO-DATE
+> Task :buildSrc:jar UP-TO-DATE
+
+> Configure project :compose-app
+WARNING: The option setting 'android.experimental.enableScreenshotTest=true' is experimental.
+The current default is 'false'.
+
+> Task :server:detekt NO-SOURCE
+> Task :detekt NO-SOURCE
+> Task :viewmodel:detekt UP-TO-DATE
+> Task :domain:detekt UP-TO-DATE
+> Task :networking:detekt UP-TO-DATE
+> Task :usecase:detekt UP-TO-DATE
+> Task :compose-resources:detekt UP-TO-DATE
+> Task :presentation-feature:detekt UP-TO-DATE
+> Task :compose-app:detekt UP-TO-DATE
+> Task :ios-swift-di:detekt UP-TO-DATE
+> Task :presentation-model:detekt UP-TO-DATE
+> Task :presentation-core:detekt UP-TO-DATE
+> Task :data:detekt UP-TO-DATE
+> Task :server:app:detekt UP-TO-DATE
+> Task :server:domain:detekt UP-TO-DATE
+> Task :server:data:detekt UP-TO-DATE
+
+BUILD SUCCESSFUL in 755ms
+17 actionable tasks: 17 up-to-date
++ echo '--- 4. Tests (Unit & Instrumented) ---'
+--- 4. Tests (Unit & Instrumented) ---
++ ./scripts/test.sh
++ '[' -n '' ']'
+++ dirname ./scripts/test.sh
++ cd ./scripts/..
++ echo 'Running unit tests...'
+Running unit tests...
++ ./gradlew test
+Type-safe project accessors is an incubating feature.
+> Task :buildSrc:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :buildSrc:compileKotlin UP-TO-DATE
+> Task :buildSrc:compileJava NO-SOURCE
+> Task :buildSrc:compileGroovy NO-SOURCE
+> Task :buildSrc:pluginDescriptors UP-TO-DATE
+> Task :buildSrc:processResources NO-SOURCE
+> Task :buildSrc:classes UP-TO-DATE
+> Task :buildSrc:jar UP-TO-DATE
+
+> Configure project :compose-app
+WARNING: The option setting 'android.experimental.enableScreenshotTest=true' is experimental.
+The current default is 'false'.
+
+> Task :data:preBuild UP-TO-DATE
+> Task :domain:preBuild UP-TO-DATE
+> Task :usecase:preBuild UP-TO-DATE
+> Task :server:app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :presentation-model:preBuild UP-TO-DATE
+> Task :viewmodel:preBuild UP-TO-DATE
+> Task :compose-resources:preBuild UP-TO-DATE
+> Task :presentation-core:preBuild UP-TO-DATE
+> Task :networking:preBuild UP-TO-DATE
+> Task :presentation-feature:preBuild UP-TO-DATE
+> Task :server:data:processResources NO-SOURCE
+> Task :presentation-feature:preDebugBuild UP-TO-DATE
+> Task :presentation-model:preDebugBuild UP-TO-DATE
+> Task :server:domain:processResources NO-SOURCE
+> Task :usecase:preDebugBuild UP-TO-DATE
+> Task :server:data:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :data:preDebugBuild UP-TO-DATE
+> Task :server:domain:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :viewmodel:preDebugBuild UP-TO-DATE
+> Task :compose-resources:preDebugBuild UP-TO-DATE
+> Task :usecase:writeDebugAarMetadata UP-TO-DATE
+> Task :presentation-feature:writeDebugAarMetadata UP-TO-DATE
+> Task :presentation-core:preDebugBuild UP-TO-DATE
+> Task :networking:preDebugBuild UP-TO-DATE
+> Task :presentation-model:writeDebugAarMetadata UP-TO-DATE
+> Task :viewmodel:writeDebugAarMetadata UP-TO-DATE
+> Task :domain:preDebugBuild UP-TO-DATE
+> Task :networking:writeDebugAarMetadata UP-TO-DATE
+> Task :data:writeDebugAarMetadata UP-TO-DATE
+> Task :server:app:extractProto UP-TO-DATE
+> Task :presentation-feature:convertXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :server:domain:processTestResources NO-SOURCE
+> Task :server:data:processTestResources NO-SOURCE
+> Task :usecase:generateDebugResValues UP-TO-DATE
+> Task :presentation-core:writeDebugAarMetadata UP-TO-DATE
+> Task :networking:generateDebugResValues UP-TO-DATE
+> Task :domain:writeDebugAarMetadata UP-TO-DATE
+> Task :viewmodel:generateDebugResValues UP-TO-DATE
+> Task :data:generateDebugResValues UP-TO-DATE
+> Task :domain:generateDebugResValues UP-TO-DATE
+> Task :presentation-feature:copyNonXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :presentation-core:convertXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :presentation-model:generateDebugResValues UP-TO-DATE
+> Task :server:app:processResources UP-TO-DATE
+> Task :presentation-core:copyNonXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :compose-resources:writeDebugAarMetadata UP-TO-DATE
+> Task :usecase:generateDebugResources UP-TO-DATE
+> Task :domain:generateDebugResources UP-TO-DATE
+> Task :data:generateDebugResources UP-TO-DATE
+> Task :presentation-feature:prepareComposeResourcesTaskForAndroidDebug NO-SOURCE
+> Task :viewmodel:generateDebugResources UP-TO-DATE
+> Task :presentation-model:generateDebugResources UP-TO-DATE
+> Task :compose-resources:convertXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :server:app:extractTestProto UP-TO-DATE
+> Task :presentation-core:prepareComposeResourcesTaskForAndroidDebug NO-SOURCE
+> Task :data:packageDebugResources UP-TO-DATE
+> Task :presentation-feature:convertXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :networking:generateDebugResources UP-TO-DATE
+> Task :presentation-model:packageDebugResources UP-TO-DATE
+> Task :data:extractDeepLinksDebug UP-TO-DATE
+> Task :usecase:packageDebugResources UP-TO-DATE
+> Task :viewmodel:packageDebugResources UP-TO-DATE
+> Task :presentation-core:convertXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :compose-resources:copyNonXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :server:app:processTestResources NO-SOURCE
+> Task :presentation-feature:copyNonXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :networking:packageDebugResources UP-TO-DATE
+> Task :compose-resources:prepareComposeResourcesTaskForAndroidDebug NO-SOURCE
+> Task :data:processDebugManifest UP-TO-DATE
+> Task :presentation-model:extractDeepLinksDebug UP-TO-DATE
+> Task :domain:packageDebugResources UP-TO-DATE
+> Task :usecase:extractDeepLinksDebug UP-TO-DATE
+> Task :presentation-core:copyNonXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :data:compileDebugLibraryResources UP-TO-DATE
+> Task :compose-resources:convertXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :networking:extractDeepLinksDebug UP-TO-DATE
+> Task :presentation-feature:prepareComposeResourcesTaskForAndroidMain NO-SOURCE
+> Task :presentation-core:prepareComposeResourcesTaskForAndroidMain NO-SOURCE
+> Task :viewmodel:extractDeepLinksDebug UP-TO-DATE
+> Task :presentation-feature:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :presentation-core:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :networking:processDebugManifest UP-TO-DATE
+> Task :presentation-model:processDebugManifest UP-TO-DATE
+> Task :compose-resources:copyNonXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :presentation-feature:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :usecase:processDebugManifest UP-TO-DATE
+> Task :domain:extractDeepLinksDebug UP-TO-DATE
+> Task :presentation-core:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :viewmodel:processDebugManifest UP-TO-DATE
+> Task :networking:compileDebugLibraryResources UP-TO-DATE
+> Task :presentation-model:compileDebugLibraryResources UP-TO-DATE
+> Task :domain:processDebugManifest UP-TO-DATE
+> Task :usecase:compileDebugLibraryResources UP-TO-DATE
+> Task :data:parseDebugLocalResources UP-TO-DATE
+> Task :presentation-feature:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :domain:compileDebugLibraryResources UP-TO-DATE
+> Task :compose-resources:prepareComposeResourcesTaskForAndroidMain NO-SOURCE
+> Task :presentation-core:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :viewmodel:compileDebugLibraryResources UP-TO-DATE
+> Task :data:generateDebugRFile UP-TO-DATE
+> Task :compose-resources:convertXmlValueResourcesForCommonMain UP-TO-DATE
+> Task :presentation-core:copyDebugComposeResourcesToAndroidAssets UP-TO-DATE
+> Task :presentation-feature:copyDebugComposeResourcesToAndroidAssets UP-TO-DATE
+> Task :presentation-core:generateDebugResValues UP-TO-DATE
+> Task :networking:parseDebugLocalResources UP-TO-DATE
+> Task :presentation-feature:generateDebugResValues UP-TO-DATE
+> Task :usecase:parseDebugLocalResources UP-TO-DATE
+> Task :presentation-core:generateDebugResources UP-TO-DATE
+> Task :domain:parseDebugLocalResources UP-TO-DATE
+> Task :compose-resources:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :presentation-model:parseDebugLocalResources UP-TO-DATE
+> Task :usecase:generateDebugRFile UP-TO-DATE
+> Task :networking:generateDebugRFile UP-TO-DATE
+> Task :viewmodel:parseDebugLocalResources UP-TO-DATE
+> Task :presentation-feature:generateDebugResources UP-TO-DATE
+> Task :domain:generateDebugRFile UP-TO-DATE
+> Task :presentation-model:generateDebugRFile UP-TO-DATE
+> Task :compose-resources:prepareComposeResourcesTaskForCommonMain UP-TO-DATE
+> Task :viewmodel:generateDebugRFile UP-TO-DATE
+> Task :presentation-core:packageDebugResources UP-TO-DATE
+> Task :presentation-feature:packageDebugResources UP-TO-DATE
+> Task :compose-resources:copyDebugComposeResourcesToAndroidAssets UP-TO-DATE
+> Task :compose-resources:generateDebugResValues UP-TO-DATE
+> Task :presentation-feature:extractDeepLinksDebug UP-TO-DATE
+> Task :presentation-core:extractDeepLinksDebug UP-TO-DATE
+> Task :compose-resources:generateDebugResources UP-TO-DATE
+> Task :presentation-feature:processDebugManifest UP-TO-DATE
+> Task :presentation-core:processDebugManifest UP-TO-DATE
+> Task :presentation-feature:compileDebugLibraryResources UP-TO-DATE
+> Task :compose-resources:packageDebugResources UP-TO-DATE
+> Task :presentation-core:compileDebugLibraryResources UP-TO-DATE
+> Task :compose-resources:extractDeepLinksDebug UP-TO-DATE
+> Task :compose-resources:processDebugManifest UP-TO-DATE
+> Task :compose-resources:compileDebugLibraryResources UP-TO-DATE
+> Task :presentation-core:parseDebugLocalResources UP-TO-DATE
+> Task :presentation-feature:parseDebugLocalResources UP-TO-DATE
+> Task :presentation-core:generateDebugRFile UP-TO-DATE
+> Task :compose-resources:parseDebugLocalResources UP-TO-DATE
+> Task :presentation-feature:generateDebugRFile UP-TO-DATE
+> Task :compose-resources:generateDebugRFile UP-TO-DATE
+> Task :domain:kmpPartiallyResolvedDependenciesChecker
+> Task :domain:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :domain:kspDebugKotlinAndroid SKIPPED
+> Task :domain:compileDebugKotlinAndroid UP-TO-DATE
+> Task :domain:javaPreCompileDebug UP-TO-DATE
+> Task :domain:compileDebugJavaWithJavac NO-SOURCE
+> Task :domain:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :domain:preReleaseBuild UP-TO-DATE
+> Task :domain:generateReleaseResValues UP-TO-DATE
+> Task :domain:generateReleaseResources UP-TO-DATE
+> Task :domain:packageReleaseResources UP-TO-DATE
+> Task :domain:parseReleaseLocalResources UP-TO-DATE
+> Task :domain:generateReleaseRFile UP-TO-DATE
+> Task :domain:kspReleaseKotlinAndroid SKIPPED
+> Task :domain:compileReleaseKotlinAndroid UP-TO-DATE
+> Task :compose-resources:kmpPartiallyResolvedDependenciesChecker
+> Task :compose-resources:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :compose-resources:generateResourceAccessorsForAndroidMain NO-SOURCE
+> Task :domain:javaPreCompileRelease UP-TO-DATE
+> Task :compose-resources:generateResourceAccessorsForCommonMain UP-TO-DATE
+> Task :compose-resources:generateActualResourceCollectorsForAndroidMain UP-TO-DATE
+> Task :domain:compileReleaseJavaWithJavac NO-SOURCE
+> Task :compose-resources:generateComposeResClass UP-TO-DATE
+> Task :compose-resources:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :compose-resources:generateResourceAccessorsForAndroidDebug NO-SOURCE
+> Task :domain:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :domain:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :domain:processDebugJavaRes UP-TO-DATE
+> Task :domain:writeReleaseAarMetadata UP-TO-DATE
+> Task :domain:extractDeepLinksRelease UP-TO-DATE
+> Task :domain:processReleaseManifest UP-TO-DATE
+> Task :domain:compileReleaseLibraryResources UP-TO-DATE
+> Task :domain:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :domain:processReleaseJavaRes UP-TO-DATE
+> Task :domain:preDebugUnitTestBuild UP-TO-DATE
+> Task :domain:generateDebugUnitTestStubRFile UP-TO-DATE
+> Task :domain:kspDebugUnitTestKotlinAndroid SKIPPED
+> Task :compose-resources:compileDebugKotlinAndroid UP-TO-DATE
+> Task :compose-resources:javaPreCompileDebug UP-TO-DATE
+> Task :compose-resources:compileDebugJavaWithJavac NO-SOURCE
+> Task :compose-resources:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :compose-resources:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :compose-resources:processDebugJavaRes UP-TO-DATE
+> Task :compose-resources:preReleaseBuild UP-TO-DATE
+> Task :compose-resources:writeReleaseAarMetadata UP-TO-DATE
+> Task :compose-resources:convertXmlValueResourcesForAndroidRelease NO-SOURCE
+> Task :domain:compileDebugUnitTestKotlinAndroid UP-TO-DATE
+> Task :compose-resources:copyNonXmlValueResourcesForAndroidRelease NO-SOURCE
+> Task :usecase:kmpPartiallyResolvedDependenciesChecker
+> Task :compose-resources:prepareComposeResourcesTaskForAndroidRelease NO-SOURCE
+> Task :presentation-model:kmpPartiallyResolvedDependenciesChecker
+> Task :domain:javaPreCompileDebugUnitTest UP-TO-DATE
+> Task :presentation-model:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :usecase:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :domain:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :compose-resources:copyReleaseComposeResourcesToAndroidAssets UP-TO-DATE
+> Task :compose-resources:generateReleaseResValues UP-TO-DATE
+> Task :domain:processDebugUnitTestJavaRes UP-TO-DATE
+> Task :networking:kmpPartiallyResolvedDependenciesChecker
+> Task :compose-resources:generateReleaseResources UP-TO-DATE
+> Task :networking:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :networking:generateCommonMainProtos UP-TO-DATE
+> Task :compose-resources:packageReleaseResources UP-TO-DATE
+> Task :compose-resources:extractDeepLinksRelease UP-TO-DATE
+> Task :usecase:kspDebugKotlinAndroid UP-TO-DATE
+> Task :presentation-model:compileDebugKotlinAndroid UP-TO-DATE
+> Task :compose-resources:processReleaseManifest UP-TO-DATE
+> Task :presentation-model:javaPreCompileDebug UP-TO-DATE
+> Task :compose-resources:compileReleaseLibraryResources UP-TO-DATE
+> Task :presentation-model:compileDebugJavaWithJavac NO-SOURCE
+> Task :presentation-model:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :presentation-model:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :compose-resources:parseReleaseLocalResources UP-TO-DATE
+> Task :presentation-model:processDebugJavaRes UP-TO-DATE
+> Task :presentation-model:preReleaseBuild UP-TO-DATE
+> Task :presentation-model:writeReleaseAarMetadata UP-TO-DATE
+> Task :compose-resources:generateReleaseRFile UP-TO-DATE
+> Task :domain:testDebugUnitTest UP-TO-DATE
+> Task :compose-resources:generateResourceAccessorsForAndroidRelease NO-SOURCE
+> Task :networking:compileDebugKotlinAndroid UP-TO-DATE
+> Task :presentation-model:generateReleaseResValues UP-TO-DATE
+> Task :domain:preReleaseUnitTestBuild UP-TO-DATE
+> Task :networking:javaPreCompileDebug UP-TO-DATE
+> Task :presentation-model:generateReleaseResources UP-TO-DATE
+> Task :networking:compileDebugJavaWithJavac NO-SOURCE
+> Task :networking:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :networking:preReleaseBuild UP-TO-DATE
+> Task :networking:generateReleaseResValues UP-TO-DATE
+> Task :usecase:compileDebugKotlinAndroid UP-TO-DATE
+> Task :presentation-model:packageReleaseResources UP-TO-DATE
+> Task :networking:generateReleaseResources UP-TO-DATE
+> Task :usecase:javaPreCompileDebug UP-TO-DATE
+> Task :presentation-model:extractDeepLinksRelease UP-TO-DATE
+> Task :usecase:compileDebugJavaWithJavac NO-SOURCE
+> Task :usecase:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :usecase:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :presentation-model:processReleaseManifest UP-TO-DATE
+> Task :networking:packageReleaseResources UP-TO-DATE
+> Task :usecase:processDebugJavaRes UP-TO-DATE
+> Task :usecase:preReleaseBuild UP-TO-DATE
+> Task :networking:parseReleaseLocalResources UP-TO-DATE
+> Task :usecase:writeReleaseAarMetadata UP-TO-DATE
+> Task :usecase:generateReleaseResValues UP-TO-DATE
+> Task :usecase:generateReleaseResources UP-TO-DATE
+> Task :networking:generateReleaseRFile UP-TO-DATE
+> Task :domain:generateReleaseUnitTestStubRFile UP-TO-DATE
+> Task :domain:kspReleaseUnitTestKotlinAndroid SKIPPED
+> Task :usecase:packageReleaseResources UP-TO-DATE
+> Task :usecase:extractDeepLinksRelease UP-TO-DATE
+> Task :presentation-model:compileReleaseLibraryResources UP-TO-DATE
+> Task :presentation-model:parseReleaseLocalResources UP-TO-DATE
+> Task :usecase:processReleaseManifest UP-TO-DATE
+> Task :usecase:compileReleaseLibraryResources UP-TO-DATE
+> Task :presentation-model:generateReleaseRFile UP-TO-DATE
+> Task :usecase:parseReleaseLocalResources UP-TO-DATE
+> Task :usecase:generateReleaseRFile UP-TO-DATE
+> Task :usecase:kspReleaseKotlinAndroid UP-TO-DATE
+> Task :domain:compileReleaseUnitTestKotlinAndroid UP-TO-DATE
+> Task :domain:javaPreCompileReleaseUnitTest UP-TO-DATE
+> Task :networking:compileReleaseKotlinAndroid UP-TO-DATE
+> Task :compose-resources:compileReleaseKotlinAndroid UP-TO-DATE
+> Task :domain:compileReleaseUnitTestJavaWithJavac NO-SOURCE
+> Task :networking:javaPreCompileRelease UP-TO-DATE
+> Task :compose-resources:javaPreCompileRelease UP-TO-DATE
+> Task :networking:compileReleaseJavaWithJavac NO-SOURCE
+> Task :compose-resources:compileReleaseJavaWithJavac NO-SOURCE
+> Task :domain:processReleaseUnitTestJavaRes UP-TO-DATE
+> Task :networking:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :presentation-model:compileReleaseKotlinAndroid UP-TO-DATE
+> Task :networking:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :compose-resources:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :presentation-model:javaPreCompileRelease UP-TO-DATE
+> Task :networking:processDebugJavaRes UP-TO-DATE
+> Task :compose-resources:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :presentation-model:compileReleaseJavaWithJavac NO-SOURCE
+> Task :networking:writeReleaseAarMetadata UP-TO-DATE
+> Task :presentation-model:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :networking:extractDeepLinksRelease UP-TO-DATE
+> Task :presentation-model:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :compose-resources:processReleaseJavaRes UP-TO-DATE
+> Task :compose-resources:preDebugUnitTestBuild UP-TO-DATE
+> Task :networking:processReleaseManifest UP-TO-DATE
+> Task :domain:testReleaseUnitTest UP-TO-DATE
+> Task :domain:test UP-TO-DATE
+> Task :networking:compileReleaseLibraryResources UP-TO-DATE
+> Task :domain:kspKotlinJvm SKIPPED
+> Task :presentation-model:processReleaseJavaRes UP-TO-DATE
+> Task :presentation-model:preDebugUnitTestBuild UP-TO-DATE
+> Task :networking:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :networking:processReleaseJavaRes UP-TO-DATE
+> Task :networking:preDebugUnitTestBuild UP-TO-DATE
+> Task :domain:compileKotlinJvm UP-TO-DATE
+> Task :domain:compileJvmMainJava NO-SOURCE
+> Task :domain:jvmProcessResources NO-SOURCE
+> Task :domain:processJvmMainResources SKIPPED
+> Task :domain:jvmMainClasses UP-TO-DATE
+> Task :usecase:compileReleaseKotlinAndroid UP-TO-DATE
+> Task :domain:jvmJar UP-TO-DATE
+> Task :usecase:javaPreCompileRelease UP-TO-DATE
+> Task :usecase:compileReleaseJavaWithJavac NO-SOURCE
+> Task :presentation-model:generateDebugUnitTestStubRFile UP-TO-DATE
+> Task :usecase:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :presentation-model:compileDebugUnitTestKotlinAndroid NO-SOURCE
+> Task :usecase:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :presentation-model:javaPreCompileDebugUnitTest UP-TO-DATE
+> Task :presentation-model:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :presentation-model:processDebugUnitTestJavaRes NO-SOURCE
+> Task :server:domain:compileKotlin UP-TO-DATE
+> Task :usecase:processReleaseJavaRes UP-TO-DATE
+> Task :usecase:preDebugUnitTestBuild UP-TO-DATE
+> Task :presentation-model:testDebugUnitTest NO-SOURCE
+> Task :server:domain:compileJava NO-SOURCE
+> Task :presentation-model:preReleaseUnitTestBuild UP-TO-DATE
+> Task :server:domain:classes UP-TO-DATE
+> Task :networking:generateDebugUnitTestStubRFile UP-TO-DATE
+> Task :server:domain:jar UP-TO-DATE
+> Task :server:domain:compileTestKotlin NO-SOURCE
+> Task :server:data:compileKotlin UP-TO-DATE
+> Task :server:domain:compileTestJava NO-SOURCE
+> Task :server:domain:testClasses UP-TO-DATE
+> Task :server:data:compileJava NO-SOURCE
+> Task :server:data:classes UP-TO-DATE
+> Task :presentation-model:generateReleaseUnitTestStubRFile UP-TO-DATE
+> Task :server:data:jar UP-TO-DATE
+> Task :usecase:generateDebugUnitTestStubRFile UP-TO-DATE
+> Task :presentation-model:compileReleaseUnitTestKotlinAndroid NO-SOURCE
+> Task :usecase:kspDebugUnitTestKotlinAndroid SKIPPED
+> Task :presentation-model:javaPreCompileReleaseUnitTest UP-TO-DATE
+> Task :presentation-model:compileReleaseUnitTestJavaWithJavac NO-SOURCE
+> Task :compose-resources:generateDebugUnitTestStubRFile UP-TO-DATE
+> Task :compose-resources:convertXmlValueResourcesForAndroidUnitTest NO-SOURCE
+> Task :presentation-model:processReleaseUnitTestJavaRes NO-SOURCE
+> Task :compose-resources:copyNonXmlValueResourcesForAndroidUnitTest NO-SOURCE
+> Task :presentation-model:testReleaseUnitTest NO-SOURCE
+> Task :presentation-model:test UP-TO-DATE
+> Task :compose-resources:prepareComposeResourcesTaskForAndroidUnitTest NO-SOURCE
+> Task :compose-resources:generateResourceAccessorsForAndroidUnitTest NO-SOURCE
+> Task :server:domain:test NO-SOURCE
+> Task :compose-resources:convertXmlValueResourcesForAndroidUnitTestDebug NO-SOURCE
+> Task :server:app:extractIncludeProto UP-TO-DATE
+> Task :compose-resources:copyNonXmlValueResourcesForAndroidUnitTestDebug NO-SOURCE
+> Task :server:app:generateProto UP-TO-DATE
+> Task :compose-resources:prepareComposeResourcesTaskForAndroidUnitTestDebug NO-SOURCE
+> Task :compose-resources:generateResourceAccessorsForAndroidUnitTestDebug NO-SOURCE
+> Task :compose-resources:convertXmlValueResourcesForCommonTest NO-SOURCE
+> Task :compose-resources:copyNonXmlValueResourcesForCommonTest NO-SOURCE
+> Task :compose-resources:prepareComposeResourcesTaskForCommonTest NO-SOURCE
+> Task :compose-resources:generateResourceAccessorsForCommonTest NO-SOURCE
+> Task :compose-resources:compileDebugUnitTestKotlinAndroid NO-SOURCE
+> Task :compose-resources:javaPreCompileDebugUnitTest UP-TO-DATE
+> Task :networking:compileDebugUnitTestKotlinAndroid UP-TO-DATE
+> Task :compose-resources:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :server:data:compileTestKotlin UP-TO-DATE
+> Task :compose-resources:processDebugUnitTestJavaRes NO-SOURCE
+> Task :networking:javaPreCompileDebugUnitTest UP-TO-DATE
+> Task :server:data:compileTestJava NO-SOURCE
+> Task :server:data:testClasses UP-TO-DATE
+> Task :compose-resources:testDebugUnitTest NO-SOURCE
+> Task :networking:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :compose-resources:preReleaseUnitTestBuild UP-TO-DATE
+> Task :viewmodel:kmpPartiallyResolvedDependenciesChecker
+> Task :viewmodel:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :data:kmpPartiallyResolvedDependenciesChecker
+> Task :networking:processDebugUnitTestJavaRes UP-TO-DATE
+> Task :data:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :server:app:compileKotlin UP-TO-DATE
+> Task :data:generateDebugBuildConfig UP-TO-DATE
+> Task :usecase:compileDebugUnitTestKotlinAndroid UP-TO-DATE
+> Task :server:data:test UP-TO-DATE
+> Task :server:app:compileJava UP-TO-DATE
+> Task :server:app:classes UP-TO-DATE
+> Task :usecase:javaPreCompileDebugUnitTest UP-TO-DATE
+> Task :usecase:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :server:app:jar UP-TO-DATE
+> Task :networking:testDebugUnitTest UP-TO-DATE
+> Task :networking:preReleaseUnitTestBuild UP-TO-DATE
+> Task :usecase:processDebugUnitTestJavaRes UP-TO-DATE
+> Task :viewmodel:kspDebugKotlinAndroid UP-TO-DATE
+> Task :usecase:testDebugUnitTest UP-TO-DATE
+> Task :usecase:preReleaseUnitTestBuild UP-TO-DATE
+> Task :networking:generateReleaseUnitTestStubRFile UP-TO-DATE
+> Task :viewmodel:compileDebugKotlinAndroid UP-TO-DATE
+> Task :compose-resources:generateReleaseUnitTestStubRFile UP-TO-DATE
+> Task :viewmodel:javaPreCompileDebug UP-TO-DATE
+> Task :compose-resources:convertXmlValueResourcesForAndroidUnitTestRelease NO-SOURCE
+> Task :usecase:generateReleaseUnitTestStubRFile UP-TO-DATE
+> Task :viewmodel:compileDebugJavaWithJavac NO-SOURCE
+> Task :compose-resources:copyNonXmlValueResourcesForAndroidUnitTestRelease NO-SOURCE
+> Task :viewmodel:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :usecase:kspReleaseUnitTestKotlinAndroid SKIPPED
+> Task :viewmodel:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :compose-resources:prepareComposeResourcesTaskForAndroidUnitTestRelease NO-SOURCE
+> Task :compose-resources:generateResourceAccessorsForAndroidUnitTestRelease NO-SOURCE
+> Task :server:app:extractIncludeTestProto UP-TO-DATE
+> Task :viewmodel:processDebugJavaRes UP-TO-DATE
+> Task :viewmodel:preReleaseBuild UP-TO-DATE
+> Task :server:app:generateTestProto NO-SOURCE
+> Task :compose-resources:compileReleaseUnitTestKotlinAndroid NO-SOURCE
+> Task :viewmodel:writeReleaseAarMetadata UP-TO-DATE
+> Task :viewmodel:generateReleaseResValues UP-TO-DATE
+> Task :viewmodel:generateReleaseResources UP-TO-DATE
+> Task :compose-resources:javaPreCompileReleaseUnitTest UP-TO-DATE
+> Task :data:kspDebugKotlinAndroid UP-TO-DATE
+> Task :compose-resources:compileReleaseUnitTestJavaWithJavac NO-SOURCE
+> Task :viewmodel:packageReleaseResources UP-TO-DATE
+> Task :compose-resources:processReleaseUnitTestJavaRes NO-SOURCE
+> Task :viewmodel:extractDeepLinksRelease UP-TO-DATE
+> Task :compose-resources:testReleaseUnitTest NO-SOURCE
+> Task :compose-resources:test UP-TO-DATE
+> Task :viewmodel:processReleaseManifest UP-TO-DATE
+> Task :server:app:compileTestKotlin UP-TO-DATE
+> Task :networking:compileReleaseUnitTestKotlinAndroid UP-TO-DATE
+> Task :viewmodel:compileReleaseLibraryResources UP-TO-DATE
+> Task :networking:javaPreCompileReleaseUnitTest UP-TO-DATE
+> Task :server:app:compileTestJava NO-SOURCE
+> Task :data:compileDebugKotlinAndroid UP-TO-DATE
+> Task :viewmodel:parseReleaseLocalResources UP-TO-DATE
+> Task :server:app:testClasses UP-TO-DATE
+> Task :networking:compileReleaseUnitTestJavaWithJavac NO-SOURCE
+> Task :data:javaPreCompileDebug UP-TO-DATE
+> Task :viewmodel:generateReleaseRFile UP-TO-DATE
+> Task :networking:processReleaseUnitTestJavaRes UP-TO-DATE
+> Task :data:compileDebugJavaWithJavac UP-TO-DATE
+> Task :data:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :data:preDebugUnitTestBuild UP-TO-DATE
+> Task :server:app:test UP-TO-DATE
+> Task :presentation-core:kmpPartiallyResolvedDependenciesChecker
+> Task :presentation-core:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :presentation-core:generateResourceAccessorsForAndroidMain NO-SOURCE
+> Task :presentation-core:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :networking:testReleaseUnitTest UP-TO-DATE
+> Task :networking:test UP-TO-DATE
+> Task :usecase:compileReleaseUnitTestKotlinAndroid UP-TO-DATE
+> Task :presentation-core:generateActualResourceCollectorsForAndroidMain UP-TO-DATE
+> Task :presentation-core:generateComposeResClass UP-TO-DATE
+> Task :presentation-core:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :presentation-core:generateResourceAccessorsForAndroidDebug NO-SOURCE
+> Task :usecase:javaPreCompileReleaseUnitTest UP-TO-DATE
+> Task :viewmodel:kspReleaseKotlinAndroid UP-TO-DATE
+> Task :usecase:compileReleaseUnitTestJavaWithJavac NO-SOURCE
+> Task :usecase:processReleaseUnitTestJavaRes UP-TO-DATE
+> Task :usecase:testReleaseUnitTest UP-TO-DATE
+> Task :usecase:test UP-TO-DATE
+> Task :presentation-feature:kmpPartiallyResolvedDependenciesChecker
+> Task :presentation-feature:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :data:generateDebugUnitTestStubRFile UP-TO-DATE
+> Task :presentation-feature:generateResourceAccessorsForAndroidMain NO-SOURCE
+> Task :data:kspDebugUnitTestKotlinAndroid SKIPPED
+> Task :presentation-feature:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :presentation-feature:generateActualResourceCollectorsForAndroidMain UP-TO-DATE
+> Task :presentation-feature:generateComposeResClass UP-TO-DATE
+> Task :data:compileDebugUnitTestKotlinAndroid NO-SOURCE
+> Task :presentation-feature:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :presentation-feature:generateResourceAccessorsForAndroidDebug NO-SOURCE
+> Task :presentation-feature:javaPreCompileDebug UP-TO-DATE
+> Task :presentation-feature:preReleaseBuild UP-TO-DATE
+> Task :data:javaPreCompileDebugUnitTest UP-TO-DATE
+> Task :presentation-feature:writeReleaseAarMetadata UP-TO-DATE
+> Task :presentation-feature:convertXmlValueResourcesForAndroidRelease NO-SOURCE
+> Task :data:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :data:preReleaseBuild UP-TO-DATE
+> Task :presentation-feature:copyNonXmlValueResourcesForAndroidRelease NO-SOURCE
+> Task :presentation-feature:prepareComposeResourcesTaskForAndroidRelease NO-SOURCE
+> Task :presentation-core:compileDebugKotlinAndroid UP-TO-DATE
+> Task :presentation-core:javaPreCompileDebug UP-TO-DATE
+> Task :data:generateReleaseBuildConfig UP-TO-DATE
+> Task :presentation-feature:copyReleaseComposeResourcesToAndroidAssets UP-TO-DATE
+> Task :presentation-core:compileDebugJavaWithJavac NO-SOURCE
+> Task :data:generateReleaseResValues UP-TO-DATE
+> Task :presentation-feature:generateReleaseResValues UP-TO-DATE
+> Task :presentation-core:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :data:generateReleaseResources UP-TO-DATE
+> Task :presentation-core:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :presentation-feature:generateReleaseResources UP-TO-DATE
+> Task :presentation-core:processDebugJavaRes UP-TO-DATE
+> Task :presentation-core:preReleaseBuild UP-TO-DATE
+> Task :presentation-core:writeReleaseAarMetadata UP-TO-DATE
+> Task :presentation-core:convertXmlValueResourcesForAndroidRelease NO-SOURCE
+> Task :presentation-core:copyNonXmlValueResourcesForAndroidRelease NO-SOURCE
+> Task :data:packageReleaseResources UP-TO-DATE
+> Task :viewmodel:compileReleaseKotlinAndroid UP-TO-DATE
+> Task :presentation-core:prepareComposeResourcesTaskForAndroidRelease NO-SOURCE
+> Task :data:parseReleaseLocalResources UP-TO-DATE
+> Task :presentation-core:copyReleaseComposeResourcesToAndroidAssets UP-TO-DATE
+> Task :viewmodel:javaPreCompileRelease UP-TO-DATE
+> Task :presentation-core:generateReleaseResValues UP-TO-DATE
+> Task :viewmodel:compileReleaseJavaWithJavac NO-SOURCE
+> Task :data:generateReleaseRFile UP-TO-DATE
+> Task :presentation-core:generateReleaseResources UP-TO-DATE
+> Task :viewmodel:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :viewmodel:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :presentation-core:packageReleaseResources UP-TO-DATE
+> Task :presentation-core:extractDeepLinksRelease UP-TO-DATE
+> Task :viewmodel:processReleaseJavaRes UP-TO-DATE
+> Task :presentation-core:processReleaseManifest UP-TO-DATE
+> Task :viewmodel:preDebugUnitTestBuild UP-TO-DATE
+> Task :presentation-core:compileReleaseLibraryResources UP-TO-DATE
+> Task :presentation-core:parseReleaseLocalResources UP-TO-DATE
+> Task :presentation-core:generateReleaseRFile UP-TO-DATE
+> Task :presentation-core:generateResourceAccessorsForAndroidRelease NO-SOURCE
+> Task :data:kspReleaseKotlinAndroid UP-TO-DATE
+> Task :viewmodel:generateDebugUnitTestStubRFile UP-TO-DATE
+> Task :viewmodel:kspDebugUnitTestKotlinAndroid SKIPPED
+> Task :presentation-feature:compileDebugKotlinAndroid UP-TO-DATE
+> Task :presentation-feature:compileDebugJavaWithJavac NO-SOURCE
+> Task :presentation-feature:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :presentation-feature:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :viewmodel:compileDebugUnitTestKotlinAndroid NO-SOURCE
+> Task :presentation-feature:processDebugJavaRes UP-TO-DATE
+> Task :viewmodel:javaPreCompileDebugUnitTest UP-TO-DATE
+> Task :viewmodel:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :viewmodel:processDebugUnitTestJavaRes NO-SOURCE
+> Task :viewmodel:testDebugUnitTest NO-SOURCE
+> Task :presentation-feature:packageReleaseResources UP-TO-DATE
+> Task :viewmodel:preReleaseUnitTestBuild UP-TO-DATE
+> Task :presentation-feature:extractDeepLinksRelease UP-TO-DATE
+> Task :presentation-feature:processReleaseManifest UP-TO-DATE
+> Task :presentation-feature:compileReleaseLibraryResources UP-TO-DATE
+> Task :presentation-feature:parseReleaseLocalResources UP-TO-DATE
+> Task :presentation-feature:generateReleaseRFile UP-TO-DATE
+> Task :presentation-feature:generateResourceAccessorsForAndroidRelease NO-SOURCE
+> Task :presentation-feature:javaPreCompileRelease UP-TO-DATE
+> Task :presentation-feature:preDebugUnitTestBuild UP-TO-DATE
+> Task :data:compileReleaseKotlinAndroid UP-TO-DATE
+> Task :data:javaPreCompileRelease UP-TO-DATE
+> Task :viewmodel:generateReleaseUnitTestStubRFile UP-TO-DATE
+> Task :viewmodel:kspReleaseUnitTestKotlinAndroid SKIPPED
+> Task :viewmodel:compileReleaseUnitTestKotlinAndroid NO-SOURCE
+> Task :viewmodel:javaPreCompileReleaseUnitTest UP-TO-DATE
+> Task :viewmodel:compileReleaseUnitTestJavaWithJavac NO-SOURCE
+> Task :data:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :viewmodel:processReleaseUnitTestJavaRes NO-SOURCE
+> Task :data:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :data:preReleaseUnitTestBuild UP-TO-DATE
+> Task :viewmodel:testReleaseUnitTest NO-SOURCE
+> Task :viewmodel:test UP-TO-DATE
+> Task :presentation-core:compileReleaseKotlinAndroid UP-TO-DATE
+> Task :presentation-core:javaPreCompileRelease UP-TO-DATE
+> Task :presentation-core:compileReleaseJavaWithJavac NO-SOURCE
+> Task :presentation-core:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :presentation-core:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :presentation-core:processReleaseJavaRes UP-TO-DATE
+> Task :presentation-core:preDebugUnitTestBuild UP-TO-DATE
+> Task :presentation-feature:generateDebugUnitTestStubRFile UP-TO-DATE
+> Task :data:generateReleaseUnitTestStubRFile UP-TO-DATE
+> Task :data:kspReleaseUnitTestKotlinAndroid SKIPPED
+> Task :data:compileReleaseUnitTestKotlinAndroid NO-SOURCE
+> Task :data:javaPreCompileReleaseUnitTest UP-TO-DATE
+> Task :data:compileReleaseUnitTestJavaWithJavac NO-SOURCE
+> Task :data:copyRoomSchemas NO-SOURCE
+> Task :data:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :data:processDebugJavaRes UP-TO-DATE
+> Task :data:writeReleaseAarMetadata UP-TO-DATE
+> Task :data:extractDeepLinksRelease UP-TO-DATE
+> Task :data:processReleaseManifest UP-TO-DATE
+> Task :data:compileReleaseLibraryResources UP-TO-DATE
+> Task :data:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :data:processReleaseJavaRes UP-TO-DATE
+> Task :data:processDebugUnitTestJavaRes NO-SOURCE
+> Task :data:testDebugUnitTest NO-SOURCE
+> Task :data:processReleaseUnitTestJavaRes NO-SOURCE
+> Task :presentation-core:generateDebugUnitTestStubRFile UP-TO-DATE
+> Task :presentation-core:convertXmlValueResourcesForAndroidUnitTest NO-SOURCE
+> Task :data:testReleaseUnitTest NO-SOURCE
+> Task :presentation-core:copyNonXmlValueResourcesForAndroidUnitTest NO-SOURCE
+> Task :data:test UP-TO-DATE
+> Task :presentation-core:prepareComposeResourcesTaskForAndroidUnitTest NO-SOURCE
+> Task :presentation-core:generateResourceAccessorsForAndroidUnitTest NO-SOURCE
+> Task :presentation-core:convertXmlValueResourcesForAndroidUnitTestDebug NO-SOURCE
+> Task :presentation-core:copyNonXmlValueResourcesForAndroidUnitTestDebug NO-SOURCE
+> Task :presentation-core:prepareComposeResourcesTaskForAndroidUnitTestDebug NO-SOURCE
+> Task :presentation-core:generateResourceAccessorsForAndroidUnitTestDebug NO-SOURCE
+> Task :presentation-core:convertXmlValueResourcesForCommonTest NO-SOURCE
+> Task :presentation-core:copyNonXmlValueResourcesForCommonTest NO-SOURCE
+> Task :presentation-core:prepareComposeResourcesTaskForCommonTest NO-SOURCE
+> Task :presentation-core:generateResourceAccessorsForCommonTest NO-SOURCE
+> Task :presentation-feature:compileReleaseKotlinAndroid UP-TO-DATE
+> Task :presentation-core:compileDebugUnitTestKotlinAndroid UP-TO-DATE
+> Task :presentation-feature:compileReleaseJavaWithJavac NO-SOURCE
+> Task :compose-app:kmpPartiallyResolvedDependenciesChecker
+> Task :presentation-core:javaPreCompileDebugUnitTest UP-TO-DATE
+> Task :compose-app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :compose-app:convertXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :compose-app:copyNonXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :presentation-feature:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :presentation-core:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :compose-app:prepareComposeResourcesTaskForAndroidMain NO-SOURCE
+> Task :compose-app:generateResourceAccessorsForAndroidMain NO-SOURCE
+> Task :presentation-feature:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :compose-app:convertXmlValueResourcesForCommonMain UP-TO-DATE
+> Task :compose-app:copyNonXmlValueResourcesForCommonMain UP-TO-DATE
+> Task :presentation-core:processDebugUnitTestJavaRes UP-TO-DATE
+> Task :compose-app:prepareComposeResourcesTaskForCommonMain UP-TO-DATE
+> Task :compose-app:generateResourceAccessorsForCommonMain UP-TO-DATE
+> Task :compose-app:generateActualResourceCollectorsForAndroidMain UP-TO-DATE
+> Task :compose-app:generateComposeResClass UP-TO-DATE
+> Task :presentation-feature:processReleaseJavaRes UP-TO-DATE
+> Task :compose-app:preBuild UP-TO-DATE
+> Task :compose-app:preDebugBuild UP-TO-DATE
+> Task :presentation-feature:convertXmlValueResourcesForAndroidUnitTest NO-SOURCE
+> Task :compose-app:generateDebugBuildConfig UP-TO-DATE
+> Task :presentation-feature:copyNonXmlValueResourcesForAndroidUnitTest NO-SOURCE
+> Task :compose-app:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :presentation-feature:prepareComposeResourcesTaskForAndroidUnitTest NO-SOURCE
+> Task :compose-app:convertXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :compose-app:copyNonXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :presentation-feature:generateResourceAccessorsForAndroidUnitTest NO-SOURCE
+> Task :compose-app:prepareComposeResourcesTaskForAndroidDebug NO-SOURCE
+> Task :compose-app:generateResourceAccessorsForAndroidDebug NO-SOURCE
+> Task :presentation-feature:convertXmlValueResourcesForAndroidUnitTestDebug NO-SOURCE
+> Task :presentation-feature:copyNonXmlValueResourcesForAndroidUnitTestDebug NO-SOURCE
+> Task :presentation-feature:prepareComposeResourcesTaskForAndroidUnitTestDebug NO-SOURCE
+> Task :presentation-feature:generateResourceAccessorsForAndroidUnitTestDebug NO-SOURCE
+> Task :presentation-feature:convertXmlValueResourcesForCommonTest NO-SOURCE
+> Task :presentation-feature:copyNonXmlValueResourcesForCommonTest NO-SOURCE
+> Task :presentation-feature:prepareComposeResourcesTaskForCommonTest NO-SOURCE
+> Task :presentation-feature:generateResourceAccessorsForCommonTest NO-SOURCE
+> Task :presentation-feature:compileDebugUnitTestKotlinAndroid NO-SOURCE
+> Task :presentation-feature:javaPreCompileDebugUnitTest UP-TO-DATE
+> Task :presentation-feature:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :presentation-feature:processDebugUnitTestJavaRes NO-SOURCE
+> Task :presentation-feature:testDebugUnitTest NO-SOURCE
+> Task :presentation-feature:preReleaseUnitTestBuild UP-TO-DATE
+> Task :presentation-core:testDebugUnitTest UP-TO-DATE
+> Task :presentation-core:preReleaseUnitTestBuild UP-TO-DATE
+> Task :compose-app:checkDebugAarMetadata UP-TO-DATE
+> Task :compose-app:generateDebugResValues UP-TO-DATE
+> Task :presentation-feature:generateReleaseUnitTestStubRFile UP-TO-DATE
+> Task :presentation-feature:convertXmlValueResourcesForAndroidUnitTestRelease NO-SOURCE
+> Task :presentation-feature:copyNonXmlValueResourcesForAndroidUnitTestRelease NO-SOURCE
+> Task :presentation-feature:prepareComposeResourcesTaskForAndroidUnitTestRelease NO-SOURCE
+> Task :presentation-feature:generateResourceAccessorsForAndroidUnitTestRelease NO-SOURCE
+> Task :presentation-feature:compileReleaseUnitTestKotlinAndroid NO-SOURCE
+> Task :presentation-feature:javaPreCompileReleaseUnitTest UP-TO-DATE
+> Task :presentation-feature:compileReleaseUnitTestJavaWithJavac NO-SOURCE
+> Task :presentation-feature:processReleaseUnitTestJavaRes NO-SOURCE
+> Task :presentation-core:generateReleaseUnitTestStubRFile UP-TO-DATE
+> Task :presentation-core:convertXmlValueResourcesForAndroidUnitTestRelease NO-SOURCE
+> Task :presentation-feature:testReleaseUnitTest NO-SOURCE
+> Task :presentation-feature:test UP-TO-DATE
+> Task :presentation-core:copyNonXmlValueResourcesForAndroidUnitTestRelease NO-SOURCE
+> Task :presentation-core:prepareComposeResourcesTaskForAndroidUnitTestRelease NO-SOURCE
+> Task :presentation-core:generateResourceAccessorsForAndroidUnitTestRelease NO-SOURCE
+> Task :compose-app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :compose-app:generateDebugResources UP-TO-DATE
+> Task :compose-app:mergeDebugResources UP-TO-DATE
+> Task :compose-app:copyDebugComposeResourcesToAndroidAssets UP-TO-DATE
+> Task :compose-app:packageDebugResources UP-TO-DATE
+> Task :compose-app:parseDebugLocalResources UP-TO-DATE
+> Task :compose-app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :compose-app:extractDeepLinksDebug UP-TO-DATE
+> Task :presentation-core:compileReleaseUnitTestKotlinAndroid UP-TO-DATE
+> Task :presentation-core:javaPreCompileReleaseUnitTest UP-TO-DATE
+> Task :presentation-core:compileReleaseUnitTestJavaWithJavac NO-SOURCE
+> Task :presentation-core:processReleaseUnitTestJavaRes UP-TO-DATE
+> Task :compose-app:processDebugMainManifest UP-TO-DATE
+> Task :compose-app:processDebugManifest UP-TO-DATE
+> Task :compose-app:processDebugManifestForPackage UP-TO-DATE
+> Task :presentation-core:testReleaseUnitTest UP-TO-DATE
+> Task :presentation-core:test UP-TO-DATE
+> Task :compose-app:processDebugResources UP-TO-DATE
+> Task :compose-app:kspDebugKotlinAndroid UP-TO-DATE
+> Task :compose-app:compileDebugKotlinAndroid UP-TO-DATE
+> Task :compose-app:javaPreCompileDebug UP-TO-DATE
+> Task :compose-app:compileDebugJavaWithJavac UP-TO-DATE
+> Task :compose-app:bundleDebugClassesToRuntimeJar UP-TO-DATE
+> Task :compose-app:bundleDebugClassesToCompileJar UP-TO-DATE
+> Task :compose-app:convertXmlValueResourcesForAndroidUnitTest NO-SOURCE
+> Task :compose-app:copyNonXmlValueResourcesForAndroidUnitTest NO-SOURCE
+> Task :compose-app:prepareComposeResourcesTaskForAndroidUnitTest NO-SOURCE
+> Task :compose-app:generateResourceAccessorsForAndroidUnitTest NO-SOURCE
+> Task :compose-app:convertXmlValueResourcesForAndroidUnitTestDebug NO-SOURCE
+> Task :compose-app:copyNonXmlValueResourcesForAndroidUnitTestDebug NO-SOURCE
+> Task :compose-app:prepareComposeResourcesTaskForAndroidUnitTestDebug NO-SOURCE
+> Task :compose-app:generateResourceAccessorsForAndroidUnitTestDebug NO-SOURCE
+> Task :compose-app:convertXmlValueResourcesForCommonTest NO-SOURCE
+> Task :compose-app:copyNonXmlValueResourcesForCommonTest NO-SOURCE
+> Task :compose-app:prepareComposeResourcesTaskForCommonTest NO-SOURCE
+> Task :compose-app:generateResourceAccessorsForCommonTest NO-SOURCE
+> Task :compose-app:kspDebugUnitTestKotlinAndroid SKIPPED
+> Task :compose-app:compileDebugUnitTestKotlinAndroid UP-TO-DATE
+> Task :compose-app:preDebugUnitTestBuild UP-TO-DATE
+> Task :compose-app:javaPreCompileDebugUnitTest UP-TO-DATE
+> Task :compose-app:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :compose-app:processDebugJavaRes UP-TO-DATE
+> Task :compose-app:processDebugUnitTestJavaRes UP-TO-DATE
+> Task :compose-app:testDebugUnitTest UP-TO-DATE
+> Task :compose-app:buildKotlinToolingMetadata UP-TO-DATE
+> Task :compose-app:preReleaseBuild UP-TO-DATE
+> Task :compose-app:generateReleaseBuildConfig UP-TO-DATE
+> Task :compose-app:convertXmlValueResourcesForAndroidRelease NO-SOURCE
+> Task :compose-app:copyNonXmlValueResourcesForAndroidRelease NO-SOURCE
+> Task :compose-app:prepareComposeResourcesTaskForAndroidRelease NO-SOURCE
+> Task :compose-app:generateResourceAccessorsForAndroidRelease NO-SOURCE
+> Task :compose-app:checkReleaseAarMetadata UP-TO-DATE
+> Task :compose-app:generateReleaseResValues UP-TO-DATE
+> Task :compose-app:mapReleaseSourceSetPaths UP-TO-DATE
+> Task :compose-app:generateReleaseResources UP-TO-DATE
+> Task :compose-app:mergeReleaseResources UP-TO-DATE
+> Task :compose-app:copyReleaseComposeResourcesToAndroidAssets UP-TO-DATE
+> Task :compose-app:packageReleaseResources UP-TO-DATE
+> Task :compose-app:parseReleaseLocalResources UP-TO-DATE
+> Task :compose-app:createReleaseCompatibleScreenManifests UP-TO-DATE
+> Task :compose-app:extractDeepLinksRelease UP-TO-DATE
+> Task :compose-app:processReleaseMainManifest UP-TO-DATE
+> Task :compose-app:processReleaseManifest UP-TO-DATE
+> Task :compose-app:processReleaseManifestForPackage UP-TO-DATE
+> Task :compose-app:processReleaseResources UP-TO-DATE
+> Task :compose-app:kspReleaseKotlinAndroid UP-TO-DATE
+> Task :compose-app:compileReleaseKotlinAndroid UP-TO-DATE
+> Task :compose-app:javaPreCompileRelease UP-TO-DATE
+> Task :compose-app:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :compose-app:bundleReleaseClassesToRuntimeJar UP-TO-DATE
+> Task :compose-app:bundleReleaseClassesToCompileJar UP-TO-DATE
+> Task :compose-app:convertXmlValueResourcesForAndroidUnitTestRelease NO-SOURCE
+> Task :compose-app:copyNonXmlValueResourcesForAndroidUnitTestRelease NO-SOURCE
+> Task :compose-app:prepareComposeResourcesTaskForAndroidUnitTestRelease NO-SOURCE
+> Task :compose-app:generateResourceAccessorsForAndroidUnitTestRelease NO-SOURCE
+> Task :compose-app:kspReleaseUnitTestKotlinAndroid SKIPPED
+> Task :compose-app:compileReleaseUnitTestKotlinAndroid UP-TO-DATE
+> Task :compose-app:preReleaseUnitTestBuild UP-TO-DATE
+> Task :compose-app:javaPreCompileReleaseUnitTest UP-TO-DATE
+> Task :compose-app:compileReleaseUnitTestJavaWithJavac NO-SOURCE
+> Task :compose-app:processReleaseJavaRes UP-TO-DATE
+> Task :compose-app:processReleaseUnitTestJavaRes UP-TO-DATE
+> Task :compose-app:testReleaseUnitTest UP-TO-DATE
+> Task :compose-app:test UP-TO-DATE
+
+BUILD SUCCESSFUL in 1s
+433 actionable tasks: 10 executed, 423 up-to-date
++ echo 'Starting server in background...'
+Starting server in background...
++ SERVER_PID=11739
++ echo 'Waiting for server to start...'
+Waiting for server to start...
++ sleep 20
++ ./gradlew :server:app:run
+Type-safe project accessors is an incubating feature.
+> Task :buildSrc:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :buildSrc:compileKotlin UP-TO-DATE
+> Task :buildSrc:compileJava NO-SOURCE
+> Task :buildSrc:compileGroovy NO-SOURCE
+> Task :buildSrc:pluginDescriptors UP-TO-DATE
+> Task :buildSrc:processResources NO-SOURCE
+> Task :buildSrc:classes UP-TO-DATE
+> Task :buildSrc:jar UP-TO-DATE
+
+> Configure project :compose-app
+WARNING: The option setting 'android.experimental.enableScreenshotTest=true' is experimental.
+The current default is 'false'.
+
+> Task :server:app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :server:domain:processResources NO-SOURCE
+> Task :server:data:processResources NO-SOURCE
+> Task :server:domain:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :server:app:extractProto UP-TO-DATE
+> Task :server:data:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :server:app:processResources UP-TO-DATE
+> Task :domain:kmpPartiallyResolvedDependenciesChecker
+> Task :domain:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :domain:kspKotlinJvm SKIPPED
+> Task :domain:compileKotlinJvm UP-TO-DATE
+> Task :domain:compileJvmMainJava NO-SOURCE
+> Task :domain:jvmProcessResources NO-SOURCE
+> Task :domain:processJvmMainResources SKIPPED
+> Task :domain:jvmMainClasses UP-TO-DATE
+> Task :domain:jvmJar UP-TO-DATE
+> Task :server:domain:compileKotlin UP-TO-DATE
+> Task :server:domain:compileJava NO-SOURCE
+> Task :server:domain:classes UP-TO-DATE
+> Task :server:domain:jar UP-TO-DATE
+> Task :server:data:compileKotlin UP-TO-DATE
+> Task :server:data:compileJava NO-SOURCE
+> Task :server:data:classes UP-TO-DATE
+> Task :server:data:jar UP-TO-DATE
+> Task :server:app:extractIncludeProto UP-TO-DATE
+> Task :server:app:generateProto UP-TO-DATE
+> Task :server:app:compileKotlin UP-TO-DATE
+> Task :server:app:compileJava UP-TO-DATE
+> Task :server:app:classes UP-TO-DATE
+
+> Task :server:app:run
+InMemoryDeviceRepository: Initializing...
+02:36:59.290 [main] DEBUG io.netty.util.internal.logging.InternalLoggerFactory -- Using SLF4J as the default logging framework
+02:36:59.292 [main] DEBUG io.netty.util.internal.PlatformDependent0 -- Java version: 21
+02:36:59.292 [main] DEBUG io.netty.util.internal.PlatformDependent0 -- -Dio.netty.noUnsafe: false
+02:36:59.293 [main] DEBUG io.netty.util.internal.PlatformDependent0 -- sun.misc.Unsafe.theUnsafe: available
+02:36:59.293 [main] DEBUG io.netty.util.internal.PlatformDependent0 -- sun.misc.Unsafe base methods: all available
+02:36:59.294 [main] DEBUG io.netty.util.internal.PlatformDependent0 -- java.nio.Buffer.address: available
+02:36:59.294 [main] DEBUG io.netty.util.internal.PlatformDependent0 -- direct buffer constructor: unavailable: Reflective setAccessible(true) disabled
+02:36:59.294 [main] DEBUG io.netty.util.internal.PlatformDependent0 -- java.nio.Bits.unaligned: available, true
+02:36:59.294 [main] DEBUG io.netty.util.internal.PlatformDependent0 -- jdk.internal.misc.Unsafe.allocateUninitializedArray(int): unavailable: symbolic reference class is not accessible: class jdk.internal.misc.Unsafe, from class io.netty.util.internal.PlatformDependent0 (unnamed module @7823a2f9)
+02:36:59.294 [main] DEBUG io.netty.util.internal.PlatformDependent0 -- java.nio.DirectByteBuffer.<init>(long, {int,long}): unavailable
+02:36:59.294 [main] DEBUG io.netty.util.internal.PlatformDependent -- sun.misc.Unsafe: available
+02:36:59.294 [main] DEBUG io.netty.util.internal.PlatformDependent -- -Dio.netty.tmpdir: /var/folders/h9/bv7130w94hq3wcb_fbtn5clm0000gn/T (java.io.tmpdir)
+02:36:59.294 [main] DEBUG io.netty.util.internal.PlatformDependent -- -Dio.netty.bitMode: 64 (sun.arch.data.model)
+02:36:59.294 [main] DEBUG io.netty.util.internal.PlatformDependent -- Platform: MacOS
+02:36:59.294 [main] DEBUG io.netty.util.internal.PlatformDependent -- -Dio.netty.maxDirectMemory: -1 bytes
+02:36:59.295 [main] DEBUG io.netty.util.internal.CleanerJava9 -- java.nio.ByteBuffer.cleaner(): available
+02:36:59.295 [main] DEBUG io.netty.util.internal.PlatformDependent -- -Dio.netty.noPreferDirect: false
+02:36:59.309 [main] DEBUG io.netty.channel.epoll.Epoll -- Epoll support is not available: null
+BatteryButlerApp: SyncService Registered
+02:36:59.330 [main] DEBUG io.netty.channel.MultithreadEventLoopGroup -- -Dio.netty.eventLoopThreads: 32
+02:36:59.331 [main] DEBUG io.netty.channel.nio.NioIoHandler -- -Dio.netty.noKeySetOptimization: false
+02:36:59.331 [main] DEBUG io.netty.channel.nio.NioIoHandler -- -Dio.netty.selectorAutoRebuildThreshold: 512
+02:36:59.333 [main] DEBUG io.netty.util.concurrent.GlobalEventExecutor -- -Dio.netty.globalEventExecutor.quietPeriodSeconds: 1
+02:36:59.335 [main] DEBUG io.netty.util.internal.InternalThreadLocalMap -- -Dio.netty.threadLocalMap.stringBuilder.initialSize: 1024
+02:36:59.335 [main] DEBUG io.netty.util.internal.InternalThreadLocalMap -- -Dio.netty.threadLocalMap.stringBuilder.maxSize: 4096
+02:36:59.337 [main] DEBUG io.netty.util.internal.PlatformDependent -- org.jctools-core.MpscChunkedArrayQueue: available
+02:36:59.345 [main] DEBUG io.netty.util.ResourceLeakDetector -- -Dio.netty.leakDetection.level: simple
+02:36:59.345 [main] DEBUG io.netty.util.ResourceLeakDetector -- -Dio.netty.leakDetection.targetRecords: 4
+02:36:59.345 [main] DEBUG io.netty.buffer.PooledByteBufAllocator -- -Dio.netty.allocator.numHeapArenas: 32
+02:36:59.345 [main] DEBUG io.netty.buffer.PooledByteBufAllocator -- -Dio.netty.allocator.numDirectArenas: 32
+02:36:59.345 [main] DEBUG io.netty.buffer.PooledByteBufAllocator -- -Dio.netty.allocator.pageSize: 8192
+02:36:59.345 [main] DEBUG io.netty.buffer.PooledByteBufAllocator -- -Dio.netty.allocator.maxOrder: 9
+02:36:59.345 [main] DEBUG io.netty.buffer.PooledByteBufAllocator -- -Dio.netty.allocator.chunkSize: 4194304
+02:36:59.345 [main] DEBUG io.netty.buffer.PooledByteBufAllocator -- -Dio.netty.allocator.smallCacheSize: 256
+02:36:59.345 [main] DEBUG io.netty.buffer.PooledByteBufAllocator -- -Dio.netty.allocator.normalCacheSize: 64
+02:36:59.345 [main] DEBUG io.netty.buffer.PooledByteBufAllocator -- -Dio.netty.allocator.maxCachedBufferCapacity: 32768
+02:36:59.345 [main] DEBUG io.netty.buffer.PooledByteBufAllocator -- -Dio.netty.allocator.cacheTrimInterval: 8192
+02:36:59.345 [main] DEBUG io.netty.buffer.PooledByteBufAllocator -- -Dio.netty.allocator.cacheTrimIntervalMillis: 0
+02:36:59.345 [main] DEBUG io.netty.buffer.PooledByteBufAllocator -- -Dio.netty.allocator.useCacheForAllThreads: false
+02:36:59.345 [main] DEBUG io.netty.buffer.PooledByteBufAllocator -- -Dio.netty.allocator.maxCachedByteBuffersPerChunk: 1023
+02:36:59.345 [main] DEBUG io.netty.buffer.PooledByteBufAllocator -- -Dio.netty.allocator.disableCacheFinalizersForFastThreadLocalThreads: false
+02:36:59.356 [grpc-nio-boss-ELG-1-1] DEBUG io.netty.channel.DefaultChannelId -- -Dio.netty.processId: 11784 (auto-detected)
+02:36:59.357 [grpc-nio-boss-ELG-1-1] DEBUG io.netty.util.NetUtil -- -Djava.net.preferIPv4Stack: false
+02:36:59.357 [grpc-nio-boss-ELG-1-1] DEBUG io.netty.util.NetUtil -- -Djava.net.preferIPv6Addresses: false
+02:36:59.359 [grpc-nio-boss-ELG-1-1] DEBUG io.netty.util.NetUtilInitializations -- Loopback interface: lo0 (lo0, 0:0:0:0:0:0:0:1%lo0)
+02:36:59.359 [grpc-nio-boss-ELG-1-1] DEBUG io.netty.util.NetUtil -- Failed to get SOMAXCONN from sysctl and file /proc/sys/net/core/somaxconn. Default: 128
+02:36:59.359 [grpc-nio-boss-ELG-1-1] DEBUG io.netty.channel.DefaultChannelId -- -Dio.netty.machineId: de:d0:ac:ff:fe:db:74:e4 (auto-detected)
+02:36:59.365 [grpc-nio-boss-ELG-1-1] DEBUG io.netty.buffer.AdaptiveByteBufAllocator -- -Dio.netty.allocator.useCachedMagazinesForNonEventLoopThreads: false
+02:36:59.367 [grpc-nio-boss-ELG-1-1] DEBUG io.netty.util.Recycler -- -Dio.netty.recycler.maxCapacityPerThread: 4096
+02:36:59.367 [grpc-nio-boss-ELG-1-1] DEBUG io.netty.util.Recycler -- -Dio.netty.recycler.ratio: 8
+02:36:59.367 [grpc-nio-boss-ELG-1-1] DEBUG io.netty.util.Recycler -- -Dio.netty.recycler.chunkSize: 32
+02:36:59.367 [grpc-nio-boss-ELG-1-1] DEBUG io.netty.util.Recycler -- -Dio.netty.recycler.blocking: false
+02:36:59.367 [grpc-nio-boss-ELG-1-1] DEBUG io.netty.util.Recycler -- -Dio.netty.recycler.batchFastThreadLocalOnly: true
+02:36:59.368 [grpc-nio-boss-ELG-1-1] DEBUG io.netty.buffer.ByteBufUtil -- -Dio.netty.allocator.type: adaptive
+02:36:59.368 [grpc-nio-boss-ELG-1-1] DEBUG io.netty.buffer.ByteBufUtil -- -Dio.netty.threadLocalDirectBufferSize: 0
+02:36:59.368 [grpc-nio-boss-ELG-1-1] DEBUG io.netty.buffer.ByteBufUtil -- -Dio.netty.maxThreadLocalCharBufferSize: 16384
+02:36:59.368 [grpc-nio-boss-ELG-1-1] DEBUG io.netty.bootstrap.ChannelInitializerExtensions -- -Dio.netty.bootstrap.extensions: null
+gRPC server started on port 50051
+02:36:59.459 [main] INFO io.ktor.server.Application -- Autoreload is disabled because the development mode is off.
+02:36:59.481 [main] INFO io.ktor.server.Application -- Application started in 0.092 seconds.
+02:36:59.483 [main] DEBUG io.netty.util.internal.NativeLibraryLoader -- -Dio.netty.native.workdir: /var/folders/h9/bv7130w94hq3wcb_fbtn5clm0000gn/T (io.netty.tmpdir)
+02:36:59.483 [main] DEBUG io.netty.util.internal.NativeLibraryLoader -- -Dio.netty.native.deleteLibAfterLoading: true
+02:36:59.483 [main] DEBUG io.netty.util.internal.NativeLibraryLoader -- -Dio.netty.native.tryPatchShadedId: true
+02:36:59.483 [main] DEBUG io.netty.util.internal.NativeLibraryLoader -- -Dio.netty.native.detectNativeLibraryDuplicates: true
+02:36:59.488 [main] DEBUG io.netty.channel.kqueue.KQueue -- KQueue support is not available: could not load a native library: netty_transport_native_kqueue_aarch_64
+02:36:59.491 [DefaultDispatcher-worker-1] INFO io.ktor.server.Application -- Responding at http://0.0.0.0:8080
++ echo 'Running instrumented tests...'
+Running instrumented tests...
++ ./gradlew :compose-app:pixel5api34Check
+Starting a Gradle Daemon, 1 busy and 1 incompatible and 1 stopped Daemons could not be reused, use --status for details
+Type-safe project accessors is an incubating feature.
+> Task :buildSrc:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :buildSrc:compileKotlin UP-TO-DATE
+> Task :buildSrc:compileJava NO-SOURCE
+> Task :buildSrc:compileGroovy NO-SOURCE
+> Task :buildSrc:pluginDescriptors UP-TO-DATE
+> Task :buildSrc:processResources NO-SOURCE
+> Task :buildSrc:classes UP-TO-DATE
+> Task :buildSrc:jar UP-TO-DATE
+
+> Configure project :compose-app
+WARNING: The option setting 'android.experimental.enableScreenshotTest=true' is experimental.
+The current default is 'false'.
+
+> Task :presentation-model:preBuild UP-TO-DATE
+> Task :data:preBuild UP-TO-DATE
+> Task :presentation-feature:preBuild UP-TO-DATE
+> Task :viewmodel:preBuild UP-TO-DATE
+> Task :usecase:preBuild UP-TO-DATE
+> Task :presentation-core:preBuild UP-TO-DATE
+> Task :domain:preBuild UP-TO-DATE
+> Task :networking:preBuild UP-TO-DATE
+> Task :compose-resources:preBuild UP-TO-DATE
+> Task :presentation-feature:preDebugBuild UP-TO-DATE
+> Task :presentation-model:preDebugBuild UP-TO-DATE
+> Task :data:preDebugBuild UP-TO-DATE
+> Task :viewmodel:preDebugBuild UP-TO-DATE
+> Task :domain:preDebugBuild UP-TO-DATE
+> Task :compose-resources:preDebugBuild UP-TO-DATE
+> Task :presentation-core:preDebugBuild UP-TO-DATE
+> Task :usecase:preDebugBuild UP-TO-DATE
+> Task :networking:preDebugBuild UP-TO-DATE
+> Task :compose-resources:writeDebugAarMetadata UP-TO-DATE
+> Task :data:writeDebugAarMetadata UP-TO-DATE
+> Task :domain:writeDebugAarMetadata UP-TO-DATE
+> Task :presentation-feature:writeDebugAarMetadata UP-TO-DATE
+> Task :presentation-model:writeDebugAarMetadata UP-TO-DATE
+> Task :viewmodel:writeDebugAarMetadata UP-TO-DATE
+> Task :presentation-core:writeDebugAarMetadata UP-TO-DATE
+> Task :usecase:writeDebugAarMetadata UP-TO-DATE
+> Task :networking:writeDebugAarMetadata UP-TO-DATE
+> Task :domain:generateDebugResValues UP-TO-DATE
+> Task :presentation-model:generateDebugResValues UP-TO-DATE
+> Task :data:generateDebugResValues UP-TO-DATE
+> Task :viewmodel:generateDebugResValues UP-TO-DATE
+> Task :usecase:generateDebugResValues UP-TO-DATE
+> Task :networking:generateDebugResValues UP-TO-DATE
+> Task :domain:generateDebugResources UP-TO-DATE
+> Task :presentation-model:generateDebugResources UP-TO-DATE
+> Task :usecase:generateDebugResources UP-TO-DATE
+> Task :data:generateDebugResources UP-TO-DATE
+> Task :viewmodel:generateDebugResources UP-TO-DATE
+> Task :networking:generateDebugResources UP-TO-DATE
+> Task :compose-resources:convertXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :presentation-core:convertXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :presentation-feature:convertXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :domain:packageDebugResources UP-TO-DATE
+> Task :viewmodel:packageDebugResources UP-TO-DATE
+> Task :data:packageDebugResources UP-TO-DATE
+> Task :presentation-model:packageDebugResources UP-TO-DATE
+> Task :networking:packageDebugResources UP-TO-DATE
+> Task :presentation-feature:copyNonXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :presentation-core:copyNonXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :compose-resources:copyNonXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :usecase:packageDebugResources UP-TO-DATE
+> Task :presentation-model:extractDeepLinksDebug UP-TO-DATE
+> Task :viewmodel:extractDeepLinksDebug UP-TO-DATE
+> Task :domain:extractDeepLinksDebug UP-TO-DATE
+> Task :data:extractDeepLinksDebug UP-TO-DATE
+> Task :usecase:extractDeepLinksDebug UP-TO-DATE
+> Task :networking:extractDeepLinksDebug UP-TO-DATE
+> Task :presentation-core:prepareComposeResourcesTaskForAndroidDebug NO-SOURCE
+> Task :compose-resources:prepareComposeResourcesTaskForAndroidDebug NO-SOURCE
+> Task :presentation-feature:prepareComposeResourcesTaskForAndroidDebug NO-SOURCE
+> Task :presentation-core:convertXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :presentation-feature:convertXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :compose-resources:convertXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :presentation-feature:copyNonXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :presentation-core:copyNonXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :compose-resources:copyNonXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :presentation-feature:prepareComposeResourcesTaskForAndroidMain NO-SOURCE
+> Task :presentation-feature:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :presentation-model:processDebugManifest UP-TO-DATE
+> Task :presentation-core:prepareComposeResourcesTaskForAndroidMain NO-SOURCE
+> Task :networking:processDebugManifest UP-TO-DATE
+> Task :data:processDebugManifest UP-TO-DATE
+> Task :domain:processDebugManifest UP-TO-DATE
+> Task :viewmodel:processDebugManifest UP-TO-DATE
+> Task :compose-resources:prepareComposeResourcesTaskForAndroidMain NO-SOURCE
+> Task :usecase:processDebugManifest UP-TO-DATE
+> Task :presentation-feature:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :presentation-feature:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :presentation-core:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :presentation-core:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :presentation-model:compileDebugLibraryResources UP-TO-DATE
+> Task :networking:compileDebugLibraryResources UP-TO-DATE
+> Task :domain:compileDebugLibraryResources UP-TO-DATE
+> Task :usecase:compileDebugLibraryResources UP-TO-DATE
+> Task :presentation-core:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :data:compileDebugLibraryResources UP-TO-DATE
+> Task :presentation-feature:copyDebugComposeResourcesToAndroidAssets UP-TO-DATE
+> Task :compose-resources:convertXmlValueResourcesForCommonMain UP-TO-DATE
+> Task :compose-resources:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :presentation-core:copyDebugComposeResourcesToAndroidAssets UP-TO-DATE
+> Task :presentation-feature:generateDebugResValues UP-TO-DATE
+> Task :viewmodel:compileDebugLibraryResources UP-TO-DATE
+> Task :presentation-core:generateDebugResValues UP-TO-DATE
+> Task :presentation-feature:generateDebugResources UP-TO-DATE
+> Task :presentation-core:generateDebugResources UP-TO-DATE
+> Task :data:parseDebugLocalResources UP-TO-DATE
+> Task :domain:parseDebugLocalResources UP-TO-DATE
+> Task :viewmodel:parseDebugLocalResources UP-TO-DATE
+> Task :presentation-model:parseDebugLocalResources UP-TO-DATE
+> Task :usecase:parseDebugLocalResources UP-TO-DATE
+> Task :networking:parseDebugLocalResources UP-TO-DATE
+> Task :presentation-core:packageDebugResources UP-TO-DATE
+> Task :presentation-feature:packageDebugResources UP-TO-DATE
+> Task :viewmodel:generateDebugRFile UP-TO-DATE
+> Task :presentation-model:generateDebugRFile UP-TO-DATE
+> Task :domain:generateDebugRFile UP-TO-DATE
+> Task :presentation-core:extractDeepLinksDebug UP-TO-DATE
+> Task :compose-resources:prepareComposeResourcesTaskForCommonMain UP-TO-DATE
+> Task :usecase:generateDebugRFile UP-TO-DATE
+> Task :data:generateDebugRFile UP-TO-DATE
+> Task :networking:generateDebugRFile UP-TO-DATE
+> Task :presentation-feature:extractDeepLinksDebug UP-TO-DATE
+> Task :compose-resources:copyDebugComposeResourcesToAndroidAssets UP-TO-DATE
+> Task :compose-resources:generateDebugResValues UP-TO-DATE
+> Task :presentation-core:processDebugManifest UP-TO-DATE
+> Task :presentation-feature:processDebugManifest UP-TO-DATE
+> Task :compose-resources:generateDebugResources UP-TO-DATE
+> Task :presentation-feature:compileDebugLibraryResources UP-TO-DATE
+> Task :presentation-core:compileDebugLibraryResources UP-TO-DATE
+> Task :presentation-core:parseDebugLocalResources UP-TO-DATE
+> Task :compose-resources:packageDebugResources UP-TO-DATE
+> Task :presentation-feature:parseDebugLocalResources UP-TO-DATE
+> Task :compose-resources:extractDeepLinksDebug UP-TO-DATE
+> Task :presentation-core:generateDebugRFile UP-TO-DATE
+> Task :presentation-feature:generateDebugRFile UP-TO-DATE
+> Task :compose-resources:processDebugManifest UP-TO-DATE
+> Task :compose-resources:compileDebugLibraryResources UP-TO-DATE
+> Task :compose-resources:parseDebugLocalResources UP-TO-DATE
+> Task :compose-resources:generateDebugRFile UP-TO-DATE
+> Task :domain:kmpPartiallyResolvedDependenciesChecker
+> Task :domain:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :domain:kspDebugKotlinAndroid SKIPPED
+> Task :domain:compileDebugKotlinAndroid UP-TO-DATE
+> Task :domain:javaPreCompileDebug UP-TO-DATE
+> Task :domain:compileDebugJavaWithJavac NO-SOURCE
+> Task :domain:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :domain:mergeDebugShaders UP-TO-DATE
+> Task :domain:compileDebugShaders NO-SOURCE
+> Task :domain:debugAssetsCopyForAGP NO-SOURCE
+> Task :domain:generateDebugAssets UP-TO-DATE
+> Task :domain:mergeDebugAssets UP-TO-DATE
+> Task :domain:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :domain:processDebugJavaRes UP-TO-DATE
+> Task :compose-resources:kmpPartiallyResolvedDependenciesChecker
+> Task :domain:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :compose-resources:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :domain:mergeDebugJniLibFolders UP-TO-DATE
+> Task :compose-resources:generateResourceAccessorsForAndroidMain NO-SOURCE
+> Task :domain:mergeDebugNativeLibs NO-SOURCE
+> Task :compose-resources:generateResourceAccessorsForCommonMain UP-TO-DATE
+> Task :domain:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :compose-resources:generateActualResourceCollectorsForAndroidMain UP-TO-DATE
+> Task :compose-resources:generateComposeResClass UP-TO-DATE
+> Task :presentation-model:kmpPartiallyResolvedDependenciesChecker
+> Task :usecase:kmpPartiallyResolvedDependenciesChecker
+> Task :presentation-model:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :usecase:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :compose-resources:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :networking:kmpPartiallyResolvedDependenciesChecker
+> Task :networking:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :compose-resources:generateResourceAccessorsForAndroidDebug NO-SOURCE
+> Task :networking:generateCommonMainProtos UP-TO-DATE
+> Task :usecase:kspDebugKotlinAndroid UP-TO-DATE
+> Task :presentation-model:compileDebugKotlinAndroid UP-TO-DATE
+> Task :presentation-model:javaPreCompileDebug UP-TO-DATE
+> Task :presentation-model:compileDebugJavaWithJavac NO-SOURCE
+> Task :presentation-model:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :presentation-model:mergeDebugShaders UP-TO-DATE
+> Task :presentation-model:compileDebugShaders NO-SOURCE
+> Task :presentation-model:debugAssetsCopyForAGP NO-SOURCE
+> Task :presentation-model:generateDebugAssets UP-TO-DATE
+> Task :presentation-model:mergeDebugAssets UP-TO-DATE
+> Task :presentation-model:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :networking:compileDebugKotlinAndroid UP-TO-DATE
+> Task :networking:javaPreCompileDebug UP-TO-DATE
+> Task :networking:compileDebugJavaWithJavac NO-SOURCE
+> Task :presentation-model:processDebugJavaRes UP-TO-DATE
+> Task :networking:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :networking:mergeDebugShaders UP-TO-DATE
+> Task :networking:compileDebugShaders NO-SOURCE
+> Task :networking:debugAssetsCopyForAGP NO-SOURCE
+> Task :networking:generateDebugAssets UP-TO-DATE
+> Task :presentation-model:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :viewmodel:kmpPartiallyResolvedDependenciesChecker
+> Task :viewmodel:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :networking:mergeDebugAssets UP-TO-DATE
+> Task :presentation-model:mergeDebugJniLibFolders UP-TO-DATE
+> Task :viewmodel:javaPreCompileDebug UP-TO-DATE
+> Task :networking:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :presentation-model:mergeDebugNativeLibs NO-SOURCE
+> Task :viewmodel:mergeDebugShaders UP-TO-DATE
+> Task :presentation-model:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :viewmodel:compileDebugShaders NO-SOURCE
+> Task :viewmodel:debugAssetsCopyForAGP NO-SOURCE
+> Task :networking:processDebugJavaRes UP-TO-DATE
+> Task :usecase:compileDebugKotlinAndroid UP-TO-DATE
+> Task :viewmodel:generateDebugAssets UP-TO-DATE
+> Task :usecase:javaPreCompileDebug UP-TO-DATE
+> Task :viewmodel:mergeDebugAssets UP-TO-DATE
+> Task :usecase:compileDebugJavaWithJavac NO-SOURCE
+> Task :viewmodel:mergeDebugJniLibFolders UP-TO-DATE
+> Task :usecase:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :viewmodel:mergeDebugNativeLibs NO-SOURCE
+> Task :usecase:mergeDebugShaders UP-TO-DATE
+> Task :usecase:compileDebugShaders NO-SOURCE
+> Task :networking:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :usecase:debugAssetsCopyForAGP NO-SOURCE
+> Task :usecase:generateDebugAssets UP-TO-DATE
+> Task :networking:mergeDebugJniLibFolders UP-TO-DATE
+> Task :usecase:mergeDebugAssets UP-TO-DATE
+> Task :networking:mergeDebugNativeLibs NO-SOURCE
+> Task :usecase:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :networking:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :usecase:processDebugJavaRes UP-TO-DATE
+> Task :data:kmpPartiallyResolvedDependenciesChecker
+> Task :data:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :data:generateDebugBuildConfig UP-TO-DATE
+> Task :usecase:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :usecase:mergeDebugJniLibFolders UP-TO-DATE
+> Task :usecase:mergeDebugNativeLibs NO-SOURCE
+> Task :viewmodel:kspDebugKotlinAndroid UP-TO-DATE
+> Task :usecase:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :compose-resources:compileDebugKotlinAndroid UP-TO-DATE
+> Task :compose-resources:javaPreCompileDebug UP-TO-DATE
+> Task :compose-resources:compileDebugJavaWithJavac NO-SOURCE
+> Task :compose-resources:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :compose-resources:mergeDebugShaders UP-TO-DATE
+> Task :compose-resources:compileDebugShaders NO-SOURCE
+> Task :compose-resources:debugAssetsCopyForAGP NO-SOURCE
+> Task :compose-resources:generateDebugAssets UP-TO-DATE
+> Task :compose-resources:mergeDebugAssets UP-TO-DATE
+> Task :compose-resources:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :compose-resources:processDebugJavaRes UP-TO-DATE
+> Task :compose-resources:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :compose-resources:mergeDebugJniLibFolders UP-TO-DATE
+> Task :compose-resources:mergeDebugNativeLibs NO-SOURCE
+> Task :compose-resources:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :viewmodel:compileDebugKotlinAndroid UP-TO-DATE
+> Task :viewmodel:compileDebugJavaWithJavac NO-SOURCE
+> Task :viewmodel:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :viewmodel:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :data:kspDebugKotlinAndroid UP-TO-DATE
+> Task :viewmodel:processDebugJavaRes UP-TO-DATE
+> Task :viewmodel:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :viewmodel:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :presentation-core:kmpPartiallyResolvedDependenciesChecker
+> Task :presentation-core:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :presentation-core:generateResourceAccessorsForAndroidMain NO-SOURCE
+> Task :presentation-core:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :presentation-core:generateActualResourceCollectorsForAndroidMain UP-TO-DATE
+> Task :presentation-core:generateComposeResClass UP-TO-DATE
+> Task :presentation-core:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :presentation-core:generateResourceAccessorsForAndroidDebug NO-SOURCE
+> Task :data:compileDebugKotlinAndroid UP-TO-DATE
+> Task :data:javaPreCompileDebug UP-TO-DATE
+> Task :data:compileDebugJavaWithJavac UP-TO-DATE
+> Task :data:copyRoomSchemas NO-SOURCE
+> Task :data:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :data:mergeDebugShaders UP-TO-DATE
+> Task :data:compileDebugShaders NO-SOURCE
+> Task :data:debugAssetsCopyForAGP NO-SOURCE
+> Task :data:generateDebugAssets UP-TO-DATE
+> Task :data:mergeDebugAssets UP-TO-DATE
+> Task :data:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :data:processDebugJavaRes UP-TO-DATE
+> Task :presentation-feature:kmpPartiallyResolvedDependenciesChecker
+> Task :presentation-feature:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :presentation-feature:generateResourceAccessorsForAndroidMain NO-SOURCE
+> Task :presentation-feature:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :presentation-feature:generateActualResourceCollectorsForAndroidMain UP-TO-DATE
+> Task :data:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :presentation-feature:generateComposeResClass UP-TO-DATE
+> Task :data:mergeDebugJniLibFolders UP-TO-DATE
+> Task :presentation-feature:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :data:mergeDebugNativeLibs NO-SOURCE
+> Task :presentation-feature:generateResourceAccessorsForAndroidDebug NO-SOURCE
+> Task :data:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :presentation-feature:javaPreCompileDebug UP-TO-DATE
+> Task :presentation-feature:mergeDebugShaders UP-TO-DATE
+> Task :presentation-core:compileDebugKotlinAndroid UP-TO-DATE
+> Task :presentation-feature:compileDebugShaders NO-SOURCE
+> Task :presentation-feature:debugAssetsCopyForAGP NO-SOURCE
+> Task :presentation-core:javaPreCompileDebug UP-TO-DATE
+> Task :presentation-feature:generateDebugAssets UP-TO-DATE
+> Task :presentation-core:compileDebugJavaWithJavac NO-SOURCE
+> Task :presentation-feature:mergeDebugAssets UP-TO-DATE
+> Task :presentation-core:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :presentation-feature:mergeDebugJniLibFolders UP-TO-DATE
+> Task :presentation-core:mergeDebugShaders UP-TO-DATE
+> Task :presentation-core:compileDebugShaders NO-SOURCE
+> Task :presentation-core:debugAssetsCopyForAGP NO-SOURCE
+> Task :presentation-core:generateDebugAssets UP-TO-DATE
+> Task :presentation-core:mergeDebugAssets UP-TO-DATE
+> Task :presentation-core:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :presentation-core:processDebugJavaRes UP-TO-DATE
+> Task :presentation-core:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :presentation-core:mergeDebugJniLibFolders UP-TO-DATE
+> Task :presentation-core:mergeDebugNativeLibs NO-SOURCE
+> Task :presentation-core:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :presentation-feature:compileDebugKotlinAndroid UP-TO-DATE
+> Task :presentation-feature:compileDebugJavaWithJavac NO-SOURCE
+> Task :presentation-feature:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :presentation-feature:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :presentation-feature:processDebugJavaRes UP-TO-DATE
+> Task :presentation-feature:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :presentation-feature:mergeDebugNativeLibs NO-SOURCE
+> Task :presentation-feature:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :compose-app:kmpPartiallyResolvedDependenciesChecker
+> Task :compose-app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :compose-app:convertXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :compose-app:copyNonXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :compose-app:prepareComposeResourcesTaskForAndroidMain NO-SOURCE
+> Task :compose-app:generateResourceAccessorsForAndroidMain NO-SOURCE
+> Task :compose-app:convertXmlValueResourcesForCommonMain UP-TO-DATE
+> Task :compose-app:copyNonXmlValueResourcesForCommonMain UP-TO-DATE
+> Task :compose-app:prepareComposeResourcesTaskForCommonMain UP-TO-DATE
+> Task :compose-app:generateResourceAccessorsForCommonMain UP-TO-DATE
+> Task :compose-app:generateActualResourceCollectorsForAndroidMain UP-TO-DATE
+> Task :compose-app:generateComposeResClass UP-TO-DATE
+> Task :compose-app:preBuild UP-TO-DATE
+> Task :compose-app:preDebugBuild UP-TO-DATE
+> Task :compose-app:generateDebugBuildConfig UP-TO-DATE
+> Task :compose-app:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :compose-app:convertXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :compose-app:copyNonXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :compose-app:prepareComposeResourcesTaskForAndroidDebug NO-SOURCE
+> Task :compose-app:generateResourceAccessorsForAndroidDebug NO-SOURCE
+> Task :compose-app:checkDebugAarMetadata UP-TO-DATE
+> Task :compose-app:generateDebugResValues UP-TO-DATE
+> Task :compose-app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :compose-app:generateDebugResources UP-TO-DATE
+> Task :compose-app:mergeDebugResources UP-TO-DATE
+> Task :compose-app:copyDebugComposeResourcesToAndroidAssets UP-TO-DATE
+> Task :compose-app:packageDebugResources UP-TO-DATE
+> Task :compose-app:parseDebugLocalResources UP-TO-DATE
+> Task :compose-app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :compose-app:extractDeepLinksDebug UP-TO-DATE
+> Task :compose-app:processDebugMainManifest UP-TO-DATE
+> Task :compose-app:processDebugManifest UP-TO-DATE
+> Task :compose-app:processDebugManifestForPackage UP-TO-DATE
+> Task :compose-app:processDebugResources UP-TO-DATE
+> Task :compose-app:kspDebugKotlinAndroid UP-TO-DATE
+> Task :compose-app:compileDebugKotlinAndroid UP-TO-DATE
+> Task :compose-app:javaPreCompileDebug UP-TO-DATE
+> Task :compose-app:compileDebugJavaWithJavac UP-TO-DATE
+> Task :compose-app:bundleDebugClassesToCompileJar UP-TO-DATE
+> Task :compose-app:preDebugAndroidTestBuild SKIPPED
+> Task :compose-app:processDebugAndroidTestManifest UP-TO-DATE
+> Task :compose-app:generateDebugAndroidTestBuildConfig UP-TO-DATE
+> Task :compose-app:convertXmlValueResourcesForAndroidInstrumentedTest NO-SOURCE
+> Task :compose-app:copyNonXmlValueResourcesForAndroidInstrumentedTest NO-SOURCE
+> Task :compose-app:prepareComposeResourcesTaskForAndroidInstrumentedTest NO-SOURCE
+> Task :compose-app:generateResourceAccessorsForAndroidInstrumentedTest NO-SOURCE
+> Task :compose-app:convertXmlValueResourcesForAndroidInstrumentedTestDebug NO-SOURCE
+> Task :compose-app:copyNonXmlValueResourcesForAndroidInstrumentedTestDebug NO-SOURCE
+> Task :compose-app:prepareComposeResourcesTaskForAndroidInstrumentedTestDebug NO-SOURCE
+> Task :compose-app:generateResourceAccessorsForAndroidInstrumentedTestDebug NO-SOURCE
+> Task :compose-app:checkDebugAndroidTestAarMetadata UP-TO-DATE
+> Task :compose-app:generateDebugAndroidTestResValues UP-TO-DATE
+> Task :compose-app:mapDebugAndroidTestSourceSetPaths UP-TO-DATE
+> Task :compose-app:generateDebugAndroidTestResources UP-TO-DATE
+> Task :compose-app:mergeDebugAndroidTestResources UP-TO-DATE
+> Task :compose-app:processDebugAndroidTestResources UP-TO-DATE
+> Task :compose-app:kspDebugAndroidTestKotlinAndroid SKIPPED
+> Task :compose-app:javaPreCompileDebugAndroidTest UP-TO-DATE
+> Task :compose-app:mergeDebugShaders UP-TO-DATE
+> Task :compose-app:compileDebugShaders NO-SOURCE
+> Task :compose-app:debugAssetsCopyForAGP NO-SOURCE
+> Task :compose-app:generateDebugAssets UP-TO-DATE
+> Task :compose-app:mergeDebugAssets UP-TO-DATE
+> Task :compose-app:compressDebugAssets UP-TO-DATE
+> Task :compose-app:desugarDebugFileDependencies UP-TO-DATE
+> Task :compose-app:dexBuilderDebug UP-TO-DATE
+> Task :compose-app:mergeDebugGlobalSynthetics UP-TO-DATE
+> Task :compose-app:processDebugJavaRes UP-TO-DATE
+> Task :compose-app:mergeDebugJavaResource UP-TO-DATE
+> Task :compose-app:checkDebugDuplicateClasses UP-TO-DATE
+> Task :compose-app:mergeExtDexDebug UP-TO-DATE
+> Task :compose-app:mergeLibDexDebug UP-TO-DATE
+> Task :compose-app:mergeProjectDexDebug UP-TO-DATE
+> Task :compose-app:mergeDebugJniLibFolders UP-TO-DATE
+> Task :compose-app:mergeDebugNativeLibs UP-TO-DATE
+> Task :compose-app:stripDebugDebugSymbols UP-TO-DATE
+> Task :compose-app:validateSigningDebug UP-TO-DATE
+> Task :compose-app:writeDebugAppMetadata UP-TO-DATE
+> Task :compose-app:writeDebugSigningConfigVersions UP-TO-DATE
+> Task :compose-app:packageDebug UP-TO-DATE
+> Task :compose-app:createDebugApkListingFileRedirect UP-TO-DATE
+> Task :compose-app:mergeDebugAndroidTestShaders UP-TO-DATE
+> Task :compose-app:compileDebugAndroidTestShaders NO-SOURCE
+> Task :compose-app:copyDebugAndroidTestComposeResourcesToAndroidAssets UP-TO-DATE
+> Task :compose-app:generateDebugAndroidTestAssets UP-TO-DATE
+> Task :compose-app:mergeDebugAndroidTestAssets UP-TO-DATE
+> Task :compose-app:compressDebugAndroidTestAssets UP-TO-DATE
+> Task :compose-app:desugarDebugAndroidTestFileDependencies UP-TO-DATE
+> Task :compose-app:checkDebugAndroidTestDuplicateClasses UP-TO-DATE
+> Task :compose-app:mergeExtDexDebugAndroidTest UP-TO-DATE
+
+> Task :compose-app:compileDebugAndroidTestKotlinAndroid FAILED
+e: file:///Users/cartland/github/cartland/battery-butler/compose-app/src/androidInstrumentedTest/kotlin/com/chriscartland/batterybutler/composeapp/ServerIntegrationTest.kt:8:26 Unresolved reference 'executeIn'.
+
+> Task :compose-app:mergeLibDexDebugAndroidTest
+> Task :compose-app:mergeDebugAndroidTestJniLibFolders
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':compose-app:compileDebugAndroidTestKotlinAndroid'.
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more details
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 7s
+271 actionable tasks: 13 executed, 258 up-to-date
++ true
++ echo 'Stopping server...'
+Stopping server...
++ kill 11739
++ echo '--- 5. Build Android App ---'
+--- 5. Build Android App ---
++ ./gradlew :compose-app:assembleDebug
+Type-safe project accessors is an incubating feature.
+> Task :buildSrc:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :buildSrc:compileKotlin UP-TO-DATE
+> Task :buildSrc:compileJava NO-SOURCE
+> Task :buildSrc:compileGroovy NO-SOURCE
+> Task :buildSrc:pluginDescriptors UP-TO-DATE
+> Task :buildSrc:processResources NO-SOURCE
+> Task :buildSrc:classes UP-TO-DATE
+> Task :buildSrc:jar UP-TO-DATE
+
+> Configure project :compose-app
+WARNING: The option setting 'android.experimental.enableScreenshotTest=true' is experimental.
+The current default is 'false'.
+
+> Task :usecase:preBuild UP-TO-DATE
+> Task :presentation-model:preBuild UP-TO-DATE
+> Task :domain:preBuild UP-TO-DATE
+> Task :data:preBuild UP-TO-DATE
+> Task :presentation-core:preBuild UP-TO-DATE
+> Task :presentation-feature:preBuild UP-TO-DATE
+> Task :compose-resources:preBuild UP-TO-DATE
+> Task :viewmodel:preBuild UP-TO-DATE
+> Task :presentation-model:preDebugBuild UP-TO-DATE
+> Task :data:preDebugBuild UP-TO-DATE
+> Task :compose-app:preBuild UP-TO-DATE
+> Task :networking:preBuild UP-TO-DATE
+> Task :usecase:preDebugBuild UP-TO-DATE
+> Task :domain:preDebugBuild UP-TO-DATE
+> Task :networking:preDebugBuild UP-TO-DATE
+> Task :presentation-core:preDebugBuild UP-TO-DATE
+> Task :presentation-model:writeDebugAarMetadata UP-TO-DATE
+> Task :viewmodel:preDebugBuild UP-TO-DATE
+> Task :networking:writeDebugAarMetadata UP-TO-DATE
+> Task :compose-resources:preDebugBuild UP-TO-DATE
+> Task :presentation-feature:preDebugBuild UP-TO-DATE
+> Task :data:writeDebugAarMetadata UP-TO-DATE
+> Task :compose-app:preDebugBuild UP-TO-DATE
+> Task :usecase:writeDebugAarMetadata UP-TO-DATE
+> Task :networking:generateDebugResValues UP-TO-DATE
+> Task :presentation-feature:writeDebugAarMetadata UP-TO-DATE
+> Task :compose-resources:writeDebugAarMetadata UP-TO-DATE
+> Task :presentation-core:writeDebugAarMetadata UP-TO-DATE
+> Task :viewmodel:writeDebugAarMetadata UP-TO-DATE
+> Task :networking:generateDebugResources UP-TO-DATE
+> Task :data:generateDebugResValues UP-TO-DATE
+> Task :domain:writeDebugAarMetadata UP-TO-DATE
+> Task :viewmodel:generateDebugResValues UP-TO-DATE
+> Task :presentation-model:generateDebugResValues UP-TO-DATE
+> Task :usecase:generateDebugResValues UP-TO-DATE
+> Task :compose-app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :compose-resources:convertXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :presentation-core:convertXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :usecase:generateDebugResources UP-TO-DATE
+> Task :data:generateDebugResources UP-TO-DATE
+> Task :networking:packageDebugResources UP-TO-DATE
+> Task :presentation-feature:convertXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :presentation-core:copyNonXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :compose-resources:copyNonXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :domain:generateDebugResValues UP-TO-DATE
+> Task :presentation-model:generateDebugResources UP-TO-DATE
+> Task :data:packageDebugResources UP-TO-DATE
+> Task :presentation-core:prepareComposeResourcesTaskForAndroidDebug NO-SOURCE
+> Task :compose-resources:prepareComposeResourcesTaskForAndroidDebug NO-SOURCE
+> Task :presentation-feature:copyNonXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :networking:extractDeepLinksDebug UP-TO-DATE
+> Task :viewmodel:generateDebugResources UP-TO-DATE
+> Task :usecase:packageDebugResources UP-TO-DATE
+> Task :presentation-feature:prepareComposeResourcesTaskForAndroidDebug NO-SOURCE
+> Task :data:extractDeepLinksDebug UP-TO-DATE
+> Task :presentation-model:packageDebugResources UP-TO-DATE
+> Task :domain:generateDebugResources UP-TO-DATE
+> Task :presentation-feature:convertXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :viewmodel:packageDebugResources UP-TO-DATE
+> Task :data:processDebugManifest UP-TO-DATE
+> Task :presentation-core:convertXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :domain:packageDebugResources UP-TO-DATE
+> Task :presentation-model:extractDeepLinksDebug UP-TO-DATE
+> Task :compose-resources:convertXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :domain:extractDeepLinksDebug UP-TO-DATE
+> Task :presentation-core:copyNonXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :networking:processDebugManifest UP-TO-DATE
+> Task :presentation-feature:copyNonXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :usecase:extractDeepLinksDebug UP-TO-DATE
+> Task :presentation-core:prepareComposeResourcesTaskForAndroidMain NO-SOURCE
+> Task :viewmodel:extractDeepLinksDebug UP-TO-DATE
+> Task :presentation-model:processDebugManifest UP-TO-DATE
+> Task :usecase:processDebugManifest UP-TO-DATE
+> Task :data:compileDebugLibraryResources UP-TO-DATE
+> Task :networking:compileDebugLibraryResources UP-TO-DATE
+> Task :presentation-feature:prepareComposeResourcesTaskForAndroidMain NO-SOURCE
+> Task :domain:processDebugManifest UP-TO-DATE
+> Task :presentation-core:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :compose-resources:copyNonXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :presentation-feature:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :viewmodel:processDebugManifest UP-TO-DATE
+> Task :presentation-model:compileDebugLibraryResources UP-TO-DATE
+> Task :usecase:compileDebugLibraryResources UP-TO-DATE
+> Task :compose-resources:prepareComposeResourcesTaskForAndroidMain NO-SOURCE
+> Task :presentation-feature:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :domain:compileDebugLibraryResources UP-TO-DATE
+> Task :viewmodel:compileDebugLibraryResources UP-TO-DATE
+> Task :presentation-feature:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :data:parseDebugLocalResources UP-TO-DATE
+> Task :presentation-core:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :compose-resources:convertXmlValueResourcesForCommonMain UP-TO-DATE
+> Task :presentation-core:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :networking:parseDebugLocalResources UP-TO-DATE
+> Task :presentation-feature:copyDebugComposeResourcesToAndroidAssets UP-TO-DATE
+> Task :data:generateDebugRFile UP-TO-DATE
+> Task :networking:generateDebugRFile UP-TO-DATE
+> Task :compose-resources:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :presentation-model:parseDebugLocalResources UP-TO-DATE
+> Task :presentation-core:copyDebugComposeResourcesToAndroidAssets UP-TO-DATE
+> Task :presentation-feature:generateDebugResValues UP-TO-DATE
+> Task :presentation-feature:generateDebugResources UP-TO-DATE
+> Task :presentation-model:generateDebugRFile UP-TO-DATE
+> Task :presentation-core:generateDebugResValues UP-TO-DATE
+> Task :compose-resources:prepareComposeResourcesTaskForCommonMain UP-TO-DATE
+> Task :usecase:parseDebugLocalResources UP-TO-DATE
+> Task :viewmodel:parseDebugLocalResources UP-TO-DATE
+> Task :domain:parseDebugLocalResources UP-TO-DATE
+> Task :presentation-core:generateDebugResources UP-TO-DATE
+> Task :viewmodel:generateDebugRFile UP-TO-DATE
+> Task :compose-resources:copyDebugComposeResourcesToAndroidAssets UP-TO-DATE
+> Task :usecase:generateDebugRFile UP-TO-DATE
+> Task :compose-resources:generateDebugResValues UP-TO-DATE
+> Task :domain:generateDebugRFile UP-TO-DATE
+> Task :presentation-feature:packageDebugResources UP-TO-DATE
+> Task :compose-resources:generateDebugResources UP-TO-DATE
+> Task :presentation-core:packageDebugResources UP-TO-DATE
+> Task :presentation-feature:extractDeepLinksDebug UP-TO-DATE
+> Task :presentation-feature:processDebugManifest UP-TO-DATE
+> Task :presentation-core:extractDeepLinksDebug UP-TO-DATE
+> Task :compose-resources:packageDebugResources UP-TO-DATE
+> Task :presentation-feature:compileDebugLibraryResources UP-TO-DATE
+> Task :presentation-core:processDebugManifest UP-TO-DATE
+> Task :compose-resources:extractDeepLinksDebug UP-TO-DATE
+> Task :presentation-core:compileDebugLibraryResources UP-TO-DATE
+> Task :compose-resources:processDebugManifest UP-TO-DATE
+> Task :compose-resources:compileDebugLibraryResources UP-TO-DATE
+> Task :presentation-feature:parseDebugLocalResources UP-TO-DATE
+> Task :presentation-feature:generateDebugRFile UP-TO-DATE
+> Task :presentation-core:parseDebugLocalResources UP-TO-DATE
+> Task :compose-resources:parseDebugLocalResources UP-TO-DATE
+> Task :presentation-core:generateDebugRFile UP-TO-DATE
+> Task :compose-resources:generateDebugRFile UP-TO-DATE
+> Task :domain:kmpPartiallyResolvedDependenciesChecker
+> Task :domain:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :domain:kspDebugKotlinAndroid SKIPPED
+> Task :domain:compileDebugKotlinAndroid UP-TO-DATE
+> Task :domain:javaPreCompileDebug UP-TO-DATE
+> Task :domain:compileDebugJavaWithJavac NO-SOURCE
+> Task :domain:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :domain:mergeDebugShaders UP-TO-DATE
+> Task :domain:compileDebugShaders NO-SOURCE
+> Task :domain:debugAssetsCopyForAGP NO-SOURCE
+> Task :domain:generateDebugAssets UP-TO-DATE
+> Task :domain:mergeDebugAssets UP-TO-DATE
+> Task :domain:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :domain:processDebugJavaRes UP-TO-DATE
+> Task :domain:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :domain:mergeDebugJniLibFolders UP-TO-DATE
+> Task :domain:mergeDebugNativeLibs NO-SOURCE
+> Task :domain:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :presentation-model:kmpPartiallyResolvedDependenciesChecker
+> Task :usecase:kmpPartiallyResolvedDependenciesChecker
+> Task :usecase:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :presentation-model:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :networking:kmpPartiallyResolvedDependenciesChecker
+> Task :networking:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :networking:generateCommonMainProtos UP-TO-DATE
+> Task :usecase:kspDebugKotlinAndroid UP-TO-DATE
+> Task :presentation-model:compileDebugKotlinAndroid UP-TO-DATE
+> Task :presentation-model:javaPreCompileDebug UP-TO-DATE
+> Task :presentation-model:compileDebugJavaWithJavac NO-SOURCE
+> Task :presentation-model:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :presentation-model:mergeDebugShaders UP-TO-DATE
+> Task :presentation-model:compileDebugShaders NO-SOURCE
+> Task :presentation-model:debugAssetsCopyForAGP NO-SOURCE
+> Task :presentation-model:generateDebugAssets UP-TO-DATE
+> Task :presentation-model:mergeDebugAssets UP-TO-DATE
+> Task :networking:compileDebugKotlinAndroid UP-TO-DATE
+> Task :presentation-model:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :networking:javaPreCompileDebug UP-TO-DATE
+> Task :networking:compileDebugJavaWithJavac NO-SOURCE
+> Task :presentation-model:processDebugJavaRes UP-TO-DATE
+> Task :networking:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :usecase:compileDebugKotlinAndroid UP-TO-DATE
+> Task :presentation-model:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :networking:mergeDebugShaders UP-TO-DATE
+> Task :usecase:javaPreCompileDebug UP-TO-DATE
+> Task :presentation-model:mergeDebugJniLibFolders UP-TO-DATE
+> Task :networking:compileDebugShaders NO-SOURCE
+> Task :usecase:compileDebugJavaWithJavac NO-SOURCE
+> Task :presentation-model:mergeDebugNativeLibs NO-SOURCE
+> Task :networking:debugAssetsCopyForAGP NO-SOURCE
+> Task :networking:generateDebugAssets UP-TO-DATE
+> Task :usecase:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :presentation-model:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :networking:mergeDebugAssets UP-TO-DATE
+> Task :usecase:mergeDebugShaders UP-TO-DATE
+> Task :usecase:compileDebugShaders NO-SOURCE
+> Task :networking:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :usecase:debugAssetsCopyForAGP NO-SOURCE
+> Task :usecase:generateDebugAssets UP-TO-DATE
+> Task :usecase:mergeDebugAssets UP-TO-DATE
+> Task :networking:processDebugJavaRes UP-TO-DATE
+> Task :usecase:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :networking:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :networking:mergeDebugJniLibFolders UP-TO-DATE
+> Task :usecase:processDebugJavaRes UP-TO-DATE
+> Task :networking:mergeDebugNativeLibs NO-SOURCE
+> Task :usecase:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :compose-resources:kmpPartiallyResolvedDependenciesChecker
+> Task :networking:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :compose-resources:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :usecase:mergeDebugJniLibFolders UP-TO-DATE
+> Task :compose-resources:generateResourceAccessorsForAndroidMain NO-SOURCE
+> Task :usecase:mergeDebugNativeLibs NO-SOURCE
+> Task :compose-resources:generateResourceAccessorsForCommonMain UP-TO-DATE
+> Task :usecase:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :compose-resources:generateActualResourceCollectorsForAndroidMain UP-TO-DATE
+> Task :compose-resources:generateComposeResClass UP-TO-DATE
+> Task :compose-resources:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :compose-resources:generateResourceAccessorsForAndroidDebug NO-SOURCE
+> Task :viewmodel:kmpPartiallyResolvedDependenciesChecker
+> Task :viewmodel:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :data:kmpPartiallyResolvedDependenciesChecker
+> Task :data:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :data:generateDebugBuildConfig UP-TO-DATE
+> Task :viewmodel:kspDebugKotlinAndroid UP-TO-DATE
+> Task :viewmodel:compileDebugKotlinAndroid UP-TO-DATE
+> Task :viewmodel:javaPreCompileDebug UP-TO-DATE
+> Task :viewmodel:compileDebugJavaWithJavac NO-SOURCE
+> Task :viewmodel:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :viewmodel:mergeDebugShaders UP-TO-DATE
+> Task :viewmodel:compileDebugShaders NO-SOURCE
+> Task :viewmodel:debugAssetsCopyForAGP NO-SOURCE
+> Task :viewmodel:generateDebugAssets UP-TO-DATE
+> Task :viewmodel:mergeDebugAssets UP-TO-DATE
+> Task :viewmodel:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :viewmodel:processDebugJavaRes UP-TO-DATE
+> Task :viewmodel:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :viewmodel:mergeDebugJniLibFolders UP-TO-DATE
+> Task :viewmodel:mergeDebugNativeLibs NO-SOURCE
+> Task :viewmodel:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :compose-resources:compileDebugKotlinAndroid UP-TO-DATE
+> Task :compose-resources:javaPreCompileDebug UP-TO-DATE
+> Task :compose-resources:compileDebugJavaWithJavac NO-SOURCE
+> Task :compose-resources:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :compose-resources:mergeDebugShaders UP-TO-DATE
+> Task :compose-resources:compileDebugShaders NO-SOURCE
+> Task :compose-resources:debugAssetsCopyForAGP NO-SOURCE
+> Task :compose-resources:generateDebugAssets UP-TO-DATE
+> Task :compose-resources:mergeDebugAssets UP-TO-DATE
+> Task :compose-resources:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :compose-resources:processDebugJavaRes UP-TO-DATE
+> Task :data:kspDebugKotlinAndroid UP-TO-DATE
+> Task :compose-resources:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :compose-resources:mergeDebugJniLibFolders UP-TO-DATE
+> Task :compose-resources:mergeDebugNativeLibs NO-SOURCE
+> Task :compose-resources:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :data:compileDebugKotlinAndroid UP-TO-DATE
+> Task :data:javaPreCompileDebug UP-TO-DATE
+> Task :data:compileDebugJavaWithJavac UP-TO-DATE
+> Task :data:copyRoomSchemas NO-SOURCE
+> Task :data:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :data:mergeDebugShaders UP-TO-DATE
+> Task :data:compileDebugShaders NO-SOURCE
+> Task :data:debugAssetsCopyForAGP NO-SOURCE
+> Task :data:generateDebugAssets UP-TO-DATE
+> Task :data:mergeDebugAssets UP-TO-DATE
+> Task :data:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :data:processDebugJavaRes UP-TO-DATE
+> Task :presentation-core:kmpPartiallyResolvedDependenciesChecker
+> Task :presentation-core:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :data:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :presentation-core:generateResourceAccessorsForAndroidMain NO-SOURCE
+> Task :presentation-core:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :data:mergeDebugJniLibFolders UP-TO-DATE
+> Task :data:mergeDebugNativeLibs NO-SOURCE
+> Task :presentation-core:generateActualResourceCollectorsForAndroidMain UP-TO-DATE
+> Task :presentation-core:generateComposeResClass UP-TO-DATE
+> Task :data:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :presentation-core:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :presentation-core:generateResourceAccessorsForAndroidDebug NO-SOURCE
+> Task :presentation-core:compileDebugKotlinAndroid UP-TO-DATE
+> Task :presentation-core:javaPreCompileDebug UP-TO-DATE
+> Task :presentation-core:compileDebugJavaWithJavac NO-SOURCE
+> Task :presentation-core:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :presentation-core:mergeDebugShaders UP-TO-DATE
+> Task :presentation-core:compileDebugShaders NO-SOURCE
+> Task :presentation-core:debugAssetsCopyForAGP NO-SOURCE
+> Task :presentation-core:generateDebugAssets UP-TO-DATE
+> Task :presentation-core:mergeDebugAssets UP-TO-DATE
+> Task :presentation-core:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :presentation-core:processDebugJavaRes UP-TO-DATE
+> Task :presentation-core:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :presentation-core:mergeDebugJniLibFolders UP-TO-DATE
+> Task :presentation-core:mergeDebugNativeLibs NO-SOURCE
+> Task :presentation-core:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :presentation-feature:kmpPartiallyResolvedDependenciesChecker
+> Task :presentation-feature:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :presentation-feature:generateResourceAccessorsForAndroidMain NO-SOURCE
+> Task :presentation-feature:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :presentation-feature:generateActualResourceCollectorsForAndroidMain UP-TO-DATE
+> Task :presentation-feature:generateComposeResClass UP-TO-DATE
+> Task :presentation-feature:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :presentation-feature:generateResourceAccessorsForAndroidDebug NO-SOURCE
+> Task :presentation-feature:compileDebugKotlinAndroid UP-TO-DATE
+> Task :presentation-feature:javaPreCompileDebug UP-TO-DATE
+> Task :presentation-feature:compileDebugJavaWithJavac NO-SOURCE
+> Task :presentation-feature:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :presentation-feature:mergeDebugShaders UP-TO-DATE
+> Task :presentation-feature:compileDebugShaders NO-SOURCE
+> Task :presentation-feature:debugAssetsCopyForAGP NO-SOURCE
+> Task :presentation-feature:generateDebugAssets UP-TO-DATE
+> Task :presentation-feature:mergeDebugAssets UP-TO-DATE
+> Task :presentation-feature:bundleLibRuntimeToJarDebug UP-TO-DATE
+> Task :presentation-feature:processDebugJavaRes UP-TO-DATE
+> Task :presentation-feature:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :presentation-feature:mergeDebugJniLibFolders UP-TO-DATE
+> Task :presentation-feature:mergeDebugNativeLibs NO-SOURCE
+> Task :presentation-feature:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :compose-app:kmpPartiallyResolvedDependenciesChecker
+> Task :compose-app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :compose-app:convertXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :compose-app:copyNonXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :compose-app:prepareComposeResourcesTaskForAndroidMain NO-SOURCE
+> Task :compose-app:generateResourceAccessorsForAndroidMain NO-SOURCE
+> Task :compose-app:convertXmlValueResourcesForCommonMain UP-TO-DATE
+> Task :compose-app:copyNonXmlValueResourcesForCommonMain UP-TO-DATE
+> Task :compose-app:prepareComposeResourcesTaskForCommonMain UP-TO-DATE
+> Task :compose-app:generateResourceAccessorsForCommonMain UP-TO-DATE
+> Task :compose-app:generateActualResourceCollectorsForAndroidMain UP-TO-DATE
+> Task :compose-app:generateComposeResClass UP-TO-DATE
+> Task :compose-app:generateDebugBuildConfig UP-TO-DATE
+> Task :compose-app:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :compose-app:convertXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :compose-app:copyNonXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :compose-app:prepareComposeResourcesTaskForAndroidDebug NO-SOURCE
+> Task :compose-app:generateResourceAccessorsForAndroidDebug NO-SOURCE
+> Task :compose-app:checkDebugAarMetadata UP-TO-DATE
+> Task :compose-app:generateDebugResValues UP-TO-DATE
+> Task :compose-app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :compose-app:generateDebugResources UP-TO-DATE
+> Task :compose-app:mergeDebugResources UP-TO-DATE
+> Task :compose-app:copyDebugComposeResourcesToAndroidAssets UP-TO-DATE
+> Task :compose-app:packageDebugResources UP-TO-DATE
+> Task :compose-app:parseDebugLocalResources UP-TO-DATE
+> Task :compose-app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :compose-app:extractDeepLinksDebug UP-TO-DATE
+> Task :compose-app:processDebugMainManifest UP-TO-DATE
+> Task :compose-app:processDebugManifest UP-TO-DATE
+> Task :compose-app:processDebugManifestForPackage UP-TO-DATE
+> Task :compose-app:processDebugResources UP-TO-DATE
+> Task :compose-app:kspDebugKotlinAndroid UP-TO-DATE
+> Task :compose-app:compileDebugKotlinAndroid UP-TO-DATE
+> Task :compose-app:javaPreCompileDebug UP-TO-DATE
+> Task :compose-app:compileDebugJavaWithJavac UP-TO-DATE
+> Task :compose-app:mergeDebugShaders UP-TO-DATE
+> Task :compose-app:compileDebugShaders NO-SOURCE
+> Task :compose-app:debugAssetsCopyForAGP NO-SOURCE
+> Task :compose-app:generateDebugAssets UP-TO-DATE
+> Task :compose-app:mergeDebugAssets UP-TO-DATE
+> Task :compose-app:compressDebugAssets UP-TO-DATE
+> Task :compose-app:desugarDebugFileDependencies UP-TO-DATE
+> Task :compose-app:dexBuilderDebug UP-TO-DATE
+> Task :compose-app:mergeDebugGlobalSynthetics UP-TO-DATE
+> Task :compose-app:processDebugJavaRes UP-TO-DATE
+> Task :compose-app:mergeDebugJavaResource UP-TO-DATE
+> Task :compose-app:checkDebugDuplicateClasses UP-TO-DATE
+> Task :compose-app:mergeExtDexDebug UP-TO-DATE
+> Task :compose-app:mergeLibDexDebug UP-TO-DATE
+> Task :compose-app:mergeProjectDexDebug UP-TO-DATE
+> Task :compose-app:mergeDebugJniLibFolders UP-TO-DATE
+> Task :compose-app:mergeDebugNativeLibs UP-TO-DATE
+> Task :compose-app:stripDebugDebugSymbols UP-TO-DATE
+> Task :compose-app:validateSigningDebug UP-TO-DATE
+> Task :compose-app:writeDebugAppMetadata UP-TO-DATE
+> Task :compose-app:writeDebugSigningConfigVersions UP-TO-DATE
+> Task :compose-app:packageDebug UP-TO-DATE
+> Task :compose-app:createDebugApkListingFileRedirect UP-TO-DATE
+> Task :compose-app:assembleDebug UP-TO-DATE
+
+BUILD SUCCESSFUL in 1s
+251 actionable tasks: 10 executed, 241 up-to-date
++ echo '--- 6. Build Desktop App ---'
+--- 6. Build Desktop App ---
++ ./gradlew :compose-app:packageDistributionForCurrentOS
+Type-safe project accessors is an incubating feature.
+> Task :buildSrc:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :buildSrc:compileKotlin UP-TO-DATE
+> Task :buildSrc:compileJava NO-SOURCE
+> Task :buildSrc:compileGroovy NO-SOURCE
+> Task :buildSrc:pluginDescriptors UP-TO-DATE
+> Task :buildSrc:processResources NO-SOURCE
+> Task :buildSrc:classes UP-TO-DATE
+> Task :buildSrc:jar UP-TO-DATE
+
+> Configure project :compose-app
+WARNING: The option setting 'android.experimental.enableScreenshotTest=true' is experimental.
+The current default is 'false'.
+
+> Task :domain:kmpPartiallyResolvedDependenciesChecker
+> Task :domain:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :domain:kspKotlinJvm SKIPPED
+> Task :compose-app:checkRuntime UP-TO-DATE
+> Task :compose-app:createRuntimeImage UP-TO-DATE
+> Task :domain:compileKotlinJvm UP-TO-DATE
+> Task :domain:compileJvmMainJava NO-SOURCE
+> Task :domain:jvmProcessResources NO-SOURCE
+> Task :domain:processJvmMainResources SKIPPED
+> Task :domain:jvmMainClasses UP-TO-DATE
+> Task :domain:jvmJar UP-TO-DATE
+> Task :presentation-model:kmpPartiallyResolvedDependenciesChecker
+> Task :usecase:kmpPartiallyResolvedDependenciesChecker
+> Task :presentation-model:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :usecase:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :usecase:kspKotlinJvm SKIPPED
+> Task :compose-resources:kmpPartiallyResolvedDependenciesChecker
+> Task :compose-resources:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :networking:kmpPartiallyResolvedDependenciesChecker
+> Task :networking:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :compose-resources:convertXmlValueResourcesForCommonMain UP-TO-DATE
+> Task :compose-resources:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :compose-resources:prepareComposeResourcesTaskForCommonMain UP-TO-DATE
+> Task :networking:generateCommonMainProtos UP-TO-DATE
+> Task :compose-resources:generateResourceAccessorsForCommonMain UP-TO-DATE
+> Task :compose-resources:convertXmlValueResourcesForJvmMain NO-SOURCE
+> Task :compose-resources:copyNonXmlValueResourcesForJvmMain NO-SOURCE
+> Task :compose-resources:prepareComposeResourcesTaskForJvmMain NO-SOURCE
+> Task :compose-resources:generateResourceAccessorsForJvmMain NO-SOURCE
+> Task :compose-resources:generateActualResourceCollectorsForJvmMain UP-TO-DATE
+> Task :compose-resources:generateComposeResClass UP-TO-DATE
+> Task :compose-resources:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :presentation-model:compileKotlinJvm UP-TO-DATE
+> Task :usecase:compileKotlinJvm UP-TO-DATE
+> Task :presentation-model:compileJvmMainJava NO-SOURCE
+> Task :usecase:compileJvmMainJava NO-SOURCE
+> Task :presentation-model:jvmProcessResources NO-SOURCE
+> Task :presentation-model:processJvmMainResources SKIPPED
+> Task :presentation-model:jvmMainClasses UP-TO-DATE
+> Task :usecase:jvmProcessResources NO-SOURCE
+> Task :usecase:processJvmMainResources SKIPPED
+> Task :usecase:jvmMainClasses UP-TO-DATE
+> Task :presentation-model:jvmJar UP-TO-DATE
+> Task :usecase:jvmJar UP-TO-DATE
+> Task :networking:compileKotlinDesktop UP-TO-DATE
+> Task :viewmodel:kmpPartiallyResolvedDependenciesChecker
+> Task :viewmodel:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :networking:compileDesktopMainJava NO-SOURCE
+> Task :networking:desktopProcessResources NO-SOURCE
+> Task :networking:processDesktopMainResources SKIPPED
+> Task :networking:desktopMainClasses UP-TO-DATE
+> Task :networking:desktopJar UP-TO-DATE
+> Task :viewmodel:kspKotlinDesktop UP-TO-DATE
+> Task :compose-resources:compileKotlinJvm UP-TO-DATE
+> Task :compose-resources:compileJvmMainJava NO-SOURCE
+> Task :compose-resources:assembleJvmMainResources UP-TO-DATE
+> Task :compose-resources:jvmProcessResources UP-TO-DATE
+> Task :compose-resources:processJvmMainResources SKIPPED
+> Task :compose-resources:jvmMainClasses UP-TO-DATE
+> Task :compose-resources:jvmJar UP-TO-DATE
+> Task :data:kmpPartiallyResolvedDependenciesChecker
+> Task :data:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :presentation-core:kmpPartiallyResolvedDependenciesChecker
+> Task :presentation-core:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :viewmodel:compileKotlinDesktop UP-TO-DATE
+> Task :presentation-core:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :presentation-core:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :presentation-core:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :viewmodel:compileDesktopMainJava NO-SOURCE
+> Task :presentation-core:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :presentation-core:convertXmlValueResourcesForJvmMain NO-SOURCE
+> Task :viewmodel:desktopProcessResources NO-SOURCE
+> Task :presentation-core:copyNonXmlValueResourcesForJvmMain NO-SOURCE
+> Task :viewmodel:processDesktopMainResources SKIPPED
+> Task :viewmodel:desktopMainClasses UP-TO-DATE
+> Task :presentation-core:prepareComposeResourcesTaskForJvmMain NO-SOURCE
+> Task :presentation-core:generateResourceAccessorsForJvmMain NO-SOURCE
+> Task :viewmodel:desktopJar UP-TO-DATE
+> Task :data:kspKotlinJvm UP-TO-DATE
+> Task :presentation-core:generateActualResourceCollectorsForJvmMain UP-TO-DATE
+> Task :presentation-core:generateComposeResClass UP-TO-DATE
+> Task :presentation-core:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :presentation-feature:kmpPartiallyResolvedDependenciesChecker
+> Task :presentation-feature:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :presentation-feature:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :presentation-feature:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :presentation-feature:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :presentation-feature:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :presentation-feature:convertXmlValueResourcesForJvmMain NO-SOURCE
+> Task :data:compileKotlinJvm UP-TO-DATE
+> Task :presentation-core:compileKotlinJvm UP-TO-DATE
+> Task :presentation-feature:copyNonXmlValueResourcesForJvmMain NO-SOURCE
+> Task :presentation-feature:prepareComposeResourcesTaskForJvmMain NO-SOURCE
+> Task :presentation-feature:generateResourceAccessorsForJvmMain NO-SOURCE
+> Task :data:compileJvmMainJava NO-SOURCE
+> Task :presentation-core:compileJvmMainJava NO-SOURCE
+> Task :data:jvmProcessResources NO-SOURCE
+> Task :data:processJvmMainResources SKIPPED
+> Task :data:jvmMainClasses UP-TO-DATE
+> Task :presentation-feature:generateActualResourceCollectorsForJvmMain UP-TO-DATE
+> Task :presentation-feature:generateComposeResClass UP-TO-DATE
+> Task :presentation-core:assembleJvmMainResources UP-TO-DATE
+> Task :presentation-feature:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :presentation-feature:assembleJvmMainResources UP-TO-DATE
+> Task :data:jvmJar UP-TO-DATE
+> Task :presentation-core:jvmProcessResources UP-TO-DATE
+> Task :presentation-core:processJvmMainResources SKIPPED
+> Task :presentation-core:jvmMainClasses UP-TO-DATE
+> Task :presentation-feature:jvmProcessResources UP-TO-DATE
+> Task :presentation-feature:processJvmMainResources SKIPPED
+> Task :presentation-core:jvmJar UP-TO-DATE
+> Task :presentation-feature:compileKotlinJvm UP-TO-DATE
+> Task :presentation-feature:compileJvmMainJava NO-SOURCE
+> Task :presentation-feature:jvmMainClasses UP-TO-DATE
+> Task :presentation-feature:jvmJar UP-TO-DATE
+> Task :compose-app:kmpPartiallyResolvedDependenciesChecker
+> Task :compose-app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :compose-app:convertXmlValueResourcesForCommonMain UP-TO-DATE
+> Task :compose-app:copyNonXmlValueResourcesForCommonMain UP-TO-DATE
+> Task :compose-app:prepareComposeResourcesTaskForCommonMain UP-TO-DATE
+> Task :compose-app:generateResourceAccessorsForCommonMain UP-TO-DATE
+> Task :compose-app:convertXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :compose-app:copyNonXmlValueResourcesForDesktopMain NO-SOURCE
+> Task :compose-app:prepareComposeResourcesTaskForDesktopMain NO-SOURCE
+> Task :compose-app:generateResourceAccessorsForDesktopMain NO-SOURCE
+> Task :compose-app:generateActualResourceCollectorsForDesktopMain UP-TO-DATE
+> Task :compose-app:generateComposeResClass UP-TO-DATE
+> Task :compose-app:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :compose-app:kspKotlinDesktop UP-TO-DATE
+> Task :compose-app:compileKotlinDesktop UP-TO-DATE
+> Task :compose-app:compileDesktopMainJava NO-SOURCE
+> Task :compose-app:assembleDesktopMainResources UP-TO-DATE
+> Task :compose-app:desktopProcessResources UP-TO-DATE
+> Task :compose-app:processDesktopMainResources SKIPPED
+> Task :compose-app:desktopMainClasses UP-TO-DATE
+> Task :compose-app:desktopJar UP-TO-DATE
+> Task :compose-app:prepareAppResources NO-SOURCE
+> Task :compose-app:unpackDefaultComposeDesktopJvmApplicationResources UP-TO-DATE
+> Task :compose-app:createDistributable UP-TO-DATE
+> Task :compose-app:packageDeb SKIPPED
+> Task :compose-app:packageDmg UP-TO-DATE
+> Task :compose-app:packageMsi SKIPPED
+> Task :compose-app:packageDistributionForCurrentOS UP-TO-DATE
+
+BUILD SUCCESSFUL in 1s
+69 actionable tasks: 10 executed, 59 up-to-date
++ echo '--- 7. Build Server ---'
+--- 7. Build Server ---
++ ./gradlew :server:app:build
+Type-safe project accessors is an incubating feature.
+> Task :buildSrc:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :buildSrc:compileKotlin UP-TO-DATE
+> Task :buildSrc:compileJava NO-SOURCE
+> Task :buildSrc:compileGroovy NO-SOURCE
+> Task :buildSrc:pluginDescriptors UP-TO-DATE
+> Task :buildSrc:processResources NO-SOURCE
+> Task :buildSrc:classes UP-TO-DATE
+> Task :buildSrc:jar UP-TO-DATE
+
+> Configure project :compose-app
+WARNING: The option setting 'android.experimental.enableScreenshotTest=true' is experimental.
+The current default is 'false'.
+
+> Task :server:app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :spotlessInternalRegisterDependencies UP-TO-DATE
+> Task :server:app:extractProto UP-TO-DATE
+> Task :server:domain:processResources NO-SOURCE
+> Task :server:data:processResources NO-SOURCE
+> Task :server:data:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :server:domain:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :server:app:processResources UP-TO-DATE
+> Task :domain:kmpPartiallyResolvedDependenciesChecker
+> Task :domain:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :domain:kspKotlinJvm SKIPPED
+> Task :server:app:detekt UP-TO-DATE
+> Task :domain:compileKotlinJvm UP-TO-DATE
+> Task :domain:compileJvmMainJava NO-SOURCE
+> Task :domain:jvmProcessResources NO-SOURCE
+> Task :domain:processJvmMainResources SKIPPED
+> Task :domain:jvmMainClasses UP-TO-DATE
+> Task :domain:jvmJar UP-TO-DATE
+> Task :server:app:spotlessKotlin UP-TO-DATE
+> Task :server:domain:compileKotlin UP-TO-DATE
+> Task :server:domain:compileJava NO-SOURCE
+> Task :server:domain:classes UP-TO-DATE
+> Task :server:app:extractIncludeProto UP-TO-DATE
+> Task :server:domain:jar UP-TO-DATE
+> Task :server:app:generateProto UP-TO-DATE
+> Task :server:app:spotlessKotlinCheck UP-TO-DATE
+> Task :server:data:compileKotlin UP-TO-DATE
+> Task :server:data:compileJava NO-SOURCE
+> Task :server:data:classes UP-TO-DATE
+> Task :server:app:spotlessKotlinGradle UP-TO-DATE
+> Task :server:data:jar UP-TO-DATE
+> Task :server:app:spotlessKotlinGradleCheck UP-TO-DATE
+> Task :server:app:compileKotlin UP-TO-DATE
+> Task :server:app:compileJava UP-TO-DATE
+> Task :server:app:classes UP-TO-DATE
+> Task :server:app:jar UP-TO-DATE
+> Task :server:app:startScripts UP-TO-DATE
+> Task :server:app:distTar UP-TO-DATE
+> Task :server:app:distZip UP-TO-DATE
+> Task :server:app:shadowJar UP-TO-DATE
+> Task :server:app:startShadowScripts UP-TO-DATE
+> Task :server:app:shadowDistTar UP-TO-DATE
+> Task :server:app:shadowDistZip UP-TO-DATE
+> Task :server:app:assemble UP-TO-DATE
+> Task :server:app:spotlessCheck UP-TO-DATE
+> Task :server:app:extractIncludeTestProto UP-TO-DATE
+> Task :server:app:extractTestProto UP-TO-DATE
+> Task :server:app:generateTestProto NO-SOURCE
+> Task :server:app:compileTestKotlin UP-TO-DATE
+> Task :server:app:compileTestJava NO-SOURCE
+> Task :server:app:processTestResources NO-SOURCE
+> Task :server:app:testClasses UP-TO-DATE
+> Task :server:app:test UP-TO-DATE
+> Task :server:app:check UP-TO-DATE
+> Task :server:app:build UP-TO-DATE
+
+BUILD SUCCESSFUL in 860ms
+34 actionable tasks: 1 executed, 33 up-to-date
++ [[ darwin24 == \d\a\r\w\i\n* ]]
++ echo '--- 8. iOS Checks (macOS detected) ---'
+--- 8. iOS Checks (macOS detected) ---
++ command -v xcodebuild
++ echo 'Strict Linkage Verification...'
+Strict Linkage Verification...
++ ./gradlew :compose-app:verifyIosFrameworkLinkage -Pkotlin.native.binary.partialLinkage=disable
+Type-safe project accessors is an incubating feature.
+> Task :buildSrc:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :buildSrc:compileKotlin UP-TO-DATE
+> Task :buildSrc:compileJava NO-SOURCE
+> Task :buildSrc:compileGroovy NO-SOURCE
+> Task :buildSrc:pluginDescriptors UP-TO-DATE
+> Task :buildSrc:processResources NO-SOURCE
+> Task :buildSrc:classes UP-TO-DATE
+> Task :buildSrc:jar UP-TO-DATE
+
+> Configure project :compose-app
+WARNING: The option setting 'android.experimental.enableScreenshotTest=true' is experimental.
+The current default is 'false'.
+
+> Task :domain:kmpPartiallyResolvedDependenciesChecker
+> Task :domain:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :domain:kspKotlinIosSimulatorArm64 SKIPPED
+> Task :compose-resources:kmpPartiallyResolvedDependenciesChecker
+> Task :compose-resources:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :compose-resources:convertXmlValueResourcesForAppleMain NO-SOURCE
+> Task :compose-resources:copyNonXmlValueResourcesForAppleMain NO-SOURCE
+> Task :compose-resources:prepareComposeResourcesTaskForAppleMain NO-SOURCE
+> Task :compose-resources:generateResourceAccessorsForAppleMain NO-SOURCE
+> Task :compose-resources:convertXmlValueResourcesForCommonMain UP-TO-DATE
+> Task :compose-resources:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :compose-resources:prepareComposeResourcesTaskForCommonMain UP-TO-DATE
+> Task :compose-resources:generateResourceAccessorsForCommonMain UP-TO-DATE
+> Task :compose-resources:convertXmlValueResourcesForIosMain NO-SOURCE
+> Task :compose-resources:copyNonXmlValueResourcesForIosMain NO-SOURCE
+> Task :compose-resources:prepareComposeResourcesTaskForIosMain NO-SOURCE
+> Task :compose-resources:generateResourceAccessorsForIosMain NO-SOURCE
+> Task :compose-resources:convertXmlValueResourcesForIosSimulatorArm64Main NO-SOURCE
+> Task :compose-resources:copyNonXmlValueResourcesForIosSimulatorArm64Main NO-SOURCE
+> Task :compose-resources:prepareComposeResourcesTaskForIosSimulatorArm64Main NO-SOURCE
+> Task :compose-resources:generateResourceAccessorsForIosSimulatorArm64Main NO-SOURCE
+> Task :compose-resources:convertXmlValueResourcesForNativeMain NO-SOURCE
+> Task :compose-resources:copyNonXmlValueResourcesForNativeMain NO-SOURCE
+> Task :compose-resources:prepareComposeResourcesTaskForNativeMain NO-SOURCE
+> Task :compose-resources:generateResourceAccessorsForNativeMain NO-SOURCE
+> Task :compose-resources:generateActualResourceCollectorsForIosSimulatorArm64Main UP-TO-DATE
+> Task :compose-resources:generateComposeResClass UP-TO-DATE
+> Task :compose-resources:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :domain:compileKotlinIosSimulatorArm64 UP-TO-DATE
+> Task :compose-resources:compileKotlinIosSimulatorArm64 UP-TO-DATE
+> Task :presentation-model:kmpPartiallyResolvedDependenciesChecker
+> Task :presentation-model:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :usecase:kmpPartiallyResolvedDependenciesChecker
+> Task :usecase:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :networking:kmpPartiallyResolvedDependenciesChecker
+> Task :networking:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :networking:generateCommonMainProtos UP-TO-DATE
+> Task :presentation-core:kmpPartiallyResolvedDependenciesChecker
+> Task :presentation-core:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :presentation-core:convertXmlValueResourcesForAppleMain NO-SOURCE
+> Task :usecase:kspKotlinIosSimulatorArm64 UP-TO-DATE
+> Task :presentation-core:copyNonXmlValueResourcesForAppleMain NO-SOURCE
+> Task :presentation-model:compileKotlinIosSimulatorArm64 UP-TO-DATE
+> Task :presentation-core:prepareComposeResourcesTaskForAppleMain NO-SOURCE
+> Task :presentation-core:generateResourceAccessorsForAppleMain NO-SOURCE
+> Task :presentation-core:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :presentation-core:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :presentation-core:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :presentation-core:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :presentation-core:convertXmlValueResourcesForIosMain NO-SOURCE
+> Task :presentation-core:copyNonXmlValueResourcesForIosMain NO-SOURCE
+> Task :presentation-core:prepareComposeResourcesTaskForIosMain NO-SOURCE
+> Task :presentation-core:generateResourceAccessorsForIosMain NO-SOURCE
+> Task :presentation-core:convertXmlValueResourcesForIosSimulatorArm64Main NO-SOURCE
+> Task :presentation-core:copyNonXmlValueResourcesForIosSimulatorArm64Main NO-SOURCE
+> Task :networking:compileKotlinIosSimulatorArm64 UP-TO-DATE
+> Task :presentation-core:prepareComposeResourcesTaskForIosSimulatorArm64Main NO-SOURCE
+> Task :presentation-core:generateResourceAccessorsForIosSimulatorArm64Main NO-SOURCE
+> Task :presentation-core:convertXmlValueResourcesForNativeMain NO-SOURCE
+> Task :presentation-core:copyNonXmlValueResourcesForNativeMain NO-SOURCE
+> Task :presentation-core:prepareComposeResourcesTaskForNativeMain NO-SOURCE
+> Task :presentation-core:generateResourceAccessorsForNativeMain NO-SOURCE
+> Task :data:kmpPartiallyResolvedDependenciesChecker
+> Task :data:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :presentation-core:generateActualResourceCollectorsForIosSimulatorArm64Main UP-TO-DATE
+> Task :presentation-core:generateComposeResClass UP-TO-DATE
+> Task :presentation-core:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :usecase:compileKotlinIosSimulatorArm64 UP-TO-DATE
+> Task :viewmodel:kmpPartiallyResolvedDependenciesChecker
+> Task :viewmodel:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :viewmodel:kspKotlinIosSimulatorArm64 UP-TO-DATE
+> Task :presentation-core:compileKotlinIosSimulatorArm64 UP-TO-DATE
+> Task :presentation-feature:kmpPartiallyResolvedDependenciesChecker
+> Task :presentation-feature:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :presentation-feature:convertXmlValueResourcesForAppleMain NO-SOURCE
+> Task :data:kspKotlinIosSimulatorArm64 UP-TO-DATE
+> Task :presentation-feature:copyNonXmlValueResourcesForAppleMain NO-SOURCE
+> Task :presentation-feature:prepareComposeResourcesTaskForAppleMain NO-SOURCE
+> Task :presentation-feature:generateResourceAccessorsForAppleMain NO-SOURCE
+> Task :presentation-feature:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :presentation-feature:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :presentation-feature:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :presentation-feature:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :presentation-feature:convertXmlValueResourcesForIosMain NO-SOURCE
+> Task :presentation-feature:copyNonXmlValueResourcesForIosMain NO-SOURCE
+> Task :presentation-feature:prepareComposeResourcesTaskForIosMain NO-SOURCE
+> Task :presentation-feature:generateResourceAccessorsForIosMain NO-SOURCE
+> Task :presentation-feature:convertXmlValueResourcesForIosSimulatorArm64Main NO-SOURCE
+> Task :viewmodel:compileKotlinIosSimulatorArm64 UP-TO-DATE
+> Task :presentation-feature:copyNonXmlValueResourcesForIosSimulatorArm64Main NO-SOURCE
+> Task :presentation-feature:prepareComposeResourcesTaskForIosSimulatorArm64Main NO-SOURCE
+> Task :presentation-feature:generateResourceAccessorsForIosSimulatorArm64Main NO-SOURCE
+> Task :presentation-feature:convertXmlValueResourcesForNativeMain NO-SOURCE
+> Task :presentation-feature:copyNonXmlValueResourcesForNativeMain NO-SOURCE
+> Task :presentation-feature:prepareComposeResourcesTaskForNativeMain NO-SOURCE
+> Task :presentation-feature:generateResourceAccessorsForNativeMain NO-SOURCE
+> Task :presentation-feature:generateActualResourceCollectorsForIosSimulatorArm64Main UP-TO-DATE
+> Task :data:compileKotlinIosSimulatorArm64 UP-TO-DATE
+> Task :presentation-feature:generateComposeResClass UP-TO-DATE
+> Task :presentation-feature:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :presentation-feature:compileKotlinIosSimulatorArm64 UP-TO-DATE
+> Task :compose-app:kmpPartiallyResolvedDependenciesChecker
+> Task :compose-app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :compose-app:convertXmlValueResourcesForAppleMain NO-SOURCE
+> Task :compose-app:copyNonXmlValueResourcesForAppleMain NO-SOURCE
+> Task :compose-app:prepareComposeResourcesTaskForAppleMain NO-SOURCE
+> Task :compose-app:generateResourceAccessorsForAppleMain NO-SOURCE
+> Task :compose-app:convertXmlValueResourcesForCommonMain UP-TO-DATE
+> Task :compose-app:copyNonXmlValueResourcesForCommonMain UP-TO-DATE
+> Task :compose-app:prepareComposeResourcesTaskForCommonMain UP-TO-DATE
+> Task :compose-app:generateResourceAccessorsForCommonMain UP-TO-DATE
+> Task :compose-app:convertXmlValueResourcesForIosMain NO-SOURCE
+> Task :compose-app:copyNonXmlValueResourcesForIosMain NO-SOURCE
+> Task :compose-app:prepareComposeResourcesTaskForIosMain NO-SOURCE
+> Task :compose-app:generateResourceAccessorsForIosMain NO-SOURCE
+> Task :compose-app:convertXmlValueResourcesForIosSimulatorArm64Main NO-SOURCE
+> Task :compose-app:copyNonXmlValueResourcesForIosSimulatorArm64Main NO-SOURCE
+> Task :compose-app:prepareComposeResourcesTaskForIosSimulatorArm64Main NO-SOURCE
+> Task :compose-app:generateResourceAccessorsForIosSimulatorArm64Main NO-SOURCE
+> Task :compose-app:convertXmlValueResourcesForNativeMain NO-SOURCE
+> Task :compose-app:copyNonXmlValueResourcesForNativeMain NO-SOURCE
+> Task :compose-app:prepareComposeResourcesTaskForNativeMain NO-SOURCE
+> Task :compose-app:generateResourceAccessorsForNativeMain NO-SOURCE
+> Task :compose-app:generateActualResourceCollectorsForIosSimulatorArm64Main UP-TO-DATE
+> Task :compose-app:generateComposeResClass UP-TO-DATE
+> Task :compose-app:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :compose-app:kspKotlinIosSimulatorArm64 FAILED
+
+[Incubating] Problems report is available at: file:///Users/cartland/github/cartland/battery-butler/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':compose-app:kspKotlinIosSimulatorArm64'.
+> Could not resolve all files for configuration ':compose-app:iosSimulatorArm64CompileKlibraries'.
+   > Could not resolve androidx.navigationevent:navigationevent-compose:1.0.0-alpha07.
+     Required by:
+         project :compose-app > org.jetbrains.androidx.navigation3:navigation3-ui:1.0.0-alpha01 > org.jetbrains.androidx.navigation3:navigation3-ui-uikitsimarm64:1.0.0-alpha01
+      > No matching variant of androidx.navigationevent:navigationevent-compose:1.0.0-rc01 was found. The consumer was configured to find a library for use during 'kotlin-api', preferably optimized for non-jvm, as well as attribute 'org.jetbrains.kotlin.klib.packaging' with value 'non-packed', attribute 'org.jetbrains.kotlin.native.target' with value 'ios_simulator_arm64', attribute 'org.jetbrains.kotlin.platform.type' with value 'native' but:
+          - Variant 'androidApiElements-published' declares a library for use during compile-time, preferably optimized for Android:
+              - Incompatible because this component declares a component, as well as attribute 'org.jetbrains.kotlin.platform.type' with value 'jvm' and the consumer needed a component, as well as attribute 'org.jetbrains.kotlin.platform.type' with value 'native'
+              - Other compatible attributes:
+                  - Doesn't say anything about org.jetbrains.kotlin.klib.packaging (required 'non-packed')
+                  - Doesn't say anything about org.jetbrains.kotlin.native.target (required 'ios_simulator_arm64')
+          - Variant 'androidRuntimeElements-published' declares a library for use during runtime, preferably optimized for Android:
+              - Incompatible because this component declares a component, as well as attribute 'org.jetbrains.kotlin.platform.type' with value 'jvm' and the consumer needed a component, as well as attribute 'org.jetbrains.kotlin.platform.type' with value 'native'
+              - Other compatible attributes:
+                  - Doesn't say anything about org.jetbrains.kotlin.klib.packaging (required 'non-packed')
+                  - Doesn't say anything about org.jetbrains.kotlin.native.target (required 'ios_simulator_arm64')
+          - Variant 'androidSourcesElements-published' declares a component for use during runtime, preferably optimized for Android:
+              - Incompatible because this component declares documentation, as well as attribute 'org.jetbrains.kotlin.platform.type' with value 'jvm' and the consumer needed a library, as well as attribute 'org.jetbrains.kotlin.platform.type' with value 'native'
+              - Other compatible attributes:
+                  - Doesn't say anything about org.jetbrains.kotlin.klib.packaging (required 'non-packed')
+                  - Doesn't say anything about org.jetbrains.kotlin.native.target (required 'ios_simulator_arm64')
+          - Variant 'androidxSourcesElements':
+              - Incompatible because this component declares documentation for use during 'androidx-multiplatform-docs' and the consumer needed a library for use during 'kotlin-api'
+              - Other compatible attributes:
+                  - Doesn't say anything about its target Java environment (preferred optimized for non-jvm)
+                  - Doesn't say anything about org.jetbrains.kotlin.klib.packaging (required 'non-packed')
+                  - Doesn't say anything about org.jetbrains.kotlin.native.target (required 'ios_simulator_arm64')
+                  - Doesn't say anything about org.jetbrains.kotlin.platform.type (required 'native')
+          - Variant 'jvmStubsApiElements-published' declares a library for use during compile-time, preferably optimized for standard JVMs:
+              - Incompatible because this component declares a component, as well as attribute 'org.jetbrains.kotlin.platform.type' with value 'jvm' and the consumer needed a component, as well as attribute 'org.jetbrains.kotlin.platform.type' with value 'native'
+              - Other compatible attributes:
+                  - Doesn't say anything about org.jetbrains.kotlin.klib.packaging (required 'non-packed')
+                  - Doesn't say anything about org.jetbrains.kotlin.native.target (required 'ios_simulator_arm64')
+          - Variant 'jvmStubsRuntimeElements-published' declares a library for use during runtime, preferably optimized for standard JVMs:
+              - Incompatible because this component declares a component, as well as attribute 'org.jetbrains.kotlin.platform.type' with value 'jvm' and the consumer needed a component, as well as attribute 'org.jetbrains.kotlin.platform.type' with value 'native'
+              - Other compatible attributes:
+                  - Doesn't say anything about org.jetbrains.kotlin.klib.packaging (required 'non-packed')
+                  - Doesn't say anything about org.jetbrains.kotlin.native.target (required 'ios_simulator_arm64')
+          - Variant 'jvmStubsSourcesElements-published' declares a component for use during runtime, preferably optimized for standard JVMs:
+              - Incompatible because this component declares documentation, as well as attribute 'org.jetbrains.kotlin.platform.type' with value 'jvm' and the consumer needed a library, as well as attribute 'org.jetbrains.kotlin.platform.type' with value 'native'
+              - Other compatible attributes:
+                  - Doesn't say anything about org.jetbrains.kotlin.klib.packaging (required 'non-packed')
+                  - Doesn't say anything about org.jetbrains.kotlin.native.target (required 'ios_simulator_arm64')
+          - Variant 'libraryVersionMetadata':
+              - Incompatible because this component declares documentation for use during 'library-version-metadata' and the consumer needed a library for use during 'kotlin-api'
+              - Other compatible attributes:
+                  - Doesn't say anything about its target Java environment (preferred optimized for non-jvm)
+                  - Doesn't say anything about org.jetbrains.kotlin.klib.packaging (required 'non-packed')
+                  - Doesn't say anything about org.jetbrains.kotlin.native.target (required 'ios_simulator_arm64')
+                  - Doesn't say anything about org.jetbrains.kotlin.platform.type (required 'native')
+          - Variant 'linuxx64StubsApiElements-published' declares a library for use during 'kotlin-api', preferably optimized for non-jvm, as well as attribute 'org.jetbrains.kotlin.platform.type' with value 'native':
+              - Incompatible because this component declares a component, as well as attribute 'org.jetbrains.kotlin.native.target' with value 'linux_x64' and the consumer needed a component, as well as attribute 'org.jetbrains.kotlin.native.target' with value 'ios_simulator_arm64'
+              - Other compatible attribute:
+                  - Doesn't say anything about org.jetbrains.kotlin.klib.packaging (required 'non-packed')
+          - Variant 'linuxx64StubsSourcesElements-published' declares a component, preferably optimized for non-jvm, as well as attribute 'org.jetbrains.kotlin.platform.type' with value 'native':
+              - Incompatible because this component declares documentation for use during 'kotlin-runtime', as well as attribute 'org.jetbrains.kotlin.native.target' with value 'linux_x64' and the consumer needed a library for use during 'kotlin-api', as well as attribute 'org.jetbrains.kotlin.native.target' with value 'ios_simulator_arm64'
+              - Other compatible attribute:
+                  - Doesn't say anything about org.jetbrains.kotlin.klib.packaging (required 'non-packed')
+          - Variant 'metadataApiElements' declares a library, preferably optimized for non-jvm:
+              - Incompatible because this component declares a component for use during 'kotlin-metadata', as well as attribute 'org.jetbrains.kotlin.platform.type' with value 'common' and the consumer needed a component for use during 'kotlin-api', as well as attribute 'org.jetbrains.kotlin.platform.type' with value 'native'
+              - Other compatible attributes:
+                  - Doesn't say anything about org.jetbrains.kotlin.klib.packaging (required 'non-packed')
+                  - Doesn't say anything about org.jetbrains.kotlin.native.target (required 'ios_simulator_arm64')
+          - Variant 'metadataSourcesElements' declares a component, preferably optimized for non-jvm:
+              - Incompatible because this component declares documentation for use during 'kotlin-runtime', as well as attribute 'org.jetbrains.kotlin.platform.type' with value 'common' and the consumer needed a library for use during 'kotlin-api', as well as attribute 'org.jetbrains.kotlin.platform.type' with value 'native'
+              - Other compatible attributes:
+                  - Doesn't say anything about org.jetbrains.kotlin.klib.packaging (required 'non-packed')
+                  - Doesn't say anything about org.jetbrains.kotlin.native.target (required 'ios_simulator_arm64')
+> There is 1 more failure with an identical cause.
+
+* Try:
+> No matching variant errors are explained in more detail at https://docs.gradle.org/8.12/userguide/variant_model.html#sub:variant-no-match.
+> Review the variant matching algorithm at https://docs.gradle.org/8.12/userguide/variant_attributes.html#sec:abm_algorithm.
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 889ms
+46 actionable tasks: 11 executed, 35 up-to-date

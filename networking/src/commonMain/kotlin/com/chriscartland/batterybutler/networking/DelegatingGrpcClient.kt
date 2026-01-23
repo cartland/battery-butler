@@ -31,16 +31,30 @@ class DelegatingGrpcClient(
                 // Android GrpcClient uses OkHttp which should be closed usually, but here we rebuild it.
                 // Ideally we'd cast and close if possible.
 
-                val newClient = if (mode == NetworkMode.GRPC_LOCAL) {
-                    try {
-                        factory()
-                    } catch (e: Exception) {
-                        if (e is kotlinx.coroutines.CancellationException) throw e
-                        e.printStackTrace()
-                        null
+                val newClient = when (mode) {
+                    NetworkMode.GRPC_LOCAL -> {
+                        // Enforce local address for Android Emulator
+                        SharedServerConfig.setServerUrl(SharedServerConfig.LOCAL_GRPC_ADDRESS_ANDROID)
+                        try {
+                            factory()
+                        } catch (e: Exception) {
+                            if (e is kotlinx.coroutines.CancellationException) throw e
+                            e.printStackTrace()
+                            null
+                        }
                     }
-                } else {
-                    null // MOCK mode, no client
+                    NetworkMode.GRPC_AWS -> {
+                        // Enforce default production URL
+                        SharedServerConfig.resetServerUrl()
+                        try {
+                            factory()
+                        } catch (e: Exception) {
+                            if (e is kotlinx.coroutines.CancellationException) throw e
+                            e.printStackTrace()
+                            null
+                        }
+                    }
+                    NetworkMode.MOCK -> null
                 }
                 currentDelegate.value = newClient
             }

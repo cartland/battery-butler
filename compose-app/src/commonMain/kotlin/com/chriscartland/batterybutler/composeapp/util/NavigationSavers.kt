@@ -7,7 +7,7 @@ import com.chriscartland.batterybutler.composeapp.Screen
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-val ScreenListSaver = listSaver<SnapshotStateList<Any>, String>(
+val ScreenListSaver = listSaver<SnapshotStateList<Screen>, String>(
     save = { stateList ->
         val screens = stateList.filterIsInstance<Screen>()
         listOf(Json.encodeToString(screens))
@@ -16,7 +16,7 @@ val ScreenListSaver = listSaver<SnapshotStateList<Any>, String>(
         try {
             val jsonString = restoredList.first()
             val list: List<Screen> = Json.decodeFromString(jsonString)
-            val snapshotList = mutableStateListOf<Any>()
+            val snapshotList = mutableStateListOf<Screen>()
             snapshotList.addAll(list)
             snapshotList
         } catch (_: Exception) {

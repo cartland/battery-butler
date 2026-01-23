@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.composeresources.generated.resources.Res
+import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_grpc_aws
 import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_grpc_local
 import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_mock
 import com.chriscartland.batterybutler.domain.model.NetworkMode
@@ -65,6 +66,9 @@ fun SettingsContent(
                         NetworkMode.MOCK -> composeStringResource(Res.string.network_mode_mock)
                         NetworkMode.GRPC_LOCAL -> composeStringResource(
                             Res.string.network_mode_grpc_local,
+                        )
+                        NetworkMode.GRPC_AWS -> composeStringResource(
+                            Res.string.network_mode_grpc_aws,
                         )
                     }
                 },

@@ -25,7 +25,9 @@ class DynamicDatabaseProvider(
             networkModeRepository.networkMode.collect { mode ->
                 val targetName = when (mode) {
                     NetworkMode.MOCK -> "battery-butler-dev.db"
-                    NetworkMode.GRPC_LOCAL -> "battery-butler.db"
+                    NetworkMode.GRPC_LOCAL,
+                    NetworkMode.GRPC_AWS,
+                    -> "battery-butler.db"
                 }
 
                 if (targetName != currentDbName) {

@@ -22,4 +22,5 @@
     <!-- Network Mode -->
     <string name="network_mode_mock">Mock</string>
     <string name="network_mode_grpc_local">gRPC Local</string>
+    <string name="network_mode_grpc_aws">AWS Cloud</string>
 </resources>

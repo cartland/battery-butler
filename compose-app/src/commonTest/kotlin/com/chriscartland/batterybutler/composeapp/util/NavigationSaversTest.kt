@@ -16,7 +16,7 @@ class NavigationSaversTest {
     @Test
     fun testSaveAndRestore() {
         // Prepare original list
-        val originalList = mutableStateListOf<Any>(
+        val originalList = mutableStateListOf<Screen>(
             Screen.Devices,
             Screen.DeviceDetail("device_123"),
             Screen.Settings,

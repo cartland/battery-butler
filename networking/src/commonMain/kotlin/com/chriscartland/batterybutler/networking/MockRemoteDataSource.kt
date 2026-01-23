@@ -14,8 +14,12 @@ class MockRemoteDataSource : RemoteDataSource {
     private val state = MutableStateFlow<RemoteUpdate?>(null)
 
     private val deviceTypes = DemoData.getDefaultDeviceTypes().toMutableList()
-    private val devices = DemoData.getDefaultDevices(deviceTypes).toMutableList()
-    private val events = DemoData.getDefaultEvents(devices).toMutableList()
+    private val originalDevices = DemoData.getDefaultDevices(deviceTypes)
+    private val events = DemoData.getDefaultEvents(originalDevices).toMutableList()
+    private val devices = originalDevices
+        .map {
+            it.copy(name = "${it.name} [Mock]")
+        }.toMutableList()
 
     init {
         // Initial snapshot

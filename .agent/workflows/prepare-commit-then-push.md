@@ -6,6 +6,12 @@ description: Run validation scripts, commit changes, and push to remote
    // turbo
    `./scripts/prepare-for-commit.sh`
 
+   > [!TIP]
+   > **Server Development Tips:**
+   > - If you modified `server/`, run `./gradlew :server:app:jibDockerBuild` to verify the container builds locally.
+   > - If you modified `server/terraform/`, run `terraform fmt -recursive server/terraform/` to format HCL.
+   > - Use `./scripts/restart_server.sh` to redeploy/reset the AWS environment if needed.
+
 2. Resolve any issues
    If the script fails (e.g. lint errors, broken tests), fix them and re-run step 1.
 

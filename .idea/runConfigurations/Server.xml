@@ -3,6 +3,9 @@
     <option name="MAIN_CLASS_NAME" value="com.chriscartland.batterybutler.app.ApplicationKt" />
     <module name="BatteryButler.server.app.main" />
     <shortenClasspath name="NONE" />
+    <envs>
+      <env name="SERVER_LABEL" value="gRPC Local" />
+    </envs>
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

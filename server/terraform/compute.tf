@@ -85,6 +85,12 @@ resource "aws_ecs_task_definition" "server" {
           "awslogs-stream-prefix" = "ecs"
         }
       }
+      environment = [
+        {
+          name  = "SERVER_LABEL"
+          value = "AWS Cloud"
+        }
+      ]
     }
   ])
 }

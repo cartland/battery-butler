@@ -29,6 +29,7 @@ class DebugNetworkReceiver(
 
             val mode = when (modeString) {
                 "GRPC_LOCAL" -> NetworkMode.GRPC_LOCAL
+                "GRPC_AWS" -> NetworkMode.GRPC_AWS
                 "MOCK" -> NetworkMode.MOCK
                 else -> null
             }

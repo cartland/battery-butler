@@ -27,7 +27,9 @@ class DelegatingRemoteDataSource(
         networkMode.flatMapLatest { mode ->
             when (mode) {
                 NetworkMode.MOCK -> mockDataSource.subscribe()
-                NetworkMode.GRPC_LOCAL -> {
+                NetworkMode.GRPC_LOCAL,
+                NetworkMode.GRPC_AWS,
+                -> {
                     // Wait for the client to be ready
                     delegatingGrpcClient.clientState
                         .filterNotNull()
@@ -48,7 +50,9 @@ class DelegatingRemoteDataSource(
         val currentMode = currentNetworkMode.value
         return when (currentMode) {
             NetworkMode.MOCK -> mockDataSource.push(update)
-            NetworkMode.GRPC_LOCAL -> grpcDataSource.push(update)
+            NetworkMode.GRPC_LOCAL,
+            NetworkMode.GRPC_AWS,
+            -> grpcDataSource.push(update)
         }
     }
 
