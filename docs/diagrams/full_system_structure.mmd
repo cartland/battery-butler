@@ -30,15 +30,12 @@ graph TD
 
     subgraph "Data Layer"
         Data[":data"]
+        DataLocal[":data-local"]
+        DataNetwork[":data-network"]
     end
 
     subgraph "Screenshot Tests"
         AndroidScreenshotTests[":android-screenshot-tests"]
-    end
-
-    subgraph "Others"
-        DataLocal[":data-local"]
-        DataNetwork[":data-network"]
     end
 
     %% Dependencies
