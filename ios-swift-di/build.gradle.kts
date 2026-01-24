@@ -16,6 +16,7 @@ kotlin {
             export(project(":domain"))
             export(project(":viewmodel"))
             export(project(":presentation-model"))
+            export(project(":ai"))
             export(libs.androidx.lifecycle.viewmodel)
         }
     }
@@ -25,6 +26,7 @@ kotlin {
             implementation(libs.kotlin.stdlib)
 
             implementation(project(":data"))
+            implementation(project(":ai"))
             api(project(":viewmodel"))
             api(project(":presentation-model"))
 

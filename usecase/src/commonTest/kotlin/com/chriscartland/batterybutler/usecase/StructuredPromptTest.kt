@@ -1,9 +1,9 @@
 package com.chriscartland.batterybutler.usecase
 
-import com.chriscartland.batterybutler.domain.ai.AiEngine
-import com.chriscartland.batterybutler.domain.ai.AiMessage
-import com.chriscartland.batterybutler.domain.ai.AiRole
-import com.chriscartland.batterybutler.domain.ai.ToolHandler
+import com.chriscartland.batterybutler.ai.AiEngine
+import com.chriscartland.batterybutler.ai.AiMessage
+import com.chriscartland.batterybutler.ai.AiRole
+import com.chriscartland.batterybutler.ai.ToolHandler
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType

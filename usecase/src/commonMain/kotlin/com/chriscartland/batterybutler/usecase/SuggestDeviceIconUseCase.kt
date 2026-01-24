@@ -1,6 +1,6 @@
 package com.chriscartland.batterybutler.usecase
 
-import com.chriscartland.batterybutler.domain.ai.AiEngine
+import com.chriscartland.batterybutler.ai.AiEngine
 import com.chriscartland.batterybutler.domain.model.DeviceIcons
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map

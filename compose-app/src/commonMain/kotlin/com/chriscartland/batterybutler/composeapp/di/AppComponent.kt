@@ -1,5 +1,6 @@
 package com.chriscartland.batterybutler.composeapp.di
 
+import com.chriscartland.batterybutler.ai.AiEngine
 import com.chriscartland.batterybutler.data.di.DataComponent
 import com.chriscartland.batterybutler.data.repository.InMemoryNetworkModeRepository
 import com.chriscartland.batterybutler.datalocal.di.DatabaseFactory
@@ -8,7 +9,6 @@ import com.chriscartland.batterybutler.datalocal.room.AppDatabase
 import com.chriscartland.batterybutler.datanetwork.DelegatingGrpcClient
 import com.chriscartland.batterybutler.datanetwork.DelegatingRemoteDataSource
 import com.chriscartland.batterybutler.datanetwork.NetworkComponent
-import com.chriscartland.batterybutler.domain.ai.AiEngine
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
 import com.chriscartland.batterybutler.domain.repository.RemoteDataSource

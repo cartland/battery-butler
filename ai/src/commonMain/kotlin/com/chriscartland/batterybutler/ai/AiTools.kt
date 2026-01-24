@@ -1,4 +1,4 @@
-package com.chriscartland.batterybutler.domain.ai
+package com.chriscartland.batterybutler.ai
 
 object AiToolNames {
     const val ADD_DEVICE = "addDevice"

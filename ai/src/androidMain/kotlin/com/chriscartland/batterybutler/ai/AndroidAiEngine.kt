@@ -1,13 +1,13 @@
 package com.chriscartland.batterybutler.ai
 
+import com.chriscartland.batterybutler.ai.AiConstants
+import com.chriscartland.batterybutler.ai.AiEngine
+import com.chriscartland.batterybutler.ai.AiMessage
+import com.chriscartland.batterybutler.ai.AiRole
+import com.chriscartland.batterybutler.ai.AiToolNames
+import com.chriscartland.batterybutler.ai.AiToolParams
 import com.chriscartland.batterybutler.ai.BuildConfig
-import com.chriscartland.batterybutler.domain.ai.AiConstants
-import com.chriscartland.batterybutler.domain.ai.AiEngine
-import com.chriscartland.batterybutler.domain.ai.AiMessage
-import com.chriscartland.batterybutler.domain.ai.AiRole
-import com.chriscartland.batterybutler.domain.ai.AiToolNames
-import com.chriscartland.batterybutler.domain.ai.AiToolParams
-import com.chriscartland.batterybutler.domain.ai.ToolHandler
+import com.chriscartland.batterybutler.ai.ToolHandler
 import com.chriscartland.batterybutler.domain.model.DeviceIcons
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.FunctionResponsePart

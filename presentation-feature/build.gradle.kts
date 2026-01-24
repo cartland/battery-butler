@@ -32,6 +32,7 @@ kotlin {
             implementation(libs.kotlinx.datetime)
 
             implementation(project(":presentation-core"))
+            implementation(project(":ai"))
             implementation(project(":compose-resources"))
 
             api(project(":presentation-model"))

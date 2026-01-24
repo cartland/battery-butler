@@ -23,6 +23,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.domain)
+            implementation(project(":ai"))
             implementation(libs.kotlinx.datetime)
             implementation(libs.kotlin.inject.runtime)
             implementation(libs.kotlinx.coroutines.core)

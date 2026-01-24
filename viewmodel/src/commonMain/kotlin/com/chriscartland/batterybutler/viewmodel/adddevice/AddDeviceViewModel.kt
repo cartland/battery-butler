@@ -49,10 +49,10 @@ class AddDeviceViewModel(
 
     // seedDeviceTypes removed
 
-    private val _aiMessages = kotlinx.coroutines.flow.MutableStateFlow<List<com.chriscartland.batterybutler.domain.ai.AiMessage>>(
+    private val _aiMessages = kotlinx.coroutines.flow.MutableStateFlow<List<com.chriscartland.batterybutler.ai.AiMessage>>(
         emptyList(),
     )
-    val aiMessages: StateFlow<List<com.chriscartland.batterybutler.domain.ai.AiMessage>> = _aiMessages
+    val aiMessages: StateFlow<List<com.chriscartland.batterybutler.ai.AiMessage>> = _aiMessages
 
     fun batchAddDevices(input: String) {
         viewModelScope.launch {

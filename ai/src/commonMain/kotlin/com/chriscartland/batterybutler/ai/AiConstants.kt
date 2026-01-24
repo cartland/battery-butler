@@ -1,4 +1,4 @@
-package com.chriscartland.batterybutler.domain.ai
+package com.chriscartland.batterybutler.ai
 
 object AiConstants {
     private const val GEMINI_2_5_FLASH_MODEL_ID = "gemini-2.5-flash"

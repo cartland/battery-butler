@@ -55,6 +55,7 @@ data class GraphConfig(
                 ":data-network" to "Data Layer",
                 ":data-local" to "Data Layer",
                 ":server:data" to "Server",
+                ":ai" to "Domain Layer",
             ),
             groupPrefixes = mapOf(
                 "ios-app" to "iOS Apps",

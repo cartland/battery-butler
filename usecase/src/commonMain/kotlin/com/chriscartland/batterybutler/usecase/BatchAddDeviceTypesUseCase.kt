@@ -1,12 +1,12 @@
 package com.chriscartland.batterybutler.usecase
 
 import com.benasher44.uuid.uuid4
-import com.chriscartland.batterybutler.domain.ai.AiEngine
-import com.chriscartland.batterybutler.domain.ai.AiMessage
-import com.chriscartland.batterybutler.domain.ai.AiRole
-import com.chriscartland.batterybutler.domain.ai.AiToolNames
-import com.chriscartland.batterybutler.domain.ai.AiToolParams
-import com.chriscartland.batterybutler.domain.ai.ToolHandler
+import com.chriscartland.batterybutler.ai.AiEngine
+import com.chriscartland.batterybutler.ai.AiMessage
+import com.chriscartland.batterybutler.ai.AiRole
+import com.chriscartland.batterybutler.ai.AiToolNames
+import com.chriscartland.batterybutler.ai.AiToolParams
+import com.chriscartland.batterybutler.ai.ToolHandler
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import kotlinx.coroutines.flow.Flow

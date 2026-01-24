@@ -3,7 +3,7 @@ package com.chriscartland.batterybutler.viewmodel.addbatteryevent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.benasher44.uuid.uuid4
-import com.chriscartland.batterybutler.domain.ai.AiMessage
+import com.chriscartland.batterybutler.ai.AiMessage
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.usecase.AddBatteryEventUseCase
 import com.chriscartland.batterybutler.usecase.BatchAddBatteryEventsUseCase
