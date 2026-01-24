@@ -1,6 +1,5 @@
 package com.chriscartland.batterybutler.ai
 
-import android.content.Context
 import com.chriscartland.batterybutler.ai.BuildConfig
 import com.chriscartland.batterybutler.domain.ai.AiConstants
 import com.chriscartland.batterybutler.domain.ai.AiEngine
@@ -23,9 +22,7 @@ import kotlinx.coroutines.flow.flow
 import org.json.JSONObject
 import kotlin.coroutines.cancellation.CancellationException
 
-class AndroidAiEngine(
-    private val context: Context,
-) : AiEngine {
+class AndroidAiEngine : AiEngine {
     // For Gemini API (Cloud), availability implies we are ready to send requests.
     // If the API key is empty, we might want to show unavailable, but user can add it later.
     private val _isAvailable = MutableStateFlow(true)

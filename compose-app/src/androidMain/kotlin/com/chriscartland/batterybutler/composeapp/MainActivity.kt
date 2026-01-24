@@ -20,7 +20,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val databaseFactory = DatabaseFactory(applicationContext)
-        val aiEngine = AndroidAiEngine(applicationContext)
+        val aiEngine = AndroidAiEngine()
 
         val networkComponent = NetworkComponent(applicationContext)
 
