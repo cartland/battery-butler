@@ -2,7 +2,10 @@
 description: Run validation scripts, commit changes, and push to remote
 ---
 
-1. Prepare for commit
+1. Fetch latest main
+   `git fetch origin main`
+
+2. Prepare for commit
    // turbo
    `./scripts/prepare-for-commit.sh`
 
