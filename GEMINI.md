@@ -8,9 +8,9 @@ Adhere to established project conventions. The `.agent/` directory contains deta
 
 ## Workflow Instructions
 
-1.  **Branching:** Create new branches with the `gemini/` prefix.
+1.  **Branching:** Create new feature branches from `origin/main` with the `gemini/` prefix.
     ```bash
-    git checkout -b gemini/feature-name
+    git checkout -b gemini/feature-name origin/main
     ```
 
 2.  **Validation:** Before committing, execute the project's validation script. Refer to `.agent/workflows/validate_changes.md` for details.
