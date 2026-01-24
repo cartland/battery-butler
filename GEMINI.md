@@ -1,22 +1,21 @@
-# Gemini Development Guidelines
+# Gemini Contribution Guidelines
 
-This document outlines project-specific instructions for me, Gemini.
+This document provides instructions for Gemini when contributing to this repository.
 
-## Guiding Principle
+## Project Conventions
 
-My primary directive is to follow the established project conventions. The source of truth for these rules and workflows is the `.agent/` directory. I will refer to it to understand the project's standards.
+Adhere to established project conventions. The `.agent/` directory contains detailed rules and workflows.
 
-## Workflow
+## Workflow Instructions
 
-1.  **Branching:** All branches I create must be prefixed with `gemini/`.
+1.  **Branching:** Create new branches with the `gemini/` prefix.
     ```bash
-    # Example
-    git checkout -b gemini/new-feature
+    git checkout -b gemini/feature-name
     ```
 
-2.  **Validation:** Before committing, I will always validate my changes by running the `validate` script, which mirrors our CI checks. The detailed process is defined in `.agent/workflows/validate_changes.md`.
+2.  **Validation:** Before committing, execute the project's validation script. Refer to `.agent/workflows/validate_changes.md` for details.
     ```bash
     ./scripts/validate.sh
     ```
 
-3.  **Pull Requests:** After validation passes, I will commit the changes and open a Pull Request. I will not push directly to `main`.
+3.  **Pull Requests:** After successful validation, commit changes and open a pull request to `main`. Direct pushes to `main` are prohibited.
