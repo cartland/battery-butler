@@ -14,7 +14,11 @@ This document outlines the shared principles and workflow for all AI agents cont
 ## Project Technical Rules
 
 - **Self Improvements**:
+  - **Always** update `.agent/` documentation when learning a critical piece of information that will improve future agent performance. This ensures continuous learning and improvement for all agents.
   - **Always** update `.agent/rules.md` when adding new rules or best practices for the project.
+
+- **Git**:
+  - **Always** use non-interactive flags for commands that might open an editor (e.g., `git cherry-pick --continue --no-edit`). This prevents the shell from getting stuck waiting for user input.
 
 - **iOS Builds**:
   - **Always** use `-derivedDataPath build/<target_name>` (e.g., `build/ios_compose`) when running multiple `xcodebuild` commands in a single script. This ensures **artifact isolation** between steps, mimicking CI parity, and prevents accidental cross-linking of frameworks.
