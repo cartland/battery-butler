@@ -1,11 +1,4 @@
-**Example for `AGENT_NAME.md`:**
-```markdown
-# AGENT_NAME Instructions
-
-This file provides the initial instructions for AGENT_NAME.
-
-**First Action:** Immediately read the main contribution guidelines located at `.agent/AGENTS.md`. This file contains the required workflow and rules for all AI agents in this project. Do not proceed with any other actions until you have read and understood it.
-```
+# AI Agent Contribution Guidelines
 
 This document outlines the shared principles and workflow for all AI agents contributing to this repository.
 
@@ -13,10 +6,30 @@ This document outlines the shared principles and workflow for all AI agents cont
 
 1.  **Single Source of Truth**: This directory, `.agent/`, is the single source of truth for all AI agent instructions.
     *   **`AGENTS.md` (This file):** The high-level charter and core workflow.
-    *   **`rules.md`:** The detailed, technical best practices and constraints.
-    *   **`workflows/`:** Step-by-step playbooks for common tasks.
+    *   **`rules.md`:** An agent-specific entry point for internal technical guidelines.
+    *   **`workflows/`:** Step-by-step playbooks for common tasks, serving as both detailed instructions for agents and user-triggerable commands (e.g., slash commands).
 2.  **Consistency**: All agents must follow the workflows defined here to ensure predictable and consistent contributions.
 3.  **Validation is Mandatory**: All changes must be validated by running `./scripts/validate.sh` before being committed.
+
+## Project Technical Rules
+
+- **Self Improvements**:
+  - **Always** update `.agent/rules.md` when adding new rules or best practices for the project.
+
+- **iOS Builds**:
+  - **Always** use `-derivedDataPath build/<target_name>` (e.g., `build/ios_compose`) when running multiple `xcodebuild` commands in a single script. This ensures **artifact isolation** between steps, mimicking CI parity, and prevents accidental cross-linking of frameworks.
+  - **Always** use `-derivedDataPath build/...` generally to keep artifacts out of system locations.
+  - **Always** use `-target` instead of `-scheme` if the scheme file is not shared (checked into git).
+  - **Always** disable code signing for local simulator builds or CI builds without certificates using `CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO`.
+
+- **Bazel**:
+  - **Bazel Outputs:** All Bazel outputs are consolidated in `.bazel/` (e.g. `.bazel/bin`) via `.bazelrc`. This directory is gitignored and excluded from Spotless.
+  - **Spotless vs Bazel:** Spotless exclusions are configured to ignore `.bazel/`. Running `spotlessApply` works safely even with Bazel symlinks present.
+
+- **Validation**:
+  - **Always** run `./scripts/validate.sh` before pushing to main. This script is maintained to match `ci.yml` strictly.
+  - **Always** run `./scripts/spotless-apply.sh` and fix errors before pushing to main.
+  - **Avoid** `clean` steps in scripts and CI if possible, relying on Gradle's incremental build and caching for speed.
 
 ## Core Git Workflow
 
@@ -25,9 +38,9 @@ This document outlines the shared principles and workflow for all AI agents cont
     git fetch origin main
     ```
 
-2.  **Create a Branch**: Create a new branch from `origin/main`. The branch MUST be prefixed with `ai/`.
+2.  **Create a Branch**: Create a new branch from `origin/main`. The branch MUST be prefixed with `agent/`.
     ```bash
-    git checkout -b ai/your-branch-name origin/main
+    git checkout -b agent/your-branch-name origin/main
     ```
 
 3.  **Implement Changes**: Make all code modifications according to the project's established conventions, as detailed in `rules.md`.
@@ -41,7 +54,16 @@ This document outlines the shared principles and workflow for all AI agents cont
     ```bash
     git add .
     git commit -m "feat: Describe the feature or fix"
-    git push origin ai/your-branch-name
+    git push origin agent/your-branch-name
     ```
 
 6.  **Create a Pull Request**: Open a pull request against the `main` branch. Direct pushes to `main` are prohibited.
+
+**Example for `AGENT_NAME.md`:**
+```markdown
+# AGENT_NAME Instructions
+
+This file provides the initial instructions for AGENT_NAME.
+
+**First Action:** Immediately read the main contribution guidelines located at `.agent/AGENTS.md`. This file contains the required workflow and rules for all AI agents in this project. Do not proceed with any other actions until you have read and understood it.
+```
