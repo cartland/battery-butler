@@ -45,3 +45,29 @@ This document outlines the shared principles and workflow for all AI agents cont
     ```
 
 6.  **Create a Pull Request**: Open a pull request against the `main` branch. Direct pushes to `main` are prohibited.
+
+## After Your PR is Merged
+
+Once your pull request has been approved and merged into `main`, it is important to clean up your branches to keep the repository tidy.
+
+1.  **Switch to the `main` Branch**:
+    ```bash
+    git checkout main
+    ```
+
+2.  **Pull the Latest Changes**: Ensure your local `main` branch is up-to-date.
+    ```bash
+    git pull origin main
+    ```
+
+3.  **Delete the Local Branch**:
+    ```bash
+    git branch -d agent/your-branch-name
+    ```
+
+4.  **Delete the Remote Branch**:
+    ```bash
+    git push origin --delete agent/your-branch-name
+    ```
+
+**Example for `AGENT_NAME.md`:**
