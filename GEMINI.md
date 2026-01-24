@@ -1,5 +1,5 @@
 # Gemini Instructions
 
-This file provides the entry point for Gemini.
+This file provides the initial instructions for Gemini.
 
-The primary contribution guidelines for all AI agents are defined in `.agent/AGENTS.md`. Refer to that file for the shared workflow, rules, and best practices.
+**First Action:** Immediately read the main contribution guidelines located at `.agent/AGENTS.md`. This file contains the required workflow and rules for all AI agents in this project. Do not proceed with any other actions until you have read and understood it.

@@ -1,4 +1,11 @@
-# AI Agent Contribution Guidelines
+**Example for `AGENT_NAME.md`:**
+```markdown
+# AGENT_NAME Instructions
+
+This file provides the initial instructions for AGENT_NAME.
+
+**First Action:** Immediately read the main contribution guidelines located at `.agent/AGENTS.md`. This file contains the required workflow and rules for all AI agents in this project. Do not proceed with any other actions until you have read and understood it.
+```
 
 This document outlines the shared principles and workflow for all AI agents contributing to this repository.
 
