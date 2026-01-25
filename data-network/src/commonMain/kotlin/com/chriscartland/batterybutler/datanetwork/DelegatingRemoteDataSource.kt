@@ -1,5 +1,6 @@
 package com.chriscartland.batterybutler.datanetwork
 
+import co.touchlab.kermit.Logger
 import com.chriscartland.batterybutler.datanetwork.grpc.DelegatingGrpcClient
 import com.chriscartland.batterybutler.datanetwork.grpc.GrpcClientState
 import com.chriscartland.batterybutler.domain.model.NetworkMode
@@ -66,10 +67,21 @@ class DelegatingRemoteDataSource(
 
     override suspend fun push(update: RemoteUpdate): Boolean {
         val mode = networkModeRepository.networkMode.first()
+        Logger.d("DelegatingRemoteDS") { "push() called with mode=$mode" }
         return when (mode) {
-            NetworkMode.Mock -> mockDataSource.push(update)
-            is NetworkMode.GrpcLocal -> grpcDataSource.push(update)
-            is NetworkMode.GrpcAws -> grpcDataSource.push(update)
+            NetworkMode.Mock -> {
+                Logger.d("DelegatingRemoteDS") { "Pushing to Mock (no-op)" }
+                mockDataSource.push(update)
+            }
+            is NetworkMode.GrpcLocal, is NetworkMode.GrpcAws -> {
+                // Wait for the client to be ready before pushing
+                Logger.d("DelegatingRemoteDS") { "Waiting for gRPC client to be ready..." }
+                delegatingGrpcClient.clientState.first { it is GrpcClientState.Ready }
+                Logger.d("DelegatingRemoteDS") { "gRPC client ready, pushing update..." }
+                val success = grpcDataSource.push(update)
+                Logger.d("DelegatingRemoteDS") { "Push result: success=$success" }
+                success
+            }
         }
     }
 }
