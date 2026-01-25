@@ -11,6 +11,13 @@ This document outlines the shared principles and workflow for all AI agents cont
 2.  **Consistency**: All agents must follow the workflows defined here to ensure predictable and consistent contributions.
 3.  **Validation is Mandatory**: All changes must be validated by running `./scripts/validate.sh` before being committed.
 
+## 🚨 Critical Rules
+
+1.  **NEVER Push Directly to `main`**:
+    *   **Always** create a feature branch (`agent/your-branch-name`).
+    *   **Always** open a Pull Request for changes.
+    *   **Exception**: Only project maintainers may push to `main` for critical reverts or documentation updates if explicitly authorized.
+
 ## Project Technical Rules
 
 - **Configuration**:
