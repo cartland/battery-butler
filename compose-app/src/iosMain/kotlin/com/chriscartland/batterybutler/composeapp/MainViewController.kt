@@ -15,10 +15,9 @@ fun MainViewController() =
         val bundle = platform.Foundation.NSBundle.mainBundle
         val version = bundle.infoDictionary?.get("CFBundleShortVersionString") as? String ?: "Unknown"
         val build = bundle.infoDictionary?.get("CFBundleVersion") as? String ?: "0"
-        val versionCode = build.toLongOrNull() ?: 0L
-        val appVersion = AppVersion(
+        val appVersion = AppVersion.Ios(
             versionName = version,
-            versionCode = versionCode,
+            buildNumber = build,
         )
         val component = IosComponentHelper.create(databaseFactory, appVersion)
         

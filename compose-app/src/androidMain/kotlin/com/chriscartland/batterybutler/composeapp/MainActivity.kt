@@ -27,7 +27,7 @@ class MainActivity : ComponentActivity() {
 
         val networkComponent = NetworkComponent(applicationContext)
 
-        val appVersion = AppVersion(
+        val appVersion = AppVersion.Android(
             versionName = BuildConfig.VERSION_NAME,
             versionCode = BuildConfig.VERSION_CODE.toLong(),
         )

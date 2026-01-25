@@ -41,7 +41,7 @@ fun SettingsScreen(
         onNetworkModeSelected = viewModel::onNetworkModeSelected,
         onExportData = viewModel::onExportData,
         onBack = onBack,
-        appVersion = appVersion ?: AppVersion("Loading...", 0),
+        appVersion = appVersion ?: AppVersion.Desktop("Loading..."),
         modifier = modifier,
     )
 }

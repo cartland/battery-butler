@@ -135,8 +135,13 @@ fun SettingsContent(
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
+                    val versionText = when (appVersion) {
+                        is AppVersion.Android -> "${appVersion.versionName} (${appVersion.versionCode})"
+                        is AppVersion.Ios -> "${appVersion.versionName} (${appVersion.buildNumber})"
+                        is AppVersion.Desktop -> appVersion.versionName
+                    }
                     Text(
-                        text = "${appVersion.versionName}-${appVersion.versionCode}",
+                        text = versionText,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                     )
@@ -156,7 +161,7 @@ fun SettingsContentPreview() {
             onNetworkModeSelected = {},
             onExportData = {},
             onBack = {},
-            appVersion = AppVersion("1.0.0", 1),
+            appVersion = AppVersion.Android("1.0.0", 123),
         )
     }
 }

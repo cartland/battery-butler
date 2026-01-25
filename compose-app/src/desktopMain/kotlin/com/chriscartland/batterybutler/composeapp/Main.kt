@@ -20,9 +20,8 @@ fun main() =
         ) {
             val databaseFactory = DatabaseFactory()
             val networkComponent = NetworkComponent()
-            val appVersion = AppVersion(
+            val appVersion = AppVersion.Desktop(
                 versionName = "1.0.0",
-                versionCode = 1,
             )
             val component =
                 AppComponent::class.create(databaseFactory, NoOpAiEngine, networkComponent, appVersion)
