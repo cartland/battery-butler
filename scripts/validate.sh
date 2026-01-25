@@ -39,23 +39,39 @@ echo "--- 7. Build Server ---"
 if [[ "$OSTYPE" == "darwin"* ]]; then
     echo "--- 8. iOS Checks (macOS detected) ---"
 
+    # Compile iOS Kotlin modules (catches import/dependency errors early)
+    echo "Compiling iOS Kotlin modules..."
+    ./gradlew :compose-app:compileKotlinIosSimulatorArm64 :ios-swift-di:compileKotlinIosSimulatorArm64
+
     # Check for Xcode and xcodebuild
     if command -v xcodebuild >/dev/null 2>&1; then
-        echo "Compiling iOS Swift DI module..."
-        ./gradlew :ios-swift-di:compileKotlinIosSimulatorArm64
-
         echo "Strict Linkage Verification..."
         ./gradlew :compose-app:verifyIosFrameworkLinkage -Pkotlin.native.binary.partialLinkage=disable
 
         echo "Building iOS App (Compose UI)..."
-        xcodebuild -project ios-app-compose-ui/iosAppComposeUI.xcodeproj -configuration Debug -scheme iosAppComposeUI -destination 'generic/platform=iOS Simulator' clean build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO CONFIGURATION_BUILD_DIR=build/ios-compose/
-        
+        xcodebuild -project ios-app-compose-ui/iosAppComposeUI.xcodeproj \
+            -configuration Debug \
+            -scheme iosAppComposeUI \
+            -destination 'generic/platform=iOS Simulator' \
+            clean build \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            CONFIGURATION_BUILD_DIR=build/ios-compose/
+
         echo "Building iOS App (SwiftUI)..."
-        # Using -scheme because the scheme is shared
-        # Disabling code signing to avoid 'requires a development team' error during local validation
-        xcodebuild -project ios-app-swift-ui/iosAppSwiftUI.xcodeproj -configuration Debug -scheme iosAppSwiftUI -destination 'generic/platform=iOS Simulator' clean build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO CONFIGURATION_BUILD_DIR=build/ios-swiftui/
+        xcodebuild -project ios-app-swift-ui/iosAppSwiftUI.xcodeproj \
+            -configuration Debug \
+            -scheme iosAppSwiftUI \
+            -destination 'generic/platform=iOS Simulator' \
+            clean build \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            CONFIGURATION_BUILD_DIR=build/ios-swiftui/
     else
-        echo "Warning: xcodebuild not found. Skipping iOS build checks."
+        echo "Warning: xcodebuild not found. Skipping iOS xcodebuild checks."
+        echo "Note: Kotlin iOS modules were still compiled above."
     fi
 else
     echo "Skipping iOS checks (not on macOS)."
