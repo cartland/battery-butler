@@ -2,11 +2,12 @@
 description: Clean up Bazel generated artifacts and symlinks
 ---
 
+// turbo-all
+
 1. List any tracked bazel files to verify if they were accidentally committed
    `git ls-files "bazel-*"`
 
 2. Remove them from git tracking (but keep on disk)
-   // turbo
    `git rm --cached bazel-*`
 
 3. Verify .bazel/ is in .gitignore

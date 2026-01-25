@@ -30,6 +30,10 @@ Deploy the gRPC server to AWS using Terraform and Jib.
    terraform apply
    ```
 
+   > [!WARNING]
+   > **Production Safety:**
+   > Ensure you are on the `main` branch or a verified release branch before applying changes to production.
+
 5. Build and push container to ECR:
    ```bash
    ./gradlew :server:app:jib

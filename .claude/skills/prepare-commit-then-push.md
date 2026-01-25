@@ -1,6 +1,6 @@
 # Prepare Commit Then Push
 
-Run validation scripts, commit changes, and push to remote.
+Run validation scripts, commit changes, and push to remote (managing Branches and PRs intelligently).
 
 ## Steps
 
@@ -22,16 +22,41 @@ Run validation scripts, commit changes, and push to remote.
 3. Resolve any issues:
    If the script fails (e.g. lint errors, broken tests), fix them and re-run step 2.
 
-4. Commit changes:
+4. Check Branch Status:
+   Check if you are on main or an existing feature branch.
+   ```bash
+   git branch --show-current
+   gh pr view --json url,state || echo "No existing PR"
+   ```
+
+5. Choose Branch Strategy:
+   - **New Feature:** If on `main` (or starting fresh), create a new branch:
+     ```bash
+     git checkout -b feature/your-feature-name
+     ```
+   - **Update Existing PR:** Stay on current branch.
+   - **Stacked PR:** If on a feature branch but want a separate PR, create new branch:
+     ```bash
+     git checkout -b feature/stacked-feature-name
+     ```
+
+6. Commit changes:
    ```bash
    git add .
    git commit -m "Your commit message"
    ```
 
-5. Resolve commit warnings:
-   If git hooks or other checks warn/fail during commit, address them.
-
-6. Push to remote:
+7. Push to remote:
    ```bash
-   git push
+   git push -u origin HEAD
    ```
+
+8. Handle Pull Request:
+   - **New PR:**
+     ```bash
+     gh pr create --web
+     ```
+   - **View Existing:**
+     ```bash
+     gh pr view --web
+     ```
