@@ -28,7 +28,7 @@ kotlin {
         val buildConfigDir = layout.buildDirectory.dir("generated/buildConfig/commonMain")
         val localPropertiesFile = rootProject.file("local.properties")
 
-        inputs.file(localPropertiesFile)
+        inputs.file(localPropertiesFile).optional()
         outputs.dir(buildConfigDir)
 
         doLast {
