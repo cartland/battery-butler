@@ -14,7 +14,8 @@
       "Bash(gh pr:*)",
       "Bash(gh api:*)",
       "Bash(./scripts/validate.sh)",
-      "Bash(./scripts/spotless-apply.sh)"
+      "Bash(./scripts/spotless-apply.sh)",
+      "Edit(**/*)"
     ]
   }
 }
