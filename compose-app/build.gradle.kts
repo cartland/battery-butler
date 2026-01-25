@@ -157,10 +157,10 @@ android {
                 // OR handle absolute paths. rootProject.file() handles both well usually.
                 var keystoreFile = rootProject.file(path)
                 if (!keystoreFile.exists()) {
-                     // Fallback: Check relative to module if root resolution failed (though unlikely for this setup)
-                     // or just trust the logged output.
-                     // But for 'release.keystore' default string, rootProject.file is correct.
-                     // In CI, path is absolute.
+                    // Fallback: Check relative to module if root resolution failed (though unlikely for this setup)
+                    // or just trust the logged output.
+                    // But for 'release.keystore' default string, rootProject.file is correct.
+                    // In CI, path is absolute.
                 }
 
                 if (keystoreFile.exists()) {
@@ -173,7 +173,9 @@ android {
                     keyPassword = findProperty("KEY_PASSWORD") as? String
                         ?: keystoreProps.getProperty("KEY_PASSWORD")
                 } else {
-                    logger.lifecycle("Signing: Release keystore not found at path: ${keystoreFile.absolutePath}. Release builds may invoke installation prompts or fail signing.")
+                    logger.lifecycle(
+                        "Signing: Release keystore not found at path: ${keystoreFile.absolutePath}. Release builds may invoke installation prompts or fail signing.",
+                    )
                 }
             }
         }
