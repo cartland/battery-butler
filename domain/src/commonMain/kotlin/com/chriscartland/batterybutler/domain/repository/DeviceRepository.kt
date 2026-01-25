@@ -3,9 +3,13 @@ package com.chriscartland.batterybutler.domain.repository
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
+import com.chriscartland.batterybutler.domain.model.SyncStatus
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 
 interface DeviceRepository {
+    val syncStatus: StateFlow<SyncStatus>
+
     fun getAllDevices(): Flow<List<Device>>
 
     fun getDeviceById(id: String): Flow<Device?>

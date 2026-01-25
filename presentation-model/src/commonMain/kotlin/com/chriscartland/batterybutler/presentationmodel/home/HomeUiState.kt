@@ -2,6 +2,7 @@ package com.chriscartland.batterybutler.presentationmodel.home
 
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
+import com.chriscartland.batterybutler.domain.model.SyncStatus
 
 data class HomeUiState(
     val groups: Map<String, List<Device>> = emptyMap(),
@@ -13,6 +14,7 @@ data class HomeUiState(
     val sortOption: SortOption = SortOption.NAME,
     val groupOption: GroupOption = GroupOption.NONE,
     val exportData: String? = null,
+    val syncStatus: SyncStatus = SyncStatus.Idle,
 )
 
 enum class SortOption {

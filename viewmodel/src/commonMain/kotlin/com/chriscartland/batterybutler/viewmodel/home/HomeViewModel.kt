@@ -9,6 +9,7 @@ import com.chriscartland.batterybutler.presentationmodel.home.SortOption
 import com.chriscartland.batterybutler.usecase.ExportDataUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.GetDevicesUseCase
+import com.chriscartland.batterybutler.usecase.GetSyncStatusUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -32,9 +33,8 @@ class HomeViewModel(
     private val getDevicesUseCase: GetDevicesUseCase,
     private val getDeviceTypesUseCase: GetDeviceTypesUseCase,
     private val exportDataUseCase: ExportDataUseCase,
+    private val getSyncStatusUseCase: GetSyncStatusUseCase,
 ) : ViewModel() {
-    // init block removed
-
     private val sortOptionFlow = MutableStateFlow(SortOption.NAME)
     private val groupOptionFlow = MutableStateFlow(GroupOption.NONE)
     private val isSortAscendingFlow = MutableStateFlow(true)
@@ -53,7 +53,8 @@ class HomeViewModel(
         },
         getDevicesUseCase(),
         getDeviceTypesUseCase(),
-    ) { config, devices, types ->
+        getSyncStatusUseCase(),
+    ) { config, devices, types, syncStatus ->
         val typeMap = types.associateBy { it.id }
 
         // Sort
@@ -89,6 +90,7 @@ class HomeViewModel(
             isSortAscending = config.isSortAsc,
             isGroupAscending = config.isGroupAsc,
             exportData = config.exportData,
+            syncStatus = syncStatus,
         )
     }.stateIn(
         scope = viewModelScope,
