@@ -193,7 +193,10 @@ android {
             // Use release signing config if available
             val releaseSigningConfig = signingConfigs.findByName("release")
             if (releaseSigningConfig?.storeFile != null) {
+                logger.lifecycle("Signing: Applying release signing config to release build type")
                 signingConfig = releaseSigningConfig
+            } else { // Explicitly log failure/skip
+                logger.lifecycle("Signing: Release signing config has no storeFile. Skipping assignment (will use debug or unsigned).")
             }
         }
     }
