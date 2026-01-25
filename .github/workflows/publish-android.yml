@@ -1,6 +1,12 @@
 name: Publish Android to Play Store
 
 on:
+  workflow_dispatch:
+    inputs:
+      version_code:
+        description: 'Version code (integer)'
+        required: true
+        type: string
   push:
     tags:
       - 'android/[0-9]*'
@@ -19,15 +25,22 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - name: Validate tag format
+      - name: Determine version code
         id: validate
         run: |
-          TAG="${GITHUB_REF#refs/tags/}"
-          VERSION="${TAG#android/}"
+          # Get version from tag or manual input
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.version_code }}"
+            echo "Source: manual workflow dispatch"
+          else
+            TAG="${GITHUB_REF#refs/tags/}"
+            VERSION="${TAG#android/}"
+            echo "Source: tag $TAG"
+          fi
 
           # Check if VERSION is a valid integer
           if ! [[ "$VERSION" =~ ^[0-9]+$ ]]; then
-            echo "::error::Invalid tag format. Expected 'android/N' where N is an integer, got: $TAG"
+            echo "::error::Invalid version code. Expected an integer, got: $VERSION"
             exit 1
           fi
 
@@ -62,13 +75,13 @@ jobs:
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > ${{ github.workspace }}/release.keystore
 
       - name: Build Release Bundle
-        env:
-          VERSION_CODE: ${{ steps.validate.outputs.version_code }}
-          KEYSTORE_PATH: ${{ github.workspace }}/release.keystore
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: ./gradlew :compose-app:bundleRelease --stacktrace
+        run: |
+          ./gradlew :compose-app:bundleRelease --stacktrace \
+            -PVERSION_CODE=${{ steps.validate.outputs.version_code }} \
+            -PKEYSTORE_PATH=${{ github.workspace }}/release.keystore \
+            -PKEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }} \
+            -PKEY_ALIAS=${{ secrets.KEY_ALIAS }} \
+            -PKEY_PASSWORD=${{ secrets.KEY_PASSWORD }}
 
       - name: Upload Bundle Artifact
         uses: actions/upload-artifact@v4
@@ -85,6 +98,7 @@ jobs:
           releaseFiles: compose-app/build/outputs/bundle/release/*.aab
           track: internal
           status: completed
+          whatsNewDirectory: distribution/whatsnew
 
       - name: Cleanup Keystore
         if: always()

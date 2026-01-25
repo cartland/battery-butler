@@ -120,7 +120,9 @@ A Google Play service account JSON key for API access.
 
 ## Publishing a Release
 
-Once secrets are configured, publish by creating a tag:
+Once secrets are configured, publish using one of these methods:
+
+### Option 1: Push a tag (recommended)
 
 ```bash
 # Check current version codes in Play Console first!
@@ -130,10 +132,28 @@ git tag android/123
 git push origin android/123
 ```
 
+### Option 2: Manual dispatch
+
+1. Go to Actions → "Publish Android to Play Store"
+2. Click "Run workflow"
+3. Enter the version code
+4. Click "Run workflow"
+
 The action will:
-1. Build the app with versionCode=123 (versionName is defined in `compose-app/build.gradle.kts`)
+1. Build the app with the specified versionCode (versionName is defined in `compose-app/build.gradle.kts`)
 2. Sign with your release keystore
-3. Upload to internal test track
+3. Upload to internal test track with release notes from `distribution/whatsnew/`
+
+## Release Notes
+
+Edit the release notes before publishing:
+
+```
+distribution/whatsnew/en-US
+```
+
+The file contains plain text that appears in Google Play. You can add additional
+language files (e.g., `es-ES`, `fr-FR`) for localized release notes.
 
 ## Troubleshooting
 

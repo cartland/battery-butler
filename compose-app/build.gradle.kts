@@ -120,7 +120,8 @@ android {
                 .get()
                 .toInt()
         // versionCode is set from tag in CI (android/N -> versionCode = N)
-        versionCode = System.getenv("VERSION_CODE")?.toIntOrNull() ?: 1
+        // Pass via Gradle property: -PVERSION_CODE=123
+        versionCode = (findProperty("VERSION_CODE") as String?)?.toIntOrNull() ?: 1
         versionName = "1.0.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -134,14 +135,15 @@ android {
     }
 
     // Signing configuration for release builds (CI environment)
+    // Pass via Gradle properties: -PKEYSTORE_PATH=... -PKEYSTORE_PASSWORD=... etc.
     signingConfigs {
         create("release") {
-            val keystorePath = System.getenv("KEYSTORE_PATH")
+            val keystorePath = findProperty("KEYSTORE_PATH") as String?
             if (keystorePath != null && file(keystorePath).exists()) {
                 storeFile = file(keystorePath)
-                storePassword = System.getenv("KEYSTORE_PASSWORD")
-                keyAlias = System.getenv("KEY_ALIAS")
-                keyPassword = System.getenv("KEY_PASSWORD")
+                storePassword = findProperty("KEYSTORE_PASSWORD") as String?
+                keyAlias = findProperty("KEY_ALIAS") as String?
+                keyPassword = findProperty("KEY_PASSWORD") as String?
             }
         }
     }
