@@ -131,7 +131,7 @@ git push origin android/123
 ```
 
 The action will:
-1. Build the app with versionCode=123, versionName="1.0.123"
+1. Build the app with versionCode=123 (versionName is defined in `compose-app/build.gradle.kts`)
 2. Sign with your release keystore
 3. Upload to internal test track
 
@@ -178,4 +178,27 @@ The tag format `android/N` maps directly to versionCode, making it easy to track
 - `android/2` → versionCode 2 (second upload)
 - etc.
 
-The maximum allowed versionCode is 2,100,000,000.
+### Safety Limit
+
+The workflow enforces a safety limit of **1,000,000** by default to prevent
+accidentally exhausting version codes. If you exceed this limit, the workflow
+will fail with an error explaining how to increase it.
+
+**To change the safety limit:**
+
+Edit `VERSION_CODE_SAFETY_LIMIT` at the top of `.github/workflows/publish-android.yml`:
+
+```yaml
+env:
+  VERSION_CODE_SAFETY_LIMIT: 1000000  # Change this value
+```
+
+**Warning:** Google Play has a hard limit of 2,100,000,000. Once you reach it,
+you cannot upload new versions of your app. The safety limit exists to catch
+mistakes (like accidentally tagging `android/1000000` instead of `android/10`).
+
+### Version Name
+
+The version name (e.g., "1.0.0") is defined in source code at
+`compose-app/build.gradle.kts` and is independent of the version code. Update
+it there when you want to change the user-visible version string.

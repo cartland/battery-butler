@@ -5,6 +5,12 @@ on:
     tags:
       - 'android/[0-9]*'
 
+# Safety limit to prevent accidentally exhausting version codes.
+# Change this value if you need higher version codes.
+# Google Play hard limit is 2,100,000,000.
+env:
+  VERSION_CODE_SAFETY_LIMIT: 1000000
+
 permissions:
   contents: read
 
@@ -25,15 +31,26 @@ jobs:
             exit 1
           fi
 
-          # Google Play versionCode must be between 1 and 2100000000
-          if [ "$VERSION" -lt 1 ] || [ "$VERSION" -gt 2100000000 ]; then
-            echo "::error::versionCode must be between 1 and 2100000000, got: $VERSION"
+          # Check minimum
+          if [ "$VERSION" -lt 1 ]; then
+            echo "::error::versionCode must be at least 1, got: $VERSION"
+            exit 1
+          fi
+
+          # Check against safety limit (configurable at top of workflow)
+          if [ "$VERSION" -gt "$VERSION_CODE_SAFETY_LIMIT" ]; then
+            echo "::error::versionCode $VERSION exceeds safety limit of $VERSION_CODE_SAFETY_LIMIT."
+            echo "::error::"
+            echo "::error::This limit exists to prevent accidentally exhausting version codes."
+            echo "::error::To increase the limit, edit VERSION_CODE_SAFETY_LIMIT in .github/workflows/publish-android.yml"
+            echo "::error::"
+            echo "::error::WARNING: Google Play has a hard limit of 2,100,000,000. Once you reach it,"
+            echo "::error::you cannot upload new versions of your app."
             exit 1
           fi
 
           echo "version_code=$VERSION" >> $GITHUB_OUTPUT
-          echo "version_name=1.0.$VERSION" >> $GITHUB_OUTPUT
-          echo "Validated: versionCode=$VERSION, versionName=1.0.$VERSION"
+          echo "Validated: versionCode=$VERSION (limit: $VERSION_CODE_SAFETY_LIMIT)"
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -47,7 +64,6 @@ jobs:
       - name: Build Release Bundle
         env:
           VERSION_CODE: ${{ steps.validate.outputs.version_code }}
-          VERSION_NAME: ${{ steps.validate.outputs.version_name }}
           KEYSTORE_PATH: ${{ github.workspace }}/release.keystore
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
