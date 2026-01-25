@@ -1,5 +1,6 @@
-package com.chriscartland.batterybutler.domain.model
+package com.chriscartland.batterybutler.presentationmodel
 
+import com.chriscartland.batterybutler.presentationmodel.DeviceIcons
 import kotlin.test.Test
 import kotlin.test.assertTrue
 

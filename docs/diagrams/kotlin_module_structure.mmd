@@ -43,6 +43,7 @@ graph TD
 
     %% Dependencies
     Ai --> Domain
+    Ai --> PresentationModel
 
     AndroidScreenshotTests --> ComposeResources
     AndroidScreenshotTests --> Domain
@@ -76,6 +77,7 @@ graph TD
 
     PresentationCore --> ComposeResources
     PresentationCore --> Domain
+    PresentationCore --> PresentationModel
 
     PresentationFeature --> Ai
     PresentationFeature --> ComposeResources
@@ -95,7 +97,9 @@ graph TD
     ServerDomain --> Domain
 
     Usecase --> Ai
+    Usecase --> Data
     Usecase --> Domain
+    Usecase --> PresentationModel
 
     Viewmodel --> Ai
     Viewmodel --> PresentationModel

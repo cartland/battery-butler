@@ -1,23 +1,16 @@
 package com.chriscartland.batterybutler.datalocal
 
-
 import com.chriscartland.batterybutler.datalocal.room.DynamicDatabaseProvider
 import com.chriscartland.batterybutler.datalocal.room.entity.toDomain
 import com.chriscartland.batterybutler.datalocal.room.entity.toEntity
-import com.chriscartland.batterybutler.domain.AppLogger
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
-import com.chriscartland.batterybutler.domain.repository.DeviceRepository
-
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
-import kotlin.coroutines.cancellation.CancellationException
 
 @Inject
 class RoomLocalDataSource(
@@ -25,8 +18,6 @@ class RoomLocalDataSource(
 ) : LocalDataSource {
     // Helper to get current DAO for suspend functions
     private val dao get() = databaseProvider.database.value.deviceDao()
-
-
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun getAllDevices(): Flow<List<Device>> =

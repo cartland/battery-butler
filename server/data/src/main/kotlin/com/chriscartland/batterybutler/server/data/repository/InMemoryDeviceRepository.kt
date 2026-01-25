@@ -1,10 +1,10 @@
 package com.chriscartland.batterybutler.server.data.repository
 
-import com.chriscartland.batterybutler.fixtures.DemoData
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
+import com.chriscartland.batterybutler.fixtures.DemoData
 import com.chriscartland.batterybutler.server.domain.repository.ServerDeviceRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

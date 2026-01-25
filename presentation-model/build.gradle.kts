@@ -24,6 +24,9 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
             api(project(":domain"))
         }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+        }
     }
 }
 

@@ -26,9 +26,13 @@ kotlin {
 
 android {
     namespace = "com.chriscartland.batterybutler.fixtures"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
+    compileSdk = libs.versions.android.compileSdk
+        .get()
+        .toInt()
     defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk
+            .get()
+            .toInt()
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21

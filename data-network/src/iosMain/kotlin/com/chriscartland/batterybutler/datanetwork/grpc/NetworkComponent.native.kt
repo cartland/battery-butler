@@ -1,6 +1,5 @@
 package com.chriscartland.batterybutler.datanetwork.grpc
 
-
 import com.squareup.wire.GrpcCall
 import com.squareup.wire.GrpcClient
 import com.squareup.wire.GrpcMethod
@@ -29,10 +28,12 @@ import okio.IOException
 import kotlin.coroutines.cancellation.CancellationException
 
 actual class NetworkComponent {
-    actual fun createGrpcClient(): GrpcClient = IosGrpcClient()
+    actual fun createGrpcClient(url: String): GrpcClient = IosGrpcClient(url)
 }
 
-class IosGrpcClient : GrpcClient() {
+private class IosGrpcClient(
+    private val url: String,
+) : GrpcClient() {
     private val client = HttpClient(Darwin) {
         install(HttpTimeout) {
             requestTimeoutMillis = 30_000
@@ -40,10 +41,10 @@ class IosGrpcClient : GrpcClient() {
         }
     }
 
-    override fun <S : Any, R : Any> newCall(method: GrpcMethod<S, R>): GrpcCall<S, R> = IosGrpcCall(client, method)
+    override fun <S : Any, R : Any> newCall(method: GrpcMethod<S, R>): GrpcCall<S, R> = IosGrpcCall(client, url, method)
 
     override fun <S : Any, R : Any> newStreamingCall(method: GrpcMethod<S, R>): GrpcStreamingCall<S, R> =
-        IosGrpcStreamingCall(client, method)
+        IosGrpcStreamingCall(client, url, method)
 }
 
 private fun frameGrpcMessage(payload: ByteArray): ByteArray {
@@ -56,6 +57,7 @@ private fun frameGrpcMessage(payload: ByteArray): ByteArray {
 
 class IosGrpcCall<S : Any, R : Any>(
     private val client: HttpClient,
+    private val baseUrl: String,
     override val method: GrpcMethod<S, R>,
 ) : GrpcCall<S, R> {
     override var requestMetadata: Map<String, String> = emptyMap()
@@ -64,7 +66,7 @@ class IosGrpcCall<S : Any, R : Any>(
 
     override suspend fun execute(request: S): R {
         val path = method.path
-        val fullUrl = "${SharedServerConfig.PRODUCTION_SERVER_URL}/$path"
+        val fullUrl = "$baseUrl/$path"
 
         val requestBytes = method.requestAdapter.encode(request)
         val framedBytes = frameGrpcMessage(requestBytes)
@@ -116,13 +118,14 @@ class IosGrpcCall<S : Any, R : Any>(
 
     override fun isExecuted(): Boolean = false
 
-    override fun clone(): GrpcCall<S, R> = IosGrpcCall(client, method)
+    override fun clone(): GrpcCall<S, R> = IosGrpcCall(client, baseUrl, method)
 
     override fun cancel() {}
 }
 
 class IosGrpcStreamingCall<S : Any, R : Any>(
     private val client: HttpClient,
+    private val baseUrl: String,
     override val method: GrpcMethod<S, R>,
 ) : GrpcStreamingCall<S, R> {
     override var requestMetadata: Map<String, String> = emptyMap()
@@ -144,7 +147,7 @@ class IosGrpcStreamingCall<S : Any, R : Any>(
                 val request = sendChannel.receive()
 
                 val path = method.path
-                val fullUrl = "${SharedServerConfig.PRODUCTION_SERVER_URL}/$path"
+                val fullUrl = "$baseUrl/$path"
                 val requestBytes = method.requestAdapter.encode(request)
                 val framedBytes = frameGrpcMessage(requestBytes)
 
@@ -215,7 +218,7 @@ class IosGrpcStreamingCall<S : Any, R : Any>(
 
     override fun isExecuted(): Boolean = true
 
-    override fun clone(): GrpcStreamingCall<S, R> = IosGrpcStreamingCall(client, method)
+    override fun clone(): GrpcStreamingCall<S, R> = IosGrpcStreamingCall(client, baseUrl, method)
 
     override fun cancel() {}
 }

@@ -32,6 +32,7 @@ kotlin {
             implementation(libs.kotlinx.datetime)
 
             implementation(project(":domain"))
+            implementation(project(":presentation-model"))
             api(project(":compose-resources"))
         }
 
