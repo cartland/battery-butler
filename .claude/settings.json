@@ -1,0 +1,21 @@
+{
+  "allowedCommands": [
+    "git add*",
+    "git commit *",
+    "git push *",
+    "git pull *",
+    "git fetch *",
+    "git status*",
+    "git branch*",
+    "git checkout*",
+    "git log*",
+    "git diff*",
+    "gh pr *",
+    "gh api *",
+    "./scripts/validate.sh",
+    "./scripts/spotless-apply.sh"
+  ],
+  "allowedEdits": [
+    "**/*"
+  ]
+}
