@@ -35,12 +35,6 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.okhttp)
         }
-        val androidMain by getting {
-            kotlin.srcDir("src/generated/java")
-        }
-        val desktopMain by getting {
-            kotlin.srcDir("src/generated/java")
-        }
         iosMain.dependencies {
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.darwin)
