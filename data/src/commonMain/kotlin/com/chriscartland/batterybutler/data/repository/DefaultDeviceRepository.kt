@@ -6,10 +6,15 @@ import com.chriscartland.batterybutler.datanetwork.RemoteDataSource
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
+import com.chriscartland.batterybutler.domain.model.SyncStatus
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 import kotlin.coroutines.cancellation.CancellationException
@@ -20,6 +25,9 @@ class DefaultDeviceRepository(
     private val remoteDataSource: RemoteDataSource,
     private val scope: CoroutineScope,
 ) : DeviceRepository {
+    private val _syncStatus = MutableStateFlow<SyncStatus>(SyncStatus.Idle)
+    override val syncStatus: StateFlow<SyncStatus> = _syncStatus.asStateFlow()
+
     init {
         scope.launch {
             try {
@@ -104,14 +112,33 @@ class DefaultDeviceRepository(
         events: List<BatteryEvent> = emptyList(),
     ) {
         scope.launch {
-            remoteDataSource.push(
-                RemoteUpdate(
-                    isFullSnapshot = false,
-                    deviceTypes = deviceTypes,
-                    devices = devices,
-                    events = events,
-                ),
-            )
+            _syncStatus.value = SyncStatus.Syncing
+            try {
+                val success = remoteDataSource.push(
+                    RemoteUpdate(
+                        isFullSnapshot = false,
+                        deviceTypes = deviceTypes,
+                        devices = devices,
+                        events = events,
+                    ),
+                )
+                if (success) {
+                    _syncStatus.value = SyncStatus.Success
+                    // Reset to Idle after a short delay
+                    delay(2000)
+                    _syncStatus.value = SyncStatus.Idle
+                } else {
+                    _syncStatus.value = SyncStatus.Failed("Failed to sync with server")
+                }
+            } catch (e: Exception) {
+                if (e is CancellationException) throw e
+                Logger.e("DefaultDeviceRepo") { "Push failed: ${e.message}" }
+                _syncStatus.value = SyncStatus.Failed(e.message ?: "Unknown error")
+            }
         }
+    }
+
+    fun dismissSyncError() {
+        _syncStatus.value = SyncStatus.Idle
     }
 }
