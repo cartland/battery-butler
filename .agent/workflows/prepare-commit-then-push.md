@@ -37,5 +37,6 @@ description: Run validation scripts, commit changes, and push/PR
    `git push -u origin HEAD`
 
 8. Handle Pull Request
-   - **New PR:** `gh pr create --fill`
+   Generate a `gh pr create` command with a title and body summarizing the changes.
+   - **New PR Example:** `gh pr create --title "feat: Add new user flow" --body "Description of changes..."`
    - **View Existing:** `gh pr view`

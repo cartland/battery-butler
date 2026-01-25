@@ -53,9 +53,7 @@ Run validation scripts, commit changes, and push to remote (managing Branches an
 
 8. Handle Pull Request:
    - **New PR:**
-     ```bash
-     gh pr create --fill
-     ```
+     Generate a `gh pr create` command with a title and body summarizing the changes.
    - **View Existing:**
      ```bash
      gh pr view
