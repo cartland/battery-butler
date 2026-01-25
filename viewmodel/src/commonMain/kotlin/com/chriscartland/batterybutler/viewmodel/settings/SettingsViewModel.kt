@@ -6,6 +6,7 @@ import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
 import com.chriscartland.batterybutler.usecase.ExportDataUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -20,10 +21,15 @@ class SettingsViewModel(
     val networkMode: StateFlow<NetworkMode> = networkModeRepository.networkMode
         .stateIn(
             viewModelScope,
-            kotlinx.coroutines.flow.SharingStarted
-                .WhileSubscribed(5000),
-            NetworkMode.MOCK,
+            SharingStarted.WhileSubscribed(5000),
+            NetworkMode.Mock,
         )
+
+    val availableNetworkModes = listOf(
+        NetworkMode.Mock,
+        NetworkMode.GrpcLocal("http://10.0.2.2:50051"), // Hardcoded default for UI list.
+        NetworkMode.GrpcAws("http://battery-butler-nlb-847feaa773351518.elb.us-west-1.amazonaws.com:80"),
+    )
 
     fun onNetworkModeSelected(mode: NetworkMode) {
         viewModelScope.launch {

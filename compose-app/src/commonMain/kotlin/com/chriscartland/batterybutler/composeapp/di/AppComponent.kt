@@ -2,16 +2,16 @@ package com.chriscartland.batterybutler.composeapp.di
 
 import com.chriscartland.batterybutler.ai.AiEngine
 import com.chriscartland.batterybutler.data.di.DataComponent
+import com.chriscartland.batterybutler.data.repository.DefaultDeviceRepository
 import com.chriscartland.batterybutler.data.repository.InMemoryNetworkModeRepository
-import com.chriscartland.batterybutler.datalocal.di.DatabaseFactory
-import com.chriscartland.batterybutler.datalocal.repository.RoomDeviceRepository
 import com.chriscartland.batterybutler.datalocal.room.AppDatabase
-import com.chriscartland.batterybutler.datanetwork.grpc.DelegatingGrpcClient
+import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
 import com.chriscartland.batterybutler.datanetwork.DelegatingRemoteDataSource
+import com.chriscartland.batterybutler.datanetwork.RemoteDataSource
+import com.chriscartland.batterybutler.datanetwork.grpc.DelegatingGrpcClient
 import com.chriscartland.batterybutler.datanetwork.grpc.NetworkComponent
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
-import com.chriscartland.batterybutler.datanetwork.RemoteDataSource
 import com.chriscartland.batterybutler.usecase.SetNetworkModeUseCase
 import com.chriscartland.batterybutler.usecase.di.UseCaseComponent
 import com.chriscartland.batterybutler.viewmodel.addbatteryevent.AddBatteryEventViewModel
@@ -76,7 +76,7 @@ abstract class AppComponent(
 
     @Provides
     @Singleton
-    override fun provideDeviceRepository(repo: RoomDeviceRepository): DeviceRepository = super.provideDeviceRepository(repo)
+    override fun provideDeviceRepository(repo: DefaultDeviceRepository): DeviceRepository = super.provideDeviceRepository(repo)
 
     @Provides
     @Singleton
@@ -100,4 +100,6 @@ abstract class AppComponent(
     @Provides
     @Singleton
     fun provideGrpcClient(impl: DelegatingGrpcClient): GrpcClient = impl
+
+    companion object
 }

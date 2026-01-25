@@ -9,7 +9,7 @@ import me.tatarka.inject.annotations.Inject
 
 @Inject
 class InMemoryNetworkModeRepository : NetworkModeRepository {
-    private val _networkMode = MutableStateFlow(NetworkMode.MOCK)
+    private val _networkMode = MutableStateFlow<NetworkMode>(NetworkMode.Mock)
     override val networkMode: Flow<NetworkMode> = _networkMode.asStateFlow()
 
     override suspend fun setNetworkMode(mode: NetworkMode) {

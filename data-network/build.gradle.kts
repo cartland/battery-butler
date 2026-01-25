@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinMultiplatform)
@@ -21,7 +23,41 @@ kotlin {
         }
     }
 
+    // Generate BuildConfig.kt for commonMain
+    val generateBuildConfig = tasks.register("generateBuildConfig") {
+        val buildConfigDir = layout.buildDirectory.dir("generated/buildConfig/commonMain")
+        val localPropertiesFile = rootProject.file("local.properties")
+
+        inputs.file(localPropertiesFile)
+        outputs.dir(buildConfigDir)
+
+        doLast {
+            val properties = Properties()
+            if (localPropertiesFile.exists()) {
+                properties.load(localPropertiesFile.inputStream())
+            }
+            // Default URL if not present
+            val defaultUrl = "http://battery-butler-nlb-847feaa773351518.elb.us-west-1.amazonaws.com:80"
+            val serverUrl = properties.getProperty("PRODUCTION_SERVER_URL") ?: defaultUrl
+
+            val file = buildConfigDir.get().file("com/chriscartland/batterybutler/datanetwork/BuildConfig.kt").asFile
+            file.parentFile.mkdirs()
+            file.writeText(
+                """
+                package com.chriscartland.batterybutler.datanetwork
+
+                object BuildConfig {
+                    const val PRODUCTION_SERVER_URL = "$serverUrl"
+                }
+                """.trimIndent(),
+            )
+        }
+    }
+
     sourceSets {
+        commonMain.configure {
+            kotlin.srcDir(generateBuildConfig.map { it.outputs.files })
+        }
         commonMain.dependencies {
             implementation(project(":domain"))
             implementation(project(":fixtures"))

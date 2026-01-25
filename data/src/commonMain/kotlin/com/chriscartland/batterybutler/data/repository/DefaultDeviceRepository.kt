@@ -2,12 +2,12 @@ package com.chriscartland.batterybutler.data.repository
 
 import com.chriscartland.batterybutler.datalocal.LocalDataSource
 import com.chriscartland.batterybutler.datanetwork.RemoteDataSource
-import com.chriscartland.batterybutler.datanetwork.RemoteUpdate
 import com.chriscartland.batterybutler.domain.AppLogger
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
+import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -20,13 +20,12 @@ class DefaultDeviceRepository(
     private val remoteDataSource: RemoteDataSource,
     private val scope: CoroutineScope,
 ) : DeviceRepository {
-
     init {
         scope.launch {
             try {
                 remoteDataSource.subscribe().collect { update ->
                     AppLogger.d("BatteryButlerRepo", "DefaultDeviceRepository received update! Size=${update.devices.size}")
-                    
+
                     if (update.isFullSnapshot) {
                         // TODO: Clear local DB? For now, we just insert/update
                     }
@@ -111,7 +110,7 @@ class DefaultDeviceRepository(
                     deviceTypes = deviceTypes,
                     devices = devices,
                     events = events,
-                )
+                ),
             )
         }
     }

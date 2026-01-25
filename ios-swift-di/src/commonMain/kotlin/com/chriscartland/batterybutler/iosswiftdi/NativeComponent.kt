@@ -6,9 +6,9 @@ import com.chriscartland.batterybutler.datalocal.di.DatabaseFactory
 import com.chriscartland.batterybutler.datalocal.repository.RoomDeviceRepository
 import com.chriscartland.batterybutler.datalocal.room.AppDatabase
 import com.chriscartland.batterybutler.datalocal.room.DeviceDao
+import com.chriscartland.batterybutler.datanetwork.RemoteDataSource
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
-import com.chriscartland.batterybutler.datanetwork.RemoteDataSource
 import com.chriscartland.batterybutler.viewmodel.adddevice.AddDeviceViewModel
 import com.chriscartland.batterybutler.viewmodel.adddevicetype.AddDeviceTypeViewModel
 import com.chriscartland.batterybutler.viewmodel.devicedetail.DeviceDetailViewModelFactory

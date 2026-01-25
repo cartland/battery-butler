@@ -1,10 +1,9 @@
 package com.chriscartland.batterybutler.datanetwork.grpc
 
-import com.chriscartland.batterybutler.datanetwork.RemoteUpdate
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
-
+import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
 import com.chriscartland.batterybutler.proto.ProtoBatteryEvent
 import com.chriscartland.batterybutler.proto.ProtoDevice
 import com.chriscartland.batterybutler.proto.ProtoDeviceType

@@ -3,6 +3,7 @@ package com.chriscartland.batterybutler.composeapp.debug
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import com.chriscartland.batterybutler.datanetwork.BuildConfig
 import com.chriscartland.batterybutler.domain.AppLogger
 import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.usecase.SetNetworkModeUseCase
@@ -28,9 +29,9 @@ class DebugNetworkReceiver(
             AppLogger.d(TAG, "Broadcast received. Mode: $modeString")
 
             val mode = when (modeString) {
-                "GRPC_LOCAL" -> NetworkMode.GRPC_LOCAL
-                "GRPC_AWS" -> NetworkMode.GRPC_AWS
-                "MOCK" -> NetworkMode.MOCK
+                "GRPC_LOCAL" -> NetworkMode.GrpcLocal("http://10.0.2.2:50051") // Hardcoded Android Emulator Localhost
+                "GRPC_AWS" -> NetworkMode.GrpcAws(BuildConfig.PRODUCTION_SERVER_URL)
+                "MOCK" -> NetworkMode.Mock
                 else -> null
             }
 

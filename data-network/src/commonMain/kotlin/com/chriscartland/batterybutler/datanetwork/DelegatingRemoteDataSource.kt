@@ -1,64 +1,75 @@
 package com.chriscartland.batterybutler.datanetwork
 
 import com.chriscartland.batterybutler.datanetwork.grpc.DelegatingGrpcClient
-import com.chriscartland.batterybutler.domain.AppLogger
+import com.chriscartland.batterybutler.datanetwork.grpc.GrpcClientState
 import com.chriscartland.batterybutler.domain.model.NetworkMode
+import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
+import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
 import com.squareup.wire.GrpcClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.stateIn
 import me.tatarka.inject.annotations.Inject
 
 @Inject
+@OptIn(ExperimentalCoroutinesApi::class)
 class DelegatingRemoteDataSource(
     private val mockDataSource: MockRemoteDataSource,
     private val grpcDataSource: GrpcSyncDataSource,
     private val delegatingGrpcClient: DelegatingGrpcClient,
-    private val networkMode: Flow<NetworkMode>,
+    private val networkModeRepository: NetworkModeRepository,
     private val scope: CoroutineScope,
 ) : RemoteDataSource {
+    override val state: StateFlow<RemoteDataSourceState> =
+        networkModeRepository.networkMode
+            .flatMapLatest { mode ->
+                when (mode) {
+                    NetworkMode.Mock -> mockDataSource.state
+                    is NetworkMode.GrpcLocal, is NetworkMode.GrpcAws -> {
+                        delegatingGrpcClient.clientState.map { clientState ->
+                            when (clientState) {
+                                GrpcClientState.Uninitialized -> RemoteDataSourceState.NotStarted
+                                GrpcClientState.InvalidConfiguration -> RemoteDataSourceState.InvalidConfiguration
+                                is GrpcClientState.Ready -> RemoteDataSourceState.Subscribed
+                            }
+                        }
+                    }
+                }
+            }.stateIn(scope, kotlinx.coroutines.flow.SharingStarted.Eagerly, RemoteDataSourceState.NotStarted)
+
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun subscribe(): Flow<RemoteUpdate> =
-        networkMode.flatMapLatest { mode ->
+        networkModeRepository.networkMode.flatMapLatest { mode ->
             when (mode) {
-                NetworkMode.MOCK -> mockDataSource.subscribe()
-                NetworkMode.GRPC_LOCAL,
-                NetworkMode.GRPC_AWS,
-                -> {
+                NetworkMode.Mock -> mockDataSource.subscribe()
+                is NetworkMode.GrpcLocal -> {
                     // Wait for the client to be ready
                     delegatingGrpcClient.clientState
-                        .filterNotNull()
+                        .mapNotNull { (it as? GrpcClientState.Ready)?.client }
+                        .flatMapLatest<GrpcClient, RemoteUpdate> { grpcDataSource.subscribe() }
+                }
+                is NetworkMode.GrpcAws -> {
+                    // Wait for the client to be ready
+                    delegatingGrpcClient.clientState
+                        .mapNotNull { (it as? GrpcClientState.Ready)?.client }
                         .flatMapLatest<GrpcClient, RemoteUpdate> { grpcDataSource.subscribe() }
                 }
             }
         }
 
     override suspend fun push(update: RemoteUpdate): Boolean {
-        // We need the current mode.
-        // Since we don't have direct access to value here without collecting,
-        // we can assume the repository holding the mode behaves like a StateFlow,
-        // OR we just collect first.
-        // But better is if networkMode IS a StateFlow or we cache it.
-        // For simplicity, we just collect the latest value.
-
-        // Optimally, we'd use a stateIn property.
-        val currentMode = currentNetworkMode.value
-        return when (currentMode) {
-            NetworkMode.MOCK -> mockDataSource.push(update)
-            NetworkMode.GRPC_LOCAL,
-            NetworkMode.GRPC_AWS,
-            -> grpcDataSource.push(update)
+        val mode = networkModeRepository.networkMode.first()
+        return when (mode) {
+            NetworkMode.Mock -> mockDataSource.push(update)
+            is NetworkMode.GrpcLocal -> grpcDataSource.push(update)
+            is NetworkMode.GrpcAws -> grpcDataSource.push(update)
         }
     }
-
-    private val currentNetworkMode: StateFlow<NetworkMode> = networkMode.stateIn(
-        scope,
-        SharingStarted.Eagerly,
-        NetworkMode.MOCK,
-    )
 }

@@ -13,6 +13,10 @@ This document outlines the shared principles and workflow for all AI agents cont
 
 ## Project Technical Rules
 
+- **Configuration**:
+  - **Always** check `local.properties` for sensitive or environment-specific configuration (e.g., API Keys, Server URLs).
+  - Use `AppConfig` or `BuildConfig` to access these values in code, do NOT hardcode them.
+
 - **Self Improvements**:
   - **Always** update `.agent/` documentation when learning a critical piece of information that will improve future agent performance. This ensures continuous learning and improvement for all agents.
   - **Always** update `.agent/rules.md` when adding new rules or best practices for the project.

@@ -62,6 +62,7 @@ To enable the AI features (Gemini), you need an API Key.
 2.  Add it to your `local.properties` file:
     ```properties
     GEMINI_API_KEY=your_api_key_here
+    PRODUCTION_SERVER_URL=http://your-server-url:port (Optional, defaults to internal AWS NLB)
     ```
 
 ## 🤝 Contributing
