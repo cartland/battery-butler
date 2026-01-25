@@ -39,6 +39,13 @@ This document outlines the shared principles and workflow for all AI agents cont
   - **Always** run `./scripts/spotless-apply.sh` and fix errors before pushing to main.
   - **Avoid** `clean` steps in scripts and CI if possible, relying on Gradle's incremental build and caching for speed.
 
+## Branch Management
+
+**Before starting new work, decide if you need a new branch:**
+- Check if there's an existing PR for the current branch.
+- If new work is unrelated to the current branch/PR, create a new branch from `origin/main`.
+- When uncertain, ask the user or default to creating a new branch.
+
 ## Core Git Workflow
 
 1.  **Sync with `main`**: Before starting new work, fetch the latest `main` branch.
