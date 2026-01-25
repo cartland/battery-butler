@@ -30,7 +30,9 @@ class MainActivity : ComponentActivity() {
         val fileSaver = AndroidFileSaver(this)
 
         setContent {
-            App(component, shareHandler, fileSaver)
+        val appVersion = "${BuildConfig.VERSION_NAME}-${BuildConfig.VERSION_CODE}"
+        setContent {
+            App(component, shareHandler, fileSaver, appVersion)
         }
 
         // DEBUG: Register receiver for ADB control

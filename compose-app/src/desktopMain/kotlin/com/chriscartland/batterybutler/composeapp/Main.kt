@@ -23,6 +23,9 @@ fun main() =
             val shareHandler = DesktopShareHandler()
             val fileSaver = DesktopFileSaver()
 
-            App(component, shareHandler, fileSaver)
+            val fileSaver = DesktopFileSaver()
+            val appVersion = "1.0.0-1 (Desktop)"
+
+            App(component, shareHandler, fileSaver, appVersion)
         }
     }

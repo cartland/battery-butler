@@ -12,5 +12,11 @@ fun MainViewController() =
         val component = IosComponentHelper.create(databaseFactory)
         val shareHandler = IosShareHandler()
         val fileSaver = IosFileSaver()
-        App(component, shareHandler, fileSaver)
+        val shareHandler = IosShareHandler()
+        val fileSaver = IosFileSaver()
+        val bundle = platform.Foundation.NSBundle.mainBundle
+        val version = bundle.infoDictionary?.get("CFBundleShortVersionString") as? String ?: "Unknown"
+        val build = bundle.infoDictionary?.get("CFBundleVersion") as? String ?: "0"
+        val appVersion = "$version-$build"
+        App(component, shareHandler, fileSaver, appVersion)
     }

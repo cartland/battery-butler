@@ -38,6 +38,7 @@ fun SettingsContent(
     onNetworkModeSelected: (NetworkMode) -> Unit,
     onExportData: () -> Unit,
     onBack: () -> Unit,
+    appVersion: String,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -112,6 +113,33 @@ fun SettingsContent(
                     }
                 }
             }
+
+            // App Version Card
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                ),
+                shape = MaterialTheme.shapes.medium,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                ) {
+                    Text(
+                        text = "App version",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Text(
+                        text = appVersion,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                    )
+                }
+            }
         }
     }
 }
@@ -126,6 +154,7 @@ fun SettingsContentPreview() {
             onNetworkModeSelected = {},
             onExportData = {},
             onBack = {},
+            appVersion = "1.0.0-1",
         )
     }
 }

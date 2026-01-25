@@ -16,6 +16,7 @@ import kotlin.time.Clock
 @Composable
 fun SettingsScreen(
     viewModel: SettingsViewModel,
+    appVersion: String,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -38,6 +39,7 @@ fun SettingsScreen(
         onNetworkModeSelected = viewModel::onNetworkModeSelected,
         onExportData = viewModel::onExportData,
         onBack = onBack,
+        appVersion = appVersion,
         modifier = modifier,
     )
 }
