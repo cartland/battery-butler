@@ -20,6 +20,9 @@ This document outlines the shared principles and workflow for all AI agents cont
 - **Git**:
   - **Always** use non-interactive flags for commands that might open an editor (e.g., `git cherry-pick --continue --no-edit`). This prevents the shell from getting stuck waiting for user input.
 
+- **Pull Requests**:
+  - **Always** ensure the Pull Request title and description accurately reflect the final changes. If the scope of a branch evolves, update the PR description before merging.
+
 - **iOS Builds**:
   - **Always** use `-derivedDataPath build/<target_name>` (e.g., `build/ios_compose`) when running multiple `xcodebuild` commands in a single script. This ensures **artifact isolation** between steps, mimicking CI parity, and prevents accidental cross-linking of frameworks.
   - **Always** use `-derivedDataPath build/...` generally to keep artifacts out of system locations.
