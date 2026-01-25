@@ -141,7 +141,10 @@ android {
             val keystoreProps = Properties()
             val keystorePropsFile = rootProject.file("keystore.properties")
             if (keystorePropsFile.exists()) {
+                logger.lifecycle("Signing: Loading properties from ${keystorePropsFile.absolutePath}")
                 keystoreProps.load(keystorePropsFile.inputStream())
+            } else {
+                logger.lifecycle("Signing: No keystore.properties found at ${keystorePropsFile.absolutePath}")
             }
 
             // 2. Resolve values (Priority: Gradle Property (-P) > keystore.properties)
@@ -149,14 +152,29 @@ android {
                 ?: keystoreProps.getProperty("KEYSTORE_PATH")
                 ?: "release.keystore" // Default local path
 
-            if (path != null && file(path).exists()) {
-                storeFile = file(path)
-                storePassword = findProperty("KEYSTORE_PASSWORD") as? String
-                    ?: keystoreProps.getProperty("KEYSTORE_PASSWORD")
-                keyAlias = findProperty("KEY_ALIAS") as? String
-                    ?: keystoreProps.getProperty("KEY_ALIAS")
-                keyPassword = findProperty("KEY_PASSWORD") as? String
-                    ?: keystoreProps.getProperty("KEY_PASSWORD")
+            if (path != null) {
+                // Try to resolve relative to root project first (common case for 'release.keystore')
+                // OR handle absolute paths. rootProject.file() handles both well usually.
+                var keystoreFile = rootProject.file(path)
+                if (!keystoreFile.exists()) {
+                     // Fallback: Check relative to module if root resolution failed (though unlikely for this setup)
+                     // or just trust the logged output.
+                     // But for 'release.keystore' default string, rootProject.file is correct.
+                     // In CI, path is absolute.
+                }
+
+                if (keystoreFile.exists()) {
+                    logger.lifecycle("Signing: Configuring release signing with keystore at ${keystoreFile.absolutePath}")
+                    storeFile = keystoreFile
+                    storePassword = findProperty("KEYSTORE_PASSWORD") as? String
+                        ?: keystoreProps.getProperty("KEYSTORE_PASSWORD")
+                    keyAlias = findProperty("KEY_ALIAS") as? String
+                        ?: keystoreProps.getProperty("KEY_ALIAS")
+                    keyPassword = findProperty("KEY_PASSWORD") as? String
+                        ?: keystoreProps.getProperty("KEY_PASSWORD")
+                } else {
+                    logger.lifecycle("Signing: Release keystore not found at path: ${keystoreFile.absolutePath}. Release builds may invoke installation prompts or fail signing.")
+                }
             }
         }
     }
