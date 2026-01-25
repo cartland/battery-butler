@@ -1,8 +1,8 @@
 package com.chriscartland.batterybutler.data.repository
 
+import co.touchlab.kermit.Logger
 import com.chriscartland.batterybutler.datalocal.LocalDataSource
 import com.chriscartland.batterybutler.datanetwork.RemoteDataSource
-import com.chriscartland.batterybutler.domain.AppLogger
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
@@ -24,7 +24,7 @@ class DefaultDeviceRepository(
         scope.launch {
             try {
                 remoteDataSource.subscribe().collect { update ->
-                    AppLogger.d("BatteryButlerRepo", "DefaultDeviceRepository received update! Size=${update.devices.size}")
+                    Logger.d("BatteryButlerRepo") { "DefaultDeviceRepository received update! Size=${update.devices.size}" }
 
                     if (update.isFullSnapshot) {
                         // TODO: Clear local DB? For now, we just insert/update

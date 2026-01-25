@@ -1,8 +1,8 @@
 package com.chriscartland.batterybutler.datanetwork
 
+import co.touchlab.kermit.Logger
 import com.chriscartland.batterybutler.datanetwork.RemoteDataSource
 import com.chriscartland.batterybutler.datanetwork.grpc.SyncMapper
-import com.chriscartland.batterybutler.domain.AppLogger
 import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
 import com.chriscartland.batterybutler.proto.SyncServiceClient
 import kotlinx.coroutines.flow.Flow
@@ -22,7 +22,7 @@ class GrpcSyncDataSource(
     override fun subscribe(): Flow<RemoteUpdate> =
         channelFlow {
             val tag = "BatteryButlerGrpc"
-            AppLogger.d(tag, "GrpcSyncDataSource starting subscribe...")
+            Logger.d(tag) { "GrpcSyncDataSource starting subscribe..." }
             // executeIn returns (SendChannel, ReceiveChannel)
             try {
                 val (requestChannel, responseChannel) = client.Subscribe().executeIn(this)
@@ -36,12 +36,12 @@ class GrpcSyncDataSource(
                     .collect { response ->
                         // println("$tag: GrpcSyncDataSource received response: $response")
                         val domainUpdate = SyncMapper.toDomain(response)
-                        AppLogger.d(tag, "GrpcSyncDataSource emitting update from server")
+                        Logger.d(tag) { "GrpcSyncDataSource emitting update from server" }
                         send(domainUpdate)
                     }
             } catch (e: Exception) {
                 if (e is CancellationException) throw e
-                AppLogger.d(tag, "GrpcSyncDataSource error: $e")
+                Logger.d(tag) { "GrpcSyncDataSource error: $e" }
                 // throw e // Don't crash the flow, maybe emit error state or retry?
             }
         }

@@ -1,6 +1,6 @@
 package com.chriscartland.batterybutler.server.app
 
-import com.chriscartland.batterybutler.domain.AppLogger
+import co.touchlab.kermit.Logger
 import com.chriscartland.batterybutler.server.app.db.DatabaseFactory
 import com.chriscartland.batterybutler.server.app.repository.PostgresDeviceRepository
 import io.grpc.Server
@@ -32,7 +32,7 @@ fun startGrpcServer(port: Int = 50051): Server {
     val grpcServer = ServerBuilder
         .forPort(port)
         .addService(BatteryService())
-        .addService(SyncService(repository).also { AppLogger.d("BatteryButlerApp", "SyncService Registered") })
+        .addService(SyncService(repository).also { Logger.d("BatteryButlerApp") { "SyncService Registered" } })
         .build()
     grpcServer.start()
     println("gRPC server started on port $port")

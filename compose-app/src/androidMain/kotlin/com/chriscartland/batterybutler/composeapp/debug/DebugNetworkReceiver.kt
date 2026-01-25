@@ -3,8 +3,8 @@ package com.chriscartland.batterybutler.composeapp.debug
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import co.touchlab.kermit.Logger
 import com.chriscartland.batterybutler.datanetwork.BuildConfig
-import com.chriscartland.batterybutler.domain.AppLogger
 import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.usecase.SetNetworkModeUseCase
 import kotlinx.coroutines.CoroutineScope
@@ -26,7 +26,7 @@ class DebugNetworkReceiver(
     ) {
         if (intent?.action == ACTION_SET_NETWORK_MODE) {
             val modeString = intent.getStringExtra(EXTRA_MODE)
-            AppLogger.d(TAG, "Broadcast received. Mode: $modeString")
+            Logger.d(TAG) { "Broadcast received. Mode: $modeString" }
 
             val mode = when (modeString) {
                 "GRPC_LOCAL" -> NetworkMode.GrpcLocal("http://10.0.2.2:50051") // Hardcoded Android Emulator Localhost
@@ -39,10 +39,10 @@ class DebugNetworkReceiver(
                 // Launch on a detached scope since Receiver context is short-lived
                 CoroutineScope(Dispatchers.Default).launch {
                     setNetworkModeUseCase(mode)
-                    AppLogger.d(TAG, "Network mode set to $mode via UseCase")
+                    Logger.d(TAG) { "Network mode set to $mode via UseCase" }
                 }
             } else {
-                AppLogger.d(TAG, "Invalid mode received: $modeString")
+                Logger.d(TAG) { "Invalid mode received: $modeString" }
             }
         }
     }
