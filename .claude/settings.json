@@ -1,22 +1,21 @@
 {
-  "allowedCommands": [
-    "git add *",
-    "git commit *",
-    "git push *",
-    "git pull *",
-    "git fetch *",
-    "git status *",
-    "git branch *",
-    "git checkout *",
-    "git log *",
-    "git diff *",
-    "git add * && git commit *",
-    "gh pr *",
-    "gh api *",
-    "./scripts/validate.sh",
-    "./scripts/spotless-apply.sh"
-  ],
-  "allowedEdits": [
-    "**/*"
-  ]
+  "permissions": {
+    "allow": [
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git pull:*)",
+      "Bash(git fetch:*)",
+      "Bash(git status:*)",
+      "Bash(git branch:*)",
+      "Bash(git checkout:*)",
+      "Bash(git log:*)",
+      "Bash(git diff:*)",
+      "Bash(gh pr:*)",
+      "Bash(gh api:*)",
+      "Bash(./scripts/validate.sh)",
+      "Bash(./scripts/spotless-apply.sh)",
+      "Edit(**/*)"
+    ]
+  }
 }
