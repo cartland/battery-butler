@@ -1,8 +1,8 @@
 package com.chriscartland.batterybutler.datanetwork
 
-import com.chriscartland.batterybutler.domain.demo.DemoData
-import com.chriscartland.batterybutler.domain.repository.RemoteDataSource
-import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
+import com.chriscartland.batterybutler.datanetwork.RemoteDataSource
+import com.chriscartland.batterybutler.datanetwork.RemoteUpdate
+import com.chriscartland.batterybutler.fixtures.DemoData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

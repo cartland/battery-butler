@@ -8,7 +8,7 @@ import com.chriscartland.batterybutler.ai.AiToolNames
 import com.chriscartland.batterybutler.ai.AiToolParams
 import com.chriscartland.batterybutler.ai.BuildConfig
 import com.chriscartland.batterybutler.ai.ToolHandler
-import com.chriscartland.batterybutler.domain.model.DeviceIcons
+import com.chriscartland.batterybutler.presentationmodel.DeviceIcons
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.FunctionResponsePart
 import com.google.ai.client.generativeai.type.Schema

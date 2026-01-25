@@ -6,6 +6,9 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
+import com.chriscartland.batterybutler.datalocal.room.entity.BatteryEventEntity
+import com.chriscartland.batterybutler.datalocal.room.entity.DeviceEntity
+import com.chriscartland.batterybutler.datalocal.room.entity.DeviceTypeEntity
 
 @Dao
 interface DeviceDao {

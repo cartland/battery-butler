@@ -1,8 +1,9 @@
 package com.chriscartland.batterybutler.datanetwork
 
+import com.chriscartland.batterybutler.datanetwork.RemoteDataSource
+import com.chriscartland.batterybutler.datanetwork.RemoteUpdate
+import com.chriscartland.batterybutler.datanetwork.grpc.SyncMapper
 import com.chriscartland.batterybutler.domain.AppLogger
-import com.chriscartland.batterybutler.domain.repository.RemoteDataSource
-import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
 import com.chriscartland.batterybutler.proto.SyncServiceClient
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow

@@ -4,8 +4,8 @@ import com.chriscartland.batterybutler.ai.AiEngine
 import com.chriscartland.batterybutler.ai.AiMessage
 import com.chriscartland.batterybutler.ai.ToolHandler
 import com.chriscartland.batterybutler.datalocal.di.DatabaseFactory
-import com.chriscartland.batterybutler.domain.repository.RemoteDataSource
-import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
+import com.chriscartland.batterybutler.datanetwork.RemoteDataSource
+import com.chriscartland.batterybutler.datanetwork.RemoteUpdate
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 

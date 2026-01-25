@@ -12,6 +12,7 @@ version = "1.0.0"
 dependencies {
     implementation(project(":server:domain"))
     implementation(project(":domain"))
+    implementation(project(":fixtures"))
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.datetime)
     testImplementation(libs.kotlin.test)

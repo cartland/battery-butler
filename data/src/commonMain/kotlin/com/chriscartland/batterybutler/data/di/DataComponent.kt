@@ -1,15 +1,17 @@
 package com.chriscartland.batterybutler.data.di
 
+import com.chriscartland.batterybutler.data.repository.DefaultDeviceRepository
 import com.chriscartland.batterybutler.data.repository.InMemoryNetworkModeRepository
-import com.chriscartland.batterybutler.datalocal.di.DatabaseFactory
-import com.chriscartland.batterybutler.datalocal.repository.RoomDeviceRepository
+import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
 import com.chriscartland.batterybutler.datalocal.room.AppDatabase
 import com.chriscartland.batterybutler.datanetwork.DelegatingRemoteDataSource
-import com.chriscartland.batterybutler.datanetwork.NetworkComponent
+import com.chriscartland.batterybutler.datanetwork.grpc.NetworkComponent
+import com.chriscartland.batterybutler.datanetwork.RemoteDataSource
 import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
-import com.chriscartland.batterybutler.domain.repository.RemoteDataSource
+import com.chriscartland.batterybutler.datalocal.LocalDataSource
+import com.chriscartland.batterybutler.datalocal.RoomLocalDataSource
 import com.chriscartland.batterybutler.proto.GrpcSyncServiceClient
 import com.chriscartland.batterybutler.proto.SyncServiceClient
 import com.squareup.wire.GrpcClient
@@ -33,7 +35,7 @@ interface DataComponent {
     fun provideAppDatabase(): AppDatabase = databaseFactory.createDatabase()
 
     @Provides
-    fun provideDeviceRepository(repo: RoomDeviceRepository): DeviceRepository = repo
+    fun provideDeviceRepository(repo: DefaultDeviceRepository): DeviceRepository = repo
 
     @Provides
     fun provideNetworkModeRepository(repo: InMemoryNetworkModeRepository): NetworkModeRepository = repo
@@ -43,6 +45,9 @@ interface DataComponent {
 
     @Provides
     fun provideRemoteDataSource(dataSource: DelegatingRemoteDataSource): RemoteDataSource = dataSource
+
+    @Provides
+    fun provideLocalDataSource(dataSource: RoomLocalDataSource): LocalDataSource = dataSource
 
     @Provides
     fun provideSyncServiceClient(client: GrpcClient): SyncServiceClient = GrpcSyncServiceClient(client)

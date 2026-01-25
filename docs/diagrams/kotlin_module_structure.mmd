@@ -37,6 +37,10 @@ graph TD
         AndroidScreenshotTests[":android-screenshot-tests"]
     end
 
+    subgraph "Others"
+        Fixtures[":fixtures"]
+    end
+
     %% Dependencies
     Ai --> Domain
 
@@ -61,6 +65,9 @@ graph TD
     DataLocal --> Domain
 
     DataNetwork --> Domain
+    DataNetwork --> Fixtures
+
+    Fixtures --> Domain
 
     IosSwiftDi --> Ai
     IosSwiftDi --> Data
@@ -82,6 +89,7 @@ graph TD
     ServerApp --> ServerDomain
 
     ServerData --> Domain
+    ServerData --> Fixtures
     ServerData --> ServerDomain
 
     ServerDomain --> Domain
