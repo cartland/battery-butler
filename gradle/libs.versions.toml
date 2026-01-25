@@ -41,6 +41,7 @@ grpc-kotlin = "1.4.1"
 wire = "5.0.0"
 screenshot = "0.0.1-alpha12"
 skie = "0.10.9"
+kermit = "2.0.4"
 generativeai = "0.9.0"
 okhttp = "4.12.0"
 serializationJson = "1.8.0"
@@ -113,6 +114,7 @@ exposed-jdbc = { group = "org.jetbrains.exposed", name = "exposed-jdbc", version
 exposed-dao = { group = "org.jetbrains.exposed", name = "exposed-dao", version.ref = "exposed" }
 exposed-java-time = { group = "org.jetbrains.exposed", name = "exposed-java-time", version.ref = "exposed" }
 h2 = { group = "com.h2database", name = "h2", version = "2.2.224" }
+kermit = { group = "co.touchlab", name = "kermit", version.ref = "kermit" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

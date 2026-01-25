@@ -25,6 +25,7 @@ kotlin {
             implementation(libs.kotlin.inject.runtime)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.uuid)
+            api(libs.kermit)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))

@@ -1,6 +1,6 @@
 package com.chriscartland.batterybutler.server.app
 
-import com.chriscartland.batterybutler.domain.AppLogger
+import co.touchlab.kermit.Logger
 import com.chriscartland.batterybutler.proto.PushResponse
 import com.chriscartland.batterybutler.proto.SyncServiceGrpcKt
 import com.chriscartland.batterybutler.proto.SyncUpdate
@@ -14,14 +14,14 @@ class SyncService(
 ) : SyncServiceGrpcKt.SyncServiceCoroutineImplBase() {
     init {
         // Kept for run-e2e-debug-flow.sh verification
-        // AppLogger.d("BatteryButlerDebug", "SyncService Created")
+        // Logger.d("BatteryButlerDebug") { "SyncService Created" }
     }
 
     override fun subscribe(request: Empty): Flow<SyncUpdate> {
-        AppLogger.d("BatteryButlerServer", "SyncService subscribe called")
+        Logger.d("BatteryButlerServer") { "SyncService subscribe called" }
         return repository.getUpdates().map {
             // Only log if needed, reducing noise
-            // AppLogger.d("BatteryButlerDebug", "SyncService mapping update size=${it.devices.size}")
+            // Logger.d("BatteryButlerDebug") { "SyncService mapping update size=${it.devices.size}" }
             ServerSyncMapper.toProto(it)
         }
     }
