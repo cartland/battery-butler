@@ -1,10 +1,12 @@
 package com.chriscartland.batterybutler.iosswiftdi
 
 import com.chriscartland.batterybutler.ai.AiEngine
+import com.chriscartland.batterybutler.data.repository.DefaultDeviceRepository
 import com.chriscartland.batterybutler.data.repository.InMemoryNetworkModeRepository
-import com.chriscartland.batterybutler.datalocal.di.DatabaseFactory
-import com.chriscartland.batterybutler.datalocal.repository.RoomDeviceRepository
+import com.chriscartland.batterybutler.datalocal.LocalDataSource
+import com.chriscartland.batterybutler.datalocal.RoomLocalDataSource
 import com.chriscartland.batterybutler.datalocal.room.AppDatabase
+import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
 import com.chriscartland.batterybutler.datalocal.room.DeviceDao
 import com.chriscartland.batterybutler.datanetwork.RemoteDataSource
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
@@ -54,7 +56,11 @@ abstract class NativeComponent(
 
     @Provides
     @SharedSingleton
-    fun provideDeviceRepository(repo: RoomDeviceRepository): DeviceRepository = repo
+    fun provideLocalDataSource(dataSource: RoomLocalDataSource): LocalDataSource = dataSource
+
+    @Provides
+    @SharedSingleton
+    fun provideDeviceRepository(repo: DefaultDeviceRepository): DeviceRepository = repo
 
     @Provides
     @SharedSingleton
