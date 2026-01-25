@@ -134,16 +134,29 @@ android {
         buildConfigField("String", "GEMINI_API_KEY", "\"$geminiKey\"")
     }
 
-    // Signing configuration for release builds (CI environment)
-    // Pass via Gradle properties: -PKEYSTORE_PATH=... -PKEYSTORE_PASSWORD=... etc.
+    // Signing configuration for release builds (CI environment or Local)
     signingConfigs {
         create("release") {
-            val keystorePath = findProperty("KEYSTORE_PATH") as String?
-            if (keystorePath != null && file(keystorePath).exists()) {
-                storeFile = file(keystorePath)
-                storePassword = findProperty("KEYSTORE_PASSWORD") as String?
-                keyAlias = findProperty("KEY_ALIAS") as String?
-                keyPassword = findProperty("KEY_PASSWORD") as String?
+            // 1. Try to load from keystore.properties (Local)
+            val keystoreProps = Properties()
+            val keystorePropsFile = rootProject.file("keystore.properties")
+            if (keystorePropsFile.exists()) {
+                keystoreProps.load(keystorePropsFile.inputStream())
+            }
+
+            // 2. Resolve values (Priority: Gradle Property (-P) > keystore.properties)
+            val path = findProperty("KEYSTORE_PATH") as? String
+                ?: keystoreProps.getProperty("KEYSTORE_PATH")
+                ?: "release.keystore" // Default local path
+
+            if (path != null && file(path).exists()) {
+                storeFile = file(path)
+                storePassword = findProperty("KEYSTORE_PASSWORD") as? String
+                    ?: keystoreProps.getProperty("KEYSTORE_PASSWORD")
+                keyAlias = findProperty("KEY_ALIAS") as? String
+                    ?: keystoreProps.getProperty("KEY_ALIAS")
+                keyPassword = findProperty("KEY_PASSWORD") as? String
+                    ?: keystoreProps.getProperty("KEY_PASSWORD")
             }
         }
     }
