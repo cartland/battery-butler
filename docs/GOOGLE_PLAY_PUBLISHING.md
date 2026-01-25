@@ -132,12 +132,16 @@ git tag android/123
 git push origin android/123
 ```
 
-### Option 2: Manual dispatch
+### Option 2: Manual retry (for failed runs)
+
+If a tag-triggered run fails transiently, retry it:
 
 1. Go to Actions → "Publish Android to Play Store"
 2. Click "Run workflow"
-3. Enter the version code
+3. In the branch/tag dropdown, select the existing `android/N` tag
 4. Click "Run workflow"
+
+Note: You must select an existing `android/N` tag. Running on a branch will fail.
 
 The action will:
 1. Build the app with the specified versionCode (versionName is defined in `compose-app/build.gradle.kts`)

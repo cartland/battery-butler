@@ -1,12 +1,10 @@
 name: Publish Android to Play Store
 
+# Triggers:
+# 1. Push a tag: git tag android/123 && git push origin android/123
+# 2. Manual retry: Actions → Run workflow → select existing android/N tag
 on:
   workflow_dispatch:
-    inputs:
-      version_code:
-        description: 'Version code (integer)'
-        required: true
-        type: string
   push:
     tags:
       - 'android/[0-9]*'
@@ -25,24 +23,30 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - name: Determine version code
+      - name: Validate tag format
         id: validate
         run: |
-          # Get version from tag or manual input
-          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            VERSION="${{ github.event.inputs.version_code }}"
-            echo "Source: manual workflow dispatch"
-          else
-            TAG="${GITHUB_REF#refs/tags/}"
-            VERSION="${TAG#android/}"
-            echo "Source: tag $TAG"
-          fi
+          REF="${GITHUB_REF}"
+          echo "Ref: $REF"
 
-          # Check if VERSION is a valid integer
-          if ! [[ "$VERSION" =~ ^[0-9]+$ ]]; then
-            echo "::error::Invalid version code. Expected an integer, got: $VERSION"
+          # Must be a tag
+          if [[ ! "$REF" =~ ^refs/tags/ ]]; then
+            echo "::error::This workflow must be run on a tag."
+            echo "::error::"
+            echo "::error::For manual dispatch, select an existing 'android/N' tag from the branch/tag dropdown."
+            echo "::error::Do not run on a branch."
             exit 1
           fi
+
+          TAG="${REF#refs/tags/}"
+
+          # Must match android/N pattern
+          if [[ ! "$TAG" =~ ^android/[0-9]+$ ]]; then
+            echo "::error::Tag must match 'android/N' pattern, got: $TAG"
+            exit 1
+          fi
+
+          VERSION="${TAG#android/}"
 
           # Check minimum
           if [ "$VERSION" -lt 1 ]; then
@@ -63,7 +67,7 @@ jobs:
           fi
 
           echo "version_code=$VERSION" >> $GITHUB_OUTPUT
-          echo "Validated: versionCode=$VERSION (limit: $VERSION_CODE_SAFETY_LIMIT)"
+          echo "Validated: tag=$TAG, versionCode=$VERSION (limit: $VERSION_CODE_SAFETY_LIMIT)"
 
       - name: Checkout
         uses: actions/checkout@v4
