@@ -16,7 +16,7 @@ permissions:
   checks: write
 
 env:
-  PRODUCTION_SERVER_URL: ${{ secrets.PRODUCTION_SERVER_URL }}
+  ORG_GRADLE_PROJECT_PRODUCTION_SERVER_URL: ${{ secrets.PRODUCTION_SERVER_URL }}
 
 jobs:
   validation_spotless:
