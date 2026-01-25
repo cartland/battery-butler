@@ -37,5 +37,5 @@ description: Run validation scripts, commit changes, and push/PR
    `git push -u origin HEAD`
 
 8. Handle Pull Request
-   - **New PR:** `gh pr create --web`
-   - **View Existing:** `gh pr view --web`
+   - **New PR:** `gh pr create --fill`
+   - **View Existing:** `gh pr view`
