@@ -2,6 +2,8 @@
 description: Validate changes locally with CI parity
 ---
 
+// turbo-all
+
 1. Run the validation script defined in the scripts directory
    `./scripts/validate.sh`
 

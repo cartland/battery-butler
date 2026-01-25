@@ -2,6 +2,8 @@
 description: How to add, edit, and use string resources in the Compose Multiplatform project and screenshot tests
 ---
 
+// turbo-all
+
 # String Resources Workflow
 
 This project uses a dedicated `:compose-resources` module to manage string resources for Kotlin Multiplatform. This ensures a clean dependency graph where any module (Features, Core, App, Tests) can access strings without circular dependencies.
