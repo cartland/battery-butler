@@ -1,6 +1,6 @@
 package com.chriscartland.batterybutler.server.data.repository
 
-import com.chriscartland.batterybutler.domain.demo.DemoData
+import com.chriscartland.batterybutler.fixtures.DemoData
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType

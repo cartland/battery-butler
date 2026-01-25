@@ -2,7 +2,7 @@ package com.chriscartland.batterybutler.composeapp
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.chriscartland.batterybutler.datanetwork.NetworkComponent
+import com.chriscartland.batterybutler.datanetwork.grpc.NetworkComponent
 import com.chriscartland.batterybutler.proto.SyncServiceClient
 import com.chriscartland.batterybutler.proto.SyncUpdate
 import kotlinx.coroutines.runBlocking

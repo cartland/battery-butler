@@ -1,8 +1,8 @@
 package com.chriscartland.batterybutler.datanetwork
 
+import com.chriscartland.batterybutler.datanetwork.grpc.DelegatingGrpcClient
+import com.chriscartland.batterybutler.domain.AppLogger
 import com.chriscartland.batterybutler.domain.model.NetworkMode
-import com.chriscartland.batterybutler.domain.repository.RemoteDataSource
-import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
 import com.squareup.wire.GrpcClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi

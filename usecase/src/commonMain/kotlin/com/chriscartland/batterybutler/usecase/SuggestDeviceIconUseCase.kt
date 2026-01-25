@@ -1,7 +1,7 @@
 package com.chriscartland.batterybutler.usecase
 
 import com.chriscartland.batterybutler.ai.AiEngine
-import com.chriscartland.batterybutler.domain.model.DeviceIcons
+import com.chriscartland.batterybutler.presentationmodel.DeviceIcons
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import me.tatarka.inject.annotations.Inject

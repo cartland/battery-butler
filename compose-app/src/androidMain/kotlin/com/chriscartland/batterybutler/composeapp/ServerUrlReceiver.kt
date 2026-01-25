@@ -4,7 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import com.chriscartland.batterybutler.datanetwork.SharedServerConfig
+import com.chriscartland.batterybutler.datanetwork.grpc.SharedServerConfig
 
 class ServerUrlReceiver : BroadcastReceiver() {
     override fun onReceive(

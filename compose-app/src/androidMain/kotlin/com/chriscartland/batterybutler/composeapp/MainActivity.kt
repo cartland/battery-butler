@@ -10,7 +10,7 @@ import com.chriscartland.batterybutler.composeapp.debug.DebugNetworkReceiver
 import com.chriscartland.batterybutler.composeapp.di.AppComponent
 import com.chriscartland.batterybutler.composeapp.di.create
 import com.chriscartland.batterybutler.datalocal.di.DatabaseFactory
-import com.chriscartland.batterybutler.datanetwork.NetworkComponent
+import com.chriscartland.batterybutler.datanetwork.grpc.NetworkComponent
 import com.chriscartland.batterybutler.presentationcore.util.AndroidFileSaver
 import com.chriscartland.batterybutler.presentationcore.util.AndroidShareHandler
 
