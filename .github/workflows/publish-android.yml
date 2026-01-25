@@ -1,0 +1,109 @@
+name: Publish Android to Play Store
+
+# Triggers:
+# 1. Push a tag: git tag android/123 && git push origin android/123
+# 2. Manual retry: Actions → Run workflow → select existing android/N tag
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'android/[0-9]*'
+
+# Safety limit to prevent accidentally exhausting version codes.
+# Change this value if you need higher version codes.
+# Google Play hard limit is 2,100,000,000.
+env:
+  VERSION_CODE_SAFETY_LIMIT: 1000000
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Validate tag format
+        id: validate
+        run: |
+          REF="${GITHUB_REF}"
+          echo "Ref: $REF"
+
+          # Must be a tag
+          if [[ ! "$REF" =~ ^refs/tags/ ]]; then
+            echo "::error::This workflow must be run on a tag."
+            echo "::error::"
+            echo "::error::For manual dispatch, select an existing 'android/N' tag from the branch/tag dropdown."
+            echo "::error::Do not run on a branch."
+            exit 1
+          fi
+
+          TAG="${REF#refs/tags/}"
+
+          # Must match android/N pattern
+          if [[ ! "$TAG" =~ ^android/[0-9]+$ ]]; then
+            echo "::error::Tag must match 'android/N' pattern, got: $TAG"
+            exit 1
+          fi
+
+          VERSION="${TAG#android/}"
+
+          # Check minimum
+          if [ "$VERSION" -lt 1 ]; then
+            echo "::error::versionCode must be at least 1, got: $VERSION"
+            exit 1
+          fi
+
+          # Check against safety limit (configurable at top of workflow)
+          if [ "$VERSION" -gt "$VERSION_CODE_SAFETY_LIMIT" ]; then
+            echo "::error::versionCode $VERSION exceeds safety limit of $VERSION_CODE_SAFETY_LIMIT."
+            echo "::error::"
+            echo "::error::This limit exists to prevent accidentally exhausting version codes."
+            echo "::error::To increase the limit, edit VERSION_CODE_SAFETY_LIMIT in .github/workflows/publish-android.yml"
+            echo "::error::"
+            echo "::error::WARNING: Google Play has a hard limit of 2,100,000,000. Once you reach it,"
+            echo "::error::you cannot upload new versions of your app."
+            exit 1
+          fi
+
+          echo "version_code=$VERSION" >> $GITHUB_OUTPUT
+          echo "Validated: tag=$TAG, versionCode=$VERSION (limit: $VERSION_CODE_SAFETY_LIMIT)"
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-java-gradle
+
+      - name: Decode Keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > ${{ github.workspace }}/release.keystore
+
+      - name: Build Release Bundle
+        run: |
+          ./gradlew :compose-app:bundleRelease --stacktrace \
+            -PVERSION_CODE=${{ steps.validate.outputs.version_code }} \
+            -PKEYSTORE_PATH=${{ github.workspace }}/release.keystore \
+            -PKEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }} \
+            -PKEY_ALIAS=${{ secrets.KEY_ALIAS }} \
+            -PKEY_PASSWORD=${{ secrets.KEY_PASSWORD }}
+
+      - name: Upload Bundle Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-bundle
+          path: compose-app/build/outputs/bundle/release/*.aab
+          retention-days: 30
+
+      - name: Publish to Play Store (Internal Track)
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.chriscartland.batterybutler
+          releaseFiles: compose-app/build/outputs/bundle/release/*.aab
+          track: internal
+          status: completed
+          whatsNewDirectory: distribution/whatsnew
+
+      - name: Cleanup Keystore
+        if: always()
+        run: rm -f ${{ github.workspace }}/release.keystore
