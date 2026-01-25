@@ -15,6 +15,8 @@ import com.chriscartland.batterybutler.datanetwork.grpc.NetworkComponent
 import com.chriscartland.batterybutler.presentationcore.util.AndroidFileSaver
 import com.chriscartland.batterybutler.presentationcore.util.AndroidShareHandler
 
+import com.chriscartland.batterybutler.domain.model.AppVersion
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -25,14 +27,17 @@ class MainActivity : ComponentActivity() {
 
         val networkComponent = NetworkComponent(applicationContext)
 
-        val component = AppComponent::class.create(databaseFactory, aiEngine, networkComponent)
+        val appVersion = AppVersion(
+            versionName = BuildConfig.VERSION_NAME,
+            versionCode = BuildConfig.VERSION_CODE.toLong(),
+        )
+
+        val component = AppComponent::class.create(databaseFactory, aiEngine, networkComponent, appVersion)
         val shareHandler = AndroidShareHandler(this)
         val fileSaver = AndroidFileSaver(this)
 
         setContent {
-        val appVersion = "${BuildConfig.VERSION_NAME}-${BuildConfig.VERSION_CODE}"
-        setContent {
-            App(component, shareHandler, fileSaver, appVersion)
+            App(component, shareHandler, fileSaver)
         }
 
         // DEBUG: Register receiver for ADB control

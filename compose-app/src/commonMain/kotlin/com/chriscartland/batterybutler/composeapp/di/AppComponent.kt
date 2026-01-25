@@ -33,6 +33,11 @@ import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
 import me.tatarka.inject.annotations.Scope
 
+import com.chriscartland.batterybutler.data.repository.StaticAppInfoRepository
+import com.chriscartland.batterybutler.domain.model.AppVersion
+import com.chriscartland.batterybutler.domain.repository.AppInfoRepository
+import com.chriscartland.batterybutler.usecase.GetAppVersionUseCase
+
 @Scope
 annotation class Singleton
 
@@ -43,6 +48,7 @@ abstract class AppComponent(
     override val databaseFactory: DatabaseFactory,
     @get:Provides val aiEngine: AiEngine,
     override val networkComponent: NetworkComponent,
+    @get:Provides val appVersion: AppVersion,
 ) : UseCaseComponent(),
     DataComponent {
     abstract val homeViewModel: HomeViewModel
@@ -59,6 +65,7 @@ abstract class AppComponent(
     abstract val settingsViewModel: SettingsViewModel
     abstract val networkModeRepository: NetworkModeRepository
     abstract val setNetworkModeUseCase: SetNetworkModeUseCase
+    abstract val getAppVersionUseCase: GetAppVersionUseCase
 
     @Provides
     @Singleton
@@ -77,6 +84,10 @@ abstract class AppComponent(
     @Provides
     @Singleton
     override fun provideDeviceRepository(repo: DefaultDeviceRepository): DeviceRepository = super.provideDeviceRepository(repo)
+
+    @Provides
+    @Singleton
+    fun provideAppInfoRepository(repo: StaticAppInfoRepository): AppInfoRepository = repo
 
     @Provides
     @Singleton

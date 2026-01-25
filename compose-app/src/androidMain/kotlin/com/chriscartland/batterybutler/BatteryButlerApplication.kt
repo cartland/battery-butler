@@ -7,6 +7,9 @@ import com.chriscartland.batterybutler.composeapp.di.create
 import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
 import com.chriscartland.batterybutler.datanetwork.grpc.NetworkComponent
 
+import com.chriscartland.batterybutler.composeapp.BuildConfig
+import com.chriscartland.batterybutler.domain.model.AppVersion
+
 class BatteryButlerApplication : Application() {
     lateinit var appComponent: AppComponent
         private set
@@ -16,6 +19,10 @@ class BatteryButlerApplication : Application() {
         val databaseFactory = DatabaseFactory(this)
         val networkComponent = NetworkComponent(this)
         val aiEngine = AndroidAiEngine()
-        appComponent = AppComponent::class.create(databaseFactory, aiEngine, networkComponent)
+        val appVersion = AppVersion(
+            versionName = BuildConfig.VERSION_NAME,
+            versionCode = BuildConfig.VERSION_CODE.toLong(),
+        )
+        appComponent = AppComponent::class.create(databaseFactory, aiEngine, networkComponent, appVersion)
     }
 }

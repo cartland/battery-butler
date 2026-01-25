@@ -42,7 +42,6 @@ fun App(
     component: AppComponent,
     shareHandler: ShareHandler,
     fileSaver: FileSaver,
-    appVersion: String,
 ) {
     BatteryButlerTheme {
         CompositionLocalProvider(
@@ -212,7 +211,6 @@ fun App(
                     entry<Screen.Settings> {
                         SettingsScreen(
                             viewModel = viewModel { component.settingsViewModel },
-                            appVersion = appVersion,
                             onBack = { backStack.removeLastOrNull() },
                         )
                     }

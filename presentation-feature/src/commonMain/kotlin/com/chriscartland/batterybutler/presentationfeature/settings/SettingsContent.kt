@@ -31,6 +31,8 @@ import com.chriscartland.batterybutler.presentationcore.components.ExpandableSel
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import org.jetbrains.compose.resources.stringResource as composeStringResource
 
+import com.chriscartland.batterybutler.domain.model.AppVersion
+
 @Composable
 fun SettingsContent(
     networkMode: NetworkMode,
@@ -38,7 +40,7 @@ fun SettingsContent(
     onNetworkModeSelected: (NetworkMode) -> Unit,
     onExportData: () -> Unit,
     onBack: () -> Unit,
-    appVersion: String,
+    appVersion: AppVersion,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -134,7 +136,7 @@ fun SettingsContent(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Text(
-                        text = appVersion,
+                        text = "${appVersion.versionName}-${appVersion.versionCode}",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                     )
@@ -154,7 +156,7 @@ fun SettingsContentPreview() {
             onNetworkModeSelected = {},
             onExportData = {},
             onBack = {},
-            appVersion = "1.0.0-1",
+            appVersion = AppVersion("1.0.0", 1),
         )
     }
 }

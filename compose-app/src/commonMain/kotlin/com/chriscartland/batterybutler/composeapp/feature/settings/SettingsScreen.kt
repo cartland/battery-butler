@@ -13,14 +13,16 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
 
+import com.chriscartland.batterybutler.domain.model.AppVersion
+
 @Composable
 fun SettingsScreen(
     viewModel: SettingsViewModel,
-    appVersion: String,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val exportData by viewModel.exportData.collectAsState()
+    val appVersion by viewModel.appVersion.collectAsState()
     val fileSaver = LocalFileSaver.current
 
     LaunchedEffect(exportData) {
@@ -39,7 +41,7 @@ fun SettingsScreen(
         onNetworkModeSelected = viewModel::onNetworkModeSelected,
         onExportData = viewModel::onExportData,
         onBack = onBack,
-        appVersion = appVersion,
+        appVersion = appVersion ?: AppVersion("Loading...", 0),
         modifier = modifier,
     )
 }

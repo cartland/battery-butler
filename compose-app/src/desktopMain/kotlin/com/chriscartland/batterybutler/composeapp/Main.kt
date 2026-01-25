@@ -10,6 +10,8 @@ import com.chriscartland.batterybutler.datanetwork.grpc.NetworkComponent
 import com.chriscartland.batterybutler.presentationcore.util.DesktopFileSaver
 import com.chriscartland.batterybutler.presentationcore.util.DesktopShareHandler
 
+import com.chriscartland.batterybutler.domain.model.AppVersion
+
 fun main() =
     application {
         Window(
@@ -18,14 +20,15 @@ fun main() =
         ) {
             val databaseFactory = DatabaseFactory()
             val networkComponent = NetworkComponent()
+            val appVersion = AppVersion(
+                versionName = "1.0.0",
+                versionCode = 1,
+            )
             val component =
-                AppComponent::class.create(databaseFactory, NoOpAiEngine, networkComponent)
+                AppComponent::class.create(databaseFactory, NoOpAiEngine, networkComponent, appVersion)
             val shareHandler = DesktopShareHandler()
             val fileSaver = DesktopFileSaver()
 
-            val fileSaver = DesktopFileSaver()
-            val appVersion = "1.0.0-1 (Desktop)"
-
-            App(component, shareHandler, fileSaver, appVersion)
+            App(component, shareHandler, fileSaver)
         }
     }

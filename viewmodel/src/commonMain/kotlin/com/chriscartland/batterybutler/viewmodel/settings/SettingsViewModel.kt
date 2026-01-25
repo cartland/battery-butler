@@ -2,9 +2,11 @@ package com.chriscartland.batterybutler.viewmodel.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.chriscartland.batterybutler.domain.model.AppVersion
 import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
 import com.chriscartland.batterybutler.usecase.ExportDataUseCase
+import com.chriscartland.batterybutler.usecase.GetAppVersionUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -17,6 +19,7 @@ import me.tatarka.inject.annotations.Inject
 class SettingsViewModel(
     private val exportDataUseCase: ExportDataUseCase,
     private val networkModeRepository: NetworkModeRepository,
+    private val getAppVersionUseCase: GetAppVersionUseCase,
 ) : ViewModel() {
     val networkMode: StateFlow<NetworkMode> = networkModeRepository.networkMode
         .stateIn(
@@ -30,6 +33,13 @@ class SettingsViewModel(
         NetworkMode.GrpcLocal("http://10.0.2.2:50051"), // Hardcoded default for UI list.
         NetworkMode.GrpcAws("http://battery-butler-nlb-847feaa773351518.elb.us-west-1.amazonaws.com:80"),
     )
+
+    private val _appVersion = MutableStateFlow<AppVersion?>(null)
+    val appVersion: StateFlow<AppVersion?> = _appVersion.asStateFlow()
+
+    init {
+        _appVersion.value = getAppVersionUseCase()
+    }
 
     fun onNetworkModeSelected(mode: NetworkMode) {
         viewModelScope.launch {
