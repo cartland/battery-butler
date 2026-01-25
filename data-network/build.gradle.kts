@@ -38,7 +38,8 @@ kotlin {
             }
             // Default URL if not present
             val defaultUrl = "http://battery-butler-nlb-847feaa773351518.elb.us-west-1.amazonaws.com:80"
-            val serverUrl = properties.getProperty("PRODUCTION_SERVER_URL")
+            val serverUrl = (project.findProperty("PRODUCTION_SERVER_URL") as? String)
+                ?: properties.getProperty("PRODUCTION_SERVER_URL")
                 ?: System.getenv("PRODUCTION_SERVER_URL")
                 ?: defaultUrl
 
