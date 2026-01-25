@@ -1,0 +1,75 @@
+name: Publish Android to Play Store
+
+on:
+  push:
+    tags:
+      - 'android/[0-9]*'
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Validate tag format
+        id: validate
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          VERSION="${TAG#android/}"
+
+          # Check if VERSION is a valid integer
+          if ! [[ "$VERSION" =~ ^[0-9]+$ ]]; then
+            echo "::error::Invalid tag format. Expected 'android/N' where N is an integer, got: $TAG"
+            exit 1
+          fi
+
+          # Google Play versionCode must be between 1 and 2100000000
+          if [ "$VERSION" -lt 1 ] || [ "$VERSION" -gt 2100000000 ]; then
+            echo "::error::versionCode must be between 1 and 2100000000, got: $VERSION"
+            exit 1
+          fi
+
+          echo "version_code=$VERSION" >> $GITHUB_OUTPUT
+          echo "version_name=1.0.$VERSION" >> $GITHUB_OUTPUT
+          echo "Validated: versionCode=$VERSION, versionName=1.0.$VERSION"
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-java-gradle
+
+      - name: Decode Keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > ${{ github.workspace }}/release.keystore
+
+      - name: Build Release Bundle
+        env:
+          VERSION_CODE: ${{ steps.validate.outputs.version_code }}
+          VERSION_NAME: ${{ steps.validate.outputs.version_name }}
+          KEYSTORE_PATH: ${{ github.workspace }}/release.keystore
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: ./gradlew :compose-app:bundleRelease --stacktrace
+
+      - name: Upload Bundle Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-bundle
+          path: compose-app/build/outputs/bundle/release/*.aab
+          retention-days: 30
+
+      - name: Publish to Play Store (Internal Track)
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.chriscartland.batterybutler
+          releaseFiles: compose-app/build/outputs/bundle/release/*.aab
+          track: internal
+          status: completed
+
+      - name: Cleanup Keystore
+        if: always()
+        run: rm -f ${{ github.workspace }}/release.keystore
