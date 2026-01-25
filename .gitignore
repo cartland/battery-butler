@@ -71,3 +71,8 @@ ios-app-swift-ui/Generated/Proto/
 
 # Local plans
 *.local.md
+
+# Signing
+*.keystore
+*.jks
+keystore.properties
