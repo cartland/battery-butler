@@ -1,7 +1,13 @@
 package com.chriscartland.batterybutler.domain.model
 
-enum class NetworkMode {
-    MOCK,
-    GRPC_LOCAL,
-    GRPC_AWS,
+sealed interface NetworkMode {
+    data object Mock : NetworkMode
+
+    data class GrpcLocal(
+        val url: String?,
+    ) : NetworkMode
+
+    data class GrpcAws(
+        val url: String?,
+    ) : NetworkMode
 }

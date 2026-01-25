@@ -4,6 +4,9 @@ import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
+import com.chriscartland.batterybutler.datalocal.room.entity.BatteryEventEntity
+import com.chriscartland.batterybutler.datalocal.room.entity.DeviceEntity
+import com.chriscartland.batterybutler.datalocal.room.entity.DeviceTypeEntity
 
 @Database(entities = [DeviceEntity::class, DeviceTypeEntity::class, BatteryEventEntity::class], version = 5)
 @ConstructedBy(AppDatabaseConstructor::class)

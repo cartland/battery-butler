@@ -1,8 +1,8 @@
 package com.chriscartland.batterybutler.composeapp.di
 
 import com.chriscartland.batterybutler.composeapp.feature.ai.NoOpAiEngine
-import com.chriscartland.batterybutler.datalocal.di.DatabaseFactory
-import com.chriscartland.batterybutler.datanetwork.NetworkComponent
+import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
+import com.chriscartland.batterybutler.datanetwork.grpc.NetworkComponent
 
 actual object IosComponentHelper {
     actual fun create(databaseFactory: DatabaseFactory): AppComponent {

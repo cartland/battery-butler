@@ -1,17 +1,20 @@
 package com.chriscartland.batterybutler.datanetwork
 
-import com.chriscartland.batterybutler.domain.demo.DemoData
-import com.chriscartland.batterybutler.domain.repository.RemoteDataSource
+import com.chriscartland.batterybutler.datanetwork.RemoteDataSource
 import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
+import com.chriscartland.batterybutler.fixtures.DemoData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.mapNotNull
 import me.tatarka.inject.annotations.Inject
 
 @Inject
 class MockRemoteDataSource : RemoteDataSource {
-    private val state = MutableStateFlow<RemoteUpdate?>(null)
+    override val state: StateFlow<RemoteDataSourceState> = MutableStateFlow(RemoteDataSourceState.Subscribed)
+
+    private val internalState = MutableStateFlow<RemoteUpdate?>(null)
 
     private val deviceTypes = DemoData.getDefaultDeviceTypes().toMutableList()
     private val originalDevices = DemoData.getDefaultDevices(deviceTypes)
@@ -27,7 +30,7 @@ class MockRemoteDataSource : RemoteDataSource {
     }
 
     private fun emitSnapshot() {
-        state.value = RemoteUpdate(
+        internalState.value = RemoteUpdate(
             isFullSnapshot = true,
             deviceTypes = deviceTypes.toList(),
             devices = devices.toList(),
@@ -35,7 +38,7 @@ class MockRemoteDataSource : RemoteDataSource {
         )
     }
 
-    override fun subscribe(): Flow<RemoteUpdate> = state.asStateFlow().mapNotNull { it }
+    override fun subscribe(): Flow<RemoteUpdate> = internalState.asStateFlow().mapNotNull { it }
 
     override suspend fun push(update: RemoteUpdate): Boolean {
         // Simulate network processing by updating in-memory state

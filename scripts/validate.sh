@@ -38,9 +38,12 @@ echo "--- 7. Build Server ---"
 # iOS checks - Only run on macOS
 if [[ "$OSTYPE" == "darwin"* ]]; then
     echo "--- 8. iOS Checks (macOS detected) ---"
-    
+
     # Check for Xcode and xcodebuild
     if command -v xcodebuild >/dev/null 2>&1; then
+        echo "Compiling iOS Swift DI module..."
+        ./gradlew :ios-swift-di:compileKotlinIosSimulatorArm64
+
         echo "Strict Linkage Verification..."
         ./gradlew :compose-app:verifyIosFrameworkLinkage -Pkotlin.native.binary.partialLinkage=disable
 

@@ -21,9 +21,36 @@ kotlin {
         }
     }
 
+    // Generate BuildConfig.kt for commonMain
+    val generateBuildConfig = tasks.register("generateBuildConfig") {
+        val buildConfigDir = layout.buildDirectory.dir("generated/buildConfig/commonMain")
+
+        outputs.dir(buildConfigDir)
+
+        doLast {
+            val serverUrl = (project.findProperty("PRODUCTION_SERVER_URL") as? String)
+
+            val file = buildConfigDir.get().file("com/chriscartland/batterybutler/datanetwork/BuildConfig.kt").asFile
+            file.parentFile.mkdirs()
+            file.writeText(
+                """
+                package com.chriscartland.batterybutler.datanetwork
+
+                object BuildConfig {
+                    const val PRODUCTION_SERVER_URL = "$serverUrl"
+                }
+                """.trimIndent(),
+            )
+        }
+    }
+
     sourceSets {
+        commonMain.configure {
+            kotlin.srcDir(generateBuildConfig.map { it.outputs.files })
+        }
         commonMain.dependencies {
             implementation(project(":domain"))
+            implementation(project(":fixtures"))
             implementation(libs.kotlin.stdlib)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.datetime)

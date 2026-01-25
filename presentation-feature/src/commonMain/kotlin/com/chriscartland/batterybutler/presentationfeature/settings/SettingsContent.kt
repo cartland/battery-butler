@@ -34,6 +34,7 @@ import org.jetbrains.compose.resources.stringResource as composeStringResource
 @Composable
 fun SettingsContent(
     networkMode: NetworkMode,
+    availableNetworkModes: List<NetworkMode>,
     onNetworkModeSelected: (NetworkMode) -> Unit,
     onExportData: () -> Unit,
     onBack: () -> Unit,
@@ -59,15 +60,15 @@ fun SettingsContent(
             ExpandableSelectionControl(
                 title = "Network Mode",
                 currentSelection = networkMode,
-                options = NetworkMode.entries,
+                options = availableNetworkModes,
                 onOptionSelected = onNetworkModeSelected,
                 optionLabel = { mode ->
                     when (mode) {
-                        NetworkMode.MOCK -> composeStringResource(Res.string.network_mode_mock)
-                        NetworkMode.GRPC_LOCAL -> composeStringResource(
+                        is NetworkMode.Mock -> composeStringResource(Res.string.network_mode_mock)
+                        is NetworkMode.GrpcLocal -> composeStringResource(
                             Res.string.network_mode_grpc_local,
                         )
-                        NetworkMode.GRPC_AWS -> composeStringResource(
+                        is NetworkMode.GrpcAws -> composeStringResource(
                             Res.string.network_mode_grpc_aws,
                         )
                     }
@@ -120,7 +121,8 @@ fun SettingsContent(
 fun SettingsContentPreview() {
     BatteryButlerTheme {
         SettingsContent(
-            networkMode = NetworkMode.MOCK,
+            networkMode = NetworkMode.Mock,
+            availableNetworkModes = listOf(NetworkMode.Mock),
             onNetworkModeSelected = {},
             onExportData = {},
             onBack = {},

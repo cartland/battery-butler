@@ -1,5 +1,6 @@
 package com.chriscartland.batterybutler.datanetwork
 
+import com.chriscartland.batterybutler.datanetwork.grpc.SyncMapper
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType

@@ -64,9 +64,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.chriscartland.batterybutler.domain.model.DeviceIcons
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import com.chriscartland.batterybutler.presentationmodel.DeviceIcons
 
 object DeviceIconMapper {
     val AvailableIcons = DeviceIcons.AvailableIcons
@@ -134,7 +134,7 @@ fun DeviceIconsPreview() {
                 contentPadding = PaddingValues(16.dp),
                 modifier = Modifier.padding(innerPadding).fillMaxSize(),
             ) {
-                items(DeviceIconMapper.AvailableIcons) { iconName ->
+                items(DeviceIconMapper.AvailableIcons) { iconName: String ->
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.padding(8.dp),

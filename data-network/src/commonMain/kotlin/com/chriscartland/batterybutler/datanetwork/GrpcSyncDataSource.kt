@@ -1,10 +1,12 @@
 package com.chriscartland.batterybutler.datanetwork
 
+import com.chriscartland.batterybutler.datanetwork.RemoteDataSource
+import com.chriscartland.batterybutler.datanetwork.grpc.SyncMapper
 import com.chriscartland.batterybutler.domain.AppLogger
-import com.chriscartland.batterybutler.domain.repository.RemoteDataSource
 import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
 import com.chriscartland.batterybutler.proto.SyncServiceClient
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.consumeAsFlow
 import me.tatarka.inject.annotations.Inject
@@ -14,6 +16,9 @@ import kotlin.coroutines.cancellation.CancellationException
 class GrpcSyncDataSource(
     private val client: SyncServiceClient,
 ) : RemoteDataSource {
+    override val state: StateFlow<RemoteDataSourceState> =
+        kotlinx.coroutines.flow.MutableStateFlow(RemoteDataSourceState.Subscribed) // DelegatingDS manages actual state
+
     override fun subscribe(): Flow<RemoteUpdate> =
         channelFlow {
             val tag = "BatteryButlerGrpc"
