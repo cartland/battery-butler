@@ -18,6 +18,16 @@ This document outlines the shared principles and workflow for all AI agents cont
     *   **Always** open a Pull Request for changes.
     *   **Exception**: Only project maintainers may push to `main` for critical reverts or documentation updates if explicitly authorized.
 
+2.  **NEVER Create Tags or Deploy Without Explicit Permission**:
+    *   **NEVER** create git tags (e.g., `android/N`, release tags) without explicit user approval.
+    *   **NEVER** trigger deployment workflows without explicit user approval.
+    *   When the user says "deploy", **ASK** which target (server, Android, etc.) and confirm before taking action.
+    *   Tags trigger production releases and cannot be easily undone.
+
+3.  **ALWAYS Ask Before Destructive or Irreversible Actions**:
+    *   Creating tags, deploying, force-pushing, deleting branches on remote, or any action that affects production requires explicit confirmation.
+    *   When uncertain about scope, ask clarifying questions before proceeding.
+
 ## Project Technical Rules
 
 - **Configuration**:
