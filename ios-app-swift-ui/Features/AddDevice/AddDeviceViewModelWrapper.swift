@@ -4,7 +4,7 @@ import Combine
 
 class AddDeviceViewModelWrapper: ObservableObject {
     @Published var deviceTypes: [DeviceType] = []
-    @Published var aiMessages: [AiMessage] = []
+    @Published var aiMessages: [BatchOperationResult] = []
     
     private let viewModel: AddDeviceViewModel
     private let viewModelStore = KmpViewModelStore()
