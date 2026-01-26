@@ -2,6 +2,10 @@
 
 Deploy the gRPC server to AWS using Terraform and Jib.
 
+> [!CAUTION]
+> **Agent Rule:** NEVER run deployment commands without explicit user permission.
+> Always confirm the deployment target and get user approval before proceeding.
+
 ## Prerequisites
 
 - AWS CLI configured (`aws configure`)

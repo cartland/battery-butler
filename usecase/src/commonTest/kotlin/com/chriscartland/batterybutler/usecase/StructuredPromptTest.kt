@@ -7,8 +7,11 @@ import com.chriscartland.batterybutler.ai.ToolHandler
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
+import com.chriscartland.batterybutler.domain.model.SyncStatus
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
@@ -31,6 +34,8 @@ class StructuredPromptTest {
     }
 
     class MockRepository : DeviceRepository {
+        override val syncStatus: StateFlow<SyncStatus> = MutableStateFlow(SyncStatus.Idle)
+
         override fun getAllDevices() = flowOf(emptyList<Device>())
 
         override fun getDeviceById(id: String) = flowOf(null)
