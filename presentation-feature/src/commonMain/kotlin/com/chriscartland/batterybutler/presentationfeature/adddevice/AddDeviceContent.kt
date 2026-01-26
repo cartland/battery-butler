@@ -332,8 +332,10 @@ fun AddDeviceAiSectionPreview() {
     BatteryButlerTheme {
         AddDeviceAiSection(
             aiMessages = listOf(
-                com.chriscartland.batterybutler.domain.model.BatchOperationResult.Progress("Example prompt"),
-                com.chriscartland.batterybutler.domain.model.BatchOperationResult.Success("Example response"),
+                com.chriscartland.batterybutler.domain.model.BatchOperationResult
+                    .Progress("Example prompt"),
+                com.chriscartland.batterybutler.domain.model.BatchOperationResult
+                    .Success("Example response"),
             ),
             onBatchAdd = {},
         )
