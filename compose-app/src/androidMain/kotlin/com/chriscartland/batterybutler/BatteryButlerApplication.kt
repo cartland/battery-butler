@@ -2,12 +2,11 @@ package com.chriscartland.batterybutler
 
 import android.app.Application
 import com.chriscartland.batterybutler.ai.AndroidAiEngine
+import com.chriscartland.batterybutler.composeapp.BuildConfig
 import com.chriscartland.batterybutler.composeapp.di.AppComponent
 import com.chriscartland.batterybutler.composeapp.di.create
 import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
 import com.chriscartland.batterybutler.datanetwork.grpc.NetworkComponent
-
-import com.chriscartland.batterybutler.composeapp.BuildConfig
 import com.chriscartland.batterybutler.domain.model.AppVersion
 
 class BatteryButlerApplication : Application() {

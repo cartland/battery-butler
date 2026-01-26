@@ -7,10 +7,9 @@ import com.chriscartland.batterybutler.composeapp.di.create
 import com.chriscartland.batterybutler.composeapp.feature.ai.NoOpAiEngine
 import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
 import com.chriscartland.batterybutler.datanetwork.grpc.NetworkComponent
+import com.chriscartland.batterybutler.domain.model.AppVersion
 import com.chriscartland.batterybutler.presentationcore.util.DesktopFileSaver
 import com.chriscartland.batterybutler.presentationcore.util.DesktopShareHandler
-
-import com.chriscartland.batterybutler.domain.model.AppVersion
 
 fun main() =
     application {

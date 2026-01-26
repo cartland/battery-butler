@@ -12,10 +12,9 @@ import com.chriscartland.batterybutler.composeapp.di.AppComponent
 import com.chriscartland.batterybutler.composeapp.di.create
 import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
 import com.chriscartland.batterybutler.datanetwork.grpc.NetworkComponent
+import com.chriscartland.batterybutler.domain.model.AppVersion
 import com.chriscartland.batterybutler.presentationcore.util.AndroidFileSaver
 import com.chriscartland.batterybutler.presentationcore.util.AndroidShareHandler
-
-import com.chriscartland.batterybutler.domain.model.AppVersion
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

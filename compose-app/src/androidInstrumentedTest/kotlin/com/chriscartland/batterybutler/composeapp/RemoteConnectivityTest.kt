@@ -14,6 +14,7 @@ class RemoteConnectivityTest {
     companion object {
         const val PRODUCTION_SERVER_URL = "http://battery-butler-nlb-847feaa773351518.elb.us-west-1.amazonaws.com:80"
     }
+
     @Test
     fun testProductionServerConnectivity() =
         runBlocking {

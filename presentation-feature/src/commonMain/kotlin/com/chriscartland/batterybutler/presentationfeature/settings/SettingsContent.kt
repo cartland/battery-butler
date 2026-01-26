@@ -25,13 +25,12 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.Res
 import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_grpc_aws
 import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_grpc_local
 import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_mock
+import com.chriscartland.batterybutler.domain.model.AppVersion
 import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.presentationcore.components.ExpandableSelectionControl
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import org.jetbrains.compose.resources.stringResource as composeStringResource
-
-import com.chriscartland.batterybutler.domain.model.AppVersion
 
 @Composable
 fun SettingsContent(

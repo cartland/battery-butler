@@ -5,6 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import com.chriscartland.batterybutler.domain.model.AppVersion
 import com.chriscartland.batterybutler.presentationcore.util.LocalFileSaver
 import com.chriscartland.batterybutler.presentationcore.util.generateFileTimestamp
 import com.chriscartland.batterybutler.presentationfeature.settings.SettingsContent
@@ -12,8 +13,6 @@ import com.chriscartland.batterybutler.viewmodel.settings.SettingsViewModel
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
-
-import com.chriscartland.batterybutler.domain.model.AppVersion
 
 @Composable
 fun SettingsScreen(

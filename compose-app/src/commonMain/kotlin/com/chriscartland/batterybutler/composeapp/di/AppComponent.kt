@@ -4,14 +4,18 @@ import com.chriscartland.batterybutler.ai.AiEngine
 import com.chriscartland.batterybutler.data.di.DataComponent
 import com.chriscartland.batterybutler.data.repository.DefaultDeviceRepository
 import com.chriscartland.batterybutler.data.repository.InMemoryNetworkModeRepository
+import com.chriscartland.batterybutler.data.repository.StaticAppInfoRepository
 import com.chriscartland.batterybutler.datalocal.room.AppDatabase
 import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
 import com.chriscartland.batterybutler.datanetwork.DelegatingRemoteDataSource
 import com.chriscartland.batterybutler.datanetwork.RemoteDataSource
 import com.chriscartland.batterybutler.datanetwork.grpc.DelegatingGrpcClient
 import com.chriscartland.batterybutler.datanetwork.grpc.NetworkComponent
+import com.chriscartland.batterybutler.domain.model.AppVersion
+import com.chriscartland.batterybutler.domain.repository.AppInfoRepository
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
+import com.chriscartland.batterybutler.usecase.GetAppVersionUseCase
 import com.chriscartland.batterybutler.usecase.SetNetworkModeUseCase
 import com.chriscartland.batterybutler.usecase.di.UseCaseComponent
 import com.chriscartland.batterybutler.viewmodel.addbatteryevent.AddBatteryEventViewModel
@@ -32,11 +36,6 @@ import kotlinx.coroutines.SupervisorJob
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
 import me.tatarka.inject.annotations.Scope
-
-import com.chriscartland.batterybutler.data.repository.StaticAppInfoRepository
-import com.chriscartland.batterybutler.domain.model.AppVersion
-import com.chriscartland.batterybutler.domain.repository.AppInfoRepository
-import com.chriscartland.batterybutler.usecase.GetAppVersionUseCase
 
 @Scope
 annotation class Singleton
