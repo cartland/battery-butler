@@ -39,7 +39,7 @@ fun HistoryListItem(
 ) {
     val date = event.date.toLocalDateTime(TimeZone.currentSystemDefault())
     val month = date.month.name.take(3)
-    val day = date.dayOfMonth.toString().padStart(2, '0')
+    val day = date.day.toString().padStart(2, '0')
 
     Row(
         modifier = modifier
