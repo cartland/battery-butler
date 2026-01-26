@@ -21,7 +21,7 @@ class BatteryButlerApplication : Application() {
         val aiEngine = AndroidAiEngine()
         val appVersion = AppVersion.Android(
             versionName = BuildConfig.VERSION_NAME,
-            versionCode = BuildConfig.VERSION_CODE.toLong(),
+            versionCode = BuildConfig.VERSION_CODE,
         )
         appComponent = AppComponent::class.create(databaseFactory, aiEngine, networkComponent, appVersion)
     }

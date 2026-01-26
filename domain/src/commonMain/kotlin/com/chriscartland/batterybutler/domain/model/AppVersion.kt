@@ -5,7 +5,7 @@ sealed interface AppVersion {
 
     data class Android(
         override val versionName: String,
-        val versionCode: Long,
+        val versionCode: Int,
     ) : AppVersion
 
     data class Ios(

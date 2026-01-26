@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
 
         val appVersion = AppVersion.Android(
             versionName = BuildConfig.VERSION_NAME,
-            versionCode = BuildConfig.VERSION_CODE.toLong(),
+            versionCode = BuildConfig.VERSION_CODE,
         )
 
         val component = AppComponent::class.create(databaseFactory, aiEngine, networkComponent, appVersion)
