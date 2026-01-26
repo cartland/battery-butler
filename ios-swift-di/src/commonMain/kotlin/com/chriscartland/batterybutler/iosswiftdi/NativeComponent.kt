@@ -71,9 +71,13 @@ abstract class NativeComponent(
     fun provideAppScope(): CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     @Provides
-    fun provideAppVersion(): com.chriscartland.batterybutler.domain.model.AppVersion = com.chriscartland.batterybutler.domain.model.AppVersion.Ios("iOS Native")
+    fun provideAppVersion(): com.chriscartland.batterybutler.domain.model.AppVersion =
+        com.chriscartland.batterybutler.domain.model.AppVersion
+            .Ios("iOS Native")
 
     @Provides
     @SharedSingleton
-    fun provideAppInfoRepository(impl: com.chriscartland.batterybutler.data.repository.StaticAppInfoRepository): com.chriscartland.batterybutler.domain.repository.AppInfoRepository = impl
+    fun provideAppInfoRepository(
+        impl: com.chriscartland.batterybutler.data.repository.StaticAppInfoRepository,
+    ): com.chriscartland.batterybutler.domain.repository.AppInfoRepository = impl
 }
