@@ -34,8 +34,8 @@ class SettingsViewModel(
         NetworkMode.GrpcAws("http://battery-butler-nlb-847feaa773351518.elb.us-west-1.amazonaws.com:80"),
     )
 
-    private val _appVersion = MutableStateFlow<AppVersion?>(null)
-    val appVersion: StateFlow<AppVersion?> = _appVersion.asStateFlow()
+    private val _appVersion = MutableStateFlow<AppVersion>(AppVersion.Unavailable)
+    val appVersion: StateFlow<AppVersion> = _appVersion.asStateFlow()
 
     init {
         _appVersion.value = getAppVersionUseCase()
