@@ -4,14 +4,18 @@ import com.chriscartland.batterybutler.ai.AiEngine
 import com.chriscartland.batterybutler.data.di.DataComponent
 import com.chriscartland.batterybutler.data.repository.DefaultDeviceRepository
 import com.chriscartland.batterybutler.data.repository.InMemoryNetworkModeRepository
+import com.chriscartland.batterybutler.data.repository.StaticAppInfoRepository
 import com.chriscartland.batterybutler.datalocal.room.AppDatabase
 import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
 import com.chriscartland.batterybutler.datanetwork.DelegatingRemoteDataSource
 import com.chriscartland.batterybutler.datanetwork.RemoteDataSource
 import com.chriscartland.batterybutler.datanetwork.grpc.DelegatingGrpcClient
 import com.chriscartland.batterybutler.datanetwork.grpc.NetworkComponent
+import com.chriscartland.batterybutler.domain.model.AppVersion
+import com.chriscartland.batterybutler.domain.repository.AppInfoRepository
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
+import com.chriscartland.batterybutler.usecase.GetAppVersionUseCase
 import com.chriscartland.batterybutler.usecase.SetNetworkModeUseCase
 import com.chriscartland.batterybutler.usecase.di.UseCaseComponent
 import com.chriscartland.batterybutler.viewmodel.addbatteryevent.AddBatteryEventViewModel
@@ -43,6 +47,7 @@ abstract class AppComponent(
     override val databaseFactory: DatabaseFactory,
     @get:Provides val aiEngine: AiEngine,
     override val networkComponent: NetworkComponent,
+    @get:Provides val appVersion: AppVersion,
 ) : UseCaseComponent(),
     DataComponent {
     abstract val homeViewModel: HomeViewModel
@@ -59,6 +64,7 @@ abstract class AppComponent(
     abstract val settingsViewModel: SettingsViewModel
     abstract val networkModeRepository: NetworkModeRepository
     abstract val setNetworkModeUseCase: SetNetworkModeUseCase
+    abstract val getAppVersionUseCase: GetAppVersionUseCase
 
     @Provides
     @Singleton
@@ -77,6 +83,10 @@ abstract class AppComponent(
     @Provides
     @Singleton
     override fun provideDeviceRepository(repo: DefaultDeviceRepository): DeviceRepository = super.provideDeviceRepository(repo)
+
+    @Provides
+    @Singleton
+    fun provideAppInfoRepository(repo: StaticAppInfoRepository): AppInfoRepository = repo
 
     @Provides
     @Singleton

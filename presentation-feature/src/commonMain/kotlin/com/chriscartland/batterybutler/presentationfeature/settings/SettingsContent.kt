@@ -25,6 +25,7 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.Res
 import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_grpc_aws
 import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_grpc_local
 import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_mock
+import com.chriscartland.batterybutler.domain.model.AppVersion
 import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.presentationcore.components.ExpandableSelectionControl
@@ -38,6 +39,7 @@ fun SettingsContent(
     onNetworkModeSelected: (NetworkMode) -> Unit,
     onExportData: () -> Unit,
     onBack: () -> Unit,
+    appVersion: AppVersion,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -112,6 +114,39 @@ fun SettingsContent(
                     }
                 }
             }
+
+            // App Version Card
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                ),
+                shape = MaterialTheme.shapes.medium,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                ) {
+                    Text(
+                        text = "App version",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    val versionText = when (appVersion) {
+                        is AppVersion.Android -> "${appVersion.versionName} (${appVersion.versionCode})"
+                        is AppVersion.Ios -> "${appVersion.versionName} (${appVersion.buildNumber})"
+                        is AppVersion.Desktop -> appVersion.versionName
+                        is AppVersion.Unavailable -> "Unavailable"
+                    }
+                    Text(
+                        text = versionText,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                    )
+                }
+            }
         }
     }
 }
@@ -126,6 +161,7 @@ fun SettingsContentPreview() {
             onNetworkModeSelected = {},
             onExportData = {},
             onBack = {},
+            appVersion = AppVersion.Android("1.0.0", 123),
         )
     }
 }

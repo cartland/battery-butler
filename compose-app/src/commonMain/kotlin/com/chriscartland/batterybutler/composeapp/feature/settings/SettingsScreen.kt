@@ -5,6 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import com.chriscartland.batterybutler.domain.model.AppVersion
 import com.chriscartland.batterybutler.presentationcore.util.LocalFileSaver
 import com.chriscartland.batterybutler.presentationcore.util.generateFileTimestamp
 import com.chriscartland.batterybutler.presentationfeature.settings.SettingsContent
@@ -20,6 +21,7 @@ fun SettingsScreen(
     modifier: Modifier = Modifier,
 ) {
     val exportData by viewModel.exportData.collectAsState()
+    val appVersion by viewModel.appVersion.collectAsState()
     val fileSaver = LocalFileSaver.current
 
     LaunchedEffect(exportData) {
@@ -38,6 +40,7 @@ fun SettingsScreen(
         onNetworkModeSelected = viewModel::onNetworkModeSelected,
         onExportData = viewModel::onExportData,
         onBack = onBack,
+        appVersion = appVersion ?: AppVersion.Desktop("Loading..."),
         modifier = modifier,
     )
 }

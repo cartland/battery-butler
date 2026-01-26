@@ -19,7 +19,7 @@ class ServerIntegrationTest {
             // Context of the app under test.
             val appContext = InstrumentationRegistry.getInstrumentation().targetContext
             val networkComponent = NetworkComponent(appContext)
-            val client = networkComponent.createGrpcClient().create(SyncServiceClient::class)
+            val client = networkComponent.createGrpcClient("http://10.0.2.2:50051").create(SyncServiceClient::class)
 
             // 1. Push an update
             val update = SyncUpdate(

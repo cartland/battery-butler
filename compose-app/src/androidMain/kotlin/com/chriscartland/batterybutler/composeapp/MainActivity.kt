@@ -12,6 +12,7 @@ import com.chriscartland.batterybutler.composeapp.di.AppComponent
 import com.chriscartland.batterybutler.composeapp.di.create
 import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
 import com.chriscartland.batterybutler.datanetwork.grpc.NetworkComponent
+import com.chriscartland.batterybutler.domain.model.AppVersion
 import com.chriscartland.batterybutler.presentationcore.util.AndroidFileSaver
 import com.chriscartland.batterybutler.presentationcore.util.AndroidShareHandler
 
@@ -25,7 +26,12 @@ class MainActivity : ComponentActivity() {
 
         val networkComponent = NetworkComponent(applicationContext)
 
-        val component = AppComponent::class.create(databaseFactory, aiEngine, networkComponent)
+        val appVersion = AppVersion.Android(
+            versionName = BuildConfig.VERSION_NAME,
+            versionCode = BuildConfig.VERSION_CODE,
+        )
+
+        val component = AppComponent::class.create(databaseFactory, aiEngine, networkComponent, appVersion)
         val shareHandler = AndroidShareHandler(this)
         val fileSaver = AndroidFileSaver(this)
 
