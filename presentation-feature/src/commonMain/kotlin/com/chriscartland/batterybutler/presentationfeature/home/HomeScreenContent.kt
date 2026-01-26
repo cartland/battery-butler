@@ -164,7 +164,7 @@ fun HomeScreenFilterRow(
                     expanded = sortExpanded,
                     onDismissRequest = { sortExpanded = false },
                 ) {
-                    SortOption.values().forEach { option ->
+                    SortOption.entries.forEach { option ->
                         DropdownMenuItem(
                             text = { Text(composeStringResource(option.labelRes())) },
                             onClick = {
@@ -189,7 +189,7 @@ fun HomeScreenFilterRow(
                     expanded = groupExpanded,
                     onDismissRequest = { groupExpanded = false },
                 ) {
-                    GroupOption.values().forEach { option ->
+                    GroupOption.entries.forEach { option ->
                         DropdownMenuItem(
                             text = { Text(composeStringResource(option.labelRes())) },
                             onClick = {
