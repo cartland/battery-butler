@@ -1,12 +1,10 @@
 package architecture
 
 import org.gradle.api.DefaultTask
-import org.gradle.api.tasks.TaskAction
 import org.gradle.api.GradleException
-import java.io.File
+import org.gradle.api.tasks.TaskAction
 
 open class ArchitectureCheckTask : DefaultTask() {
-
     // Define the Allowed Dependencies Graph
     // Key: The module name (e.g., ":usecase")
     // Value: List of allowed dependency prefixes or exact matches
@@ -16,7 +14,8 @@ open class ArchitectureCheckTask : DefaultTask() {
         ":data-local" to listOf(":domain"),
         ":data-network" to listOf(":domain", ":fixtures"),
         ":data" to listOf(":domain", ":data-local", ":data-network"),
-        ":usecase" to listOf(":domain", ":ai", ":presentation-model"), // AI is allowed for now until Phase 1 fully completes? No, Phase 1 removed it from ViewModel, but UseCase uses AI.
+        // AI is allowed for usecase (business logic layer)
+        ":usecase" to listOf(":domain", ":ai", ":presentation-model"),
         ":presentation-model" to listOf(":domain"),
         ":viewmodel" to listOf(":usecase", ":domain", ":presentation-model"),
         ":presentation-core" to listOf(":domain", ":presentation-model", ":compose-resources"),
@@ -29,7 +28,7 @@ open class ArchitectureCheckTask : DefaultTask() {
         ":server:data" to listOf(":server:domain", ":domain", ":fixtures"),
         ":server:app" to listOf(":server:domain", ":server:data", ":domain"),
         ":git" to listOf(),
-        ":scripts" to listOf()
+        ":scripts" to listOf(),
     )
 
     @TaskAction
@@ -61,14 +60,17 @@ open class ArchitectureCheckTask : DefaultTask() {
                     if (dep is org.gradle.api.artifacts.ProjectDependency) {
                         val depPath = dep.dependencyProject.path
                         if (depPath != moduleName) { // self-dependency is separate issue, usually ignored
-                             val isAllowed = allowed?.any { rule ->
-                                 if (rule == "*") true
-                                 else depPath == rule || (rule.endsWith("*") && depPath.startsWith(rule.trimEnd('*')))
-                             } ?: false
+                            val isAllowed = allowed?.any { rule ->
+                                if (rule == "*") {
+                                    true
+                                } else {
+                                    depPath == rule || (rule.endsWith("*") && depPath.startsWith(rule.trimEnd('*')))
+                                }
+                            } ?: false
 
-                             if (!isAllowed) {
-                                 violations.add("Module '$moduleName' depends on forbidden module '$depPath'. Allowed: $allowed")
-                             }
+                            if (!isAllowed) {
+                                violations.add("Module '$moduleName' depends on forbidden module '$depPath'. Allowed: $allowed")
+                            }
                         }
                     }
                 }

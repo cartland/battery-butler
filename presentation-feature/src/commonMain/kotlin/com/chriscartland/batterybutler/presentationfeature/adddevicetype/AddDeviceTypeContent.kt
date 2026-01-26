@@ -319,8 +319,10 @@ fun AddDeviceTypeContentPreview() {
     BatteryButlerTheme {
         AddDeviceTypeContent(
             aiMessages = listOf(
-                com.chriscartland.batterybutler.domain.model.BatchOperationResult.Progress("Processing..."),
-                com.chriscartland.batterybutler.domain.model.BatchOperationResult.Success("Confirmed."),
+                com.chriscartland.batterybutler.domain.model.BatchOperationResult
+                    .Progress("Processing..."),
+                com.chriscartland.batterybutler.domain.model.BatchOperationResult
+                    .Success("Confirmed."),
             ),
             suggestedIcon = "detector_smoke",
             onDeviceTypeAdded = {},
