@@ -35,7 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.chriscartland.batterybutler.ai.AiMessage
+import com.chriscartland.batterybutler.domain.model.BatchOperationResult
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
@@ -50,7 +50,7 @@ import kotlin.time.Instant
 @Composable
 fun AddBatteryEventContent(
     devices: List<Device>,
-    aiMessages: List<AiMessage>,
+    aiMessages: List<BatchOperationResult>,
     onAddEvent: (String, Instant) -> Unit, // deviceId, date
     onBatchAdd: (String) -> Unit,
     onAddDeviceClick: () -> Unit,
@@ -116,9 +116,20 @@ fun AddBatteryEventContent(
                         .padding(8.dp),
                 ) {
                     items(aiMessages) { msg ->
+                        val text = when (msg) {
+                            is BatchOperationResult.Progress -> "🤖 ${msg.message}"
+                            is BatchOperationResult.Success -> "✅ ${msg.message}"
+                            is BatchOperationResult.Error -> "❌ ${msg.message}"
+                        }
+                        val color = when (msg) {
+                            is BatchOperationResult.Error -> MaterialTheme.colorScheme.error
+                            is BatchOperationResult.Success -> MaterialTheme.colorScheme.primary
+                            else -> MaterialTheme.colorScheme.onSurface
+                        }
                         Text(
-                            text = "${msg.role}: ${msg.text}",
+                            text = text,
                             style = MaterialTheme.typography.bodySmall,
+                            color = color,
                             modifier = Modifier.padding(vertical = 4.dp),
                         )
                     }

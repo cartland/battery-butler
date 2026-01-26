@@ -38,7 +38,6 @@ kotlin {
 
             api(project(":presentation-model"))
             implementation(projects.usecase)
-            implementation(project(":ai"))
             implementation(libs.kotlinx.datetime)
             implementation(libs.uuid)
             // Data needed for Repositories? No, domain repositories.

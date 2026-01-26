@@ -47,8 +47,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.chriscartland.batterybutler.ai.AiMessage
-import com.chriscartland.batterybutler.ai.AiRole
+import com.chriscartland.batterybutler.domain.model.BatchOperationResult
 import com.chriscartland.batterybutler.domain.model.DeviceInput
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
@@ -59,7 +58,7 @@ import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 @Composable
 fun AddDeviceContent(
     deviceTypes: List<DeviceType>,
-    aiMessages: List<AiMessage>,
+    aiMessages: List<BatchOperationResult>,
     onAddDevice: (DeviceInput) -> Unit,
     onBatchAdd: (String) -> Unit,
     onManageDeviceTypesClick: () -> Unit,
@@ -136,7 +135,7 @@ fun AddDeviceContent(
 
 @Composable
 fun AddDeviceAiSection(
-    aiMessages: List<AiMessage>,
+    aiMessages: List<BatchOperationResult>,
     onBatchAdd: (String) -> Unit,
 ) {
     // AI Section
@@ -182,9 +181,20 @@ fun AddDeviceAiSection(
                     .padding(8.dp),
             ) {
                 items(aiMessages) { msg ->
+                    val text = when (msg) {
+                        is BatchOperationResult.Progress -> "🤖 ${msg.message}"
+                        is BatchOperationResult.Success -> "✅ ${msg.message}"
+                        is BatchOperationResult.Error -> "❌ ${msg.message}"
+                    }
+                    val color = when (msg) {
+                        is BatchOperationResult.Error -> MaterialTheme.colorScheme.error
+                        is BatchOperationResult.Success -> MaterialTheme.colorScheme.primary
+                        else -> MaterialTheme.colorScheme.onSurface
+                    }
                     Text(
-                        text = "${msg.role}: ${msg.text}",
+                        text = text,
                         style = MaterialTheme.typography.bodySmall,
+                        color = color,
                         modifier = Modifier.padding(vertical = 4.dp),
                     )
                 }
@@ -322,8 +332,8 @@ fun AddDeviceAiSectionPreview() {
     BatteryButlerTheme {
         AddDeviceAiSection(
             aiMessages = listOf(
-                AiMessage("1", AiRole.USER, "Example prompt"),
-                AiMessage("2", AiRole.MODEL, "Example response"),
+                com.chriscartland.batterybutler.domain.model.BatchOperationResult.Progress("Example prompt"),
+                com.chriscartland.batterybutler.domain.model.BatchOperationResult.Success("Example response"),
             ),
             onBatchAdd = {},
         )

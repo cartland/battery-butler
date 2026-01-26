@@ -7,8 +7,9 @@ import com.chriscartland.batterybutler.ai.AiRole
 import com.chriscartland.batterybutler.ai.AiToolNames
 import com.chriscartland.batterybutler.ai.AiToolParams
 import com.chriscartland.batterybutler.ai.ToolHandler
-import com.chriscartland.batterybutler.domain.model.BatteryEvent
+import com.chriscartland.batterybutler.domain.model.BatchOperationResult
 import com.chriscartland.batterybutler.domain.model.Device
+import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import kotlinx.coroutines.flow.Flow
@@ -33,10 +34,8 @@ class BatchAddBatteryEventsUseCase(
         - If the Device Type is implied or listed, include it.
         """.trimIndent()
 
-    operator fun invoke(input: String): Flow<AiMessage> =
+    operator fun invoke(input: String): Flow<BatchOperationResult> =
         channelFlow {
-            val modelMsgId = uuid4().toString()
-
             val toolHandler = ToolHandler { name, args ->
                 when (name) {
                     AiToolNames.RECORD_BATTERY_REPLACEMENT -> {
@@ -88,9 +87,9 @@ class BatchAddBatteryEventsUseCase(
                             // 3. Add Battery Event
                             val event = BatteryEvent(
                                 id = uuid4().toString(),
+                                batteryType = "AA", // Placeholder or from args if available
                                 deviceId = targetDevice.id,
                                 date = instant,
-                                batteryType = args[AiToolParams.BATTERY_TYPE] as? String ?: "Unknown",
                                 notes = "Imported via AI",
                             )
                             deviceRepository.addEvent(event)
@@ -121,11 +120,12 @@ class BatchAddBatteryEventsUseCase(
                     """.trimIndent()
 
                 aiEngine.generateResponse(prompt, toolHandler).collect { tokenMsg ->
-                    send(AiMessage(modelMsgId, AiRole.MODEL, tokenMsg.text))
+                    send(BatchOperationResult.Progress(tokenMsg.text))
                 }
+                send(BatchOperationResult.Success("Batch operation completed."))
             } catch (e: Exception) {
                 if (e is CancellationException) throw e
-                send(AiMessage(uuid4().toString(), AiRole.SYSTEM, "Error processing input: ${e.message}"))
+                send(BatchOperationResult.Error("Error processing input: ${e.message}"))
             }
         }
 }

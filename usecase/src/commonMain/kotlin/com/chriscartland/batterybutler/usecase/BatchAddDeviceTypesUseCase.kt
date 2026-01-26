@@ -7,6 +7,7 @@ import com.chriscartland.batterybutler.ai.AiRole
 import com.chriscartland.batterybutler.ai.AiToolNames
 import com.chriscartland.batterybutler.ai.AiToolParams
 import com.chriscartland.batterybutler.ai.ToolHandler
+import com.chriscartland.batterybutler.domain.model.BatchOperationResult
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import kotlinx.coroutines.flow.Flow
@@ -28,10 +29,8 @@ class BatchAddDeviceTypesUseCase(
         - If 'Battery Type' is missing, use "AA" as a placeholder or infer from context if possible.
         """.trimIndent()
 
-    operator fun invoke(input: String): Flow<AiMessage> =
+    operator fun invoke(input: String): Flow<BatchOperationResult> =
         channelFlow {
-            val modelMsgId = uuid4().toString()
-
             val toolHandler = ToolHandler { name, args ->
                 when (name) {
                     AiToolNames.ADD_DEVICE_TYPE -> {
@@ -79,11 +78,12 @@ class BatchAddDeviceTypesUseCase(
                     """.trimIndent()
 
                 aiEngine.generateResponse(prompt, toolHandler).collect { tokenMsg ->
-                    send(AiMessage(modelMsgId, AiRole.MODEL, tokenMsg.text))
+                    send(BatchOperationResult.Progress(tokenMsg.text))
                 }
+                send(BatchOperationResult.Success("Batch operation completed."))
             } catch (e: Exception) {
                 if (e is CancellationException) throw e
-                send(AiMessage(uuid4().toString(), AiRole.SYSTEM, "Error processing input: ${e.message}"))
+                send(BatchOperationResult.Error("Error processing input: ${e.message}"))
             }
         }
 }

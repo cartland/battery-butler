@@ -3,7 +3,7 @@ package com.chriscartland.batterybutler.viewmodel.addbatteryevent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.benasher44.uuid.uuid4
-import com.chriscartland.batterybutler.ai.AiMessage
+import com.chriscartland.batterybutler.domain.model.BatchOperationResult
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.usecase.AddBatteryEventUseCase
 import com.chriscartland.batterybutler.usecase.BatchAddBatteryEventsUseCase
@@ -27,8 +27,8 @@ class AddBatteryEventViewModel(
     private val updateDeviceUseCase: UpdateDeviceUseCase,
     private val batchAddBatteryEventsUseCase: BatchAddBatteryEventsUseCase,
 ) : ViewModel() {
-    private val _aiMessages = MutableStateFlow<List<AiMessage>>(emptyList())
-    val aiMessages: StateFlow<List<AiMessage>> = _aiMessages
+    private val _aiMessages = MutableStateFlow<List<BatchOperationResult>>(emptyList())
+    val aiMessages: StateFlow<List<BatchOperationResult>> = _aiMessages
 
     val devices = getDevicesUseCase().stateIn(
         scope = viewModelScope,

@@ -49,8 +49,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.chriscartland.batterybutler.ai.AiMessage
-import com.chriscartland.batterybutler.ai.AiRole
+import com.chriscartland.batterybutler.domain.model.BatchOperationResult
 import com.chriscartland.batterybutler.domain.model.DeviceTypeInput
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMapper
@@ -60,7 +59,7 @@ import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddDeviceTypeContent(
-    aiMessages: List<AiMessage>,
+    aiMessages: List<BatchOperationResult>,
     suggestedIcon: String? = null,
     usedIcons: List<String> = emptyList(),
     onSuggestIcon: (String) -> Unit = {},
@@ -179,9 +178,20 @@ fun AddDeviceTypeContent(
                             .padding(8.dp),
                     ) {
                         items(aiMessages) { msg ->
+                            val text = when (msg) {
+                                is BatchOperationResult.Progress -> "🤖 ${msg.message}"
+                                is BatchOperationResult.Success -> "✅ ${msg.message}"
+                                is BatchOperationResult.Error -> "❌ ${msg.message}"
+                            }
+                            val color = when (msg) {
+                                is BatchOperationResult.Error -> MaterialTheme.colorScheme.error
+                                is BatchOperationResult.Success -> MaterialTheme.colorScheme.primary
+                                else -> MaterialTheme.colorScheme.onSurface
+                            }
                             Text(
-                                text = "${msg.role}: ${msg.text}",
+                                text = text,
                                 style = MaterialTheme.typography.bodySmall,
+                                color = color,
                                 modifier = Modifier.padding(vertical = 4.dp),
                             )
                         }
@@ -309,8 +319,8 @@ fun AddDeviceTypeContentPreview() {
     BatteryButlerTheme {
         AddDeviceTypeContent(
             aiMessages = listOf(
-                AiMessage("1", AiRole.USER, "Add Smoke Detector"),
-                AiMessage("2", AiRole.MODEL, "Confirmed."),
+                com.chriscartland.batterybutler.domain.model.BatchOperationResult.Progress("Processing..."),
+                com.chriscartland.batterybutler.domain.model.BatchOperationResult.Success("Confirmed."),
             ),
             suggestedIcon = "detector_smoke",
             onDeviceTypeAdded = {},
