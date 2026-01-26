@@ -65,7 +65,7 @@ fun ButlerCenteredTopAppBar(
             }
         },
         modifier = modifier,
-        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(),
+        colors = TopAppBarDefaults.topAppBarColors(),
     )
 }
 
