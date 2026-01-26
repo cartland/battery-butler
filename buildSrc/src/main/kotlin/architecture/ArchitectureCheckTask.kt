@@ -10,16 +10,25 @@ open class ArchitectureCheckTask : DefaultTask() {
     // Value: List of allowed dependency prefixes or exact matches
     private val allowedDependencies = mapOf(
         ":domain" to listOf(), // Domain depends on nothing
-        ":ai" to listOf(":domain"),
+        ":ai" to listOf(":domain", ":presentation-model"),
         ":data-local" to listOf(":domain"),
         ":data-network" to listOf(":domain", ":fixtures"),
         ":data" to listOf(":domain", ":data-local", ":data-network"),
-        // AI is allowed for usecase (business logic layer)
-        ":usecase" to listOf(":domain", ":ai", ":presentation-model"),
+        ":usecase" to listOf(
+            ":domain",
+            ":ai",
+            ":presentation-model",
+        ), // AI is allowed for now until Phase 1 fully completes? No, Phase 1 removed it from ViewModel, but UseCase uses AI.
         ":presentation-model" to listOf(":domain"),
         ":viewmodel" to listOf(":usecase", ":domain", ":presentation-model"),
         ":presentation-core" to listOf(":domain", ":presentation-model", ":compose-resources"),
-        ":presentation-feature" to listOf(":presentation-core", ":presentation-model", ":compose-resources", ":viewmodel", ":domain"),
+        ":presentation-feature" to listOf(
+            ":presentation-core",
+            ":presentation-model",
+            ":compose-resources",
+            ":viewmodel",
+            ":domain",
+        ),
         ":compose-resources" to listOf(),
         ":fixtures" to listOf(":domain"),
         ":compose-app" to listOf("*"), // App wires everything
@@ -73,6 +82,20 @@ open class ArchitectureCheckTask : DefaultTask() {
                             }
                         }
                     }
+                }
+            }
+        }
+
+        // Specific Check for Module Purity
+        val domainProject = project.findProject(":domain")
+        if (domainProject != null) {
+            if (domainProject.plugins.hasPlugin("com.android.library") || domainProject.plugins.hasPlugin("com.android.application")) {
+                violations.add("Module ':domain' must be Pure Kotlin but has Android plugins applied.")
+            }
+            // Check for android dependencies in commonMain (rough check by name)
+            domainProject.configurations.findByName("commonMainImplementation")?.dependencies?.forEach { dep ->
+                if (dep.group?.startsWith("com.google.android") == true || dep.group?.startsWith("androidx") == true) {
+                    violations.add("Module ':domain' depends on Android library '${dep.group}:${dep.name}'. Domain must be pure.")
                 }
             }
         }

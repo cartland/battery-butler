@@ -29,6 +29,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(project(":domain"))
+            implementation(project(":presentation-model"))
             implementation(libs.kotlinx.coroutines.core)
         }
         androidMain.dependencies {
