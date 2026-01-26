@@ -1,4 +1,4 @@
-package com.chriscartland.batterybutler.presentationmodel
+package com.chriscartland.batterybutler.domain.model
 
 object DeviceIcons {
     val AvailableIcons = listOf(
