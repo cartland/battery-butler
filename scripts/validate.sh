@@ -23,6 +23,9 @@ echo "--- 3. Lint ---"
 echo "--- 3b. Detekt ---"
 ./gradlew detekt --stacktrace
 
+echo "--- 3c. Architecture Check ---"
+./gradlew checkArchitecture
+
 echo "--- 4. Tests (Unit & Instrumented) ---"
 ./scripts/test.sh
 

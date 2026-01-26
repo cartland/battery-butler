@@ -14,3 +14,12 @@ spotless {
         ktlint()
     }
 }
+
+gradlePlugin {
+    plugins {
+        create("architectureCheck") {
+            id = "architecture.check"
+            implementationClass = "architecture.ArchitecturePlugin"
+        }
+    }
+}

@@ -20,6 +20,7 @@ plugins {
     alias(libs.plugins.androidKotlinMultiplatformLibrary) apply false
     alias(libs.plugins.kotlinSerialization) apply false
     alias(libs.plugins.detekt) apply false
+    id("architecture.check")
 }
 
 allprojects {
