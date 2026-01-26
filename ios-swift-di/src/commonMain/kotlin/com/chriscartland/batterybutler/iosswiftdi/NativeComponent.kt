@@ -73,7 +73,7 @@ abstract class NativeComponent(
     @Provides
     fun provideAppVersion(): com.chriscartland.batterybutler.domain.model.AppVersion =
         com.chriscartland.batterybutler.domain.model.AppVersion
-            .Ios("iOS Native")
+            .Ios(versionName = "iOS Native", buildNumber = "1")
 
     @Provides
     @SharedSingleton
