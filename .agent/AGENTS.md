@@ -83,6 +83,9 @@ This document outlines the shared principles and workflow for all AI agents cont
     git push origin agent/your-branch-name
     ```
 
+    > [!IMPORTANT]
+    > **Spotless Verification**: After running `git commit`, check the output. If the post-commit hook reports `spotlessCheck FAILED`, you MUST run `./gradlew spotlessApply`, amend your commit (or create a fix commit), and verify again. Do not ignore this failure.
+
 6.  **Create a Pull Request**: Open a pull request against the `main` branch. Direct pushes to `main` are prohibited.
 
 ## After Your PR is Merged
