@@ -25,32 +25,40 @@ The following Mermaid graph illustrates the dependency structure between modules
 *   **`:domain`**: The core of the application. Contains entities, repository interfaces, and pure business objects.
     *   **Dependencies**: Zero dependencies on other modules. Pure Kotlin.
     *   **Role**: Defines the "What" of the app.
+    *   **Enforcement**: Strictly forbidden from importing any other module.
+
+*   **`:ai`**: AI implementation (Gemini/ML Kit).
+    *   **Dependencies**: `:domain`.
+    *   **Role**: Implements `AiEngine` interface defined in Domain (or provides AI implementations). Encapsulates Generative AI logic.
 
 *   **`:usecase`**: specific business logic scenarios (Interactors).
-    *   **Dependencies**: `:domain`.
+    *   **Dependencies**: `:domain`, `:presentation-model`, `:ai`.
     *   **Role**: Orchestrates data flow between Repositories and ViewModels. Encapsulates business rules.
+    *   **Restriction**: MUST NOT depend on `:data`.
 
-*   **`:data`**: Implementation of the Data Layer (Database, Preferences).
+*   **`:data`** (and `:data-local`, `:data-network`): Implementation of the Data Layer.
     *   **Dependencies**: `:domain` (implements Repositories).
-    *   **Role**: Manages local data persistence (Room, SqlDelight, etc.).
-
-*   **`:networking`**: Implementation of remote data fetching.
-    *   **Dependencies**: `:domain` (implements Repositories or Data Sources).
-    *   **Role**: gRPC / REST clients (Wire, Ktor).
+    *   **Role**: Manages local data persistence and networking.
 
 ### Presentation & UI Layers
 
-*   **`:viewmodel`**: KMP State Handling.
-    *   **Dependencies**: `:usecase`, `:domain`. (Scope: `androidx.lifecycle.viewmodel`).
-    *   **Role**: Manages UI state and handles user intents. Exposes `StateFlow` to UI.
+*   **`:presentation-model`**: Shared UI models.
+    *   **Dependencies**: `:domain`.
+    *   **Role**: Simple data classes for UI state that don't depend on Android/Compose.
 
-*   **`:ui-core`**: Reusable Design System elements.
-    *   **Dependencies**: `:domain` (for core models), Compose Runtime/Material3.
+*   **`:viewmodel`**: KMP State Handling.
+    *   **Dependencies**: `:usecase`, `:domain`, `:presentation-model`.
+    *   **Role**: Manages UI state and handles user intents. Exposes `StateFlow` to UI.
+    *   **Restriction**: MUST NOT depend on `:ai` or `:data`.
+
+*   **`:presentation-core`**: Reusable Design System elements.
+    *   **Dependencies**: `:domain`, `:presentation-model`, `:compose-resources`.
     *   **Role**: Theming, common widgets, basic layout components.
 
-*   **`:ui-feature`**: Feature-specific screens and flows.
-    *   **Dependencies**: `:viewmodel`, `:ui-core`, `:domain`.
+*   **`:presentation-feature`**: Feature-specific screens and flows.
+    *   **Dependencies**: `:viewmodel`, `:presentation-core`, `:presentation-model`, `:domain`, `:compose-resources`.
     *   **Role**: Composable screens (e.g., `AddDeviceScreen`). Connects ViewModels to UI.
+    *   **Restriction**: MUST NOT depend on `:ai`.
 
 ### Application Entry Points
 
@@ -69,18 +77,26 @@ The following Mermaid graph illustrates the dependency structure between modules
     *   **Role**: Server side business entities.
 
 *   **`:server:data`**: Server data persistence.
-    *   **Dependencies**: `:server:domain`.
+    *   **Dependencies**: `:server:domain`, `:domain`, `:fixtures`.
     *   **Role**: Database access for the server.
 
 *   **`:server:app`**: The gRPC Server application.
-    *   **Dependencies**: `:server:domain`, `:server:data`.
+    *   **Dependencies**: `:server:domain`, `:server:data`, `:domain`.
     *   **Role**: Runs the gRPC service, handles requests.
 
-## 4. Strict Dependency Rules
+## 4. Strict Dependency Rules (Enforced)
 
-1.  **Vertical Separation**: `UI` never communicates directly with `Data`. It must go through `ViewModel`.
+The build system strictly enforces these rules via the `checkArchitecture` task.
+
+1.  **Vertical Separation**: `UI` never communicates directly with `Data`. It must go through `ViewModel` -> `UseCase`.
 2.  **Domain Purity**: `:domain` cannot see any other module.
-3.  **Data Hiding**: `:data` and `:networking` are implementation details. `:viewmodel` and `:ui-*` should not depend on them directly (only via `:domain` interfaces), except for the `:compose-app` root which needs them for DI.
+3.  **AI Isolation**: AI types are implementation details. UI must not depend on `:ai`. Interaction goes through UseCases which return Domain types (`BatchOperationResult`).
+4.  **Usecase Isolation**: `:usecase` must not depend on `:data`. It uses Repository interfaces from `:domain`.
+
+To run the check manually:
+```bash
+./gradlew checkArchitecture
+```
 
 ## 5. Technology Stack
 
@@ -89,6 +105,6 @@ The following Mermaid graph illustrates the dependency structure between modules
 *   **Dependency Injection**: [Kotlin Inject](https://github.com/evant/kotlin-inject).
 *   **Persistence**: [Room for KMP](https://developer.android.com/kotlin/multiplatform/room).
 *   **Concurrency**: Kotlin Coroutines & Flow.
-*   **AI**: Google AI Client SDK (Gemini) / ML Kit.
-*   **Networking**: Ktor / Wire (gRPC).
+*   **AI**: Google AI Client SDK (Gemini).
+*   **Networking**: Wire (gRPC).
 *   **Date/Time**: `kotlinx-datetime`.
