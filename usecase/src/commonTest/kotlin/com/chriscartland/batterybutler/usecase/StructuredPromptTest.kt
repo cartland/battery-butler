@@ -44,7 +44,7 @@ class StructuredPromptTest {
 
         override suspend fun updateDevice(device: Device) {}
 
-        override suspend fun deleteDevice(deviceId: String) {}
+        override suspend fun deleteDevice(id: String) {}
 
         override fun getAllDeviceTypes() = flowOf(emptyList<DeviceType>())
 
