@@ -1,7 +1,6 @@
 package com.chriscartland.batterybutler.composeapp
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.chriscartland.batterybutler.datanetwork.grpc.SharedServerConfig
 import com.squareup.wire.GrpcClient
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
@@ -12,6 +11,9 @@ import java.util.concurrent.TimeUnit
 
 @RunWith(AndroidJUnit4::class)
 class RemoteConnectivityTest {
+    companion object {
+        const val PRODUCTION_SERVER_URL = "http://battery-butler-nlb-847feaa773351518.elb.us-west-1.amazonaws.com:80"
+    }
     @Test
     fun testProductionServerConnectivity() =
         runBlocking {
@@ -25,7 +27,7 @@ class RemoteConnectivityTest {
             val grpcClient = GrpcClient
                 .Builder()
                 .client(client)
-                .baseUrl(SharedServerConfig.PRODUCTION_SERVER_URL)
+                .baseUrl(PRODUCTION_SERVER_URL)
                 .build()
 
             // Assuming there is a GreeterService or health check.
@@ -37,7 +39,7 @@ class RemoteConnectivityTest {
 
             val request = okhttp3.Request
                 .Builder()
-                .url(SharedServerConfig.PRODUCTION_SERVER_URL) // This might 404 on HTTP/1.1 attempt, but confirms connection
+                .url(PRODUCTION_SERVER_URL) // This might 404 on HTTP/1.1 attempt, but confirms connection
                 .build()
 
             // This is a "Poor man's" connectivity check for now.
@@ -48,7 +50,7 @@ class RemoteConnectivityTest {
                 // 200, 404, or 500 means we hit the server.
                 // Connection Refused means we failed.
             } catch (e: Exception) {
-                throw RuntimeException("Failed to connect to ${SharedServerConfig.PRODUCTION_SERVER_URL}", e)
+                throw RuntimeException("Failed to connect to ${PRODUCTION_SERVER_URL}", e)
             }
         }
 }
