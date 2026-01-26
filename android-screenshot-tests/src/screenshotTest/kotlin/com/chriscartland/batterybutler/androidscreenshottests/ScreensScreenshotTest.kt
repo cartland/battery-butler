@@ -37,8 +37,7 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 // Shared Fakes
-// Shared Fakes
-@OptIn(ExperimentalTime::class) // For Clock.System.now() if needed, though kotlin.time.Clock is stable since 1.9, verify env
+@OptIn(ExperimentalTime::class)
 val fakeDeviceType = DeviceType("type1", "Smoke Detector", "detector_smoke")
 val fakeDevice = Device(
     id = "dev1",
