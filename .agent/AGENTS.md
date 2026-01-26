@@ -31,6 +31,7 @@ This document outlines the shared principles and workflow for all AI agents cont
 - **Git**:
   - **Always** use non-interactive flags for commands that might open an editor (e.g., `git cherry-pick --continue --no-edit`). This prevents the shell from getting stuck waiting for user input.
   - **Always** escape special characters in command arguments (e.g., `$` and `` ` ``) to prevent unintended shell expansion. Use single quotes or backslashes (`\`) for escaping.
+  - **Prefer** using `--body-file` with a temporary file for `gh pr create` when the description contains complex Markdown (backticks, quotes) to avoid shell parsing errors.
 
 - **Pull Requests**:
   - **Always** ensure the Pull Request title and description accurately reflect the final changes. If the scope of a branch evolves, update the PR description before merging.
