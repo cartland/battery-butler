@@ -27,6 +27,7 @@ kotlin {
 
             implementation(project(":data"))
             implementation(project(":ai"))
+            implementation(project(":usecase"))
             api(project(":viewmodel"))
             api(project(":presentation-model"))
 

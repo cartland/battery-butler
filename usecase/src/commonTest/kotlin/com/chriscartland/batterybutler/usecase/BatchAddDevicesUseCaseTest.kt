@@ -109,7 +109,9 @@ class BatchAddDevicesUseCaseTest {
             assertEquals("Test Device", repo.devices[0].name)
             assertEquals(1, repo.deviceTypes.size)
             assertEquals("Test Type", repo.deviceTypes[0].name)
-            val progressResult = results.filterIsInstance<com.chriscartland.batterybutler.domain.model.BatchOperationResult.Progress>().first()
+            val progressResult = results
+                .filterIsInstance<com.chriscartland.batterybutler.domain.model.BatchOperationResult.Progress>()
+                .first()
             assertEquals("Success: Added device 'Test Device' (Type: Test Type)", progressResult.message)
         }
 }
