@@ -135,7 +135,8 @@ class AndroidAiEngine : AiEngine {
                 emit(AiMessage("resp_${System.currentTimeMillis()}", AiRole.MODEL, text ?: "No text response", false))
             } catch (e: Exception) {
                 if (e is CancellationException) throw e
-                e.printStackTrace()
+                co.touchlab.kermit.Logger
+                    .e("AndroidAiEngine") { "Error generating response: ${e.message}" }
                 emit(AiMessage("error", AiRole.MODEL, "Error: ${e.message}", false))
             }
         }
