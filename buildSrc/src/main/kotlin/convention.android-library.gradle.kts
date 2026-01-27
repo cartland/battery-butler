@@ -1,10 +1,7 @@
-import com.android.build.api.dsl.LibraryExtension
 import com.android.build.api.dsl.ManagedVirtualDevice
 import org.gradle.api.JavaVersion
-import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.get
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 plugins {
     id("com.android.library")
@@ -19,15 +16,23 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_21)
         }
     }
-    
+
     // Default JVM configuration if needed, or leave to module
 }
 
 android {
-    compileSdk = libs.findVersion("android.compileSdk").get().requiredVersion.toInt()
-    
+    compileSdk = libs
+        .findVersion("android.compileSdk")
+        .get()
+        .requiredVersion
+        .toInt()
+
     defaultConfig {
-        minSdk = libs.findVersion("android.minSdk").get().requiredVersion.toInt()
+        minSdk = libs
+            .findVersion("android.minSdk")
+            .get()
+            .requiredVersion
+            .toInt()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
