@@ -1,5 +1,5 @@
 ---
-description: Run validation scripts, commit changes, and push/PR
+description: Run formatter (Spotless), commit changes, and push/PR
 ---
 
 // turbo-all
@@ -7,17 +7,14 @@ description: Run validation scripts, commit changes, and push/PR
 1. Fetch latest main
    `git fetch origin main`
 
-2. Prepare for commit
-   `./scripts/prepare-for-commit.sh`
+2. Format Code (Spotless)
+   `./scripts/spotless-apply.sh`
 
    > [!TIP]
-   > **Server Development Tips:**
-   > - If you modified `server/`, run `./gradlew :server:app:jibDockerBuild` to verify the container builds locally.
-   > - If you modified `server/terraform/`, run `terraform fmt -recursive server/terraform/` to format HCL.
-   > - Use `./scripts/restart_server.sh` to redeploy/reset the AWS environment if needed.
+   > We prioritize meaningful PRs over local validation. Tests and deeper checks will run in CI.
 
-3. Resolve any issues
-   If the script fails (e.g. lint errors, broken tests), fix them and re-run step 2.
+3. Resolve any Formatting issues
+   If the script fails, fix the format errors.
 
 4. Check Branch Status
    Check if you are on main or an existing feature branch.
@@ -50,3 +47,4 @@ description: Run validation scripts, commit changes, and push/PR
      > rm pr_body.txt
      > ```
    - **View Existing:** `gh pr view`
+
