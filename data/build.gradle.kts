@@ -26,8 +26,6 @@ kotlin {
             api(project(":data-network"))
             api(project(":data-local"))
 
-            // implementation(libs.androidx.room.runtime) // Moved to data-local
-            // implementation(libs.sqlite.bundled) // Moved to data-local
             implementation(libs.kotlin.inject.runtime)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.datetime)
@@ -38,8 +36,6 @@ kotlin {
             implementation(libs.kotlinx.coroutines.test)
         }
         androidMain.dependencies {
-            // implementation(libs.androidx.room.runtime) // Moved
-            // implementation(libs.generativeai) // Moved to :ai
         }
         val androidInstrumentedTest by getting {
             dependencies {
@@ -47,7 +43,6 @@ kotlin {
                 implementation(libs.androidx.testExt.junit)
                 implementation(libs.androidx.runner)
                 implementation(libs.androidx.core)
-                // implementation(libs.androidx.room.testing)
                 implementation(libs.kotlinx.coroutines.test)
             }
         }
@@ -74,15 +69,7 @@ android {
     }
 }
 
-// Room block removed
-
-ksp {
-    // Room schema arg removed
-}
-
 dependencies {
-    // Room KSP processors removed
-
     add("kspCommonMainMetadata", libs.kotlin.inject.compiler)
 
     add("kspAndroid", libs.kotlin.inject.compiler)
@@ -95,8 +82,4 @@ dependencies {
 
     // Add JVM KSP for Desktop support
     add("kspJvm", libs.kotlin.inject.compiler)
-}
-
-configurations.named("kspCommonMainMetadata") {
-    // exclude(group = "androidx.room", module = "room-compiler")
 }

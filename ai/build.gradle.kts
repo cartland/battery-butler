@@ -4,7 +4,6 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
-    // alias(libs.plugins.room) // Removed
     alias(libs.plugins.ksp)
 }
 
@@ -77,15 +76,7 @@ android {
     }
 }
 
-// Room block removed
-
-ksp {
-    // Room schema arg removed
-}
-
 dependencies {
-    // Room KSP processors removed
-
     add("kspCommonMainMetadata", libs.kotlin.inject.compiler)
 
     add("kspAndroid", libs.kotlin.inject.compiler)
@@ -98,8 +89,4 @@ dependencies {
 
     // Add JVM KSP for Desktop support
     add("kspJvm", libs.kotlin.inject.compiler)
-}
-
-configurations.named("kspCommonMainMetadata") {
-    // exclude(group = "androidx.room", module = "room-compiler")
 }
