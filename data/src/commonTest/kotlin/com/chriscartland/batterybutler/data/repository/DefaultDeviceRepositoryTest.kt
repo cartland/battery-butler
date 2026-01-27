@@ -6,7 +6,9 @@ import com.chriscartland.batterybutler.datanetwork.RemoteDataSourceState
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
+import com.chriscartland.batterybutler.domain.model.SyncStatus
 import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -14,6 +16,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
@@ -224,6 +227,70 @@ class DefaultDeviceRepositoryTest {
             assertEquals(1, remote.pushedUpdates.size)
         }
 
+    // SyncStatus state transition tests
+    @Test
+    fun `syncStatus transitions to Syncing when push starts`() =
+        runTest(testDispatcher) {
+            val local = FakeLocalDataSource()
+            val remote = FakeRemoteDataSource()
+            remote.suspendPush = true // Suspend to capture intermediate state
+            val repo = DefaultDeviceRepository(local, remote, this)
+            val device = createDevice(id = "1", name = "Test Device")
+
+            // Collect sync status values
+            val states = mutableListOf<SyncStatus>()
+            val job = backgroundScope.launch {
+                repo.syncStatus.collect { states.add(it) }
+            }
+
+            repo.addDevice(device)
+            // Advance just enough for the push to start but not complete
+            testDispatcher.scheduler.advanceTimeBy(10)
+
+            // Should have seen Idle -> Syncing
+            assertTrue(states.any { it is SyncStatus.Syncing })
+
+            // Let the push complete
+            remote.resumePush()
+            advanceUntilIdle()
+
+            job.cancel()
+        }
+
+    @Test
+    fun `syncStatus is Failed after push fails`() =
+        runTest(testDispatcher) {
+            val local = FakeLocalDataSource()
+            val remote = FakeRemoteDataSource()
+            remote.shouldFail = true
+            val repo = DefaultDeviceRepository(local, remote, this)
+            val device = createDevice(id = "1", name = "Test Device")
+
+            repo.addDevice(device)
+            advanceUntilIdle()
+
+            // After failed push, syncStatus should be Failed
+            val status = repo.syncStatus.value
+            assertTrue(status is SyncStatus.Failed, "Expected Failed but got $status")
+        }
+
+    @Test
+    fun `syncStatus returns to Idle after successful push`() =
+        runTest(testDispatcher) {
+            val local = FakeLocalDataSource()
+            val remote = FakeRemoteDataSource()
+            val repo = DefaultDeviceRepository(local, remote, this)
+            val device = createDevice(id = "1", name = "Test Device")
+
+            repo.addDevice(device)
+            // Advance past the 2000ms delay in pushUpdate
+            advanceUntilIdle()
+
+            // After successful push and delay, syncStatus should return to Idle
+            val status = repo.syncStatus.value
+            assertEquals(SyncStatus.Idle, status)
+        }
+
     private fun createDevice(
         id: String,
         name: String,
@@ -324,6 +391,8 @@ class FakeLocalDataSource : LocalDataSource {
 class FakeRemoteDataSource : RemoteDataSource {
     val pushedUpdates = mutableListOf<RemoteUpdate>()
     var shouldFail = false
+    var suspendPush = false
+    private var pushDeferred: CompletableDeferred<Unit>? = null
 
     override val state: StateFlow<RemoteDataSourceState> = MutableStateFlow(RemoteDataSourceState.NotStarted)
 
@@ -331,6 +400,14 @@ class FakeRemoteDataSource : RemoteDataSource {
 
     override suspend fun push(update: RemoteUpdate): Boolean {
         pushedUpdates.add(update)
+        if (suspendPush) {
+            pushDeferred = CompletableDeferred()
+            pushDeferred?.await()
+        }
         return !shouldFail
+    }
+
+    fun resumePush() {
+        pushDeferred?.complete(Unit)
     }
 }
