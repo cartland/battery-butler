@@ -40,10 +40,6 @@ kotlin {
             implementation(projects.usecase)
             implementation(libs.kotlinx.datetime)
             implementation(libs.uuid)
-            // Data needed for Repositories? No, domain repositories.
-            // But if ViewModels use Repositories, they are Interfaces in Domain.
-            // Wait, do ViewModels need Data/Room? No, usually they use Repositories from Domain.
-            // Let's check dependencies.
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
