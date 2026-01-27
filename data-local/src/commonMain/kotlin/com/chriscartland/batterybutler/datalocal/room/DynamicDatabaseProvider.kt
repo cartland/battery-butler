@@ -34,8 +34,10 @@ class DynamicDatabaseProvider(
                     try {
                         oldDb.close()
                     } catch (e: Exception) {
-                        // if (e is CancellationException) throw e
-                        e.printStackTrace()
+                        if (e is kotlinx.coroutines.CancellationException) throw e
+                        co.touchlab.kermit.Logger.w("DynamicDatabaseProvider") {
+                            "Failed to close old database: ${e.message}"
+                        }
                     }
                     val newDb = factory.createDatabase(targetName)
                     _database.value = newDb
