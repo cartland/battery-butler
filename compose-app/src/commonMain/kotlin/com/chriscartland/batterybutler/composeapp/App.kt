@@ -49,8 +49,6 @@ fun App(
             LocalFileSaver provides fileSaver,
             LocalAppStrings provides ComposeAppStrings(),
         ) {
-// Replaced by ScreenListSaver in NavigationSavers.kt
-
             val backStack = rememberSaveable(saver = ScreenListSaver) {
                 mutableStateListOf<Screen>(Screen.Devices)
             }
