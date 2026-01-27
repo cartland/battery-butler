@@ -10,7 +10,6 @@ import com.chriscartland.batterybutler.domain.model.SyncStatus
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -123,9 +122,7 @@ class DefaultDeviceRepository(
                 )
                 if (success) {
                     _syncStatus.value = SyncStatus.Success
-                    // Reset to Idle after a short delay
-                    delay(2000)
-                    _syncStatus.value = SyncStatus.Idle
+                    // UI layer is responsible for dismissing Success state after showing feedback
                 } else {
                     _syncStatus.value = SyncStatus.Failed("Failed to sync with server")
                 }
@@ -137,7 +134,7 @@ class DefaultDeviceRepository(
         }
     }
 
-    fun dismissSyncError() {
+    override fun dismissSyncStatus() {
         _syncStatus.value = SyncStatus.Idle
     }
 }

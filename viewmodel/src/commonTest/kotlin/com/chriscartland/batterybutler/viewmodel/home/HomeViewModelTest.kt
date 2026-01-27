@@ -7,6 +7,7 @@ import com.chriscartland.batterybutler.domain.model.SyncStatus
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.presentationmodel.home.GroupOption
 import com.chriscartland.batterybutler.presentationmodel.home.SortOption
+import com.chriscartland.batterybutler.usecase.DismissSyncStatusUseCase
 import com.chriscartland.batterybutler.usecase.ExportDataUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.GetDevicesUseCase
@@ -240,12 +241,14 @@ class HomeViewModelTest {
             getDeviceTypesUseCase = GetDeviceTypesUseCase(repo),
             exportDataUseCase = ExportDataUseCase(repo),
             getSyncStatusUseCase = GetSyncStatusUseCase(repo),
+            dismissSyncStatusUseCase = DismissSyncStatusUseCase(repo),
         )
 }
 
 class FakeDeviceRepository : DeviceRepository {
     private val devicesFlow = MutableStateFlow<List<Device>>(emptyList())
     private val deviceTypesFlow = MutableStateFlow<List<DeviceType>>(emptyList())
+    private val _syncStatus = MutableStateFlow<SyncStatus>(SyncStatus.Idle)
 
     fun setDevices(devices: List<Device>) {
         devicesFlow.value = devices
@@ -255,7 +258,11 @@ class FakeDeviceRepository : DeviceRepository {
         deviceTypesFlow.value = types
     }
 
-    override val syncStatus: StateFlow<SyncStatus> = MutableStateFlow(SyncStatus.Idle)
+    override val syncStatus: StateFlow<SyncStatus> = _syncStatus
+
+    override fun dismissSyncStatus() {
+        _syncStatus.value = SyncStatus.Idle
+    }
 
     override fun getAllDevices(): Flow<List<Device>> = devicesFlow
 

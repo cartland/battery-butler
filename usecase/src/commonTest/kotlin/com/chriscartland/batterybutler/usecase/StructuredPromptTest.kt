@@ -36,6 +36,8 @@ class StructuredPromptTest {
     class MockRepository : DeviceRepository {
         override val syncStatus: StateFlow<SyncStatus> = MutableStateFlow(SyncStatus.Idle)
 
+        override fun dismissSyncStatus() {}
+
         override fun getAllDevices() = flowOf(emptyList<Device>())
 
         override fun getDeviceById(id: String) = flowOf(null)

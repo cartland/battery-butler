@@ -3,15 +3,19 @@ package com.chriscartland.batterybutler.viewmodel.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chriscartland.batterybutler.domain.model.Device
+import com.chriscartland.batterybutler.domain.model.SyncStatus
 import com.chriscartland.batterybutler.presentationmodel.home.GroupOption
 import com.chriscartland.batterybutler.presentationmodel.home.HomeUiState
 import com.chriscartland.batterybutler.presentationmodel.home.SortOption
+import com.chriscartland.batterybutler.usecase.DismissSyncStatusUseCase
 import com.chriscartland.batterybutler.usecase.ExportDataUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.GetDevicesUseCase
 import com.chriscartland.batterybutler.usecase.GetSyncStatusUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
 import com.chriscartland.batterybutler.viewmodel.toSortedMap
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -27,12 +31,33 @@ class HomeViewModel(
     private val getDeviceTypesUseCase: GetDeviceTypesUseCase,
     private val exportDataUseCase: ExportDataUseCase,
     private val getSyncStatusUseCase: GetSyncStatusUseCase,
+    private val dismissSyncStatusUseCase: DismissSyncStatusUseCase,
 ) : ViewModel() {
     private val sortOptionFlow = MutableStateFlow(SortOption.NAME)
     private val groupOptionFlow = MutableStateFlow(GroupOption.NONE)
     private val isSortAscendingFlow = MutableStateFlow(true)
     private val isGroupAscendingFlow = MutableStateFlow(true)
     private val exportDataFlow = MutableStateFlow<String?>(null)
+    private var autoDismissJob: Job? = null
+
+    companion object {
+        private const val SYNC_SUCCESS_DISPLAY_DURATION_MS = 2000L
+    }
+
+    init {
+        // Auto-dismiss Success status after a delay
+        viewModelScope.launch {
+            getSyncStatusUseCase().collect { status ->
+                autoDismissJob?.cancel()
+                if (status is SyncStatus.Success) {
+                    autoDismissJob = viewModelScope.launch {
+                        delay(SYNC_SUCCESS_DISPLAY_DURATION_MS)
+                        dismissSyncStatusUseCase()
+                    }
+                }
+            }
+        }
+    }
 
     val uiState: StateFlow<HomeUiState> = combine(
         combine(
