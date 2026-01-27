@@ -34,8 +34,8 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Generate Diagrams
-        run: ./gradlew generateMermaidGraph
+      - name: Generate Diagrams and Code Share Analysis
+        run: ./gradlew generateMermaidGraph analyzeCodeShare
 
       - name: Check for Changes
         id: check_changes
