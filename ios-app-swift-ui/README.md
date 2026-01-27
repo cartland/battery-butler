@@ -28,7 +28,7 @@ This directory contains the Swift source code for the native iOS application of 
     -   Also add "Search Paths" in Build Settings if necessary (search for "Framework Search Paths" and add the path to the debugFramework folder).
 
 4.  **Add Source Files**:
-    -   Drag `BatteryButlerApp.swift`, `ContentView.swift`, `DeviceRow.swift`, `ViewModelWrapper.swift`, and `FlowCollector.swift` into the Xcode project group.
+    -   Drag `BatteryButlerApp.swift`, `ContentView.swift`, `DeviceRow.swift`, and `ViewModelWrapper.swift` into the Xcode project group.
     -   Delete the default `BatteryButlerNativeApp.swift` (or rename `BatteryButlerApp` to match your project creation).
     -   Delete default `ContentView.swift` (replace with provided).
 

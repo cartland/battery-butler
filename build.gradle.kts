@@ -8,17 +8,17 @@ buildscript {
 plugins {
     // this is necessary to avoid the plugins to be loaded multiple times
     // in each subproject's classloader
-    alias(libs.plugins.androidApplication) apply false
-    alias(libs.plugins.androidLibrary) apply false
+    // alias(libs.plugins.androidApplication) apply false
+    // alias(libs.plugins.androidLibrary) apply false
     alias(libs.plugins.composeHotReload) apply false
     alias(libs.plugins.composeMultiplatform) apply false
     alias(libs.plugins.composeCompiler) apply false
-    alias(libs.plugins.kotlinJvm) apply false
-    alias(libs.plugins.kotlinAndroid) apply false
-    alias(libs.plugins.kotlinMultiplatform) apply false
+    // alias(libs.plugins.kotlinJvm) apply false
+    // alias(libs.plugins.kotlinAndroid) apply false
+    // alias(libs.plugins.kotlinMultiplatform) apply false
     alias(libs.plugins.spotless) apply false
-    alias(libs.plugins.androidKotlinMultiplatformLibrary) apply false
-    alias(libs.plugins.kotlinSerialization) apply false
+    // alias(libs.plugins.androidKotlinMultiplatformLibrary) apply false
+    // alias(libs.plugins.kotlinSerialization) apply false
     alias(libs.plugins.detekt) apply false
     id("architecture.check")
 }
@@ -39,6 +39,7 @@ allprojects {
             target("*.gradle.kts")
             if (project == rootProject) {
                 target("*.gradle.kts", "settings.gradle.kts", "buildSrc/**/*.kts")
+                targetExclude("buildSrc/build/**/*.kts")
             }
             ktlint()
         }
