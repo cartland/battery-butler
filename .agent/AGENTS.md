@@ -9,7 +9,7 @@ This document outlines the shared principles and workflow for all AI agents cont
     *   **`rules.md`:** An agent-specific entry point for internal technical guidelines.
     *   **`workflows/`:** Step-by-step playbooks for common tasks, serving as both detailed instructions for agents and user-triggerable commands (e.g., slash commands).
 2.  **Consistency**: All agents must follow the workflows defined here to ensure predictable and consistent contributions.
-3.  **Validation is Mandatory**: All changes must be validated by running `./scripts/validate.sh` before being committed.
+3.  **Spotless is Mandatory**: All changes must be formatted by running `./scripts/spotless-apply.sh` before being committed. Full validation happens on PRs.
 
 ## 🚨 Critical Rules
 
@@ -82,9 +82,9 @@ This document outlines the shared principles and workflow for all AI agents cont
 
 3.  **Implement Changes**: Make all code modifications according to the project's established conventions, as detailed in `rules.md`.
 
-4.  **Validate Locally**: Run the full validation suite.
+4.  **Format Code**: Run Spotless to ensure code style compliance.
     ```bash
-    ./scripts/validate.sh
+    ./scripts/spotless-apply.sh
     ```
 
 5.  **Commit and Push**: Once validation passes, commit the changes with a clear message and push the branch.
