@@ -84,14 +84,16 @@ fun AddDeviceContent(
                 },
                 actions = {
                     TextButton(onClick = {
-                        if (name.isNotBlank() && selectedType != null) {
-                            onAddDevice(
-                                DeviceInput(
-                                    name = name,
-                                    location = location.takeIf { it.isNotBlank() },
-                                    typeId = selectedType!!.id,
-                                ),
-                            )
+                        selectedType?.let { type ->
+                            if (name.isNotBlank()) {
+                                onAddDevice(
+                                    DeviceInput(
+                                        name = name,
+                                        location = location.takeIf { it.isNotBlank() },
+                                        typeId = type.id,
+                                    ),
+                                )
+                            }
                         }
                     }) {
                         Text(

@@ -158,7 +158,7 @@ fun DeviceDetailBody(
                     )
                 }
 
-                if (!device.location.isNullOrBlank()) {
+                device.location?.takeIf { it.isNotBlank() }?.let { location ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -171,7 +171,7 @@ fun DeviceDetailBody(
                             modifier = Modifier.size(16.dp),
                         )
                         Text(
-                            text = device.location!!,
+                            text = location,
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontWeight = FontWeight.Medium,
