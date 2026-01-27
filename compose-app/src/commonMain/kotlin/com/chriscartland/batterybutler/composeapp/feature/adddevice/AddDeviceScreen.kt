@@ -16,9 +16,6 @@ fun AddDeviceScreen(
     modifier: Modifier = Modifier,
 ) {
     val deviceTypes by viewModel.deviceTypes.collectAsStateWithLifecycle()
-
-    // Seed types block removed
-
     val aiMessages by viewModel.aiMessages.collectAsStateWithLifecycle()
 
     AddDeviceContent(
