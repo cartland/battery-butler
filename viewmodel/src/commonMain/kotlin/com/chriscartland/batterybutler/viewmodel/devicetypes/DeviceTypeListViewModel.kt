@@ -7,8 +7,8 @@ import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeG
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeListUiState
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeSortOption
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
+import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
@@ -64,7 +64,7 @@ class DeviceTypeListViewModel(
             )
         }.stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
+            started = defaultWhileSubscribed(),
             initialValue = DeviceTypeListUiState.Success(emptyMap()),
         )
 

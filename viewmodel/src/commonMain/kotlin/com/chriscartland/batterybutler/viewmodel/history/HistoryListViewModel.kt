@@ -7,7 +7,7 @@ import com.chriscartland.batterybutler.presentationmodel.history.HistoryListUiSt
 import com.chriscartland.batterybutler.usecase.GetBatteryEventsUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.GetDevicesUseCase
-import kotlinx.coroutines.flow.SharingStarted
+import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
@@ -41,7 +41,7 @@ class HistoryListViewModel(
         HistoryListUiState.Success(items)
     }.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
+        started = defaultWhileSubscribed(),
         initialValue = HistoryListUiState.Loading,
     )
 }

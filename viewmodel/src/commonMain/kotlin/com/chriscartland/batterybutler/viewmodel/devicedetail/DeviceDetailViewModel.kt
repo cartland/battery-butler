@@ -10,7 +10,7 @@ import com.chriscartland.batterybutler.usecase.GetBatteryEventsUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceDetailUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.UpdateDeviceUseCase
-import kotlinx.coroutines.flow.SharingStarted
+import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
@@ -62,7 +62,7 @@ class DeviceDetailViewModel(
         }
     }.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
+        started = defaultWhileSubscribed(),
         initialValue = DeviceDetailUiState.Loading,
     )
 

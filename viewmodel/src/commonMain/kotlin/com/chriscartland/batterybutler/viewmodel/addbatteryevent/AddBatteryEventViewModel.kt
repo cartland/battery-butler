@@ -10,8 +10,8 @@ import com.chriscartland.batterybutler.usecase.BatchAddBatteryEventsUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceDetailUseCase
 import com.chriscartland.batterybutler.usecase.GetDevicesUseCase
 import com.chriscartland.batterybutler.usecase.UpdateDeviceUseCase
+import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
@@ -32,7 +32,7 @@ class AddBatteryEventViewModel(
 
     val devices = getDevicesUseCase().stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
+        started = defaultWhileSubscribed(),
         initialValue = emptyList(),
     )
 

@@ -7,6 +7,7 @@ import com.chriscartland.batterybutler.domain.model.DeviceTypeInput
 import com.chriscartland.batterybutler.usecase.AddDeviceTypeUseCase
 import com.chriscartland.batterybutler.usecase.BatchAddDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.SuggestDeviceIconUseCase
+import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -31,8 +32,7 @@ class AddDeviceTypeViewModel(
         .map { types -> types.mapNotNull { it.defaultIcon }.distinct() }
         .stateIn(
             scope = viewModelScope,
-            started = kotlinx.coroutines.flow.SharingStarted
-                .WhileSubscribed(5000),
+            started = defaultWhileSubscribed(),
             initialValue = emptyList(),
         )
 
