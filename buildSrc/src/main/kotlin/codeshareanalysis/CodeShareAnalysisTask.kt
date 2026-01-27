@@ -1,11 +1,25 @@
 package codeshareanalysis
 
 import org.gradle.api.DefaultTask
+import org.gradle.api.file.FileTree
+import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
 import java.io.File
 
 abstract class CodeShareAnalysisTask : DefaultTask() {
+    private val config = CodeShareConfig.default
+
+    @get:InputFiles
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    val sourceFiles: FileTree
+        get() = project.rootProject.fileTree(project.rootProject.projectDir) {
+            include(config.fileExtensions.map { "**/*.$it" })
+            exclude(config.ignoredDirs.map { "**$it**" })
+        }
+
     @get:OutputFile
     val reportFile: File = project.rootProject.file("docs/Code_Share_Analysis.md")
 
@@ -16,7 +30,7 @@ abstract class CodeShareAnalysisTask : DefaultTask() {
 
     @TaskAction
     fun analyze() {
-        val scanner = CodeScanner(project)
+        val scanner = CodeScanner(project, config)
         val generator = ReportGenerator()
 
         println("Scanning codebase for lines of code...")

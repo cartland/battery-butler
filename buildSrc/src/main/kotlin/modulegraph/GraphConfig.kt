@@ -19,6 +19,7 @@ data class GraphConfig(
     data class MermaidCli(
         val theme: String,
         val cssFile: String,
+        val npxSearchPaths: List<String>,
     )
 
     data class ScannerConfig(
@@ -81,6 +82,11 @@ data class GraphConfig(
             mermaidCli = MermaidCli(
                 theme = "default",
                 cssFile = "buildSrc/config/mermaid/mermaid.css",
+                npxSearchPaths = listOf(
+                    "/usr/local/bin/npx",
+                    "/opt/homebrew/bin/npx",
+                    "/usr/bin/npx",
+                ),
             ),
             scanner = ScannerConfig(
                 gradleConfigurations = listOf(

@@ -1,25 +1,25 @@
 # Code Share Analysis
 
 This document provides a breakdown of the codebase by application layer and module.
-Total Lines of Code: 13732
-Generated at: 2026-01-27T02:44:28.533964Z
+Total Lines of Code: 13748
+Generated at: 2026-01-27T05:15:59.287848Z
 
 ## Application Breakdown
 * Shared Code: 8,407 lines (61.2%)
 * CMP Android, iOS, Desktop: 1,456 lines (10.6%)
-* Other: 1,338 lines (9.7%)
+* Other: 1,354 lines (9.8%)
 * iOS Swift App: 1,019 lines (7.4%)
 * Server: 847 lines (6.2%)
 * Android Screenshot Tests: 665 lines (4.8%)
 
 ## Module Breakdown
-* `:presentation-feature`: 3,125 lines (22.8%)
+* `:presentation-feature`: 3,125 lines (22.7%)
 * `:compose-app`: 1,456 lines (10.6%)
 * `:presentation-core`: 1,204 lines (8.8%)
 * `:iosAppSwiftUI.xcodeproj`: 1,019 lines (7.4%)
 * `:usecase`: 994 lines (7.2%)
-* `:viewmodel`: 941 lines (6.9%)
-* `:buildSrc`: 815 lines (5.9%)
+* `:viewmodel`: 941 lines (6.8%)
+* `:buildSrc`: 831 lines (6.0%)
 * `:data-network`: 788 lines (5.7%)
 * `:android-screenshot-tests`: 665 lines (4.8%)
 * `:server:app`: 662 lines (4.8%)
