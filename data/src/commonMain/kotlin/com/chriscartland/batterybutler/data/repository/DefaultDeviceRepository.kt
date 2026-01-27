@@ -43,8 +43,7 @@ class DefaultDeviceRepository(
                 }
             } catch (e: Exception) {
                 if (e is CancellationException) throw e
-                // Log error quietly unless critical
-                e.printStackTrace()
+                Logger.e("BatteryButlerRepo") { "Error receiving remote updates: ${e.message}" }
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.chriscartland.batterybutler.datanetwork.grpc
 
+import co.touchlab.kermit.Logger
 import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
 import com.squareup.wire.GrpcCall
@@ -44,7 +45,7 @@ class DelegatingGrpcClient(
                                 GrpcClientState.Ready(factory(url))
                             } catch (e: Exception) {
                                 if (e is CancellationException) throw e
-                                e.printStackTrace()
+                                Logger.e("DelegatingGrpcClient") { "Failed to create gRPC client: ${e.message}" }
                                 GrpcClientState.Uninitialized // Or Error state?
                             }
                         }
@@ -58,7 +59,7 @@ class DelegatingGrpcClient(
                                 GrpcClientState.Ready(factory(url))
                             } catch (e: Exception) {
                                 if (e is CancellationException) throw e
-                                e.printStackTrace()
+                                Logger.e("DelegatingGrpcClient") { "Failed to create gRPC client: ${e.message}" }
                                 GrpcClientState.Uninitialized
                             }
                         }

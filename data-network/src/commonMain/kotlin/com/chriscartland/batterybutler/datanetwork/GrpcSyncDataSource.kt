@@ -52,7 +52,7 @@ class GrpcSyncDataSource(
             response.success
         } catch (e: Exception) {
             if (e is CancellationException) throw e
-            e.printStackTrace()
+            Logger.e("BatteryButlerGrpc") { "Push update failed: ${e.message}" }
             false
         }
 }
