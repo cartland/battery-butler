@@ -113,7 +113,6 @@ dependencies {
 
     add("kspAndroid", libs.androidx.room.compiler)
     add("kspAndroid", libs.kotlin.inject.compiler)
-    add("kspAndroid", libs.kotlin.inject.compiler)
 
     add("kspIosX64", libs.androidx.room.compiler)
     add("kspIosX64", libs.kotlin.inject.compiler)

@@ -64,9 +64,7 @@ kotlin {
             implementation(project(":viewmodel"))
             implementation(project(":ai"))
             implementation(project(":usecase"))
-            implementation(project(":usecase"))
             // implementation(project(":networking")) // Provided by :data
-            implementation(project(":compose-resources"))
             implementation(project(":compose-resources"))
 
             implementation(libs.androidx.nav3.ui)
@@ -244,8 +242,6 @@ dependencies {
     add("kspAndroid", libs.kotlin.inject.compiler)
     add("kspIosX64", libs.kotlin.inject.compiler)
     add("kspIosArm64", libs.kotlin.inject.compiler)
-    add("kspIosSimulatorArm64", libs.kotlin.inject.compiler)
-    add("kspDesktop", libs.kotlin.inject.compiler)
     add("kspIosSimulatorArm64", libs.kotlin.inject.compiler)
     add("kspDesktop", libs.kotlin.inject.compiler)
 }
