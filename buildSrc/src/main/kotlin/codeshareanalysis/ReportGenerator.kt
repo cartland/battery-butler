@@ -17,13 +17,6 @@ class ReportGenerator {
         sb.appendLine()
 
         sb.appendLine("## Application Breakdown")
-        // Sort buckets by size or predefined order?
-        // User's example had specific order.
-        // Let's sort by size descending to match the "Module Breakdown" request, or default config order?
-        // User request: "Application Breakdown... predefined categories"
-        // Let's stick to config order if possible, or Size.
-        // User Example: Shared (68%), CMP (13%), iOS (0.2%). It seems Size descending.
-
         val sortedBuckets = result.bucketCounts.toList().sortedByDescending { it.second }
 
         sortedBuckets.forEach { (name, count) ->

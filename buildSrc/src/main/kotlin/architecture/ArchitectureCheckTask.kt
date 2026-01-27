@@ -18,7 +18,7 @@ open class ArchitectureCheckTask : DefaultTask() {
             ":domain",
             ":ai",
             ":presentation-model",
-        ), // AI is allowed for now until Phase 1 fully completes? No, Phase 1 removed it from ViewModel, but UseCase uses AI.
+        ),
         ":presentation-model" to listOf(":domain"),
         ":viewmodel" to listOf(":usecase", ":domain", ":presentation-model"),
         ":presentation-core" to listOf(":domain", ":presentation-model", ":compose-resources"),
@@ -50,10 +50,6 @@ open class ArchitectureCheckTask : DefaultTask() {
             val allowed = allowedDependencies[moduleName]
 
             if (allowed == null && !moduleName.startsWith(":server")) {
-                // Determine if we should enforce for this module
-                // For now, let's just log or skip unknown modules if they aren't critical
-                // But better to be strict.
-                // violations.add("Module $moduleName is not defined in architecture rules.")
                 return@forEach
             }
 
