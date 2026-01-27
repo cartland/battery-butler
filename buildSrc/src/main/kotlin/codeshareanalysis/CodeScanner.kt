@@ -48,12 +48,7 @@ class CodeScanner(
         return ScanResult(totalLines, bucketMap, moduleMap)
     }
 
-    private fun countLines(file: File): Int {
-        // Simple line count, ignoring empty lines maybe?
-        // User didn't specify, but standard LOC usually implies non-empty or just raw lines.
-        // Let's do raw lines for simplicity and predictability.
-        return file.readLines().size
-    }
+    private fun countLines(file: File): Int = file.readLines().size
 
     private fun findModuleForFile(
         file: File,
@@ -63,16 +58,9 @@ class CodeScanner(
         var current = file.parentFile
         while (current != null && current != rootDir && current.path.startsWith(rootDir.path)) {
             if (File(current, "build.gradle.kts").exists() || File(current, "build.gradle").exists()) {
-                // Determine module spec path (e.g. :server:app)
                 return getGradleProjectPath(current, rootDir)
             }
-            // Also handle Xcode projects?
-            // "This must handle Xcode projects... described by their Gradle module name :domain etc...
-            // wait, Xcode projects are NOT gradle modules usually.
-            // But the user sample said: ":<module_name>".
-            // For Xcode projects like "ios-app-swift-ui", maybe we just use that folder name as the module name?
-            // Check for Xcode project in this directory
-            // Check for Xcode project in this directory
+            // Handle Xcode projects (use folder name as module name)
             val xcodeProj = current.listFiles()?.firstOrNull { it.name.endsWith(".xcodeproj") }
             if (xcodeProj != null) {
                 return ":" + xcodeProj.name
