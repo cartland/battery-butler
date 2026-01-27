@@ -5,6 +5,8 @@ import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.SyncStatus
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
+import com.chriscartland.batterybutler.presentationmodel.home.GroupOption
+import com.chriscartland.batterybutler.presentationmodel.home.SortOption
 import com.chriscartland.batterybutler.usecase.ExportDataUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.GetDevicesUseCase
@@ -24,9 +26,12 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
+import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class, ExperimentalTime::class)
 class HomeViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
 
@@ -60,28 +65,12 @@ class HomeViewModelTest {
     fun `loads devices and types`() =
         runTest {
             val repo = FakeDeviceRepository()
-            val device = Device(
-                id = "1",
-                name = "Test Device",
-                typeId = "type-1",
-                batteryLastReplaced = Instant.DISTANT_PAST,
-                lastUpdated = Instant.DISTANT_PAST,
-            )
+            val device = createDevice(id = "1", name = "Test Device", typeId = "type-1")
             val type = DeviceType(id = "type-1", name = "Test Type")
             repo.setDevices(listOf(device))
             repo.setDeviceTypes(listOf(type))
 
             val viewModel = createViewModel(repo)
-
-            // Trigger collection (stateIn is lazy/WhileSubscribed)
-            // usage of runTest with StandardTestDispatcher might require advanceUntilIdle if we used launch
-            // but stateIn initial value + flow updates should work.
-
-            // We need to collect the flow to get updates.
-            // Combining flows in ViewModel happens immediately? No, it's a StateFlow.
-            // The repository emits flowOf(devices).
-
-            // With StandardTestDispatcher, we might need to yield.
 
             val state = viewModel.uiState.first {
                 it.groupedDevices.values
@@ -98,6 +87,152 @@ class HomeViewModelTest {
             assertEquals(device, state.groupedDevices.values.flatten()[0])
             assertEquals("Test Type", state.deviceTypes["type-1"]?.name)
         }
+
+    @Test
+    fun `devices are sorted by name by default`() =
+        runTest {
+            val repo = FakeDeviceRepository()
+            val deviceA = createDevice(id = "1", name = "Alpha")
+            val deviceB = createDevice(id = "2", name = "Zulu")
+            val deviceC = createDevice(id = "3", name = "Bravo")
+            repo.setDevices(listOf(deviceB, deviceA, deviceC))
+
+            val viewModel = createViewModel(repo)
+
+            val state = viewModel.uiState.first {
+                it.groupedDevices.values
+                    .flatten()
+                    .size == 3
+            }
+            val devices = state.groupedDevices.values.flatten()
+
+            assertEquals("Alpha", devices[0].name)
+            assertEquals("Bravo", devices[1].name)
+            assertEquals("Zulu", devices[2].name)
+        }
+
+    @Test
+    fun `onSortOptionSelected changes sort option`() =
+        runTest {
+            val repo = FakeDeviceRepository()
+            val viewModel = createViewModel(repo)
+
+            viewModel.onSortOptionSelected(SortOption.LOCATION)
+
+            val state = viewModel.uiState.first { it.sortOption == SortOption.LOCATION }
+            assertEquals(SortOption.LOCATION, state.sortOption)
+        }
+
+    @Test
+    fun `onGroupOptionSelected changes group option`() =
+        runTest {
+            val repo = FakeDeviceRepository()
+            val viewModel = createViewModel(repo)
+
+            viewModel.onGroupOptionSelected(GroupOption.TYPE)
+
+            val state = viewModel.uiState.first { it.groupOption == GroupOption.TYPE }
+            assertEquals(GroupOption.TYPE, state.groupOption)
+        }
+
+    @Test
+    fun `toggleSortDirection inverts sort direction`() =
+        runTest {
+            val repo = FakeDeviceRepository()
+            val viewModel = createViewModel(repo)
+
+            val initialState = viewModel.uiState.first()
+            assertTrue(initialState.isSortAscending)
+
+            viewModel.toggleSortDirection()
+
+            val updatedState = viewModel.uiState.first { !it.isSortAscending }
+            assertFalse(updatedState.isSortAscending)
+        }
+
+    @Test
+    fun `toggleGroupDirection inverts group direction`() =
+        runTest {
+            val repo = FakeDeviceRepository()
+            val viewModel = createViewModel(repo)
+
+            val initialState = viewModel.uiState.first()
+            assertTrue(initialState.isGroupAscending)
+
+            viewModel.toggleGroupDirection()
+
+            val updatedState = viewModel.uiState.first { !it.isGroupAscending }
+            assertFalse(updatedState.isGroupAscending)
+        }
+
+    @Test
+    fun `grouping by type groups devices correctly`() =
+        runTest {
+            val repo = FakeDeviceRepository()
+            val type1 = DeviceType(id = "type-1", name = "Smoke Detector")
+            val type2 = DeviceType(id = "type-2", name = "Remote")
+            val device1 = createDevice(id = "1", name = "Kitchen Smoke", typeId = "type-1")
+            val device2 = createDevice(id = "2", name = "Living Room Smoke", typeId = "type-1")
+            val device3 = createDevice(id = "3", name = "TV Remote", typeId = "type-2")
+            repo.setDeviceTypes(listOf(type1, type2))
+            repo.setDevices(listOf(device1, device2, device3))
+
+            val viewModel = createViewModel(repo)
+            viewModel.onGroupOptionSelected(GroupOption.TYPE)
+
+            val state = viewModel.uiState.first {
+                it.groupOption == GroupOption.TYPE &&
+                    it.groupedDevices.values
+                        .flatten()
+                        .size == 3
+            }
+
+            assertTrue(state.groupedDevices.containsKey("Smoke Detector"))
+            assertTrue(state.groupedDevices.containsKey("Remote"))
+            assertEquals(2, state.groupedDevices["Smoke Detector"]?.size)
+            assertEquals(1, state.groupedDevices["Remote"]?.size)
+        }
+
+    @Test
+    fun `grouping by location groups devices correctly`() =
+        runTest {
+            val repo = FakeDeviceRepository()
+            val device1 = createDevice(id = "1", name = "Device 1", location = "Kitchen")
+            val device2 = createDevice(id = "2", name = "Device 2", location = "Kitchen")
+            val device3 = createDevice(id = "3", name = "Device 3", location = "Bedroom")
+            repo.setDevices(listOf(device1, device2, device3))
+
+            val viewModel = createViewModel(repo)
+            viewModel.onGroupOptionSelected(GroupOption.LOCATION)
+
+            val state = viewModel.uiState.first {
+                it.groupOption == GroupOption.LOCATION &&
+                    it.groupedDevices.values
+                        .flatten()
+                        .size == 3
+            }
+
+            assertTrue(state.groupedDevices.containsKey("Kitchen"))
+            assertTrue(state.groupedDevices.containsKey("Bedroom"))
+            assertEquals(2, state.groupedDevices["Kitchen"]?.size)
+            assertEquals(1, state.groupedDevices["Bedroom"]?.size)
+        }
+
+    private fun createDevice(
+        id: String,
+        name: String,
+        typeId: String = "type-1",
+        location: String? = null,
+        batteryLastReplaced: Instant = Instant.DISTANT_PAST,
+    ): Device =
+        Device(
+            id = id,
+            name = name,
+            typeId = typeId,
+            batteryLastReplaced = batteryLastReplaced,
+            lastUpdated = Instant.DISTANT_PAST,
+            location = location,
+        )
 
     private fun createViewModel(repo: DeviceRepository): HomeViewModel =
         HomeViewModel(
