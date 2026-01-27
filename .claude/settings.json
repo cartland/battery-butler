@@ -15,6 +15,7 @@
       "Bash(git ls-files:*)",
       "Bash(gh pr:*)",
       "Bash(gh api:*)",
+      "Bash(gh workflow:*)",
       "Bash(./scripts/validate.sh)",
       "Bash(./scripts/spotless-apply.sh)",
       "Bash(./scripts/format.sh)",
@@ -31,7 +32,11 @@
       "Bash(xcodebuild:*)",
       "Bash(grep:*)",
       "Bash(cd:*)",
-      "Edit(**/*)"
+      "Read(**/*)",
+      "Edit(**/*)",
+      "Write(**/*)",
+      "Glob(**/*)",
+      "Grep(**/*)"
     ]
   }
 }
