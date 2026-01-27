@@ -47,12 +47,28 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.chriscartland.batterybutler.composeresources.generated.resources.Res
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_batch_import_ai
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_cancel
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_process_ai
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_save
+import com.chriscartland.batterybutler.composeresources.generated.resources.add_device_manual_entry
+import com.chriscartland.batterybutler.composeresources.generated.resources.add_device_title
+import com.chriscartland.batterybutler.composeresources.generated.resources.content_desc_manage_types
+import com.chriscartland.batterybutler.composeresources.generated.resources.label_ai_output
+import com.chriscartland.batterybutler.composeresources.generated.resources.label_device_name
+import com.chriscartland.batterybutler.composeresources.generated.resources.label_device_type
+import com.chriscartland.batterybutler.composeresources.generated.resources.label_location
+import com.chriscartland.batterybutler.composeresources.generated.resources.placeholder_add_device_ai
+import com.chriscartland.batterybutler.composeresources.generated.resources.status_confirmed
+import com.chriscartland.batterybutler.composeresources.generated.resources.status_processing
 import com.chriscartland.batterybutler.domain.model.BatchOperationResult
 import com.chriscartland.batterybutler.domain.model.DeviceInput
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMapper
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -75,11 +91,11 @@ fun AddDeviceContent(
         modifier = modifier,
         topBar = {
             ButlerCenteredTopAppBar(
-                title = "Add Device",
+                title = stringResource(Res.string.add_device_title),
                 onBack = onBack,
                 navigationIcon = {
                     TextButton(onClick = onBack) {
-                        Text("Cancel", color = MaterialTheme.colorScheme.primary)
+                        Text(stringResource(Res.string.action_cancel), color = MaterialTheme.colorScheme.primary)
                     }
                 },
                 actions = {
@@ -97,7 +113,7 @@ fun AddDeviceContent(
                         }
                     }) {
                         Text(
-                            "Save",
+                            stringResource(Res.string.action_save),
                             color = if (name.isNotBlank() && selectedType != null) {
                                 MaterialTheme.colorScheme.primary
                             } else {
@@ -143,7 +159,7 @@ fun AddDeviceAiSection(
     // AI Section
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
-            "Batch Import (AI)",
+            stringResource(Res.string.action_batch_import_ai),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.padding(bottom = 8.dp),
@@ -158,7 +174,7 @@ fun AddDeviceAiSection(
                 value = aiInput,
                 onValueChange = { aiInput = it },
                 modifier = Modifier.weight(1f),
-                placeholder = { Text("E.g. Add Fire Alarm in Hallway") },
+                placeholder = { Text(stringResource(Res.string.placeholder_add_device_ai)) },
                 maxLines = 3,
             )
             IconButton(
@@ -170,12 +186,16 @@ fun AddDeviceAiSection(
                 },
                 enabled = aiInput.isNotBlank(),
             ) {
-                Icon(Icons.Default.AutoAwesome, contentDescription = "Process with AI")
+                Icon(Icons.Default.AutoAwesome, contentDescription = stringResource(Res.string.action_process_ai))
             }
         }
 
         if (aiMessages.isNotEmpty()) {
-            Text("AI Output:", style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(top = 8.dp))
+            Text(
+                stringResource(Res.string.label_ai_output),
+                style = MaterialTheme.typography.labelMedium,
+                modifier = Modifier.padding(top = 8.dp),
+            )
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -226,14 +246,14 @@ fun AddDeviceManualSection(
         modifier = Modifier.fillMaxWidth(),
     ) {
         Text(
-            "Manual Entry",
+            stringResource(Res.string.add_device_manual_entry),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.primary,
         )
         OutlinedTextField(
             value = name,
             onValueChange = onNameChange,
-            label = { Text("Device Name") },
+            label = { Text(stringResource(Res.string.label_device_name)) },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
@@ -245,7 +265,7 @@ fun AddDeviceManualSection(
         OutlinedTextField(
             value = location,
             onValueChange = onLocationChange,
-            label = { Text("Location") },
+            label = { Text(stringResource(Res.string.label_location)) },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
@@ -268,7 +288,7 @@ fun AddDeviceManualSection(
                 OutlinedTextField(
                     value = selectedType?.name ?: "",
                     onValueChange = {},
-                    label = { Text("Device Type") },
+                    label = { Text(stringResource(Res.string.label_device_type)) },
                     leadingIcon = if (selectedType != null) {
                         {
                             Icon(
@@ -322,7 +342,7 @@ fun AddDeviceManualSection(
                 contentPadding = PaddingValues(0.dp),
                 modifier = Modifier.size(56.dp),
             ) {
-                Icon(Icons.Default.DevicesOther, contentDescription = "Manage Types")
+                Icon(Icons.Default.DevicesOther, contentDescription = stringResource(Res.string.content_desc_manage_types))
             }
         }
     }
@@ -335,9 +355,9 @@ fun AddDeviceAiSectionPreview() {
         AddDeviceAiSection(
             aiMessages = listOf(
                 com.chriscartland.batterybutler.domain.model.BatchOperationResult
-                    .Progress("Example prompt"),
+                    .Progress(stringResource(Res.string.status_processing)),
                 com.chriscartland.batterybutler.domain.model.BatchOperationResult
-                    .Success("Example response"),
+                    .Success(stringResource(Res.string.status_confirmed)),
             ),
             onBatchAdd = {},
         )
