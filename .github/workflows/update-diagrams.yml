@@ -69,7 +69,7 @@ jobs:
           fi
           
           # Commit Changes
-          git add .
+          git add docs/
           git commit -m "Docs: Auto-update architecture diagrams (${{ matrix.os }})"
           git pull --rebase origin main
           git push origin main
