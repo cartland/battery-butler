@@ -11,4 +11,9 @@ data class Device(
     val lastUpdated: Instant,
     val location: String? = null,
     val imagePath: String? = null,
-)
+) {
+    init {
+        require(id.isNotBlank()) { "Device ID cannot be blank" }
+        require(name.isNotBlank()) { "Device name cannot be blank" }
+    }
+}
