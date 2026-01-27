@@ -23,4 +23,25 @@
     <string name="network_mode_mock">Mock</string>
     <string name="network_mode_grpc_local">gRPC Local</string>
     <string name="network_mode_grpc_aws">AWS Cloud</string>
+    <!-- Add Device Type -->
+    <string name="add_device_type_title">New Device Type</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_save">Save</string>
+    <string name="action_batch_import_ai">Batch Import (AI)</string>
+    <string name="placeholder_batch_import">E.g. Add AA, AAA, and 9V types</string>
+    <string name="action_process_ai">Process with AI</string>
+    <string name="label_ai_output">AI Output:</string>
+    <string name="status_processing">Processing...</string>
+    <string name="status_confirmed">Confirmed.</string>
+    <string name="label_icon">Icon</string>
+    <string name="label_device_details">Device Details</string>
+    <string name="label_name">Name</string>
+    <string name="placeholder_device_name">e.g. Xbox Controller</string>
+    <string name="content_desc_suggest_icon">Suggest Icon</string>
+    <string name="label_battery_type">Battery Type</string>
+    <string name="label_battery_type_hint">Battery Type (e.g., AA)</string>
+    <string name="label_battery_quantity">Battery Quantity</string>
+    <string name="content_desc_batteries_needed">Batteries needed</string>
+    <string name="action_decrease">Decrease</string>
+    <string name="action_increase">Increase</string>
 </resources>
