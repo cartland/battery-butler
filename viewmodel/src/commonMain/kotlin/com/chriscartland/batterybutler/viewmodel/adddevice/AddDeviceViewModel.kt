@@ -8,7 +8,7 @@ import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.usecase.AddDeviceUseCase
 import com.chriscartland.batterybutler.usecase.BatchAddDevicesUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
-import kotlinx.coroutines.flow.SharingStarted
+import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -27,7 +27,7 @@ class AddDeviceViewModel(
     val deviceTypes: StateFlow<List<DeviceType>> = getDeviceTypesUseCase()
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
+            started = defaultWhileSubscribed(),
             initialValue = emptyList(),
         )
 

@@ -7,8 +7,8 @@ import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
 import com.chriscartland.batterybutler.usecase.ExportDataUseCase
 import com.chriscartland.batterybutler.usecase.GetAppVersionUseCase
+import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -24,7 +24,7 @@ class SettingsViewModel(
     val networkMode: StateFlow<NetworkMode> = networkModeRepository.networkMode
         .stateIn(
             viewModelScope,
-            SharingStarted.WhileSubscribed(5000),
+            defaultWhileSubscribed(),
             NetworkMode.Mock,
         )
 

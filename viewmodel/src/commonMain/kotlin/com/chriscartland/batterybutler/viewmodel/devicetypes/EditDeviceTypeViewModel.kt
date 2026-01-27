@@ -7,7 +7,7 @@ import com.chriscartland.batterybutler.presentationmodel.devicetypes.EditDeviceT
 import com.chriscartland.batterybutler.usecase.DeleteDeviceTypeUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.UpdateDeviceTypeUseCase
-import kotlinx.coroutines.flow.SharingStarted
+import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -46,7 +46,7 @@ class EditDeviceTypeViewModel(
             }
         }.stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
+            started = defaultWhileSubscribed(),
             initialValue = EditDeviceTypeUiState.Loading,
         )
 
