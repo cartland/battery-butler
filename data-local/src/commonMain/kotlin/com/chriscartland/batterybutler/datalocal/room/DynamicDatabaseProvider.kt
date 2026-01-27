@@ -15,18 +15,18 @@ class DynamicDatabaseProvider(
     private val networkModeRepository: NetworkModeRepository,
     private val scope: CoroutineScope,
 ) {
-    private val initialDbName = "battery-butler.db"
-    private var currentDbName: String = initialDbName
-    private val _database = MutableStateFlow(factory.createDatabase(initialDbName))
+    private var currentDbName: String = DatabaseConstants.PRODUCTION_DATABASE_NAME
+    private val _database = MutableStateFlow(factory.createDatabase(DatabaseConstants.PRODUCTION_DATABASE_NAME))
     val database: StateFlow<AppDatabase> = _database.asStateFlow()
 
     init {
         scope.launch {
             networkModeRepository.networkMode.collect { mode ->
                 val targetName = when (mode) {
-                    NetworkMode.Mock -> "battery-butler-dev.db"
-                    is NetworkMode.GrpcLocal -> "battery-butler.db"
-                    is NetworkMode.GrpcAws -> "battery-butler.db"
+                    NetworkMode.Mock -> DatabaseConstants.DEVELOPMENT_DATABASE_NAME
+                    is NetworkMode.GrpcLocal,
+                    is NetworkMode.GrpcAws,
+                    -> DatabaseConstants.PRODUCTION_DATABASE_NAME
                 }
 
                 if (targetName != currentDbName) {
