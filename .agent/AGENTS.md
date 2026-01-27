@@ -38,6 +38,12 @@ This document outlines the shared principles and workflow for all AI agents cont
   - **Always** update `.agent/` documentation when learning a critical piece of information that will improve future agent performance. This ensures continuous learning and improvement for all agents.
   - **Always** update `.agent/rules.md` when adding new rules or best practices for the project.
 
+- **Bash Commands**:
+  - **Always** run bash commands as separate tool calls instead of combining them with `&&`, `||`, or `for` loops.
+  - **Never** write shell scripts with control flow (loops, conditionals) in a single bash command.
+  - **Example**: Instead of `gh pr merge 1 && gh pr merge 2`, make two separate bash tool calls.
+  - This makes command execution more transparent and easier to debug.
+
 - **Git**:
   - **Always** use non-interactive flags for commands that might open an editor (e.g., `git cherry-pick --continue --no-edit`). This prevents the shell from getting stuck waiting for user input.
   - **Always** escape special characters in command arguments (e.g., `$` and `` ` ``) to prevent unintended shell expansion. Use single quotes or backslashes (`\`) for escaping.
@@ -60,6 +66,16 @@ This document outlines the shared principles and workflow for all AI agents cont
   - **Always** run `./scripts/validate.sh` before pushing to main. This script is maintained to match `ci.yml` strictly.
   - **Always** run `./scripts/spotless-apply.sh` and fix errors before pushing to main.
   - **Avoid** `clean` steps in scripts and CI if possible, relying on Gradle's incremental build and caching for speed.
+
+- **CI Workflow Synchronization**:
+  - **When changing JDK version**: Update ALL workflow files in `.github/workflows/` that use `setup-java`.
+  - **When changing Gradle version**: Verify all workflows use compatible settings.
+  - **When changing tooling requirements**: Check auxiliary workflows (update-diagrams.yml, update-screenshots.yml) in addition to main CI.
+  - **Checklist for tooling changes**:
+    1. `ci.yml` - Main CI workflow
+    2. `update-diagrams.yml` - Auto-updates architecture diagrams
+    3. `update-screenshots.yml` - Auto-updates Android screenshots
+    4. Any other workflows in `.github/workflows/`
 
 ## Branch Management
 
