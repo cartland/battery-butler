@@ -8,7 +8,6 @@ plugins {
 }
 
 kotlin {
-    jvmToolchain(21)
 }
 
 group = "com.chriscartland.batterybutler.server.app"

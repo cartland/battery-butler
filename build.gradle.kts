@@ -25,6 +25,22 @@ plugins {
 
 allprojects {
     apply(plugin = "com.diffplug.spotless")
+
+    pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
+        extensions.configure<org.jetbrains.kotlin.gradle.dsl.KotlinTopLevelExtension> {
+            jvmToolchain(21)
+        }
+    }
+    pluginManager.withPlugin("org.jetbrains.kotlin.android") {
+        extensions.configure<org.jetbrains.kotlin.gradle.dsl.KotlinTopLevelExtension> {
+            jvmToolchain(21)
+        }
+    }
+    pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
+        extensions.configure<org.jetbrains.kotlin.gradle.dsl.KotlinTopLevelExtension> {
+            jvmToolchain(21)
+        }
+    }
     configure<com.diffplug.gradle.spotless.SpotlessExtension> {
 
         kotlin {

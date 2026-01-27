@@ -10,10 +10,13 @@ class SettingsScreenshotTest {
     @Composable
     fun SettingsContentPreview() {
         SettingsContent(
-            networkMode = NetworkMode.MOCK,
+            networkMode = NetworkMode.Mock,
+            availableNetworkModes = listOf(NetworkMode.Mock),
             onNetworkModeSelected = {},
             onExportData = {},
             onBack = {},
+            appVersion = com.chriscartland.batterybutler.domain.model.AppVersion
+                .Android("1.0.0", 1),
         )
     }
 }
