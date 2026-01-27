@@ -39,6 +39,7 @@ allprojects {
             target("*.gradle.kts")
             if (project == rootProject) {
                 target("*.gradle.kts", "settings.gradle.kts", "buildSrc/**/*.kts")
+                targetExclude("buildSrc/build/**/*.kts")
             }
             ktlint()
         }
