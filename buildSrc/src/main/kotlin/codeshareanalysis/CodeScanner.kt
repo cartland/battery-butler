@@ -97,17 +97,23 @@ class CodeScanner(
     private fun getGitTrackedFiles(rootDir: File): List<File> {
         try {
             // Use -z to separate filenames with null bytes to handle spaces/special chars safely
-            val process = ProcessBuilder("git", "ls-files", "-z")
+            // Set directory explicitly and inherit environment for worktree support
+            val processBuilder = ProcessBuilder("git", "ls-files", "-z")
                 .directory(rootDir)
-                .start()
+                .redirectErrorStream(true)
+
+            // Ensure environment is inherited (especially GIT_DIR for worktrees)
+            processBuilder.environment().putAll(System.getenv())
+
+            val process = processBuilder.start()
 
             val content = process.inputStream.bufferedReader().use { it.readText() }
             val exitCode = process.waitFor()
 
             if (exitCode != 0) {
                 // If git fails (e.g. not a git repo), we might want to fallback or just warn.
-                // For now, returning empty list is safer than crashing, but we log to stderr.
-                System.err.println("Warning: 'git ls-files' failed with exit code $exitCode. Analysis strictly requires a git repository.")
+                System.err.println("Warning: 'git ls-files' failed with exit code $exitCode in directory: ${rootDir.absolutePath}")
+                System.err.println("Output: $content")
                 return emptyList()
             }
 
@@ -116,7 +122,7 @@ class CodeScanner(
                 .filter { it.isNotBlank() }
                 .map { File(rootDir, it) }
         } catch (e: Exception) {
-            e.printStackTrace()
+            System.err.println("Exception running git ls-files: ${e.message}")
             return emptyList()
         }
     }
