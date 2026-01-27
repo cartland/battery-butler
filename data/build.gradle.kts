@@ -33,6 +33,10 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             implementation(libs.uuid)
         }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+            implementation(libs.kotlinx.coroutines.test)
+        }
         androidMain.dependencies {
             // implementation(libs.androidx.room.runtime) // Moved
             // implementation(libs.generativeai) // Moved to :ai
