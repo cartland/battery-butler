@@ -81,12 +81,8 @@ abstract class GenerateGraphTask : DefaultTask() {
         inputMmd: File,
         outputSvg: File,
     ) {
-        val npxPath = listOf(
-            "/Users/cartland/.nvm/versions/node/v24.2.0/bin/npx",
-            "/usr/local/bin/npx",
-            "/opt/homebrew/bin/npx",
-            "/usr/bin/npx",
-        ).firstOrNull { File(it).exists() } ?: "npx"
+        val npxPath = config.mermaidCli.npxSearchPaths
+            .firstOrNull { File(it).exists() } ?: "npx"
 
         println("Generating SVG for ${inputMmd.name} using $npxPath...")
         project.exec {
