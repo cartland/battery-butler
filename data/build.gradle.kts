@@ -4,17 +4,12 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
-    // alias(libs.plugins.room) // Removed
+    id("convention.android-library")
     alias(libs.plugins.ksp)
 }
 
 kotlin {
-    androidTarget {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_21)
-            freeCompilerArgs.add("-Xexpect-actual-classes")
-        }
-    }
+    // androidTarget configured by convention
 
     jvm {
         compilerOptions {
@@ -62,15 +57,7 @@ kotlin {
 
 android {
     namespace = "com.chriscartland.batterybutler.data"
-    compileSdk = libs.versions.android.compileSdk
-        .get()
-        .toInt()
     defaultConfig {
-        minSdk = libs.versions.android.minSdk
-            .get()
-            .toInt()
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
         val localProperties = Properties()
         val localPropertiesFile = rootProject.file("local.properties")
         if (localPropertiesFile.exists()) {
@@ -81,21 +68,6 @@ android {
     }
     buildFeatures {
         buildConfig = true
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
-    }
-    testOptions {
-        managedDevices {
-            devices {
-                maybeCreate<com.android.build.api.dsl.ManagedVirtualDevice>("pixel5api34").apply {
-                    device = "Pixel 5"
-                    apiLevel = 34
-                    systemImageSource = "google"
-                }
-            }
-        }
     }
 }
 
