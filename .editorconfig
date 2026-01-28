@@ -1,35 +1,61 @@
+# EditorConfig for Battery Butler Mobile
+# https://editorconfig.org
+# ktlint uses this file for formatting configuration
+
+root = true
+
+# Default settings for all files
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Kotlin files
 [*.{kt,kts}]
-# Kotlin style typically requires functions to start with a lowercase letter.
-# Composable functions should start with a capital letter.
+indent_size = 4
+
+# Note: Line length is enforced by Detekt (120 chars), not ktlint
+# Disable ktlint's line length rule to avoid duplicate enforcement
+ktlint_standard_max-line-length = disabled
+
+# ============================================================================
+# ktlint Configuration
+# https://pinterest.github.io/ktlint/latest/rules/configuration-ktlint/
+# ============================================================================
+
+# --- Compose Support ---
+# Composable functions use PascalCase (capital first letter) by convention.
+# This tells ktlint to ignore the lowercase function naming rule for @Composable.
 ktlint_function_naming_ignore_when_annotated_with = Composable
 
-# ktlint always puts a new line after a multi-line assignment, like this:
-# val colors =
-#     if (darkTheme) {
-#         darkColorScheme(
-#             primary = Color(0xFFBB86FC),
-#             secondary = Color(0xFF03DAC5),
-#             tertiary = Color(0xFF3700B3),
-#         )
-#     } else {
-#         lightColorScheme(
-#             primary = Color(0xFF6200EE),
-#             secondary = Color(0xFF03DAC5),
-#             tertiary = Color(0xFF3700B3),
-#         )
-#     }
-# But we actually prefer to keep some multi-line assignments on the same line, like this:
-# val colors = if (darkTheme) {
-#     darkColorScheme(
-#         primary = Color(0xFFBB86FC),
-#         secondary = Color(0xFF03DAC5),
-#         tertiary = Color(0xFF3700B3),
-#     )
-# } else {
-#     lightColorScheme(
-#         primary = Color(0xFF6200EE),
-#         secondary = Color(0xFF03DAC5),
-#         tertiary = Color(0xFF3700B3),
-#     )
-# }
+# --- Multiline Expression Wrapping ---
+# ktlint's default puts assignments on a new line after the equals sign:
+#   val colors =
+#       if (darkTheme) { ... }
+#
+# We prefer keeping the expression on the same line when it reads better:
+#   val colors = if (darkTheme) { ... }
 ktlint_standard_multiline-expression-wrapping = disabled
+
+# --- Trailing Commas ---
+# Trailing commas make diffs cleaner and reordering easier.
+# Enabled for multiline declarations (function parameters, collection literals).
+ktlint_standard_trailing-comma-on-call-site = enabled
+ktlint_standard_trailing-comma-on-declaration-site = enabled
+
+# XML and Gradle files
+[*.xml]
+indent_size = 4
+
+[*.gradle.kts]
+indent_size = 4
+
+# Markdown files (preserve trailing whitespace for line breaks)
+[*.md]
+trim_trailing_whitespace = false
+
+# YAML files
+[*.{yml,yaml}]
+indent_size = 2
