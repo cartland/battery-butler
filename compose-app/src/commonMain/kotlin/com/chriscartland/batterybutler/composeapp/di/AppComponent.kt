@@ -63,8 +63,8 @@ abstract class AppComponent(
     abstract val deviceRepository: DeviceRepository
     abstract val settingsViewModel: SettingsViewModel
     abstract val networkModeRepository: NetworkModeRepository
-    abstract val setNetworkModeUseCase: SetNetworkModeUseCase
-    abstract val getAppVersionUseCase: GetAppVersionUseCase
+    abstract override val setNetworkModeUseCase: SetNetworkModeUseCase
+    abstract override val getAppVersionUseCase: GetAppVersionUseCase
     abstract val appScope: CoroutineScope
 
     @Provides
