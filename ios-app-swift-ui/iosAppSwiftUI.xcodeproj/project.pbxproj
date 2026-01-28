@@ -27,6 +27,7 @@
 		24ABD57C2F1CEC230036E1DD /* DeviceTypeListScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24ABD5722F1CEC230036E1DD /* DeviceTypeListScreen.swift */; };
 		24ABD57D2F1CEC230036E1DD /* AddDeviceTypeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24ABD5702F1CEC230036E1DD /* AddDeviceTypeScreen.swift */; };
 		24ABD57E2F1CEC230036E1DD /* DeviceTypeRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24ABD5742F1CEC230036E1DD /* DeviceTypeRow.swift */; };
+		AG1000000000000000000002 /* Generated in Sources */ = {isa = PBXBuildFile; fileRef = AG1000000000000000000001 /* Generated */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -50,6 +51,7 @@
 		24ABD5742F1CEC230036E1DD /* DeviceTypeRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceTypeRow.swift; sourceTree = "<group>"; };
 		24ABD5752F1CEC230036E1DD /* EditDeviceTypeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDeviceTypeScreen.swift; sourceTree = "<group>"; };
 		24ABD5762F1CEC230036E1DD /* EditDeviceTypeViewModelWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDeviceTypeViewModelWrapper.swift; sourceTree = "<group>"; };
+		AG1000000000000000000001 /* Generated */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Generated; sourceTree = "<group>"; };
 		B9DA97B12DC1472C00A4DA20 /* BatteryButler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BatteryButler.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -187,6 +189,7 @@
 				246295A12F14EEF40047C600 /* Features */,
 				B9DA98002DC14AA900A4DA20 /* Configuration */,
 				B9DA97B32DC1472C00A4DA20 /* iosApp */,
+				AG1000000000000000000001 /* Generated */,
 				B9DA97B22DC1472C00A4DA20 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -336,6 +339,7 @@
 				246295AD2F14EEF40047C600 /* HomeScreen.swift in Sources */,
 				246295AE2F14EEF40047C600 /* SettingsScreen.swift in Sources */,
 				246295AF2F14EEF40047C600 /* DeviceDetailViewModelWrapper.swift in Sources */,
+				AG1000000000000000000002 /* Generated in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

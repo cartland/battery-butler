@@ -64,7 +64,7 @@ build_log.txt
 
 # Generated Protos
 networking/src/generated/
-ios-app-swift-ui/Generated/Proto/
+ios-app-swift-ui/Generated/
 
 # Bazel
 .bazel/

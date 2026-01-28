@@ -28,6 +28,7 @@ For a detailed deep-dive into the module structure, dependency graph, and strict
 *   **AI**: Google AI Client SDK (Gemini) / ML Kit.
 *   **Networking**: Ktor & Wire (gRPC).
 *   **Date/Time**: `kotlinx-datetime`.
+*   **Build Systems**: Gradle (Kotlin/Android), Bazel (Proto generation).
 
 ## 🛠 Building and Running
 This project uses Gradle for build and test orchestration.
@@ -47,6 +48,7 @@ This project uses Gradle for build and test orchestration.
 *   Run the Gradle task: `./gradlew :compose-app:run`
 
 ### iOS
+*   **Prerequisite**: Install Bazel for proto generation: `brew install bazelisk`
 *   Open `ios-app-swift-ui/iosAppSwiftUI.xcodeproj` in **Xcode**.
 *   Ensure you have built the KMP framework at least once (`./gradlew :compose-app:embedAndSignAppleFrameworkForXcode`).
 *   Run on an iPhone Simulator or Device.
