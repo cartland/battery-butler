@@ -69,7 +69,8 @@ allprojects {
     }
 
     dependencies {
-        add("detektPlugins", libs.detekt.compose)
+        val libs = rootProject.extensions.getByType<VersionCatalogsExtension>().named("libs")
+        add("detektPlugins", libs.findLibrary("detekt-compose").get())
     }
 }
 
