@@ -37,7 +37,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -227,17 +226,24 @@ fun DeviceDetailBody(
                         Box(
                             modifier = Modifier
                                 .size(40.dp)
-                                .background(Color.White.copy(alpha = 0.2f), RoundedCornerShape(8.dp)),
+                                .background(
+                                    MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f),
+                                    RoundedCornerShape(8.dp),
+                                ),
                             contentAlignment = Alignment.Center,
                         ) {
-                            Icon(Icons.Default.AddCircle, contentDescription = null, tint = Color.White)
+                            Icon(
+                                Icons.Default.AddCircle,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onPrimary,
+                            )
                         }
                         Column(verticalArrangement = Arrangement.Center) {
                             Text("Record Replacement", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                             Text(
                                 "Log battery change for today",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = Color.White.copy(alpha = 0.8f),
+                                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f),
                             )
                         }
                     }
