@@ -1,2 +1,28 @@
+# Symlink prefix to keep bazel outputs organized
 build --symlink_prefix=.bazel/
 query --symlink_prefix=.bazel/
+
+# Enable disk cache for faster rebuilds
+build --disk_cache=~/.cache/bazel-disk-cache
+
+# Enable repository cache for faster dependency resolution
+common --repository_cache=~/.cache/bazel-repo-cache
+
+# Show test output on failure
+test --test_output=errors
+
+# Use worker processes for persistent compilation daemons
+build --worker_sandboxing
+
+# Enable action caching
+build --remote_download_minimal
+
+# Improve error messages
+build --verbose_failures
+
+# Use modern C++ standard for any native compilation
+build --cxxopt=-std=c++17
+
+# Platform-specific optimizations
+build:macos --macos_minimum_os=12.0
+build:linux --copt=-O2
