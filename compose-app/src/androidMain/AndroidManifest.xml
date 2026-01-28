@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- Signature-level permission to protect debug receivers from unauthorized access -->
+    <permission
+        android:name="com.chriscartland.batterybutler.permission.SET_SERVER_URL"
+        android:protectionLevel="signature"
+        android:description="@string/permission_set_server_url_description"
+        android:label="@string/permission_set_server_url_label" />
+
     <application
         android:name="com.chriscartland.batterybutler.BatteryButlerApplication"
         android:allowBackup="true"
@@ -28,10 +35,12 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+        <!-- Debug receiver for changing server URL. Protected by signature permission. -->
         <receiver
             android:name=".ServerUrlReceiver"
             android:enabled="true"
-            android:exported="true">
+            android:exported="true"
+            android:permission="com.chriscartland.batterybutler.permission.SET_SERVER_URL">
             <intent-filter>
                 <action android:name="com.chriscartland.batterybutler.SET_SERVER_URL" />
             </intent-filter>

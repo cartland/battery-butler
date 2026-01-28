@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Battery Butler</string>
+    <string name="permission_set_server_url_label">Set Server URL</string>
+    <string name="permission_set_server_url_description">Allows changing the server URL for network communication. Only apps signed with the same certificate can use this permission.</string>
 </resources>
