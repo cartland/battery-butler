@@ -1,26 +1,62 @@
+// Battery Butler domain model definitions.
+// These protos define the core data structures for device and battery tracking.
 syntax = "proto3";
 
 package com.chriscartland.batterybutler.proto;
 
 option java_multiple_files = true;
 
-
+// Represents a category of devices (e.g., "Smoke Alarm", "Remote Control").
+// Device types define default battery characteristics shared by all devices of that type.
 message ProtoDeviceType {
+  // Unique identifier for the device type.
   string id = 1;
+  // Human-readable name (e.g., "Smoke Alarm").
   string name = 2;
+  // Material Icon name or identifier for UI display (e.g., "detector_smoke").
+  // Empty string if not specified.
+  string default_icon = 3;
+  // Battery type used by devices of this type (e.g., "AA", "9V", "CR2032").
+  // Defaults to "AA" if not specified.
+  string battery_type = 4;
+  // Number of batteries required by devices of this type.
+  // Defaults to 1 if not specified or 0.
+  int32 battery_quantity = 5;
 }
 
+// Represents a specific device instance that uses batteries.
 message ProtoDevice {
+  // Unique identifier for the device.
   string id = 1;
+  // Human-readable name (e.g., "Kitchen Smoke Alarm").
   string name = 2;
+  // Reference to the device's type (foreign key to ProtoDeviceType.id).
   string type_id = 3;
-  string location = 4; // Optional, empty string if null
+  // Physical location of the device (e.g., "Kitchen", "Living Room").
+  // Empty string if not specified.
+  string location = 4;
+  // Timestamp (epoch milliseconds) of the last battery replacement.
+  // 0 indicates no replacement has been recorded.
+  int64 battery_last_replaced_timestamp_ms = 5;
+  // Timestamp (epoch milliseconds) when this device record was last updated.
+  // 0 indicates unknown.
+  int64 last_updated_timestamp_ms = 6;
+  // Path or URL to a custom device image.
+  // Empty string if not specified.
+  string image_path = 7;
 }
 
+// Represents a battery replacement event for a device.
 message ProtoBatteryEvent {
+  // Unique identifier for this event.
   string id = 1;
+  // Reference to the device (foreign key to ProtoDevice.id).
   string device_id = 2;
+  // Timestamp (epoch milliseconds) when the battery was replaced.
   int64 date_timestamp_ms = 3;
+  // Timestamp (epoch milliseconds) when this event record was created.
   int64 created_timestamp_ms = 4;
+  // Optional notes about the replacement (e.g., "Used Duracell batteries").
+  // Empty string if not specified.
   string notes = 5;
 }
