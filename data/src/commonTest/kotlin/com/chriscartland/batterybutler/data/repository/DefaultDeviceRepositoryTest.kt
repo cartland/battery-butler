@@ -365,6 +365,10 @@ class FakeLocalDataSource : LocalDataSource {
         devices.add(device)
     }
 
+    override suspend fun addDevices(devices: List<Device>) {
+        this.devices.addAll(devices)
+    }
+
     override suspend fun updateDevice(device: Device) {
         updatedDevices.add(device)
     }
@@ -379,6 +383,10 @@ class FakeLocalDataSource : LocalDataSource {
 
     override suspend fun addDeviceType(type: DeviceType) {
         deviceTypes.add(type)
+    }
+
+    override suspend fun addDeviceTypes(types: List<DeviceType>) {
+        deviceTypes.addAll(types)
     }
 
     override suspend fun updateDeviceType(type: DeviceType) {
@@ -397,6 +405,10 @@ class FakeLocalDataSource : LocalDataSource {
 
     override suspend fun addEvent(event: BatteryEvent) {
         events.add(event)
+    }
+
+    override suspend fun addEvents(events: List<BatteryEvent>) {
+        this.events.addAll(events)
     }
 
     override suspend fun updateEvent(event: BatteryEvent) {

@@ -37,6 +37,10 @@ class RoomLocalDataSource(
         dao.insertDevice(device.toEntity())
     }
 
+    override suspend fun addDevices(devices: List<Device>) {
+        dao.insertDevices(devices.map { it.toEntity() })
+    }
+
     override suspend fun updateDevice(device: Device) {
         dao.updateDevice(device.toEntity())
     }
@@ -61,6 +65,10 @@ class RoomLocalDataSource(
 
     override suspend fun addDeviceType(type: DeviceType) {
         dao.insertDeviceType(type.toEntity())
+    }
+
+    override suspend fun addDeviceTypes(types: List<DeviceType>) {
+        dao.insertDeviceTypes(types.map { it.toEntity() })
     }
 
     override suspend fun updateDeviceType(type: DeviceType) {
@@ -95,6 +103,10 @@ class RoomLocalDataSource(
 
     override suspend fun addEvent(event: BatteryEvent) {
         dao.insertEvent(event.toEntity())
+    }
+
+    override suspend fun addEvents(events: List<BatteryEvent>) {
+        dao.insertEvents(events.map { it.toEntity() })
     }
 
     override suspend fun updateEvent(event: BatteryEvent) {

@@ -36,9 +36,10 @@ class DefaultDeviceRepository(
                     if (update.isFullSnapshot) {
                         // TODO: Clear local DB? For now, we just insert/update
                     }
-                    update.deviceTypes.forEach { localDataSource.addDeviceType(it) } // Assuming add handles upsert
-                    update.devices.forEach { localDataSource.addDevice(it) }
-                    update.events.forEach { localDataSource.addEvent(it) }
+                    // Use batch operations for better performance
+                    localDataSource.addDeviceTypes(update.deviceTypes)
+                    localDataSource.addDevices(update.devices)
+                    localDataSource.addEvents(update.events)
                 }
             } catch (e: Exception) {
                 if (e is CancellationException) throw e

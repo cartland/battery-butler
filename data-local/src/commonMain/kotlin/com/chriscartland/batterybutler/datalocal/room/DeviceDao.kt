@@ -21,6 +21,9 @@ interface DeviceDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertDevice(device: DeviceEntity)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertDevices(devices: List<DeviceEntity>)
+
     @Update
     suspend fun updateDevice(device: DeviceEntity)
 
@@ -36,6 +39,9 @@ interface DeviceDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertDeviceType(type: DeviceTypeEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertDeviceTypes(types: List<DeviceTypeEntity>)
 
     @Update
     suspend fun updateDeviceType(type: DeviceTypeEntity)
@@ -58,6 +64,9 @@ interface DeviceDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertEvent(event: BatteryEventEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertEvents(events: List<BatteryEventEntity>)
 
     @Update
     suspend fun updateEvent(event: BatteryEventEntity)
