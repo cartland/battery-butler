@@ -275,7 +275,7 @@ class DefaultDeviceRepositoryTest {
         }
 
     @Test
-    fun `syncStatus returns to Idle after successful push`() =
+    fun `syncStatus is Success after successful push`() =
         runTest(testDispatcher) {
             val local = FakeLocalDataSource()
             val remote = FakeRemoteDataSource()
@@ -283,12 +283,32 @@ class DefaultDeviceRepositoryTest {
             val device = createDevice(id = "1", name = "Test Device")
 
             repo.addDevice(device)
-            // Advance past the 2000ms delay in pushUpdate
             advanceUntilIdle()
 
-            // After successful push and delay, syncStatus should return to Idle
+            // After successful push, syncStatus should be Success (UI layer handles dismissal)
             val status = repo.syncStatus.value
-            assertEquals(SyncStatus.Idle, status)
+            assertEquals(SyncStatus.Success, status)
+        }
+
+    @Test
+    fun `dismissSyncStatus returns status to Idle`() =
+        runTest(testDispatcher) {
+            val local = FakeLocalDataSource()
+            val remote = FakeRemoteDataSource()
+            val repo = DefaultDeviceRepository(local, remote, this)
+            val device = createDevice(id = "1", name = "Test Device")
+
+            repo.addDevice(device)
+            advanceUntilIdle()
+
+            // Verify we're in Success state
+            assertEquals(SyncStatus.Success, repo.syncStatus.value)
+
+            // Dismiss the sync status (simulating what UI layer does)
+            repo.dismissSyncStatus()
+
+            // Should return to Idle
+            assertEquals(SyncStatus.Idle, repo.syncStatus.value)
         }
 
     private fun createDevice(

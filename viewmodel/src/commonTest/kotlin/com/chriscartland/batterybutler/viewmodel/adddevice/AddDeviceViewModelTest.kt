@@ -177,6 +177,8 @@ class FakeDeviceRepository : DeviceRepository {
 
     override val syncStatus: StateFlow<SyncStatus> = MutableStateFlow(SyncStatus.Idle)
 
+    override fun dismissSyncStatus() {}
+
     override fun getAllDevices(): Flow<List<Device>> = emptyFlow()
 
     override fun getDeviceById(id: String): Flow<Device?> = emptyFlow()

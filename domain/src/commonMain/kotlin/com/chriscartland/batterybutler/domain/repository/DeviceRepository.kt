@@ -10,6 +10,11 @@ import kotlinx.coroutines.flow.StateFlow
 interface DeviceRepository {
     val syncStatus: StateFlow<SyncStatus>
 
+    /**
+     * Resets sync status to Idle. Call this to dismiss Success or Failed states.
+     */
+    fun dismissSyncStatus()
+
     fun getAllDevices(): Flow<List<Device>>
 
     fun getDeviceById(id: String): Flow<Device?>

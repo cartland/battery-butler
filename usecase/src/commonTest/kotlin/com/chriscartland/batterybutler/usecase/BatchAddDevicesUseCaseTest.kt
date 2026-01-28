@@ -24,6 +24,8 @@ class FakeDeviceRepository : DeviceRepository {
     val deviceTypes = mutableListOf<DeviceType>()
     override val syncStatus: StateFlow<SyncStatus> = MutableStateFlow(SyncStatus.Idle)
 
+    override fun dismissSyncStatus() {}
+
     override fun getAllDevices(): Flow<List<Device>> = flowOf(devices)
 
     override fun getDeviceById(id: String): Flow<Device?> = flowOf(devices.find { it.id == id })
