@@ -50,6 +50,8 @@ awsSdk = "2.25.16"
 postgres = "42.7.2"
 hikari = "5.1.0"
 exposed = "0.50.1"
+composeRules = "0.4.12"
+
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -115,6 +117,8 @@ exposed-dao = { group = "org.jetbrains.exposed", name = "exposed-dao", version.r
 exposed-java-time = { group = "org.jetbrains.exposed", name = "exposed-java-time", version.ref = "exposed" }
 h2 = { group = "com.h2database", name = "h2", version = "2.2.224" }
 kermit = { group = "co.touchlab", name = "kermit", version.ref = "kermit" }
+detekt-compose = { module = "io.nlopez.compose.rules:detekt", version.ref = "composeRules" }
+
 
 [plugins]
 androidApplication = { id = "com.android.application" }

@@ -66,6 +66,11 @@ allprojects {
             // KMP source compatibility
             source.setFrom(files("src"))
         }
+        }
+        
+        dependencies {
+            detektPlugins(rootProject.libs.detekt.compose)
+        }
     }
 }
 
