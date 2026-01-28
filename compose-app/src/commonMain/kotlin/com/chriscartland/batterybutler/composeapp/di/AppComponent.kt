@@ -72,13 +72,11 @@ abstract class AppComponent(
 
     @Provides
     @Singleton
-    override fun provideNetworkModeRepository(repo: InMemoryNetworkModeRepository): NetworkModeRepository =
-        super.provideNetworkModeRepository(repo)
+    override fun provideNetworkModeRepository(repo: InMemoryNetworkModeRepository): NetworkModeRepository = super.provideNetworkModeRepository(repo)
 
     @Provides
     @Singleton
-    override fun provideRemoteDataSource(dataSource: DelegatingRemoteDataSource): RemoteDataSource =
-        super.provideRemoteDataSource(dataSource)
+    override fun provideRemoteDataSource(dataSource: DelegatingRemoteDataSource): RemoteDataSource = super.provideRemoteDataSource(dataSource)
 
     @Provides
     @Singleton
