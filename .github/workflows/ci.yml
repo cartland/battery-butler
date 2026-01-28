@@ -112,9 +112,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Bazel
-        run: brew install bazelisk
-
       - name: Build iOS App (SwiftUI)
         run: |
           cd ios-app-swift-ui
