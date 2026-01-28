@@ -8,11 +8,14 @@ import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeL
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeSortOption
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
+import com.chriscartland.batterybutler.viewmodel.toSortedMap
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import me.tatarka.inject.annotations.Inject
+import kotlin.comparisons.naturalOrder
+import kotlin.comparisons.reverseOrder
 
 @Inject
 class DeviceTypeListViewModel(
@@ -91,13 +94,3 @@ private data class DeviceTypeSortConfig(
     val isSortAsc: Boolean,
     val isGroupAsc: Boolean,
 )
-
-// Custom implementations
-private fun <K : Comparable<K>, V> Map<K, V>.toSortedMap(comparator: Comparator<K>): Map<K, V> =
-    this.entries
-        .sortedWith(Comparator { a, b -> comparator.compare(a.key, b.key) })
-        .associate { it.key to it.value }
-
-private fun <T : Comparable<T>> naturalOrder(): Comparator<T> = Comparator { a, b -> a.compareTo(b) }
-
-private fun <T : Comparable<T>> reverseOrder(): Comparator<T> = Comparator { a, b -> b.compareTo(a) }
