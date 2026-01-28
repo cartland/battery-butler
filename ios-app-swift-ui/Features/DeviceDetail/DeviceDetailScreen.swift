@@ -18,7 +18,7 @@ struct DeviceDetailScreen: View {
                         HStack {
                             Image(systemName: "cpu") // Placeholder
                                 .font(.system(size: 60))
-                                .foregroundColor(.blue)
+                                .foregroundColor(.accentColor)
                             
                             VStack(alignment: .leading) {
                                 Text(success.device.name)
@@ -42,7 +42,7 @@ struct DeviceDetailScreen: View {
                             Text("Replaced Battery")
                                 .frame(maxWidth: .infinity)
                                 .padding()
-                                .background(Color.green)
+                                .background(Color.accentColor)
                                 .foregroundColor(.white)
                                 .cornerRadius(10)
                         }
