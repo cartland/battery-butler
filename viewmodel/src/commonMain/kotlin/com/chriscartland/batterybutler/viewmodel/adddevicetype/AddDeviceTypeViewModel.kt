@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 import kotlin.uuid.ExperimentalUuidApi
@@ -73,7 +74,7 @@ class AddDeviceTypeViewModel(
     fun batchAddDeviceTypes(input: String) {
         viewModelScope.launch {
             batchAddDeviceTypesUseCase(input).collect { message ->
-                _aiMessages.value += message
+                _aiMessages.update { it + message }
             }
         }
     }
