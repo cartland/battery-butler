@@ -173,7 +173,22 @@ naming:
     excludeClassPattern: '$^'
 
 performance:
-  active: false
+  active: true
+  ArrayPrimitive:
+    active: true
+  CouldBeSequence:
+    active: false
+    threshold: 3
+  ForEachOnRange:
+    active: true
+    excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**']
+  SpreadOperator:
+    active: true
+    excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**']
+  UnnecessaryPartOfBinaryExpression:
+    active: true
+  UnnecessaryTemporaryInstantiation:
+    active: true
 
 potential-bugs:
   active: true
