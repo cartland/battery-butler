@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
@@ -95,10 +96,10 @@ fun App(
                         DevicesScreenRoot(
                             viewModel = homeViewModel,
                             onTabSelected = onTabSelected,
-                            onSettingsClick = { backStack.add(Screen.Settings) },
-                            onAddDeviceClick = { backStack.add(Screen.AddDevice) },
+                            onSettingsClick = { backStack.navigateTo(Screen.Settings) },
+                            onAddDeviceClick = { backStack.navigateTo(Screen.AddDevice) },
                             onDeviceClick = { deviceId ->
-                                backStack.add(Screen.DeviceDetail(deviceId))
+                                backStack.navigateTo(Screen.DeviceDetail(deviceId))
                             },
                         )
                     }
@@ -108,9 +109,9 @@ fun App(
                         TypesScreenRoot(
                             viewModel = deviceTypeListViewModel,
                             onTabSelected = onTabSelected,
-                            onSettingsClick = { backStack.add(Screen.Settings) },
-                            onAddTypeClick = { backStack.add(Screen.AddDeviceType) },
-                            onEditType = { typeId -> backStack.add(Screen.EditDeviceType(typeId)) },
+                            onSettingsClick = { backStack.navigateTo(Screen.Settings) },
+                            onAddTypeClick = { backStack.navigateTo(Screen.AddDeviceType) },
+                            onEditType = { typeId -> backStack.navigateTo(Screen.EditDeviceType(typeId)) },
                         )
                     }
 
@@ -119,10 +120,10 @@ fun App(
                         HistoryScreenRoot(
                             viewModel = historyListViewModel,
                             onTabSelected = onTabSelected,
-                            onSettingsClick = { backStack.add(Screen.Settings) },
-                            onAddEventClick = { backStack.add(Screen.AddBatteryEvent) },
+                            onSettingsClick = { backStack.navigateTo(Screen.Settings) },
+                            onAddEventClick = { backStack.navigateTo(Screen.AddBatteryEvent) },
                             onEventClick = { eventId, deviceId ->
-                                backStack.add(Screen.EventDetail(eventId))
+                                backStack.navigateTo(Screen.EventDetail(eventId))
                             },
                         )
                     }
@@ -131,7 +132,7 @@ fun App(
                         AddDeviceScreen(
                             viewModel = viewModel { component.addDeviceViewModel },
                             onDeviceAdded = { backStack.removeLastOrNull() },
-                            onManageDeviceTypesClick = { backStack.add(Screen.Types) },
+                            onManageDeviceTypesClick = { backStack.navigateTo(Screen.Types) },
                             onBack = { backStack.removeLastOrNull() },
                         )
                     }
@@ -140,7 +141,7 @@ fun App(
                         AddBatteryEventScreen(
                             viewModel = viewModel { component.addBatteryEventViewModel },
                             onEventAdded = { backStack.removeLastOrNull() },
-                            onAddDeviceClick = { backStack.add(Screen.AddDevice) },
+                            onAddDeviceClick = { backStack.navigateTo(Screen.AddDevice) },
                             onBack = { backStack.removeLastOrNull() },
                         )
                     }
@@ -161,8 +162,8 @@ fun App(
                         DeviceDetailScreen(
                             viewModel = viewModel,
                             onBack = { backStack.removeLastOrNull() },
-                            onEdit = { backStack.add(Screen.EditDevice(args.deviceId)) },
-                            onEventClick = { eventId -> backStack.add(Screen.EventDetail(eventId)) },
+                            onEdit = { backStack.navigateTo(Screen.EditDevice(args.deviceId)) },
+                            onEventClick = { eventId -> backStack.navigateTo(Screen.EventDetail(eventId)) },
                         )
                     }
 
@@ -191,7 +192,7 @@ fun App(
                                     backStack.removeLastOrNull()
                                 }
                             },
-                            onManageDeviceTypesClick = { backStack.add(Screen.Types) },
+                            onManageDeviceTypesClick = { backStack.navigateTo(Screen.Types) },
                         )
                     }
                     entry<Screen.EditDeviceType> {
@@ -263,4 +264,14 @@ sealed interface Screen {
     data class EditDeviceType(
         val typeId: String,
     ) : Screen
+}
+
+/**
+ * Safely navigates to a screen, preventing duplicate navigation from rapid clicks.
+ * If the last screen in the back stack matches the target screen, the navigation is skipped.
+ */
+private fun SnapshotStateList<Screen>.navigateTo(screen: Screen) {
+    if (lastOrNull() != screen) {
+        add(screen)
+    }
 }
