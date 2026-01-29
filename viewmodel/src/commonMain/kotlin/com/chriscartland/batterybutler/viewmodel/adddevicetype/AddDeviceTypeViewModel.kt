@@ -29,6 +29,9 @@ class AddDeviceTypeViewModel(
     private val _suggestedIcon = MutableStateFlow<String?>(null)
     val suggestedIcon = _suggestedIcon.asStateFlow()
 
+    private val _isSuggestingIcon = MutableStateFlow(false)
+    val isSuggestingIcon = _isSuggestingIcon.asStateFlow()
+
     val usedIcons: StateFlow<List<String>> = getDeviceTypesUseCase()
         .map { types -> types.mapNotNull { it.defaultIcon }.distinct() }
         .stateIn(
@@ -39,10 +42,17 @@ class AddDeviceTypeViewModel(
 
     fun suggestIcon(name: String) {
         if (name.isBlank()) return
+        // Prevent rapid-fire API calls by skipping if already in progress
+        if (_isSuggestingIcon.value) return
         viewModelScope.launch {
-            val icon = suggestDeviceIconUseCase(name)
-            if (icon != null && icon != "default") {
-                _suggestedIcon.value = icon
+            _isSuggestingIcon.value = true
+            try {
+                val icon = suggestDeviceIconUseCase(name)
+                if (icon != null && icon != "default") {
+                    _suggestedIcon.value = icon
+                }
+            } finally {
+                _isSuggestingIcon.value = false
             }
         }
     }

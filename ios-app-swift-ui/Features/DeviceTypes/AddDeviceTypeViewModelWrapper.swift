@@ -9,30 +9,39 @@ struct AddDeviceTypeState {
     var isSaving: Bool = false
     var isSaved: Bool = false
     var saveError: String? = nil
+    var isSuggestingIcon: Bool = false
 }
 
 class AddDeviceTypeViewModelWrapper: ObservableObject {
     @Published var state: AddDeviceTypeState = AddDeviceTypeState()
-    
+
     private let viewModel: AddDeviceTypeViewModel
     private let viewModelStore = KmpViewModelStore()
-    private var task: Task<Void, Never>?
-    
+    private var suggestedIconTask: Task<Void, Never>?
+    private var isSuggestingIconTask: Task<Void, Never>?
+
     init(_ viewModel: AddDeviceTypeViewModel) {
         self.viewModel = viewModel
         viewModelStore.put(key: "vm", viewModel: viewModel)
-        
-        self.task = Task { @MainActor [weak self] in
+
+        self.suggestedIconTask = Task { @MainActor [weak self] in
             for await icon in viewModel.suggestedIcon {
                 if let icon = icon {
                     self?.state.defaultIcon = icon
                 }
             }
         }
+
+        self.isSuggestingIconTask = Task { @MainActor [weak self] in
+            for await isSuggesting in viewModel.isSuggestingIcon {
+                self?.state.isSuggestingIcon = isSuggesting as? Bool ?? false
+            }
+        }
     }
-    
+
     deinit {
-        task?.cancel()
+        suggestedIconTask?.cancel()
+        isSuggestingIconTask?.cancel()
         viewModelStore.clear()
     }
     

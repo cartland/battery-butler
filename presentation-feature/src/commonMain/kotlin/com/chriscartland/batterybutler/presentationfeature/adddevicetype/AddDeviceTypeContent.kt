@@ -84,6 +84,7 @@ fun AddDeviceTypeContent(
     aiMessages: List<BatchOperationResult>,
     suggestedIcon: String? = null,
     usedIcons: List<String> = emptyList(),
+    isSuggestingIcon: Boolean = false,
     onSuggestIcon: (String) -> Unit = {},
     onConsumeSuggestedIcon: () -> Unit = {},
     onDeviceTypeAdded: (DeviceTypeInput) -> Unit,
@@ -266,12 +267,19 @@ fun AddDeviceTypeContent(
                         keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Next) }),
                         trailingIcon = {
                             if (name.isNotBlank()) {
-                                IconButton(onClick = { onSuggestIcon(name) }) {
-                                    Icon(
-                                        Icons.Default.AutoAwesome,
-                                        contentDescription = stringResource(Res.string.content_desc_suggest_icon),
-                                        tint = MaterialTheme.colorScheme.primary,
+                                if (isSuggestingIcon) {
+                                    androidx.compose.material3.CircularProgressIndicator(
+                                        modifier = Modifier.size(24.dp),
+                                        strokeWidth = 2.dp,
                                     )
+                                } else {
+                                    IconButton(onClick = { onSuggestIcon(name) }) {
+                                        Icon(
+                                            Icons.Default.AutoAwesome,
+                                            contentDescription = stringResource(Res.string.content_desc_suggest_icon),
+                                            tint = MaterialTheme.colorScheme.primary,
+                                        )
+                                    }
                                 }
                             }
                         },
