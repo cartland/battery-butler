@@ -168,7 +168,7 @@ fun DeviceTypeIconItem(
         ) {
             Icon(
                 imageVector = DeviceIconMapper.getIcon(iconName),
-                contentDescription = null,
+                contentDescription = if (isSelected) "Selected: $iconName" else iconName,
                 tint = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(32.dp),
             )

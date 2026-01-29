@@ -137,7 +137,7 @@ fun EventDetailContent(
                         ) {
                             Icon(
                                 imageVector = DeviceIconMapper.getIcon(iconName),
-                                contentDescription = null,
+                                contentDescription = "Device icon",
                                 modifier = Modifier.size(48.dp),
                                 tint = MaterialTheme.colorScheme.onPrimaryContainer,
                             )
@@ -168,7 +168,7 @@ fun EventDetailContent(
                             horizontalArrangement = Arrangement.SpaceBetween,
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                                Icon(Icons.Default.CalendarToday, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                                Icon(Icons.Default.CalendarToday, contentDescription = "Calendar", tint = MaterialTheme.colorScheme.primary)
                                 Text("Replaced On", fontWeight = FontWeight.Medium)
                             }
                             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
