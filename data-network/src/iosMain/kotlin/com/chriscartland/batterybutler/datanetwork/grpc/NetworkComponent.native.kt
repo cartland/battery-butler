@@ -18,6 +18,8 @@ import io.ktor.client.statement.bodyAsChannel
 import io.ktor.client.statement.readBytes
 import io.ktor.utils.io.readFully
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
@@ -63,7 +65,12 @@ class IosGrpcCall<S : Any, R : Any>(
     override val responseMetadata: Map<String, String>? = null
     override val timeout: okio.Timeout = okio.Timeout.NONE
 
+    private var job: Job? = null
+    private var cancelled = false
+    private var executed = false
+
     override suspend fun execute(request: S): R {
+        executed = true
         val path = method.path
         val fullUrl = "$baseUrl/$path"
 
@@ -95,8 +102,10 @@ class IosGrpcCall<S : Any, R : Any>(
         request: S,
         callback: GrpcCall.Callback<S, R>,
     ) {
-        val scope = CoroutineScope(kotlinx.coroutines.Dispatchers.Default)
-        scope.launch {
+        executed = true
+        // Use SupervisorJob to prevent child failures from cancelling the scope
+        val scope = CoroutineScope(SupervisorJob() + kotlinx.coroutines.Dispatchers.Default)
+        job = scope.launch {
             try {
                 val result = execute(request)
                 callback.onSuccess(this@IosGrpcCall, result)
@@ -113,13 +122,16 @@ class IosGrpcCall<S : Any, R : Any>(
             execute(request)
         }
 
-    override fun isCanceled(): Boolean = false
+    override fun isCanceled(): Boolean = cancelled
 
-    override fun isExecuted(): Boolean = false
+    override fun isExecuted(): Boolean = executed
 
     override fun clone(): GrpcCall<S, R> = IosGrpcCall(client, baseUrl, method)
 
-    override fun cancel() {}
+    override fun cancel() {
+        cancelled = true
+        job?.cancel()
+    }
 }
 
 class IosGrpcStreamingCall<S : Any, R : Any>(
@@ -131,16 +143,26 @@ class IosGrpcStreamingCall<S : Any, R : Any>(
     override val responseMetadata: Map<String, String>? = null
     override val timeout: okio.Timeout = okio.Timeout.NONE
 
+    private var job: Job? = null
+    private var cancelled = false
+    private var executed = false
+
+    /**
+     * Executes the streaming call with an internally managed scope.
+     * Note: Prefer [executeIn] with a caller-provided scope for proper lifecycle management.
+     */
     override fun execute(): Pair<SendChannel<S>, ReceiveChannel<R>> {
-        val scope = CoroutineScope(kotlinx.coroutines.Dispatchers.Default)
+        // Use SupervisorJob to manage the internal scope lifecycle
+        val scope = CoroutineScope(SupervisorJob() + kotlinx.coroutines.Dispatchers.Default)
         return executeIn(scope)
     }
 
     override fun executeIn(scope: CoroutineScope): Pair<SendChannel<S>, ReceiveChannel<R>> {
+        executed = true
         val sendChannel = Channel<S>(Channel.UNLIMITED)
         val receiveChannel = Channel<R>(Channel.UNLIMITED)
 
-        scope.launch {
+        job = scope.launch {
             try {
                 // Wait for the first message (the subscription/request)
                 val request = sendChannel.receive()
@@ -212,11 +234,14 @@ class IosGrpcStreamingCall<S : Any, R : Any>(
 
     override fun executeBlocking(): Pair<MessageSink<S>, MessageSource<R>> = throw UnsupportedOperationException("Blocking streaming not supported")
 
-    override fun isCanceled(): Boolean = false
+    override fun isCanceled(): Boolean = cancelled
 
-    override fun isExecuted(): Boolean = true
+    override fun isExecuted(): Boolean = executed
 
     override fun clone(): GrpcStreamingCall<S, R> = IosGrpcStreamingCall(client, baseUrl, method)
 
-    override fun cancel() {}
+    override fun cancel() {
+        cancelled = true
+        job?.cancel()
+    }
 }
