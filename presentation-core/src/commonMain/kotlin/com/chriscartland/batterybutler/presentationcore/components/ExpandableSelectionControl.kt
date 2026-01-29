@@ -26,7 +26,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 
 @Composable
 fun <T> ExpandableSelectionControl(
@@ -116,5 +118,19 @@ fun <T> ExpandableSelectionControl(
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ExpandableSelectionControlPreview() {
+    BatteryButlerTheme {
+        ExpandableSelectionControl(
+            title = "Network Mode",
+            currentSelection = "Local Server",
+            options = listOf("Mock Data", "Local Server", "Production"),
+            onOptionSelected = {},
+            optionLabel = { it },
+        )
     }
 }
