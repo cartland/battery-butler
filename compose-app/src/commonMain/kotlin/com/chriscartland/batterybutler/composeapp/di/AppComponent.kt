@@ -65,6 +65,7 @@ abstract class AppComponent(
     abstract val networkModeRepository: NetworkModeRepository
     abstract val setNetworkModeUseCase: SetNetworkModeUseCase
     abstract val getAppVersionUseCase: GetAppVersionUseCase
+    abstract val appScope: CoroutineScope
 
     @Provides
     @Singleton
