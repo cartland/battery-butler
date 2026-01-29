@@ -205,14 +205,13 @@ fun AddBatteryEventContent(
             Button(
                 onClick = {
                     if (deviceIdInput.isNotBlank()) {
-                        // Validate Date
+                        // Validate Date - parse and convert to Instant at start of day
                         val date = try {
                             kotlinx.datetime.LocalDate
                                 .parse(dateInput)
                                 .atStartOfDayIn(TimeZone.currentSystemDefault())
-                                .let { Instant.fromEpochMilliseconds(it.toEpochMilliseconds()) }
                         } catch (_: Exception) {
-                            Clock.System.now() // Fallback or handle error
+                            Clock.System.now() // Fallback if date parsing fails
                         }
 
                         onAddEvent(deviceIdInput, date)

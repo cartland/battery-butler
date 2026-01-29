@@ -50,8 +50,14 @@ internal object ServerSyncMapper {
             name = name,
             typeId = typeId,
             location = location.takeIf { it.isNotEmpty() },
-            batteryLastReplaced = Instant.fromEpochMilliseconds(0),
-            lastUpdated = Instant.fromEpochMilliseconds(0),
+            batteryLastReplaced = batteryLastReplacedTimestampMs
+                .takeIf { it > 0 }
+                ?.let { Instant.fromEpochMilliseconds(it) }
+                ?: Instant.fromEpochMilliseconds(0),
+            lastUpdated = lastUpdatedTimestampMs
+                .takeIf { it > 0 }
+                ?.let { Instant.fromEpochMilliseconds(it) }
+                ?: Instant.fromEpochMilliseconds(0),
         )
 
     private fun Device.toProto(): ProtoDevice =
@@ -61,6 +67,8 @@ internal object ServerSyncMapper {
             .setName(name)
             .setTypeId(typeId)
             .setLocation(location ?: "")
+            .setBatteryLastReplacedTimestampMs(batteryLastReplaced.toEpochMilliseconds())
+            .setLastUpdatedTimestampMs(lastUpdated.toEpochMilliseconds())
             .build()
 
     private fun ProtoBatteryEvent.toDomain(): BatteryEvent =
