@@ -6,13 +6,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.content.ContextCompat
-import com.chriscartland.batterybutler.ai.AndroidAiEngine
+import com.chriscartland.batterybutler.BatteryButlerApplication
 import com.chriscartland.batterybutler.composeapp.debug.DebugNetworkReceiver
-import com.chriscartland.batterybutler.composeapp.di.AppComponent
-import com.chriscartland.batterybutler.composeapp.di.create
-import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
-import com.chriscartland.batterybutler.datanetwork.grpc.NetworkComponent
-import com.chriscartland.batterybutler.domain.model.AppVersion
 import com.chriscartland.batterybutler.presentationcore.util.AndroidFileSaver
 import com.chriscartland.batterybutler.presentationcore.util.AndroidShareHandler
 
@@ -21,17 +16,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        val databaseFactory = DatabaseFactory(applicationContext)
-        val aiEngine = AndroidAiEngine()
-
-        val networkComponent = NetworkComponent(applicationContext)
-
-        val appVersion = AppVersion.Android(
-            versionName = BuildConfig.VERSION_NAME,
-            versionCode = BuildConfig.VERSION_CODE,
-        )
-
-        val component = AppComponent::class.create(databaseFactory, aiEngine, networkComponent, appVersion)
+        // Reuse application-level component instead of creating duplicate
+        val component = (application as BatteryButlerApplication).appComponent
         val shareHandler = AndroidShareHandler(this)
         val fileSaver = AndroidFileSaver(this)
 
