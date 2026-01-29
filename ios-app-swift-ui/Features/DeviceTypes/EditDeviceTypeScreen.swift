@@ -3,7 +3,7 @@ import shared
 
 struct EditDeviceTypeScreen: View {
     @StateObject var viewModelWrapper: EditDeviceTypeViewModelWrapper
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) private var dismiss
     @State private var showDeleteConfirmation = false
     
     init(factory: EditDeviceTypeViewModelFactory, typeId: String) {
@@ -49,7 +49,7 @@ struct EditDeviceTypeScreen: View {
                     Text("Saved!")
                         .onAppear {
                             viewModelWrapper.consumeSaveSuccess()
-                            presentationMode.wrappedValue.dismiss()
+                            dismiss()
                         }
                 }
             }
@@ -67,7 +67,7 @@ struct EditDeviceTypeScreen: View {
         .alert("Delete Device Type?", isPresented: $showDeleteConfirmation) {
             Button("Delete", role: .destructive) {
                 viewModelWrapper.delete()
-                presentationMode.wrappedValue.dismiss()
+                dismiss()
             }
             Button("Cancel", role: .cancel) { }
         } message: {

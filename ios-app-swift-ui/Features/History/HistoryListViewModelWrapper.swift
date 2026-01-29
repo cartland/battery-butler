@@ -12,7 +12,10 @@ class HistoryListViewModelWrapper: ObservableObject {
     init(_ viewModel: HistoryListViewModel) {
         self.viewModel = viewModel
         viewModelStore.put(key: "vm", viewModel: viewModel)
-        self.state = viewModel.uiState.value as! HistoryListUiState
+        guard let initialState = viewModel.uiState.value as? HistoryListUiState else {
+            fatalError("Expected HistoryListUiState but got \(type(of: viewModel.uiState.value))")
+        }
+        self.state = initialState
         
         self.task = Task { @MainActor [weak self] in
             for await newState in viewModel.uiState {

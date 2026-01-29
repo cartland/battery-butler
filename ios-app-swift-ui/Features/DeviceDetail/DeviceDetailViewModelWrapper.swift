@@ -13,9 +13,12 @@ class DeviceDetailViewModelWrapper: ObservableObject {
     init(_ viewModel: DeviceDetailViewModel) {
         self.viewModel = viewModel
         viewModelStore.put(key: "vm", viewModel: viewModel)
-        
-        // Initial state
-        self.state = viewModel.uiState.value as! DeviceDetailUiState
+
+        // Initial state - safely cast with descriptive error
+        guard let initialState = viewModel.uiState.value as? DeviceDetailUiState else {
+            fatalError("Expected DeviceDetailUiState but got \(type(of: viewModel.uiState.value))")
+        }
+        self.state = initialState
         
         self.task = Task { @MainActor [weak self] in
             for await newState in viewModel.uiState {

@@ -3,8 +3,8 @@ import shared
 
 struct AddDeviceTypeScreen: View {
     @StateObject var viewModelWrapper: AddDeviceTypeViewModelWrapper
-    @Environment(\.presentationMode) var presentationMode
-    
+    @Environment(\.dismiss) private var dismiss
+
     init(viewModel: AddDeviceTypeViewModel) {
         _viewModelWrapper = StateObject(wrappedValue: AddDeviceTypeViewModelWrapper(viewModel))
     }
@@ -37,7 +37,7 @@ struct AddDeviceTypeScreen: View {
                     Text("Saved!")
                         .onAppear {
                             viewModelWrapper.consumeSaveSuccess()
-                            presentationMode.wrappedValue.dismiss()
+                            dismiss()
                         }
                 }
             }
@@ -45,7 +45,7 @@ struct AddDeviceTypeScreen: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {
-                        presentationMode.wrappedValue.dismiss()
+                        dismiss()
                     }
                 }
                 ToolbarItem(placement: .confirmationAction) {

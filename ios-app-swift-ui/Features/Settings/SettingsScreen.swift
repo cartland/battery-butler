@@ -4,7 +4,6 @@ import shared
 
 struct SettingsScreen: View {
     @StateObject private var wrapper: SettingsViewModelWrapper
-    @Environment(\.presentationMode) var presentationMode
     @State private var isShareSheetPresented = false
     
     init(viewModel: SettingsViewModel) {
