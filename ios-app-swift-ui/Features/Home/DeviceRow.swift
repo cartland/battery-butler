@@ -6,24 +6,27 @@ struct DeviceRow: View {
     
     var body: some View {
         HStack {
-            Image(systemName: "cpu") // Placeholder icon
+            Image(systemName: "cpu")
                 .font(.title2)
                 .foregroundColor(.blue)
-            
+                .accessibilityHidden(true)
+
             VStack(alignment: .leading) {
                 Text(device.name)
                     .font(.headline)
-                Text(device.typeId) // Display type ID
+                Text(device.typeId)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }
-            
+
             Spacer()
-            
-            // Battery indicator could go here
+
             Image(systemName: "battery.100")
                 .foregroundColor(.green)
+                .accessibilityHidden(true)
         }
         .padding(.vertical, 4)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(device.name), \(device.typeId)")
     }
 }

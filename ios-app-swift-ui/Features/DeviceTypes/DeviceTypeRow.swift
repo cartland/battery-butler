@@ -15,5 +15,9 @@ struct DeviceTypeRow: View {
             }
         }
         .padding(.vertical, 4)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(deviceType.batteryType.isEmpty
+            ? deviceType.name
+            : "\(deviceType.name), uses \(deviceType.batteryType) battery")
     }
 }

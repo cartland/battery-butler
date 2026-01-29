@@ -16,9 +16,10 @@ struct DeviceDetailScreen: View {
                     VStack(alignment: .leading, spacing: 16) {
                         // Header
                         HStack {
-                            Image(systemName: "cpu") // Placeholder
-                                .font(.system(size: 60))
+                            Image(systemName: "cpu")
+                                .font(.largeTitle)
                                 .foregroundColor(.accentColor)
+                                .accessibilityLabel("Device icon")
                             
                             VStack(alignment: .leading) {
                                 Text(success.device.name)
@@ -46,6 +47,7 @@ struct DeviceDetailScreen: View {
                                 .foregroundColor(.white)
                                 .cornerRadius(10)
                         }
+                        .accessibilityHint("Records a battery replacement for today")
                         
                         Divider()
                         
@@ -75,6 +77,7 @@ struct DeviceDetailScreen: View {
                 Text("Device not found")
             } else {
                 ProgressView()
+                    .accessibilityLabel("Loading device details")
             }
         }
         .navigationTitle("Device Details")

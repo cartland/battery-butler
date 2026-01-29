@@ -17,6 +17,7 @@ struct DeviceTypeListScreen: View {
             
             if state is DeviceTypeListUiStateLoading {
                 ProgressView()
+                    .accessibilityLabel("Loading device types")
             } else if let successState = state as? DeviceTypeListUiStateSuccess {
                 if successState.groupedTypes.isEmpty {
                     Text("No device types found")
@@ -44,6 +45,7 @@ struct DeviceTypeListScreen: View {
                     isAddTypePresented = true
                 }) {
                     Image(systemName: "plus")
+                        .accessibilityLabel("Add device type")
                 }
             }
         }
