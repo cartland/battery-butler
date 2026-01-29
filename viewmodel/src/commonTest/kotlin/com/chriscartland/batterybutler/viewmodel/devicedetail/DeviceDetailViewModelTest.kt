@@ -284,8 +284,7 @@ private class FakeDetailRepository : DeviceRepository {
 
     override suspend fun deleteDeviceType(id: String) {}
 
-    override fun getEventsForDevice(deviceId: String): Flow<List<BatteryEvent>> =
-        eventsMap.getOrPut(deviceId) { MutableStateFlow(emptyList()) }
+    override fun getEventsForDevice(deviceId: String): Flow<List<BatteryEvent>> = eventsMap.getOrPut(deviceId) { MutableStateFlow(emptyList()) }
 
     override fun getAllEvents(): Flow<List<BatteryEvent>> = flowOf(eventsMap.values.flatMap { it.value })
 
