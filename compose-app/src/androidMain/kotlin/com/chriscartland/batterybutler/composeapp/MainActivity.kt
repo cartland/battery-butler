@@ -17,6 +17,8 @@ import com.chriscartland.batterybutler.presentationcore.util.AndroidFileSaver
 import com.chriscartland.batterybutler.presentationcore.util.AndroidShareHandler
 
 class MainActivity : ComponentActivity() {
+    private var debugNetworkReceiver: DebugNetworkReceiver? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
@@ -41,13 +43,19 @@ class MainActivity : ComponentActivity() {
 
         // DEBUG: Register receiver for ADB control
         // adb shell am broadcast -a com.chriscartland.batterybutler.SET_NETWORK_MODE --es mode "GRPC_LOCAL"
-        val receiver = DebugNetworkReceiver(component.setNetworkModeUseCase)
+        debugNetworkReceiver = DebugNetworkReceiver(component.setNetworkModeUseCase)
         val filter = IntentFilter(DebugNetworkReceiver.ACTION_SET_NETWORK_MODE)
         ContextCompat.registerReceiver(
             this,
-            receiver,
+            debugNetworkReceiver,
             filter,
             ContextCompat.RECEIVER_EXPORTED,
         )
+    }
+
+    override fun onDestroy() {
+        debugNetworkReceiver?.let { unregisterReceiver(it) }
+        debugNetworkReceiver = null
+        super.onDestroy()
     }
 }
