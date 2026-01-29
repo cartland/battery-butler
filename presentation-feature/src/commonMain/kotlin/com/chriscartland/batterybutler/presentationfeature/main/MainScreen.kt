@@ -223,7 +223,6 @@ fun HistoryScreen(
 }
 
 @Preview
-@Preview
 @Composable
 fun DevicesScreenPreview() {
     BatteryButlerTheme {
