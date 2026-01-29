@@ -1,5 +1,6 @@
 package com.chriscartland.batterybutler.server.app.db
 
+import co.touchlab.kermit.Logger
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import kotlinx.serialization.Serializable
@@ -10,6 +11,8 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest
+
+private const val TAG = "DatabaseFactory"
 
 object DatabaseFactory {
     fun init() {
@@ -32,7 +35,7 @@ object DatabaseFactory {
     }
 
     private fun getAwsDbConfig(): HikariConfig {
-        println("Initializing AWS Database Configuration...")
+        Logger.i(TAG) { "Initializing database connection" }
         val secretName = System.getenv("DB_SECRET_NAME") ?: error("DB_SECRET_NAME env var not found")
         val region = Region.US_WEST_1
 
@@ -62,7 +65,7 @@ object DatabaseFactory {
     }
 
     private fun getLocalDbConfig(): HikariConfig {
-        println("Initializing Local Database Configuration (H2)...")
+        Logger.i(TAG) { "Initializing local database connection" }
         // For now, fallback to H2 in-memory or throw.
         // Using H2 for local dev to prevent crash until local postgres is set up.
         return HikariConfig().apply {
