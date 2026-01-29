@@ -47,6 +47,18 @@
     <string name="placeholder_add_device_ai">E.g. Add Fire Alarm in Hallway</string>
     <string name="content_desc_manage_types">Manage Types</string>
 
+    <!-- Device Detail -->
+    <string name="device_detail_title">Device Details</string>
+    <string name="action_edit">Edit</string>
+    <string name="error_device_not_found">Device not found</string>
+    <string name="unknown_type">Unknown Type</string>
+    <string name="label_type">Type</string>
+    <string name="label_quantity">Quantity</string>
+    <string name="action_record_replacement">Record Replacement</string>
+    <string name="action_record_replacement_description">Log battery change for today</string>
+    <string name="section_history">History</string>
+    <string name="action_view_all">View All</string>
+
     <!-- Common -->
     <string name="action_cancel">Cancel</string>
     <string name="action_save">Save</string>

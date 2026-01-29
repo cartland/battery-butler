@@ -41,6 +41,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.chriscartland.batterybutler.composeresources.generated.resources.Res
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_edit
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_record_replacement
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_record_replacement_description
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_view_all
+import com.chriscartland.batterybutler.composeresources.generated.resources.device_detail_title
+import com.chriscartland.batterybutler.composeresources.generated.resources.error_device_not_found
+import com.chriscartland.batterybutler.composeresources.generated.resources.label_quantity
+import com.chriscartland.batterybutler.composeresources.generated.resources.label_type
+import com.chriscartland.batterybutler.composeresources.generated.resources.section_history
+import com.chriscartland.batterybutler.composeresources.generated.resources.unknown_type
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
@@ -49,6 +60,7 @@ import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMap
 import com.chriscartland.batterybutler.presentationcore.components.HistoryListItem
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationmodel.devicedetail.DeviceDetailUiState
+import org.jetbrains.compose.resources.stringResource
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -66,11 +78,15 @@ fun DeviceDetailContent(
         modifier = modifier,
         topBar = {
             ButlerCenteredTopAppBar(
-                title = "Device Details",
+                title = stringResource(Res.string.device_detail_title),
                 onBack = onBack,
                 actions = {
                     androidx.compose.material3.TextButton(onClick = onEdit) {
-                        Text("Edit", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold)
+                        Text(
+                            stringResource(Res.string.action_edit),
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.SemiBold,
+                        )
                     }
                 },
             )
@@ -82,7 +98,7 @@ fun DeviceDetailContent(
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
                 DeviceDetailUiState.NotFound -> {
-                    Text("Device not found", modifier = Modifier.align(Alignment.Center))
+                    Text(stringResource(Res.string.error_device_not_found), modifier = Modifier.align(Alignment.Center))
                 }
                 is DeviceDetailUiState.Success -> {
                     DeviceDetailBody(
@@ -107,6 +123,13 @@ fun DeviceDetailBody(
     val device = state.device
     val deviceType = state.deviceType
     val iconName = deviceType?.defaultIcon ?: "devices_other"
+    val unknownTypeName = stringResource(Res.string.unknown_type)
+    val typeLabel = stringResource(Res.string.label_type)
+    val quantityLabel = stringResource(Res.string.label_quantity)
+    val historyLabel = stringResource(Res.string.section_history)
+    val viewAllLabel = stringResource(Res.string.action_view_all)
+    val recordReplacementLabel = stringResource(Res.string.action_record_replacement)
+    val recordReplacementDescription = stringResource(Res.string.action_record_replacement_description)
 
     LazyColumn(
         modifier = modifier.padding(horizontal = 16.dp),
@@ -151,7 +174,7 @@ fun DeviceDetailBody(
                         modifier = Modifier.size(16.dp),
                     )
                     Text(
-                        text = deviceType?.name ?: "Unknown Type",
+                        text = deviceType?.name ?: unknownTypeName,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontWeight = FontWeight.Medium,
@@ -190,14 +213,14 @@ fun DeviceDetailBody(
                 // Battery Type Card
                 StatCard(
                     icon = Icons.Default.BatteryFull,
-                    label = "Type",
+                    label = typeLabel,
                     value = deviceType?.batteryType ?: "N/A",
                     modifier = Modifier.weight(1f),
                 )
                 // Quantity Card
                 StatCard(
                     icon = Icons.Default.Numbers,
-                    label = "Quantity",
+                    label = quantityLabel,
                     value = "${deviceType?.batteryQuantity ?: 0}",
                     modifier = Modifier.weight(1f),
                 )
@@ -233,9 +256,13 @@ fun DeviceDetailBody(
                             Icon(Icons.Default.AddCircle, contentDescription = null, tint = Color.White)
                         }
                         Column(verticalArrangement = Arrangement.Center) {
-                            Text("Record Replacement", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                             Text(
-                                "Log battery change for today",
+                                recordReplacementLabel,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                            )
+                            Text(
+                                recordReplacementDescription,
                                 style = MaterialTheme.typography.bodySmall,
                                 color = Color.White.copy(alpha = 0.8f),
                             )
@@ -256,8 +283,16 @@ fun DeviceDetailBody(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text("History", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                Text("View All", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+                Text(
+                    historyLabel,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                )
+                Text(
+                    viewAllLabel,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                )
             }
         }
 
@@ -265,7 +300,7 @@ fun DeviceDetailBody(
             HistoryListItem(
                 event = event,
                 deviceName = device.name,
-                deviceTypeName = deviceType?.name ?: "Unknown Type",
+                deviceTypeName = deviceType?.name ?: unknownTypeName,
                 deviceLocation = device.location,
                 modifier = Modifier.clickable { onEventClick(event.id) },
             )
