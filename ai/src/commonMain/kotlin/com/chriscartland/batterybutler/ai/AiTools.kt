@@ -1,12 +1,12 @@
 package com.chriscartland.batterybutler.ai
 
-object AiToolNames {
+data object AiToolNames {
     const val ADD_DEVICE = "addDevice"
     const val ADD_DEVICE_TYPE = "addDeviceType"
     const val RECORD_BATTERY_REPLACEMENT = "recordBatteryReplacement"
 }
 
-object AiToolParams {
+data object AiToolParams {
     const val NAME = "name"
     const val TYPE = "type"
     const val LOCATION = "location"
