@@ -2,7 +2,6 @@ package com.chriscartland.batterybutler.composeapp.feature.main
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chriscartland.batterybutler.presentationcore.util.LocalFileSaver
@@ -26,7 +25,7 @@ fun DevicesScreenRoot(
     onAddDeviceClick: () -> Unit,
     onDeviceClick: (String) -> Unit,
 ) {
-    val state by viewModel.uiState.collectAsState()
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
     val coreUiState = state
     val fileSaver = LocalFileSaver.current
 
@@ -85,7 +84,7 @@ fun HistoryScreenRoot(
     onAddEventClick: () -> Unit,
     onEventClick: (String, String) -> Unit,
 ) {
-    val state by viewModel.uiState.collectAsState()
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     HistoryScreen(
         state = state,
