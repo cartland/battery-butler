@@ -1,5 +1,6 @@
 package com.chriscartland.batterybutler.server.data.repository
 
+import co.touchlab.kermit.Logger
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
@@ -21,7 +22,7 @@ class InMemoryDeviceRepository : ServerDeviceRepository {
     private val updates: MutableStateFlow<RemoteUpdate>
 
     init {
-        println("InMemoryDeviceRepository: Initializing...")
+        Logger.d("InMemoryDeviceRepository") { "Initializing" }
         // Initialize with deterministic DemoData
         val initialDeviceTypes = DemoData.getDefaultDeviceTypes()
         val serverLabel = System.getenv("SERVER_LABEL") ?: "AWS Cloud"
