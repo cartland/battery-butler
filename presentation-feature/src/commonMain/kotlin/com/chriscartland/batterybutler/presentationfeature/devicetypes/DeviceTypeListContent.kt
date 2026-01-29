@@ -155,7 +155,7 @@ fun DeviceTypeListContent(
                                     leadingContent = {
                                         Icon(
                                             imageVector = DeviceIconMapper.getIcon(type.defaultIcon),
-                                            contentDescription = null,
+                                            contentDescription = "Device type icon",
                                             tint = MaterialTheme.colorScheme.primary,
                                         )
                                     },

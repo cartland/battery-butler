@@ -149,7 +149,7 @@ fun DeviceDetailBody(
                     ) {
                         Icon(
                             imageVector = DeviceIconMapper.getIcon(iconName),
-                            contentDescription = null,
+                            contentDescription = "Device icon",
                             modifier = Modifier.size(64.dp),
                             tint = MaterialTheme.colorScheme.onPrimaryContainer,
                         )
@@ -168,7 +168,7 @@ fun DeviceDetailBody(
                 ) {
                     Icon(
                         Icons.Default.DevicesOther,
-                        contentDescription = null,
+                        contentDescription = "Device type",
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(16.dp),
                     )
@@ -188,7 +188,7 @@ fun DeviceDetailBody(
                     ) {
                         Icon(
                             Icons.Default.LocationOn,
-                            contentDescription = null,
+                            contentDescription = "Location",
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(16.dp),
                         )
