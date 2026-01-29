@@ -42,7 +42,6 @@ allprojects {
         }
     }
     configure<com.diffplug.gradle.spotless.SpotlessExtension> {
-
         kotlin {
             if (project == rootProject) {
                 target("src/**/*.kt", "buildSrc/src/**/*.kt")
@@ -59,13 +58,19 @@ allprojects {
             }
             ktlint()
         }
-        apply(plugin = "io.gitlab.arturbosch.detekt")
-        configure<io.gitlab.arturbosch.detekt.extensions.DetektExtension> {
-            config.setFrom(files("$rootDir/detekt.yml"))
-            buildUponDefaultConfig = true
-            // KMP source compatibility
-            source.setFrom(files("src"))
-        }
+    }
+
+    apply(plugin = "io.gitlab.arturbosch.detekt")
+    configure<io.gitlab.arturbosch.detekt.extensions.DetektExtension> {
+        config.setFrom(files("$rootDir/detekt.yml"))
+        buildUponDefaultConfig = true
+        // KMP source compatibility
+        source.setFrom(files("src"))
+    }
+
+    dependencies {
+        val libs = rootProject.extensions.getByType<VersionCatalogsExtension>().named("libs")
+        add("detektPlugins", libs.findLibrary("detekt-compose").get())
     }
 }
 
