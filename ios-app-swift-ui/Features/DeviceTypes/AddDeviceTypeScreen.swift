@@ -8,37 +8,30 @@ struct AddDeviceTypeScreen: View {
     init(viewModel: AddDeviceTypeViewModel) {
         _viewModelWrapper = StateObject(wrappedValue: AddDeviceTypeViewModelWrapper(viewModel))
     }
-    
+
     var body: some View {
-        NavigationView {
+        // NavigationStack used for proper toolbar support in sheets
+        NavigationStack {
             Form {
                 let state = viewModelWrapper.state
-                
+
                 Section(header: Text("Device Type Details")) {
                     TextField("Name", text: Binding(
                         get: { state.name },
                         set: { viewModelWrapper.updateName(name: $0) }
                     ))
-                    
+
                     TextField("Battery Type", text: Binding(
                         get: { state.batteryType },
                         set: { viewModelWrapper.updateBatteryType(type: $0) }
                     ))
                 }
-                
+
                 if let error = state.saveError {
                     Section {
                         Text(error)
                             .foregroundColor(.red)
                     }
-                }
-                
-                if state.isSaved {
-                    Text("Saved!")
-                        .onAppear {
-                            viewModelWrapper.consumeSaveSuccess()
-                            dismiss()
-                        }
                 }
             }
             .navigationTitle("Add Device Type")
@@ -59,6 +52,12 @@ struct AddDeviceTypeScreen: View {
             .overlay {
                 if viewModelWrapper.state.isSaving {
                     ProgressView()
+                }
+            }
+            .onChange(of: viewModelWrapper.state.isSaved) { _, isSaved in
+                if isSaved {
+                    viewModelWrapper.consumeSaveSuccess()
+                    dismiss()
                 }
             }
         }
