@@ -14,7 +14,10 @@ class HomeViewModelWrapper: ObservableObject {
     
     init(_ viewModel: HomeViewModel) {
         self.viewModel = viewModel
-        self.state = viewModel.uiState.value as! HomeUiState
+        guard let initialState = viewModel.uiState.value as? HomeUiState else {
+            fatalError("Expected HomeUiState but got \(type(of: viewModel.uiState.value))")
+        }
+        self.state = initialState
         viewModelStore.put(key: "vm", viewModel: viewModel)
         
         self.task = Task { @MainActor [weak self] in

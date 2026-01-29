@@ -3,8 +3,8 @@ import shared
 
 struct AddDeviceScreen: View {
     @StateObject private var wrapper: AddDeviceViewModelWrapper
-    @Environment(\.presentationMode) var presentationMode
-    
+    @Environment(\.dismiss) private var dismiss
+
     @State private var name: String = ""
     @State private var selectedTypeId: String = ""
     
@@ -29,7 +29,7 @@ struct AddDeviceScreen: View {
                 Section {
                     Button("Add Device") {
                         wrapper.addDevice(name: name, typeId: selectedTypeId)
-                        presentationMode.wrappedValue.dismiss()
+                        dismiss()
                     }
                     .disabled(name.isEmpty || selectedTypeId.isEmpty)
                 }
@@ -38,12 +38,9 @@ struct AddDeviceScreen: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {
-                        presentationMode.wrappedValue.dismiss()
+                        dismiss()
                     }
                 }
-            }
-            .onAppear {
-                // No-op or equivalent if needed, but seedDeviceTypes is removed.
             }
         }
     }
