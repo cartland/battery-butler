@@ -1,4 +1,4 @@
-name: Publish Android to Play Store
+name: Release Android to Play Store
 
 # Triggers:
 # 1. Push a tag: git tag android/123 && git push origin android/123
@@ -19,7 +19,7 @@ permissions:
   contents: read
 
 jobs:
-  publish:
+  release:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -59,7 +59,7 @@ jobs:
             echo "::error::versionCode $VERSION exceeds safety limit of $VERSION_CODE_SAFETY_LIMIT."
             echo "::error::"
             echo "::error::This limit exists to prevent accidentally exhausting version codes."
-            echo "::error::To increase the limit, edit VERSION_CODE_SAFETY_LIMIT in .github/workflows/publish-android.yml"
+            echo "::error::To increase the limit, edit VERSION_CODE_SAFETY_LIMIT in .github/workflows/release-android.yml"
             echo "::error::"
             echo "::error::WARNING: Google Play has a hard limit of 2,100,000,000. Once you reach it,"
             echo "::error::you cannot upload new versions of your app."
@@ -94,7 +94,7 @@ jobs:
           path: compose-app/build/outputs/bundle/release/*.aab
           retention-days: 30
 
-      - name: Publish to Play Store (Internal Track)
+      - name: Upload to Play Store (Internal Track)
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}

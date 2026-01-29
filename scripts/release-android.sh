@@ -3,7 +3,7 @@ set -e
 cd "$(dirname "$0")/.."
 
 # Releases Android app to internal testing by creating and pushing an android/N tag.
-# This triggers the publish-android.yml GitHub Action workflow.
+# This triggers the release-android.yml GitHub Action workflow.
 #
 # Usage: ./scripts/release-android.sh
 #
@@ -99,7 +99,7 @@ if git push origin "$NEW_TAG"; then
     echo "Tag $NEW_TAG has been pushed."
     echo ""
     echo "Monitor the release workflow at:"
-    echo "  https://github.com/cartland/battery-butler/actions/workflows/publish-android.yml"
+    echo "  https://github.com/cartland/battery-butler/actions/workflows/release-android.yml"
     echo ""
 else
     echo -e "${RED}Failed to push tag. Cleaning up local tag...${NC}"
