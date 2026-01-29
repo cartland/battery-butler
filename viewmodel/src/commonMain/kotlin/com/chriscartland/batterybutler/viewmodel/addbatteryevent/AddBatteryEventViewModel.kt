@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 import kotlin.time.Instant
@@ -65,7 +66,7 @@ class AddBatteryEventViewModel(
     fun batchAddEvents(input: String) {
         viewModelScope.launch {
             batchAddBatteryEventsUseCase(input).collect { message ->
-                _aiMessages.value += message
+                _aiMessages.update { it + message }
             }
         }
     }

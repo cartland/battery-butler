@@ -11,6 +11,7 @@ import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 import kotlin.time.Clock
@@ -56,7 +57,7 @@ class AddDeviceViewModel(
     fun batchAddDevices(input: String) {
         viewModelScope.launch {
             batchAddDevicesUseCase(input).collect { message ->
-                _aiMessages.value += message
+                _aiMessages.update { it + message }
             }
         }
     }
