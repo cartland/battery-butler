@@ -8,14 +8,30 @@ The architecture is designed to maximize code sharing for business logic and dat
 
 ## 2. Module Graph
 
-The following Mermaid graph illustrates the dependency structure between modules. Arrows indicate a dependency (e.g., `A --> B` means A depends on B).
+The following diagrams illustrate the dependency structure between modules. Arrows indicate a dependency (e.g., `A --> B` means A depends on B).
 
-![Architecture Diagram](diagrams/kotlin_module_structure.svg)
+### Kotlin Module Structure
+
+This diagram shows all Kotlin/Gradle modules and their dependencies:
+
+![Kotlin Module Diagram](diagrams/kotlin_module_structure.svg)
 
 <details>
   <summary>Click to see Mermaid Source</summary>
 
   [Source File](diagrams/kotlin_module_structure.mmd)
+</details>
+
+### Full System Structure
+
+This diagram includes the iOS Xcode projects and their integration with the Kotlin modules:
+
+![Full System Diagram](diagrams/full_system_structure.svg)
+
+<details>
+  <summary>Click to see Mermaid Source</summary>
+
+  [Source File](diagrams/full_system_structure.mmd)
 </details>
 
 ## 3. Module Descriptions
