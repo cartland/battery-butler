@@ -43,8 +43,7 @@ private class IosGrpcClient(
 
     override fun <S : Any, R : Any> newCall(method: GrpcMethod<S, R>): GrpcCall<S, R> = IosGrpcCall(client, url, method)
 
-    override fun <S : Any, R : Any> newStreamingCall(method: GrpcMethod<S, R>): GrpcStreamingCall<S, R> =
-        IosGrpcStreamingCall(client, url, method)
+    override fun <S : Any, R : Any> newStreamingCall(method: GrpcMethod<S, R>): GrpcStreamingCall<S, R> = IosGrpcStreamingCall(client, url, method)
 }
 
 private fun frameGrpcMessage(payload: ByteArray): ByteArray {
@@ -211,8 +210,7 @@ class IosGrpcStreamingCall<S : Any, R : Any>(
         return sendChannel to receiveChannel
     }
 
-    override fun executeBlocking(): Pair<MessageSink<S>, MessageSource<R>> =
-        throw UnsupportedOperationException("Blocking streaming not supported")
+    override fun executeBlocking(): Pair<MessageSink<S>, MessageSource<R>> = throw UnsupportedOperationException("Blocking streaming not supported")
 
     override fun isCanceled(): Boolean = false
 
