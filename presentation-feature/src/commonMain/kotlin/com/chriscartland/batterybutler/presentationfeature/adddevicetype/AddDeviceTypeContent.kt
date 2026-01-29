@@ -120,8 +120,9 @@ fun AddDeviceTypeContent(
                     }
                 },
                 actions = {
+                    val isValid = name.isNotBlank() && batteryType.isNotBlank()
                     TextButton(onClick = {
-                        if (name.isNotBlank()) {
+                        if (isValid) {
                             onDeviceTypeAdded(
                                 DeviceTypeInput(
                                     name = name,
@@ -134,7 +135,7 @@ fun AddDeviceTypeContent(
                     }) {
                         Text(
                             stringResource(Res.string.action_save),
-                            color = if (name.isNotBlank()) {
+                            color = if (isValid) {
                                 MaterialTheme.colorScheme.primary
                             } else {
                                 MaterialTheme.colorScheme.onSurface.copy(
