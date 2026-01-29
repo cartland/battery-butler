@@ -1,5 +1,10 @@
 package com.chriscartland.batterybutler.presentationfeature.home
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -121,8 +126,12 @@ fun HomeScreenFilterRow(
     onSortOptionSelected: (SortOption) -> Unit,
 ) {
     Column {
-        // Sync status indicator
-        if (state.syncStatus is SyncStatus.Syncing) {
+        // Sync status indicator with smooth animation
+        AnimatedVisibility(
+            visible = state.syncStatus is SyncStatus.Syncing,
+            enter = expandVertically() + fadeIn(),
+            exit = shrinkVertically() + fadeOut(),
+        ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
