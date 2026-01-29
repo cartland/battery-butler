@@ -2,21 +2,15 @@ package com.chriscartland.batterybutler.androidscreenshottests
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.chriscartland.batterybutler.domain.model.NetworkMode
-import com.chriscartland.batterybutler.presentationfeature.settings.SettingsContent
+import com.android.tools.screenshot.PreviewTest
+import com.chriscartland.batterybutler.androidscreenshottests.util.ScreenshotTestTheme
+import com.chriscartland.batterybutler.presentationfeature.settings.SettingsContentPreview
 
-class SettingsScreenshotTest {
-    @Preview(showBackground = true)
-    @Composable
-    fun SettingsContentPreview() {
-        SettingsContent(
-            networkMode = NetworkMode.Mock,
-            availableNetworkModes = listOf(NetworkMode.Mock),
-            onNetworkModeSelected = {},
-            onExportData = {},
-            onBack = {},
-            appVersion = com.chriscartland.batterybutler.domain.model.AppVersion
-                .Android("1.0.0", 1),
-        )
+@PreviewTest
+@Preview(showBackground = true)
+@Composable
+fun SettingsContentPreviewTest() {
+    ScreenshotTestTheme {
+        SettingsContentPreview()
     }
 }
