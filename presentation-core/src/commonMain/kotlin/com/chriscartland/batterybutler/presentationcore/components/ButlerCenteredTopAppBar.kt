@@ -79,3 +79,31 @@ fun ButlerCenteredTopAppBarPreview() {
         )
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun ButlerCenteredTopAppBarWithAiPreview() {
+    BatteryButlerTheme {
+        androidx.compose.runtime.CompositionLocalProvider(LocalAiAvailable provides true) {
+            ButlerCenteredTopAppBar(
+                title = "AI Enabled",
+                onBack = {},
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ButlerCenteredTopAppBarWithActionsPreview() {
+    BatteryButlerTheme {
+        ButlerCenteredTopAppBar(
+            title = "With Actions",
+            actions = {
+                IconButton(onClick = {}) {
+                    Icon(Icons.Default.AutoAwesome, contentDescription = "Action")
+                }
+            },
+        )
+    }
+}

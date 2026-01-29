@@ -334,3 +334,31 @@ fun DeviceDetailContentPreview() {
         )
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun DeviceDetailLoadingPreview() {
+    BatteryButlerTheme {
+        DeviceDetailContent(
+            state = DeviceDetailUiState.Loading,
+            onRecordReplacement = {},
+            onBack = {},
+            onEdit = {},
+            onEventClick = {},
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DeviceDetailNotFoundPreview() {
+    BatteryButlerTheme {
+        DeviceDetailContent(
+            state = DeviceDetailUiState.NotFound,
+            onRecordReplacement = {},
+            onBack = {},
+            onEdit = {},
+            onEventClick = {},
+        )
+    }
+}
