@@ -1,6 +1,6 @@
 package com.chriscartland.batterybutler.domain.model
 
-object DeviceIcons {
+data object DeviceIcons {
     val AvailableIcons = listOf(
         // Shapes
         "star",

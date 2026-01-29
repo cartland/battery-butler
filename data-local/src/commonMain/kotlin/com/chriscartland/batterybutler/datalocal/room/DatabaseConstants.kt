@@ -3,7 +3,7 @@ package com.chriscartland.batterybutler.datalocal.room
 /**
  * Constants for database configuration.
  */
-object DatabaseConstants {
+data object DatabaseConstants {
     /** Production database name used for real data. */
     const val PRODUCTION_DATABASE_NAME = "battery-butler.db"
 

@@ -6,7 +6,7 @@ import com.chriscartland.batterybutler.ai.ToolHandler
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
-object NoOpAiEngine : AiEngine {
+data object NoOpAiEngine : AiEngine {
     override val isAvailable: Flow<Boolean> = flowOf(false)
 
     override suspend fun generateResponse(

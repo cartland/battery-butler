@@ -68,7 +68,7 @@ import com.chriscartland.batterybutler.domain.model.DeviceIcons
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 
-object DeviceIconMapper {
+data object DeviceIconMapper {
     val AvailableIcons = DeviceIcons.AvailableIcons
 
     fun getIcon(iconName: String?): ImageVector =
