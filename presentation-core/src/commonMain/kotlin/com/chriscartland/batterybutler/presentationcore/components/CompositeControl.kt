@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -40,12 +39,13 @@ fun CompositeControl(
     val borderColor = MaterialTheme.colorScheme.outline
     val containerColor = Color.Transparent
     val contentColor = MaterialTheme.colorScheme.onSurface
+    val shape = MaterialTheme.shapes.small
 
     Surface(
         modifier = modifier
             .height(32.dp)
-            .border(1.dp, borderColor, RoundedCornerShape(8.dp))
-            .clip(RoundedCornerShape(8.dp)),
+            .border(1.dp, borderColor, shape)
+            .clip(shape),
         color = containerColor,
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
