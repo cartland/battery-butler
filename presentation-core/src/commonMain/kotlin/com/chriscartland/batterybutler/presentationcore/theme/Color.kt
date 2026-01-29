@@ -4,7 +4,8 @@ import androidx.compose.ui.graphics.Color
 
 // Comforting Theme: Sage & Linen
 
-val Primary = Color(0xFF537A66) // Deep Sage
+val PrimaryLight = Color(0xFF537A66) // Deep Sage (for light theme)
+val PrimaryDark = Color(0xFF7CA38F) // Lighter Sage (for dark theme, better contrast)
 val Secondary = Color(0xFF8B7355) // Warm Walnut
 val Tertiary = Color(0xFF5E7A91) // Soft Steel Blue - for AI/accent elements
 
