@@ -12,6 +12,8 @@ interface LocalDataSource {
 
     suspend fun addDevice(device: Device)
 
+    suspend fun addDevices(devices: List<Device>)
+
     suspend fun updateDevice(device: Device)
 
     suspend fun deleteDevice(id: String)
@@ -21,6 +23,8 @@ interface LocalDataSource {
     fun getDeviceTypeById(id: String): Flow<DeviceType?>
 
     suspend fun addDeviceType(type: DeviceType)
+
+    suspend fun addDeviceTypes(types: List<DeviceType>)
 
     suspend fun updateDeviceType(type: DeviceType)
 
@@ -33,6 +37,8 @@ interface LocalDataSource {
     fun getEventById(id: String): Flow<BatteryEvent?>
 
     suspend fun addEvent(event: BatteryEvent)
+
+    suspend fun addEvents(events: List<BatteryEvent>)
 
     suspend fun updateEvent(event: BatteryEvent)
 
