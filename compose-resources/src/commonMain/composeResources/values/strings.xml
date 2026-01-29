@@ -68,4 +68,10 @@
     <string name="label_ai_output">AI Output:</string>
     <string name="status_processing">Processing...</string>
     <string name="status_confirmed">Confirmed.</string>
+
+    <!-- Empty States -->
+    <string name="empty_devices_title">No devices yet</string>
+    <string name="empty_devices_message">Tap + to add your first device</string>
+    <string name="empty_history_title">No battery events</string>
+    <string name="empty_history_message">Record battery replacements to see them here</string>
 </resources>
