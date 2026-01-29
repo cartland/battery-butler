@@ -10,6 +10,7 @@ import com.chriscartland.batterybutler.usecase.AddBatteryEventUseCase
 import com.chriscartland.batterybutler.usecase.GetBatteryEventsUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceDetailUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
+import com.chriscartland.batterybutler.usecase.UpdateDeviceLastReplacedUseCase
 import com.chriscartland.batterybutler.usecase.UpdateDeviceUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -228,7 +229,7 @@ class DeviceDetailViewModelTest {
             getDeviceDetailUseCase = GetDeviceDetailUseCase(repo),
             getDeviceTypesUseCase = GetDeviceTypesUseCase(repo),
             getBatteryEventsUseCase = GetBatteryEventsUseCase(repo),
-            addBatteryEventUseCase = AddBatteryEventUseCase(repo),
+            addBatteryEventUseCase = AddBatteryEventUseCase(repo, UpdateDeviceLastReplacedUseCase(repo)),
             updateDeviceUseCase = UpdateDeviceUseCase(repo),
         )
 }
@@ -284,8 +285,7 @@ private class FakeDetailRepository : DeviceRepository {
 
     override suspend fun deleteDeviceType(id: String) {}
 
-    override fun getEventsForDevice(deviceId: String): Flow<List<BatteryEvent>> =
-        eventsMap.getOrPut(deviceId) { MutableStateFlow(emptyList()) }
+    override fun getEventsForDevice(deviceId: String): Flow<List<BatteryEvent>> = eventsMap.getOrPut(deviceId) { MutableStateFlow(emptyList()) }
 
     override fun getAllEvents(): Flow<List<BatteryEvent>> = flowOf(eventsMap.values.flatMap { it.value })
 
