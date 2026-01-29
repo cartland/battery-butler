@@ -130,7 +130,7 @@ fun HistoryListItem(
             val daysAgo = eventDate.daysUntil(now)
 
             Text(
-                text = "$daysAgo days",
+                text = if (daysAgo == 1) "1 day" else "$daysAgo days",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
