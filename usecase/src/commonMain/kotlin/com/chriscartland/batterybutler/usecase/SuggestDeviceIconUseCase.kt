@@ -1,5 +1,6 @@
 package com.chriscartland.batterybutler.usecase
 
+import co.touchlab.kermit.Logger
 import com.chriscartland.batterybutler.ai.AiEngine
 import com.chriscartland.batterybutler.domain.model.DeviceIcons
 import kotlinx.coroutines.flow.firstOrNull
@@ -39,6 +40,7 @@ class SuggestDeviceIconUseCase(
                 ?.filter { !it.isWhitespace() }
         } catch (e: Exception) {
             if (e is CancellationException) throw e
+            Logger.e("SuggestDeviceIconUseCase", e) { "Failed to suggest icon for type: $typeName" }
             null
         }
     }

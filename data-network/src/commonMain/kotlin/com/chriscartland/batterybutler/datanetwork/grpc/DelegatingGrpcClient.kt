@@ -45,7 +45,7 @@ class DelegatingGrpcClient(
                                 GrpcClientState.Ready(factory(url))
                             } catch (e: Exception) {
                                 if (e is CancellationException) throw e
-                                Logger.e("DelegatingGrpcClient") { "Failed to create gRPC client: ${e.message}" }
+                                Logger.e("DelegatingGrpcClient", e) { "Failed to create gRPC client" }
                                 GrpcClientState.Uninitialized // Or Error state?
                             }
                         }
@@ -59,7 +59,7 @@ class DelegatingGrpcClient(
                                 GrpcClientState.Ready(factory(url))
                             } catch (e: Exception) {
                                 if (e is CancellationException) throw e
-                                Logger.e("DelegatingGrpcClient") { "Failed to create gRPC client: ${e.message}" }
+                                Logger.e("DelegatingGrpcClient", e) { "Failed to create gRPC client" }
                                 GrpcClientState.Uninitialized
                             }
                         }

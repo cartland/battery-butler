@@ -42,7 +42,7 @@ class DefaultDeviceRepository(
                 }
             } catch (e: Exception) {
                 if (e is CancellationException) throw e
-                Logger.e("BatteryButlerRepo") { "Error receiving remote updates: ${e.message}" }
+                Logger.e("BatteryButlerRepo", e) { "Error receiving remote updates" }
             }
         }
     }
@@ -128,7 +128,7 @@ class DefaultDeviceRepository(
                 }
             } catch (e: Exception) {
                 if (e is CancellationException) throw e
-                Logger.e("DefaultDeviceRepo") { "Push failed: ${e.message}" }
+                Logger.e("DefaultDeviceRepo", e) { "Push failed" }
                 _syncStatus.value = SyncStatus.Failed(e.message ?: "Unknown error")
             }
         }
