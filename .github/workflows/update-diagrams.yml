@@ -23,11 +23,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup JDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'zulu'
-          java-version: '21'
+      - uses: ./.github/actions/setup-java-gradle
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
