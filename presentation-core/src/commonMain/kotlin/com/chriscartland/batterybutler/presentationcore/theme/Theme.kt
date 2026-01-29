@@ -7,7 +7,7 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 
 private val LightColorScheme = lightColorScheme(
-    primary = Primary,
+    primary = PrimaryLight,
     onPrimary = OnPrimary,
     secondary = Secondary,
     onSecondary = OnSecondary,
@@ -25,8 +25,7 @@ private val LightColorScheme = lightColorScheme(
 )
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Primary,
-    // Depending on design, might want dark text on primary in dark mode, but keeping white for now as Primary is dark-ish blue
+    primary = PrimaryDark,
     onPrimary = OnPrimary,
     secondary = Secondary,
     onSecondary = OnSecondary,
