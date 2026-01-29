@@ -40,14 +40,16 @@ struct HomeScreen: View {
             ToolbarItem(placement: .navigationBarLeading) {
                 NavigationLink(destination: SettingsScreen(viewModel: component.settingsViewModel)) {
                     Image(systemName: "gear")
+                        .accessibilityLabel("Settings")
                 }
             }
-            
+
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: {
                     isAddDevicePresented = true
                 }) {
                     Image(systemName: "plus")
+                        .accessibilityLabel("Add device")
                 }
             }
         }
