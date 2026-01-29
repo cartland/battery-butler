@@ -66,8 +66,8 @@ class HomeViewModel(
             isSortAscendingFlow,
             isGroupAscendingFlow,
             exportDataFlow,
-        ) { sort, group, isSortAsc, isGroupAsc, exportData ->
-            SortConfig(sort, group, isSortAsc, isGroupAsc, exportData)
+        ) { sort, group, isSortAscending, isGroupAscending, exportData ->
+            SortConfig(sort, group, isSortAscending, isGroupAscending, exportData)
         },
         getDevicesUseCase(),
         getDeviceTypesUseCase(),
@@ -82,7 +82,7 @@ class HomeViewModel(
             SortOption.BATTERY_AGE -> devices.sortedBy { it.batteryLastReplaced }
             SortOption.TYPE -> devices.sortedBy { typeMap[it.typeId]?.name }
         }
-        if (!config.isSortAsc) {
+        if (!config.isSortAscending) {
             sortedDevices = sortedDevices.reversed()
         }
 
@@ -94,7 +94,7 @@ class HomeViewModel(
         }
 
         val finalGroupedDevices = if (config.group != GroupOption.NONE) {
-            val comparator = if (config.isGroupAsc) naturalOrder<String>() else reverseOrder()
+            val comparator = if (config.isGroupAscending) naturalOrder<String>() else reverseOrder()
             groupedDevices.toSortedMap(comparator)
         } else {
             groupedDevices
@@ -105,8 +105,8 @@ class HomeViewModel(
             deviceTypes = typeMap,
             sortOption = config.sort,
             groupOption = config.group,
-            isSortAscending = config.isSortAsc,
-            isGroupAscending = config.isGroupAsc,
+            isSortAscending = config.isSortAscending,
+            isGroupAscending = config.isGroupAscending,
             exportData = config.exportData,
             syncStatus = syncStatus,
         )
@@ -147,7 +147,7 @@ class HomeViewModel(
 private data class SortConfig(
     val sort: SortOption,
     val group: GroupOption,
-    val isSortAsc: Boolean,
-    val isGroupAsc: Boolean,
+    val isSortAscending: Boolean,
+    val isGroupAscending: Boolean,
     val exportData: String?,
 )

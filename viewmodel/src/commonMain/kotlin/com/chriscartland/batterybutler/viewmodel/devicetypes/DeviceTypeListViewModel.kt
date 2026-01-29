@@ -33,8 +33,8 @@ class DeviceTypeListViewModel(
                 groupOptionFlow,
                 isSortAscendingFlow,
                 isGroupAscendingFlow,
-            ) { sort, group, isSortAsc, isGroupAsc ->
-                DeviceTypeSortConfig(sort, group, isSortAsc, isGroupAsc)
+            ) { sort, group, isSortAscending, isGroupAscending ->
+                DeviceTypeSortConfig(sort, group, isSortAscending, isGroupAscending)
             },
             getDeviceTypesUseCase(),
         ) { config, list ->
@@ -42,7 +42,7 @@ class DeviceTypeListViewModel(
                 DeviceTypeSortOption.NAME -> list.sortedBy { it.name }
                 DeviceTypeSortOption.BATTERY_TYPE -> list.sortedWith(compareBy<DeviceType> { it.batteryType ?: "" }.thenBy { it.name })
             }
-            if (!config.isSortAsc) {
+            if (!config.isSortAscending) {
                 sortedList = sortedList.reversed()
             }
 
@@ -52,7 +52,7 @@ class DeviceTypeListViewModel(
             }
 
             val finalGroupedList = if (config.group != DeviceTypeGroupOption.NONE) {
-                val comparator = if (config.isGroupAsc) naturalOrder<String>() else reverseOrder()
+                val comparator = if (config.isGroupAscending) naturalOrder<String>() else reverseOrder()
                 groupedList.toSortedMap(comparator)
             } else {
                 groupedList
@@ -62,8 +62,8 @@ class DeviceTypeListViewModel(
                 groupedTypes = finalGroupedList,
                 sortOption = config.sort,
                 groupOption = config.group,
-                isSortAscending = config.isSortAsc,
-                isGroupAscending = config.isGroupAsc,
+                isSortAscending = config.isSortAscending,
+                isGroupAscending = config.isGroupAscending,
             )
         }.stateIn(
             scope = viewModelScope,
@@ -91,6 +91,6 @@ class DeviceTypeListViewModel(
 private data class DeviceTypeSortConfig(
     val sort: DeviceTypeSortOption,
     val group: DeviceTypeGroupOption,
-    val isSortAsc: Boolean,
-    val isGroupAsc: Boolean,
+    val isSortAscending: Boolean,
+    val isGroupAscending: Boolean,
 )
