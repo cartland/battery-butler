@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- Network permissions required for gRPC communication with server -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <!-- Signature-level permission to protect debug receivers from unauthorized access -->
     <permission
         android:name="com.chriscartland.batterybutler.permission.SET_SERVER_URL"
