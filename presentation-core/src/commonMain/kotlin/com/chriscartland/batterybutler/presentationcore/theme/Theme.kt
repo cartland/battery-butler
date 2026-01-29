@@ -42,6 +42,7 @@ fun BatteryButlerTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
+        shapes = BatteryButlerShapes,
         content = content,
     )
 }
