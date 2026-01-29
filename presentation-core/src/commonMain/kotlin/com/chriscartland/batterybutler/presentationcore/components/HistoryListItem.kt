@@ -114,8 +114,8 @@ fun HistoryListItem(
             modifier = Modifier.width(60.dp),
         ) {
             Icon(
-                imageVector = Icons.Default.BatteryFull, // Placeholder or specific icon
-                contentDescription = null,
+                imageVector = Icons.Default.BatteryFull,
+                contentDescription = "Battery replacement",
                 tint = MaterialTheme.colorScheme.primary,
             )
 
