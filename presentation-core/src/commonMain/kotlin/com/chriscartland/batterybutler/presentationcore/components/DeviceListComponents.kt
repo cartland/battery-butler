@@ -55,7 +55,7 @@ fun DeviceListItem(
                 .date
             val eventDate = device.batteryLastReplaced.toLocalDateTime(timeZone).date
             val days = eventDate.daysUntil(now)
-            "$days days"
+            if (days == 1) "1 day" else "$days days"
         }
     }
 
