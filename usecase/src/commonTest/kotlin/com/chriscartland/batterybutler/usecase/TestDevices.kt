@@ -1,11 +1,14 @@
 package com.chriscartland.batterybutler.usecase
 
+import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.Device
+import com.chriscartland.batterybutler.domain.model.DeviceType
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 /**
- * Helper object for creating test devices with sensible defaults.
+ * Helper object for creating test data with sensible defaults.
+ * Use these builders to avoid duplicating test data construction across tests.
  */
 @OptIn(ExperimentalTime::class)
 object TestDevices {
@@ -26,5 +29,35 @@ object TestDevices {
             lastUpdated = lastUpdated,
             location = location,
             imagePath = imagePath,
+        )
+
+    fun createDeviceType(
+        id: String = "test-type-id",
+        name: String = "Test Device Type",
+        defaultIcon: String? = "default",
+        batteryType: String = "AA",
+        batteryQuantity: Int = 2,
+    ): DeviceType =
+        DeviceType(
+            id = id,
+            name = name,
+            defaultIcon = defaultIcon,
+            batteryType = batteryType,
+            batteryQuantity = batteryQuantity,
+        )
+
+    fun createBatteryEvent(
+        id: String = "test-event-id",
+        deviceId: String = "test-device-id",
+        date: Instant = Instant.DISTANT_PAST,
+        batteryType: String? = "AA",
+        notes: String? = null,
+    ): BatteryEvent =
+        BatteryEvent(
+            id = id,
+            deviceId = deviceId,
+            date = date,
+            batteryType = batteryType,
+            notes = notes,
         )
 }
