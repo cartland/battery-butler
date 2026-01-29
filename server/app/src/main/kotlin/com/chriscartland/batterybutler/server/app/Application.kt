@@ -20,9 +20,9 @@ fun main() {
     // Shutdown hook for gRPC
     Runtime.getRuntime().addShutdownHook(
         Thread {
-            println("Shutting down gRPC server...")
+            Logger.i("BatteryButlerApp") { "Shutting down gRPC server" }
             grpcServer.shutdown()
-            println("gRPC server shut down.")
+            Logger.i("BatteryButlerApp") { "gRPC server shut down" }
         },
     )
 }
@@ -35,7 +35,7 @@ fun startGrpcServer(port: Int = 50051): Server {
         .addService(SyncService(repository).also { Logger.d("BatteryButlerApp") { "SyncService Registered" } })
         .build()
     grpcServer.start()
-    println("gRPC server started on port $port")
+    Logger.i("BatteryButlerApp") { "gRPC server started on port $port" }
     return grpcServer
 }
 
