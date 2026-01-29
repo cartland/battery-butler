@@ -8,11 +8,11 @@ import com.chriscartland.batterybutler.datanetwork.BuildConfig
 import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.usecase.SetNetworkModeUseCase
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class DebugNetworkReceiver(
     private val setNetworkModeUseCase: SetNetworkModeUseCase,
+    private val scope: CoroutineScope,
 ) : BroadcastReceiver() {
     companion object {
         const val ACTION_SET_NETWORK_MODE = "com.chriscartland.batterybutler.SET_NETWORK_MODE"
@@ -36,8 +36,8 @@ class DebugNetworkReceiver(
             }
 
             if (mode != null) {
-                // Launch on a detached scope since Receiver context is short-lived
-                CoroutineScope(Dispatchers.Default).launch {
+                // Use injected scope for proper lifecycle management
+                scope.launch {
                     setNetworkModeUseCase(mode)
                     Logger.d(TAG) { "Network mode set to $mode via UseCase" }
                 }
