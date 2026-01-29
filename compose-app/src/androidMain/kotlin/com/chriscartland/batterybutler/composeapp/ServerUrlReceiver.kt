@@ -92,7 +92,7 @@ class ServerUrlReceiver : BroadcastReceiver() {
                 )
             }
 
-            kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.Main).launch {
+            application.appComponent.appScope.launch {
                 try {
                     setNetworkModeUseCase(mode)
                 } finally {
