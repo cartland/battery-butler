@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import com.chriscartland.batterybutler.presentationcore.theme.IconSize
 
 @Composable
 fun CompositeControl(
@@ -62,7 +63,7 @@ fun CompositeControl(
                         imageVector = if (isAscending) Icons.Default.ArrowDownward else Icons.Default.ArrowUpward,
                         contentDescription = if (isAscending) "Ascending" else "Descending",
                         tint = contentColor,
-                        modifier = Modifier.size(16.dp),
+                        modifier = Modifier.size(IconSize.ExtraSmall),
                     )
                 }
 
@@ -92,7 +93,7 @@ fun CompositeControl(
                     imageVector = Icons.Default.ArrowDropDown,
                     contentDescription = null,
                     tint = contentColor,
-                    modifier = Modifier.padding(start = 4.dp).size(18.dp),
+                    modifier = Modifier.padding(start = 4.dp).size(IconSize.Small),
                 )
             }
         }

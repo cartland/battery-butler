@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import com.chriscartland.batterybutler.presentationcore.theme.IconSize
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.daysUntil
 import kotlinx.datetime.toLocalDateTime
@@ -82,7 +83,7 @@ fun DeviceListItem(
                     imageVector = DeviceIconMapper.getIcon(iconName),
                     contentDescription = deviceType?.name,
                     tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                    modifier = Modifier.size(24.dp),
+                    modifier = Modifier.size(IconSize.Medium),
                 )
             }
 
@@ -123,7 +124,7 @@ fun DeviceListItem(
                     imageVector = Icons.Default.BatteryFull,
                     contentDescription = "Battery Status",
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(24.dp),
+                    modifier = Modifier.size(IconSize.Medium),
                 )
                 Text(
                     text = daysSinceBatteryChange,
@@ -169,7 +170,7 @@ fun DeviceTypeIconItem(
                 imageVector = DeviceIconMapper.getIcon(iconName),
                 contentDescription = if (isSelected) "Selected: $iconName" else iconName,
                 tint = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(32.dp),
+                modifier = Modifier.size(IconSize.Large),
             )
         }
     }
