@@ -34,14 +34,13 @@ class GrpcSyncDataSource(
                 responseChannel
                     .consumeAsFlow()
                     .collect { response ->
-                        // println("$tag: GrpcSyncDataSource received response: $response")
                         val domainUpdate = SyncMapper.toDomain(response)
                         Logger.d(tag) { "GrpcSyncDataSource emitting update from server" }
                         send(domainUpdate)
                     }
             } catch (e: Exception) {
                 if (e is CancellationException) throw e
-                Logger.d(tag) { "GrpcSyncDataSource error: $e" }
+                Logger.e(tag, e) { "GrpcSyncDataSource error" }
                 // throw e // Don't crash the flow, maybe emit error state or retry?
             }
         }
@@ -52,7 +51,7 @@ class GrpcSyncDataSource(
             response.success
         } catch (e: Exception) {
             if (e is CancellationException) throw e
-            Logger.e("BatteryButlerGrpc") { "Push update failed: ${e.message}" }
+            Logger.e("BatteryButlerGrpc", e) { "Push update failed" }
             false
         }
 }
