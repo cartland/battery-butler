@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Devices
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -37,16 +39,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.composeresources.composeStringResource
+import com.chriscartland.batterybutler.composeresources.generated.resources.Res
+import com.chriscartland.batterybutler.composeresources.generated.resources.empty_devices_message
+import com.chriscartland.batterybutler.composeresources.generated.resources.empty_devices_title
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.SyncStatus
 import com.chriscartland.batterybutler.presentationcore.components.CompositeControl
 import com.chriscartland.batterybutler.presentationcore.components.DeviceListItem
+import com.chriscartland.batterybutler.presentationcore.components.EmptyStateContent
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationfeature.util.labelRes
 import com.chriscartland.batterybutler.presentationmodel.home.GroupOption
 import com.chriscartland.batterybutler.presentationmodel.home.HomeUiState
 import com.chriscartland.batterybutler.presentationmodel.home.SortOption
+import org.jetbrains.compose.resources.stringResource
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -211,34 +218,45 @@ fun HomeScreenList(
     onDeviceClick: (String) -> Unit,
     contentPadding: androidx.compose.foundation.layout.PaddingValues,
 ) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = contentPadding,
-    ) {
-        state.groupedDevices.forEach { (groupName, devices) ->
-            if (state.groupOption != GroupOption.NONE) {
-                stickyHeader {
-                    Surface(
-                        modifier = Modifier.fillMaxWidth(),
-                        color = MaterialTheme.colorScheme.surfaceVariant,
-                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    ) {
-                        Text(
-                            text = groupName,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                            style = MaterialTheme.typography.labelLarge,
-                            fontWeight = FontWeight.Bold,
-                        )
+    val allDevices = state.groupedDevices.values.flatten()
+
+    if (allDevices.isEmpty()) {
+        EmptyStateContent(
+            icon = Icons.Outlined.Devices,
+            title = stringResource(Res.string.empty_devices_title),
+            message = stringResource(Res.string.empty_devices_message),
+            modifier = Modifier.padding(contentPadding),
+        )
+    } else {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = contentPadding,
+        ) {
+            state.groupedDevices.forEach { (groupName, devices) ->
+                if (state.groupOption != GroupOption.NONE) {
+                    stickyHeader {
+                        Surface(
+                            modifier = Modifier.fillMaxWidth(),
+                            color = MaterialTheme.colorScheme.surfaceVariant,
+                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        ) {
+                            Text(
+                                text = groupName,
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                                style = MaterialTheme.typography.labelLarge,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        }
                     }
                 }
-            }
 
-            items(devices) { device ->
-                DeviceListItem(
-                    device = device,
-                    deviceType = state.deviceTypes[device.typeId],
-                    onClick = { onDeviceClick(device.id) },
-                )
+                items(devices) { device ->
+                    DeviceListItem(
+                        device = device,
+                        deviceType = state.deviceTypes[device.typeId],
+                        onClick = { onDeviceClick(device.id) },
+                    )
+                }
             }
         }
     }
