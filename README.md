@@ -30,6 +30,18 @@ For a detailed deep-dive into the module structure, dependency graph, and strict
 *   **Date/Time**: `kotlinx-datetime`.
 *   **Build Systems**: Gradle (Kotlin/Android), Bazel (Proto generation).
 
+## 📋 Prerequisites
+
+Before building the project, ensure you have the following installed:
+
+| Tool | Version | Notes |
+| :--- | :--- | :--- |
+| **JDK** | 21+ | Required for Kotlin compilation |
+| **Android Studio** | Latest stable | For Android development |
+| **Xcode** | 15+ | For iOS development (macOS only) |
+| **Bazel** | Latest | For proto generation (`brew install bazelisk`) |
+| **Gradle** | 8.12+ | Wrapper included, no manual install needed |
+
 ## 🛠 Building and Running
 This project uses Gradle for build and test orchestration.
 
@@ -72,3 +84,5 @@ To enable the AI features (Gemini), you need an API Key.
 This project uses `Spotless` for code formatting.
 Run `./scripts/format.sh` before committing to ensure your code follows the style guidelines.
 Use `./scripts/prepare-for-commit.sh` to validate your changes before pushing.
+
+For AI agents (Claude Code, etc.), see the **[Agent Guidelines](.agent/AGENTS.md)** for workflow requirements.
