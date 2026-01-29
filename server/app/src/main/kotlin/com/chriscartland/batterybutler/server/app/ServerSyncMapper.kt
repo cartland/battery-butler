@@ -35,6 +35,9 @@ internal object ServerSyncMapper {
         DeviceType(
             id = id,
             name = name,
+            defaultIcon = defaultIcon.takeIf { it.isNotEmpty() },
+            batteryType = batteryType.takeIf { it.isNotEmpty() } ?: "AA",
+            batteryQuantity = batteryQuantity.takeIf { it > 0 } ?: 1,
         )
 
     private fun DeviceType.toProto(): ProtoDeviceType =
@@ -42,6 +45,9 @@ internal object ServerSyncMapper {
             .newBuilder()
             .setId(id)
             .setName(name)
+            .setDefaultIcon(defaultIcon ?: "")
+            .setBatteryType(batteryType)
+            .setBatteryQuantity(batteryQuantity)
             .build()
 
     private fun ProtoDevice.toDomain(): Device =
