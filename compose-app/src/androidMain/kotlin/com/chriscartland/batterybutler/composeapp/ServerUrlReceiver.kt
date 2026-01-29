@@ -3,7 +3,7 @@ package com.chriscartland.batterybutler.composeapp
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.util.Log
+import co.touchlab.kermit.Logger
 import com.chriscartland.batterybutler.BatteryButlerApplication
 import com.chriscartland.batterybutler.datanetwork.BuildConfig
 import kotlinx.coroutines.launch
@@ -15,7 +15,7 @@ class ServerUrlReceiver : BroadcastReceiver() {
     ) {
         val application = context.applicationContext as? BatteryButlerApplication
         if (application == null) {
-            Log.e("ServerUrlReceiver", "Application context is not BatteryButlerApplication")
+            Logger.e("ServerUrlReceiver") { "Application context is not BatteryButlerApplication" }
             return
         }
         // Access repository through AppComponent
@@ -74,7 +74,7 @@ class ServerUrlReceiver : BroadcastReceiver() {
         if (intent.action == "com.chriscartland.batterybutler.SET_SERVER_URL") {
             val url = intent.getStringExtra("url")
             val mode = if (url != null) {
-                Log.d("ServerUrlReceiver", "Updating Server URL to: $url")
+                Logger.d("ServerUrlReceiver") { "Updating Server URL" }
                 // If 10.0.2.2, maybe Local? But let's just use GrpcAws(url) as "Custom" for now.
                 // Or wait, if we are in Local mode, we might want to stay in Local mode but change URL?
                 // But simplified NetworkMode means the Mode CARRIES the URL.
@@ -82,7 +82,7 @@ class ServerUrlReceiver : BroadcastReceiver() {
                 com.chriscartland.batterybutler.domain.model.NetworkMode
                     .GrpcAws(url)
             } else {
-                Log.d("ServerUrlReceiver", "Updating Server URL: Resetting to default")
+                Logger.d("ServerUrlReceiver") { "Resetting Server URL to default" }
                 // Resetting usually meant "Use default".
                 // We can reset to GrpcAws(DefaultUrl) or just leave it?
                 // Previous code `resetServerUrl()` cleared the override.
