@@ -2,9 +2,9 @@ package com.chriscartland.batterybutler.composeapp.feature.settings
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chriscartland.batterybutler.domain.model.AppVersion
 import com.chriscartland.batterybutler.presentationcore.util.LocalFileSaver
 import com.chriscartland.batterybutler.presentationcore.util.generateFileTimestamp
@@ -20,8 +20,8 @@ fun SettingsScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val exportData by viewModel.exportData.collectAsState()
-    val appVersion by viewModel.appVersion.collectAsState()
+    val exportData by viewModel.exportData.collectAsStateWithLifecycle()
+    val appVersion by viewModel.appVersion.collectAsStateWithLifecycle()
     val fileSaver = LocalFileSaver.current
 
     LaunchedEffect(exportData) {
@@ -33,7 +33,7 @@ fun SettingsScreen(
             viewModel.onExportDataConsumed()
         }
     }
-    val networkMode by viewModel.networkMode.collectAsState()
+    val networkMode by viewModel.networkMode.collectAsStateWithLifecycle()
     SettingsContent(
         networkMode = networkMode,
         availableNetworkModes = viewModel.availableNetworkModes,
