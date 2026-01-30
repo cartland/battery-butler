@@ -19,7 +19,48 @@ env:
   ORG_GRADLE_PROJECT_PRODUCTION_SERVER_URL: ${{ secrets.PRODUCTION_SERVER_URL }}
 
 jobs:
+  # Detect which files changed to skip unnecessary CI jobs
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      kotlin-changed: ${{ steps.filter.outputs.kotlin }}
+      swift-changed: ${{ steps.filter.outputs.swift }}
+      gradle-changed: ${{ steps.filter.outputs.gradle }}
+      server-changed: ${{ steps.filter.outputs.server }}
+      ios-compose-changed: ${{ steps.filter.outputs.ios-compose }}
+      ios-native-changed: ${{ steps.filter.outputs.ios-native }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            kotlin:
+              - '**/*.kt'
+              - '**/*.kts'
+              - 'gradle/**'
+              - 'gradlew*'
+            swift:
+              - '**/*.swift'
+              - 'ios-app-swift-ui/**'
+            gradle:
+              - 'build.gradle.kts'
+              - 'settings.gradle.kts'
+              - 'gradle.properties'
+              - 'buildSrc/**'
+              - 'gradle/**'
+            server:
+              - 'server/**'
+            ios-compose:
+              - 'ios-app-compose-ui/**'
+              - '**/*.kt'
+            ios-native:
+              - 'ios-app-swift-ui/**'
+              - '**/*.swift'
+
   validation_spotless:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.kotlin-changed == 'true' || needs.detect-changes.outputs.gradle-changed == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -31,6 +72,8 @@ jobs:
         run: ./gradlew spotlessCheck --stacktrace
 
   validation_lint:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.kotlin-changed == 'true' || needs.detect-changes.outputs.gradle-changed == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -40,6 +83,8 @@ jobs:
         run: ./gradlew lint --stacktrace
 
   validation_test:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.kotlin-changed == 'true' || needs.detect-changes.outputs.gradle-changed == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -49,6 +94,8 @@ jobs:
         run: ./gradlew test --stacktrace
 
   validation_instrumented:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.kotlin-changed == 'true' || needs.detect-changes.outputs.gradle-changed == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -63,7 +110,8 @@ jobs:
         run: ./scripts/test.sh
 
   build_android:
-
+    needs: detect-changes
+    if: needs.detect-changes.outputs.kotlin-changed == 'true' || needs.detect-changes.outputs.gradle-changed == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -80,7 +128,8 @@ jobs:
           retention-days: 90
 
   build_ios_compose:
-
+    needs: detect-changes
+    if: needs.detect-changes.outputs.ios-compose-changed == 'true' || needs.detect-changes.outputs.gradle-changed == 'true'
     runs-on: macos-latest
     steps:
       - uses: maxim-lobanov/setup-xcode@v1
@@ -102,7 +151,8 @@ jobs:
           retention-days: 90
 
   build_ios_native:
-
+    needs: detect-changes
+    if: needs.detect-changes.outputs.ios-native-changed == 'true'
     runs-on: macos-latest
     steps:
       - uses: maxim-lobanov/setup-xcode@v1
@@ -125,7 +175,8 @@ jobs:
           retention-days: 90
 
   build_desktop:
-
+    needs: detect-changes
+    if: needs.detect-changes.outputs.kotlin-changed == 'true' || needs.detect-changes.outputs.gradle-changed == 'true'
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -144,7 +195,8 @@ jobs:
           compression-level: 0
 
   build_server:
-
+    needs: detect-changes
+    if: needs.detect-changes.outputs.server-changed == 'true' || needs.detect-changes.outputs.kotlin-changed == 'true' || needs.detect-changes.outputs.gradle-changed == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
