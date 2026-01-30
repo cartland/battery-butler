@@ -80,7 +80,7 @@ class HomeViewModel(
             SortOption.NAME -> devices.sortedBy { it.name }
             SortOption.LOCATION -> devices.sortedWith(compareBy<Device> { it.location ?: "" }.thenBy { it.name })
             SortOption.BATTERY_AGE -> devices.sortedBy { it.batteryLastReplaced }
-            SortOption.TYPE -> devices.sortedBy { typeMap[it.typeId]?.name }
+            SortOption.TYPE -> devices.sortedBy { typeMap[it.typeId]?.name ?: "" }
         }
         if (!config.isSortAscending) {
             sortedDevices = sortedDevices.reversed()
