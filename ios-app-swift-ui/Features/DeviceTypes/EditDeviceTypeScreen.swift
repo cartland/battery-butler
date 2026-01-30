@@ -5,15 +5,15 @@ struct EditDeviceTypeScreen: View {
     @StateObject var viewModelWrapper: EditDeviceTypeViewModelWrapper
     @Environment(\.dismiss) private var dismiss
     @State private var showDeleteConfirmation = false
-    
+
     init(factory: EditDeviceTypeViewModelFactory, typeId: String) {
         _viewModelWrapper = StateObject(wrappedValue: EditDeviceTypeViewModelWrapper(factory.create(typeId: typeId)))
     }
-    
+
     var body: some View {
         Form {
             let state = viewModelWrapper.state
-            
+
             if state.isLoading {
                 ProgressView()
             } else if state.isNotFound {
@@ -24,33 +24,25 @@ struct EditDeviceTypeScreen: View {
                         get: { state.name },
                         set: { viewModelWrapper.updateName(name: $0) }
                     ))
-                    
+
                     TextField("Battery Type", text: Binding(
                         get: { state.batteryType },
                         set: { viewModelWrapper.updateBatteryType(type: $0) }
                     ))
                 }
-                
+
                 Section {
                     Button("Delete Type") {
                         showDeleteConfirmation = true
                     }
                     .foregroundColor(.red)
                 }
-                
+
                 if let error = state.saveError {
                     Section {
                         Text(error)
                             .foregroundColor(.red)
                     }
-                }
-                
-                if state.isSaved {
-                    Text("Saved!")
-                        .onAppear {
-                            viewModelWrapper.consumeSaveSuccess()
-                            dismiss()
-                        }
                 }
             }
         }
@@ -72,6 +64,12 @@ struct EditDeviceTypeScreen: View {
             Button("Cancel", role: .cancel) { }
         } message: {
             Text("This action cannot be undone.")
+        }
+        .onChange(of: viewModelWrapper.state.isSaved) { _, isSaved in
+            if isSaved {
+                viewModelWrapper.consumeSaveSuccess()
+                dismiss()
+            }
         }
     }
 }

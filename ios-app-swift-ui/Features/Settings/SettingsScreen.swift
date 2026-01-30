@@ -5,11 +5,11 @@ import shared
 struct SettingsScreen: View {
     @StateObject private var wrapper: SettingsViewModelWrapper
     @State private var isShareSheetPresented = false
-    
+
     init(viewModel: SettingsViewModel) {
         _wrapper = StateObject(wrappedValue: SettingsViewModelWrapper(viewModel))
     }
-    
+
     var body: some View {
         Form {
             Section(header: Text("Data Management")) {
@@ -17,14 +17,14 @@ struct SettingsScreen: View {
                     wrapper.onExportData()
                 }
             }
-            
+
             Section {
                 Text("Version 1.0.0")
                     .foregroundColor(.secondary)
             }
         }
         .navigationTitle("Settings")
-        .onChange(of: wrapper.exportData) { newData in
+        .onChange(of: wrapper.exportData) { _, newData in
             if newData != nil {
                 isShareSheetPresented = true
             }

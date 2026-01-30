@@ -7,17 +7,18 @@ struct AddDeviceScreen: View {
 
     @State private var name: String = ""
     @State private var selectedTypeId: String = ""
-    
+
     init(viewModel: AddDeviceViewModel) {
         _wrapper = StateObject(wrappedValue: AddDeviceViewModelWrapper(viewModel))
     }
-    
+
     var body: some View {
-        NavigationView {
+        // NavigationStack used for proper toolbar support in sheets
+        NavigationStack {
             Form {
                 Section(header: Text("Device Details")) {
                     TextField("Device Name", text: $name)
-                    
+
                     Picker("Type", selection: $selectedTypeId) {
                         Text("Select Type").tag("")
                         ForEach(wrapper.deviceTypes, id: \.id) { type in
@@ -25,7 +26,7 @@ struct AddDeviceScreen: View {
                         }
                     }
                 }
-                
+
                 Section {
                     Button("Add Device") {
                         wrapper.addDevice(name: name, typeId: selectedTypeId)
