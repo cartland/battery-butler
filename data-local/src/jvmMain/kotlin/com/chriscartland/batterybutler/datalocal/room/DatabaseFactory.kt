@@ -5,6 +5,7 @@ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.chriscartland.batterybutler.datalocal.room.AppDatabase
 import com.chriscartland.batterybutler.datalocal.room.AppDatabaseConstructor
 import com.chriscartland.batterybutler.datalocal.room.MIGRATION_3_4
+import com.chriscartland.batterybutler.datalocal.room.MIGRATION_4_5
 import java.io.File
 
 actual class DatabaseFactory {
@@ -15,7 +16,7 @@ actual class DatabaseFactory {
                 name = dbFile.absolutePath,
                 factory = { AppDatabaseConstructor.initialize() },
             ).setDriver(BundledSQLiteDriver())
-            .addMigrations(MIGRATION_3_4)
+            .addMigrations(MIGRATION_3_4, MIGRATION_4_5)
             .build()
     }
 }
