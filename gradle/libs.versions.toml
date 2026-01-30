@@ -51,6 +51,9 @@ postgres = "42.7.2"
 hikari = "5.1.0"
 exposed = "0.50.1"
 composeRules = "0.4.12"
+firebase-bom = "33.1.0"
+google-services = "4.4.1"
+firebase-crashlytics-plugin = "3.0.1"
 
 
 [libraries]
@@ -118,6 +121,8 @@ exposed-java-time = { group = "org.jetbrains.exposed", name = "exposed-java-time
 h2 = { group = "com.h2database", name = "h2", version = "2.2.224" }
 kermit = { group = "co.touchlab", name = "kermit", version.ref = "kermit" }
 detekt-compose = { module = "io.nlopez.compose.rules:detekt", version.ref = "composeRules" }
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
+firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
 
 
 [plugins]
@@ -141,3 +146,5 @@ wire = { id = "com.squareup.wire", version.ref = "wire" }
 screenshot = { id = "com.android.compose.screenshot", version.ref = "screenshot" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version = "1.23.8" }
 jib = { id = "com.google.cloud.tools.jib", version = "3.5.2" }
+google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebase-crashlytics-plugin" }

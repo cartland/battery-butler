@@ -9,6 +9,8 @@ plugins {
     alias(libs.plugins.composeHotReload)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics)
 }
 
 kotlin {
@@ -39,6 +41,8 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation(libs.generativeai)
             implementation(libs.kotlinx.coroutines.play.services)
+            implementation(project.dependencies.platform(libs.firebase.bom))
+            implementation(libs.firebase.crashlytics)
         }
         commonMain.dependencies {
             implementation(compose.runtime)

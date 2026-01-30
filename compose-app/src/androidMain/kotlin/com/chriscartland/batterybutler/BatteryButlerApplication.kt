@@ -8,6 +8,8 @@ import com.chriscartland.batterybutler.composeapp.di.create
 import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
 import com.chriscartland.batterybutler.datanetwork.grpc.NetworkComponent
 import com.chriscartland.batterybutler.domain.model.AppVersion
+import co.touchlab.kermit.LogcatWriter
+import co.touchlab.kermit.Logger
 
 class BatteryButlerApplication : Application() {
     lateinit var appComponent: AppComponent
@@ -23,5 +25,6 @@ class BatteryButlerApplication : Application() {
             versionCode = BuildConfig.VERSION_CODE,
         )
         appComponent = AppComponent::class.create(databaseFactory, aiEngine, networkComponent, appVersion)
+        Logger.setLogWriters(LogcatWriter())
     }
 }
