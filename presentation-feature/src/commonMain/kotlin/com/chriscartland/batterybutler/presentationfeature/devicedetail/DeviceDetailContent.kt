@@ -302,7 +302,7 @@ fun DeviceDetailBody(
             }
         }
 
-        items(state.events) { event ->
+        items(state.events, key = { it.id }) { event ->
             HistoryListItem(
                 event = event,
                 deviceName = device.name,

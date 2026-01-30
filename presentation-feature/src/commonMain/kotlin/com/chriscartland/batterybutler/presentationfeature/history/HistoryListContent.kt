@@ -37,7 +37,7 @@ fun HistoryListContent(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = contentPadding,
                 ) {
-                    items(state.items) { item ->
+                    items(state.items, key = { it.event.id }) { item ->
                         HistoryListItem(
                             event = item.event,
                             deviceName = item.deviceName,
