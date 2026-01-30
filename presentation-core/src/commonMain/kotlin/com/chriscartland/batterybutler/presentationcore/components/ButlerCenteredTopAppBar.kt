@@ -101,7 +101,7 @@ fun ButlerCenteredTopAppBarWithActionsPreview() {
             title = "With Actions",
             actions = {
                 IconButton(onClick = {}) {
-                    Icon(Icons.Default.AutoAwesome, contentDescription = "Action")
+                    Icon(Icons.Default.AutoAwesome, contentDescription = "Sample Action")
                 }
             },
         )

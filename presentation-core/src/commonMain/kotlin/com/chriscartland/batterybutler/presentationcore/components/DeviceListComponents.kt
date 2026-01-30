@@ -81,7 +81,7 @@ fun DeviceListItem(
             ) {
                 Icon(
                     imageVector = DeviceIconMapper.getIcon(iconName),
-                    contentDescription = deviceType?.name,
+                    contentDescription = deviceType?.name ?: "Device Icon",
                     tint = MaterialTheme.colorScheme.onPrimaryContainer,
                     modifier = Modifier.size(IconSize.Medium),
                 )
@@ -122,7 +122,7 @@ fun DeviceListItem(
             ) {
                 Icon(
                     imageVector = Icons.Default.BatteryFull,
-                    contentDescription = "Battery Status",
+                    contentDescription = "Battery Age",
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(IconSize.Medium),
                 )
@@ -168,7 +168,11 @@ fun DeviceTypeIconItem(
         ) {
             Icon(
                 imageVector = DeviceIconMapper.getIcon(iconName),
-                contentDescription = if (isSelected) "Selected: $iconName" else iconName,
+                contentDescription = if (isSelected) {
+                    "Selected: ${iconName.replace("_", " ")}"
+                } else {
+                    iconName.replace("_", " ")
+                },
                 tint = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(IconSize.Large),
             )
