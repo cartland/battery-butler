@@ -259,7 +259,7 @@ fun HomeScreenList(
                     }
                 }
 
-                items(devices) { device ->
+                items(devices, key = { it.id }) { device ->
                     DeviceListItem(
                         device = device,
                         deviceType = state.deviceTypes[device.typeId],

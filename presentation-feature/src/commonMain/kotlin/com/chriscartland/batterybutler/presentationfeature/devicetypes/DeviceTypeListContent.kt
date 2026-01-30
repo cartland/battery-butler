@@ -148,7 +148,7 @@ fun DeviceTypeListContent(
                                 }
                             }
 
-                            items(types) { type ->
+                            items(types, key = { it.id }) { type ->
                                 ListItem(
                                     headlineContent = { Text(type.name, fontWeight = FontWeight.Medium) },
                                     supportingContent = { Text("${type.batteryQuantity} x ${type.batteryType}") },
