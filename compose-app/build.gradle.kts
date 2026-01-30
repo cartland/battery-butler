@@ -219,6 +219,7 @@ android {
 dependencies {
     debugImplementation(compose.uiTooling)
     debugImplementation(libs.compose.ui.test.manifest)
+    debugImplementation(libs.leakcanary.android)
 }
 
 compose.desktop {

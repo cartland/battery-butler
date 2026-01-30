@@ -51,6 +51,7 @@ postgres = "42.7.2"
 hikari = "5.1.0"
 exposed = "0.50.1"
 composeRules = "0.4.12"
+leakcanary = "2.14"
 
 
 [libraries]
@@ -118,6 +119,7 @@ exposed-java-time = { group = "org.jetbrains.exposed", name = "exposed-java-time
 h2 = { group = "com.h2database", name = "h2", version = "2.2.224" }
 kermit = { group = "co.touchlab", name = "kermit", version.ref = "kermit" }
 detekt-compose = { module = "io.nlopez.compose.rules:detekt", version.ref = "composeRules" }
+leakcanary-android = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary" }
 
 
 [plugins]
