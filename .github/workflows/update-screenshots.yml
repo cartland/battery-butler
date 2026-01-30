@@ -1,7 +1,7 @@
 name: Update Screenshots
 
 on:
-  push:
+  pull_request:
     branches:
       - main
   workflow_dispatch:
@@ -16,12 +16,12 @@ jobs:
 
     permissions:
       contents: write
-      pull-requests: write
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.head_ref }}
           fetch-depth: 0
 
       - uses: ./.github/actions/setup-java-gradle
@@ -34,16 +34,9 @@ jobs:
       - name: Generate Screenshots
         run: ./gradlew :android-screenshot-tests:updateDebugScreenshotTest
 
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v7
+      - name: Auto-commit screenshot updates
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "Test: Auto-update android screenshots"
-          title: "Test: Auto-update android screenshots"
-          body: |
-            Auto-generated screenshot updates from CI.
-
-            This PR was automatically created by the Update Screenshots workflow.
-          branch: auto/update-screenshots
-          delete-branch: true
-          labels: automated
+          commit_message: "Test: Auto-update android screenshots"
+          file_pattern: "android-screenshot-tests/src/screenshotTestDebug/reference/"
+          branch: ${{ github.head_ref }}

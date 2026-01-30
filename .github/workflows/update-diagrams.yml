@@ -1,7 +1,7 @@
 name: Update Diagrams
 
 on:
-  push:
+  pull_request:
     branches:
       - main
   workflow_dispatch:
@@ -16,12 +16,12 @@ jobs:
 
     permissions:
       contents: write
-      pull-requests: write
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.head_ref }}
           fetch-depth: 0
 
       - uses: ./.github/actions/setup-java-gradle
@@ -34,16 +34,9 @@ jobs:
       - name: Generate Diagrams and Code Share Analysis
         run: ./gradlew generateMermaidGraph analyzeCodeShare
 
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v7
+      - name: Auto-commit diagram updates
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "Docs: Auto-update architecture diagrams"
-          title: "Docs: Auto-update architecture diagrams"
-          body: |
-            Auto-generated diagram updates from CI.
-
-            This PR was automatically created by the Update Diagrams workflow.
-          branch: auto/update-diagrams
-          delete-branch: true
-          labels: automated
+          commit_message: "Docs: Auto-update architecture diagrams"
+          file_pattern: "docs/"
+          branch: ${{ github.head_ref }}
