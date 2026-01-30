@@ -19,7 +19,7 @@ struct DeviceDetailScreen: View {
                             Image(systemName: "cpu")
                                 .font(.largeTitle)
                                 .foregroundColor(.accentColor)
-                                .accessibilityLabel("Device icon")
+                                .accessibilityHidden(true)
                             
                             VStack(alignment: .leading) {
                                 Text(success.device.name)
