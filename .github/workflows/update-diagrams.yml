@@ -6,6 +6,10 @@ on:
       - main
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   update-diagrams:
     strategy:
@@ -13,6 +17,7 @@ jobs:
       matrix:
         os: [macos-latest]
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
 
     permissions:
       contents: write
@@ -35,7 +40,7 @@ jobs:
         run: ./gradlew generateMermaidGraph analyzeCodeShare
 
       - name: Auto-commit diagram updates
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: "Docs: Auto-update architecture diagrams"
           file_pattern: "docs/"

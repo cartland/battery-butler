@@ -6,6 +6,10 @@ on:
       - main
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   update-screenshots:
     strategy:
@@ -13,6 +17,7 @@ jobs:
       matrix:
         os: [macos-latest]
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
 
     permissions:
       contents: write
@@ -35,7 +40,7 @@ jobs:
         run: ./gradlew :android-screenshot-tests:updateDebugScreenshotTest
 
       - name: Auto-commit screenshot updates
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: "Test: Auto-update android screenshots"
           file_pattern: "android-screenshot-tests/src/screenshotTestDebug/reference/"
