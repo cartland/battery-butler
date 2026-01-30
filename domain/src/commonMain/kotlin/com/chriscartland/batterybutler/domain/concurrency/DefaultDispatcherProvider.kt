@@ -1,0 +1,13 @@
+package com.chriscartland.batterybutler.domain.concurrency
+
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import me.tatarka.inject.annotations.Inject
+
+@Inject
+class DefaultDispatcherProvider : DispatcherProvider {
+    override val main: CoroutineDispatcher get() = Dispatchers.Main
+    override val io: CoroutineDispatcher get() = Dispatchers.Default
+    override val default: CoroutineDispatcher get() = Dispatchers.Default
+    override val unconfined: CoroutineDispatcher get() = Dispatchers.Unconfined
+}

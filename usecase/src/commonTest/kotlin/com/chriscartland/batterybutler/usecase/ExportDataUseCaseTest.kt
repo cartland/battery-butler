@@ -22,7 +22,7 @@ class ExportDataUseCaseTest {
     fun `export empty repository returns valid JSON structure`() =
         runTest {
             val repository = TestExportRepository()
-            val useCase = ExportDataUseCase(repository)
+            val useCase = ExportDataUseCase(repository, TestDispatcherProvider())
 
             val result = useCase()
 
@@ -50,7 +50,7 @@ class ExportDataUseCaseTest {
                     location = "Kitchen",
                 ),
             )
-            val useCase = ExportDataUseCase(repository)
+            val useCase = ExportDataUseCase(repository, TestDispatcherProvider())
 
             val result = useCase()
 
@@ -73,7 +73,7 @@ class ExportDataUseCaseTest {
                     batteryQuantity = 1,
                 ),
             )
-            val useCase = ExportDataUseCase(repository)
+            val useCase = ExportDataUseCase(repository, TestDispatcherProvider())
 
             val result = useCase()
 
@@ -97,7 +97,7 @@ class ExportDataUseCaseTest {
                     notes = "Replaced during maintenance",
                 ),
             )
-            val useCase = ExportDataUseCase(repository)
+            val useCase = ExportDataUseCase(repository, TestDispatcherProvider())
 
             val result = useCase()
 
@@ -138,7 +138,7 @@ class ExportDataUseCaseTest {
                     notes = null,
                 ),
             )
-            val useCase = ExportDataUseCase(repository)
+            val useCase = ExportDataUseCase(repository, TestDispatcherProvider())
 
             val result = useCase()
 
@@ -172,7 +172,7 @@ class ExportDataUseCaseTest {
             )
             repository.deviceTypes.add(DeviceType(id = "type-1", name = "Type 1"))
             repository.deviceTypes.add(DeviceType(id = "type-2", name = "Type 2"))
-            val useCase = ExportDataUseCase(repository)
+            val useCase = ExportDataUseCase(repository, TestDispatcherProvider())
 
             val result = useCase()
 
@@ -195,7 +195,7 @@ class ExportDataUseCaseTest {
                     lastUpdated = Instant.DISTANT_PAST,
                 ),
             )
-            val useCase = ExportDataUseCase(repository)
+            val useCase = ExportDataUseCase(repository, TestDispatcherProvider())
 
             val result = useCase()
 
@@ -219,7 +219,7 @@ class ExportDataUseCaseTest {
                     lastUpdated = Instant.DISTANT_PAST,
                 ),
             )
-            val useCase = ExportDataUseCase(repository)
+            val useCase = ExportDataUseCase(repository, TestDispatcherProvider())
 
             val result = useCase()
 
@@ -227,6 +227,17 @@ class ExportDataUseCaseTest {
             assertTrue(result.contains("\n"))
             assertTrue(result.contains("    ")) // 4-space indentation
         }
+}
+
+private class TestDispatcherProvider : com.chriscartland.batterybutler.domain.concurrency.DispatcherProvider {
+    // Use UnconfinedTestDispatcher for synchronous execution in tests
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+    private val testDispatcher = kotlinx.coroutines.test.UnconfinedTestDispatcher()
+
+    override val main: kotlinx.coroutines.CoroutineDispatcher get() = testDispatcher
+    override val io: kotlinx.coroutines.CoroutineDispatcher get() = testDispatcher
+    override val default: kotlinx.coroutines.CoroutineDispatcher get() = testDispatcher
+    override val unconfined: kotlinx.coroutines.CoroutineDispatcher get() = testDispatcher
 }
 
 // Test-specific repository implementation for export tests
