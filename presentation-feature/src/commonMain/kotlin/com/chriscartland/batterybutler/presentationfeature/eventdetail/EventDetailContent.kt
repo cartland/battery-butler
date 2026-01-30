@@ -47,6 +47,9 @@ import com.chriscartland.batterybutler.presentationcore.components.ButlerCentere
 import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMapper
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationmodel.eventdetail.EventDetailUiState
+import com.chriscartland.batterybutler.composeresources.generated.resources.Res
+import com.chriscartland.batterybutler.composeresources.generated.resources.*
+import org.jetbrains.compose.resources.stringResource
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.ExperimentalTime
@@ -67,11 +70,11 @@ fun EventDetailContent(
         modifier = modifier,
         topBar = {
             ButlerCenteredTopAppBar(
-                title = "Edit Event",
+                title = stringResource(Res.string.edit_event_title),
                 onBack = onBack,
                 navigationIcon = {
                     TextButton(onClick = onBack) {
-                        Text("Done", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.primary)
+                        Text(stringResource(Res.string.action_done), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.primary)
                     }
                 },
             )
@@ -83,7 +86,7 @@ fun EventDetailContent(
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
                 EventDetailUiState.NotFound -> {
-                    Text("Event not found", modifier = Modifier.align(Alignment.Center))
+                    Text(stringResource(Res.string.error_event_not_found), modifier = Modifier.align(Alignment.Center))
                 }
                 is EventDetailUiState.Success -> {
                     val event = uiState.event
@@ -108,12 +111,12 @@ fun EventDetailContent(
                                         showDatePicker = false
                                     },
                                 ) {
-                                    Text("OK")
+                                    Text(stringResource(Res.string.action_ok))
                                 }
                             },
                             dismissButton = {
                                 TextButton(onClick = { showDatePicker = false }) {
-                                    Text("Cancel")
+                                    Text(stringResource(Res.string.action_cancel))
                                 }
                             },
                         ) {
@@ -137,7 +140,7 @@ fun EventDetailContent(
                         ) {
                             Icon(
                                 imageVector = DeviceIconMapper.getIcon(iconName),
-                                contentDescription = "Device icon",
+                                contentDescription = stringResource(Res.string.content_desc_device_icon),
                                 modifier = Modifier.size(48.dp),
                                 tint = MaterialTheme.colorScheme.onPrimaryContainer,
                             )
@@ -149,7 +152,7 @@ fun EventDetailContent(
                             fontWeight = FontWeight.Bold,
                         )
                         Text(
-                            text = uiState.deviceType?.name ?: "Unknown",
+                            text = uiState.deviceType?.name ?: stringResource(Res.string.unknown_device),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -168,8 +171,8 @@ fun EventDetailContent(
                             horizontalArrangement = Arrangement.SpaceBetween,
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                                Icon(Icons.Default.CalendarToday, contentDescription = "Calendar", tint = MaterialTheme.colorScheme.primary)
-                                Text("Replaced On", fontWeight = FontWeight.Medium)
+                                Icon(Icons.Default.CalendarToday, contentDescription = stringResource(Res.string.content_desc_calendar), tint = MaterialTheme.colorScheme.primary)
+                                Text(stringResource(Res.string.label_replaced_on), fontWeight = FontWeight.Medium)
                             }
                             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 Text(dateString, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
@@ -193,7 +196,7 @@ fun EventDetailContent(
                             modifier = Modifier.fillMaxWidth().height(56.dp),
                             shape = RoundedCornerShape(12.dp),
                         ) {
-                            Text("Delete Entry", fontWeight = FontWeight.SemiBold)
+                            Text(stringResource(Res.string.action_delete_entry), fontWeight = FontWeight.SemiBold)
                         }
                     }
                 }

@@ -43,6 +43,9 @@ import com.chriscartland.batterybutler.domain.model.BatchOperationResult
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import com.chriscartland.batterybutler.composeresources.generated.resources.Res
+import com.chriscartland.batterybutler.composeresources.generated.resources.*
+import org.jetbrains.compose.resources.stringResource
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toLocalDateTime
@@ -81,9 +84,8 @@ fun AddBatteryEventContent(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            // AI Section
             Text(
-                "Batch Import (AI)",
+                stringResource(Res.string.action_batch_import_ai),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,
             )
@@ -96,7 +98,7 @@ fun AddBatteryEventContent(
                     value = aiInput,
                     onValueChange = { aiInput = it },
                     modifier = Modifier.weight(1f),
-                    placeholder = { Text("E.g. Replaced remote battery today") },
+                    placeholder = { Text(stringResource(Res.string.placeholder_ai_input_event)) },
                     maxLines = 3,
                 )
                 IconButton(
@@ -108,12 +110,12 @@ fun AddBatteryEventContent(
                     },
                     enabled = aiInput.isNotBlank(),
                 ) {
-                    Icon(Icons.Default.AutoAwesome, contentDescription = "Process with AI")
+                    Icon(Icons.Default.AutoAwesome, contentDescription = stringResource(Res.string.action_process_ai))
                 }
             }
 
             if (aiMessages.isNotEmpty()) {
-                Text("AI Output:", style = MaterialTheme.typography.labelMedium)
+                Text(stringResource(Res.string.label_ai_output), style = MaterialTheme.typography.labelMedium)
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -145,7 +147,7 @@ fun AddBatteryEventContent(
 
             // Manual Section
             Text(
-                "Manual Entry",
+                stringResource(Res.string.add_device_manual_entry),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,
             )
@@ -168,10 +170,10 @@ fun AddBatteryEventContent(
                 onExpandedChange = { expanded = !expanded },
             ) {
                 OutlinedTextField(
-                    value = selectedDevice?.name ?: "Select Device",
+                    value = selectedDevice?.name ?: stringResource(Res.string.label_select_device),
                     onValueChange = {}, // ReadOnly
                     readOnly = true,
-                    label = { Text("Device") },
+                    label = { Text(stringResource(Res.string.label_device)) },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                     modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable, true).fillMaxWidth(),
                 )
@@ -190,7 +192,7 @@ fun AddBatteryEventContent(
                     }
                     HorizontalDivider()
                     DropdownMenuItem(
-                        text = { Text("Add New Device...", fontWeight = FontWeight.Bold) },
+                        text = { Text(stringResource(Res.string.action_add_new_device_ellipsis), fontWeight = FontWeight.Bold) },
                         onClick = {
                             onAddDeviceClick()
                             expanded = false
@@ -202,7 +204,7 @@ fun AddBatteryEventContent(
             OutlinedTextField(
                 value = dateInput,
                 onValueChange = { dateInput = it },
-                label = { Text("Date (YYYY-MM-DD)") },
+                label = { Text(stringResource(Res.string.label_date_format)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
@@ -227,7 +229,7 @@ fun AddBatteryEventContent(
                 enabled = deviceIdInput.isNotBlank(),
                 modifier = Modifier.align(Alignment.End),
             ) {
-                Text("Add Event")
+                Text(stringResource(Res.string.action_add_event))
             }
         }
     }

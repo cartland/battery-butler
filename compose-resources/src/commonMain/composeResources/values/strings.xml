@@ -74,4 +74,25 @@
     <string name="empty_devices_message">Tap + to add your first device</string>
     <string name="empty_history_title">No battery events</string>
     <string name="empty_history_message">Record battery replacements to see them here</string>
+    <!-- Add Battery Event -->
+    <string name="add_battery_event_title">Add Battery Event</string>
+    <string name="placeholder_ai_input_event">E.g. Replaced remote battery today</string>
+    <string name="label_select_device">Select Device</string>
+    <string name="action_add_new_device_ellipsis">Add New Device...</string>
+    <string name="label_date_format">Date (YYYY-MM-DD)</string>
+    <string name="action_add_event">Add Event</string>
+
+    <!-- Event Detail -->
+    <string name="edit_event_title">Edit Event</string>
+    <string name="action_done">Done</string>
+    <string name="error_event_not_found">Event not found</string>
+    <string name="label_replaced_on">Replaced On</string>
+    <string name="content_desc_calendar">Calendar</string>
+    <string name="action_delete_entry">Delete Entry</string>
+    <string name="action_ok">OK</string>
+    <string name="label_device">Device</string>
+    <string name="content_desc_device_icon">Device Icon</string>
+
+    <!-- Shared/Common additions -->
+    <string name="unknown_device">Unknown Device</string>
 </resources>
