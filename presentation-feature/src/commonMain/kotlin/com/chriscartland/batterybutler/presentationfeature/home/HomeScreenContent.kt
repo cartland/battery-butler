@@ -58,7 +58,6 @@ import com.chriscartland.batterybutler.presentationfeature.util.labelRes
 import com.chriscartland.batterybutler.presentationmodel.home.GroupOption
 import com.chriscartland.batterybutler.presentationmodel.home.HomeUiState
 import com.chriscartland.batterybutler.presentationmodel.home.SortOption
-import org.jetbrains.compose.resources.stringResource
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -232,8 +231,8 @@ fun HomeScreenList(
     if (allDevices.isEmpty()) {
         EmptyStateContent(
             icon = Icons.Outlined.Devices,
-            title = stringResource(Res.string.empty_devices_title),
-            message = stringResource(Res.string.empty_devices_message),
+            title = composeStringResource(Res.string.empty_devices_title),
+            message = composeStringResource(Res.string.empty_devices_message),
             modifier = Modifier.padding(contentPadding),
         )
     } else {

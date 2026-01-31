@@ -49,6 +49,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.chriscartland.batterybutler.composeresources.composeStringResource
 import com.chriscartland.batterybutler.composeresources.generated.resources.Res
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_batch_import_ai
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_cancel
@@ -76,7 +77,6 @@ import com.chriscartland.batterybutler.presentationcore.components.ButlerCentere
 import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMapper
 import com.chriscartland.batterybutler.presentationcore.components.DeviceTypeIconItem
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
-import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -113,11 +113,11 @@ fun AddDeviceTypeContent(
         modifier = modifier,
         topBar = {
             ButlerCenteredTopAppBar(
-                title = stringResource(Res.string.add_device_type_title),
+                title = composeStringResource(Res.string.add_device_type_title),
                 onBack = onBack,
                 navigationIcon = {
                     TextButton(onClick = onBack) {
-                        Text(stringResource(Res.string.action_cancel), color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(composeStringResource(Res.string.action_cancel), color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 },
                 actions = {
@@ -135,7 +135,7 @@ fun AddDeviceTypeContent(
                         }
                     }) {
                         Text(
-                            stringResource(Res.string.action_save),
+                            composeStringResource(Res.string.action_save),
                             color = if (isValid) {
                                 MaterialTheme.colorScheme.primary
                             } else {
@@ -162,7 +162,7 @@ fun AddDeviceTypeContent(
             // AI Section
             Column(modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    stringResource(Res.string.action_batch_import_ai),
+                    composeStringResource(Res.string.action_batch_import_ai),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(bottom = 8.dp),
@@ -177,7 +177,7 @@ fun AddDeviceTypeContent(
                         value = aiInput,
                         onValueChange = { aiInput = it },
                         modifier = Modifier.weight(1f),
-                        placeholder = { Text(stringResource(Res.string.placeholder_batch_import)) },
+                        placeholder = { Text(composeStringResource(Res.string.placeholder_batch_import)) },
                         maxLines = 3,
                     )
                     IconButton(
@@ -189,13 +189,13 @@ fun AddDeviceTypeContent(
                         },
                         enabled = aiInput.isNotBlank(),
                     ) {
-                        Icon(Icons.Default.AutoAwesome, contentDescription = stringResource(Res.string.action_process_ai))
+                        Icon(Icons.Default.AutoAwesome, contentDescription = composeStringResource(Res.string.action_process_ai))
                     }
                 }
 
                 if (aiMessages.isNotEmpty()) {
                     Text(
-                        stringResource(Res.string.label_ai_output),
+                        composeStringResource(Res.string.label_ai_output),
                         style = MaterialTheme.typography.labelMedium,
                         modifier = Modifier.padding(top = 8.dp),
                     )
@@ -228,7 +228,7 @@ fun AddDeviceTypeContent(
             }
 
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                Text(stringResource(Res.string.label_icon), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Text(composeStringResource(Res.string.label_icon), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(4),
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -250,17 +250,17 @@ fun AddDeviceTypeContent(
 
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 Text(
-                    stringResource(Res.string.label_device_details),
+                    composeStringResource(Res.string.label_device_details),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                 )
 
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(stringResource(Res.string.label_name), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
+                    Text(composeStringResource(Res.string.label_name), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
                     OutlinedTextField(
                         value = name,
                         onValueChange = { name = it },
-                        placeholder = { Text(stringResource(Res.string.placeholder_device_name)) },
+                        placeholder = { Text(composeStringResource(Res.string.placeholder_device_name)) },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
@@ -276,7 +276,7 @@ fun AddDeviceTypeContent(
                                     IconButton(onClick = { onSuggestIcon(name) }) {
                                         Icon(
                                             Icons.Default.AutoAwesome,
-                                            contentDescription = stringResource(Res.string.content_desc_suggest_icon),
+                                            contentDescription = composeStringResource(Res.string.content_desc_suggest_icon),
                                             tint = MaterialTheme.colorScheme.primary,
                                         )
                                     }
@@ -288,14 +288,14 @@ fun AddDeviceTypeContent(
 
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(
-                        stringResource(Res.string.label_battery_type),
+                        composeStringResource(Res.string.label_battery_type),
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Medium,
                     )
                     OutlinedTextField(
                         value = batteryType,
                         onValueChange = { batteryType = it },
-                        label = { Text(stringResource(Res.string.label_battery_type_hint)) },
+                        label = { Text(composeStringResource(Res.string.label_battery_type_hint)) },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
                         shape = RoundedCornerShape(12.dp),
@@ -306,7 +306,7 @@ fun AddDeviceTypeContent(
 
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(
-                        stringResource(Res.string.label_battery_quantity),
+                        composeStringResource(Res.string.label_battery_quantity),
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Medium,
                     )
@@ -333,7 +333,7 @@ fun AddDeviceTypeContent(
                                 )
                             }
                             Text(
-                                stringResource(Res.string.content_desc_batteries_needed),
+                                composeStringResource(Res.string.content_desc_batteries_needed),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
@@ -343,7 +343,7 @@ fun AddDeviceTypeContent(
                                 onClick = { if (batteryQuantity > 1) batteryQuantity-- },
                                 modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(8.dp)),
                             ) {
-                                Icon(Icons.Default.Remove, contentDescription = stringResource(Res.string.action_decrease))
+                                Icon(Icons.Default.Remove, contentDescription = composeStringResource(Res.string.action_decrease))
                             }
                             Text(batteryQuantity.toString(), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                             IconButton(
@@ -352,7 +352,7 @@ fun AddDeviceTypeContent(
                             ) {
                                 Icon(
                                     Icons.Default.Add,
-                                    contentDescription = stringResource(Res.string.action_increase),
+                                    contentDescription = composeStringResource(Res.string.action_increase),
                                     tint = MaterialTheme.colorScheme.onPrimary,
                                 )
                             }
@@ -371,9 +371,9 @@ fun AddDeviceTypeContentPreview() {
         AddDeviceTypeContent(
             aiMessages = listOf(
                 com.chriscartland.batterybutler.domain.model.BatchOperationResult
-                    .Progress(stringResource(Res.string.status_processing)),
+                    .Progress(composeStringResource(Res.string.status_processing)),
                 com.chriscartland.batterybutler.domain.model.BatchOperationResult
-                    .Success(stringResource(Res.string.status_confirmed)),
+                    .Success(composeStringResource(Res.string.status_confirmed)),
             ),
             suggestedIcon = "detector_smoke",
             onDeviceTypeAdded = {},
