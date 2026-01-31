@@ -90,6 +90,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Cache Xcode DerivedData
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData
+          key: ${{ runner.os }}-xcode-compose-${{ hashFiles('ios-app-compose-ui/**/*.swift', 'ios-app-compose-ui/**/*.xcodeproj/**') }}
+          restore-keys: |
+            ${{ runner.os }}-xcode-compose-
+
       - name: Build iOS App (Compose UI)
         run: |
           xcodebuild -project ios-app-compose-ui/iosAppComposeUI.xcodeproj -configuration Debug -scheme iosAppComposeUI -destination 'generic/platform=iOS Simulator' build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO CONFIGURATION_BUILD_DIR=build/ios-compose/
@@ -111,6 +119,14 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Cache Xcode DerivedData
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData
+          key: ${{ runner.os }}-xcode-native-${{ hashFiles('ios-app-swift-ui/**/*.swift', 'ios-app-swift-ui/**/*.xcodeproj/**') }}
+          restore-keys: |
+            ${{ runner.os }}-xcode-native-
 
       - name: Build iOS App (SwiftUI)
         run: |
