@@ -1,15 +1,18 @@
 #!/bin/bash
 set -ex
 cd "$(dirname "$0")/.."
+PROJECT_ROOT="$(pwd)"
 
 # Ensure Bazel is in PATH (Xcode environment fix)
 export PATH="$PATH:/opt/homebrew/bin:/usr/local/bin"
 
 # Build the tarball containing generated protos
-bazel build //protos:mobile_protos_tar
+# Use --disk_cache="" to ensure outputs are materialized locally
+bazel build //protos:mobile_protos_tar --disk_cache=""
 
-# Locate the output tarball
-TAR_FILE=".bazel/bin/protos/mobile_protos.tar"
+# Locate the output tarball using bazel info for reliable path resolution
+BAZEL_BIN=$(bazel info bazel-bin 2>/dev/null)
+TAR_FILE="$BAZEL_BIN/protos/mobile_protos.tar"
 
 if [ ! -f "$TAR_FILE" ]; then
     echo "Error: Tarball not found at $TAR_FILE"
@@ -24,7 +27,7 @@ else
     NEW_SHA=$(sha256sum "$TAR_FILE" | awk '{print $1}')
 fi
 
-SHA_FILE=".bazel/bin/protos/.mobile_protos.sha256"
+SHA_FILE="$BAZEL_BIN/protos/.mobile_protos.sha256"
 
 # Check if content changed
 if [ -f "$SHA_FILE" ]; then
@@ -40,7 +43,7 @@ echo "Protos changed (New SHA: $NEW_SHA). Updating files..."
 # Define Output Locations
 # Java/Kotlin generation is handled by Wire Gradle plugin for Networking module.
 # We only need to extract Swift files for iOS App.
-SWIFT_OUT="ios-app-swift-ui/Generated/Proto"
+SWIFT_OUT="$PROJECT_ROOT/ios-app-swift-ui/Generated/Proto"
 
 # Clean old files
 rm -rf "$SWIFT_OUT"
