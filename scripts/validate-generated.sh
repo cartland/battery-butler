@@ -259,13 +259,13 @@ validate_analysis() {
         echo "::warning::Content may not reflect actual code sharing"
     fi
 
-    # Count tables/sections (rough heuristic)
-    local table_count
-    table_count=$(grep -c "^|" "$analysis_file" 2>/dev/null) || table_count=0
-    if [[ "$table_count" -lt 5 ]]; then
-        warning "Analysis has fewer tables than expected ($table_count rows)"
+    # Count bullet points/sections (the analysis uses bullet lists, not tables)
+    local bullet_count
+    bullet_count=$(grep -c "^\* " "$analysis_file" 2>/dev/null) || bullet_count=0
+    if [[ "$bullet_count" -lt 5 ]]; then
+        warning "Analysis has fewer bullet items than expected ($bullet_count items)"
     else
-        info "Analysis contains $table_count table rows"
+        info "Analysis contains $bullet_count bullet items"
     fi
 }
 
