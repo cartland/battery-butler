@@ -39,7 +39,60 @@ jobs:
       - name: Generate Screenshots
         run: ./gradlew :android-screenshot-tests:updateDebugScreenshotTest
 
+      - name: Check for meaningful screenshot changes
+        id: check_changes
+        run: |
+          # Check if screenshot changes are meaningful (not just minor rendering variations)
+          # Only commit if file sizes changed significantly or new files were added/removed
+          SCREENSHOT_DIR="android-screenshot-tests/src/screenshotTestDebug/reference/"
+
+          # Get list of changed files
+          CHANGED_FILES=$(git diff --name-only "$SCREENSHOT_DIR" 2>/dev/null || echo "")
+
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "No screenshot changes detected"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Check for new or deleted files (these are always meaningful)
+          NEW_FILES=$(git status --porcelain "$SCREENSHOT_DIR" | grep "^?" | wc -l | tr -d ' ')
+          DELETED_FILES=$(git status --porcelain "$SCREENSHOT_DIR" | grep "^.D" | wc -l | tr -d ' ')
+
+          if [ "$NEW_FILES" -gt 0 ] || [ "$DELETED_FILES" -gt 0 ]; then
+            echo "New or deleted screenshot files detected"
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # For modified files, check if size changed by more than 5%
+          SIGNIFICANT_CHANGES=0
+          for file in $CHANGED_FILES; do
+            if [ -f "$file" ]; then
+              OLD_SIZE=$(git show HEAD:"$file" 2>/dev/null | wc -c | tr -d ' ')
+              NEW_SIZE=$(wc -c < "$file" | tr -d ' ')
+              if [ "$OLD_SIZE" -gt 0 ]; then
+                DIFF=$((NEW_SIZE - OLD_SIZE))
+                DIFF=${DIFF#-}  # absolute value
+                THRESHOLD=$((OLD_SIZE / 20))  # 5% threshold
+                if [ "$DIFF" -gt "$THRESHOLD" ]; then
+                  SIGNIFICANT_CHANGES=$((SIGNIFICANT_CHANGES + 1))
+                fi
+              fi
+            fi
+          done
+
+          if [ "$SIGNIFICANT_CHANGES" -gt 0 ]; then
+            echo "Significant screenshot changes detected ($SIGNIFICANT_CHANGES files)"
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "Only minor rendering variations, skipping commit"
+            git checkout -- "$SCREENSHOT_DIR"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Auto-commit screenshot updates
+        if: steps.check_changes.outputs.has_changes == 'true'
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: "Test: Auto-update android screenshots"
