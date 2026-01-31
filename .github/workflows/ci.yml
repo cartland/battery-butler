@@ -63,8 +63,8 @@ jobs:
         run: ./scripts/test.sh
 
   build_android:
-
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-java-gradle
@@ -80,8 +80,8 @@ jobs:
           retention-days: 90
 
   build_ios_compose:
-
     runs-on: macos-latest
+    timeout-minutes: 30
     steps:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
@@ -102,8 +102,8 @@ jobs:
           retention-days: 90
 
   build_ios_native:
-
     runs-on: macos-latest
+    timeout-minutes: 30
     steps:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
@@ -125,8 +125,8 @@ jobs:
           retention-days: 90
 
   build_desktop:
-
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
@@ -144,8 +144,8 @@ jobs:
           compression-level: 0
 
   build_server:
-
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-java-gradle
