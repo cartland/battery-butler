@@ -67,7 +67,8 @@ jobs:
     # Skip if this is a commit from the bot itself (prevent loops)
     if: github.actor != 'github-actions[bot]'
 
-    runs-on: macos-latest
+    # Ubuntu is faster and cheaper than macOS for Gradle-only tasks
+    runs-on: ubuntu-latest
 
     permissions:
       contents: write
