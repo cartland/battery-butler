@@ -45,8 +45,8 @@ jobs:
           # Check if only the timestamp line changed in Code_Share_Analysis.md
           # If so, reset the file to avoid infinite update loops
           if git diff --name-only | grep -q "Code_Share_Analysis.md"; then
-            # Count non-timestamp changes
-            MEANINGFUL_CHANGES=$(git diff docs/Code_Share_Analysis.md | grep "^[-+]" | grep -v "^[-+][-+][-+]" | grep -cv "Generated at:")
+            # Count non-timestamp changes (use || true to handle grep exit code)
+            MEANINGFUL_CHANGES=$(git diff docs/Code_Share_Analysis.md | grep "^[-+]" | grep -v "^[-+][-+][-+]" | grep -cv "Generated at:" || echo "0")
             if [ "$MEANINGFUL_CHANGES" -eq 0 ]; then
               echo "Only timestamp changed in Code_Share_Analysis.md, resetting file"
               git checkout -- docs/Code_Share_Analysis.md
