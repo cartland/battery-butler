@@ -28,6 +28,28 @@ This document outlines the shared principles and workflow for all AI agents cont
     *   Creating tags, deploying, force-pushing, deleting branches on remote, or any action that affects production requires explicit confirmation.
     *   When uncertain about scope, ask clarifying questions before proceeding.
 
+## Build & Test Health
+
+Keeping the build and tests healthy is a top priority. When you identify or fix build/test issues:
+
+1. **Always Create PRs for Fixes**: Never leave build or test fixes uncommitted. Create a PR promptly so fixes are tracked and reviewed.
+
+2. **Verify Before Closing Tasks**: Before marking a build/test verification task as complete:
+   - Confirm the build/test actually runs successfully
+   - If you made fixes, commit them and create a PR
+   - Document any known issues or failures in the PR description
+
+3. **Fix Forward**: When you encounter a broken build or test:
+   - Investigate the root cause
+   - Create a fix on a feature branch
+   - Open a PR with clear description of the problem and solution
+   - Don't just work around issues locally
+
+4. **Test Categories**:
+   - **Unit tests**: Must pass (`./gradlew test`)
+   - **Instrumented tests**: Must run (network failures are acceptable if server isn't available)
+   - **Screenshot tests**: Must run (baseline mismatches indicate UI changes, not broken infrastructure)
+
 ## Project Technical Rules
 
 - **Configuration**:
