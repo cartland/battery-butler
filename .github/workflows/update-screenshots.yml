@@ -1,29 +1,120 @@
+# =============================================================================
+# UPDATE SCREENSHOTS WORKFLOW
+# =============================================================================
+#
+# PURPOSE:
+#   Automatically generate and commit Android screenshot test baselines when
+#   UI code changes.
+#
+# BEHAVIOR:
+#   - On Pull Requests: Commits screenshot updates directly to the PR branch
+#   - On Main Push: Creates a follow-up PR with updates (fallback)
+#
+# SETUP REQUIRED:
+#   To enable auto-commits to PR branches, you need to create a Personal Access
+#   Token (PAT) and add it as a repository secret.
+#
+#   Step 1: Create a Fine-Grained Personal Access Token
+#     1. Go to https://github.com/settings/tokens?type=beta
+#     2. Click "Generate new token"
+#     3. Name: "Battery Butler Bot" (or similar)
+#     4. Expiration: Choose based on your security policy (90 days recommended)
+#     5. Repository access: Select "Only select repositories" → this repo
+#     6. Permissions:
+#        - Contents: Read and write
+#        - Pull requests: Read and write
+#        - Metadata: Read (auto-selected)
+#     7. Click "Generate token" and copy the token
+#
+#   Step 2: Add the token as a repository secret
+#     1. Go to repository Settings → Secrets and variables → Actions
+#     2. Click "New repository secret"
+#     3. Name: BOT_PAT
+#     4. Value: Paste the token from Step 1
+#     5. Click "Add secret"
+#
+#   Step 3: Test
+#     Create a PR with UI changes and verify screenshots are auto-updated.
+#
+# TROUBLESHOOTING:
+#   - "Resource not accessible by integration": PAT doesn't have correct permissions
+#   - "Bad credentials": PAT has expired, create a new one
+#   - Screenshots not updating on PRs: Check that BOT_PAT secret exists
+#
+# =============================================================================
+
 name: Update Screenshots
 
 on:
+  # Run on pull requests to update screenshots before merge
+  pull_request:
+    branches: [main]
+    paths:
+      - 'compose-app/**'
+      - 'presentation-*/**'
+      - 'android-screenshot-tests/**'
+
+  # Also run on main push as fallback (creates follow-up PR)
   push:
-    branches:
-      - main
+    branches: [main]
+
+  # Allow manual trigger for testing
   workflow_dispatch:
 
 jobs:
   update-screenshots:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [macos-latest]
-    runs-on: ${{ matrix.os }}
+    # Skip if this is a commit from the bot itself (prevent loops)
+    if: github.actor != 'github-actions[bot]'
+
+    runs-on: macos-latest
 
     permissions:
       contents: write
       pull-requests: write
 
     steps:
-      - name: Checkout
+      # =========================================================================
+      # STEP 1: Check if BOT_PAT is configured
+      # =========================================================================
+      - name: Check PAT Configuration
+        id: check-pat
+        run: |
+          if [ -z "${{ secrets.BOT_PAT }}" ]; then
+            echo "configured=false" >> $GITHUB_OUTPUT
+            echo "::warning::BOT_PAT secret is not configured."
+            echo "::warning::"
+            echo "::warning::Without BOT_PAT, screenshot updates cannot be committed to PR branches."
+            echo "::warning::Updates will be created as separate PRs instead."
+            echo "::warning::"
+            echo "::warning::To enable auto-commits to PRs, follow the setup instructions"
+            echo "::warning::in .github/workflows/update-screenshots.yml"
+          else
+            echo "configured=true" >> $GITHUB_OUTPUT
+            echo "✓ BOT_PAT is configured"
+          fi
+
+      # =========================================================================
+      # STEP 2: Checkout code
+      # =========================================================================
+      # For PRs with BOT_PAT: checkout the PR branch with push access
+      - name: Checkout (PR with PAT)
+        if: github.event_name == 'pull_request' && steps.check-pat.outputs.configured == 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.BOT_PAT }}
+          fetch-depth: 0
+
+      # For PRs without PAT or main push: regular checkout
+      - name: Checkout (Standard)
+        if: github.event_name != 'pull_request' || steps.check-pat.outputs.configured != 'true'
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+      # =========================================================================
+      # STEP 3: Setup build environment
+      # =========================================================================
       - uses: ./.github/actions/setup-java-gradle
 
       - name: Setup Node.js
@@ -31,19 +122,81 @@ jobs:
         with:
           node-version: '20'
 
+      # =========================================================================
+      # STEP 4: Generate screenshots
+      # =========================================================================
       - name: Generate Screenshots
         run: ./gradlew :android-screenshot-tests:updateDebugScreenshotTest
 
-      - name: Create Pull Request
+      # =========================================================================
+      # STEP 5: Validate generated output
+      # =========================================================================
+      # This step fails the build if generation produced nothing or is obviously broken.
+      # Without this check, a broken generator could silently "succeed" with empty output.
+      - name: Validate Generated Files
+        run: |
+          echo "Validating that screenshot generation produced valid output..."
+          ./scripts/validate-generated.sh --screenshots
+
+      # =========================================================================
+      # STEP 6: Commit changes
+      # =========================================================================
+      # For PRs with BOT_PAT: commit directly to PR branch
+      - name: Commit to PR Branch
+        if: github.event_name == 'pull_request' && steps.check-pat.outputs.configured == 'true'
+        id: commit-to-pr
+        run: |
+          # Configure git
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Check for changes
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No screenshot changes detected"
+            echo "changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "Committing screenshot updates..."
+            git commit -m "test: Auto-update Android screenshots
+
+          Generated by Update Screenshots workflow.
+          [skip ci]"
+
+            # Push changes
+            if git push; then
+              echo "✓ Screenshot updates committed to PR branch"
+              echo "changes=true" >> $GITHUB_OUTPUT
+            else
+              echo "::error::Failed to push screenshot updates."
+              echo "::error::"
+              echo "::error::Possible causes:"
+              echo "::error::  1. BOT_PAT has expired - create a new token"
+              echo "::error::  2. BOT_PAT lacks write permissions - check token settings"
+              echo "::error::  3. Branch protection rules - ensure bot can push"
+              echo "::error::"
+              echo "::error::See .github/workflows/update-screenshots.yml for setup instructions."
+              exit 1
+            fi
+          fi
+
+      # For main push or if PAT not configured: create follow-up PR
+      - name: Create Pull Request (Fallback)
+        if: github.event_name == 'push' || (github.event_name == 'pull_request' && steps.check-pat.outputs.configured != 'true')
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "Test: Auto-update android screenshots"
-          title: "Test: Auto-update android screenshots"
+          commit-message: "test: Auto-update Android screenshots"
+          title: "test: Auto-update Android screenshots"
           body: |
             Auto-generated screenshot updates from CI.
 
             This PR was automatically created by the Update Screenshots workflow.
+
+            ---
+            ⚠️ **Note:** This is a follow-up PR because screenshot updates could not be
+            committed directly to the original PR branch. To enable direct commits,
+            configure the `BOT_PAT` secret. See `.github/workflows/update-screenshots.yml`
+            for setup instructions.
           branch: auto/update-screenshots
           delete-branch: true
           labels: automated
