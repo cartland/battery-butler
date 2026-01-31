@@ -39,7 +39,28 @@ jobs:
       - name: Generate Diagrams and Code Share Analysis
         run: ./gradlew generateMermaidGraph analyzeCodeShare
 
+      - name: Check for meaningful changes
+        id: check_changes
+        run: |
+          # Check if only the timestamp line changed in Code_Share_Analysis.md
+          # If so, reset the file to avoid infinite update loops
+          if git diff --name-only | grep -q "Code_Share_Analysis.md"; then
+            # Count non-timestamp changes
+            MEANINGFUL_CHANGES=$(git diff docs/Code_Share_Analysis.md | grep "^[-+]" | grep -v "^[-+][-+][-+]" | grep -cv "Generated at:")
+            if [ "$MEANINGFUL_CHANGES" -eq 0 ]; then
+              echo "Only timestamp changed in Code_Share_Analysis.md, resetting file"
+              git checkout -- docs/Code_Share_Analysis.md
+            fi
+          fi
+          # Check if there are any remaining changes
+          if git diff --quiet docs/; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
+
       - name: Auto-commit diagram updates
+        if: steps.check_changes.outputs.has_changes == 'true'
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: "Docs: Auto-update architecture diagrams"
