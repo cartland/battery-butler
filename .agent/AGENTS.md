@@ -73,6 +73,7 @@ Keeping the build and tests healthy is a top priority. When you identify or fix 
 
 - **Pull Requests**:
   - **Always** ensure the Pull Request title and description accurately reflect the final changes. If the scope of a branch evolves, update the PR description before merging.
+  - See **PR Merge Workflow** section below for merge sequencing and broken build handling.
 
 - **iOS Builds**:
   - **Always** use `-derivedDataPath build/<target_name>` (e.g., `build/ios_compose`) when running multiple `xcodebuild` commands in a single script. This ensures **artifact isolation** between steps, mimicking CI parity, and prevents accidental cross-linking of frameworks.
@@ -168,4 +169,188 @@ Once your pull request has been approved and merged into `main`, it is important
 This file provides the initial instructions for AGENT_NAME.
 
 **First Action:** Immediately read the main contribution guidelines located at `.agent/AGENTS.md`. This file contains the required workflow and rules for all AI agents in this project. Do not proceed with any other actions until you have read and understood it.
+```
+
+## PR Merge Workflow
+
+### Priority Levels
+
+| Priority | Condition | Action |
+|----------|-----------|--------|
+| **P0** | `main` is broken (CI failing) | Stop everything. Fix immediately. |
+| **P1** | PRs approved and CI green | Merge sequentially, monitor after each. |
+| **P2** | PRs pending CI or review | Wait. Work on other tasks. |
+| **P3** | New feature work | Only if P0-P2 queue is empty. |
+
+### The Golden Rule
+
+> **A broken `main` blocks everything.** No PR merges until `main` is green.
+
+### Pre-Merge Checklist
+
+Before merging ANY PR:
+
+```bash
+# 1. Check main branch CI status
+gh run list --branch main --limit 3
+
+# 2. If main is red, STOP. Fix main first.
+# 3. If main is green, proceed with merge.
+```
+
+### Merge Sequencing
+
+When multiple PRs are ready to merge:
+
+1. **Merge ONE at a time**
+2. **Wait for main CI** after each merge (check with `gh run list --branch main`)
+3. **If CI fails**, stop merging and fix immediately
+4. **Decide: Rebase or Direct Merge** (see below)
+
+### Rebase vs Direct Merge Decision
+
+**Tradeoff:** Rebasing resets the CI clock (slower but safer). Direct merge is faster but may fail after merge.
+
+| PR Type | Strategy | Rationale |
+|---------|----------|-----------|
+| Docs-only changes | Direct merge | No code interaction risk |
+| Single-file fixes | Direct merge if no conflicts | Low risk |
+| Multi-file code changes | Rebase first | May interact with merged changes |
+| Changes to shared code (build, CI, core) | Always rebase | High interaction risk |
+
+**Decision tree:**
+```
+Is the PR docs-only or trivial?
+  └─ Yes → Direct merge (use --auto if CI was green)
+  └─ No → Does it touch files changed by recently merged PRs?
+           └─ Yes → Rebase first
+           └─ No → Direct merge is acceptable
+```
+
+**Direct merge (faster):**
+```bash
+# CI already passed, no rebase needed
+gh pr merge <number> --squash --delete-branch
+```
+
+**Rebase first (safer):**
+```bash
+git fetch origin main
+git checkout agent/pr-branch
+git rebase origin/main
+git push --force-with-lease origin agent/pr-branch
+# Wait for PR CI to pass again, then merge
+```
+
+### Tracking Merge Success Rate
+
+If post-merge failures become frequent (>10% of merges break main):
+1. Switch to "always rebase" strategy
+2. Consider enabling GitHub merge queue
+3. Review which PR types are causing failures
+
+```bash
+# Check for failures in recent merges:
+gh run list --branch main --limit 10 --json conclusion | grep -c failure
+```
+
+### When Main Breaks
+
+**Immediate actions:**
+
+1. **Stop all PR merges** - Do not merge anything else
+2. **Create P0 fix task**:
+   ```bash
+   bd create --type task --priority P0 --title "Fix broken main: <failure description>"
+   ```
+3. **Identify the breaking commit**:
+   ```bash
+   gh run list --branch main --limit 5
+   git log --oneline origin/main -10
+   ```
+4. **Fix options** (in order of preference):
+   - Quick fix forward (new PR to fix the issue)
+   - Revert the breaking commit if fix is complex
+
+### Task Tracking with bd
+
+#### PR Lifecycle Tasks
+
+When creating PRs, track them:
+
+```bash
+# Create task for PR
+bd create --type task --title "PR #123: <title>" --label pr-pending
+
+# When CI passes and approved
+bd update <id> --label pr-ready
+
+# After merge, monitor main CI
+bd update <id> --label pr-merged-monitoring
+
+# After main CI passes
+bd close <id>
+```
+
+#### Broken Build Tasks
+
+```bash
+# Create P0 task immediately
+bd create --type task --priority P0 --title "BROKEN BUILD: <description>"
+
+# This automatically blocks other work via priority
+```
+
+#### Recommended Labels
+
+| Label | Meaning |
+|-------|---------|
+| `pr-pending` | PR created, waiting for CI/review |
+| `pr-ready` | CI green, approved, ready to merge |
+| `pr-merged-monitoring` | Merged, watching main CI |
+| `build-broken` | Main CI is failing |
+| `blocked-by-build` | Waiting for main to be green |
+
+### Parallel PR Strategy
+
+To maximize velocity while staying safe:
+
+1. **Submit PRs in parallel** - Don't wait for one to merge before creating another
+2. **Merge serially** - One at a time, with CI checks between
+3. **Rebase before merge** - Ensure each PR is on latest main
+4. **Monitor after merge** - Don't walk away until main CI passes
+
+```
+Good:
+  Submit PR #1 ──────────────────────────────────┐
+  Submit PR #2 ──────────────────────────────────┤ (parallel submission)
+  Submit PR #3 ──────────────────────────────────┘
+
+  Merge PR #1 → Wait for main CI → Green ✓
+  Rebase PR #2 → Wait for PR CI → Merge PR #2 → Wait for main CI → Green ✓
+  Rebase PR #3 → Wait for PR CI → Merge PR #3 → Wait for main CI → Green ✓
+
+Bad:
+  Merge PR #1 → Merge PR #2 → Merge PR #3 → Main CI fails → Which one broke it?
+```
+
+### Quick Reference Commands
+
+```bash
+# Check main CI status
+gh run list --branch main --limit 3
+
+# Check PR CI status
+gh pr checks <pr-number>
+
+# Merge with auto-wait for CI (if enabled)
+gh pr merge <pr-number> --auto --squash
+
+# List open PRs ready to merge
+gh pr list --state open --json number,title,reviewDecision,statusCheckRollup
+
+# Rebase PR on latest main
+git fetch origin main
+git rebase origin/main
+git push --force-with-lease
 ```
