@@ -129,7 +129,17 @@ jobs:
         run: ./gradlew :android-screenshot-tests:updateDebugScreenshotTest
 
       # =========================================================================
-      # STEP 5: Commit changes
+      # STEP 5: Validate generated output
+      # =========================================================================
+      # This step fails the build if generation produced nothing or is obviously broken.
+      # Without this check, a broken generator could silently "succeed" with empty output.
+      - name: Validate Generated Files
+        run: |
+          echo "Validating that screenshot generation produced valid output..."
+          ./scripts/validate-generated.sh --screenshots
+
+      # =========================================================================
+      # STEP 6: Commit changes
       # =========================================================================
       # For PRs with BOT_PAT: commit directly to PR branch
       - name: Commit to PR Branch
