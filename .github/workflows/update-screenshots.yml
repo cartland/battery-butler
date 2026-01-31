@@ -118,8 +118,20 @@ jobs:
       - uses: ./.github/actions/setup-java-gradle
 
       # =========================================================================
-      # STEP 4: Generate screenshots
+      # STEP 4: Clean up old screenshots and generate new ones
       # =========================================================================
+      # Remove old baseline images before regenerating to prevent orphaned files
+      # when tests are renamed or deleted. The updateDebugScreenshotTest task will
+      # recreate all current baselines.
+      - name: Clean Old Screenshots
+        run: |
+          SCREENSHOT_DIR="android-screenshot-tests/src/screenshotTestDebug/reference"
+          if [ -d "$SCREENSHOT_DIR" ]; then
+            echo "Removing old screenshot baselines..."
+            rm -rf "$SCREENSHOT_DIR"
+            echo "Old baselines removed."
+          fi
+
       - name: Generate Screenshots
         run: ./gradlew :android-screenshot-tests:updateDebugScreenshotTest
 
