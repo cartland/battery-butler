@@ -158,15 +158,24 @@ Same pattern as diagrams:
 
 ## Configuration Checklist
 
-When implementing Option 1:
+The workflow files have been updated to support auto-commits to PR branches.
+To enable this feature, complete the following:
 
-- [ ] Create PAT with `repo` scope (or fine-grained with contents:write)
+- [ ] Create PAT with fine-grained permissions (see workflow files for details)
 - [ ] Add PAT as repository secret `BOT_PAT`
-- [ ] Update `update-diagrams.yml` to trigger on PRs
-- [ ] Update `update-screenshots.yml` to trigger on PRs
-- [ ] Consider adding spotless auto-fix
 - [ ] Test on a non-fork PR
-- [ ] Document in AGENTS.md
+- [x] Update `update-diagrams.yml` to trigger on PRs ✓
+- [x] Update `update-screenshots.yml` to trigger on PRs ✓
+
+### Quick Setup
+
+1. Go to https://github.com/settings/tokens?type=beta
+2. Create token with:
+   - Repository: This repo only
+   - Permissions: Contents (read/write), Pull requests (read/write)
+3. Add as secret: Settings → Secrets → Actions → `BOT_PAT`
+
+See the workflow files for detailed setup instructions.
 
 ## Troubleshooting
 
