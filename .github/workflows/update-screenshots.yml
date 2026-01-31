@@ -66,7 +66,8 @@ jobs:
     # Skip if this is a commit from the bot itself (prevent loops)
     if: github.actor != 'github-actions[bot]'
 
-    runs-on: macos-latest
+    # Ubuntu is faster and cheaper - screenshot tests use Paparazzi (no emulator needed)
+    runs-on: ubuntu-latest
 
     permissions:
       contents: write
