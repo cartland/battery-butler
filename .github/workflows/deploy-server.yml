@@ -61,6 +61,8 @@ name: Deploy Server
 on:
   push:
     branches: [ "main" ]
+    tags-ignore:
+      - '**'  # Don't trigger on tag pushes (e.g., android/*)
     paths:
       - 'server/**'
       - 'gradle/**'
@@ -68,8 +70,33 @@ on:
       - '.github/workflows/deploy-server.yml'
 
 jobs:
+  # ===========================================================================
+  # Pre-check: Verify AWS credentials are configured
+  # ===========================================================================
+  check-credentials:
+    name: Check AWS Credentials
+    runs-on: ubuntu-latest
+    outputs:
+      has-credentials: ${{ steps.check.outputs.has-credentials }}
+    steps:
+      - name: Check for AWS credentials
+        id: check
+        run: |
+          if [ -n "${{ secrets.AWS_DEPLOY_ROLE_ARN }}" ] || [ -n "${{ secrets.AWS_ACCESS_KEY_ID }}" ]; then
+            echo "has-credentials=true" >> $GITHUB_OUTPUT
+            echo "✓ AWS credentials are configured"
+          else
+            echo "has-credentials=false" >> $GITHUB_OUTPUT
+            echo "::warning::AWS credentials are not configured. Skipping deployment."
+            echo "::warning::To enable deployments, configure AWS_DEPLOY_ROLE_ARN (recommended)"
+            echo "::warning::or AWS_ACCESS_KEY_ID + AWS_SECRET_ACCESS_KEY secrets."
+            echo "::warning::See .github/workflows/deploy-server.yml for setup instructions."
+          fi
+
   deploy:
     name: Build and Deploy
+    needs: check-credentials
+    if: needs.check-credentials.outputs.has-credentials == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
