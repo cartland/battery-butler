@@ -187,6 +187,37 @@ jobs:
             fi
           fi
 
+      # =========================================================================
+      # STEP 7: Close stale auto-update PRs before creating new one
+      # =========================================================================
+      # This prevents accumulation of outdated PRs that can have merge conflicts
+      - name: Close Stale Auto-Update PRs
+        if: github.event_name == 'push' || (github.event_name == 'pull_request' && steps.check-pat.outputs.configured != 'true')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Checking for existing auto/update-screenshots PRs..."
+
+          # Find and close any existing PRs from the auto/update-screenshots branch
+          EXISTING_PRS=$(gh pr list --head "auto/update-screenshots" --state open --json number,title --jq '.[].number')
+
+          if [ -n "$EXISTING_PRS" ]; then
+            for PR_NUM in $EXISTING_PRS; do
+              echo "Closing stale PR #$PR_NUM..."
+              gh pr close "$PR_NUM" --comment "Closing: Superseded by newer auto-generated screenshots from the latest main branch commit."
+            done
+            echo "✓ Closed stale PRs"
+          else
+            echo "No existing auto-update PRs to close"
+          fi
+
+          # Delete the old branch if it exists (ensures fresh start)
+          if git ls-remote --heads origin auto/update-screenshots | grep -q auto/update-screenshots; then
+            echo "Deleting old auto/update-screenshots branch..."
+            git push origin --delete auto/update-screenshots || true
+            echo "✓ Old branch deleted"
+          fi
+
       # For main push or if PAT not configured: create follow-up PR
       - name: Create Pull Request (Fallback)
         if: github.event_name == 'push' || (github.event_name == 'pull_request' && steps.check-pat.outputs.configured != 'true')
@@ -200,11 +231,15 @@ jobs:
 
             This PR was automatically created by the Update Screenshots workflow.
 
+            **Commit:** ${{ github.sha }}
+            **Triggered by:** Push to main
+
             ---
             ⚠️ **Note:** This is a follow-up PR because screenshot updates could not be
             committed directly to the original PR branch. To enable direct commits,
             configure the `BOT_PAT` secret. See `.github/workflows/update-screenshots.yml`
             for setup instructions.
           branch: auto/update-screenshots
+          base: main
           delete-branch: true
           labels: automated

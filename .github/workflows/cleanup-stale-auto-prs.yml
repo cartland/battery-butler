@@ -1,0 +1,117 @@
+# =============================================================================
+# CLEANUP STALE AUTO-GENERATED PRs
+# =============================================================================
+#
+# PURPOSE:
+#   Automatically close stale auto-generated PRs that may have accumulated
+#   due to timing issues or workflow failures.
+#
+# BEHAVIOR:
+#   - Runs daily at midnight UTC
+#   - Closes any auto/* PRs older than 24 hours
+#   - Closes any auto/* PRs that have merge conflicts
+#   - Deletes orphaned auto/* branches
+#
+# =============================================================================
+
+name: Cleanup Stale Auto PRs
+
+on:
+  # Run daily at midnight UTC
+  schedule:
+    - cron: '0 0 * * *'
+
+  # Allow manual trigger for testing
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Cleanup Stale Auto-Generated PRs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "=== Cleaning up stale auto-generated PRs ==="
+          echo ""
+
+          # Get current time in seconds since epoch
+          CURRENT_TIME=$(date +%s)
+          MAX_AGE_HOURS=24
+          MAX_AGE_SECONDS=$((MAX_AGE_HOURS * 3600))
+
+          # Find all open PRs from auto/* branches
+          echo "Checking for auto/* PRs..."
+          AUTO_PRS=$(gh pr list --search "head:auto/" --state open --json number,headRefName,createdAt,mergeable --jq '.[]')
+
+          if [ -z "$AUTO_PRS" ]; then
+            echo "No auto/* PRs found"
+          else
+            echo "$AUTO_PRS" | jq -c '.' | while read -r pr; do
+              PR_NUM=$(echo "$pr" | jq -r '.number')
+              BRANCH=$(echo "$pr" | jq -r '.headRefName')
+              CREATED=$(echo "$pr" | jq -r '.createdAt')
+              MERGEABLE=$(echo "$pr" | jq -r '.mergeable')
+
+              # Convert created time to seconds
+              CREATED_TIME=$(date -d "$CREATED" +%s 2>/dev/null || date -j -f "%Y-%m-%dT%H:%M:%SZ" "$CREATED" +%s 2>/dev/null || echo "0")
+              AGE_SECONDS=$((CURRENT_TIME - CREATED_TIME))
+              AGE_HOURS=$((AGE_SECONDS / 3600))
+
+              echo ""
+              echo "PR #$PR_NUM ($BRANCH)"
+              echo "  Age: ${AGE_HOURS} hours"
+              echo "  Mergeable: $MERGEABLE"
+
+              SHOULD_CLOSE=false
+              REASON=""
+
+              # Close if older than max age
+              if [ "$AGE_SECONDS" -gt "$MAX_AGE_SECONDS" ]; then
+                SHOULD_CLOSE=true
+                REASON="Stale: PR is ${AGE_HOURS} hours old (max: ${MAX_AGE_HOURS} hours)"
+              fi
+
+              # Close if has merge conflicts
+              if [ "$MERGEABLE" = "CONFLICTING" ]; then
+                SHOULD_CLOSE=true
+                REASON="Conflicts: PR has merge conflicts with main branch"
+              fi
+
+              if [ "$SHOULD_CLOSE" = true ]; then
+                echo "  → Closing: $REASON"
+                gh pr close "$PR_NUM" --comment "Auto-closing: $REASON
+
+          This PR was automatically closed by the cleanup workflow. A new PR will be created by the next update workflow run if changes are still needed."
+              else
+                echo "  → Keeping (recent and mergeable)"
+              fi
+            done
+          fi
+
+          echo ""
+          echo "=== Cleaning up orphaned auto/* branches ==="
+
+          # Find and delete orphaned auto/* branches (no open PR)
+          for BRANCH in $(git ls-remote --heads origin 'refs/heads/auto/*' | awk '{print $2}' | sed 's|refs/heads/||'); do
+            # Check if there's an open PR for this branch
+            OPEN_PR=$(gh pr list --head "$BRANCH" --state open --json number --jq 'length')
+
+            if [ "$OPEN_PR" = "0" ]; then
+              echo "Deleting orphaned branch: $BRANCH"
+              git push origin --delete "$BRANCH" || true
+            else
+              echo "Keeping branch with open PR: $BRANCH"
+            fi
+          done
+
+          echo ""
+          echo "=== Cleanup complete ==="
