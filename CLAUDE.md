@@ -236,3 +236,22 @@ git commit -m "chore(beads): Update task tracking"
 - If working on a feature branch, include beads updates in that branch
 - Push beads commits promptly so other collaborators see task updates
 - Use descriptive commit messages that reference affected task IDs
+
+## Session Resume Points
+
+**Last Updated: 2026-02-01**
+
+### Immediate Actions (P1)
+1. **Merge pending PRs** (bb-7v0): PRs #214, #222, #224, #225 are ready
+   - GitHub ruleset was updated to only require "ci" check
+   - These should now be mergeable - batch merge docs PRs first
+
+2. **Test-common module** (bb-9wz.6): PR #225 adds initial module
+   - After merge, add FakeDeviceRepository and other shared fakes
+   - Update other modules to use test-common instead of inline fakes
+
+### Context
+- CI now uses unified "ci" job for required checks (PR #217)
+- Docs-only PRs skip expensive builds via path filtering (PR #213)
+- Accelerated development strategy documented in `.agent/AGENTS.md`
+- Integration branch strategy available for rapid local iteration
