@@ -43,14 +43,14 @@ fun DeviceListItem(
     deviceType: DeviceType?,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    nowInstant: Instant = Clock.System.now(),
 ) {
-    val daysSinceBatteryChange = remember(device.batteryLastReplaced) {
+    val daysSinceBatteryChange = remember(device.batteryLastReplaced, nowInstant) {
         if (device.batteryLastReplaced.toEpochMilliseconds() == 0L) {
             "N/A"
         } else {
             val timeZone = TimeZone.currentSystemDefault()
-            val now = Clock.System
-                .now()
+            val now = nowInstant
                 .toLocalDateTime(timeZone)
                 .date
             val eventDate = device.batteryLastReplaced.toLocalDateTime(timeZone).date
@@ -192,6 +192,7 @@ fun DeviceListItemPreview() {
             device = device,
             deviceType = type,
             onClick = {},
+            nowInstant = now,
         )
     }
 }

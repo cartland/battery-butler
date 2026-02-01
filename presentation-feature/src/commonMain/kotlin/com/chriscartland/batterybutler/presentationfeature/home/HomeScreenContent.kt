@@ -58,10 +58,11 @@ import com.chriscartland.batterybutler.presentationfeature.util.labelRes
 import com.chriscartland.batterybutler.presentationmodel.home.GroupOption
 import com.chriscartland.batterybutler.presentationmodel.home.HomeUiState
 import com.chriscartland.batterybutler.presentationmodel.home.SortOption
+import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class, ExperimentalTime::class)
 @Composable
 fun HomeScreenContent(
     state: HomeUiState,
@@ -72,6 +73,7 @@ fun HomeScreenContent(
     onDeviceClick: (String) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
+    nowInstant: Instant = Clock.System.now(),
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -119,6 +121,7 @@ fun HomeScreenContent(
             state = state,
             onDeviceClick = onDeviceClick,
             contentPadding = mergedPadding,
+            nowInstant = nowInstant,
         )
     }
 }
@@ -219,12 +222,13 @@ fun HomeScreenFilterRow(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalTime::class)
 @Composable
 fun HomeScreenList(
     state: HomeUiState,
     onDeviceClick: (String) -> Unit,
     contentPadding: androidx.compose.foundation.layout.PaddingValues,
+    nowInstant: Instant = Clock.System.now(),
 ) {
     val allDevices = state.groupedDevices.values.flatten()
 
@@ -263,6 +267,7 @@ fun HomeScreenList(
                         device = device,
                         deviceType = state.deviceTypes[device.typeId],
                         onClick = { onDeviceClick(device.id) },
+                        nowInstant = nowInstant,
                     )
                 }
             }
@@ -289,6 +294,7 @@ fun HomeScreenPreview() {
             onSortOptionToggle = {},
             onSortOptionSelected = {},
             onDeviceClick = {},
+            nowInstant = now,
         )
     }
 }
@@ -310,6 +316,7 @@ fun HomeScreenFilterRowPreview() {
     }
 }
 
+@OptIn(ExperimentalTime::class)
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenListPreview() {
@@ -325,6 +332,7 @@ fun HomeScreenListPreview() {
             onDeviceClick = {},
             contentPadding = androidx.compose.foundation.layout
                 .PaddingValues(16.dp),
+            nowInstant = now,
         )
     }
 }
