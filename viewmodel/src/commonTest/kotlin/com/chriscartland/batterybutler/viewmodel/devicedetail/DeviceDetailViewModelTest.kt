@@ -6,6 +6,7 @@ import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.SyncStatus
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.presentationmodel.devicedetail.DeviceDetailUiState
+import com.chriscartland.batterybutler.testcommon.TestDevices
 import com.chriscartland.batterybutler.usecase.AddBatteryEventUseCase
 import com.chriscartland.batterybutler.usecase.GetBatteryEventsUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceDetailUseCase
@@ -76,7 +77,7 @@ class DeviceDetailViewModelTest {
     fun `state becomes Success when device exists`() =
         runTest {
             val repo = FakeDetailRepository()
-            val device = createDevice(id = "device-1", name = "Smoke Detector")
+            val device = TestDevices.createDevice(id = "device-1", name = "Smoke Detector")
             repo.setDevice(device)
 
             val viewModel = createViewModel(repo, "device-1")
@@ -93,7 +94,7 @@ class DeviceDetailViewModelTest {
     fun `Success state includes device type`() =
         runTest {
             val repo = FakeDetailRepository()
-            val device = createDevice(id = "device-1", name = "Smoke Detector", typeId = "type-1")
+            val device = TestDevices.createDevice(id = "device-1", name = "Smoke Detector", typeId = "type-1")
             val deviceType = DeviceType(id = "type-1", name = "Smoke Detector", batteryType = "9V")
             repo.setDevice(device)
             repo.setDeviceTypes(listOf(deviceType))
@@ -114,7 +115,7 @@ class DeviceDetailViewModelTest {
     fun `Success state handles missing device type`() =
         runTest {
             val repo = FakeDetailRepository()
-            val device = createDevice(id = "device-1", name = "Test Device", typeId = "unknown-type")
+            val device = TestDevices.createDevice(id = "device-1", name = "Test Device", typeId = "unknown-type")
             repo.setDevice(device)
             // Don't add the device type
 
@@ -131,7 +132,7 @@ class DeviceDetailViewModelTest {
     fun `Success state includes battery events`() =
         runTest {
             val repo = FakeDetailRepository()
-            val device = createDevice(id = "device-1", name = "Test Device")
+            val device = TestDevices.createDevice(id = "device-1", name = "Test Device")
             val event1 = BatteryEvent(
                 id = "event-1",
                 deviceId = "device-1",
@@ -160,7 +161,7 @@ class DeviceDetailViewModelTest {
     fun `recordReplacement adds battery event`() =
         runTest {
             val repo = FakeDetailRepository()
-            val device = createDevice(id = "device-1", name = "Test Device")
+            val device = TestDevices.createDevice(id = "device-1", name = "Test Device")
             repo.setDevice(device)
 
             val viewModel = createViewModel(repo, "device-1")
@@ -182,7 +183,7 @@ class DeviceDetailViewModelTest {
     fun `recordReplacement updates device battery last replaced date`() =
         runTest {
             val repo = FakeDetailRepository()
-            val device = createDevice(
+            val device = TestDevices.createDevice(
                 id = "device-1",
                 name = "Test Device",
                 batteryLastReplaced = Instant.DISTANT_PAST,
@@ -203,22 +204,6 @@ class DeviceDetailViewModelTest {
             assertTrue(repo.updatedDevices.isNotEmpty())
             assertTrue(repo.updatedDevices[0].batteryLastReplaced > Instant.DISTANT_PAST)
         }
-
-    private fun createDevice(
-        id: String,
-        name: String,
-        typeId: String = "type-1",
-        batteryLastReplaced: Instant = Instant.DISTANT_PAST,
-        location: String? = null,
-    ): Device =
-        Device(
-            id = id,
-            name = name,
-            typeId = typeId,
-            batteryLastReplaced = batteryLastReplaced,
-            lastUpdated = Instant.DISTANT_PAST,
-            location = location,
-        )
 
     private fun createViewModel(
         repo: FakeDetailRepository,
