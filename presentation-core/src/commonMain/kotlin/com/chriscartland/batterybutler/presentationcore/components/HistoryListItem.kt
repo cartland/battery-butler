@@ -36,6 +36,7 @@ fun HistoryListItem(
     deviceTypeName: String,
     deviceLocation: String?,
     modifier: Modifier = Modifier,
+    nowInstant: Instant = Clock.System.now(),
 ) {
     val date = event.date.toLocalDateTime(TimeZone.currentSystemDefault())
     val month = date.month.name.take(3)
@@ -74,10 +75,7 @@ fun HistoryListItem(
             modifier = Modifier.weight(1f).padding(horizontal = 16.dp),
         ) {
             val timeZone = TimeZone.currentSystemDefault()
-            val now = Clock.System
-                .now()
-                .toLocalDateTime(timeZone)
-                .date
+            val now = nowInstant.toLocalDateTime(timeZone).date
             val eventDate = event.date.toLocalDateTime(timeZone).date
             val daysAgo = eventDate.daysUntil(now)
 
@@ -122,10 +120,7 @@ fun HistoryListItem(
             // Re-calculate relative time for the right side or just use the days?
             // "Right side should also be a battery with the age in days"
             val timeZone = TimeZone.currentSystemDefault()
-            val now = Clock.System
-                .now()
-                .toLocalDateTime(timeZone)
-                .date
+            val now = nowInstant.toLocalDateTime(timeZone).date
             val eventDate = event.date.toLocalDateTime(timeZone).date
             val daysAgo = eventDate.daysUntil(now)
 
@@ -143,13 +138,16 @@ fun HistoryListItem(
 @Composable
 fun HistoryListItemPreview() {
     BatteryButlerTheme {
-        val now = Instant.parse("2026-01-18T17:00:00Z")
-        val event = BatteryEvent("evt1", "dev1", now)
+        // Use fixed dates for stable screenshots
+        val nowInstant = Instant.parse("2026-01-18T17:00:00Z")
+        val eventInstant = Instant.parse("2026-01-11T17:00:00Z") // 7 days ago
+        val event = BatteryEvent("evt1", "dev1", eventInstant)
         HistoryListItem(
             event = event,
             deviceName = "Kitchen Smoke",
             deviceTypeName = "Smoke Alarm",
             deviceLocation = "Kitchen",
+            nowInstant = nowInstant,
         )
     }
 }

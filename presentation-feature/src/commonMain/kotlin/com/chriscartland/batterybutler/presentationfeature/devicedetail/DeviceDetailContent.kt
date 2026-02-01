@@ -60,10 +60,11 @@ import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMap
 import com.chriscartland.batterybutler.presentationcore.components.HistoryListItem
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationmodel.devicedetail.DeviceDetailUiState
+import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
 @Composable
 fun DeviceDetailContent(
     state: DeviceDetailUiState,
@@ -72,6 +73,7 @@ fun DeviceDetailContent(
     onEdit: () -> Unit,
     onEventClick: (String) -> Unit,
     modifier: Modifier = Modifier,
+    nowInstant: Instant = Clock.System.now(),
 ) {
     Scaffold(
         modifier = modifier,
@@ -105,6 +107,7 @@ fun DeviceDetailContent(
                         onRecordReplacement = onRecordReplacement,
                         onEventClick = onEventClick,
                         modifier = Modifier.fillMaxSize(),
+                        nowInstant = nowInstant,
                     )
                 }
             }
@@ -112,12 +115,14 @@ fun DeviceDetailContent(
     }
 }
 
+@OptIn(ExperimentalTime::class)
 @Composable
 fun DeviceDetailBody(
     state: DeviceDetailUiState.Success,
     onRecordReplacement: () -> Unit,
     onEventClick: (String) -> Unit,
     modifier: Modifier = Modifier,
+    nowInstant: Instant = Clock.System.now(),
 ) {
     val device = state.device
     val deviceType = state.deviceType
@@ -309,6 +314,7 @@ fun DeviceDetailBody(
                 deviceTypeName = deviceType?.name ?: unknownTypeName,
                 deviceLocation = device.location,
                 modifier = Modifier.clickable { onEventClick(event.id) },
+                nowInstant = nowInstant,
             )
         }
 
@@ -357,10 +363,12 @@ fun StatCard(
 @Composable
 fun DeviceDetailContentPreview() {
     BatteryButlerTheme {
-        val now = Instant.parse("2026-01-18T17:00:00Z")
+        // Use fixed dates for stable screenshots
+        val nowInstant = Instant.parse("2026-01-18T17:00:00Z")
+        val eventInstant = Instant.parse("2026-01-11T17:00:00Z") // 7 days ago
         val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
-        val device = Device("dev1", "Kitchen Smoke", "type1", now, now, "Kitchen")
-        val event = BatteryEvent("evt1", "dev1", now)
+        val device = Device("dev1", "Kitchen Smoke", "type1", nowInstant, nowInstant, "Kitchen")
+        val event = BatteryEvent("evt1", "dev1", eventInstant)
         val state = DeviceDetailUiState.Success(
             device = device,
             deviceType = type,
@@ -372,6 +380,7 @@ fun DeviceDetailContentPreview() {
             onBack = {},
             onEdit = {},
             onEventClick = {},
+            nowInstant = nowInstant,
         )
     }
 }
