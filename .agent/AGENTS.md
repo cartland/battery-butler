@@ -469,3 +469,88 @@ Track to improve:
 | Active development | Serial merge with local validation |
 | Broken main | Stop all merges, P0 fix |
 | End of session | Ensure main is green before stopping |
+| Rapid iteration (many changes) | Integration branch |
+
+## Integration Branch Strategy (Rapid Development)
+
+When making many related changes, use an integration branch to iterate quickly without waiting for main CI on every change.
+
+### Concept
+
+```
+main ─────────────────────────────────────── ← Protected, requires CI
+    \                                     /
+     └── agent/integration ──●──●──●──●──● ← Fast iteration
+                             │  │  │  │  │
+                          (commits, no CI wait)
+```
+
+### When to Use
+
+- Making 5+ related changes in a session
+- Exploring/prototyping before final implementation
+- Batch updates (docs, configs, tests)
+- When CI latency is blocking productivity
+
+### Workflow
+
+1. **Create integration branch from main**
+   ```bash
+   git checkout -b agent/integration-<topic> origin/main
+   ```
+
+2. **Make rapid changes with local validation only**
+   ```bash
+   # Each change: validate locally, commit, continue
+   ./gradlew spotlessCheck test --quiet
+   git add . && git commit -m "feat: Change X"
+   # No need to push or wait for CI
+   ```
+
+3. **Periodically sync with main** (if main changes)
+   ```bash
+   git fetch origin main
+   git rebase origin/main
+   ```
+
+4. **When ready, create single PR to main**
+   ```bash
+   git push -u origin agent/integration-<topic>
+   gh pr create --title "feat: <topic> - batch update"
+   ```
+
+5. **CI runs once on the batch**, not on each commit
+
+### Trade-offs
+
+| Aspect | Integration Branch | Direct to Main PRs |
+|--------|-------------------|-------------------|
+| Speed | Fast (no CI wait per commit) | Slow (CI after each) |
+| Risk | Higher (batch testing) | Lower (incremental) |
+| Atomicity | Single large PR | Multiple small PRs |
+| Rollback | All or nothing | Granular |
+
+### Rules
+
+1. **Local validation is mandatory** - Always run `./gradlew spotlessCheck test` before committing
+2. **Keep integration branches short-lived** - Merge to main within 1-2 sessions
+3. **Don't let integration branches diverge too far** - Rebase on main regularly
+4. **Final PR must pass full CI** - No shortcuts for the merge to main
+
+### Example Session
+
+```bash
+# Morning: Start integration branch
+git checkout -b agent/integration-docs origin/main
+
+# Rapid changes (no CI wait)
+vim docs/FEATURES.md && ./gradlew spotlessCheck && git add . && git commit -m "docs: Update features"
+vim CLAUDE.md && ./gradlew spotlessCheck && git add . && git commit -m "docs: Update instructions"
+vim README.md && ./gradlew spotlessCheck && git add . && git commit -m "docs: Update readme"
+# ... more changes ...
+
+# End of session: Create PR for the batch
+git push -u origin agent/integration-docs
+gh pr create --title "docs: Batch documentation update"
+# CI runs once on all changes combined
+```
