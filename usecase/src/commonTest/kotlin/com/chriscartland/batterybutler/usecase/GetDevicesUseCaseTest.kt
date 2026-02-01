@@ -1,5 +1,7 @@
 package com.chriscartland.batterybutler.usecase
 
+import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
+import com.chriscartland.batterybutler.testcommon.TestDevices
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -14,7 +16,7 @@ class GetDevicesUseCaseTest {
         runTest {
             val device = TestDevices.createDevice(id = "1", name = "Test Device")
             val fakeRepository = FakeDeviceRepository()
-            fakeRepository.devices.add(device)
+            fakeRepository.setDevices(listOf(device))
             val useCase = GetDevicesUseCase(fakeRepository)
 
             val result = useCase().first()
@@ -41,7 +43,7 @@ class GetDevicesUseCaseTest {
             val device1 = TestDevices.createDevice(id = "1", name = "Device 1")
             val device2 = TestDevices.createDevice(id = "2", name = "Device 2")
             val device3 = TestDevices.createDevice(id = "3", name = "Device 3")
-            fakeRepository.devices.addAll(listOf(device1, device2, device3))
+            fakeRepository.setDevices(listOf(device1, device2, device3))
             val useCase = GetDevicesUseCase(fakeRepository)
 
             val result = useCase().first()
@@ -62,7 +64,7 @@ class GetDevicesUseCaseTest {
                 typeId = "type-smoke",
                 location = "Kitchen",
             )
-            fakeRepository.devices.add(device)
+            fakeRepository.setDevices(listOf(device))
             val useCase = GetDevicesUseCase(fakeRepository)
 
             val result = useCase().first().first()

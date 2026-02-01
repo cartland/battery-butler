@@ -1,5 +1,7 @@
 package com.chriscartland.batterybutler.usecase
 
+import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
+import com.chriscartland.batterybutler.testcommon.TestDevices
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals

@@ -5,6 +5,7 @@ import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.SyncStatus
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
+import com.chriscartland.batterybutler.testcommon.TestDevices
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
