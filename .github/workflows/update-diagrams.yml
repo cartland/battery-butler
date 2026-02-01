@@ -58,6 +58,12 @@ on:
   # Also run on main push as fallback (creates follow-up PR)
   push:
     branches: [main]
+    paths:
+      - '**/*.kt'
+      - '**/*.java'
+      - '**/*.swift'
+      - '**/build.gradle.kts'
+      - 'settings.gradle.kts'
 
   # Run daily to keep diagrams fresh even without code changes
   # This prevents large diffs from accumulating over time
