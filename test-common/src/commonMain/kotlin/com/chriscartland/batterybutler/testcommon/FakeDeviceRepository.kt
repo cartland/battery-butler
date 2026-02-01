@@ -81,8 +81,7 @@ class FakeDeviceRepository : DeviceRepository {
 
     override fun getAllDevices(): Flow<List<Device>> = devicesFlow
 
-    override fun getDeviceById(id: String): Flow<Device?> =
-        devicesFlow.map { list -> list.find { it.id == id } }
+    override fun getDeviceById(id: String): Flow<Device?> = devicesFlow.map { list -> list.find { it.id == id } }
 
     override suspend fun addDevice(device: Device) {
         devices.add(device)
@@ -104,8 +103,7 @@ class FakeDeviceRepository : DeviceRepository {
 
     override fun getAllDeviceTypes(): Flow<List<DeviceType>> = deviceTypesFlow
 
-    override fun getDeviceTypeById(id: String): Flow<DeviceType?> =
-        deviceTypesFlow.map { list -> list.find { it.id == id } }
+    override fun getDeviceTypeById(id: String): Flow<DeviceType?> = deviceTypesFlow.map { list -> list.find { it.id == id } }
 
     override suspend fun addDeviceType(type: DeviceType) {
         deviceTypes.add(type)
@@ -125,13 +123,11 @@ class FakeDeviceRepository : DeviceRepository {
         deviceTypesFlow.value = deviceTypes.toList()
     }
 
-    override fun getEventsForDevice(deviceId: String): Flow<List<BatteryEvent>> =
-        eventsFlow.map { list -> list.filter { it.deviceId == deviceId } }
+    override fun getEventsForDevice(deviceId: String): Flow<List<BatteryEvent>> = eventsFlow.map { list -> list.filter { it.deviceId == deviceId } }
 
     override fun getAllEvents(): Flow<List<BatteryEvent>> = eventsFlow
 
-    override fun getEventById(id: String): Flow<BatteryEvent?> =
-        eventsFlow.map { list -> list.find { it.id == id } }
+    override fun getEventById(id: String): Flow<BatteryEvent?> = eventsFlow.map { list -> list.find { it.id == id } }
 
     override suspend fun addEvent(event: BatteryEvent) {
         events.add(event)
