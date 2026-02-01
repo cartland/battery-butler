@@ -19,6 +19,45 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
+# Parse flags
+ALLOW_DUPLICATE_TAG=false
+CONFIRM_RELEASE=false
+
+show_help() {
+    echo "Usage: ./scripts/release-android.sh [OPTIONS]"
+    echo ""
+    echo "Options:"
+    echo "  --allow-duplicate-tag  Skip prompt when commit already has an android/* tag"
+    echo "  --confirm-release      Skip final release confirmation prompt"
+    echo "  -h, --help             Show this help message"
+    echo ""
+    echo "For fully non-interactive mode, use both flags:"
+    echo "  ./scripts/release-android.sh --allow-duplicate-tag --confirm-release"
+}
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --allow-duplicate-tag)
+            ALLOW_DUPLICATE_TAG=true
+            shift
+            ;;
+        --confirm-release)
+            CONFIRM_RELEASE=true
+            shift
+            ;;
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        *)
+            echo -e "${RED}Error: Unknown option: $1${NC}"
+            echo ""
+            show_help
+            exit 1
+            ;;
+    esac
+done
+
 echo "=== Android Release Script ==="
 echo ""
 
@@ -66,11 +105,15 @@ if [ -n "$EXISTING_TAGS" ]; then
     echo -e "${YELLOW}Warning: This commit already has android tag(s):${NC}"
     echo "$EXISTING_TAGS"
     echo ""
-    read -p "Do you want to create another tag anyway? (y/N) " -n 1 -r
-    echo ""
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        echo "Aborted."
-        exit 0
+    if [ "$ALLOW_DUPLICATE_TAG" = true ]; then
+        echo "--allow-duplicate-tag specified, continuing..."
+    else
+        read -p "Do you want to create another tag anyway? (y/N) " -n 1 -r
+        echo ""
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            echo "Aborted."
+            exit 0
+        fi
     fi
 fi
 
@@ -78,11 +121,15 @@ fi
 echo -e "${YELLOW}This will create tag '$NEW_TAG' and push it to origin.${NC}"
 echo "This triggers the Play Store internal release workflow."
 echo ""
-read -p "Proceed with release? (y/N) " -n 1 -r
-echo ""
-if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-    echo "Aborted."
-    exit 0
+if [ "$CONFIRM_RELEASE" = true ]; then
+    echo "--confirm-release specified, proceeding..."
+else
+    read -p "Proceed with release? (y/N) " -n 1 -r
+    echo ""
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        echo "Aborted."
+        exit 0
+    fi
 fi
 
 # Create the tag
