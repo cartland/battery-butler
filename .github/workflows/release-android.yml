@@ -101,7 +101,7 @@ jobs:
           packageName: com.chriscartland.batterybutler
           releaseFiles: compose-app/build/outputs/bundle/release/*.aab
           track: internal
-          status: completed
+          status: draft
           whatsNewDirectory: distribution/whatsnew
 
       - name: Cleanup Keystore
