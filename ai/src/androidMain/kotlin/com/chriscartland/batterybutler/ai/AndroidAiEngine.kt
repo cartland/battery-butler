@@ -1,13 +1,5 @@
 package com.chriscartland.batterybutler.ai
 
-import com.chriscartland.batterybutler.ai.AiConstants
-import com.chriscartland.batterybutler.ai.AiEngine
-import com.chriscartland.batterybutler.ai.AiMessage
-import com.chriscartland.batterybutler.ai.AiRole
-import com.chriscartland.batterybutler.ai.AiToolNames
-import com.chriscartland.batterybutler.ai.AiToolParams
-import com.chriscartland.batterybutler.ai.BuildConfig
-import com.chriscartland.batterybutler.ai.ToolHandler
 import com.chriscartland.batterybutler.domain.model.DeviceIcons
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.FunctionResponsePart
@@ -22,18 +14,22 @@ import kotlinx.coroutines.flow.flow
 import org.json.JSONObject
 import kotlin.coroutines.cancellation.CancellationException
 
-class AndroidAiEngine : AiEngine {
-    // For Gemini API (Cloud), availability implies we are ready to send requests.
-    // If the API key is empty, we might want to show unavailable, but user can add it later.
-    private val _isAvailable = MutableStateFlow(true)
+/**
+ * Android implementation of [AiEngine] using the Gemini API.
+ *
+ * @param config Configuration providing the API key and other settings.
+ *               The API key is injected at runtime rather than embedded at compile time,
+ *               allowing for more secure key management.
+ */
+class AndroidAiEngine(
+    private val config: AiConfig,
+) : AiEngine {
+    // For Gemini API (Cloud), availability depends on having a valid API key configured.
+    private val _isAvailable = MutableStateFlow(config.apiKey.isNotBlank())
     override val isAvailable: Flow<Boolean> = _isAvailable.asStateFlow()
     override val compatibility: Flow<Boolean> = flow { emit(true) }
 
-    // Use API Key from local.properties via BuildConfig
-    // Note: ensure BuildConfig is generated for :data module and includes GEMINI_API_KEY if needed.
-    // If BuildConfig is only in :composeApp, we might need to pass it in or configure :data to have it.
-
-    private val apiKey = BuildConfig.GEMINI_API_KEY
+    private val apiKey: String get() = config.apiKey
 
     // Define Tools without execution blocks (manual execution)
     private val addDeviceTool = defineFunction(
@@ -93,8 +89,8 @@ class AndroidAiEngine : AiEngine {
         toolHandler: ToolHandler?,
     ): Flow<AiMessage> =
         flow {
-            if (apiKey.contains("TODO")) {
-                emit(AiMessage("error", AiRole.MODEL, "Missing API Key. Please update AndroidAiEngine.kt.", false))
+            if (apiKey.isBlank()) {
+                emit(AiMessage("error", AiRole.MODEL, "Missing API Key. Please configure GEMINI_API_KEY in local.properties.", false))
                 return@flow
             }
 
