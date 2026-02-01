@@ -77,6 +77,8 @@ xcodebuild -project ios-app-swift-ui/...      # iOS
 
 ### Task Management with `bd` (Beads)
 
+**IMPORTANT: Beads is the primary task tracking system for this project.**
+
 Use `bd` CLI for all task/issue management. **Never modify `.beads/issues.jsonl` directly.**
 
 Beads is an AI-native issue tracker that lives in the repository. Issues are stored in `.beads/issues.jsonl` (JSONL format for easy git merging) while SQLite is used as a local cache.
@@ -86,6 +88,25 @@ Beads is an AI-native issue tracker that lives in the repository. Issues are sto
 - **SQLite is a local cache** - Fast queries, rebuilt from JSONL automatically
 - **Parallel machines** - Each machine has its own SQLite cache; JSONL merges via git
 - **Merge driver** - `.gitattributes` configures `merge=beads` for smart conflict resolution
+
+#### Rules for Task Tracking
+1. **Always create beads for new tasks** - Don't just discuss tasks, create beads for them
+2. **Check `bd list` at session start** - See what work is pending
+3. **Close beads when done** - Use `bd close <id>` with a reason
+4. **Never lose tasks in conversation** - If something needs doing, create a bead
+
+#### Session Workflow
+```bash
+# Start of session
+bd list                    # See pending tasks
+bd ready                   # See tasks ready to work on
+
+# When you identify new work
+bd create "Task title" --type task --priority P2
+
+# When you complete work
+bd close <id> --reason "Fixed in PR #123"
+```
 
 #### Quick Reference
 ```bash
