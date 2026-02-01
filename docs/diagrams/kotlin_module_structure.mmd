@@ -39,6 +39,7 @@ graph TD
 
     subgraph "Others"
         Fixtures[":fixtures"]
+        TestCommon[":test-common"]
     end
 
     %% Dependencies
@@ -95,6 +96,8 @@ graph TD
     ServerData --> ServerDomain
 
     ServerDomain --> Domain
+
+    TestCommon --> Domain
 
     Usecase --> Ai
     Usecase --> Domain
