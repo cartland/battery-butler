@@ -40,6 +40,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.chriscartland.batterybutler.composeresources.composeStringResource
 import com.chriscartland.batterybutler.composeresources.generated.resources.Res
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_edit
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_record_replacement
@@ -59,7 +60,6 @@ import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMap
 import com.chriscartland.batterybutler.presentationcore.components.HistoryListItem
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationmodel.devicedetail.DeviceDetailUiState
-import org.jetbrains.compose.resources.stringResource
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -77,12 +77,12 @@ fun DeviceDetailContent(
         modifier = modifier,
         topBar = {
             ButlerCenteredTopAppBar(
-                title = stringResource(Res.string.device_detail_title),
+                title = composeStringResource(Res.string.device_detail_title),
                 onBack = onBack,
                 actions = {
                     androidx.compose.material3.TextButton(onClick = onEdit) {
                         Text(
-                            stringResource(Res.string.action_edit),
+                            composeStringResource(Res.string.action_edit),
                             color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.SemiBold,
                         )
@@ -97,7 +97,7 @@ fun DeviceDetailContent(
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
                 DeviceDetailUiState.NotFound -> {
-                    Text(stringResource(Res.string.error_device_not_found), modifier = Modifier.align(Alignment.Center))
+                    Text(composeStringResource(Res.string.error_device_not_found), modifier = Modifier.align(Alignment.Center))
                 }
                 is DeviceDetailUiState.Success -> {
                     DeviceDetailBody(
@@ -122,13 +122,13 @@ fun DeviceDetailBody(
     val device = state.device
     val deviceType = state.deviceType
     val iconName = deviceType?.defaultIcon ?: "devices_other"
-    val unknownTypeName = stringResource(Res.string.unknown_type)
-    val typeLabel = stringResource(Res.string.label_type)
-    val quantityLabel = stringResource(Res.string.label_quantity)
-    val historyLabel = stringResource(Res.string.section_history)
-    val viewAllLabel = stringResource(Res.string.action_view_all)
-    val recordReplacementLabel = stringResource(Res.string.action_record_replacement)
-    val recordReplacementDescription = stringResource(Res.string.action_record_replacement_description)
+    val unknownTypeName = composeStringResource(Res.string.unknown_type)
+    val typeLabel = composeStringResource(Res.string.label_type)
+    val quantityLabel = composeStringResource(Res.string.label_quantity)
+    val historyLabel = composeStringResource(Res.string.section_history)
+    val viewAllLabel = composeStringResource(Res.string.action_view_all)
+    val recordReplacementLabel = composeStringResource(Res.string.action_record_replacement)
+    val recordReplacementDescription = composeStringResource(Res.string.action_record_replacement_description)
 
     LazyColumn(
         modifier = modifier.padding(horizontal = 16.dp),
