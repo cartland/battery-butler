@@ -3,20 +3,15 @@ package com.chriscartland.batterybutler.viewmodel.adddevice
 import com.chriscartland.batterybutler.ai.AiEngine
 import com.chriscartland.batterybutler.ai.AiMessage
 import com.chriscartland.batterybutler.ai.ToolHandler
-import com.chriscartland.batterybutler.domain.model.BatteryEvent
-import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceInput
 import com.chriscartland.batterybutler.domain.model.DeviceType
-import com.chriscartland.batterybutler.domain.model.SyncStatus
-import com.chriscartland.batterybutler.domain.repository.DeviceRepository
+import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
 import com.chriscartland.batterybutler.usecase.AddDeviceUseCase
 import com.chriscartland.batterybutler.usecase.BatchAddDevicesUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
@@ -93,9 +88,9 @@ class AddDeviceViewModelTest {
             viewModel.addDevice(input)
             testDispatcher.scheduler.advanceUntilIdle()
 
-            assertEquals(1, repo.addedDevices.size)
-            assertEquals("New Device", repo.addedDevices[0].name)
-            assertEquals("Living Room", repo.addedDevices[0].location)
+            assertEquals(1, repo.devices.size)
+            assertEquals("New Device", repo.devices[0].name)
+            assertEquals("Living Room", repo.devices[0].location)
         }
 
     @Test
@@ -111,8 +106,8 @@ class AddDeviceViewModelTest {
             viewModel.addDevice(input2)
             testDispatcher.scheduler.advanceUntilIdle()
 
-            assertEquals(2, repo.addedDevices.size)
-            assertNotEquals(repo.addedDevices[0].id, repo.addedDevices[1].id)
+            assertEquals(2, repo.devices.size)
+            assertNotEquals(repo.devices[0].id, repo.devices[1].id)
         }
 
     @Test
@@ -129,7 +124,7 @@ class AddDeviceViewModelTest {
             viewModel.addDevice(input)
             testDispatcher.scheduler.advanceUntilIdle()
 
-            assertEquals("type-smoke-detector", repo.addedDevices[0].typeId)
+            assertEquals("type-smoke-detector", repo.devices[0].typeId)
         }
 
     @Test
@@ -165,53 +160,6 @@ class AddDeviceViewModelTest {
             getDeviceTypesUseCase = GetDeviceTypesUseCase(repo),
             batchAddDevicesUseCase = BatchAddDevicesUseCase(FakeAiEngine(), repo),
         )
-}
-
-class FakeDeviceRepository : DeviceRepository {
-    private val deviceTypesFlow = MutableStateFlow<List<DeviceType>>(emptyList())
-    val addedDevices = mutableListOf<Device>()
-
-    fun setDeviceTypes(types: List<DeviceType>) {
-        deviceTypesFlow.value = types
-    }
-
-    override val syncStatus: StateFlow<SyncStatus> = MutableStateFlow(SyncStatus.Idle)
-
-    override fun dismissSyncStatus() {}
-
-    override fun getAllDevices(): Flow<List<Device>> = emptyFlow()
-
-    override fun getDeviceById(id: String): Flow<Device?> = emptyFlow()
-
-    override suspend fun addDevice(device: Device) {
-        addedDevices.add(device)
-    }
-
-    override suspend fun updateDevice(device: Device) {}
-
-    override suspend fun deleteDevice(id: String) {}
-
-    override fun getAllDeviceTypes(): Flow<List<DeviceType>> = deviceTypesFlow
-
-    override fun getDeviceTypeById(id: String): Flow<DeviceType?> = emptyFlow()
-
-    override suspend fun addDeviceType(type: DeviceType) {}
-
-    override suspend fun updateDeviceType(type: DeviceType) {}
-
-    override suspend fun deleteDeviceType(id: String) {}
-
-    override fun getEventsForDevice(deviceId: String): Flow<List<BatteryEvent>> = emptyFlow()
-
-    override fun getAllEvents(): Flow<List<BatteryEvent>> = emptyFlow()
-
-    override fun getEventById(id: String): Flow<BatteryEvent?> = emptyFlow()
-
-    override suspend fun addEvent(event: BatteryEvent) {}
-
-    override suspend fun updateEvent(event: BatteryEvent) {}
-
-    override suspend fun deleteEvent(id: String) {}
 }
 
 class FakeAiEngine : AiEngine {
