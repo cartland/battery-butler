@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.chriscartland.batterybutler.composeresources.composeStringResource
 import com.chriscartland.batterybutler.composeresources.generated.resources.Res
 import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_grpc_aws
 import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_grpc_local
@@ -30,7 +31,6 @@ import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.presentationcore.components.ExpandableSelectionControl
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
-import org.jetbrains.compose.resources.stringResource as composeStringResource
 
 @Composable
 fun SettingsContent(
