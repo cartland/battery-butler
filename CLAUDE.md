@@ -75,10 +75,63 @@ bd create --type task --priority P0 --title "BROKEN BUILD: <description>"
 xcodebuild -project ios-app-swift-ui/...      # iOS
 ```
 
-### Task Management
+### Task Management with `bd` (Beads)
+
+Use `bd` CLI for all task/issue management. **Never modify `.beads/issues.jsonl` directly.**
+
+#### Quick Reference
 ```bash
-bd ready           # Show tasks ready to work on
-bd close <id>      # Mark task complete
-bd show <id>       # View task details
-bd create ...      # Create new task
+bd init              # Initialize in a git repo (already done)
+bd list              # List all open issues
+bd ready             # Show tasks ready to work on (no blockers)
+bd show <id>         # View full task details
+bd close <id>        # Mark task complete
+```
+
+#### Creating Issues
+```bash
+# Create a task
+bd create "Fix the login button" --type task --priority P2
+
+# Create an epic
+bd create "User Authentication" --type epic --priority P2 \
+  --description "Implement login flow with Google Sign-In..."
+
+# Create a bug
+bd create "App crashes on startup" --type bug --priority P1
+
+# With full options
+bd create "Title" \
+  --type task|bug|feature|epic|chore \
+  --priority P0|P1|P2|P3|P4 \
+  --description "Detailed description..." \
+  --labels "ui,android"
+```
+
+#### Issue Types
+- `task` - General work item (default)
+- `bug` - Something broken that needs fixing
+- `feature` - New functionality
+- `epic` - Large initiative with multiple tasks
+- `chore` - Maintenance work
+
+#### Priority Levels
+- **P0** - Critical/blocking (fix immediately)
+- **P1** - High priority
+- **P2** - Normal priority (default)
+- **P3** - Low priority
+- **P4** - Nice to have
+
+#### Filtering & Searching
+```bash
+bd list --type epic           # List only epics
+bd list --priority P1         # List high priority items
+bd search "login"             # Search by text
+bd list --labels ui           # Filter by label
+```
+
+#### Closing Issues
+```bash
+bd close <id>                              # Simple close
+bd close <id> --reason "Fixed in PR #123"  # With reason
 ```

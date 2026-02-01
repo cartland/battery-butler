@@ -181,9 +181,40 @@ jobs:
             fi
           fi
 
-      # For main push or if PAT not configured: create follow-up PR
+      # =========================================================================
+      # STEP 7: Close stale auto-update PRs before creating new one
+      # =========================================================================
+      # This prevents accumulation of outdated PRs that can have merge conflicts
+      - name: Close Stale Auto-Update PRs
+        if: github.event_name == 'push' || github.event_name == 'schedule' || (github.event_name == 'pull_request' && steps.check-pat.outputs.configured != 'true')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Checking for existing auto/update-diagrams PRs..."
+
+          # Find and close any existing PRs from the auto/update-diagrams branch
+          EXISTING_PRS=$(gh pr list --head "auto/update-diagrams" --state open --json number,title --jq '.[].number')
+
+          if [ -n "$EXISTING_PRS" ]; then
+            for PR_NUM in $EXISTING_PRS; do
+              echo "Closing stale PR #$PR_NUM..."
+              gh pr close "$PR_NUM" --comment "Closing: Superseded by newer auto-generated diagrams from the latest main branch commit."
+            done
+            echo "✓ Closed stale PRs"
+          else
+            echo "No existing auto-update PRs to close"
+          fi
+
+          # Delete the old branch if it exists (ensures fresh start)
+          if git ls-remote --heads origin auto/update-diagrams | grep -q auto/update-diagrams; then
+            echo "Deleting old auto/update-diagrams branch..."
+            git push origin --delete auto/update-diagrams || true
+            echo "✓ Old branch deleted"
+          fi
+
+      # For main push, schedule, or if PAT not configured: create follow-up PR
       - name: Create Pull Request (Fallback)
-        if: github.event_name == 'push' || (github.event_name == 'pull_request' && steps.check-pat.outputs.configured != 'true')
+        if: github.event_name == 'push' || github.event_name == 'schedule' || (github.event_name == 'pull_request' && steps.check-pat.outputs.configured != 'true')
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -194,11 +225,15 @@ jobs:
 
             This PR was automatically created by the Update Diagrams workflow.
 
+            **Commit:** ${{ github.sha }}
+            **Triggered by:** ${{ github.event_name }}
+
             ---
             ⚠️ **Note:** This is a follow-up PR because diagram updates could not be
             committed directly to the original PR branch. To enable direct commits,
             configure the `BOT_PAT` secret. See `.github/workflows/update-diagrams.yml`
             for setup instructions.
           branch: auto/update-diagrams
+          base: main
           delete-branch: true
           labels: automated
