@@ -17,15 +17,18 @@ import com.chriscartland.batterybutler.presentationcore.components.HistoryListIt
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationmodel.history.HistoryItemUiModel
 import com.chriscartland.batterybutler.presentationmodel.history.HistoryListUiState
+import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
+@OptIn(ExperimentalTime::class)
 @Composable
 fun HistoryListContent(
     state: HistoryListUiState,
     onEventClick: (String, String) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
+    nowInstant: Instant = Clock.System.now(),
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         when (state) {
@@ -46,6 +49,7 @@ fun HistoryListContent(
                             modifier = Modifier.clickable {
                                 onEventClick(item.event.id, item.event.deviceId)
                             },
+                            nowInstant = nowInstant,
                         )
                     }
                 }
@@ -59,8 +63,10 @@ fun HistoryListContent(
 @Composable
 fun HistoryListContentPreview() {
     BatteryButlerTheme {
-        val now = Instant.parse("2026-01-18T17:00:00Z")
-        val event = BatteryEvent("evt1", "dev1", now)
+        // Use fixed dates for stable screenshots
+        val nowInstant = Instant.parse("2026-01-18T17:00:00Z")
+        val eventInstant = Instant.parse("2026-01-11T17:00:00Z") // 7 days ago
+        val event = BatteryEvent("evt1", "dev1", eventInstant)
         val item = HistoryItemUiModel(event, "Kitchen Smoke", "Smoke Alarm", "Kitchen")
         val state = HistoryListUiState.Success(
             items = listOf(item),
@@ -68,6 +74,7 @@ fun HistoryListContentPreview() {
         HistoryListContent(
             state = state,
             onEventClick = { _, _ -> },
+            nowInstant = nowInstant,
         )
     }
 }
