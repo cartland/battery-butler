@@ -1,0 +1,160 @@
+name: Release Server to AWS
+
+# Triggers:
+# 1. Push a tag: git tag server/v1.0.0 && git push origin server/v1.0.0
+# 2. Manual retry: Actions → Run workflow → select existing server/vX.Y.Z tag
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'server/v[0-9]*.[0-9]*.[0-9]*'
+
+permissions:
+  contents: read
+  id-token: write # Required for OIDC authentication
+
+jobs:
+  validate:
+    name: Validate Tag
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.validate.outputs.version }}
+    steps:
+      - name: Validate tag format
+        id: validate
+        run: |
+          REF="${GITHUB_REF}"
+          echo "Ref: $REF"
+
+          # Must be a tag
+          if [[ ! "$REF" =~ ^refs/tags/ ]]; then
+            echo "::error::This workflow must be run on a tag."
+            echo "::error::"
+            echo "::error::For manual dispatch, select an existing 'server/vX.Y.Z' tag from the branch/tag dropdown."
+            echo "::error::Do not run on a branch."
+            exit 1
+          fi
+
+          TAG="${REF#refs/tags/}"
+
+          # Must match server/vX.Y.Z pattern
+          if [[ ! "$TAG" =~ ^server/v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Tag must match 'server/vX.Y.Z' pattern, got: $TAG"
+            exit 1
+          fi
+
+          VERSION="${TAG#server/v}"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Validated: tag=$TAG, version=$VERSION"
+
+  check-credentials:
+    name: Check AWS Credentials
+    needs: validate
+    runs-on: ubuntu-latest
+    outputs:
+      has-credentials: ${{ steps.check.outputs.has-credentials }}
+    steps:
+      - name: Check for AWS credentials
+        id: check
+        run: |
+          if [ -n "${{ secrets.AWS_DEPLOY_ROLE_ARN }}" ] || [ -n "${{ secrets.AWS_ACCESS_KEY_ID }}" ]; then
+            echo "has-credentials=true" >> $GITHUB_OUTPUT
+            echo "✓ AWS credentials are configured"
+          else
+            echo "has-credentials=false" >> $GITHUB_OUTPUT
+            echo "::error::AWS credentials are not configured."
+            echo "::error::Configure AWS_DEPLOY_ROLE_ARN (recommended) or AWS_ACCESS_KEY_ID + AWS_SECRET_ACCESS_KEY."
+            echo "::error::See .github/workflows/deploy-server.yml for setup instructions."
+            exit 1
+          fi
+
+  deploy:
+    name: Build and Deploy v${{ needs.validate.outputs.version }}
+    needs: [validate, check-credentials]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      VERSION: ${{ needs.validate.outputs.version }}
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: ./.github/actions/setup-java-gradle
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+
+    # AWS Authentication
+    - name: Configure AWS Credentials (OIDC)
+      if: ${{ secrets.AWS_DEPLOY_ROLE_ARN != '' }}
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+        aws-region: us-west-1
+
+    - name: Configure AWS Credentials (Access Keys - Fallback)
+      if: ${{ secrets.AWS_DEPLOY_ROLE_ARN == '' }}
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-west-1
+
+    - name: Terraform Init
+      working-directory: server/terraform
+      env:
+        TF_STATE_BUCKET: ${{ secrets.TF_STATE_BUCKET }}
+        TF_LOCK_TABLE: ${{ secrets.TF_LOCK_TABLE }}
+        TF_STATE_KEY: server/terraform.tfstate
+        TF_STATE_REGION: us-west-1
+      run: |
+        terraform init \
+          -backend-config="bucket=${TF_STATE_BUCKET}" \
+          -backend-config="key=${TF_STATE_KEY}" \
+          -backend-config="region=${TF_STATE_REGION}" \
+          -backend-config="dynamodb_table=${TF_LOCK_TABLE}" \
+          -backend-config="encrypt=true"
+
+    - name: Terraform Apply
+      working-directory: server/terraform
+      run: terraform apply -auto-approve
+
+    - name: Get ECR Repo URL
+      id: tf-outputs
+      working-directory: server/terraform
+      run: |
+        echo "ECR_URL=$(terraform output -raw ecr_repository_url)" >> $GITHUB_OUTPUT
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+
+    - name: Build and Push Container (Jib)
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_USERNAME: ${{ steps.login-ecr.outputs.username }}
+        ECR_PASSWORD: ${{ steps.login-ecr.outputs.password }}
+        ECR_REPO_URL: ${{ steps.tf-outputs.outputs.ECR_URL }}
+      run: |
+        # Build with version tag
+        ./gradlew :server:app:jibDockerBuild \
+          -Djib.to.image=$ECR_REPO_URL \
+          -Djib.to.tags=latest,$VERSION \
+          --stacktrace --info
+
+        # Push both tags
+        docker push $ECR_REPO_URL:latest
+        docker push $ECR_REPO_URL:$VERSION
+
+    - name: Force ECS Deployment
+      run: |
+        aws ecs update-service --cluster battery-butler-cluster --service battery-butler-service --force-new-deployment
+
+    - name: Deployment Summary
+      run: |
+        echo "## Server Deployment Complete :rocket:" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Version:** v$VERSION" >> $GITHUB_STEP_SUMMARY
+        echo "**ECR Image:** \`${{ steps.tf-outputs.outputs.ECR_URL }}:$VERSION\`" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "The ECS service has been updated with the new image." >> $GITHUB_STEP_SUMMARY
