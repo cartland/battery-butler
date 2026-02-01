@@ -69,6 +69,12 @@ gh run list --branch main --limit 1 --watch
 
 ## Project-Specific Knowledge
 
+### Efficiency Rules
+- **NEVER use `sleep` commands** - Don't wait for CI. Find productive work instead.
+- **Always iterate locally** - Run local validation while CI runs remotely
+- **Check CI status without waiting** - Use `gh pr view` or `gh run list` without `--watch`
+- **Work in parallel** - While one PR's CI runs, work on other tasks from `bd ready`
+
 ### Build System
 - **Bazel disk cache issue**: When running `bazel build` in scripts called from Xcode, use `--disk_cache=""` to ensure outputs are materialized locally. The disk cache can return metadata without creating actual files.
 - **iOS protos**: Run `./scripts/generate-protos.sh` before iOS builds if proto files changed. The script generates Swift protobuf files from Bazel.
@@ -260,16 +266,17 @@ git commit -m "chore(beads): Update task tracking"
 **Last Updated: 2026-02-01**
 
 ### Immediate Actions (P1)
-1. **Merge pending PRs** (bb-7v0): PRs #214, #222, #224, #225 are ready
-   - GitHub ruleset was updated to only require "ci" check
-   - These should now be mergeable - batch merge docs PRs first
+1. **Merge PR #225** (bb-7v0): test-common module with FakeDeviceRepository
+   - CI running, merge when green
+   - PRs #214, #224, #227, #228 already merged
 
-2. **Test-common module** (bb-9wz.6): PR #225 adds initial module
-   - After merge, add FakeDeviceRepository and other shared fakes
-   - Update other modules to use test-common instead of inline fakes
+2. **Continue test-common module** (bb-9wz.6):
+   - FakeDeviceRepository added to test-common
+   - Next: Migrate existing tests to use shared fakes
+   - Remove duplicate FakeDeviceRepository implementations
 
 ### Context
-- CI now uses unified "ci" job for required checks (PR #217)
-- Docs-only PRs skip expensive builds via path filtering (PR #213)
-- Accelerated development strategy documented in `.agent/AGENTS.md`
-- Integration branch strategy available for rapid local iteration
+- CI uses unified "ci" job for required checks
+- Docs-only PRs skip expensive builds via path filtering
+- Accelerated development strategy in `.agent/AGENTS.md`
+- **Never use sleep** - find productive work while CI runs
