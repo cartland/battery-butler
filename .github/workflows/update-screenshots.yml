@@ -57,6 +57,10 @@ on:
   # Also run on main push as fallback (creates follow-up PR)
   push:
     branches: [main]
+    paths:
+      - 'compose-app/**'
+      - 'presentation-*/**'
+      - 'android-screenshot-tests/**'
 
   # Allow manual trigger for testing
   workflow_dispatch:
