@@ -51,6 +51,7 @@ import com.chriscartland.batterybutler.presentationmodel.home.HomeUiState
 import com.chriscartland.batterybutler.presentationmodel.home.SortOption
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.StringResource
+import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -199,6 +200,7 @@ fun TypesScreen(
     }
 }
 
+@OptIn(ExperimentalTime::class)
 @Composable
 fun HistoryScreen(
     state: HistoryListUiState,
@@ -206,6 +208,7 @@ fun HistoryScreen(
     onSettingsClick: () -> Unit,
     onAddEventClick: () -> Unit,
     onEventClick: (String, String) -> Unit,
+    nowInstant: Instant = Clock.System.now(),
 ) {
     MainScreenShell(
         currentTab = MainTab.History,
@@ -218,6 +221,7 @@ fun HistoryScreen(
             onEventClick = onEventClick,
             modifier = Modifier.padding(innerPadding),
             contentPadding = fabPadding,
+            nowInstant = nowInstant,
         )
     }
 }
@@ -276,9 +280,10 @@ fun TypesScreenPreview() {
 @Composable
 fun HistoryScreenPreview() {
     BatteryButlerTheme {
-        // Wrap the preview in the theme
-        val now = Instant.parse("2026-01-18T17:00:00Z")
-        val event = BatteryEvent("evt1", "dev1", now)
+        // Use fixed dates for stable screenshots
+        val nowInstant = Instant.parse("2026-01-18T17:00:00Z")
+        val eventInstant = Instant.parse("2026-01-11T17:00:00Z") // 7 days ago
+        val event = BatteryEvent("evt1", "dev1", eventInstant)
         val item = HistoryItemUiModel(event, "Kitchen Smoke", "Smoke Alarm", "Kitchen")
         val state = HistoryListUiState.Success(
             items = listOf(item),
@@ -289,6 +294,7 @@ fun HistoryScreenPreview() {
             onSettingsClick = {},
             onAddEventClick = {},
             onEventClick = { _, _ -> },
+            nowInstant = nowInstant,
         )
     }
 }
