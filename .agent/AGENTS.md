@@ -20,9 +20,11 @@ This document outlines the shared principles and workflow for all AI agents cont
 
 2.  **NEVER Create Tags or Deploy Without Explicit Permission**:
     *   **NEVER** create git tags (e.g., `android/N`, release tags) without explicit user approval.
+    *   **NEVER** push tags manually - always use release scripts (e.g., `./scripts/release-android.sh`).
     *   **NEVER** trigger deployment workflows without explicit user approval.
-    *   When the user says "deploy", **ASK** which target (server, Android, etc.) and confirm before taking action.
+    *   When the user says "deploy" or "release", **ASK** which target and confirm, then use the appropriate release script.
     *   Tags trigger production releases and cannot be easily undone.
+    *   Release scripts provide safety checks, version validation, and confirmation prompts.
 
 3.  **ALWAYS Ask Before Destructive or Irreversible Actions**:
     *   Creating tags, deploying, force-pushing, deleting branches on remote, or any action that affects production requires explicit confirmation.
