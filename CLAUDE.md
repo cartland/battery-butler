@@ -79,9 +79,16 @@ xcodebuild -project ios-app-swift-ui/...      # iOS
 
 Use `bd` CLI for all task/issue management. **Never modify `.beads/issues.jsonl` directly.**
 
+Beads is an AI-native issue tracker that lives in the repository. Issues are stored in `.beads/issues.jsonl` (JSONL format for easy git merging) while SQLite is used as a local cache.
+
+#### How It Works
+- **JSONL is the source of truth** - Portable, git-friendly, mergeable
+- **SQLite is a local cache** - Fast queries, rebuilt from JSONL automatically
+- **Parallel machines** - Each machine has its own SQLite cache; JSONL merges via git
+- **Merge driver** - `.gitattributes` configures `merge=beads` for smart conflict resolution
+
 #### Quick Reference
 ```bash
-bd init              # Initialize in a git repo (already done)
 bd list              # List all open issues
 bd ready             # Show tasks ready to work on (no blockers)
 bd show <id>         # View full task details
@@ -135,3 +142,32 @@ bd list --labels ui           # Filter by label
 bd close <id>                              # Simple close
 bd close <id> --reason "Fixed in PR #123"  # With reason
 ```
+
+#### Committing Beads Changes
+Beads files should be committed to git like any other code:
+
+```bash
+# After creating/closing issues, commit the changes
+git add .beads/issues.jsonl
+git commit -m "chore: Update issue tracking"
+```
+
+**What gets committed:**
+- `.beads/issues.jsonl` - Issue data (JSONL format)
+- `.beads/interactions.jsonl` - Interaction logs
+- `.beads/config.yaml` - Configuration
+- `.beads/metadata.json` - Metadata
+
+**What stays local (gitignored):**
+- `*.db*` - SQLite database (local cache)
+- `daemon.*` - Runtime files
+- `bd.sock` - Socket file
+
+#### Parallel Machine Workflow
+When multiple machines edit issues:
+1. Each machine modifies its local SQLite + JSONL
+2. Commit and push `.beads/issues.jsonl` via PR
+3. Git merges JSONL using the beads merge driver
+4. After pull, SQLite cache rebuilds from merged JSONL
+
+The JSONL format (one JSON object per line) makes merges simple - each issue is a separate line, so conflicts only occur when the same issue is edited on multiple machines.
