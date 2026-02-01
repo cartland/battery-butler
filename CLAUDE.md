@@ -75,6 +75,24 @@ bd create --type task --priority P0 --title "BROKEN BUILD: <description>"
 xcodebuild -project ios-app-swift-ui/...      # iOS
 ```
 
+### Releases
+
+**NEVER push git tags manually. Always use the release scripts.**
+
+```bash
+# Android release
+./scripts/release-android.sh
+
+# Server release (future)
+./scripts/release-server.sh
+```
+
+#### Why This Matters
+1. Release scripts check for existing tags and increment correctly
+2. Manual tag pushes can conflict with Play Store versionCode history
+3. Scripts provide confirmation prompts and safety checks
+4. Scripts ensure you're on the right commit
+
 ### Task Management with `bd` (Beads)
 
 **IMPORTANT: Beads is the primary task tracking system for this project.**
