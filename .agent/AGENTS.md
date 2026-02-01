@@ -356,3 +356,201 @@ git fetch origin main
 git rebase origin/main
 git push --force-with-lease
 ```
+
+## Accelerated Development Strategy
+
+### The Problem with Serial Merging
+
+Waiting for full CI (15-20 min) after each PR merge creates a bottleneck. With 10 PRs, that's 2.5+ hours of waiting.
+
+### Accelerated Approach: Batch + Monitor
+
+**Core principle:** Use local validation for high confidence, then batch merges while monitoring.
+
+#### Risk Categories
+
+| Risk Level | PR Type | Strategy |
+|------------|---------|----------|
+| **Low** | Docs-only, README, CLAUDE.md, .beads/* | Batch merge up to 5 at once |
+| **Medium** | Single-file code changes, test fixes | Merge 2-3, wait for CI |
+| **High** | Multi-file refactors, CI changes, shared code | Serial merge, wait for CI |
+
+#### Local Validation Before Merge
+
+Before merging any code PR, run local validation:
+
+```bash
+# Quick validation (< 2 min)
+./gradlew spotlessCheck --quiet
+
+# Medium validation (< 5 min)
+./gradlew spotlessCheck test --quiet
+
+# Full validation (< 10 min) - for high-risk PRs
+./scripts/validate.sh
+```
+
+#### Batch Merge Protocol
+
+**For low-risk PRs (docs-only):**
+
+```bash
+# 1. Merge up to 5 docs-only PRs in quick succession
+gh pr merge 199 --squash
+gh pr merge 209 --squash
+gh pr merge 214 --squash
+gh pr merge 215 --squash
+
+# 2. Monitor main CI for the batch
+gh run list --branch main --limit 1 --watch
+
+# 3. If any failure, identify and revert the culprit
+```
+
+**For medium-risk PRs:**
+
+```bash
+# 1. Run local validation on each PR branch
+git checkout <branch> && ./gradlew spotlessCheck test --quiet
+
+# 2. Merge 2-3 at once if local validation passes
+gh pr merge 200 --squash
+gh pr merge 201 --squash
+
+# 3. Wait for main CI before next batch
+gh run list --branch main --limit 1 --watch
+```
+
+#### Parallel Work While CI Runs
+
+While CI is running:
+- Rebase remaining PRs onto latest main
+- Run local validation on next batch
+- Create new PRs for other tasks
+- Review and approve pending PRs
+
+```bash
+# Rebase multiple branches in parallel
+for branch in feat/a feat/b feat/c; do
+  git checkout $branch && git rebase origin/main && git push -f &
+done
+wait
+```
+
+#### Failure Recovery
+
+If main breaks after batch merge:
+
+1. **Identify the culprit** - Check which PR likely broke it
+2. **Quick fix** - If obvious, fix forward with new PR
+3. **Revert** - If unclear, revert the suspect PR
+4. **Learn** - Move that PR type to higher risk category
+
+```bash
+# Revert last merge if needed
+git revert HEAD --no-edit
+git push origin main
+```
+
+#### Velocity Metrics
+
+Track to improve:
+- PRs merged per hour
+- Post-merge failure rate
+- Time spent waiting vs working
+
+**Target:** <10% post-merge failure rate while maximizing throughput.
+
+### When to Use Each Strategy
+
+| Situation | Strategy |
+|-----------|----------|
+| Catching up on PR backlog | Batch low-risk, parallel rebase |
+| Active development | Serial merge with local validation |
+| Broken main | Stop all merges, P0 fix |
+| End of session | Ensure main is green before stopping |
+| Rapid iteration (many changes) | Integration branch |
+
+## Integration Branch Strategy (Rapid Development)
+
+When making many related changes, use an integration branch to iterate quickly without waiting for main CI on every change.
+
+### Concept
+
+```
+main ─────────────────────────────────────── ← Protected, requires CI
+    \                                     /
+     └── agent/integration ──●──●──●──●──● ← Fast iteration
+                             │  │  │  │  │
+                          (commits, no CI wait)
+```
+
+### When to Use
+
+- Making 5+ related changes in a session
+- Exploring/prototyping before final implementation
+- Batch updates (docs, configs, tests)
+- When CI latency is blocking productivity
+
+### Workflow
+
+1. **Create integration branch from main**
+   ```bash
+   git checkout -b agent/integration-<topic> origin/main
+   ```
+
+2. **Make rapid changes with local validation only**
+   ```bash
+   # Each change: validate locally, commit, continue
+   ./gradlew spotlessCheck test --quiet
+   git add . && git commit -m "feat: Change X"
+   # No need to push or wait for CI
+   ```
+
+3. **Periodically sync with main** (if main changes)
+   ```bash
+   git fetch origin main
+   git rebase origin/main
+   ```
+
+4. **When ready, create single PR to main**
+   ```bash
+   git push -u origin agent/integration-<topic>
+   gh pr create --title "feat: <topic> - batch update"
+   ```
+
+5. **CI runs once on the batch**, not on each commit
+
+### Trade-offs
+
+| Aspect | Integration Branch | Direct to Main PRs |
+|--------|-------------------|-------------------|
+| Speed | Fast (no CI wait per commit) | Slow (CI after each) |
+| Risk | Higher (batch testing) | Lower (incremental) |
+| Atomicity | Single large PR | Multiple small PRs |
+| Rollback | All or nothing | Granular |
+
+### Rules
+
+1. **Local validation is mandatory** - Always run `./gradlew spotlessCheck test` before committing
+2. **Keep integration branches short-lived** - Merge to main within 1-2 sessions
+3. **Don't let integration branches diverge too far** - Rebase on main regularly
+4. **Final PR must pass full CI** - No shortcuts for the merge to main
+
+### Example Session
+
+```bash
+# Morning: Start integration branch
+git checkout -b agent/integration-docs origin/main
+
+# Rapid changes (no CI wait)
+vim docs/FEATURES.md && ./gradlew spotlessCheck && git add . && git commit -m "docs: Update features"
+vim CLAUDE.md && ./gradlew spotlessCheck && git add . && git commit -m "docs: Update instructions"
+vim README.md && ./gradlew spotlessCheck && git add . && git commit -m "docs: Update readme"
+# ... more changes ...
+
+# End of session: Create PR for the batch
+git push -u origin agent/integration-docs
+gh pr create --title "docs: Batch documentation update"
+# CI runs once on all changes combined
+```
