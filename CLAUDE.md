@@ -49,6 +49,24 @@ bd create --type task --priority P0 --title "BROKEN BUILD: <description>"
 # 3. Fix immediately
 ```
 
+### Accelerated Development (Batch Merging)
+
+See `.agent/AGENTS.md` for full "Accelerated Development Strategy" section.
+
+**Quick Reference:**
+- **Low-risk PRs** (docs-only): Batch merge up to 5 at once
+- **Medium-risk PRs** (single-file changes): Merge 2-3, wait for CI
+- **High-risk PRs** (multi-file, CI changes): Serial merge, wait for CI
+
+```bash
+# Batch merge docs-only PRs (fast)
+gh pr merge 214 --squash
+gh pr merge 209 --squash
+gh pr merge 222 --squash
+# Then monitor main CI for the batch
+gh run list --branch main --limit 1 --watch
+```
+
 ## Project-Specific Knowledge
 
 ### Build System
