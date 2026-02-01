@@ -238,3 +238,37 @@ jobs:
           name: battery-butler-server-jar
           path: server/app/build/libs/
           retention-days: 90
+
+  # Single required status check that works with path filtering
+  # This job passes if all required jobs passed OR were skipped (docs-only changes)
+  ci:
+    needs:
+      - changes
+      - validation_spotless
+      - validation_lint
+      - validation_test
+      - validation_instrumented
+      - build_android
+      - build_ios_compose
+      - build_ios_native
+      - build_desktop
+      - build_server
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Check CI Status
+        run: |
+          # Check if any job failed (skipped jobs are OK)
+          if [[ "${{ needs.validation_spotless.result }}" == "failure" ]] || \
+             [[ "${{ needs.validation_lint.result }}" == "failure" ]] || \
+             [[ "${{ needs.validation_test.result }}" == "failure" ]] || \
+             [[ "${{ needs.validation_instrumented.result }}" == "failure" ]] || \
+             [[ "${{ needs.build_android.result }}" == "failure" ]] || \
+             [[ "${{ needs.build_ios_compose.result }}" == "failure" ]] || \
+             [[ "${{ needs.build_ios_native.result }}" == "failure" ]] || \
+             [[ "${{ needs.build_desktop.result }}" == "failure" ]] || \
+             [[ "${{ needs.build_server.result }}" == "failure" ]]; then
+            echo "One or more jobs failed"
+            exit 1
+          fi
+          echo "All jobs passed or were skipped (docs-only change)"
