@@ -168,6 +168,7 @@ validate_screenshots() {
     local screenshot_dir="android-screenshot-tests/src/screenshotTestDebug/reference"
     local min_screenshots=10  # Expect at least this many screenshots
     local min_image_size=500  # Minimum bytes for a valid PNG (some icons are small)
+    local broken_image_size=100  # Images <= this size are definitely broken (1x1 pixel = 68 bytes)
 
     # Check screenshot directory exists
     if [[ ! -d "$screenshot_dir" ]]; then
@@ -203,21 +204,50 @@ validate_screenshots() {
         success "Found $screenshot_count screenshot baseline(s)"
     fi
 
-    # Check for empty/corrupt images
-    local empty_count=0
+    # Check for broken images (1x1 pixel = ~68 bytes - these are DEFINITELY broken)
+    local broken_count=0
+    local broken_files=""
     while IFS= read -r -d '' file; do
         local size=$(wc -c < "$file" | tr -d ' ')
-        if [[ "$size" -lt "$min_image_size" ]]; then
-            ((empty_count++))
-            if [[ "$empty_count" -le 3 ]]; then
-                warning "Screenshot may be corrupt (too small): $(basename "$file")"
+        if [[ "$size" -le "$broken_image_size" ]]; then
+            ((broken_count++))
+            local basename=$(basename "$file")
+            broken_files="$broken_files  - $basename ($size bytes)\n"
+        fi
+    done < <(find "$screenshot_dir" -name "*.png" -type f -print0)
+
+    if [[ "$broken_count" -gt 0 ]]; then
+        error "$broken_count screenshot(s) are broken (1x1 pixel)"
+        echo "::error::$broken_count screenshot(s) are broken (<=100 bytes = 1x1 pixel)"
+        echo "::error::"
+        echo "::error::Broken screenshots:"
+        echo -e "$broken_files" | head -10
+        echo "::error::"
+        echo "::error::This usually means the preview composable failed to render."
+        echo "::error::Common causes:"
+        echo "::error::  1. Using stringResource() instead of composeStringResource()"
+        echo "::error::  2. Missing LocalAppStrings provider in ScreenshotTestTheme"
+        echo "::error::  3. Composable throws an exception during rendering"
+        echo "::error::"
+        echo "::error::Fix the preview composable, then regenerate screenshots."
+        return 1
+    fi
+
+    # Check for suspiciously small images (might be broken but not 1x1)
+    local small_count=0
+    while IFS= read -r -d '' file; do
+        local size=$(wc -c < "$file" | tr -d ' ')
+        if [[ "$size" -gt "$broken_image_size" && "$size" -lt "$min_image_size" ]]; then
+            ((small_count++))
+            if [[ "$small_count" -le 3 ]]; then
+                warning "Screenshot may be incomplete: $(basename "$file") ($size bytes)"
             fi
         fi
     done < <(find "$screenshot_dir" -name "*.png" -type f -print0)
 
-    if [[ "$empty_count" -gt 0 ]]; then
-        warning "$empty_count screenshot(s) may be corrupt or empty"
-        echo "::warning::$empty_count screenshot(s) are suspiciously small (<$min_image_size bytes)"
+    if [[ "$small_count" -gt 0 ]]; then
+        warning "$small_count screenshot(s) are suspiciously small (<$min_image_size bytes)"
+        echo "::warning::These may be valid small UI components or may indicate rendering issues"
     fi
 }
 
