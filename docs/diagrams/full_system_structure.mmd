@@ -41,6 +41,7 @@ graph TD
 
     subgraph "Others"
         Fixtures[":fixtures"]
+        TestCommon[":test-common"]
     end
 
     %% Dependencies
@@ -98,12 +99,16 @@ graph TD
 
     ServerDomain --> Domain
 
+    TestCommon --> Domain
+
     Usecase --> Ai
     Usecase --> Domain
     Usecase --> PresentationModel
+    Usecase --> TestCommon
 
     Viewmodel --> Ai
     Viewmodel --> PresentationModel
+    Viewmodel --> TestCommon
     Viewmodel --> Usecase
 
     IosAppComposeUi.xcodeproj --> ComposeApp
