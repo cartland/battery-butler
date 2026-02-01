@@ -210,3 +210,29 @@ When multiple machines edit issues:
 4. After pull, SQLite cache rebuilds from merged JSONL
 
 The JSONL format (one JSON object per line) makes merges simple - each issue is a separate line, so conflicts only occur when the same issue is edited on multiple machines.
+
+#### Beads Commit Strategy
+
+**When to commit beads:**
+
+1. **With every PR** - If your PR references or closes a bead, include `.beads/issues.jsonl` in the same commit or PR
+2. **At end of session** - Always commit beads before ending a work session, even if no code changes were made
+3. **After creating tasks** - Commit immediately after `bd create` to avoid losing task definitions
+4. **After significant updates** - Closing multiple tasks, updating priorities, or adding detailed descriptions
+
+**How to commit:**
+```bash
+# Include with code changes (recommended)
+git add src/... .beads/issues.jsonl
+git commit -m "feat: Add feature X (closes bb-123)"
+
+# Standalone beads update (when no code changes)
+git add .beads/
+git commit -m "chore(beads): Update task tracking"
+```
+
+**Best practices:**
+- Don't let beads changes accumulate - commit early and often
+- If working on a feature branch, include beads updates in that branch
+- Push beads commits promptly so other collaborators see task updates
+- Use descriptive commit messages that reference affected task IDs
