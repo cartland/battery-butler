@@ -77,3 +77,4 @@ ios-app-swift-ui/Generated/
 *.jks
 keystore.properties
 keystore_base64.txt
+.reports/
