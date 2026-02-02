@@ -73,8 +73,12 @@ jobs:
     needs: [validate, check-credentials]
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    permissions:
+      id-token: write # Required for OIDC authentication
+      contents: read
     env:
       VERSION: ${{ needs.validate.outputs.version }}
+      USE_OIDC: ${{ secrets.AWS_DEPLOY_ROLE_ARN != '' }}
 
     steps:
     - uses: actions/checkout@v4
@@ -86,14 +90,14 @@ jobs:
 
     # AWS Authentication
     - name: Configure AWS Credentials (OIDC)
-      if: ${{ secrets.AWS_DEPLOY_ROLE_ARN != '' }}
+      if: env.USE_OIDC == 'true'
       uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
         aws-region: us-west-1
 
     - name: Configure AWS Credentials (Access Keys - Fallback)
-      if: ${{ secrets.AWS_DEPLOY_ROLE_ARN == '' }}
+      if: env.USE_OIDC != 'true'
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
