@@ -71,28 +71,11 @@ fun HistoryListItem(
             )
         }
 
+        val daysAgo = calculateDaysAgo(event.date, nowInstant)
+
         Column(
             modifier = Modifier.weight(1f).padding(horizontal = 16.dp),
         ) {
-            val timeZone = TimeZone.currentSystemDefault()
-            val now = nowInstant.toLocalDateTime(timeZone).date
-            val eventDate = event.date.toLocalDateTime(timeZone).date
-            val daysAgo = eventDate.daysUntil(now)
-
-            val relativeTime = when {
-                daysAgo == 0 -> "Today"
-                daysAgo == 1 -> "Yesterday"
-                daysAgo < 30 -> "$daysAgo days ago"
-                daysAgo < 365 -> {
-                    val months = daysAgo / 30
-                    if (months <= 1) "1 month ago" else "$months months ago"
-                }
-                else -> {
-                    val years = daysAgo / 365
-                    if (years <= 1) "1 year ago" else "$years years ago"
-                }
-            }
-
             Text(
                 text = deviceName,
                 style = MaterialTheme.typography.bodyLarge,
@@ -116,14 +99,6 @@ fun HistoryListItem(
                 contentDescription = "Battery replacement",
                 tint = MaterialTheme.colorScheme.primary,
             )
-
-            // Re-calculate relative time for the right side or just use the days?
-            // "Right side should also be a battery with the age in days"
-            val timeZone = TimeZone.currentSystemDefault()
-            val now = nowInstant.toLocalDateTime(timeZone).date
-            val eventDate = event.date.toLocalDateTime(timeZone).date
-            val daysAgo = eventDate.daysUntil(now)
-
             Text(
                 text = if (daysAgo == 1) "1 day" else "$daysAgo days",
                 style = MaterialTheme.typography.labelSmall,
@@ -131,6 +106,17 @@ fun HistoryListItem(
             )
         }
     }
+}
+
+@OptIn(kotlin.time.ExperimentalTime::class)
+private fun calculateDaysAgo(
+    eventDate: Instant,
+    nowInstant: Instant,
+): Int {
+    val timeZone = TimeZone.currentSystemDefault()
+    val now = nowInstant.toLocalDateTime(timeZone).date
+    val date = eventDate.toLocalDateTime(timeZone).date
+    return date.daysUntil(now)
 }
 
 @OptIn(kotlin.time.ExperimentalTime::class)
