@@ -25,6 +25,7 @@ jobs:
     outputs:
       code: ${{ steps.filter.outputs.code }}
       docs_only: ${{ steps.filter.outputs.docs_only }}
+      needs_spotless: ${{ steps.filter.outputs.needs_spotless }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
@@ -65,12 +66,18 @@ jobs:
               - 'LICENSE'
               - '.gitignore'
               - '.gitattributes'
+            # Files that need spotless (code + markdown)
+            needs_spotless:
+              - '**/*.kt'
+              - '**/*.java'
+              - '**/*.md'
+              - '**/*.gradle.kts'
 
   validation_spotless:
     needs: changes
+    if: needs.changes.outputs.needs_spotless == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    # Always run - validates markdown formatting too
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-java-gradle
