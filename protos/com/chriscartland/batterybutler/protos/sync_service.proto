@@ -20,10 +20,15 @@ message SyncUpdate {
   // If true, replace local data with this list (used for initial sync).
   // If false, apply these as diffs (upsert/delete logic).
   bool is_full_snapshot = 1;
-  
+
   repeated ProtoDeviceType device_types = 2;
   repeated ProtoDevice devices = 3;
   repeated ProtoBatteryEvent events = 4;
+
+  // IDs of deleted items (for incremental syncs, ignored in full snapshots)
+  repeated string deleted_device_type_ids = 5;
+  repeated string deleted_device_ids = 6;
+  repeated string deleted_event_ids = 7;
 }
 
 message PushResponse {
