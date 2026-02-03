@@ -6,6 +6,7 @@ import com.chriscartland.batterybutler.ai.AiToolNames
 import com.chriscartland.batterybutler.ai.AiToolParams
 import com.chriscartland.batterybutler.ai.ToolHandler
 import com.chriscartland.batterybutler.domain.model.BatchOperationResult
+import com.chriscartland.batterybutler.domain.model.DataError
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
@@ -95,7 +96,11 @@ class BatchAddDevicesUseCase(
                 send(BatchOperationResult.Success("Batch operation completed."))
             } catch (e: Exception) {
                 if (e is CancellationException) throw e
-                send(BatchOperationResult.Error("Error processing input: ${e.message}"))
+                send(
+                    BatchOperationResult.Error(
+                        DataError.Ai.ApiError("Error processing input: ${e.message}", e.toString()),
+                    ),
+                )
             }
         }
 }

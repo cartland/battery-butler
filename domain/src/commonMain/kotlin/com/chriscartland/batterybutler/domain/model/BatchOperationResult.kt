@@ -10,6 +10,6 @@ sealed interface BatchOperationResult {
     ) : BatchOperationResult
 
     data class Error(
-        val message: String,
+        val error: DataError,
     ) : BatchOperationResult
 }

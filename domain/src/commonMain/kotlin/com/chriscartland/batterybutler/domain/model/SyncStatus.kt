@@ -22,9 +22,10 @@ sealed interface SyncStatus {
 
     /**
      * The last sync operation failed.
-     * @property message Human-readable error description for display.
+     * @property error Typed error with message and cause for programmatic handling.
+     *                 Use [DataError.message] for display text.
      */
     data class Failed(
-        val message: String,
+        val error: DataError,
     ) : SyncStatus
 }

@@ -4,6 +4,7 @@ import co.touchlab.kermit.Logger
 import com.chriscartland.batterybutler.datalocal.LocalDataSource
 import com.chriscartland.batterybutler.datanetwork.RemoteDataSource
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
+import com.chriscartland.batterybutler.domain.model.DataError
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.SyncStatus
@@ -34,7 +35,11 @@ class DefaultDeviceRepository(
                     Logger.d("BatteryButlerRepo") { "DefaultDeviceRepository received update! Size=${update.devices.size}" }
 
                     if (update.isFullSnapshot) {
-                        // TODO: Clear local DB? For now, we just insert/update
+                        // Design decision: We upsert rather than clear the local DB.
+                        // This prevents data loss if the network is flaky and avoids
+                        // orphaning local-only data. Stale data becomes harmless since
+                        // the server is authoritative. Revisit when implementing
+                        // offline-first with conflict resolution.
                     }
                     // Use batch operations for better performance
                     localDataSource.addDeviceTypes(update.deviceTypes)
@@ -64,7 +69,9 @@ class DefaultDeviceRepository(
 
     override suspend fun deleteDevice(id: String) {
         localDataSource.deleteDevice(id)
-        // TODO: Push delete to remote? RemoteUpdate doesn't support delete yet?
+        // Note: Deletes are local-only. RemoteUpdate only supports add/update semantics.
+        // Remote delete requires either: (1) adding deletedIds to RemoteUpdate proto,
+        // or (2) soft-delete with isDeleted flag. See issue tracker for remote delete support.
     }
 
     override fun getAllDeviceTypes(): Flow<List<DeviceType>> = localDataSource.getAllDeviceTypes()
@@ -125,12 +132,16 @@ class DefaultDeviceRepository(
                     _syncStatus.value = SyncStatus.Success
                     // UI layer is responsible for dismissing Success state after showing feedback
                 } else {
-                    _syncStatus.value = SyncStatus.Failed("Failed to sync with server")
+                    _syncStatus.value = SyncStatus.Failed(
+                        DataError.Network.PushFailed("Server rejected sync request"),
+                    )
                 }
             } catch (e: Exception) {
                 if (e is CancellationException) throw e
                 Logger.e("DefaultDeviceRepo", e) { "Push failed" }
-                _syncStatus.value = SyncStatus.Failed(e.message ?: "Unknown error")
+                _syncStatus.value = SyncStatus.Failed(
+                    DataError.Unknown(e.message ?: "Unknown error", e.toString()),
+                )
             }
         }
     }

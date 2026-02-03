@@ -48,16 +48,22 @@ class BatchOperationResultTest {
     }
 
     @Test
-    fun `Error stores message`() {
-        val error = BatchOperationResult.Error(message = "Failed to process item")
+    fun `Error stores typed error with message`() {
+        val error = BatchOperationResult.Error(
+            error = DataError.Ai.ApiError("Failed to process item"),
+        )
 
-        assertEquals("Failed to process item", error.message)
+        assertEquals("Failed to process item", error.error.message)
     }
 
     @Test
-    fun `Error instances with same message are equal`() {
-        val error1 = BatchOperationResult.Error(message = "Error occurred")
-        val error2 = BatchOperationResult.Error(message = "Error occurred")
+    fun `Error instances with same error are equal`() {
+        val error1 = BatchOperationResult.Error(
+            error = DataError.Ai.ApiError("Error occurred"),
+        )
+        val error2 = BatchOperationResult.Error(
+            error = DataError.Ai.ApiError("Error occurred"),
+        )
 
         assertEquals(error1, error2)
         assertEquals(error1.hashCode(), error2.hashCode())
@@ -67,7 +73,7 @@ class BatchOperationResultTest {
     fun `sealed interface variants are distinguishable`() {
         val progress: BatchOperationResult = BatchOperationResult.Progress("progress")
         val success: BatchOperationResult = BatchOperationResult.Success("success")
-        val error: BatchOperationResult = BatchOperationResult.Error("error")
+        val error: BatchOperationResult = BatchOperationResult.Error(DataError.Unknown("error"))
 
         assertIs<BatchOperationResult.Progress>(progress)
         assertIs<BatchOperationResult.Success>(success)
@@ -79,7 +85,7 @@ class BatchOperationResultTest {
         val results = listOf(
             BatchOperationResult.Progress("progress"),
             BatchOperationResult.Success("success"),
-            BatchOperationResult.Error("error"),
+            BatchOperationResult.Error(DataError.Unknown("error")),
         )
 
         for (result in results) {
@@ -97,10 +103,31 @@ class BatchOperationResultTest {
     fun `different variant types are not equal`() {
         val progress = BatchOperationResult.Progress("test")
         val success = BatchOperationResult.Success("test")
-        val error = BatchOperationResult.Error("test")
+        val error = BatchOperationResult.Error(DataError.Unknown("test"))
 
         assertNotEquals<BatchOperationResult>(progress, success)
         assertNotEquals<BatchOperationResult>(success, error)
         assertNotEquals<BatchOperationResult>(progress, error)
+    }
+
+    @Test
+    fun `error types are exhaustively matchable`() {
+        val error = BatchOperationResult.Error(DataError.Ai.ParsingError("Parse failed"))
+
+        val errorDescription = when (error.error) {
+            is DataError.Network.ConnectionFailed -> "connection"
+            is DataError.Network.Timeout -> "timeout"
+            is DataError.Network.ServerError -> "server"
+            is DataError.Network.NotReady -> "not ready"
+            is DataError.Network.PushFailed -> "push failed"
+            is DataError.Database.ReadFailed -> "db read"
+            is DataError.Database.WriteFailed -> "db write"
+            is DataError.Database.ConstraintViolation -> "constraint"
+            is DataError.Ai.ApiError -> "ai api"
+            is DataError.Ai.ParsingError -> "ai parse"
+            is DataError.Unknown -> "unknown"
+        }
+
+        assertEquals("ai parse", errorDescription)
     }
 }
