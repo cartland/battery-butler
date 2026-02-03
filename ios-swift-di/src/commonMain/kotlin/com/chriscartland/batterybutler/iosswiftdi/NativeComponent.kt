@@ -1,7 +1,9 @@
 package com.chriscartland.batterybutler.iosswiftdi
 
 import com.chriscartland.batterybutler.ai.AiEngine
+import com.chriscartland.batterybutler.ai.NoOpAiEngine
 import com.chriscartland.batterybutler.data.repository.DefaultDeviceRepository
+import com.chriscartland.batterybutler.data.repository.DefaultFeatureFlagProvider
 import com.chriscartland.batterybutler.data.repository.InMemoryNetworkModeRepository
 import com.chriscartland.batterybutler.datalocal.LocalDataSource
 import com.chriscartland.batterybutler.datalocal.RoomLocalDataSource
@@ -9,7 +11,9 @@ import com.chriscartland.batterybutler.datalocal.room.AppDatabase
 import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
 import com.chriscartland.batterybutler.datalocal.room.DeviceDao
 import com.chriscartland.batterybutler.datanetwork.RemoteDataSource
+import com.chriscartland.batterybutler.domain.model.FeatureFlag
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
+import com.chriscartland.batterybutler.domain.repository.FeatureFlagProvider
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
 import com.chriscartland.batterybutler.viewmodel.adddevice.AddDeviceViewModel
 import com.chriscartland.batterybutler.viewmodel.adddevicetype.AddDeviceTypeViewModel
@@ -69,6 +73,18 @@ abstract class NativeComponent(
     @Provides
     @SharedSingleton
     fun provideAppScope(): CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+
+    @Provides
+    @SharedSingleton
+    fun provideFeatureFlagProvider(): FeatureFlagProvider {
+        val enabledFeatures = buildSet {
+            if (aiEngine !is NoOpAiEngine) {
+                add(FeatureFlag.AI_BATCH_IMPORT)
+            }
+            add(FeatureFlag.REMOTE_SYNC)
+        }
+        return DefaultFeatureFlagProvider(enabledFeatures)
+    }
 
     @Provides
     fun provideAppVersion(): com.chriscartland.batterybutler.domain.model.AppVersion =
