@@ -166,6 +166,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Gradle caching for KMP framework build
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Cache Gradle
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-ios-${{ hashFiles('**/*.gradle*', '**/libs.versions.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-ios-
+            ${{ runner.os }}-gradle-
+
       - name: Cache Xcode DerivedData
         uses: actions/cache@v5
         with:
@@ -197,6 +215,35 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v4
+
+      # Gradle caching for KMP framework build
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Cache Gradle
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-ios-${{ hashFiles('**/*.gradle*', '**/libs.versions.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-ios-
+            ${{ runner.os }}-gradle-
+
+      # Bazel caching for proto generation
+      - name: Cache Bazel
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.cache/bazel
+            ~/.cache/bazelisk
+          key: ${{ runner.os }}-bazel-${{ hashFiles('WORKSPACE', 'MODULE.bazel', 'protos/**') }}
+          restore-keys: |
+            ${{ runner.os }}-bazel-
 
       - name: Cache Xcode DerivedData
         uses: actions/cache@v5
