@@ -82,6 +82,7 @@ import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 @Composable
 fun AddDeviceTypeContent(
     aiMessages: List<BatchOperationResult>,
+    isAiBatchImportEnabled: Boolean,
     suggestedIcon: String? = null,
     usedIcons: List<String> = emptyList(),
     isSuggestingIcon: Boolean = false,
@@ -159,69 +160,71 @@ fun AddDeviceTypeContent(
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp),
         ) {
-            // AI Section
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    composeStringResource(Res.string.action_batch_import_ai),
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(bottom = 8.dp),
-                )
-
-                var aiInput by rememberSaveable { mutableStateOf("") }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    OutlinedTextField(
-                        value = aiInput,
-                        onValueChange = { aiInput = it },
-                        modifier = Modifier.weight(1f),
-                        placeholder = { Text(composeStringResource(Res.string.placeholder_batch_import)) },
-                        maxLines = 3,
-                    )
-                    IconButton(
-                        onClick = {
-                            if (aiInput.isNotBlank()) {
-                                onBatchAdd(aiInput)
-                                aiInput = ""
-                            }
-                        },
-                        enabled = aiInput.isNotBlank(),
-                    ) {
-                        Icon(Icons.Default.AutoAwesome, contentDescription = composeStringResource(Res.string.action_process_ai))
-                    }
-                }
-
-                if (aiMessages.isNotEmpty()) {
+            // AI Section (only shown when AI is available)
+            if (isAiBatchImportEnabled) {
+                Column(modifier = Modifier.fillMaxWidth()) {
                     Text(
-                        composeStringResource(Res.string.label_ai_output),
-                        style = MaterialTheme.typography.labelMedium,
-                        modifier = Modifier.padding(top = 8.dp),
+                        composeStringResource(Res.string.action_batch_import_ai),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(bottom = 8.dp),
                     )
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(150.dp)
-                            .padding(8.dp),
+
+                    var aiInput by rememberSaveable { mutableStateOf("") }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        items(aiMessages) { msg ->
-                            val text = when (msg) {
-                                is BatchOperationResult.Progress -> "🤖 ${msg.message}"
-                                is BatchOperationResult.Success -> "✅ ${msg.message}"
-                                is BatchOperationResult.Error -> "❌ ${msg.error.message}"
+                        OutlinedTextField(
+                            value = aiInput,
+                            onValueChange = { aiInput = it },
+                            modifier = Modifier.weight(1f),
+                            placeholder = { Text(composeStringResource(Res.string.placeholder_batch_import)) },
+                            maxLines = 3,
+                        )
+                        IconButton(
+                            onClick = {
+                                if (aiInput.isNotBlank()) {
+                                    onBatchAdd(aiInput)
+                                    aiInput = ""
+                                }
+                            },
+                            enabled = aiInput.isNotBlank(),
+                        ) {
+                            Icon(Icons.Default.AutoAwesome, contentDescription = composeStringResource(Res.string.action_process_ai))
+                        }
+                    }
+
+                    if (aiMessages.isNotEmpty()) {
+                        Text(
+                            composeStringResource(Res.string.label_ai_output),
+                            style = MaterialTheme.typography.labelMedium,
+                            modifier = Modifier.padding(top = 8.dp),
+                        )
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(150.dp)
+                                .padding(8.dp),
+                        ) {
+                            items(aiMessages) { msg ->
+                                val text = when (msg) {
+                                    is BatchOperationResult.Progress -> "🤖 ${msg.message}"
+                                    is BatchOperationResult.Success -> "✅ ${msg.message}"
+                                    is BatchOperationResult.Error -> "❌ ${msg.error.message}"
+                                }
+                                val color = when (msg) {
+                                    is BatchOperationResult.Error -> MaterialTheme.colorScheme.error
+                                    is BatchOperationResult.Success -> MaterialTheme.colorScheme.primary
+                                    else -> MaterialTheme.colorScheme.onSurface
+                                }
+                                Text(
+                                    text = text,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = color,
+                                    modifier = Modifier.padding(vertical = 4.dp),
+                                )
                             }
-                            val color = when (msg) {
-                                is BatchOperationResult.Error -> MaterialTheme.colorScheme.error
-                                is BatchOperationResult.Success -> MaterialTheme.colorScheme.primary
-                                else -> MaterialTheme.colorScheme.onSurface
-                            }
-                            Text(
-                                text = text,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = color,
-                                modifier = Modifier.padding(vertical = 4.dp),
-                            )
                         }
                     }
                 }
@@ -370,11 +373,10 @@ fun AddDeviceTypeContentPreview() {
     BatteryButlerTheme {
         AddDeviceTypeContent(
             aiMessages = listOf(
-                com.chriscartland.batterybutler.domain.model.BatchOperationResult
-                    .Progress(composeStringResource(Res.string.status_processing)),
-                com.chriscartland.batterybutler.domain.model.BatchOperationResult
-                    .Success(composeStringResource(Res.string.status_confirmed)),
+                BatchOperationResult.Progress(composeStringResource(Res.string.status_processing)),
+                BatchOperationResult.Success(composeStringResource(Res.string.status_confirmed)),
             ),
+            isAiBatchImportEnabled = true,
             suggestedIcon = "detector_smoke",
             onDeviceTypeAdded = {},
             onBatchAdd = {},

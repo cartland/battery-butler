@@ -1,13 +1,17 @@
 package com.chriscartland.batterybutler.composeapp.di
 
 import com.chriscartland.batterybutler.ai.AiEngine
+import com.chriscartland.batterybutler.composeapp.feature.ai.NoOpAiEngine
+import com.chriscartland.batterybutler.data.repository.DefaultFeatureFlagProvider
 import com.chriscartland.batterybutler.data.repository.StaticAppInfoRepository
 import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
 import com.chriscartland.batterybutler.datanetwork.grpc.DelegatingGrpcClient
 import com.chriscartland.batterybutler.datanetwork.grpc.NetworkComponent
 import com.chriscartland.batterybutler.domain.model.AppVersion
+import com.chriscartland.batterybutler.domain.model.FeatureFlag
 import com.chriscartland.batterybutler.domain.repository.AppInfoRepository
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
+import com.chriscartland.batterybutler.domain.repository.FeatureFlagProvider
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
 import com.chriscartland.batterybutler.usecase.di.UseCaseComponent
 import com.chriscartland.batterybutler.viewmodel.addbatteryevent.AddBatteryEventViewModel
@@ -56,6 +60,20 @@ abstract class AppComponent(
     @Provides
     @Singleton
     fun provideAppInfoRepository(repo: StaticAppInfoRepository): AppInfoRepository = repo
+
+    @Provides
+    @Singleton
+    fun provideFeatureFlagProvider(aiEngine: AiEngine): FeatureFlagProvider {
+        val enabledFeatures = buildSet {
+            // AI features are enabled when we have a real AI engine (not NoOp)
+            if (aiEngine !is NoOpAiEngine) {
+                add(FeatureFlag.AI_BATCH_IMPORT)
+            }
+            // Remote sync is always available (server might not be configured, but feature exists)
+            add(FeatureFlag.REMOTE_SYNC)
+        }
+        return DefaultFeatureFlagProvider(enabledFeatures)
+    }
 
     @Provides
     @Singleton

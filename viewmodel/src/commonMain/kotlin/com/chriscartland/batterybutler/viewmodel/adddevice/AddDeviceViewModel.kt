@@ -6,6 +6,8 @@ import com.chriscartland.batterybutler.domain.model.BatchOperationResult
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceInput
 import com.chriscartland.batterybutler.domain.model.DeviceType
+import com.chriscartland.batterybutler.domain.model.FeatureFlag
+import com.chriscartland.batterybutler.domain.repository.FeatureFlagProvider
 import com.chriscartland.batterybutler.usecase.AddDeviceUseCase
 import com.chriscartland.batterybutler.usecase.BatchAddDevicesUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
@@ -26,7 +28,17 @@ class AddDeviceViewModel(
     private val addDeviceUseCase: AddDeviceUseCase,
     private val getDeviceTypesUseCase: GetDeviceTypesUseCase,
     private val batchAddDevicesUseCase: BatchAddDevicesUseCase,
+    private val featureFlagProvider: FeatureFlagProvider,
 ) : ViewModel() {
+    val isAiBatchImportEnabled: StateFlow<Boolean> =
+        featureFlagProvider
+            .observeEnabled(FeatureFlag.AI_BATCH_IMPORT)
+            .stateIn(
+                scope = viewModelScope,
+                started = defaultWhileSubscribed(),
+                initialValue = featureFlagProvider.isEnabled(FeatureFlag.AI_BATCH_IMPORT),
+            )
+
     val deviceTypes: StateFlow<List<DeviceType>> = getDeviceTypesUseCase()
         .stateIn(
             scope = viewModelScope,

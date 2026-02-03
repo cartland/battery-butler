@@ -17,10 +17,12 @@ fun AddDeviceScreen(
 ) {
     val deviceTypes by viewModel.deviceTypes.collectAsStateWithLifecycle()
     val aiMessages by viewModel.aiMessages.collectAsStateWithLifecycle()
+    val isAiBatchImportEnabled by viewModel.isAiBatchImportEnabled.collectAsStateWithLifecycle()
 
     AddDeviceContent(
         deviceTypes = deviceTypes,
         aiMessages = aiMessages,
+        isAiBatchImportEnabled = isAiBatchImportEnabled,
         onAddDevice = { input ->
             viewModel.addDevice(input)
             onDeviceAdded()
