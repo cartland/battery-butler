@@ -225,7 +225,7 @@ jobs:
       # For main push or if PAT not configured: create follow-up PR
       - name: Create Pull Request (Fallback)
         if: github.event_name == 'push' || (github.event_name == 'pull_request' && steps.check-pat.outputs.configured != 'true')
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "test: Auto-update Android screenshots"
