@@ -22,6 +22,8 @@
       "Bash(./scripts/prepare-for-commit.sh)",
       "Bash(./scripts/run-e2e-debug-flow.sh)",
       "Bash(./scripts/restart_server.sh)",
+      "Bash(./scripts/analyze-*.sh:*)",
+      "Bash(bd:*)",
       "Bash(./gradlew:*)",
       "Bash(docker:*)",
       "Bash(terraform:*)",
