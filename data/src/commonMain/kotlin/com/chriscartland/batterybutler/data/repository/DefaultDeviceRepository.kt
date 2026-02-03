@@ -40,6 +40,11 @@ class DefaultDeviceRepository(
                         // orphaning local-only data. Stale data becomes harmless since
                         // the server is authoritative. Revisit when implementing
                         // offline-first with conflict resolution.
+                    } else {
+                        // Apply deletions from server (incremental sync only)
+                        update.deletedDeviceTypeIds.forEach { localDataSource.deleteDeviceType(it) }
+                        update.deletedDeviceIds.forEach { localDataSource.deleteDevice(it) }
+                        update.deletedEventIds.forEach { localDataSource.deleteEvent(it) }
                     }
                     // Use batch operations for better performance
                     localDataSource.addDeviceTypes(update.deviceTypes)
@@ -69,9 +74,7 @@ class DefaultDeviceRepository(
 
     override suspend fun deleteDevice(id: String) {
         localDataSource.deleteDevice(id)
-        // Note: Deletes are local-only. RemoteUpdate only supports add/update semantics.
-        // Remote delete requires either: (1) adding deletedIds to RemoteUpdate proto,
-        // or (2) soft-delete with isDeleted flag. See issue tracker for remote delete support.
+        pushUpdate(deletedDeviceIds = listOf(id))
     }
 
     override fun getAllDeviceTypes(): Flow<List<DeviceType>> = localDataSource.getAllDeviceTypes()
@@ -90,6 +93,7 @@ class DefaultDeviceRepository(
 
     override suspend fun deleteDeviceType(id: String) {
         localDataSource.deleteDeviceType(id)
+        pushUpdate(deletedDeviceTypeIds = listOf(id))
     }
 
     override fun getEventsForDevice(deviceId: String): Flow<List<BatteryEvent>> = localDataSource.getEventsForDevice(deviceId)
@@ -110,12 +114,16 @@ class DefaultDeviceRepository(
 
     override suspend fun deleteEvent(id: String) {
         localDataSource.deleteEvent(id)
+        pushUpdate(deletedEventIds = listOf(id))
     }
 
     private fun pushUpdate(
         deviceTypes: List<DeviceType> = emptyList(),
         devices: List<Device> = emptyList(),
         events: List<BatteryEvent> = emptyList(),
+        deletedDeviceTypeIds: List<String> = emptyList(),
+        deletedDeviceIds: List<String> = emptyList(),
+        deletedEventIds: List<String> = emptyList(),
     ) {
         scope.launch {
             _syncStatus.value = SyncStatus.Syncing
@@ -126,6 +134,9 @@ class DefaultDeviceRepository(
                         deviceTypes = deviceTypes,
                         devices = devices,
                         events = events,
+                        deletedDeviceTypeIds = deletedDeviceTypeIds,
+                        deletedDeviceIds = deletedDeviceIds,
+                        deletedEventIds = deletedEventIds,
                     ),
                 )
                 if (success) {

@@ -20,6 +20,9 @@ internal object ServerSyncMapper {
             deviceTypes = proto.deviceTypesList.map { it.toDomain() },
             devices = proto.devicesList.map { it.toDomain() },
             events = proto.eventsList.map { it.toDomain() },
+            deletedDeviceTypeIds = proto.deletedDeviceTypeIdsList,
+            deletedDeviceIds = proto.deletedDeviceIdsList,
+            deletedEventIds = proto.deletedEventIdsList,
         )
 
     fun toProto(domain: RemoteUpdate): SyncUpdate =
@@ -29,6 +32,9 @@ internal object ServerSyncMapper {
             .addAllDeviceTypes(domain.deviceTypes.map { it.toProto() })
             .addAllDevices(domain.devices.map { it.toProto() })
             .addAllEvents(domain.events.map { it.toProto() })
+            .addAllDeletedDeviceTypeIds(domain.deletedDeviceTypeIds)
+            .addAllDeletedDeviceIds(domain.deletedDeviceIds)
+            .addAllDeletedEventIds(domain.deletedEventIds)
             .build()
 
     private fun ProtoDeviceType.toDomain(): DeviceType =

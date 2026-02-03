@@ -29,6 +29,9 @@ internal object SyncMapper {
             deviceTypes = proto.device_types.map { it.toDomain() },
             devices = proto.devices.map { it.toDomain() },
             events = proto.events.map { it.toDomain() },
+            deletedDeviceTypeIds = proto.deleted_device_type_ids,
+            deletedDeviceIds = proto.deleted_device_ids,
+            deletedEventIds = proto.deleted_event_ids,
         )
 
     /**
@@ -40,6 +43,9 @@ internal object SyncMapper {
             device_types = domain.deviceTypes.map { it.toProto() },
             devices = domain.devices.map { it.toProto() },
             events = domain.events.map { it.toProto() },
+            deleted_device_type_ids = domain.deletedDeviceTypeIds,
+            deleted_device_ids = domain.deletedDeviceIds,
+            deleted_event_ids = domain.deletedEventIds,
         )
 
     private fun ProtoDeviceType.toDomain(): DeviceType =

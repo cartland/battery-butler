@@ -9,4 +9,7 @@ data class RemoteUpdate(
     val deviceTypes: List<DeviceType>,
     val devices: List<Device>,
     val events: List<BatteryEvent>,
+    val deletedDeviceTypeIds: List<String> = emptyList(),
+    val deletedDeviceIds: List<String> = emptyList(),
+    val deletedEventIds: List<String> = emptyList(),
 )

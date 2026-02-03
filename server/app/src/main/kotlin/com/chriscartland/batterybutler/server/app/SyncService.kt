@@ -29,6 +29,11 @@ class SyncService(
     override suspend fun pushUpdate(request: SyncUpdate): PushResponse {
         val domainUpdate = ServerSyncMapper.toDomain(request)
 
+        // Apply deletions first (delete wins for conflicts)
+        domainUpdate.deletedDeviceTypeIds.forEach { repository.deleteDeviceType(it) }
+        domainUpdate.deletedDeviceIds.forEach { repository.deleteDevice(it) }
+        domainUpdate.deletedEventIds.forEach { repository.deleteEvent(it) }
+
         // Apply updates to repository
         domainUpdate.deviceTypes.forEach { repository.addDeviceType(it) } // naive add/update
         domainUpdate.devices.forEach { repository.addDevice(it) }
