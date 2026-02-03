@@ -70,7 +70,7 @@ jobs:
           echo "Validated: tag=$TAG, versionCode=$VERSION (limit: $VERSION_CODE_SAFETY_LIMIT)"
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - uses: ./.github/actions/setup-java-gradle
 
