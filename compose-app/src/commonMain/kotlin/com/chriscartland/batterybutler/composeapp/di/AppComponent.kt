@@ -1,7 +1,7 @@
 package com.chriscartland.batterybutler.composeapp.di
 
 import com.chriscartland.batterybutler.ai.AiEngine
-import com.chriscartland.batterybutler.composeapp.feature.ai.NoOpAiEngine
+import com.chriscartland.batterybutler.ai.NoOpAiEngine
 import com.chriscartland.batterybutler.data.repository.DefaultFeatureFlagProvider
 import com.chriscartland.batterybutler.data.repository.StaticAppInfoRepository
 import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory

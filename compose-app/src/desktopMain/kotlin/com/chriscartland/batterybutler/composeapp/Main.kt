@@ -2,9 +2,9 @@ package com.chriscartland.batterybutler.composeapp
 
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import com.chriscartland.batterybutler.ai.NoOpAiEngine
 import com.chriscartland.batterybutler.composeapp.di.AppComponent
 import com.chriscartland.batterybutler.composeapp.di.create
-import com.chriscartland.batterybutler.composeapp.feature.ai.NoOpAiEngine
 import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
 import com.chriscartland.batterybutler.datanetwork.grpc.NetworkComponent
 import com.chriscartland.batterybutler.domain.model.AppVersion
