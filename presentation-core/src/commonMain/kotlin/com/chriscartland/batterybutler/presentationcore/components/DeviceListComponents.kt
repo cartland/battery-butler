@@ -185,14 +185,16 @@ fun DeviceTypeIconItem(
 @Composable
 fun DeviceListItemPreview() {
     BatteryButlerTheme {
-        val now = Instant.parse("2026-01-18T17:00:00Z")
-        val device = Device("dev1", "Kitchen Smoke", "type1", now, now, "Kitchen")
+        // Use fixed dates for stable screenshots
+        val nowInstant = Instant.parse("2026-01-18T17:00:00Z")
+        val batteryReplacedInstant = Instant.parse("2026-01-13T17:00:00Z") // 5 days ago
+        val device = Device("dev1", "Kitchen Smoke", "type1", batteryReplacedInstant, nowInstant, "Kitchen")
         val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
         DeviceListItem(
             device = device,
             deviceType = type,
             onClick = {},
-            nowInstant = now,
+            nowInstant = nowInstant,
         )
     }
 }
