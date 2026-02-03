@@ -280,9 +280,11 @@ fun HomeScreenList(
 @Composable
 fun HomeScreenPreview() {
     BatteryButlerTheme {
-        val now = Instant.parse("2026-01-18T17:00:00Z")
+        // Use fixed dates for stable screenshots
+        val nowInstant = Instant.parse("2026-01-18T17:00:00Z")
+        val batteryReplacedInstant = Instant.parse("2026-01-13T17:00:00Z") // 5 days ago
         val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
-        val device = Device("dev1", "Kitchen Smoke", "type1", now, now, "Kitchen")
+        val device = Device("dev1", "Kitchen Smoke", "type1", batteryReplacedInstant, nowInstant, "Kitchen")
         val state = HomeUiState(
             groupedDevices = mapOf("All" to listOf(device)),
             deviceTypes = mapOf("type1" to type),
@@ -294,7 +296,7 @@ fun HomeScreenPreview() {
             onSortOptionToggle = {},
             onSortOptionSelected = {},
             onDeviceClick = {},
-            nowInstant = now,
+            nowInstant = nowInstant,
         )
     }
 }
@@ -321,9 +323,11 @@ fun HomeScreenFilterRowPreview() {
 @Composable
 fun HomeScreenListPreview() {
     BatteryButlerTheme {
-        val now = Instant.parse("2026-01-18T17:00:00Z")
+        // Use fixed dates for stable screenshots
+        val nowInstant = Instant.parse("2026-01-18T17:00:00Z")
+        val batteryReplacedInstant = Instant.parse("2026-01-13T17:00:00Z") // 5 days ago
         val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
-        val device = Device("dev1", "Kitchen Smoke", "type1", now, now, "Kitchen")
+        val device = Device("dev1", "Kitchen Smoke", "type1", batteryReplacedInstant, nowInstant, "Kitchen")
         HomeScreenList(
             state = HomeUiState(
                 groupedDevices = mapOf("All" to listOf(device)),
@@ -332,7 +336,7 @@ fun HomeScreenListPreview() {
             onDeviceClick = {},
             contentPadding = androidx.compose.foundation.layout
                 .PaddingValues(16.dp),
-            nowInstant = now,
+            nowInstant = nowInstant,
         )
     }
 }
