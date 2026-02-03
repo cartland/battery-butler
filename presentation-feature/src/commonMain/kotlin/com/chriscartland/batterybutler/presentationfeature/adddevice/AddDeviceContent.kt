@@ -75,6 +75,7 @@ import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 fun AddDeviceContent(
     deviceTypes: List<DeviceType>,
     aiMessages: List<BatchOperationResult>,
+    isAiBatchImportEnabled: Boolean,
     onAddDevice: (DeviceInput) -> Unit,
     onBatchAdd: (String) -> Unit,
     onManageDeviceTypesClick: () -> Unit,
@@ -136,7 +137,9 @@ fun AddDeviceContent(
             verticalArrangement = Arrangement.spacedBy(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            AddDeviceAiSection(aiMessages = aiMessages, onBatchAdd = onBatchAdd)
+            if (isAiBatchImportEnabled) {
+                AddDeviceAiSection(aiMessages = aiMessages, onBatchAdd = onBatchAdd)
+            }
             AddDeviceManualSection(
                 name = name,
                 onNameChange = { name = it },
@@ -391,6 +394,7 @@ fun AddDeviceContentPreview() {
         AddDeviceContent(
             deviceTypes = emptyList(),
             aiMessages = emptyList(),
+            isAiBatchImportEnabled = true,
             onAddDevice = {},
             onBatchAdd = {},
             onManageDeviceTypesClick = {},

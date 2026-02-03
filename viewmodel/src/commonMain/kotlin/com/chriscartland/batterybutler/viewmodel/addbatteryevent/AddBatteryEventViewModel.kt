@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.benasher44.uuid.uuid4
 import com.chriscartland.batterybutler.domain.model.BatchOperationResult
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
+import com.chriscartland.batterybutler.domain.model.FeatureFlag
+import com.chriscartland.batterybutler.domain.repository.FeatureFlagProvider
 import com.chriscartland.batterybutler.usecase.AddBatteryEventUseCase
 import com.chriscartland.batterybutler.usecase.BatchAddBatteryEventsUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceDetailUseCase
@@ -27,7 +29,17 @@ class AddBatteryEventViewModel(
     private val getDeviceDetailUseCase: GetDeviceDetailUseCase,
     private val updateDeviceUseCase: UpdateDeviceUseCase,
     private val batchAddBatteryEventsUseCase: BatchAddBatteryEventsUseCase,
+    private val featureFlagProvider: FeatureFlagProvider,
 ) : ViewModel() {
+    val isAiBatchImportEnabled: StateFlow<Boolean> =
+        featureFlagProvider
+            .observeEnabled(FeatureFlag.AI_BATCH_IMPORT)
+            .stateIn(
+                scope = viewModelScope,
+                started = defaultWhileSubscribed(),
+                initialValue = featureFlagProvider.isEnabled(FeatureFlag.AI_BATCH_IMPORT),
+            )
+
     private val _aiMessages = MutableStateFlow<List<BatchOperationResult>>(emptyList())
     val aiMessages: StateFlow<List<BatchOperationResult>> = _aiMessages
 

@@ -5,6 +5,8 @@ import com.chriscartland.batterybutler.ai.AiMessage
 import com.chriscartland.batterybutler.ai.ToolHandler
 import com.chriscartland.batterybutler.domain.model.DeviceInput
 import com.chriscartland.batterybutler.domain.model.DeviceType
+import com.chriscartland.batterybutler.domain.model.FeatureFlag
+import com.chriscartland.batterybutler.domain.repository.FeatureFlagProvider
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
 import com.chriscartland.batterybutler.usecase.AddDeviceUseCase
 import com.chriscartland.batterybutler.usecase.BatchAddDevicesUseCase
@@ -159,6 +161,7 @@ class AddDeviceViewModelTest {
             addDeviceUseCase = AddDeviceUseCase(repo),
             getDeviceTypesUseCase = GetDeviceTypesUseCase(repo),
             batchAddDevicesUseCase = BatchAddDevicesUseCase(FakeAiEngine(), repo),
+            featureFlagProvider = FakeFeatureFlagProvider(),
         )
 }
 
@@ -170,4 +173,12 @@ class FakeAiEngine : AiEngine {
         prompt: String,
         toolHandler: ToolHandler?,
     ): Flow<AiMessage> = emptyFlow()
+}
+
+class FakeFeatureFlagProvider(
+    private val enabledFlags: Set<FeatureFlag> = setOf(FeatureFlag.AI_BATCH_IMPORT),
+) : FeatureFlagProvider {
+    override fun isEnabled(flag: FeatureFlag): Boolean = enabledFlags.contains(flag)
+
+    override fun observeEnabled(flag: FeatureFlag): Flow<Boolean> = flowOf(isEnabled(flag))
 }

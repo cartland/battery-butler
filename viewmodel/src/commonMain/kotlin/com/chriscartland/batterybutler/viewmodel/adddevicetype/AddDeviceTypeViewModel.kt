@@ -2,8 +2,11 @@ package com.chriscartland.batterybutler.viewmodel.adddevicetype
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.chriscartland.batterybutler.domain.model.BatchOperationResult
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.DeviceTypeInput
+import com.chriscartland.batterybutler.domain.model.FeatureFlag
+import com.chriscartland.batterybutler.domain.repository.FeatureFlagProvider
 import com.chriscartland.batterybutler.usecase.AddDeviceTypeUseCase
 import com.chriscartland.batterybutler.usecase.BatchAddDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.SuggestDeviceIconUseCase
@@ -25,7 +28,17 @@ class AddDeviceTypeViewModel(
     private val batchAddDeviceTypesUseCase: BatchAddDeviceTypesUseCase,
     private val suggestDeviceIconUseCase: SuggestDeviceIconUseCase,
     private val getDeviceTypesUseCase: com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase,
+    private val featureFlagProvider: FeatureFlagProvider,
 ) : ViewModel() {
+    val isAiBatchImportEnabled: StateFlow<Boolean> =
+        featureFlagProvider
+            .observeEnabled(FeatureFlag.AI_BATCH_IMPORT)
+            .stateIn(
+                scope = viewModelScope,
+                started = defaultWhileSubscribed(),
+                initialValue = featureFlagProvider.isEnabled(FeatureFlag.AI_BATCH_IMPORT),
+            )
+
     private val _suggestedIcon = MutableStateFlow<String?>(null)
     val suggestedIcon = _suggestedIcon.asStateFlow()
 
@@ -75,11 +88,8 @@ class AddDeviceTypeViewModel(
         }
     }
 
-    private val _aiMessages = kotlinx.coroutines.flow
-        .MutableStateFlow<List<com.chriscartland.batterybutler.domain.model.BatchOperationResult>>(
-            emptyList(),
-        )
-    val aiMessages: StateFlow<List<com.chriscartland.batterybutler.domain.model.BatchOperationResult>> = _aiMessages
+    private val _aiMessages = MutableStateFlow<List<BatchOperationResult>>(emptyList())
+    val aiMessages: StateFlow<List<BatchOperationResult>> = _aiMessages
 
     fun batchAddDeviceTypes(input: String) {
         viewModelScope.launch {

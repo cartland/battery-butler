@@ -55,6 +55,7 @@ import kotlin.time.Instant
 fun AddBatteryEventContent(
     devices: List<Device>,
     aiMessages: List<BatchOperationResult>,
+    isAiBatchImportEnabled: Boolean,
     onAddEvent: (String, Instant) -> Unit, // deviceId, date
     onBatchAdd: (String) -> Unit,
     onAddDeviceClick: () -> Unit,
@@ -81,67 +82,69 @@ fun AddBatteryEventContent(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            // AI Section
-            Text(
-                "Batch Import (AI)",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary,
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                OutlinedTextField(
-                    value = aiInput,
-                    onValueChange = { aiInput = it },
-                    modifier = Modifier.weight(1f),
-                    placeholder = { Text("E.g. Replaced remote battery today") },
-                    maxLines = 3,
+            // AI Section (only shown when AI is available)
+            if (isAiBatchImportEnabled) {
+                Text(
+                    "Batch Import (AI)",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
                 )
-                IconButton(
-                    onClick = {
-                        if (aiInput.isNotBlank()) {
-                            onBatchAdd(aiInput)
-                            aiInput = ""
-                        }
-                    },
-                    enabled = aiInput.isNotBlank(),
-                ) {
-                    Icon(Icons.Default.AutoAwesome, contentDescription = "Process with AI")
-                }
-            }
 
-            if (aiMessages.isNotEmpty()) {
-                Text("AI Output:", style = MaterialTheme.typography.labelMedium)
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp) // Limited height
-                        .padding(8.dp),
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    items(aiMessages) { msg ->
-                        val text = when (msg) {
-                            is BatchOperationResult.Progress -> "🤖 ${msg.message}"
-                            is BatchOperationResult.Success -> "✅ ${msg.message}"
-                            is BatchOperationResult.Error -> "❌ ${msg.error.message}"
-                        }
-                        val color = when (msg) {
-                            is BatchOperationResult.Error -> MaterialTheme.colorScheme.error
-                            is BatchOperationResult.Success -> MaterialTheme.colorScheme.primary
-                            else -> MaterialTheme.colorScheme.onSurface
-                        }
-                        Text(
-                            text = text,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = color,
-                            modifier = Modifier.padding(vertical = 4.dp),
-                        )
+                    OutlinedTextField(
+                        value = aiInput,
+                        onValueChange = { aiInput = it },
+                        modifier = Modifier.weight(1f),
+                        placeholder = { Text("E.g. Replaced remote battery today") },
+                        maxLines = 3,
+                    )
+                    IconButton(
+                        onClick = {
+                            if (aiInput.isNotBlank()) {
+                                onBatchAdd(aiInput)
+                                aiInput = ""
+                            }
+                        },
+                        enabled = aiInput.isNotBlank(),
+                    ) {
+                        Icon(Icons.Default.AutoAwesome, contentDescription = "Process with AI")
                     }
                 }
-            }
 
-            Spacer(modifier = Modifier.height(16.dp))
+                if (aiMessages.isNotEmpty()) {
+                    Text("AI Output:", style = MaterialTheme.typography.labelMedium)
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp) // Limited height
+                            .padding(8.dp),
+                    ) {
+                        items(aiMessages) { msg ->
+                            val text = when (msg) {
+                                is BatchOperationResult.Progress -> "🤖 ${msg.message}"
+                                is BatchOperationResult.Success -> "✅ ${msg.message}"
+                                is BatchOperationResult.Error -> "❌ ${msg.error.message}"
+                            }
+                            val color = when (msg) {
+                                is BatchOperationResult.Error -> MaterialTheme.colorScheme.error
+                                is BatchOperationResult.Success -> MaterialTheme.colorScheme.primary
+                                else -> MaterialTheme.colorScheme.onSurface
+                            }
+                            Text(
+                                text = text,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = color,
+                                modifier = Modifier.padding(vertical = 4.dp),
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+            }
 
             // Manual Section
             Text(
@@ -243,6 +246,7 @@ fun AddBatteryEventContentPreview() {
         AddBatteryEventContent(
             devices = listOf(device),
             aiMessages = emptyList(),
+            isAiBatchImportEnabled = true,
             onAddEvent = { _, _ -> },
             onBatchAdd = {},
             onAddDeviceClick = {},

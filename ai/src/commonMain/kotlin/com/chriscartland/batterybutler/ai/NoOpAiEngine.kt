@@ -1,8 +1,5 @@
-package com.chriscartland.batterybutler.composeapp.feature.ai
+package com.chriscartland.batterybutler.ai
 
-import com.chriscartland.batterybutler.ai.AiEngine
-import com.chriscartland.batterybutler.ai.AiMessage
-import com.chriscartland.batterybutler.ai.ToolHandler
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 

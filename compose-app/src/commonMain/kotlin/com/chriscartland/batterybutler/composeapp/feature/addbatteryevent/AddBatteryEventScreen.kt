@@ -20,10 +20,12 @@ fun AddBatteryEventScreen(
 ) {
     val devices by viewModel.devices.collectAsStateWithLifecycle()
     val aiMessages by viewModel.aiMessages.collectAsStateWithLifecycle()
+    val isAiBatchImportEnabled by viewModel.isAiBatchImportEnabled.collectAsStateWithLifecycle()
 
     AddBatteryEventContent(
         devices = devices,
         aiMessages = aiMessages,
+        isAiBatchImportEnabled = isAiBatchImportEnabled,
         onAddEvent = { deviceId, date ->
             viewModel.addEvent(
                 deviceId = deviceId,
