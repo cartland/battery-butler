@@ -67,6 +67,45 @@ gh pr merge 222 --squash
 gh run list --branch main --limit 1 --watch
 ```
 
+### Dependabot PRs
+Dependabot is configured (`.github/dependabot.yml`) for weekly updates.
+
+**Important:** PRs that modify `.github/workflows/` files (GitHub Actions updates) cannot be merged via CLI due to GitHub security restrictions. These require manual merge via web UI.
+
+## Architecture Principles
+
+### Offline-First Sync
+The app should work entirely offline and sync bidirectionally when online:
+- Local changes persist immediately to Room database
+- Changes sync to server when connectivity is available
+- Server changes sync back to local on reconnect
+- Deletes should eventually sync (see `bb-d0t` for remote delete support)
+
+### Error Handling
+**Project code NEVER throws exceptions except `CancellationException`.**
+
+Use sealed class hierarchies for exhaustive `when` expressions:
+```kotlin
+// GOOD: Required sealed type - compiler enforces handling all cases
+data class Failed(val error: DataError) : SyncStatus
+
+when (status) {
+    is SyncStatus.Failed -> when (status.error) {
+        is DataError.Network.ConnectionFailed -> // handle
+        is DataError.Network.Timeout -> // handle
+        // ... compiler error if cases missing
+    }
+}
+
+// BAD: Optional field - callers can ignore typed error
+data class Failed(val message: String, val error: DataError? = null)
+```
+
+Key types (see `domain/model/DataResult.kt`):
+- `DataResult<T>` - Success/Error wrapper for operations
+- `DataError` - Sealed hierarchy: Network, Database, Ai, Unknown
+- Catch library exceptions at data layer boundaries, return typed errors
+
 ## Project-Specific Knowledge
 
 ### Efficiency Rules
@@ -263,17 +302,21 @@ git commit -m "chore(beads): Update task tracking"
 
 ## Session Resume Points
 
-**Last Updated: 2026-02-01**
+**Last Updated: 2026-02-03**
 
-### Immediate Actions (P1)
-1. **Merge PR #225** (bb-7v0): test-common module with FakeDeviceRepository
-   - CI running, merge when green
-   - PRs #214, #224, #227, #228 already merged
+### Ready Tasks (P2)
+Run `bd ready` to see current tasks. Top priorities:
+1. `bb-d0t` - Support remote delete in sync protocol (offline-first)
+2. `bb-9k1` - Fix screenshot test time consistency
 
-2. **Continue test-common module** (bb-9wz.6):
-   - FakeDeviceRepository added to test-common
-   - Next: Migrate existing tests to use shared fakes
-   - Remove duplicate FakeDeviceRepository implementations
+### Recent Completions
+- Added `DataResult`/`DataError` typed error handling (PR #254)
+- Added Dependabot config and ADR-003 for alpha dependencies
+- Merged 5 Dependabot PRs (kotlin, compose, protobuf, cache, create-pull-request)
+
+### Known Issues
+- **Screenshot tests with relative time** are flaky - components showing "X days ago" change based on test run date (tracked in `bb-9k1`)
+- **Dependabot workflow PRs** need manual merge via web UI
 
 ### Context
 - CI uses unified "ci" job for required checks
