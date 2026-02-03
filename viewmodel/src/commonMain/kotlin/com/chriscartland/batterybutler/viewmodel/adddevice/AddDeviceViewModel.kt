@@ -2,6 +2,7 @@ package com.chriscartland.batterybutler.viewmodel.adddevice
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.chriscartland.batterybutler.domain.model.BatchOperationResult
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceInput
 import com.chriscartland.batterybutler.domain.model.DeviceType
@@ -9,6 +10,7 @@ import com.chriscartland.batterybutler.usecase.AddDeviceUseCase
 import com.chriscartland.batterybutler.usecase.BatchAddDevicesUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -48,11 +50,8 @@ class AddDeviceViewModel(
         }
     }
 
-    private val _aiMessages = kotlinx.coroutines.flow
-        .MutableStateFlow<List<com.chriscartland.batterybutler.domain.model.BatchOperationResult>>(
-            emptyList(),
-        )
-    val aiMessages: StateFlow<List<com.chriscartland.batterybutler.domain.model.BatchOperationResult>> = _aiMessages
+    private val _aiMessages = MutableStateFlow<List<BatchOperationResult>>(emptyList())
+    val aiMessages: StateFlow<List<BatchOperationResult>> = _aiMessages
 
     fun batchAddDevices(input: String) {
         viewModelScope.launch {
