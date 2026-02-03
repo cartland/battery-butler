@@ -32,25 +32,25 @@ class SyncStatusTest {
     }
 
     @Test
-    fun `Failed stores message`() {
-        val failed = SyncStatus.Failed(message = "Network error")
+    fun `Failed stores typed error with message`() {
+        val failed = SyncStatus.Failed(error = DataError.Network.ConnectionFailed("Network error"))
 
-        assertEquals("Network error", failed.message)
+        assertEquals("Network error", failed.error.message)
     }
 
     @Test
-    fun `Failed instances with same message are equal`() {
-        val failed1 = SyncStatus.Failed(message = "Connection timeout")
-        val failed2 = SyncStatus.Failed(message = "Connection timeout")
+    fun `Failed instances with same error are equal`() {
+        val failed1 = SyncStatus.Failed(error = DataError.Network.Timeout("Connection timeout"))
+        val failed2 = SyncStatus.Failed(error = DataError.Network.Timeout("Connection timeout"))
 
         assertEquals(failed1, failed2)
         assertEquals(failed1.hashCode(), failed2.hashCode())
     }
 
     @Test
-    fun `Failed instances with different messages are not equal`() {
-        val failed1 = SyncStatus.Failed(message = "Error 1")
-        val failed2 = SyncStatus.Failed(message = "Error 2")
+    fun `Failed instances with different errors are not equal`() {
+        val failed1 = SyncStatus.Failed(error = DataError.Network.Timeout("Error 1"))
+        val failed2 = SyncStatus.Failed(error = DataError.Network.ServerError("Error 2"))
 
         assertNotEquals(failed1, failed2)
     }
@@ -60,7 +60,7 @@ class SyncStatusTest {
         val idle: SyncStatus = SyncStatus.Idle
         val syncing: SyncStatus = SyncStatus.Syncing
         val success: SyncStatus = SyncStatus.Success
-        val failed: SyncStatus = SyncStatus.Failed("error")
+        val failed: SyncStatus = SyncStatus.Failed(DataError.Unknown("error"))
 
         assertIs<SyncStatus.Idle>(idle)
         assertIs<SyncStatus.Syncing>(syncing)
@@ -74,7 +74,7 @@ class SyncStatusTest {
             SyncStatus.Idle,
             SyncStatus.Syncing,
             SyncStatus.Success,
-            SyncStatus.Failed("error"),
+            SyncStatus.Failed(DataError.Unknown("error")),
         )
 
         for (status in statuses) {
@@ -94,5 +94,26 @@ class SyncStatusTest {
         assertNotEquals<SyncStatus>(SyncStatus.Idle, SyncStatus.Syncing)
         assertNotEquals<SyncStatus>(SyncStatus.Syncing, SyncStatus.Success)
         assertNotEquals<SyncStatus>(SyncStatus.Idle, SyncStatus.Success)
+    }
+
+    @Test
+    fun `error types are exhaustively matchable`() {
+        val failed = SyncStatus.Failed(DataError.Network.PushFailed("Push rejected"))
+
+        val errorDescription = when (failed.error) {
+            is DataError.Network.ConnectionFailed -> "connection"
+            is DataError.Network.Timeout -> "timeout"
+            is DataError.Network.ServerError -> "server"
+            is DataError.Network.NotReady -> "not ready"
+            is DataError.Network.PushFailed -> "push failed"
+            is DataError.Database.ReadFailed -> "db read"
+            is DataError.Database.WriteFailed -> "db write"
+            is DataError.Database.ConstraintViolation -> "constraint"
+            is DataError.Ai.ApiError -> "ai api"
+            is DataError.Ai.ParsingError -> "ai parse"
+            is DataError.Unknown -> "unknown"
+        }
+
+        assertEquals("push failed", errorDescription)
     }
 }

@@ -82,7 +82,7 @@ fun HomeScreenContent(
         when (val status = state.syncStatus) {
             is SyncStatus.Failed -> {
                 snackbarHostState.showSnackbar(
-                    message = "Sync failed: ${status.message}",
+                    message = "Sync failed: ${status.error.message}",
                 )
             }
             else -> {}

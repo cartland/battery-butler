@@ -206,7 +206,7 @@ fun AddDeviceAiSection(
                     val text = when (msg) {
                         is BatchOperationResult.Progress -> "🤖 ${msg.message}"
                         is BatchOperationResult.Success -> "✅ ${msg.message}"
-                        is BatchOperationResult.Error -> "❌ ${msg.message}"
+                        is BatchOperationResult.Error -> "❌ ${msg.error.message}"
                     }
                     val color = when (msg) {
                         is BatchOperationResult.Error -> MaterialTheme.colorScheme.error
