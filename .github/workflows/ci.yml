@@ -167,7 +167,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Cache Xcode DerivedData
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/Library/Developer/Xcode/DerivedData
           key: ${{ runner.os }}-xcode-compose-${{ hashFiles('ios-app-compose-ui/**/*.swift', 'ios-app-compose-ui/**/*.xcodeproj/**') }}
@@ -199,7 +199,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Cache Xcode DerivedData
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/Library/Developer/Xcode/DerivedData
           key: ${{ runner.os }}-xcode-native-${{ hashFiles('ios-app-swift-ui/**/*.swift', 'ios-app-swift-ui/**/*.xcodeproj/**') }}
