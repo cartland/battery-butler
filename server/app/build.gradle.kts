@@ -3,10 +3,15 @@ plugins {
     alias(libs.plugins.kotlinJvm)
     alias(libs.plugins.ktor)
     alias(libs.plugins.protobuf)
-    alias(libs.plugins.jib)
+    // Apply Jib from root buildscript classpath to ensure commons-compress fix is applied
+    // alias(libs.plugins.jib)
     alias(libs.plugins.kotlinSerialization)
     application
 }
+
+// Apply Jib plugin from root buildscript classpath
+// This ensures the commons-compress 1.27.1 force resolution takes effect
+apply(plugin = "com.google.cloud.tools.jib")
 
 kotlin {
 }

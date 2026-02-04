@@ -1,7 +1,13 @@
 buildscript {
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+    }
     dependencies {
         // Fix Jib/Ktor plugin dependency conflict
         // See: https://github.com/GoogleContainerTools/jib/issues/4235
+        // Load Jib plugin through buildscript to control its classpath
+        classpath("com.google.cloud.tools:jib-gradle-plugin:3.5.2")
         classpath("org.apache.commons:commons-compress:1.27.1")
         classpath("commons-codec:commons-codec:1.17.0")
     }
