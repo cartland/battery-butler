@@ -2,13 +2,15 @@ buildscript {
     dependencies {
         // Fix Jib/Ktor plugin dependency conflict
         // See: https://github.com/GoogleContainerTools/jib/issues/4235
-        classpath("commons-codec:commons-codec:1.16.1")
+        classpath("org.apache.commons:commons-compress:1.27.1")
+        classpath("commons-codec:commons-codec:1.17.0")
     }
     configurations.all {
         resolutionStrategy {
             // Force consistent versions for Jib compatibility
-            force("org.apache.commons:commons-compress:1.26.0")
-            force("commons-codec:commons-codec:1.16.1")
+            // 1.27.1 has the fix for the putArchiveEntry method signature
+            force("org.apache.commons:commons-compress:1.27.1")
+            force("commons-codec:commons-codec:1.17.0")
         }
     }
 }
