@@ -27,7 +27,7 @@ jobs:
       docs_only: ${{ steps.filter.outputs.docs_only }}
       needs_spotless: ${{ steps.filter.outputs.needs_spotless }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -79,7 +79,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-java-gradle
       - name: Clean Project
         run: echo "Skipping clean to use cache (if available) and speed up build"
@@ -92,7 +92,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-java-gradle
       - name: Run Lint
         run: ./gradlew lint --stacktrace
@@ -103,7 +103,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-java-gradle
       - name: Run Unit Tests
         run: ./gradlew test --stacktrace
@@ -114,7 +114,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-java-gradle
       - name: Enable KVM
         run: |
@@ -130,7 +130,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Run Architecture Analysis
         run: ./scripts/analyze-architecture.sh
 
@@ -140,7 +140,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-java-gradle
       - name: Build Android App
         run: ./gradlew :compose-app:assembleDebug
@@ -164,7 +164,7 @@ jobs:
           xcode-version: latest-stable
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       # Gradle caching for KMP framework build
       - name: Set up JDK
@@ -214,7 +214,7 @@ jobs:
           xcode-version: latest-stable
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       # Gradle caching for KMP framework build
       - name: Set up JDK
@@ -274,7 +274,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-java-gradle
       - name: Build Desktop App
         run: ./gradlew :compose-app:packageDistributionForCurrentOS
@@ -292,7 +292,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-java-gradle
       - name: Build Server
         run: ./gradlew :server:app:build

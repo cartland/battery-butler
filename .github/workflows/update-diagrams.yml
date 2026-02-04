@@ -112,7 +112,7 @@ jobs:
       # For PRs with BOT_PAT: checkout the PR branch with push access
       - name: Checkout (PR with PAT)
         if: github.event_name == 'pull_request' && steps.check-pat.outputs.configured == 'true'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ github.head_ref }}
           token: ${{ secrets.BOT_PAT }}
@@ -121,7 +121,7 @@ jobs:
       # For PRs without PAT or main push: regular checkout
       - name: Checkout (Standard)
         if: github.event_name != 'pull_request' || steps.check-pat.outputs.configured != 'true'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
