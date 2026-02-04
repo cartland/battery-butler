@@ -1,7 +1,15 @@
 buildscript {
     dependencies {
-        // Force newer commons-compress to resolve conflict between AGP (uses 1.21) and Jib
-        classpath("org.apache.commons:commons-compress:1.26.0")
+        // Fix Jib/Ktor plugin dependency conflict
+        // See: https://github.com/GoogleContainerTools/jib/issues/4235
+        classpath("commons-codec:commons-codec:1.16.1")
+    }
+    configurations.all {
+        resolutionStrategy {
+            // Force consistent versions for Jib compatibility
+            force("org.apache.commons:commons-compress:1.26.0")
+            force("commons-codec:commons-codec:1.16.1")
+        }
     }
 }
 
