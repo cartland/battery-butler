@@ -1,9 +1,14 @@
 package com.chriscartland.batterybutler.data.di
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import com.chriscartland.batterybutler.data.repository.DataStoreNetworkModeRepository
 import com.chriscartland.batterybutler.data.repository.DefaultDeviceRepository
-import com.chriscartland.batterybutler.data.repository.InMemoryNetworkModeRepository
 import com.chriscartland.batterybutler.datalocal.LocalDataSource
 import com.chriscartland.batterybutler.datalocal.RoomLocalDataSource
+import com.chriscartland.batterybutler.datalocal.preferences.DataStoreFactory
+import com.chriscartland.batterybutler.datalocal.preferences.DataStorePreferencesDataSource
+import com.chriscartland.batterybutler.datalocal.preferences.PreferencesDataSource
 import com.chriscartland.batterybutler.datalocal.room.AppDatabase
 import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
 import com.chriscartland.batterybutler.datanetwork.DelegatingRemoteDataSource
@@ -21,6 +26,7 @@ import me.tatarka.inject.annotations.Provides
 interface DataComponent {
     // Requirements from the platform/app
     val databaseFactory: DatabaseFactory
+    val dataStoreFactory: DataStoreFactory
     val networkComponent: NetworkComponent
 
     // Scope is managed by the Component using this interface (e.g. Singleton in AppComponent)
@@ -35,10 +41,16 @@ interface DataComponent {
     fun provideAppDatabase(): AppDatabase = databaseFactory.createDatabase()
 
     @Provides
+    fun providePreferencesDataStore(): DataStore<Preferences> = dataStoreFactory.createPreferencesDataStore()
+
+    @Provides
+    fun providePreferencesDataSource(dataSource: DataStorePreferencesDataSource): PreferencesDataSource = dataSource
+
+    @Provides
     fun provideDeviceRepository(repo: DefaultDeviceRepository): DeviceRepository = repo
 
     @Provides
-    fun provideNetworkModeRepository(repo: InMemoryNetworkModeRepository): NetworkModeRepository = repo
+    fun provideNetworkModeRepository(repo: DataStoreNetworkModeRepository): NetworkModeRepository = repo
 
     @Provides
     fun provideNetworkModeFlow(repo: NetworkModeRepository): Flow<NetworkMode> = repo.networkMode

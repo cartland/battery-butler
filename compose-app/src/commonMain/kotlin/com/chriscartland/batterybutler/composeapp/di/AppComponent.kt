@@ -4,6 +4,7 @@ import com.chriscartland.batterybutler.ai.AiEngine
 import com.chriscartland.batterybutler.ai.NoOpAiEngine
 import com.chriscartland.batterybutler.data.repository.DefaultFeatureFlagProvider
 import com.chriscartland.batterybutler.data.repository.StaticAppInfoRepository
+import com.chriscartland.batterybutler.datalocal.preferences.DataStoreFactory
 import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
 import com.chriscartland.batterybutler.datanetwork.grpc.DelegatingGrpcClient
 import com.chriscartland.batterybutler.datanetwork.grpc.NetworkComponent
@@ -37,6 +38,7 @@ import me.tatarka.inject.annotations.Provides
 abstract class AppComponent(
     // We pass this through to DataComponent via AppDataModule
     override val databaseFactory: DatabaseFactory,
+    override val dataStoreFactory: DataStoreFactory,
     @get:Provides val aiEngine: AiEngine,
     override val networkComponent: NetworkComponent,
     @get:Provides val appVersion: AppVersion,
@@ -81,6 +83,9 @@ abstract class AppComponent(
 
     @Provides
     fun provideDatabaseFactory(): DatabaseFactory = databaseFactory
+
+    @Provides
+    fun provideDataStoreFactory(): DataStoreFactory = dataStoreFactory
 
     @Provides
     @Singleton

@@ -1,12 +1,17 @@
 package com.chriscartland.batterybutler.iosswiftdi
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import com.chriscartland.batterybutler.ai.AiEngine
 import com.chriscartland.batterybutler.ai.NoOpAiEngine
+import com.chriscartland.batterybutler.data.repository.DataStoreNetworkModeRepository
 import com.chriscartland.batterybutler.data.repository.DefaultDeviceRepository
 import com.chriscartland.batterybutler.data.repository.DefaultFeatureFlagProvider
-import com.chriscartland.batterybutler.data.repository.InMemoryNetworkModeRepository
 import com.chriscartland.batterybutler.datalocal.LocalDataSource
 import com.chriscartland.batterybutler.datalocal.RoomLocalDataSource
+import com.chriscartland.batterybutler.datalocal.preferences.DataStoreFactory
+import com.chriscartland.batterybutler.datalocal.preferences.DataStorePreferencesDataSource
+import com.chriscartland.batterybutler.datalocal.preferences.PreferencesDataSource
 import com.chriscartland.batterybutler.datalocal.room.AppDatabase
 import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
 import com.chriscartland.batterybutler.datalocal.room.DeviceDao
@@ -37,6 +42,7 @@ annotation class SharedSingleton
 @SharedSingleton
 abstract class NativeComponent(
     @get:Provides val databaseFactory: DatabaseFactory,
+    @get:Provides val dataStoreFactory: DataStoreFactory,
     @get:Provides val aiEngine: AiEngine,
     @get:Provides val remoteDataSource: RemoteDataSource,
 ) {
@@ -68,7 +74,15 @@ abstract class NativeComponent(
 
     @Provides
     @SharedSingleton
-    fun provideNetworkModeRepository(impl: InMemoryNetworkModeRepository): NetworkModeRepository = impl
+    fun providePreferencesDataStore(): DataStore<Preferences> = dataStoreFactory.createPreferencesDataStore()
+
+    @Provides
+    @SharedSingleton
+    fun providePreferencesDataSource(dataSource: DataStorePreferencesDataSource): PreferencesDataSource = dataSource
+
+    @Provides
+    @SharedSingleton
+    fun provideNetworkModeRepository(impl: DataStoreNetworkModeRepository): NetworkModeRepository = impl
 
     @Provides
     @SharedSingleton

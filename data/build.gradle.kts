@@ -28,6 +28,7 @@ kotlin {
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.datetime)
             implementation(libs.uuid)
+            implementation(libs.androidx.datastore.preferences.core)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
