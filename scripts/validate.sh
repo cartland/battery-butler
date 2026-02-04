@@ -38,6 +38,10 @@ echo "--- 6. Build Desktop App ---"
 echo "--- 7. Build Server ---"
 ./gradlew :server:app:build
 
+echo "--- 7b. Verify Jib Container Build ---"
+# Build container as tar to catch Jib/dependency issues (no Docker required)
+./gradlew :server:app:jibBuildTar
+
 # iOS checks - Only run on macOS
 if [[ "$OSTYPE" == "darwin"* ]]; then
     echo "--- 8. iOS Checks (macOS detected) ---"

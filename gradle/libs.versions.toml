@@ -147,4 +147,4 @@ protobuf = { id = "com.google.protobuf", version.ref = "protobufPlugin" }
 wire = { id = "com.squareup.wire", version.ref = "wire" }
 screenshot = { id = "com.android.compose.screenshot", version.ref = "screenshot" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version = "1.23.8" }
-jib = { id = "com.google.cloud.tools.jib", version = "3.5.2" }
+jib = { id = "com.google.cloud.tools.jib", version = "3.4.1" }
