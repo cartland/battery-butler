@@ -27,6 +27,7 @@ kotlinStdlib = "2.3.0"
 runner = "1.7.0"
 core = "1.7.0"
 androidx-room = "2.7.0-alpha12"
+androidx-datastore = "1.1.2"
 sqlite = "2.5.0-alpha12"
 ksp = "2.2.20-2.0.4"
 androidx-nav3 = "1.0.0-alpha02"
@@ -44,6 +45,7 @@ skie = "0.10.9"
 kermit = "2.0.4"
 generativeai = "0.9.0"
 okhttp = "4.12.0"
+okio = "3.9.0"
 serializationJson = "1.10.0"
 protobufPlugin = "0.9.4"
 awsSdk = "2.25.16"
@@ -83,6 +85,8 @@ androidx-room-runtime = { group = "androidx.room", name = "room-runtime", versio
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "androidx-room" }
 sqlite-bundled = { group = "androidx.sqlite", name = "sqlite-bundled", version.ref = "sqlite" }
 androidx-room-testing = { group = "androidx.room", name = "room-testing", version.ref = "androidx-room" }
+androidx-datastore-core = { group = "androidx.datastore", name = "datastore-core", version.ref = "androidx-datastore" }
+androidx-datastore-preferences-core = { group = "androidx.datastore", name = "datastore-preferences-core", version.ref = "androidx-datastore" }
 androidx-nav3-ui = { group = "org.jetbrains.androidx.navigation3", name = "navigation3-ui", version.ref = "androidx-nav3" }
 androidx-nav3-runtime = { group = "androidx.navigation3", name = "navigation3-runtime", version.ref = "androidx-nav3" }
 kotlin-inject-runtime = { group = "me.tatarka.inject", name = "kotlin-inject-runtime", version.ref = "kotlin-inject" }
@@ -107,6 +111,7 @@ grpc-inprocess = { group = "io.grpc", name = "grpc-inprocess", version.ref = "gr
 wire-runtime = { group = "com.squareup.wire", name = "wire-runtime", version.ref = "wire" }
 wire-grpc-client = { group = "com.squareup.wire", name = "wire-grpc-client", version.ref = "wire" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
+okio = { group = "com.squareup.okio", name = "okio", version.ref = "okio" }
 screenshot-validation-api = { group = "com.android.tools.screenshot", name = "screenshot-validation-api", version.ref = "screenshot" }
 aws-secretsmanager = { group = "software.amazon.awssdk", name = "secretsmanager", version.ref = "awsSdk" }
 aws-sts = { group = "software.amazon.awssdk", name = "sts", version.ref = "awsSdk" }

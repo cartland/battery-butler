@@ -35,6 +35,8 @@ kotlin {
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.datetime)
             implementation(libs.uuid)
+            implementation(libs.androidx.datastore.preferences.core)
+            implementation(libs.okio)
         }
         androidMain.dependencies {
             implementation(libs.androidx.room.runtime)

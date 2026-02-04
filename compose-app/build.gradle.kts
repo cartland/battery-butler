@@ -67,6 +67,7 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             implementation(libs.uuid)
             implementation(libs.kotlinx.serialization.json)
+            implementation(libs.androidx.datastore.preferences.core)
             implementation(project(":presentation-feature"))
         }
         commonTest.dependencies {
