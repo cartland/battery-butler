@@ -1,12 +1,3 @@
-// Force commons-compress version to fix Jib compatibility issue
-// See: https://github.com/GoogleContainerTools/jib/issues/3445
-buildscript {
-    configurations.all {
-        resolutionStrategy {
-            force("org.apache.commons:commons-compress:1.26.0")
-        }
-    }
-}
 
 plugins {
     alias(libs.plugins.kotlinJvm)
