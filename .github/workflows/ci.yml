@@ -296,6 +296,10 @@ jobs:
       - uses: ./.github/actions/setup-java-gradle
       - name: Build Server
         run: ./gradlew :server:app:build
+      - name: Verify Jib Container Build
+        # Build container as tar to catch Jib/dependency issues early
+        # This doesn't require Docker but validates the container build pipeline
+        run: ./gradlew :server:app:jibBuildTar
       - name: Upload Server JAR
         uses: actions/upload-artifact@v6
         with:

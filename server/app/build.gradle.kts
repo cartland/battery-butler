@@ -13,6 +13,16 @@ plugins {
 // This ensures the commons-compress 1.27.1 force resolution takes effect
 apply(plugin = "com.google.cloud.tools.jib")
 
+// Force commons-compress 1.21 across all configurations
+// Jib bytecode requires putArchiveEntry(TarArchiveEntry) which only exists in 1.21 and earlier
+// See: https://github.com/GoogleContainerTools/jib/issues/4235
+configurations.all {
+    resolutionStrategy {
+        force("org.apache.commons:commons-compress:1.21")
+        force("commons-codec:commons-codec:1.16.1")
+    }
+}
+
 kotlin {
 }
 
