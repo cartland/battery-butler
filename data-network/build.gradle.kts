@@ -61,6 +61,10 @@ kotlin {
 
         androidMain.dependencies {
             implementation(libs.okhttp)
+            implementation(libs.androidx.credentials)
+            implementation(libs.androidx.credentials.play.services.auth)
+            implementation(libs.googleid)
+            implementation(libs.kotlinx.coroutines.play.services)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.core)

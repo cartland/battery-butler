@@ -54,6 +54,8 @@ hikari = "5.1.0"
 exposed = "0.50.1"
 composeRules = "0.4.12"
 leakcanary = "2.14"
+androidx-credentials = "1.5.0"
+googleid = "1.1.1"
 
 
 [libraries]
@@ -125,6 +127,9 @@ h2 = { group = "com.h2database", name = "h2", version = "2.2.224" }
 kermit = { group = "co.touchlab", name = "kermit", version.ref = "kermit" }
 detekt-compose = { module = "io.nlopez.compose.rules:detekt", version.ref = "composeRules" }
 leakcanary-android = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary" }
+androidx-credentials = { group = "androidx.credentials", name = "credentials", version.ref = "androidx-credentials" }
+androidx-credentials-play-services-auth = { group = "androidx.credentials", name = "credentials-play-services-auth", version.ref = "androidx-credentials" }
+googleid = { group = "com.google.android.libraries.identity.googleid", name = "googleid", version.ref = "googleid" }
 
 
 [plugins]
