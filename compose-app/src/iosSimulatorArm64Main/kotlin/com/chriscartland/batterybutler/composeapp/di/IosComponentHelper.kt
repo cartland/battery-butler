@@ -3,6 +3,7 @@ package com.chriscartland.batterybutler.composeapp.di
 import com.chriscartland.batterybutler.ai.NoOpAiEngine
 import com.chriscartland.batterybutler.datalocal.preferences.DataStoreFactory
 import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
+import com.chriscartland.batterybutler.datanetwork.auth.GoogleSignInBridge
 import com.chriscartland.batterybutler.datanetwork.grpc.NetworkComponent
 import com.chriscartland.batterybutler.domain.model.AppVersion
 
@@ -13,12 +14,14 @@ actual object IosComponentHelper {
         appVersion: AppVersion,
     ): AppComponent {
         val networkComponent = NetworkComponent()
+        val googleSignInBridge = GoogleSignInBridge()
         return AppComponent::class.create(
             databaseFactory,
             dataStoreFactory,
             NoOpAiEngine,
             networkComponent,
             appVersion,
+            googleSignInBridge,
         )
     }
 }
