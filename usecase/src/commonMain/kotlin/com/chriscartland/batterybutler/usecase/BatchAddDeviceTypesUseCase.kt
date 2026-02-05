@@ -50,9 +50,11 @@ class BatchAddDeviceTypesUseCase(
                                         name = name,
                                         defaultIcon = iconName,
                                         batteryType = args[AiToolParams.BATTERY_TYPE] as? String ?: "AA",
-                                        batteryQuantity = (args[AiToolParams.BATTERY_QUANTITY] as? String)?.toIntOrNull()
-                                            ?: (args[AiToolParams.BATTERY_QUANTITY] as? Number)?.toInt()
-                                            ?: 1,
+                                        batteryQuantity = when (val qty = args[AiToolParams.BATTERY_QUANTITY]) {
+                                            is String -> qty.toIntOrNull() ?: 1
+                                            is Number -> qty.toInt()
+                                            else -> 1
+                                        },
                                     ),
                                 )
                                 "Success: Added device type '$name'"
