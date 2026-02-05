@@ -7,6 +7,7 @@ import com.chriscartland.batterybutler.composeapp.di.AppComponent
 import com.chriscartland.batterybutler.composeapp.di.create
 import com.chriscartland.batterybutler.datalocal.preferences.DataStoreFactory
 import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
+import com.chriscartland.batterybutler.datanetwork.auth.GoogleSignInBridge
 import com.chriscartland.batterybutler.datanetwork.grpc.NetworkComponent
 import com.chriscartland.batterybutler.domain.model.AppVersion
 import com.chriscartland.batterybutler.presentationcore.util.DesktopFileSaver
@@ -24,6 +25,7 @@ fun main() =
             val appVersion = AppVersion.Desktop(
                 versionName = "1.0.0",
             )
+            val googleSignInBridge = GoogleSignInBridge()
             val component =
                 AppComponent::class.create(
                     databaseFactory,
@@ -31,6 +33,7 @@ fun main() =
                     NoOpAiEngine,
                     networkComponent,
                     appVersion,
+                    googleSignInBridge,
                 )
             val shareHandler = DesktopShareHandler()
             val fileSaver = DesktopFileSaver()
