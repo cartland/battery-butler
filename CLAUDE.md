@@ -70,6 +70,19 @@ gh run list --branch main --limit 1 --watch
 ### Dependabot PRs
 Dependabot is configured (`.github/dependabot.yml`) for weekly updates.
 
+**Merge criteria:**
+- ✅ **Simple updates**: Patch/minor versions with passing CI → merge
+- ✅ **Needs rebase**: Use `@dependabot rebase` comment, then merge if CI passes
+- ❌ **Breaking changes**: Close PR if:
+  - Large version jumps (e.g., 15+ minor versions)
+  - CI fails with compilation errors (not just needing rebase)
+  - Changes to critical infrastructure (gRPC, database, sync)
+  - No urgent security CVEs requiring immediate action
+
+**When closing breaking Dependabot PRs:**
+- Leave a comment explaining the rationale
+- If upgrade is needed later, do it incrementally with proper testing
+
 **Important:** PRs that modify `.github/workflows/` files (GitHub Actions updates) cannot be merged via CLI due to GitHub security restrictions. These require manual merge via web UI.
 
 ## Architecture Principles
