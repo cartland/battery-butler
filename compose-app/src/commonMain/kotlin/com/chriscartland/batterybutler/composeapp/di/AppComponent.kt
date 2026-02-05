@@ -6,6 +6,7 @@ import com.chriscartland.batterybutler.data.repository.DefaultFeatureFlagProvide
 import com.chriscartland.batterybutler.data.repository.StaticAppInfoRepository
 import com.chriscartland.batterybutler.datalocal.preferences.DataStoreFactory
 import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
+import com.chriscartland.batterybutler.datanetwork.auth.GoogleSignInBridge
 import com.chriscartland.batterybutler.datanetwork.grpc.DelegatingGrpcClient
 import com.chriscartland.batterybutler.datanetwork.grpc.NetworkComponent
 import com.chriscartland.batterybutler.domain.model.AppVersion
@@ -25,6 +26,7 @@ import com.chriscartland.batterybutler.viewmodel.editdevice.EditDeviceViewModelF
 import com.chriscartland.batterybutler.viewmodel.eventdetail.EventDetailViewModelFactory
 import com.chriscartland.batterybutler.viewmodel.history.HistoryListViewModel
 import com.chriscartland.batterybutler.viewmodel.home.HomeViewModel
+import com.chriscartland.batterybutler.viewmodel.login.LoginViewModel
 import com.chriscartland.batterybutler.viewmodel.settings.SettingsViewModel
 import com.squareup.wire.GrpcClient
 import kotlinx.coroutines.CoroutineScope
@@ -42,9 +44,11 @@ abstract class AppComponent(
     @get:Provides val aiEngine: AiEngine,
     override val networkComponent: NetworkComponent,
     @get:Provides val appVersion: AppVersion,
+    @get:Provides override val googleSignInBridge: GoogleSignInBridge,
 ) : UseCaseComponent(),
     AppDataModule {
     abstract val homeViewModel: HomeViewModel
+    abstract val loginViewModel: LoginViewModel
     abstract val addDeviceViewModel: AddDeviceViewModel
     abstract val addDeviceTypeViewModel: AddDeviceTypeViewModel
     abstract val addBatteryEventViewModel: AddBatteryEventViewModel
@@ -57,7 +61,7 @@ abstract class AppComponent(
     abstract val deviceRepository: DeviceRepository
     abstract val settingsViewModel: SettingsViewModel
     abstract val networkModeRepository: NetworkModeRepository
-    abstract val appScope: CoroutineScope
+    abstract override val appScope: CoroutineScope
 
     @Provides
     @Singleton

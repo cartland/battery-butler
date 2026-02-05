@@ -22,6 +22,7 @@ import com.chriscartland.batterybutler.composeapp.feature.devicedetail.DeviceDet
 import com.chriscartland.batterybutler.composeapp.feature.devicetypes.EditDeviceTypeScreen
 import com.chriscartland.batterybutler.composeapp.feature.editdevice.EditDeviceScreen
 import com.chriscartland.batterybutler.composeapp.feature.eventdetail.EventDetailScreen
+import com.chriscartland.batterybutler.composeapp.feature.login.LoginScreen
 import com.chriscartland.batterybutler.composeapp.feature.main.DevicesScreenRoot
 import com.chriscartland.batterybutler.composeapp.feature.main.HistoryScreenRoot
 import com.chriscartland.batterybutler.composeapp.feature.main.TypesScreenRoot
@@ -50,8 +51,9 @@ fun App(
             LocalFileSaver provides fileSaver,
             LocalAppStrings provides ComposeAppStrings(),
         ) {
+            // Start at Login screen - user can skip to Devices or sign in
             val backStack = rememberSaveable(saver = ScreenListSaver) {
-                mutableStateListOf<Screen>(Screen.Devices)
+                mutableStateListOf<Screen>(Screen.Login)
             }
 
             NavDisplay(
@@ -89,6 +91,19 @@ fun App(
                             MainTab.Types -> navigateToTypes()
                             MainTab.History -> navigateToHistory()
                         }
+                    }
+
+                    val navigateFromLoginToDevices: () -> Unit = {
+                        backStack.clear()
+                        backStack.add(Screen.Devices)
+                    }
+
+                    entry<Screen.Login> {
+                        LoginScreen(
+                            viewModel = viewModel { component.loginViewModel },
+                            onLoginSuccess = navigateFromLoginToDevices,
+                            onSkipLogin = navigateFromLoginToDevices,
+                        )
                     }
 
                     entry<Screen.Devices> {
@@ -224,6 +239,9 @@ fun App(
 
 @Serializable
 sealed interface Screen {
+    @Serializable
+    data object Login : Screen
+
     @Serializable
     data object Devices : Screen
 
