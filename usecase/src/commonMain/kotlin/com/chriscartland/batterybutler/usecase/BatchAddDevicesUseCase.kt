@@ -40,23 +40,18 @@ class BatchAddDevicesUseCase(
 
                         try {
                             val typeId = if (!typeName.isNullOrBlank()) {
-                                // Smart deduplication
-                                val existingTypes: List<DeviceType> = deviceRepository.getAllDeviceTypes().first()
-                                val existingType = existingTypes.find { type -> type.name == typeName }
-
-                                if (existingType != null) {
-                                    existingType.id
-                                } else {
-                                    val newTypeId = uuid4().toString()
-                                    deviceRepository.addDeviceType(
-                                        DeviceType(
-                                            id = newTypeId,
-                                            name = typeName,
-                                            defaultIcon = "default",
-                                        ),
-                                    )
-                                    newTypeId
-                                }
+                                // Smart deduplication: find existing type or create new one
+                                val existingTypes = deviceRepository.getAllDeviceTypes().first()
+                                existingTypes.find { it.name == typeName }?.id
+                                    ?: uuid4().toString().also { newTypeId ->
+                                        deviceRepository.addDeviceType(
+                                            DeviceType(
+                                                id = newTypeId,
+                                                name = typeName,
+                                                defaultIcon = "default",
+                                            ),
+                                        )
+                                    }
                             } else {
                                 "default_type"
                             }

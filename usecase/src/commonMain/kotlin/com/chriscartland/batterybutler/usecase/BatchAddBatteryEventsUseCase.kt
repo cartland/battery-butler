@@ -44,39 +44,28 @@ class BatchAddBatteryEventsUseCase(
 
                         try {
                             // 1. Find or Create Device
-                            val existingDevices: List<Device> = deviceRepository.getAllDevices().first()
-                            var device: Device? = existingDevices.find { d -> d.name == deviceName }
-
-                            if (device == null) {
-                                // Find or Create Device Type
-                                val typeId = if (!deviceTypeName.isNullOrBlank()) {
-                                    val existingTypes: List<DeviceType> = deviceRepository.getAllDeviceTypes().first()
-                                    val existingType = existingTypes.find { t -> t.name == deviceTypeName }
-
-                                    if (existingType != null) {
-                                        existingType.id
+                            val existingDevices = deviceRepository.getAllDevices().first()
+                            val targetDevice = existingDevices.find { it.name == deviceName }
+                                ?: run {
+                                    // Find or Create Device Type
+                                    val typeId = if (!deviceTypeName.isNullOrBlank()) {
+                                        val existingTypes = deviceRepository.getAllDeviceTypes().first()
+                                        existingTypes.find { it.name == deviceTypeName }?.id
+                                            ?: uuid4().toString().also { newTypeId ->
+                                                deviceRepository.addDeviceType(DeviceType(newTypeId, deviceTypeName, "default"))
+                                            }
                                     } else {
-                                        val newTypeId = uuid4().toString()
-                                        deviceRepository.addDeviceType(DeviceType(newTypeId, deviceTypeName, "default"))
-                                        newTypeId
+                                        "default_type"
                                     }
-                                } else {
-                                    "default_type"
+
+                                    Device(
+                                        id = uuid4().toString(),
+                                        name = deviceName,
+                                        typeId = typeId,
+                                        batteryLastReplaced = Instant.fromEpochMilliseconds(0),
+                                        lastUpdated = Clock.System.now(),
+                                    ).also { deviceRepository.addDevice(it) }
                                 }
-
-                                val newDevice = Device(
-                                    id = uuid4().toString(),
-                                    name = deviceName,
-                                    typeId = typeId,
-                                    batteryLastReplaced = Instant.fromEpochMilliseconds(0),
-                                    lastUpdated = Clock.System.now(),
-                                )
-                                deviceRepository.addDevice(newDevice)
-                                device = newDevice
-                            }
-
-                            // Ensure non-null for updates
-                            val targetDevice: Device = device!!
 
                             // 2. Parse Date
                             val date = kotlinx.datetime.LocalDate.parse(dateStr)
