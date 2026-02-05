@@ -1,7 +1,18 @@
 package com.chriscartland.batterybutler.datanetwork.auth
 
+import android.app.Activity
+import androidx.credentials.ClearCredentialStateRequest
+import androidx.credentials.CredentialManager
+import androidx.credentials.CustomCredential
+import androidx.credentials.GetCredentialRequest
+import androidx.credentials.GetCredentialResponse
+import androidx.credentials.exceptions.GetCredentialCancellationException
+import androidx.credentials.exceptions.GetCredentialException
+import androidx.credentials.exceptions.NoCredentialException
 import com.chriscartland.batterybutler.domain.model.AuthError
 import com.chriscartland.batterybutler.domain.model.Result
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 
 /**
  * Android implementation of [GoogleSignInBridge].
@@ -16,7 +27,8 @@ import com.chriscartland.batterybutler.domain.model.Result
  */
 actual class GoogleSignInBridge {
     private var webClientId: String? = null
-    private var activityProvider: (() -> android.app.Activity)? = null
+    private var activityProvider: (() -> Activity)? = null
+    private var credentialManager: CredentialManager? = null
 
     /**
      * Initializes the bridge with the web client ID and activity provider.
@@ -27,16 +39,18 @@ actual class GoogleSignInBridge {
      */
     fun initialize(
         webClientId: String?,
-        activityProvider: () -> android.app.Activity,
+        activityProvider: () -> Activity,
     ) {
         this.webClientId = webClientId
         this.activityProvider = activityProvider
+        activityProvider().let { activity ->
+            this.credentialManager = CredentialManager.create(activity)
+        }
     }
 
     actual suspend fun signIn(): Result<GoogleIdToken, AuthError.SignIn> {
         val clientId = webClientId
         if (clientId.isNullOrBlank()) {
-            // OAuth not configured - return a clear error
             return Result.Error(
                 AuthError.SignIn.Failed(
                     message = "Google Sign-In not configured",
@@ -55,18 +69,105 @@ actual class GoogleSignInBridge {
             )
         }
 
-        // TODO: Implement actual Credential Manager flow
-        // For now, return a placeholder indicating the feature is not yet implemented
-        return Result.Error(
-            AuthError.SignIn.Failed(
-                message = "Google Sign-In not yet implemented",
-                cause = "Credential Manager integration pending",
-            ),
-        )
+        val manager = credentialManager
+        if (manager == null) {
+            return Result.Error(
+                AuthError.SignIn.Failed(
+                    message = "Sign-in not ready",
+                    cause = "CredentialManager not initialized",
+                ),
+            )
+        }
+
+        val googleIdOption = GetGoogleIdOption
+            .Builder()
+            .setFilterByAuthorizedAccounts(false)
+            .setServerClientId(clientId)
+            .setAutoSelectEnabled(true)
+            .build()
+
+        val request = GetCredentialRequest
+            .Builder()
+            .addCredentialOption(googleIdOption)
+            .build()
+
+        return try {
+            val response = manager.getCredential(activity, request)
+            handleSignInResponse(response)
+        } catch (e: GetCredentialCancellationException) {
+            Result.Error(
+                AuthError.SignIn.Cancelled(
+                    message = "Sign-in cancelled",
+                    cause = e.message,
+                ),
+            )
+        } catch (e: NoCredentialException) {
+            Result.Error(
+                AuthError.SignIn.Failed(
+                    message = "No Google account found",
+                    cause = e.message,
+                ),
+            )
+        } catch (e: GetCredentialException) {
+            val errorMessage = when {
+                e.message?.contains("network", ignoreCase = true) == true -> "Network error"
+                else -> "Sign-in failed"
+            }
+            val isNetworkError = e.message?.contains("network", ignoreCase = true) == true
+            if (isNetworkError) {
+                Result.Error(
+                    AuthError.SignIn.NetworkError(
+                        message = errorMessage,
+                        cause = e.message,
+                    ),
+                )
+            } else {
+                Result.Error(
+                    AuthError.SignIn.Failed(
+                        message = errorMessage,
+                        cause = e.message,
+                    ),
+                )
+            }
+        }
+    }
+
+    private fun handleSignInResponse(
+        response: GetCredentialResponse,
+    ): Result<GoogleIdToken, AuthError.SignIn> {
+        val credential = response.credential
+
+        return when {
+            credential is CustomCredential &&
+                credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL -> {
+                val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+                Result.Success(
+                    GoogleIdToken(
+                        idToken = googleIdTokenCredential.idToken,
+                        email = googleIdTokenCredential.id,
+                        displayName = googleIdTokenCredential.displayName,
+                        photoUrl = googleIdTokenCredential.profilePictureUri?.toString(),
+                    ),
+                )
+            }
+            else -> {
+                Result.Error(
+                    AuthError.SignIn.Failed(
+                        message = "Unexpected credential type",
+                        cause = "Received ${credential.type} instead of Google ID token",
+                    ),
+                )
+            }
+        }
     }
 
     actual suspend fun signOut() {
-        // TODO: Implement Credential Manager sign-out
+        val manager = credentialManager ?: return
+        try {
+            manager.clearCredentialState(ClearCredentialStateRequest())
+        } catch (e: Exception) {
+            // Sign out errors are not critical; ignore
+        }
     }
 
     actual fun isConfigured(): Boolean = !webClientId.isNullOrBlank()
