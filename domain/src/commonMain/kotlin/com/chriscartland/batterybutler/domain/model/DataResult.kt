@@ -5,7 +5,13 @@ package com.chriscartland.batterybutler.domain.model
  *
  * Project code NEVER throws exceptions except CancellationException.
  * Library exceptions are caught at data layer boundaries and returned as [Error].
+ *
+ * @deprecated Use [Result]<T, [DataError]> instead for generic error handling.
  */
+@Deprecated(
+    message = "Use Result<T, DataError> for generic error handling",
+    replaceWith = ReplaceWith("Result<T, DataError>", "com.chriscartland.batterybutler.domain.model.Result"),
+)
 sealed interface DataResult<out T> {
     data class Success<T>(
         val data: T,
@@ -24,10 +30,12 @@ sealed interface DataResult<out T> {
  * - [Database] - Errors from local persistence (Room, SQLite)
  * - [Ai] - Errors from AI/ML operations
  * - [Unknown] - Fallback for unexpected errors
+ *
+ * Implements [AppError] to enable use with generic [Result] type.
  */
-sealed interface DataError {
-    val message: String
-    val cause: String?
+sealed interface DataError : AppError {
+    override val message: String
+    override val cause: String?
 
     sealed interface Network : DataError {
         data class ConnectionFailed(
