@@ -69,23 +69,18 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.labe
 import com.chriscartland.batterybutler.composeresources.generated.resources.label_name
 import com.chriscartland.batterybutler.composeresources.generated.resources.placeholder_batch_import
 import com.chriscartland.batterybutler.composeresources.generated.resources.placeholder_device_name
-import com.chriscartland.batterybutler.composeresources.generated.resources.status_confirmed
-import com.chriscartland.batterybutler.composeresources.generated.resources.status_processing
 import com.chriscartland.batterybutler.domain.model.BatchOperationResult
 import com.chriscartland.batterybutler.domain.model.DeviceTypeInput
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMapper
 import com.chriscartland.batterybutler.presentationcore.components.DeviceTypeIconItem
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import com.chriscartland.batterybutler.presentationmodel.adddevicetype.AddDeviceTypeUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddDeviceTypeContent(
-    aiMessages: List<BatchOperationResult>,
-    isAiBatchImportEnabled: Boolean,
-    suggestedIcon: String? = null,
-    usedIcons: List<String> = emptyList(),
-    isSuggestingIcon: Boolean = false,
+    uiState: AddDeviceTypeUiState,
     onSuggestIcon: (String) -> Unit = {},
     onConsumeSuggestedIcon: () -> Unit = {},
     onDeviceTypeAdded: (DeviceTypeInput) -> Unit,
@@ -99,15 +94,15 @@ fun AddDeviceTypeContent(
     var batteryQuantity by rememberSaveable { mutableStateOf(1) }
     val focusManager = LocalFocusManager.current
 
-    androidx.compose.runtime.LaunchedEffect(suggestedIcon) {
-        suggestedIcon?.let {
+    androidx.compose.runtime.LaunchedEffect(uiState.suggestedIcon) {
+        uiState.suggestedIcon?.let {
             selectedIcon = it
             onConsumeSuggestedIcon()
         }
     }
 
-    val icons = remember(usedIcons) {
-        DeviceIconMapper.AvailableIcons.sortedByDescending { it in usedIcons }
+    val icons = remember(uiState.usedIcons) {
+        DeviceIconMapper.AvailableIcons.sortedByDescending { it in uiState.usedIcons }
     }
 
     Scaffold(
@@ -161,7 +156,7 @@ fun AddDeviceTypeContent(
             verticalArrangement = Arrangement.spacedBy(24.dp),
         ) {
             // AI Section (only shown when AI is available)
-            if (isAiBatchImportEnabled) {
+            if (uiState.isAiBatchImportEnabled) {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Text(
                         composeStringResource(Res.string.action_batch_import_ai),
@@ -195,7 +190,7 @@ fun AddDeviceTypeContent(
                         }
                     }
 
-                    if (aiMessages.isNotEmpty()) {
+                    if (uiState.aiMessages.isNotEmpty()) {
                         Text(
                             composeStringResource(Res.string.label_ai_output),
                             style = MaterialTheme.typography.labelMedium,
@@ -207,7 +202,7 @@ fun AddDeviceTypeContent(
                                 .height(150.dp)
                                 .padding(8.dp),
                         ) {
-                            items(aiMessages) { msg ->
+                            items(uiState.aiMessages) { msg ->
                                 val text = when (msg) {
                                     is BatchOperationResult.Progress -> "🤖 ${msg.message}"
                                     is BatchOperationResult.Success -> "✅ ${msg.message}"
@@ -270,7 +265,7 @@ fun AddDeviceTypeContent(
                         keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Next) }),
                         trailingIcon = {
                             if (name.isNotBlank()) {
-                                if (isSuggestingIcon) {
+                                if (uiState.isSuggestingIcon) {
                                     androidx.compose.material3.CircularProgressIndicator(
                                         modifier = Modifier.size(24.dp),
                                         strokeWidth = 2.dp,
@@ -372,12 +367,14 @@ fun AddDeviceTypeContent(
 fun AddDeviceTypeContentPreview() {
     BatteryButlerTheme {
         AddDeviceTypeContent(
-            aiMessages = listOf(
-                BatchOperationResult.Progress(composeStringResource(Res.string.status_processing)),
-                BatchOperationResult.Success(composeStringResource(Res.string.status_confirmed)),
+            uiState = AddDeviceTypeUiState(
+                aiMessages = listOf(
+                    BatchOperationResult.Progress("Processing..."),
+                    BatchOperationResult.Success("Confirmed"),
+                ),
+                isAiBatchImportEnabled = true,
+                suggestedIcon = "detector_smoke",
             ),
-            isAiBatchImportEnabled = true,
-            suggestedIcon = "detector_smoke",
             onDeviceTypeAdded = {},
             onBatchAdd = {},
             onBack = {},

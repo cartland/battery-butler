@@ -16,18 +16,10 @@ fun AddDeviceTypeScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val aiMessages by viewModel.aiMessages.collectAsStateWithLifecycle()
-    val suggestedIcon by viewModel.suggestedIcon.collectAsStateWithLifecycle()
-    val usedIcons by viewModel.usedIcons.collectAsStateWithLifecycle()
-    val isSuggestingIcon by viewModel.isSuggestingIcon.collectAsStateWithLifecycle()
-    val isAiBatchImportEnabled by viewModel.isAiBatchImportEnabled.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     AddDeviceTypeContent(
-        aiMessages = aiMessages,
-        isAiBatchImportEnabled = isAiBatchImportEnabled,
-        suggestedIcon = suggestedIcon,
-        usedIcons = usedIcons,
-        isSuggestingIcon = isSuggestingIcon,
+        uiState = uiState,
         onSuggestIcon = viewModel::suggestIcon,
         onConsumeSuggestedIcon = viewModel::consumeSuggestedIcon,
         onDeviceTypeAdded = { input ->
