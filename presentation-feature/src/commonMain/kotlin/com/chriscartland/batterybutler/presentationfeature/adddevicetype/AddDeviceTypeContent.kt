@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -51,16 +50,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.composeresources.composeStringResource
 import com.chriscartland.batterybutler.composeresources.generated.resources.Res
-import com.chriscartland.batterybutler.composeresources.generated.resources.action_batch_import_ai
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_cancel
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_decrease
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_increase
-import com.chriscartland.batterybutler.composeresources.generated.resources.action_process_ai
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_save
 import com.chriscartland.batterybutler.composeresources.generated.resources.add_device_type_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.content_desc_batteries_needed
 import com.chriscartland.batterybutler.composeresources.generated.resources.content_desc_suggest_icon
-import com.chriscartland.batterybutler.composeresources.generated.resources.label_ai_output
 import com.chriscartland.batterybutler.composeresources.generated.resources.label_battery_quantity
 import com.chriscartland.batterybutler.composeresources.generated.resources.label_battery_type
 import com.chriscartland.batterybutler.composeresources.generated.resources.label_battery_type_hint
@@ -71,7 +67,7 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.plac
 import com.chriscartland.batterybutler.composeresources.generated.resources.placeholder_device_name
 import com.chriscartland.batterybutler.domain.model.BatchOperationResult
 import com.chriscartland.batterybutler.domain.model.DeviceTypeInput
-import com.chriscartland.batterybutler.presentationcore.components.BatchOperationResultItem
+import com.chriscartland.batterybutler.presentationcore.components.AiBatchImportSection
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMapper
 import com.chriscartland.batterybutler.presentationcore.components.DeviceTypeIconItem
@@ -158,57 +154,11 @@ fun AddDeviceTypeContent(
         ) {
             // AI Section (only shown when AI is available)
             if (uiState.isAiBatchImportEnabled) {
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    Text(
-                        composeStringResource(Res.string.action_batch_import_ai),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(bottom = 8.dp),
-                    )
-
-                    var aiInput by rememberSaveable { mutableStateOf("") }
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        OutlinedTextField(
-                            value = aiInput,
-                            onValueChange = { aiInput = it },
-                            modifier = Modifier.weight(1f),
-                            placeholder = { Text(composeStringResource(Res.string.placeholder_batch_import)) },
-                            maxLines = 3,
-                        )
-                        IconButton(
-                            onClick = {
-                                if (aiInput.isNotBlank()) {
-                                    onBatchAdd(aiInput)
-                                    aiInput = ""
-                                }
-                            },
-                            enabled = aiInput.isNotBlank(),
-                        ) {
-                            Icon(Icons.Default.AutoAwesome, contentDescription = composeStringResource(Res.string.action_process_ai))
-                        }
-                    }
-
-                    if (uiState.aiMessages.isNotEmpty()) {
-                        Text(
-                            composeStringResource(Res.string.label_ai_output),
-                            style = MaterialTheme.typography.labelMedium,
-                            modifier = Modifier.padding(top = 8.dp),
-                        )
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(150.dp)
-                                .padding(8.dp),
-                        ) {
-                            items(uiState.aiMessages) { result ->
-                                BatchOperationResultItem(result = result)
-                            }
-                        }
-                    }
-                }
+                AiBatchImportSection(
+                    aiMessages = uiState.aiMessages,
+                    placeholderRes = Res.string.placeholder_batch_import,
+                    onBatchAdd = onBatchAdd,
+                )
             }
 
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
