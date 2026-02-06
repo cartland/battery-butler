@@ -17,31 +17,26 @@ class AddDeviceTypeViewModelWrapper: ObservableObject {
 
     private let viewModel: AddDeviceTypeViewModel
     private let viewModelStore = KmpViewModelStore()
-    private var suggestedIconTask: Task<Void, Never>?
-    private var isSuggestingIconTask: Task<Void, Never>?
+    private var uiStateTask: Task<Void, Never>?
 
     init(_ viewModel: AddDeviceTypeViewModel) {
         self.viewModel = viewModel
         viewModelStore.put(key: "vm", viewModel: viewModel)
 
-        self.suggestedIconTask = Task { @MainActor [weak self] in
-            for await icon in viewModel.suggestedIcon {
-                if let icon = icon {
-                    self?.state.defaultIcon = icon
+        self.uiStateTask = Task { @MainActor [weak self] in
+            for await uiState in viewModel.uiState {
+                if let uiState = uiState as? AddDeviceTypeUiState {
+                    if let icon = uiState.suggestedIcon {
+                        self?.state.defaultIcon = icon
+                    }
+                    self?.state.isSuggestingIcon = uiState.isSuggestingIcon
                 }
-            }
-        }
-
-        self.isSuggestingIconTask = Task { @MainActor [weak self] in
-            for await isSuggesting in viewModel.isSuggestingIcon {
-                self?.state.isSuggestingIcon = isSuggesting as? Bool ?? false
             }
         }
     }
 
     deinit {
-        suggestedIconTask?.cancel()
-        isSuggestingIconTask?.cancel()
+        uiStateTask?.cancel()
         viewModelStore.clear()
     }
     
