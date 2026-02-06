@@ -19,6 +19,11 @@ actual class GoogleSignInBridge {
      */
     fun initialize(clientId: String?) {
         this.clientId = clientId
+        if (clientId.isNullOrBlank()) {
+            println("Google Sign-In (iOS): Not configured - add GIDClientID to Info.plist")
+        } else {
+            println("Google Sign-In (iOS): Configured with client ID ...${clientId.takeLast(15)}")
+        }
     }
 
     actual suspend fun signIn(): Result<GoogleIdToken, AuthError.SignIn> {

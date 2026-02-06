@@ -15,6 +15,9 @@ actual object IosComponentHelper {
     ): AppComponent {
         val networkComponent = NetworkComponent()
         val googleSignInBridge = GoogleSignInBridge()
+        // iOS client ID comes from Info.plist via Swift interop (future work)
+        // For now, initialize without ID - will show "Coming Soon"
+        googleSignInBridge.initialize(null)
         return AppComponent::class.create(
             databaseFactory,
             dataStoreFactory,

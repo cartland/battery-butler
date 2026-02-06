@@ -125,6 +125,28 @@ android {
         }
         val geminiKey = localProperties.getProperty("GEMINI_API_KEY") ?: ""
         buildConfigField("String", "GEMINI_API_KEY", "\"$geminiKey\"")
+
+        // Google Sign-In Configuration
+        // Priority: Gradle property (-P) > local.properties > empty string
+        val googleWebClientId = findProperty("GOOGLE_WEB_CLIENT_ID") as String?
+            ?: localProperties.getProperty("GOOGLE_WEB_CLIENT_ID")
+            ?: ""
+        buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"$googleWebClientId\"")
+
+        if (googleWebClientId.isBlank()) {
+            logger.warn("┌─────────────────────────────────────────────────────────────")
+            logger.warn("│ Google Sign-In: NOT CONFIGURED")
+            logger.warn("├─────────────────────────────────────────────────────────────")
+            logger.warn("│ To enable Google Sign-In:")
+            logger.warn("│   1. Create OAuth credentials at https://console.cloud.google.com")
+            logger.warn("│   2. Add to local.properties:")
+            logger.warn("│      GOOGLE_WEB_CLIENT_ID=your-id.apps.googleusercontent.com")
+            logger.warn("│   OR pass via Gradle: -PGOOGLE_WEB_CLIENT_ID=...")
+            logger.warn("└─────────────────────────────────────────────────────────────")
+        } else {
+            val masked = "...${googleWebClientId.takeLast(15)}"
+            logger.lifecycle("Google Sign-In: Configured ($masked)")
+        }
     }
 
     // Signing configuration for release builds (CI environment or Local)

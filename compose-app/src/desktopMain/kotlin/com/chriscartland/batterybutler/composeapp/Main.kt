@@ -25,7 +25,11 @@ fun main() =
             val appVersion = AppVersion.Desktop(
                 versionName = "1.0.0",
             )
+            val googleClientId = System.getenv("GOOGLE_WEB_CLIENT_ID")
+                ?: System.getProperty("google.web.client.id")
+                ?: ""
             val googleSignInBridge = GoogleSignInBridge()
+            googleSignInBridge.initialize(googleClientId.ifBlank { null })
             val component =
                 AppComponent::class.create(
                     databaseFactory,
