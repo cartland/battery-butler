@@ -219,11 +219,13 @@ jobs:
           fi
 
       # For main push, schedule, or if PAT not configured: create follow-up PR
+      # NOTE: Using BOT_PAT (if available) is required to trigger CI on the created PR.
+      # When using GITHUB_TOKEN, GitHub Actions prevents triggering workflows to avoid loops.
       - name: Create Pull Request (Fallback)
         if: github.event_name == 'push' || github.event_name == 'schedule' || (github.event_name == 'pull_request' && steps.check-pat.outputs.configured != 'true')
         uses: peter-evans/create-pull-request@v8
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ steps.check-pat.outputs.configured == 'true' && secrets.BOT_PAT || secrets.GITHUB_TOKEN }}
           commit-message: "docs: Auto-update architecture diagrams"
           title: "docs: Auto-update architecture diagrams"
           body: |
@@ -235,10 +237,7 @@ jobs:
             **Triggered by:** ${{ github.event_name }}
 
             ---
-            ⚠️ **Note:** This is a follow-up PR because diagram updates could not be
-            committed directly to the original PR branch. To enable direct commits,
-            configure the `BOT_PAT` secret. See `.github/workflows/update-diagrams.yml`
-            for setup instructions.
+            ${{ steps.check-pat.outputs.configured != 'true' && '⚠️ **Note:** CI checks may not run automatically on this PR because `BOT_PAT` is not configured. To enable CI triggering, configure the `BOT_PAT` secret. See `.github/workflows/update-diagrams.yml` for setup instructions.' || '' }}
           branch: auto/update-diagrams
           base: main
           delete-branch: true
