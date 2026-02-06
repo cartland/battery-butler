@@ -47,6 +47,7 @@ import com.chriscartland.batterybutler.composeresources.composeStringResource
 import com.chriscartland.batterybutler.composeresources.generated.resources.Res
 import com.chriscartland.batterybutler.composeresources.generated.resources.empty_devices_message
 import com.chriscartland.batterybutler.composeresources.generated.resources.empty_devices_title
+import com.chriscartland.batterybutler.domain.model.DataError
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.SyncStatus
@@ -82,7 +83,7 @@ fun HomeScreenContent(
         when (val status = state.syncStatus) {
             is SyncStatus.Failed -> {
                 snackbarHostState.showSnackbar(
-                    message = "Sync failed: ${status.error.message}",
+                    message = getSyncErrorMessage(status.error),
                 )
             }
             else -> {}
@@ -276,6 +277,34 @@ fun HomeScreenList(
 }
 
 @OptIn(ExperimentalTime::class)
+/**
+ * Returns a user-friendly error message for sync failures.
+ */
+private fun getSyncErrorMessage(error: DataError): String =
+    when (error) {
+        is DataError.Network.ConnectionFailed ->
+            "Can't connect to server. Your changes are saved locally."
+        is DataError.Network.Timeout ->
+            "Connection timed out. Try again when you have a better signal."
+        is DataError.Network.ServerError ->
+            "Server is having issues. Your data is safe on this device."
+        is DataError.Network.NotReady ->
+            "Sync isn't ready yet. Your changes are saved locally."
+        is DataError.Network.PushFailed ->
+            "Couldn't sync your changes. They're saved locally and will sync later."
+        is DataError.Database.ReadFailed,
+        is DataError.Database.WriteFailed,
+        is DataError.Database.ConstraintViolation,
+        ->
+            "There was a problem with your data. Please try again."
+        is DataError.Ai.ApiError,
+        is DataError.Ai.ParsingError,
+        ->
+            "AI feature encountered an error. Please try again."
+        is DataError.Unknown ->
+            "Something went wrong. Your data is safe on this device."
+    }
+
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
