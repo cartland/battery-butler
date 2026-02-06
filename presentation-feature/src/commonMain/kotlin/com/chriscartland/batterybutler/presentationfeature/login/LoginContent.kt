@@ -271,7 +271,7 @@ private fun getErrorText(error: AuthError): Pair<String, String> =
 
 @Preview(showBackground = true)
 @Composable
-private fun LoginContentUnauthenticatedPreview() {
+fun LoginContentUnauthenticatedPreview() {
     BatteryButlerTheme {
         LoginContent(
             authState = AuthState.Unauthenticated,
@@ -285,7 +285,7 @@ private fun LoginContentUnauthenticatedPreview() {
 
 @Preview(showBackground = true)
 @Composable
-private fun LoginContentAuthenticatingPreview() {
+fun LoginContentAuthenticatingPreview() {
     BatteryButlerTheme {
         LoginContent(
             authState = AuthState.Authenticating,
@@ -299,7 +299,7 @@ private fun LoginContentAuthenticatingPreview() {
 
 @Preview(showBackground = true)
 @Composable
-private fun LoginContentNotConfiguredPreview() {
+fun LoginContentNotConfiguredPreview() {
     BatteryButlerTheme {
         LoginContent(
             authState = AuthState.Unauthenticated,
@@ -313,7 +313,7 @@ private fun LoginContentNotConfiguredPreview() {
 
 @Preview(showBackground = true)
 @Composable
-private fun LoginContentErrorPreview() {
+fun LoginContentErrorPreview() {
     BatteryButlerTheme {
         LoginContent(
             authState = AuthState.Failed(
