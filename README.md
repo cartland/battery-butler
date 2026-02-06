@@ -79,6 +79,34 @@ To enable the AI features (Gemini), you need an API Key.
     PRODUCTION_SERVER_URL=http://your-server-url:port (Optional, defaults to internal AWS NLB)
     ```
 
+## 🔐 Google Sign-In Configuration (Optional)
+
+Google Sign-In is disabled by default. To enable:
+
+### 1. Google Cloud Console Setup
+1. Go to [APIs & Services > Credentials](https://console.cloud.google.com/apis/credentials)
+2. Create OAuth 2.0 Client ID (Web application type)
+3. Copy the Client ID
+
+### 2. Local Development
+Add to `local.properties`:
+```properties
+GOOGLE_WEB_CLIENT_ID=123456789-abc.apps.googleusercontent.com
+```
+
+### 3. CI/CD (GitHub Actions)
+Add repository secret:
+- Settings > Secrets and variables > Actions > New repository secret
+- Name: `GOOGLE_WEB_CLIENT_ID`
+- Value: Your Web Client ID
+
+### 4. Android: Register SHA-1 Fingerprints
+```bash
+# Debug fingerprint
+./gradlew signingReport
+```
+Add the SHA-1 to your OAuth client in Google Cloud Console under "Android" application type.
+
 ## 🤝 Contributing
 
 This project uses `Spotless` for code formatting.

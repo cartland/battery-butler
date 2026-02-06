@@ -28,6 +28,7 @@ class BatteryButlerApplication : Application() {
             versionCode = BuildConfig.VERSION_CODE,
         )
         val googleSignInBridge = GoogleSignInBridge()
+        googleSignInBridge.initialize(BuildConfig.GOOGLE_WEB_CLIENT_ID)
         appComponent = AppComponent::class.create(
             databaseFactory,
             dataStoreFactory,

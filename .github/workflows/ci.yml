@@ -17,6 +17,7 @@ permissions:
 
 env:
   ORG_GRADLE_PROJECT_PRODUCTION_SERVER_URL: ${{ secrets.PRODUCTION_SERVER_URL }}
+  ORG_GRADLE_PROJECT_GOOGLE_WEB_CLIENT_ID: ${{ secrets.GOOGLE_WEB_CLIENT_ID }}
 
 jobs:
   # Detect if this is a documentation-only change to skip expensive builds

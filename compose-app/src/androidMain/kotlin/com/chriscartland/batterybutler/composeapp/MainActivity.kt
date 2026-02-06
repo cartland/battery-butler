@@ -19,7 +19,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         // Reuse application-level component instead of creating duplicate
-        val component = (application as BatteryButlerApplication).appComponent
+        val app = application as BatteryButlerApplication
+        val component = app.appComponent
+
+        // Bind activity to GoogleSignInBridge for Credential Manager
+        component.googleSignInBridge.bindActivity { this }
+
         val shareHandler = AndroidShareHandler(this)
         val fileSaver = AndroidFileSaver(this)
 
