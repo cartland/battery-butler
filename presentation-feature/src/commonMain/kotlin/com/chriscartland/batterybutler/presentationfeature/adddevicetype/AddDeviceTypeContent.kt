@@ -71,6 +71,7 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.plac
 import com.chriscartland.batterybutler.composeresources.generated.resources.placeholder_device_name
 import com.chriscartland.batterybutler.domain.model.BatchOperationResult
 import com.chriscartland.batterybutler.domain.model.DeviceTypeInput
+import com.chriscartland.batterybutler.presentationcore.components.BatchOperationResultItem
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMapper
 import com.chriscartland.batterybutler.presentationcore.components.DeviceTypeIconItem
@@ -202,23 +203,8 @@ fun AddDeviceTypeContent(
                                 .height(150.dp)
                                 .padding(8.dp),
                         ) {
-                            items(uiState.aiMessages) { msg ->
-                                val text = when (msg) {
-                                    is BatchOperationResult.Progress -> "🤖 ${msg.message}"
-                                    is BatchOperationResult.Success -> "✅ ${msg.message}"
-                                    is BatchOperationResult.Error -> "❌ ${msg.error.message}"
-                                }
-                                val color = when (msg) {
-                                    is BatchOperationResult.Error -> MaterialTheme.colorScheme.error
-                                    is BatchOperationResult.Success -> MaterialTheme.colorScheme.primary
-                                    else -> MaterialTheme.colorScheme.onSurface
-                                }
-                                Text(
-                                    text = text,
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = color,
-                                    modifier = Modifier.padding(vertical = 4.dp),
-                                )
+                            items(uiState.aiMessages) { result ->
+                                BatchOperationResultItem(result = result)
                             }
                         }
                     }
