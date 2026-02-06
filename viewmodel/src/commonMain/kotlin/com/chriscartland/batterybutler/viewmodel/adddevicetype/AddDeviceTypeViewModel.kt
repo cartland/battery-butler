@@ -7,13 +7,14 @@ import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.DeviceTypeInput
 import com.chriscartland.batterybutler.domain.model.FeatureFlag
 import com.chriscartland.batterybutler.domain.repository.FeatureFlagProvider
+import com.chriscartland.batterybutler.presentationmodel.adddevicetype.AddDeviceTypeUiState
 import com.chriscartland.batterybutler.usecase.AddDeviceTypeUseCase
 import com.chriscartland.batterybutler.usecase.BatchAddDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.SuggestDeviceIconUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -30,48 +31,55 @@ class AddDeviceTypeViewModel(
     private val getDeviceTypesUseCase: com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase,
     private val featureFlagProvider: FeatureFlagProvider,
 ) : ViewModel() {
-    val isAiBatchImportEnabled: StateFlow<Boolean> =
-        featureFlagProvider
-            .observeEnabled(FeatureFlag.AI_BATCH_IMPORT)
-            .stateIn(
-                scope = viewModelScope,
-                started = defaultWhileSubscribed(),
-                initialValue = featureFlagProvider.isEnabled(FeatureFlag.AI_BATCH_IMPORT),
-            )
+    private val isAiBatchImportEnabledFlow =
+        featureFlagProvider.observeEnabled(FeatureFlag.AI_BATCH_IMPORT)
 
-    private val _suggestedIcon = MutableStateFlow<String?>(null)
-    val suggestedIcon = _suggestedIcon.asStateFlow()
+    private val suggestedIconFlow = MutableStateFlow<String?>(null)
+    private val isSuggestingIconFlow = MutableStateFlow(false)
+    private val aiMessagesFlow = MutableStateFlow<List<BatchOperationResult>>(emptyList())
 
-    private val _isSuggestingIcon = MutableStateFlow(false)
-    val isSuggestingIcon = _isSuggestingIcon.asStateFlow()
-
-    val usedIcons: StateFlow<List<String>> = getDeviceTypesUseCase()
+    private val usedIconsFlow = getDeviceTypesUseCase()
         .map { types -> types.mapNotNull { it.defaultIcon }.distinct() }
-        .stateIn(
-            scope = viewModelScope,
-            started = defaultWhileSubscribed(),
-            initialValue = emptyList(),
+
+    val uiState: StateFlow<AddDeviceTypeUiState> = combine(
+        isAiBatchImportEnabledFlow,
+        aiMessagesFlow,
+        suggestedIconFlow,
+        usedIconsFlow,
+        isSuggestingIconFlow,
+    ) { isAiEnabled, aiMessages, suggestedIcon, usedIcons, isSuggestingIcon ->
+        AddDeviceTypeUiState(
+            isAiBatchImportEnabled = isAiEnabled,
+            aiMessages = aiMessages,
+            suggestedIcon = suggestedIcon,
+            usedIcons = usedIcons,
+            isSuggestingIcon = isSuggestingIcon,
         )
+    }.stateIn(
+        scope = viewModelScope,
+        started = defaultWhileSubscribed(),
+        initialValue = AddDeviceTypeUiState(),
+    )
 
     fun suggestIcon(name: String) {
         if (name.isBlank()) return
         // Prevent rapid-fire API calls by skipping if already in progress
-        if (_isSuggestingIcon.value) return
+        if (isSuggestingIconFlow.value) return
         viewModelScope.launch {
-            _isSuggestingIcon.value = true
+            isSuggestingIconFlow.value = true
             try {
                 val icon = suggestDeviceIconUseCase(name)
                 if (icon != null && icon != "default") {
-                    _suggestedIcon.value = icon
+                    suggestedIconFlow.value = icon
                 }
             } finally {
-                _isSuggestingIcon.value = false
+                isSuggestingIconFlow.value = false
             }
         }
     }
 
     fun consumeSuggestedIcon() {
-        _suggestedIcon.value = null
+        suggestedIconFlow.value = null
     }
 
     @OptIn(ExperimentalUuidApi::class)
@@ -88,18 +96,15 @@ class AddDeviceTypeViewModel(
         }
     }
 
-    private val _aiMessages = MutableStateFlow<List<BatchOperationResult>>(emptyList())
-    val aiMessages: StateFlow<List<BatchOperationResult>> = _aiMessages
-
     fun batchAddDeviceTypes(input: String) {
         viewModelScope.launch {
             batchAddDeviceTypesUseCase(input).collect { message ->
-                _aiMessages.update { it + message }
+                aiMessagesFlow.update { it + message }
             }
         }
     }
 
     fun clearAiMessages() {
-        _aiMessages.value = emptyList()
+        aiMessagesFlow.value = emptyList()
     }
 }
