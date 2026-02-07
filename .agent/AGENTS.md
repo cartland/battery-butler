@@ -180,9 +180,38 @@ This file provides the initial instructions for AGENT_NAME.
 | Priority | Condition | Action |
 |----------|-----------|--------|
 | **P0** | `main` is broken (CI failing) | Stop everything. Fix immediately. |
+| **P0.5** | Instruction/Beads PRs (see below) | Merge immediately. Shared context for all agents. |
 | **P1** | PRs approved and CI green | Merge sequentially, monitor after each. |
 | **P2** | PRs pending CI or review | Wait. Work on other tasks. |
 | **P3** | New feature work | Only if P0-P2 queue is empty. |
+
+### Instruction/Beads PRs (P0.5 Priority)
+
+PRs that **only** modify the following files are **highest priority after broken builds**:
+
+- `.agent/` - Agent instructions and workflows
+- `CLAUDE.md` or `*/CLAUDE.md` - Claude Code instructions
+- `.beads/` - Task tracking data
+
+**Why P0.5?** These PRs establish shared understanding across all agents:
+- Task assignments and status changes
+- Workflow improvements and rules
+- Session resume points and context
+
+**Fast-path rules:**
+1. These PRs pass CI immediately (path filtering skips expensive builds)
+2. Merge as soon as CI is green (no batching needed, each is self-contained)
+3. Pull latest main after merging to get updated instructions
+4. All agents benefit from latest decisions and tasks immediately
+
+**Quick merge:**
+```bash
+# Check if PR only modifies instruction/beads files
+gh pr view <number> --json files | jq '.files[].path'
+
+# If only .agent/, CLAUDE.md, or .beads/ → merge immediately when green
+gh pr merge <number> --squash --delete-branch
+```
 
 ### The Golden Rule
 
@@ -371,7 +400,8 @@ Waiting for full CI (15-20 min) after each PR merge creates a bottleneck. With 1
 
 | Risk Level | PR Type | Strategy |
 |------------|---------|----------|
-| **Low** | Docs-only, README, CLAUDE.md, .beads/* | Batch merge up to 5 at once |
+| **P0.5 (Immediate)** | `.agent/`, `CLAUDE.md`, `.beads/*` | Merge immediately when green (priority) |
+| **Low** | Docs-only, README, comments | Batch merge up to 5 at once |
 | **Medium** | Single-file code changes, test fixes | Merge 2-3, wait for CI |
 | **High** | Multi-file refactors, CI changes, shared code | Serial merge, wait for CI |
 
@@ -392,7 +422,23 @@ Before merging any code PR, run local validation:
 
 #### Batch Merge Protocol
 
-**For low-risk PRs (docs-only):**
+**For P0.5 PRs (instruction/beads - highest priority):**
+
+```bash
+# These establish shared context - merge immediately when CI passes
+# Do NOT batch these - each provides immediate value to all agents
+
+# 1. Identify instruction/beads PRs
+gh pr list --json number,title,files | jq '.[] | select(.files | all(.path | test("^(\\.agent/|CLAUDE\\.md|\\.beads/)"))'
+
+# 2. Merge each immediately when green (CI passes fast due to path filtering)
+gh pr merge <number> --squash --delete-branch
+
+# 3. Pull to get latest instructions before continuing other work
+git pull origin main
+```
+
+**For low-risk PRs (docs-only, excluding instructions):**
 
 ```bash
 # 1. Merge up to 5 docs-only PRs in quick succession
