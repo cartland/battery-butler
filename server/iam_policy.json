@@ -27,6 +27,7 @@
                 "ec2:RevokeSecurityGroupIngress",
                 "ec2:RevokeSecurityGroupEgress",
                 "ec2:CreateTags",
+                "ec2:DeleteTags",
                 "ec2:ModifyVpcAttribute",
                 "ec2:ModifySubnetAttribute",
                 "ec2:GetSecurityGroupsForVpc"
@@ -46,7 +47,8 @@
                 "elasticloadbalancing:DeleteListener",
                 "elasticloadbalancing:ModifyTargetGroupAttributes",
                 "elasticloadbalancing:ModifyLoadBalancerAttributes",
-                "elasticloadbalancing:AddTags"
+                "elasticloadbalancing:AddTags",
+                "elasticloadbalancing:RemoveTags"
             ],
             "Resource": "*"
         },
@@ -76,7 +78,10 @@
                 "ecs:CreateService",
                 "ecs:DeleteService",
                 "ecs:UpdateService",
-                "ecs:TagResource"
+                "ecs:TagResource",
+                "ecs:UntagResource",
+                "ecs:ListTagsForResource",
+                "ecs:List*"
             ],
             "Resource": "*"
         },
@@ -93,6 +98,7 @@
                 "rds:ModifyDBInstance",
                 "rds:ListTagsForResource",
                 "rds:ModifyDBSubnetGroup",
+                "rds:RemoveTagsFromResource",
                 "secretsmanager:CreateSecret",
                 "secretsmanager:DeleteSecret",
                 "secretsmanager:GetSecretValue",
@@ -115,7 +121,10 @@
                 "iam:AttachRolePolicy",
                 "iam:DetachRolePolicy",
                 "iam:List*",
-                "iam:CreateServiceLinkedRole"
+                "iam:CreateServiceLinkedRole",
+                "iam:PutRolePolicy",
+                "iam:GetRolePolicy",
+                "iam:DeleteRolePolicy"
             ],
             "Resource": "*"
         },
@@ -128,7 +137,8 @@
                 "logs:PutRetentionPolicy",
                 "logs:DescribeLogGroups",
                 "logs:ListTagsForResource",
-                "logs:TagResource"
+                "logs:TagResource",
+                "logs:UntagResource"
             ],
             "Resource": "*"
         },
