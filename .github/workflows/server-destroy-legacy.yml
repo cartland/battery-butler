@@ -1,0 +1,93 @@
+# =============================================================================
+# ONE-TIME: Destroy Legacy Single-Environment Infrastructure
+# =============================================================================
+#
+# PURPOSE:
+#   Clean up the old single-environment infrastructure before migrating to
+#   multi-environment setup. DELETE THIS WORKFLOW after running.
+#
+# =============================================================================
+
+name: "[One-Time] Destroy Legacy Infrastructure"
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "destroy" to confirm'
+        required: true
+        type: string
+
+env:
+  AWS_REGION: us-west-1
+
+jobs:
+  destroy:
+    name: Destroy Legacy Infrastructure
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: inputs.confirm == 'destroy'
+    permissions:
+      id-token: write
+      contents: read
+    env:
+      USE_OIDC: ${{ secrets.AWS_DEPLOY_ROLE_ARN != '' }}
+
+    steps:
+    - uses: actions/checkout@v6
+
+    - name: Confirm destruction
+      run: |
+        echo "::warning::Destroying legacy single-environment infrastructure"
+        echo "This will remove the existing ECS cluster, RDS database, and all related resources."
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+
+    - name: Configure AWS Credentials (OIDC)
+      if: env.USE_OIDC == 'true'
+      uses: aws-actions/configure-aws-credentials@v5
+      with:
+        role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Configure AWS Credentials (Access Keys)
+      if: env.USE_OIDC != 'true'
+      uses: aws-actions/configure-aws-credentials@v5
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Terraform Init (Legacy State)
+      working-directory: server/terraform
+      env:
+        TF_STATE_BUCKET: ${{ secrets.TF_STATE_BUCKET }}
+        TF_LOCK_TABLE: ${{ secrets.TF_LOCK_TABLE }}
+      run: |
+        terraform init \
+          -backend-config="bucket=${TF_STATE_BUCKET}" \
+          -backend-config="key=server/terraform.tfstate" \
+          -backend-config="region=${{ env.AWS_REGION }}" \
+          -backend-config="dynamodb_table=${TF_LOCK_TABLE}" \
+          -backend-config="encrypt=true"
+
+    - name: Terraform Destroy
+      working-directory: server/terraform
+      run: |
+        # The old config didn't have variables, so we need to provide dummy values
+        # to satisfy the new variable requirements during destroy
+        terraform destroy -auto-approve \
+          -var="environment=legacy" \
+          -var="image_tag=destroying"
+
+    - name: Cleanup Summary
+      run: |
+        echo "## Legacy Infrastructure Destroyed" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "The old single-environment infrastructure has been removed." >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Next Steps" >> $GITHUB_STEP_SUMMARY
+        echo "1. Merge the multi-environment PR" >> $GITHUB_STEP_SUMMARY
+        echo "2. Delete this workflow file" >> $GITHUB_STEP_SUMMARY
+        echo "3. Configure GitHub Environments (staging, production)" >> $GITHUB_STEP_SUMMARY
