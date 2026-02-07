@@ -140,6 +140,24 @@ jobs:
           -backend-config="dynamodb_table=${TF_LOCK_TABLE}" \
           -backend-config="encrypt=true"
 
+    # Import ECR if it exists but isn't in terraform state
+    - name: Import ECR Repository
+      working-directory: server/terraform
+      run: |
+        REPO_NAME="battery-butler-server"
+        # Check if ECR exists in AWS
+        if aws ecr describe-repositories --repository-names "$REPO_NAME" > /dev/null 2>&1; then
+          # Check if it's already in terraform state
+          if ! terraform state show aws_ecr_repository.server > /dev/null 2>&1; then
+            echo "Importing existing ECR repository into terraform state"
+            terraform import aws_ecr_repository.server "$REPO_NAME"
+          else
+            echo "ECR repository already in terraform state"
+          fi
+        else
+          echo "ECR repository does not exist, will be created by terraform"
+        fi
+
     - name: Terraform Plan
       id: plan
       working-directory: server/terraform
