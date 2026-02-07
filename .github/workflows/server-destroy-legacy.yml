@@ -75,11 +75,8 @@ jobs:
     - name: Terraform Destroy
       working-directory: server/terraform
       run: |
-        # The old config didn't have variables, so we need to provide dummy values
-        # to satisfy the new variable requirements during destroy
-        terraform destroy -auto-approve \
-          -var="environment=legacy" \
-          -var="image_tag=destroying"
+        # Destroy the legacy infrastructure (no variables in old config)
+        terraform destroy -auto-approve
 
     - name: Cleanup Summary
       run: |
