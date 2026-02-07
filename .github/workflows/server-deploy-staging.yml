@@ -1,0 +1,155 @@
+# =============================================================================
+# DEPLOY SERVER TO STAGING
+# =============================================================================
+#
+# PURPOSE:
+#   Manually deploy a specific image tag to staging environment.
+#   Uses the same image SHA that was built and tested in dev.
+#
+# USAGE:
+#   gh workflow run server-deploy-staging.yml -f image_tag=abc1234
+#
+# =============================================================================
+
+name: Server Deploy (Staging)
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: 'Docker image tag to deploy (e.g., abc1234)'
+        required: true
+        type: string
+
+env:
+  AWS_REGION: us-west-1
+
+jobs:
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: staging
+    permissions:
+      id-token: write
+      contents: read
+    env:
+      USE_OIDC: ${{ secrets.AWS_DEPLOY_ROLE_ARN != '' }}
+
+    steps:
+    - uses: actions/checkout@v6
+
+    - name: Validate Image Tag
+      run: |
+        if [ -z "${{ inputs.image_tag }}" ]; then
+          echo "::error::Image tag is required"
+          exit 1
+        fi
+        echo "Deploying image tag: ${{ inputs.image_tag }}"
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+
+    - name: Configure AWS Credentials (OIDC)
+      if: env.USE_OIDC == 'true'
+      uses: aws-actions/configure-aws-credentials@v5
+      with:
+        role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Configure AWS Credentials (Access Keys)
+      if: env.USE_OIDC != 'true'
+      uses: aws-actions/configure-aws-credentials@v5
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Verify Image Exists
+      id: verify
+      run: |
+        # Get ECR registry
+        ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+        ECR_REGISTRY="${ACCOUNT_ID}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com"
+
+        # Check if image exists
+        if aws ecr describe-images \
+          --repository-name battery-butler-server \
+          --image-ids imageTag=${{ inputs.image_tag }} > /dev/null 2>&1; then
+          echo "Image found: ${ECR_REGISTRY}/battery-butler-server:${{ inputs.image_tag }}"
+        else
+          echo "::error::Image not found: ${{ inputs.image_tag }}"
+          echo "Available tags:"
+          aws ecr describe-images \
+            --repository-name battery-butler-server \
+            --query 'imageDetails[*].imageTags' \
+            --output text | tr '\t' '\n' | head -10
+          exit 1
+        fi
+
+    - name: Terraform Init
+      working-directory: server/terraform
+      env:
+        TF_STATE_BUCKET: ${{ secrets.TF_STATE_BUCKET }}
+        TF_LOCK_TABLE: ${{ secrets.TF_LOCK_TABLE }}
+      run: |
+        terraform init \
+          -backend-config="bucket=${TF_STATE_BUCKET}" \
+          -backend-config="key=server/staging/terraform.tfstate" \
+          -backend-config="region=${{ env.AWS_REGION }}" \
+          -backend-config="dynamodb_table=${TF_LOCK_TABLE}" \
+          -backend-config="encrypt=true"
+
+    - name: Terraform Plan
+      working-directory: server/terraform
+      run: |
+        terraform plan \
+          -var-file=environments/staging.tfvars \
+          -var="image_tag=${{ inputs.image_tag }}" \
+          -out=tfplan
+
+    - name: Terraform Apply
+      working-directory: server/terraform
+      run: terraform apply tfplan
+
+    - name: Force ECS Deployment
+      run: |
+        aws ecs update-service \
+          --cluster battery-butler-staging-cluster \
+          --service battery-butler-staging-service \
+          --force-new-deployment
+
+    - name: Wait for Deployment
+      run: |
+        echo "Waiting for ECS service to stabilize..."
+        aws ecs wait services-stable \
+          --cluster battery-butler-staging-cluster \
+          --services battery-butler-staging-service
+        echo "Staging deployment complete!"
+
+    - name: Tag Image as latest-staging
+      run: |
+        ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+        MANIFEST=$(aws ecr batch-get-image \
+          --repository-name battery-butler-server \
+          --image-ids imageTag=${{ inputs.image_tag }} \
+          --query 'images[].imageManifest' \
+          --output text)
+
+        aws ecr put-image \
+          --repository-name battery-butler-server \
+          --image-tag latest-staging \
+          --image-manifest "$MANIFEST" || true
+
+    - name: Deployment Summary
+      run: |
+        echo "## Staging Deployment Complete" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "- **Image Tag:** ${{ inputs.image_tag }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Triggered by:** ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Promote to Production" >> $GITHUB_STEP_SUMMARY
+        echo "After testing in staging, deploy to production:" >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
+        echo "gh workflow run server-deploy-prod.yml -f image_tag=${{ inputs.image_tag }}" >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY

@@ -1,5 +1,9 @@
+# =============================================================================
+# LOAD BALANCER CONFIGURATION (environment-specific)
+# =============================================================================
+
 resource "aws_security_group" "alb" {
-  name        = "battery-butler-alb-sg"
+  name        = "battery-butler-${var.environment}-nlb-sg"
   description = "Allow HTTP/HTTPS traffic"
   vpc_id      = aws_vpc.main.id
 
@@ -11,7 +15,6 @@ resource "aws_security_group" "alb" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # For initial testing without certs, we might need port 80 or 50051 direct
   ingress {
     description = "Allow HTTP traffic"
     from_port   = 80
@@ -26,27 +29,41 @@ resource "aws_security_group" "alb" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  tags = {
+    Name        = "battery-butler-${var.environment}-nlb-sg"
+    Environment = var.environment
+  }
 }
 
 resource "aws_lb" "main" {
-  name               = "battery-butler-nlb"
+  name               = "bb-${var.environment}-nlb"
   internal           = false
   load_balancer_type = "network"
   security_groups    = [aws_security_group.alb.id]
   subnets            = [aws_subnet.public_a.id, aws_subnet.public_b.id]
+
+  tags = {
+    Name        = "battery-butler-${var.environment}-nlb"
+    Environment = var.environment
+  }
 }
 
 resource "aws_lb_target_group" "grpc" {
-  name        = "battery-butler-grpc-tg"
+  name        = "bb-${var.environment}-grpc-tg"
   port        = 50051
   protocol    = "TCP"
   target_type = "ip"
   vpc_id      = aws_vpc.main.id
 
   health_check {
-    enabled             = true
-    protocol            = "TCP"
-    port                = "traffic-port"
+    enabled  = true
+    protocol = "TCP"
+    port     = "traffic-port"
+  }
+
+  tags = {
+    Environment = var.environment
   }
 }
 
@@ -60,5 +77,9 @@ resource "aws_lb_listener" "tcp" {
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.grpc.arn
+  }
+
+  tags = {
+    Environment = var.environment
   }
 }

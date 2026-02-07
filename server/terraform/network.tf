@@ -1,10 +1,20 @@
+# =============================================================================
+# NETWORK CONFIGURATION (environment-specific)
+# =============================================================================
+#
+# Each environment gets its own VPC and subnets for isolation.
+# This prevents accidental cross-environment access.
+#
+# =============================================================================
+
 resource "aws_vpc" "main" {
   cidr_block           = "10.0.0.0/16"
   enable_dns_hostnames = true
   enable_dns_support   = true
 
   tags = {
-    Name = "battery-butler-vpc"
+    Name        = "battery-butler-${var.environment}-vpc"
+    Environment = var.environment
   }
 }
 
@@ -12,7 +22,8 @@ resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
 
   tags = {
-    Name = "battery-butler-igw"
+    Name        = "battery-butler-${var.environment}-igw"
+    Environment = var.environment
   }
 }
 
@@ -27,7 +38,8 @@ resource "aws_subnet" "public_a" {
   map_public_ip_on_launch = true
 
   tags = {
-    Name = "battery-butler-public-a"
+    Name        = "battery-butler-${var.environment}-public-a"
+    Environment = var.environment
   }
 }
 
@@ -38,7 +50,8 @@ resource "aws_subnet" "public_b" {
   map_public_ip_on_launch = true
 
   tags = {
-    Name = "battery-butler-public-b"
+    Name        = "battery-butler-${var.environment}-public-b"
+    Environment = var.environment
   }
 }
 
@@ -51,7 +64,8 @@ resource "aws_route_table" "public" {
   }
 
   tags = {
-    Name = "battery-butler-public-rt"
+    Name        = "battery-butler-${var.environment}-public-rt"
+    Environment = var.environment
   }
 }
 
