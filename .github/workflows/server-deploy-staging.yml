@@ -108,7 +108,7 @@ jobs:
         # Check if ECR exists in AWS
         if aws ecr describe-repositories --repository-names "$REPO_NAME" > /dev/null 2>&1; then
           # Check if it's already in terraform state
-          if ! terraform state show aws_ecr_repository.server > /dev/null 2>&1; then
+          if ! terraform state show -lock=false aws_ecr_repository.server > /dev/null 2>&1; then
             echo "Importing existing ECR repository into terraform state"
             terraform import \
               -var-file=environments/staging.tfvars \
