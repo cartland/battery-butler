@@ -1,13 +1,12 @@
 # =============================================================================
-# ECR REPOSITORY
+# ECR REPOSITORY (read-only)
 # =============================================================================
-# ECR is shared across all environments - same images, different tags.
-# This allows "build once, deploy many" pattern.
+# ECR is managed outside terraform (created by aws CLI in build workflow).
+# This data source reads the existing repo for use in task definitions.
+# This avoids terraform state lock issues from import/state-show cycles.
 
-resource "aws_ecr_repository" "server" {
-  name                 = "battery-butler-server"
-  image_tag_mutability = "MUTABLE"
-  force_delete         = true
+data "aws_ecr_repository" "server" {
+  name = "battery-butler-server"
 }
 
 # =============================================================================
@@ -102,7 +101,7 @@ resource "aws_ecs_task_definition" "server" {
   container_definitions = jsonencode([
     {
       name      = "server"
-      image     = "${aws_ecr_repository.server.repository_url}:${var.image_tag}"
+      image     = "${data.aws_ecr_repository.server.repository_url}:${var.image_tag}"
       essential = true
       portMappings = [
         {
