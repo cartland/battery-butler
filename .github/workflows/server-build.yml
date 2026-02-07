@@ -16,6 +16,7 @@
 name: Server Build & Deploy (Dev)
 
 on:
+  workflow_dispatch:
   push:
     branches: [ "main" ]
     tags-ignore:
