@@ -21,6 +21,10 @@ on:
         required: true
         type: string
 
+concurrency:
+  group: deploy-staging
+  cancel-in-progress: false
+
 env:
   AWS_REGION: us-west-1
 
@@ -100,25 +104,15 @@ jobs:
           -backend-config="dynamodb_table=${TF_LOCK_TABLE}" \
           -backend-config="encrypt=true"
 
-    # Import ECR if it exists but isn't in terraform state
-    - name: Import ECR Repository
+    # One-time migration: remove ECR from state if it was previously managed
+    - name: Remove ECR from Terraform State
       working-directory: server/terraform
       run: |
-        REPO_NAME="battery-butler-server"
-        # Check if ECR exists in AWS
-        if aws ecr describe-repositories --repository-names "$REPO_NAME" > /dev/null 2>&1; then
-          # Check if it's already in terraform state
-          if ! terraform state show aws_ecr_repository.server > /dev/null 2>&1; then
-            echo "Importing existing ECR repository into terraform state"
-            terraform import \
-              -var-file=environments/staging.tfvars \
-              -var="image_tag=${{ inputs.image_tag }}" \
-              aws_ecr_repository.server "$REPO_NAME"
-          else
-            echo "ECR repository already in terraform state"
-          fi
+        if terraform state show aws_ecr_repository.server > /dev/null 2>&1; then
+          echo "Removing ECR repository from terraform state (now managed externally)"
+          terraform state rm aws_ecr_repository.server
         else
-          echo "ECR repository does not exist, will be created by terraform"
+          echo "ECR not in terraform state (expected)"
         fi
 
     - name: Terraform Plan
