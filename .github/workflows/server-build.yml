@@ -63,7 +63,6 @@ jobs:
       contents: read
     outputs:
       image-tag: ${{ steps.meta.outputs.sha }}
-      ecr-url: ${{ steps.tf-outputs.outputs.ECR_URL }}
     env:
       USE_OIDC: ${{ secrets.AWS_DEPLOY_ROLE_ARN != '' }}
 
@@ -81,9 +80,6 @@ jobs:
         echo "full-sha=$SHA" >> $GITHUB_OUTPUT
         echo "Building image with tag: $SHORT_SHA"
 
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v3
-
     - name: Configure AWS Credentials (OIDC)
       if: env.USE_OIDC == 'true'
       uses: aws-actions/configure-aws-credentials@v5
@@ -99,33 +95,17 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ env.AWS_REGION }}
 
-    # Initialize Terraform just to get ECR URL (shared across envs)
-    - name: Terraform Init (Dev)
-      working-directory: server/terraform
-      env:
-        TF_STATE_BUCKET: ${{ secrets.TF_STATE_BUCKET }}
-        TF_LOCK_TABLE: ${{ secrets.TF_LOCK_TABLE }}
+    # Create ECR repository if it doesn't exist (needed on first run)
+    - name: Ensure ECR Repository Exists
       run: |
-        terraform init \
-          -backend-config="bucket=${TF_STATE_BUCKET}" \
-          -backend-config="key=server/dev/terraform.tfstate" \
-          -backend-config="region=${{ env.AWS_REGION }}" \
-          -backend-config="dynamodb_table=${TF_LOCK_TABLE}" \
-          -backend-config="encrypt=true"
-
-    - name: Get ECR URL
-      id: tf-outputs
-      working-directory: server/terraform
-      run: |
-        # Get ECR URL - it may not exist yet on first run
-        # Use -json to avoid ANSI escape codes in output
-        OUTPUT_JSON=$(terraform output -json 2>/dev/null || echo "{}")
-        if echo "$OUTPUT_JSON" | jq -e '.ecr_repository_url.value' > /dev/null 2>&1; then
-          ECR_URL=$(echo "$OUTPUT_JSON" | jq -r '.ecr_repository_url.value')
-          echo "ECR_URL=$ECR_URL" >> $GITHUB_OUTPUT
+        REPO_NAME="battery-butler-server"
+        if ! aws ecr describe-repositories --repository-names "$REPO_NAME" > /dev/null 2>&1; then
+          echo "Creating ECR repository: $REPO_NAME"
+          aws ecr create-repository \
+            --repository-name "$REPO_NAME" \
+            --image-tag-mutability MUTABLE
         else
-          echo "ECR not yet provisioned, will be created during apply"
-          echo "ECR_URL=pending" >> $GITHUB_OUTPUT
+          echo "ECR repository already exists: $REPO_NAME"
         fi
 
     - name: Login to Amazon ECR
@@ -205,6 +185,24 @@ jobs:
           -backend-config="region=${{ env.AWS_REGION }}" \
           -backend-config="dynamodb_table=${TF_LOCK_TABLE}" \
           -backend-config="encrypt=true"
+
+    # Import ECR if it exists but isn't in terraform state
+    - name: Import ECR Repository
+      working-directory: server/terraform
+      run: |
+        REPO_NAME="battery-butler-server"
+        # Check if ECR exists in AWS
+        if aws ecr describe-repositories --repository-names "$REPO_NAME" > /dev/null 2>&1; then
+          # Check if it's already in terraform state
+          if ! terraform state show aws_ecr_repository.server > /dev/null 2>&1; then
+            echo "Importing existing ECR repository into terraform state"
+            terraform import aws_ecr_repository.server "$REPO_NAME"
+          else
+            echo "ECR repository already in terraform state"
+          fi
+        else
+          echo "ECR repository does not exist, will be created by terraform"
+        fi
 
     - name: Terraform Apply
       working-directory: server/terraform
