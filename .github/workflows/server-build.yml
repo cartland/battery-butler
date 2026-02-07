@@ -118,13 +118,14 @@ jobs:
       working-directory: server/terraform
       run: |
         # Get ECR URL - it may not exist yet on first run
-        ECR_URL=$(terraform output -raw ecr_repository_url 2>/dev/null || echo "")
-        if [ -z "$ECR_URL" ]; then
-          echo "ECR not yet provisioned, will be created during apply"
-          # Use a placeholder - will be updated after terraform apply
-          echo "ECR_URL=pending" >> $GITHUB_OUTPUT
-        else
+        # Use -json to avoid ANSI escape codes in output
+        OUTPUT_JSON=$(terraform output -json 2>/dev/null || echo "{}")
+        if echo "$OUTPUT_JSON" | jq -e '.ecr_repository_url.value' > /dev/null 2>&1; then
+          ECR_URL=$(echo "$OUTPUT_JSON" | jq -r '.ecr_repository_url.value')
           echo "ECR_URL=$ECR_URL" >> $GITHUB_OUTPUT
+        else
+          echo "ECR not yet provisioned, will be created during apply"
+          echo "ECR_URL=pending" >> $GITHUB_OUTPUT
         fi
 
     - name: Login to Amazon ECR
