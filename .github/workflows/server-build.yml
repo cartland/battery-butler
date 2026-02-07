@@ -196,7 +196,10 @@ jobs:
           # Check if it's already in terraform state
           if ! terraform state show aws_ecr_repository.server > /dev/null 2>&1; then
             echo "Importing existing ECR repository into terraform state"
-            terraform import aws_ecr_repository.server "$REPO_NAME"
+            terraform import \
+              -var-file=environments/dev.tfvars \
+              -var="image_tag=${{ needs.build.outputs.image-tag }}" \
+              aws_ecr_repository.server "$REPO_NAME"
           else
             echo "ECR repository already in terraform state"
           fi
