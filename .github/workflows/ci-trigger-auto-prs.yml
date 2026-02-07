@@ -1,0 +1,80 @@
+# =============================================================================
+# CI TRIGGER FOR AUTO-GENERATED PRs
+# =============================================================================
+#
+# PURPOSE:
+#   Triggers CI on auto-generated PRs that don't get CI automatically.
+#
+#   When workflows use GITHUB_TOKEN (instead of BOT_PAT), GitHub prevents
+#   triggering other workflows to avoid infinite loops. This means:
+#   - Update Diagrams workflow creates/updates a PR
+#   - CI workflow never runs on that PR
+#   - PR is blocked but without visible status
+#
+#   This workflow uses `workflow_run` trigger to run CI after the auto-update
+#   workflows complete, ensuring auto-generated PRs get proper CI status.
+#
+# =============================================================================
+
+name: CI for Auto PRs
+
+on:
+  workflow_run:
+    workflows: ["Update Diagrams", "Update Screenshots"]
+    types: [completed]
+
+jobs:
+  trigger-ci:
+    # Only run if the triggering workflow succeeded and created changes
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger CI on auto-generated PR
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { owner, repo } = context.repo;
+
+            // Determine which branch to check based on the triggering workflow
+            const workflowName = context.payload.workflow_run.name;
+            let branch;
+            if (workflowName === 'Update Diagrams') {
+              branch = 'auto/update-diagrams';
+            } else if (workflowName === 'Update Screenshots') {
+              branch = 'auto/update-screenshots';
+            } else {
+              console.log(`Unknown workflow: ${workflowName}`);
+              return;
+            }
+
+            // Find open PR from this branch
+            const { data: prs } = await github.rest.pulls.list({
+              owner,
+              repo,
+              head: `${owner}:${branch}`,
+              state: 'open'
+            });
+
+            if (prs.length === 0) {
+              console.log(`No open PR found for branch ${branch}`);
+              return;
+            }
+
+            const pr = prs[0];
+            console.log(`Found PR #${pr.number}: ${pr.title}`);
+
+            // Trigger the CI workflow on this PR's head SHA
+            try {
+              await github.rest.actions.createWorkflowDispatch({
+                owner,
+                repo,
+                workflow_id: 'ci.yml',
+                ref: branch
+              });
+              console.log(`Triggered CI workflow on ${branch}`);
+            } catch (error) {
+              // workflow_dispatch might fail if already running
+              console.log(`Note: ${error.message}`);
+            }
