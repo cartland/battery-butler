@@ -1,0 +1,203 @@
+# =============================================================================
+# DEPLOY SERVER TO PRODUCTION
+# =============================================================================
+#
+# PURPOSE:
+#   Manually deploy a specific image tag to production with approval gate.
+#   Requires reviewer approval via GitHub Environments.
+#
+# USAGE:
+#   gh workflow run server-deploy-prod.yml -f image_tag=abc1234
+#
+# SETUP:
+#   Configure GitHub Environment "production" with:
+#   - Required reviewers (1+)
+#   - Optional: 5 minute wait timer
+#   - Branch protection: main only
+#
+# =============================================================================
+
+name: Server Deploy (Production)
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: 'Docker image tag to deploy (e.g., abc1234)'
+        required: true
+        type: string
+
+env:
+  AWS_REGION: us-west-1
+
+jobs:
+  # ===========================================================================
+  # Pre-flight checks before approval
+  # ===========================================================================
+  preflight:
+    name: Pre-flight Checks
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    env:
+      USE_OIDC: ${{ secrets.AWS_DEPLOY_ROLE_ARN != '' }}
+    outputs:
+      image-exists: ${{ steps.verify.outputs.exists }}
+
+    steps:
+    - name: Configure AWS Credentials (OIDC)
+      if: env.USE_OIDC == 'true'
+      uses: aws-actions/configure-aws-credentials@v5
+      with:
+        role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Configure AWS Credentials (Access Keys)
+      if: env.USE_OIDC != 'true'
+      uses: aws-actions/configure-aws-credentials@v5
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Verify Image Exists
+      id: verify
+      run: |
+        if aws ecr describe-images \
+          --repository-name battery-butler-server \
+          --image-ids imageTag=${{ inputs.image_tag }} > /dev/null 2>&1; then
+          echo "exists=true" >> $GITHUB_OUTPUT
+          echo "Image verified: ${{ inputs.image_tag }}"
+        else
+          echo "exists=false" >> $GITHUB_OUTPUT
+          echo "::error::Image not found: ${{ inputs.image_tag }}"
+          exit 1
+        fi
+
+    - name: Check if deployed to staging
+      run: |
+        # Check if this image is tagged as latest-staging
+        STAGING_TAG=$(aws ecr describe-images \
+          --repository-name battery-butler-server \
+          --image-ids imageTag=latest-staging \
+          --query 'imageDetails[0].imageTags' \
+          --output text 2>/dev/null || echo "")
+
+        if echo "$STAGING_TAG" | grep -q "${{ inputs.image_tag }}"; then
+          echo "Image was deployed to staging"
+        else
+          echo "::warning::Image ${{ inputs.image_tag }} may not have been tested in staging"
+          echo "Staging has: $STAGING_TAG"
+        fi
+
+  # ===========================================================================
+  # Deploy to Production (requires approval)
+  # ===========================================================================
+  deploy-prod:
+    name: Deploy to Production
+    needs: preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    permissions:
+      id-token: write
+      contents: read
+    env:
+      USE_OIDC: ${{ secrets.AWS_DEPLOY_ROLE_ARN != '' }}
+
+    steps:
+    - uses: actions/checkout@v6
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+
+    - name: Configure AWS Credentials (OIDC)
+      if: env.USE_OIDC == 'true'
+      uses: aws-actions/configure-aws-credentials@v5
+      with:
+        role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Configure AWS Credentials (Access Keys)
+      if: env.USE_OIDC != 'true'
+      uses: aws-actions/configure-aws-credentials@v5
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Terraform Init
+      working-directory: server/terraform
+      env:
+        TF_STATE_BUCKET: ${{ secrets.TF_STATE_BUCKET }}
+        TF_LOCK_TABLE: ${{ secrets.TF_LOCK_TABLE }}
+      run: |
+        terraform init \
+          -backend-config="bucket=${TF_STATE_BUCKET}" \
+          -backend-config="key=server/prod/terraform.tfstate" \
+          -backend-config="region=${{ env.AWS_REGION }}" \
+          -backend-config="dynamodb_table=${TF_LOCK_TABLE}" \
+          -backend-config="encrypt=true"
+
+    - name: Terraform Plan
+      id: plan
+      working-directory: server/terraform
+      run: |
+        terraform plan \
+          -var-file=environments/prod.tfvars \
+          -var="image_tag=${{ inputs.image_tag }}" \
+          -out=tfplan \
+          -no-color 2>&1 | tee plan-output.txt
+
+        # Show plan summary in job
+        echo "## Terraform Plan" >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
+        grep -E '(Plan:|No changes)' plan-output.txt >> $GITHUB_STEP_SUMMARY || true
+        echo '```' >> $GITHUB_STEP_SUMMARY
+
+    - name: Terraform Apply
+      working-directory: server/terraform
+      run: terraform apply tfplan
+
+    - name: Force ECS Deployment
+      run: |
+        aws ecs update-service \
+          --cluster battery-butler-prod-cluster \
+          --service battery-butler-prod-service \
+          --force-new-deployment
+
+    - name: Wait for Deployment
+      run: |
+        echo "Waiting for ECS service to stabilize..."
+        aws ecs wait services-stable \
+          --cluster battery-butler-prod-cluster \
+          --services battery-butler-prod-service
+        echo "Production deployment complete!"
+
+    - name: Tag Image as latest-prod
+      run: |
+        MANIFEST=$(aws ecr batch-get-image \
+          --repository-name battery-butler-server \
+          --image-ids imageTag=${{ inputs.image_tag }} \
+          --query 'images[].imageManifest' \
+          --output text)
+
+        aws ecr put-image \
+          --repository-name battery-butler-server \
+          --image-tag latest-prod \
+          --image-manifest "$MANIFEST" || true
+
+    - name: Deployment Summary
+      run: |
+        echo "## Production Deployment Complete" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "- **Image Tag:** ${{ inputs.image_tag }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Approved by:** ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Time:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Rollback" >> $GITHUB_STEP_SUMMARY
+        echo "If issues occur, rollback using:" >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
+        echo "gh workflow run server-rollback.yml -f environment=prod -f image_tag=<previous-tag>" >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
