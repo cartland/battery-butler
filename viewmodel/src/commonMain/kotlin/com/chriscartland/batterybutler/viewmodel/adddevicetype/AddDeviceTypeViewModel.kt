@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
 import me.tatarka.inject.annotations.Inject
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -34,6 +35,7 @@ class AddDeviceTypeViewModel(
     private val isAiBatchImportEnabledFlow =
         featureFlagProvider.observeEnabled(FeatureFlag.AI_BATCH_IMPORT)
 
+    private val suggestIconMutex = Mutex()
     private val suggestedIconFlow = MutableStateFlow<String?>(null)
     private val isSuggestingIconFlow = MutableStateFlow(false)
     private val aiMessagesFlow = MutableStateFlow<List<BatchOperationResult>>(emptyList())
@@ -63,17 +65,19 @@ class AddDeviceTypeViewModel(
 
     fun suggestIcon(name: String) {
         if (name.isBlank()) return
-        // Prevent rapid-fire API calls by skipping if already in progress
-        if (isSuggestingIconFlow.value) return
         viewModelScope.launch {
-            isSuggestingIconFlow.value = true
+            // Use tryLock to atomically check-and-acquire, preventing race conditions
+            // If already suggesting (mutex held), skip this request
+            if (!suggestIconMutex.tryLock()) return@launch
             try {
+                isSuggestingIconFlow.value = true
                 val icon = suggestDeviceIconUseCase(name)
                 if (icon != null && icon != "default") {
                     suggestedIconFlow.value = icon
                 }
             } finally {
                 isSuggestingIconFlow.value = false
+                suggestIconMutex.unlock()
             }
         }
     }
