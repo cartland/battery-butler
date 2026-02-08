@@ -66,6 +66,11 @@ kotlin {
             implementation(libs.googleid)
             implementation(libs.kotlinx.coroutines.play.services)
         }
+        val desktopMain by getting {
+            dependencies {
+                implementation(libs.kotlinx.serialization.json)
+            }
+        }
         iosMain.dependencies {
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.darwin)
