@@ -8,8 +8,8 @@
 # =============================================================================
 
 environment       = "prod"
-ecs_cpu           = 1024
-ecs_memory        = 2048
-ecs_desired_count = 2
-db_instance_class = "db.t3.medium"
-db_multi_az       = true
+ecs_cpu           = 256
+ecs_memory        = 512
+ecs_desired_count = 1
+db_instance_class = "db.t3.micro"
+db_multi_az       = false
