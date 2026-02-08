@@ -31,6 +31,36 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ---
 
+## 2026-02-07
+
+### Features
+
+- **Multi-environment server deployment**: Implemented build-once, deploy-many pipeline with dev (auto), staging (manual), and prod (manual + approval gate) environments ([#405](https://github.com/cartland/battery-butler/pull/405), [#407](https://github.com/cartland/battery-butler/pull/407)) - Same Docker image SHA is promoted through environments unchanged.
+
+- **Server destroy workflow**: Added `server-destroy.yml` to tear down staging or dev infrastructure on demand, with production explicitly blocked ([#411](https://github.com/cartland/battery-butler/pull/411)) - Needed for managing AWS free-tier RDS instance limits.
+
+### CI/CD Improvements
+
+- **CI path filtering for non-code files**: Excluded `server/*.json` and `server/*.md` from the CI code filter so beads-only and docs-only PRs skip expensive builds ([#413](https://github.com/cartland/battery-butler/pull/413)) - Reduces CI time from ~15min to ~30s for documentation changes.
+
+- **Terraform state lock prevention**: Removed ECR from Terraform management (now a `data` source), added concurrency groups to all deploy workflows, and removed the error-prone import step ([#407](https://github.com/cartland/battery-butler/pull/407)) - Eliminates the root cause of repeated DynamoDB state lock issues.
+
+- **Free-tier compatible infrastructure**: Downgraded staging and prod Terraform configs to `db.t3.micro` for AWS free-tier compatibility ([#409](https://github.com/cartland/battery-butler/pull/409), [#410](https://github.com/cartland/battery-butler/pull/410)).
+
+### Fixes
+
+- **Comprehensive IAM permissions**: Audited all Terraform resources and added missing IAM permissions for tag management, inline policies, and ECS operations ([#408](https://github.com/cartland/battery-butler/pull/408)) - Previous deploys failed iteratively due to missing permissions.
+
+- **Terraform import hanging**: Fixed `terraform import` hanging by passing `-var-file` to prevent interactive prompts ([#402](https://github.com/cartland/battery-butler/pull/402)).
+
+### Documentation
+
+- **Updated CLAUDE.md**: Added server deployment documentation, CI path filtering notes, and updated session resume points ([#413](https://github.com/cartland/battery-butler/pull/413)).
+
+- **Agent priority P0.5**: Added priority level for instruction/beads PRs that should be fast-tracked ([#404](https://github.com/cartland/battery-butler/pull/404)).
+
+---
+
 ## 2026-02-01
 
 ### CI/CD Improvements

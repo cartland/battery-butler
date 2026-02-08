@@ -2,71 +2,141 @@
 
 This directory contains the gRPC Server application and the Infrastructure-as-Code (Terraform) to deploy it to AWS.
 
-## 🏗 Architecture
+## Architecture
 
 The server is deployed as a containerized microservice on **AWS Fargate** (Serverless Compute).
 
-- **Registry**: Amazon ECR (stores Docker images built by Jib).
-- **Compute**: AWS ECS Cluster + Fargate Service (runs the `vince/battery-butler-server` container).
-- **Network**: VPC with Public Subnets (for Fargate/ALB) across 2 AZs.
-- **Load Balancer**: Application Load Balancer (ALB) handling HTTP/2 and gRPC traffic on Port 80/443.
+- **Registry**: Amazon ECR (stores Docker images built by Jib, managed outside Terraform).
+- **Compute**: AWS ECS Cluster + Fargate Service (runs the container).
+- **Network**: VPC with Public Subnets across 2 AZs.
+- **Load Balancer**: Network Load Balancer (NLB) forwarding TCP port 80 to gRPC port 50051.
 - **Database**: Amazon RDS (PostgreSQL) - `db.t3.micro`.
-- **Secrets**: Credentials managed via AWS Secrets Manager.
+- **Secrets**: Database credentials managed via AWS Secrets Manager.
 
-## 🚀 Deployment
+## Multi-Environment Deployment
 
-Deployment is fully automated via **GitHub Actions** (`.github/workflows/deploy-server.yml`).
+The server uses a **build once, deploy many** strategy. The same Docker image SHA is promoted through environments:
 
-### Prerequisites (GitHub Secrets)
+```
+Push to main -> Build Image -> Tag with SHA -> Push to ECR -> Auto-deploy to Dev
+                                                                     |
+                                              Manual trigger -> Deploy to Staging
+                                                                     |
+                                       Manual trigger + approval -> Deploy to Prod
+```
 
-To enable deployment, set the following Secrets in your GitHub Repository settings:
+### Environments
+
+| Environment | Trigger | State Key | GitHub Environment |
+|-------------|---------|-----------|-------------------|
+| **Dev** | Auto on push to main | `server/dev/terraform.tfstate` | `dev` |
+| **Staging** | Manual `workflow_dispatch` | `server/staging/terraform.tfstate` | `staging` |
+| **Production** | Manual + reviewer approval | `server/prod/terraform.tfstate` | `production` |
+
+Each environment has its own Terraform state and configuration in `terraform/environments/{env}.tfvars`.
+
+### Workflows
+
+| Workflow | File | Purpose |
+|----------|------|---------|
+| Build & Deploy Dev | `server-build.yml` | Build container, push to ECR, deploy to dev |
+| Deploy Staging | `server-deploy-staging.yml` | Promote image to staging |
+| Deploy Production | `server-deploy-prod.yml` | Promote image to prod (with approval) |
+| Destroy | `server-destroy.yml` | Tear down staging or dev infrastructure |
+| Rollback | `server-rollback.yml` | Emergency rollback to previous image |
+
+### Deploy Commands
+
+```bash
+# Check latest dev image tag from build logs
+gh run list --workflow=server-build.yml --limit 1
+
+# Promote to staging
+gh workflow run server-deploy-staging.yml -f image_tag=<sha>
+
+# Promote to production (requires approval on GitHub)
+gh workflow run server-deploy-prod.yml -f image_tag=<sha>
+
+# Destroy an environment
+gh workflow run server-destroy.yml -f environment=staging
+```
+
+### Testing Endpoints
+
+The NLB exposes port 80 (TCP), forwarding to gRPC on port 50051:
+
+```bash
+# Install grpcurl if needed: brew install grpcurl
+
+# Test an endpoint
+grpcurl -plaintext -proto protos/com/chriscartland/batterybutler/protos/battery_service.proto \
+  <nlb-dns>:80 com.chriscartland.batterybutler.proto.BatteryService/GetServerStatus
+```
+
+## Prerequisites (GitHub Secrets)
 
 | Secret Name | Description |
-| :--- | :--- |
-| `AWS_ACCESS_KEY_ID` | IAM User Access Key. **MUST have `AmazonEC2ContainerRegistryPowerUser` attached.** |
-| `AWS_SECRET_ACCESS_KEY` | IAM User Secret Key. |
+|:---|:---|
+| `AWS_ACCESS_KEY_ID` | IAM User Access Key |
+| `AWS_SECRET_ACCESS_KEY` | IAM User Secret Key |
+| `AWS_DEPLOY_ROLE_ARN` | (Optional) OIDC role ARN for keyless auth |
+| `TF_STATE_BUCKET` | S3 bucket for Terraform state |
+| `TF_LOCK_TABLE` | DynamoDB table for state locking |
+
+See `AWS_SETUP.md` for detailed setup instructions.
+
+## IAM Permissions
+
+The IAM policy is documented in `server/iam_policy.json`. This file is the source of truth but must be **manually synced to AWS Console** when updated. Key notes:
+
+- ECR is managed outside Terraform (created by AWS CLI in build job, read via `data` source)
+- Terraform tag operations require both `TagResource` and `UntagResource` permissions
+- Inline IAM policies require `iam:PutRolePolicy`, `iam:GetRolePolicy`, `iam:DeleteRolePolicy`
+
+## Terraform
+
+### Configuration
+
+Environment-specific settings are in `terraform/environments/`:
+- `dev.tfvars` - Minimal resources for development
+- `staging.tfvars` - Mid-tier for pre-production testing
+- `prod.tfvars` - Production configuration
+
+All currently use `db.t3.micro` for AWS free-tier compatibility.
 
 ### Manual Deployment (Local)
 
-You can also run the deployment manually from your machine if you have:
-1.  [Terraform](https://developer.hashicorp.com/terraform/downloads) installed.
-2.  AWS CLI configured (`aws configure`).
+Requires [Terraform](https://developer.hashicorp.com/terraform/downloads) and AWS CLI (`aws configure`).
 
-#### 1. Provision Infrastructure
 ```bash
 cd server/terraform
-terraform init
-terraform apply
+terraform init \
+  -backend-config="bucket=YOUR_BUCKET" \
+  -backend-config="key=server/dev/terraform.tfstate" \
+  -backend-config="region=us-west-1" \
+  -backend-config="dynamodb_table=battery-butler-tf-lock" \
+  -backend-config="encrypt=true"
+
+terraform apply -var-file=environments/dev.tfvars -var="image_tag=latest-dev"
 ```
 
-#### 2. Build & Deploy Container
-```bash
-# Push container to ECR
-./gradlew :server:app:jib
-
-# Force ECS to pick up new image
-aws ecs update-service --cluster battery-butler-cluster --service battery-butler-service --force-new-deployment
-```
-
-## 🛠 Docker (Jib)
+## Docker (Jib)
 
 This project uses [Jib](https://github.com/GoogleContainerTools/jib) to build optimized Docker images without a Docker daemon.
 
 - **Check Configuration**: `server/app/build.gradle.kts`
 - **Build to Daemon (Local)**: `./gradlew :server:app:jibDockerBuild`
 - **Build to Registry (Remote)**: `./gradlew :server:app:jib`
-- **Build to Tarball (Local Debug)**: `./gradlew :server:app:jibBuildTar` (Useful for verifying build without Docker or Credentials).
+- **Build to Tarball (Local Debug)**: `./gradlew :server:app:jibBuildTar`
 
-## 📚 AWS Glossary
+## AWS Glossary
 
-Here is a quick reference for the AWS resources created by Terraform:
-
-- **VPC (Virtual Private Cloud)**: A private network for your resources, isolated from the rest of the internet.
-- **ECS (Elastic Container Service)**: The orchestrator that runs your Docker containers.
-- **Fargate**: A serverless compute engine for ECS (runs containers without managing servers/EC2).
-- **ECR (Elastic Container Registry)**: Where your Docker images are stored (like GitHub for Docker).
-- **RDS (Relational Database Service)**: Managed SQL database service (hosting our PostgreSQL DB).
-- **ALB (Application Load Balancer)**: Distributes incoming network traffic across multiple targets (our ECS tasks). It handles the HTTP/2 and gRPC connections.
-- **IAM (Identity and Access Management)**: Manages permissions (roles, users) securely.
-- **AZ (Availability Zone)**: Distinct data centers within an AWS Region (e.g., `us-west-1a`) for redundancy.
-- **S3 (Simple Storage Service)**: Object storage (used here to store the "State" of Terraform infrastructure).
+- **VPC (Virtual Private Cloud)**: A private network for your resources.
+- **ECS (Elastic Container Service)**: Orchestrator that runs Docker containers.
+- **Fargate**: Serverless compute engine for ECS.
+- **ECR (Elastic Container Registry)**: Docker image storage.
+- **RDS (Relational Database Service)**: Managed PostgreSQL database.
+- **NLB (Network Load Balancer)**: Distributes TCP traffic to ECS tasks.
+- **IAM (Identity and Access Management)**: Manages permissions.
+- **AZ (Availability Zone)**: Distinct data centers within an AWS Region.
+- **S3 (Simple Storage Service)**: Object storage for Terraform state.

@@ -1,49 +1,56 @@
-# AWS Cost Estimate (Development Environment)
+# AWS Cost Estimate
 
-This document provides a monthly cost estimate for running the **Battery Butler** server on AWS using the provided Terraform configuration.
-Estimates are based on **us-west-1** (N. California) on-demand pricing as of Jan 2026.
+Monthly cost estimates for running Battery Butler server on AWS.
+Based on **us-west-1** (N. California) on-demand pricing as of Feb 2026.
 
-### Summary
-**Total Estimated Monthly Cost: ~$41.00**
+## Per-Environment Cost
 
-> **Note**: If your AWS account is less than 12 months old, you may be eligible for the **AWS Free Tier**, significantly reducing this cost (specifically for RDS).
+| Component | Dev | Staging | Prod |
+|-----------|-----|---------|------|
+| NLB | $16.43 | $16.43 | $16.43 |
+| Fargate (0.25 vCPU, 0.5 GB) | $9.01 | $9.01 | $9.01 |
+| RDS (db.t3.micro) | $14.71 | $14.71 | $14.71 |
+| Secrets Manager | $0.40 | $0.40 | $0.40 |
+| ECR + Data Transfer | ~$0.50 | - | - |
+| **Total** | **~$41** | **~$41** | **~$41** |
 
----
+> **Free Tier**: If your AWS account is less than 12 months old, RDS `db.t3.micro` (750 hours/month) and 20GB storage are free, reducing each environment to ~$26/month.
 
-### Detailed Breakdown
+> **Free Tier Limitation**: Max 2 RDS instances. Cannot run all 3 environments simultaneously on free tier.
 
-#### 1. Application Load Balancer (ALB)
-The entry point for gRPC traffic.
-*   **Hourly Charge**: $0.0225 per hour
-*   **Monthly Cost**: $0.0225 * 730 hours = **$16.43**
-*   *Note*: LCU (Load Balancer Capacity Unity) charges are negligible for development traffic.
+## Multi-Environment Total
 
-#### 2. Compute (AWS Fargate)
-Serverless compute for the container.
-*   **Configuration**: 0.25 vCPU, 0.5 GB Memory
-*   **vCPU Cost**: 0.25 * $0.04048/hour = $0.01012/hour
-*   **Memory Cost**: 0.5 * $0.004445/hour = $0.00222/hour
-*   **Total Hourly**: ~$0.0123/hour
-*   **Monthly Cost**: $0.0123 * 730 hours = **$9.01**
+| Scenario | Monthly Cost |
+|----------|-------------|
+| Dev only | ~$41 |
+| Dev + Prod (staging destroyed) | ~$82 |
+| Dev + Staging + Prod | ~$123 |
 
-#### 3. Database (Amazon RDS)
-Managed PostgreSQL instance.
-*   **Instance**: `db.t3.micro` (Single AZ)
-*   **Compute Cost**: $0.017/hour * 730 hours = **$12.41**
-*   **Storage Cost**: 20 GB (gp2) * $0.115/GB = **$2.30**
-*   **Total Monthly**: **$14.71**
-*   *Free Tier Strategy*: Eligible for 750 hours/month of `db.t3.micro` and 20GB storage for the first 12 months.
+## Detailed Breakdown
 
-#### 4. Secrets Manager
-Stores database credentials.
-*   **Cost**: **$0.40** per secret per month.
+### Network Load Balancer (NLB)
+- Hourly: $0.0225/hour
+- Monthly: $0.0225 * 730 = **$16.43**
 
-#### 5. Network & Registry
-*   **ECR (Registry)**: ~$0.10/GB month (Negligible for small images).
-*   **Data Transfer**: Free inbound. Outbound to internet is ~$0.09/GB (Negligible for dev).
-*   **NAT Gateway**: **$0.00** (Architecture uses Public Subnets for Fargate to avoid the ~$32/mo NAT Gateway cost).
+### Compute (AWS Fargate)
+- Config: 0.25 vCPU, 0.5 GB Memory, 1 task
+- vCPU: 0.25 * $0.04048/hour = $0.01012/hour
+- Memory: 0.5 * $0.004445/hour = $0.00222/hour
+- Monthly: ~$0.0123 * 730 = **$9.01**
 
-### Cost Optimization Tips
-1.  **Stop Fargate**: Set `desired_count = 0` in `compute.tf` when not in use to save ~$9/mo.
-2.  **Stop RDS**: Stop the RDS instance manually if not working for >7 days (AWS auto-starts it after 7 days) to save ~$12/mo.
-3.  **Delete Stack**: Run `terraform destroy` when not actively developing to drop costs to ~$0 (storage only).
+### Database (Amazon RDS)
+- Instance: `db.t3.micro` (Single AZ)
+- Compute: $0.017/hour * 730 = **$12.41**
+- Storage: 20 GB (gp2) * $0.115/GB = **$2.30**
+- Total: **$14.71**
+
+### Secrets Manager
+- Per secret: **$0.40/month**
+
+## Cost Optimization Tips
+
+1. **Destroy unused environments**: `gh workflow run server-destroy.yml -f environment=staging` — saves ~$41/month per environment.
+2. **Stop Fargate**: Set `ecs_desired_count = 0` in tfvars when not in use — saves ~$9/month.
+3. **Stop RDS**: Stop the instance manually for up to 7 days (AWS auto-restarts after 7 days) — saves ~$12/month.
+4. **Full teardown**: `terraform destroy` when not developing — drops to ~$0.
+5. **Share RDS**: Long-term, consider sharing one RDS instance across environments with separate databases (requires Terraform refactoring, tracked in `bb-jj7`).
