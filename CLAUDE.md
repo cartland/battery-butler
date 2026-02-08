@@ -313,26 +313,75 @@ git commit -m "chore(beads): Update task tracking"
 - Push beads commits promptly so other collaborators see task updates
 - Use descriptive commit messages that reference affected task IDs
 
+### Server Deployment
+
+Multi-environment deployment pipeline: dev → staging → prod. Same Docker image SHA promoted through environments.
+
+**Workflows:**
+- `server-build.yml` — Auto-deploys to dev on push to main (server changes)
+- `server-deploy-staging.yml` — Manual trigger with `image_tag` input
+- `server-deploy-prod.yml` — Manual trigger with approval gate (GitHub Environment)
+- `server-destroy.yml` — Tear down staging/dev infrastructure
+- `server-rollback.yml` — Emergency rollback
+
+**Deploy commands:**
+```bash
+# Check latest dev image tag
+gh run list --workflow=server-build.yml --limit 1
+
+# Promote to staging
+gh workflow run server-deploy-staging.yml -f image_tag=<sha>
+
+# Promote to prod (requires approval)
+gh workflow run server-deploy-prod.yml -f image_tag=<sha>
+
+# Test endpoints
+grpcurl -plaintext -proto protos/com/chriscartland/batterybutler/protos/battery_service.proto \
+  <nlb-dns>:80 com.chriscartland.batterybutler.proto.BatteryService/GetServerStatus
+```
+
+**Key architecture decisions:**
+- ECR is managed outside terraform (data source, not resource) to avoid state lock issues
+- Each environment has separate terraform state (`server/{env}/terraform.tfstate`)
+- Concurrency groups prevent parallel deploys to same environment
+- IAM permissions documented in `server/iam_policy.json` — update AWS Console manually when changed
+
+**AWS free-tier limitations:**
+- Only `db.t3.micro` RDS instances allowed
+- Max 2 RDS instances — can't run dev + staging + prod simultaneously
+- Use `server-destroy.yml` to tear down unused environments
+
+### CI Path Filtering
+
+CI uses `dorny/paths-filter` to skip expensive builds for non-code changes:
+- **Beads-only changes** (`.beads/**`): Skip all builds, only run `ci` gate
+- **Docs-only changes** (`*.md`, `.agent/**`): Skip all builds
+- **Non-code server files** (`server/*.json`, `server/*.md`): Skip all builds
+- **Code changes**: Run full build matrix (Android, iOS, Desktop, Server)
+
 ## Session Resume Points
 
-**Last Updated: 2026-02-03**
+**Last Updated: 2026-02-07**
 
-### Ready Tasks (P2)
+### Ready Tasks
 Run `bd ready` to see current tasks. Top priorities:
-1. `bb-d0t` - Support remote delete in sync protocol (offline-first)
-2. `bb-9k1` - Fix screenshot test time consistency
+1. `bb-jj7` (P3 epic) — Split terraform into shared and per-environment configs
+2. `bb-sys` (P3 epic) — Login: Google Sign-In with ID Token Verification
 
 ### Recent Completions
-- Added `DataResult`/`DataError` typed error handling (PR #254)
-- Added Dependabot config and ADR-003 for alpha dependencies
-- Merged 5 Dependabot PRs (kotlin, compose, protobuf, cache, create-pull-request)
+- Multi-environment server deployment (PRs #405-#411)
+- Comprehensive IAM permissions audit and fix (PR #408)
+- Server deployed to dev and prod (image `eed5b36`)
+- Staging destroyed to free RDS quota (free-tier limit)
 
 ### Known Issues
-- **Screenshot tests with relative time** are flaky - components showing "X days ago" change based on test run date (tracked in `bb-9k1`)
+- **Screenshot tests with relative time** are flaky — components showing "X days ago" change based on test run date (tracked in `bb-9k1`)
 - **Dependabot workflow PRs** need manual merge via web UI
+- **Staging unavailable** — destroyed to stay within free-tier RDS instance quota; re-deploy after AWS account upgrade
 
 ### Context
 - CI uses unified "ci" job for required checks
 - Docs-only PRs skip expensive builds via path filtering
 - Accelerated development strategy in `.agent/AGENTS.md`
-- **Never use sleep** - find productive work while CI runs
+- **Never use sleep** — find productive work while CI runs
+- Server NLB endpoints expose port 80 (TCP → gRPC 50051); no HTTP health endpoint exposed externally
