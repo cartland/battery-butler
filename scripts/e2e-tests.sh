@@ -17,15 +17,15 @@ else
     SERVER_PID=$!
     trap "kill $SERVER_PID 2>/dev/null || true" EXIT
 
-    # Poll until gRPC port is ready (up to 60s — server compile can be slow)
-    echo "Waiting for server to start on port 50051..."
-    for i in $(seq 1 60); do
-        if nc -z localhost 50051 2>/dev/null; then
-            echo "Server is ready on port 50051."
+    # Poll until server is ready (up to 30s)
+    echo "Waiting for server to start..."
+    for i in $(seq 1 30); do
+        if curl -s http://localhost:8080/ >/dev/null 2>&1; then
+            echo "Server is ready."
             break
         fi
-        if [ "$i" -eq 60 ]; then
-            echo "ERROR: Server failed to start within 60 seconds."
+        if [ "$i" -eq 30 ]; then
+            echo "ERROR: Server failed to start within 30 seconds."
             exit 1
         fi
         sleep 1
