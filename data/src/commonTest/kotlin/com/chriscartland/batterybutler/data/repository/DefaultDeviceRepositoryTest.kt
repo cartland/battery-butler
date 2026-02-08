@@ -9,12 +9,17 @@ import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.SyncStatus
 import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -44,13 +49,26 @@ class DefaultDeviceRepositoryTest {
         Dispatchers.resetMain()
     }
 
+    /**
+     * Creates a [DefaultDeviceRepository] with a child scope that shares the test dispatcher.
+     * The returned scope must be cancelled at the end of the test to stop the subscribe retry loop.
+     */
+    private fun createRepo(
+        local: FakeLocalDataSource,
+        remote: FakeRemoteDataSource,
+    ): Pair<DefaultDeviceRepository, CoroutineScope> {
+        val repoScope = CoroutineScope(testDispatcher + Job())
+        val repo = DefaultDeviceRepository(local, remote, repoScope)
+        return repo to repoScope
+    }
+
     // Device Tests
     @Test
     fun `addDevice saves to local and pushes to remote`() =
         runTest(testDispatcher) {
             val local = FakeLocalDataSource()
             val remote = FakeRemoteDataSource()
-            val repo = DefaultDeviceRepository(local, remote, this)
+            val (repo, repoScope) = createRepo(local, remote)
             val device = createDevice(id = "1", name = "Test Device")
 
             repo.addDevice(device)
@@ -60,6 +78,7 @@ class DefaultDeviceRepositoryTest {
             assertEquals(device, local.devices[0])
             assertEquals(1, remote.pushedUpdates.size)
             assertEquals(device, remote.pushedUpdates[0].devices.firstOrNull())
+            repoScope.cancel()
         }
 
     @Test
@@ -67,7 +86,7 @@ class DefaultDeviceRepositoryTest {
         runTest(testDispatcher) {
             val local = FakeLocalDataSource()
             val remote = FakeRemoteDataSource()
-            val repo = DefaultDeviceRepository(local, remote, this)
+            val (repo, repoScope) = createRepo(local, remote)
             val device = createDevice(id = "1", name = "Updated Device")
 
             repo.updateDevice(device)
@@ -75,6 +94,7 @@ class DefaultDeviceRepositoryTest {
 
             assertTrue(local.updatedDevices.contains(device))
             assertEquals(device, remote.pushedUpdates[0].devices.firstOrNull())
+            repoScope.cancel()
         }
 
     @Test
@@ -82,12 +102,13 @@ class DefaultDeviceRepositoryTest {
         runTest(testDispatcher) {
             val local = FakeLocalDataSource()
             val remote = FakeRemoteDataSource()
-            val repo = DefaultDeviceRepository(local, remote, this)
+            val (repo, repoScope) = createRepo(local, remote)
 
             repo.deleteDevice("device-1")
             advanceUntilIdle()
 
             assertTrue(local.deletedDeviceIds.contains("device-1"))
+            repoScope.cancel()
         }
 
     // Device Type Tests
@@ -96,7 +117,7 @@ class DefaultDeviceRepositoryTest {
         runTest(testDispatcher) {
             val local = FakeLocalDataSource()
             val remote = FakeRemoteDataSource()
-            val repo = DefaultDeviceRepository(local, remote, this)
+            val (repo, repoScope) = createRepo(local, remote)
             val type = DeviceType(id = "type-1", name = "Smoke Detector")
 
             repo.addDeviceType(type)
@@ -105,6 +126,7 @@ class DefaultDeviceRepositoryTest {
             assertEquals(1, local.deviceTypes.size)
             assertEquals(type, local.deviceTypes[0])
             assertEquals(type, remote.pushedUpdates[0].deviceTypes.firstOrNull())
+            repoScope.cancel()
         }
 
     @Test
@@ -112,7 +134,7 @@ class DefaultDeviceRepositoryTest {
         runTest(testDispatcher) {
             val local = FakeLocalDataSource()
             val remote = FakeRemoteDataSource()
-            val repo = DefaultDeviceRepository(local, remote, this)
+            val (repo, repoScope) = createRepo(local, remote)
             val type = DeviceType(id = "type-1", name = "Updated Type")
 
             repo.updateDeviceType(type)
@@ -120,6 +142,7 @@ class DefaultDeviceRepositoryTest {
 
             assertTrue(local.updatedDeviceTypes.contains(type))
             assertEquals(type, remote.pushedUpdates[0].deviceTypes.firstOrNull())
+            repoScope.cancel()
         }
 
     @Test
@@ -127,12 +150,13 @@ class DefaultDeviceRepositoryTest {
         runTest(testDispatcher) {
             val local = FakeLocalDataSource()
             val remote = FakeRemoteDataSource()
-            val repo = DefaultDeviceRepository(local, remote, this)
+            val (repo, repoScope) = createRepo(local, remote)
 
             repo.deleteDeviceType("type-1")
             advanceUntilIdle()
 
             assertTrue(local.deletedDeviceTypeIds.contains("type-1"))
+            repoScope.cancel()
         }
 
     // Battery Event Tests
@@ -141,7 +165,7 @@ class DefaultDeviceRepositoryTest {
         runTest(testDispatcher) {
             val local = FakeLocalDataSource()
             val remote = FakeRemoteDataSource()
-            val repo = DefaultDeviceRepository(local, remote, this)
+            val (repo, repoScope) = createRepo(local, remote)
             val event = createBatteryEvent(id = "event-1", deviceId = "device-1")
 
             repo.addEvent(event)
@@ -150,6 +174,7 @@ class DefaultDeviceRepositoryTest {
             assertEquals(1, local.events.size)
             assertEquals(event, local.events[0])
             assertEquals(event, remote.pushedUpdates[0].events.firstOrNull())
+            repoScope.cancel()
         }
 
     @Test
@@ -157,7 +182,7 @@ class DefaultDeviceRepositoryTest {
         runTest(testDispatcher) {
             val local = FakeLocalDataSource()
             val remote = FakeRemoteDataSource()
-            val repo = DefaultDeviceRepository(local, remote, this)
+            val (repo, repoScope) = createRepo(local, remote)
             val event = createBatteryEvent(id = "event-1", deviceId = "device-1")
 
             repo.updateEvent(event)
@@ -165,6 +190,7 @@ class DefaultDeviceRepositoryTest {
 
             assertTrue(local.updatedEvents.contains(event))
             assertEquals(event, remote.pushedUpdates[0].events.firstOrNull())
+            repoScope.cancel()
         }
 
     @Test
@@ -172,12 +198,13 @@ class DefaultDeviceRepositoryTest {
         runTest(testDispatcher) {
             val local = FakeLocalDataSource()
             val remote = FakeRemoteDataSource()
-            val repo = DefaultDeviceRepository(local, remote, this)
+            val (repo, repoScope) = createRepo(local, remote)
 
             repo.deleteEvent("event-1")
             advanceUntilIdle()
 
             assertTrue(local.deletedEventIds.contains("event-1"))
+            repoScope.cancel()
         }
 
     // Flow delegation tests
@@ -188,11 +215,12 @@ class DefaultDeviceRepositoryTest {
             val remote = FakeRemoteDataSource()
             val device = createDevice(id = "1", name = "Test")
             local.setDevicesForFlow(listOf(device))
-            val repo = DefaultDeviceRepository(local, remote, this)
+            val (repo, repoScope) = createRepo(local, remote)
 
             // The repository delegates to local
             val flow = repo.getAllDevices()
             assertEquals(local.getAllDevices(), flow)
+            repoScope.cancel()
         }
 
     @Test
@@ -202,10 +230,11 @@ class DefaultDeviceRepositoryTest {
             val remote = FakeRemoteDataSource()
             val type = DeviceType(id = "type-1", name = "Test")
             local.setDeviceTypesForFlow(listOf(type))
-            val repo = DefaultDeviceRepository(local, remote, this)
+            val (repo, repoScope) = createRepo(local, remote)
 
             val flow = repo.getAllDeviceTypes()
             assertEquals(local.getAllDeviceTypes(), flow)
+            repoScope.cancel()
         }
 
     // Remote push failure test
@@ -215,7 +244,7 @@ class DefaultDeviceRepositoryTest {
             val local = FakeLocalDataSource()
             val remote = FakeRemoteDataSource()
             remote.shouldFail = true
-            val repo = DefaultDeviceRepository(local, remote, this)
+            val (repo, repoScope) = createRepo(local, remote)
             val device = createDevice(id = "1", name = "Test Device")
 
             repo.addDevice(device)
@@ -225,6 +254,7 @@ class DefaultDeviceRepositoryTest {
             assertEquals(1, local.devices.size)
             // Remote push was attempted
             assertEquals(1, remote.pushedUpdates.size)
+            repoScope.cancel()
         }
 
     // SyncStatus state transition tests
@@ -234,7 +264,7 @@ class DefaultDeviceRepositoryTest {
             val local = FakeLocalDataSource()
             val remote = FakeRemoteDataSource()
             remote.suspendPush = true // Suspend to capture intermediate state
-            val repo = DefaultDeviceRepository(local, remote, this)
+            val (repo, repoScope) = createRepo(local, remote)
             val device = createDevice(id = "1", name = "Test Device")
 
             // Collect sync status values
@@ -247,7 +277,7 @@ class DefaultDeviceRepositoryTest {
             // Advance just enough for the push to start but not complete
             testDispatcher.scheduler.advanceTimeBy(10)
 
-            // Should have seen Idle -> Syncing
+            // Should have seen Syncing (from subscribe init or from push)
             assertTrue(states.any { it is SyncStatus.Syncing })
 
             // Let the push complete
@@ -255,6 +285,7 @@ class DefaultDeviceRepositoryTest {
             advanceUntilIdle()
 
             job.cancel()
+            repoScope.cancel()
         }
 
     @Test
@@ -263,7 +294,7 @@ class DefaultDeviceRepositoryTest {
             val local = FakeLocalDataSource()
             val remote = FakeRemoteDataSource()
             remote.shouldFail = true
-            val repo = DefaultDeviceRepository(local, remote, this)
+            val (repo, repoScope) = createRepo(local, remote)
             val device = createDevice(id = "1", name = "Test Device")
 
             repo.addDevice(device)
@@ -272,6 +303,7 @@ class DefaultDeviceRepositoryTest {
             // After failed push, syncStatus should be Failed
             val status = repo.syncStatus.value
             assertTrue(status is SyncStatus.Failed, "Expected Failed but got $status")
+            repoScope.cancel()
         }
 
     @Test
@@ -279,7 +311,7 @@ class DefaultDeviceRepositoryTest {
         runTest(testDispatcher) {
             val local = FakeLocalDataSource()
             val remote = FakeRemoteDataSource()
-            val repo = DefaultDeviceRepository(local, remote, this)
+            val (repo, repoScope) = createRepo(local, remote)
             val device = createDevice(id = "1", name = "Test Device")
 
             repo.addDevice(device)
@@ -288,6 +320,7 @@ class DefaultDeviceRepositoryTest {
             // After successful push, syncStatus should be Success (UI layer handles dismissal)
             val status = repo.syncStatus.value
             assertEquals(SyncStatus.Success, status)
+            repoScope.cancel()
         }
 
     @Test
@@ -295,7 +328,7 @@ class DefaultDeviceRepositoryTest {
         runTest(testDispatcher) {
             val local = FakeLocalDataSource()
             val remote = FakeRemoteDataSource()
-            val repo = DefaultDeviceRepository(local, remote, this)
+            val (repo, repoScope) = createRepo(local, remote)
             val device = createDevice(id = "1", name = "Test Device")
 
             repo.addDevice(device)
@@ -309,6 +342,7 @@ class DefaultDeviceRepositoryTest {
 
             // Should return to Idle
             assertEquals(SyncStatus.Idle, repo.syncStatus.value)
+            repoScope.cancel()
         }
 
     private fun createDevice(
@@ -428,7 +462,7 @@ class FakeRemoteDataSource : RemoteDataSource {
 
     override val state: StateFlow<RemoteDataSourceState> = MutableStateFlow(RemoteDataSourceState.NotStarted)
 
-    override fun subscribe(): Flow<RemoteUpdate> = emptyFlow()
+    override fun subscribe(): Flow<RemoteUpdate> = flow { awaitCancellation() }
 
     override suspend fun push(update: RemoteUpdate): Boolean {
         pushedUpdates.add(update)
