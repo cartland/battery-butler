@@ -54,6 +54,8 @@ jobs:
               - 'fixtures/**'
               - 'ai/**'
               - 'server/**'
+              - '!server/*.md'
+              - '!server/*.json'
               - 'ios-app-*/**'
               - 'android-screenshot-tests/**'
               - 'scripts/**'
