@@ -20,6 +20,7 @@ import com.chriscartland.batterybutler.usecase.di.UseCaseComponent
 import com.chriscartland.batterybutler.viewmodel.addbatteryevent.AddBatteryEventViewModel
 import com.chriscartland.batterybutler.viewmodel.adddevice.AddDeviceViewModel
 import com.chriscartland.batterybutler.viewmodel.adddevicetype.AddDeviceTypeViewModel
+import com.chriscartland.batterybutler.viewmodel.aichat.AiChatViewModel
 import com.chriscartland.batterybutler.viewmodel.devicedetail.DeviceDetailViewModelFactory
 import com.chriscartland.batterybutler.viewmodel.devicetypes.DeviceTypeListViewModel
 import com.chriscartland.batterybutler.viewmodel.devicetypes.EditDeviceTypeViewModelFactory
@@ -62,7 +63,9 @@ abstract class AppComponent(
     abstract val deviceTypeListViewModel: DeviceTypeListViewModel
     abstract val editDeviceTypeViewModelFactory: EditDeviceTypeViewModelFactory
     abstract val deviceRepository: DeviceRepository
+    abstract val aiChatViewModel: AiChatViewModel
     abstract val settingsViewModel: SettingsViewModel
+    abstract val featureFlagProvider: FeatureFlagProvider
     abstract val networkModeRepository: NetworkModeRepository
     abstract override val appScope: CoroutineScope
 
