@@ -1,0 +1,109 @@
+# =============================================================================
+# DESTROY SERVER ENVIRONMENT
+# =============================================================================
+#
+# PURPOSE:
+#   Tear down all infrastructure for a given environment.
+#   Use with caution - this permanently deletes resources.
+#
+# USAGE:
+#   gh workflow run server-destroy.yml -f environment=staging
+#
+# =============================================================================
+
+name: Server Destroy Environment
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to destroy (staging or dev)'
+        required: true
+        type: choice
+        options:
+          - staging
+          - dev
+
+concurrency:
+  group: deploy-${{ inputs.environment }}
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: us-west-1
+
+jobs:
+  destroy:
+    name: Destroy ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: ${{ inputs.environment }}
+    permissions:
+      id-token: write
+      contents: read
+    env:
+      USE_OIDC: ${{ secrets.AWS_DEPLOY_ROLE_ARN != '' }}
+
+    steps:
+    - uses: actions/checkout@v6
+
+    - name: Block production destroy
+      if: inputs.environment == 'prod' || inputs.environment == 'production'
+      run: |
+        echo "::error::Cannot destroy production via this workflow"
+        exit 1
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+
+    - name: Configure AWS Credentials (OIDC)
+      if: env.USE_OIDC == 'true'
+      uses: aws-actions/configure-aws-credentials@v5
+      with:
+        role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Configure AWS Credentials (Access Keys)
+      if: env.USE_OIDC != 'true'
+      uses: aws-actions/configure-aws-credentials@v5
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Terraform Init
+      working-directory: server/terraform
+      env:
+        TF_STATE_BUCKET: ${{ secrets.TF_STATE_BUCKET }}
+        TF_LOCK_TABLE: ${{ secrets.TF_LOCK_TABLE }}
+      run: |
+        terraform init \
+          -backend-config="bucket=${TF_STATE_BUCKET}" \
+          -backend-config="key=server/${{ inputs.environment }}/terraform.tfstate" \
+          -backend-config="region=${{ env.AWS_REGION }}" \
+          -backend-config="dynamodb_table=${TF_LOCK_TABLE}" \
+          -backend-config="encrypt=true"
+
+    - name: Remove ECR from Terraform State
+      working-directory: server/terraform
+      run: |
+        if terraform state show aws_ecr_repository.server > /dev/null 2>&1; then
+          echo "Removing ECR repository from terraform state (managed externally)"
+          terraform state rm aws_ecr_repository.server
+        else
+          echo "ECR not in terraform state (expected)"
+        fi
+
+    - name: Terraform Destroy
+      working-directory: server/terraform
+      run: |
+        terraform destroy -auto-approve \
+          -var-file=environments/${{ inputs.environment }}.tfvars \
+          -var="image_tag=destroy"
+
+    - name: Destroy Summary
+      run: |
+        echo "## Environment Destroyed" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "- **Environment:** ${{ inputs.environment }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Destroyed by:** ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Time:** $(date -u +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
