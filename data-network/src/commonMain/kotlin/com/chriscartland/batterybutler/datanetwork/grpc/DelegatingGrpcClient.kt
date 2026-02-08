@@ -28,6 +28,7 @@ class DelegatingGrpcClient(
     private val factory: (String) -> GrpcClient,
     private val networkModeRepository: NetworkModeRepository,
     private val scope: CoroutineScope,
+    private val tokenProvider: (() -> String?)? = null,
 ) : GrpcClient() {
     private val currentDelegate = MutableStateFlow<GrpcClientState>(GrpcClientState.Uninitialized)
     val clientState: StateFlow<GrpcClientState> = currentDelegate
@@ -75,13 +76,22 @@ class DelegatingGrpcClient(
         val state = currentDelegate.value
         val delegate = (state as? GrpcClientState.Ready)?.client
             ?: throw IOException("Network client not ready. State: $state")
-        return delegate.newCall(method)
+        val call = delegate.newCall(method)
+        call.requestMetadata = call.requestMetadata + authHeaders()
+        return call
     }
 
     override fun <S : Any, R : Any> newStreamingCall(method: GrpcMethod<S, R>): GrpcStreamingCall<S, R> {
         val state = currentDelegate.value
         val delegate = (state as? GrpcClientState.Ready)?.client
             ?: throw IOException("Network client not ready. State: $state")
-        return delegate.newStreamingCall(method)
+        val call = delegate.newStreamingCall(method)
+        call.requestMetadata = call.requestMetadata + authHeaders()
+        return call
+    }
+
+    private fun authHeaders(): Map<String, String> {
+        val token = tokenProvider?.invoke() ?: return emptyMap()
+        return mapOf("authorization" to "Bearer $token")
     }
 }

@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package com.chriscartland.batterybutler.proto;
+
+option java_multiple_files = true;
+
+// Authentication service for verifying Google ID tokens and issuing session tokens.
+service AuthService {
+  // Verify a Google ID token and receive a server session token.
+  rpc VerifyToken (VerifyTokenRequest) returns (VerifyTokenResponse);
+}
+
+message VerifyTokenRequest {
+  // The Google ID token obtained from Google Sign-In.
+  string google_id_token = 1;
+}
+
+message VerifyTokenResponse {
+  // Whether the token was valid and verification succeeded.
+  bool valid = 1;
+  // Server-issued session token for authenticating subsequent gRPC calls.
+  // Empty if valid is false.
+  string session_token = 2;
+  // Server-assigned user ID.
+  string user_id = 3;
+  // User's email from the verified token.
+  string email = 4;
+  // User's display name from the verified token.
+  string display_name = 5;
+  // User's photo URL from the verified token.
+  string photo_url = 6;
+  // When the session token expires (epoch milliseconds).
+  int64 expires_at_ms = 7;
+  // Error message if valid is false.
+  string error_message = 8;
+}
