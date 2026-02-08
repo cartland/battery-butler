@@ -13,5 +13,5 @@ environment       = "staging"
 ecs_cpu           = 512
 ecs_memory        = 1024
 ecs_desired_count = 1
-db_instance_class = "db.t3.small"
+db_instance_class = "db.t3.micro"
 db_multi_az       = false
