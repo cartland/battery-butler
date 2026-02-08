@@ -11,11 +11,11 @@ import kotlinx.coroutines.flow.flow
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.javatime.timestamp
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.update
+import org.jetbrains.exposed.sql.upsert
 import kotlin.time.ExperimentalTime
 import kotlin.time.toJavaInstant
 import kotlin.time.toKotlinInstant
@@ -113,7 +113,7 @@ class PostgresDeviceRepository : ServerDeviceRepository {
 
     override suspend fun addDevice(device: Device) {
         newSuspendedTransaction {
-            Devices.insert {
+            Devices.upsert {
                 it[id] = device.id
                 it[name] = device.name
                 it[typeId] = device.typeId
@@ -149,7 +149,7 @@ class PostgresDeviceRepository : ServerDeviceRepository {
 
     override suspend fun addDeviceType(type: DeviceType) {
         newSuspendedTransaction {
-            DeviceTypes.insert {
+            DeviceTypes.upsert {
                 it[id] = type.id
                 it[name] = type.name
                 it[batteryType] = type.batteryType
@@ -181,7 +181,7 @@ class PostgresDeviceRepository : ServerDeviceRepository {
 
     override suspend fun addEvent(event: BatteryEvent) {
         newSuspendedTransaction {
-            BatteryEvents.insert {
+            BatteryEvents.upsert {
                 it[id] = event.id
                 it[deviceId] = event.deviceId
                 it[timestamp] = event.date.toJavaInstant()
