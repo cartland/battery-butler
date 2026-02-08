@@ -66,8 +66,8 @@ This project uses Gradle for build and test orchestration.
 *   Run on an iPhone Simulator or Device.
 
 ### Server (gRPC)
-*   Run locally: `./gradlew :server:app:run`
-*   The server listens on port `50051` by default.
+*   Run locally: `./gradlew :server:app:run` (listens on port `50051`)
+*   Deploy to AWS: Push to main auto-deploys to dev. See `server/README.md` for multi-environment deployment (dev/staging/prod).
 
 ## 🔑 AI Configuration (Optional)
 
