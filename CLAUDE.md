@@ -17,6 +17,8 @@ When you discover something that would help future sessions:
 
 This ensures continuous learning across sessions.
 
+**Run `/dump-context` before ending any session where significant work was done.** This captures tasks, decisions, and operational knowledge into beads and documentation so nothing is lost between sessions.
+
 ## PR Merge Workflow (Quick Reference)
 
 See `.agent/AGENTS.md` for full details. Key rules:
