@@ -3,14 +3,19 @@ package com.chriscartland.batterybutler.viewmodel.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chriscartland.batterybutler.domain.model.AppVersion
+import com.chriscartland.batterybutler.domain.model.AuthState
 import com.chriscartland.batterybutler.domain.model.NetworkMode
+import com.chriscartland.batterybutler.domain.model.User
+import com.chriscartland.batterybutler.domain.repository.AuthRepository
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
 import com.chriscartland.batterybutler.usecase.ExportDataUseCase
 import com.chriscartland.batterybutler.usecase.GetAppVersionUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
@@ -20,6 +25,7 @@ class SettingsViewModel(
     private val exportDataUseCase: ExportDataUseCase,
     private val networkModeRepository: NetworkModeRepository,
     private val getAppVersionUseCase: GetAppVersionUseCase,
+    private val authRepository: AuthRepository,
 ) : ViewModel() {
     val networkMode: StateFlow<NetworkMode> = networkModeRepository.networkMode
         .stateIn(
@@ -44,6 +50,24 @@ class SettingsViewModel(
     fun onNetworkModeSelected(mode: NetworkMode) {
         viewModelScope.launch {
             networkModeRepository.setNetworkMode(mode)
+        }
+    }
+
+    val currentUser: StateFlow<User?> = authRepository.authState
+        .map { state ->
+            when (state) {
+                is AuthState.Authenticated -> state.user
+                else -> null
+            }
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+    val isSignedIn: StateFlow<Boolean> = authRepository.authState
+        .map { it is AuthState.Authenticated }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+
+    fun signOut() {
+        viewModelScope.launch {
+            authRepository.signOut()
         }
     }
 
