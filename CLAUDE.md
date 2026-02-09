@@ -361,9 +361,24 @@ CI uses `dorny/paths-filter` to skip expensive builds for non-code changes:
 - **Non-code server files** (`server/*.json`, `server/*.md`): Skip all builds
 - **Code changes**: Run full build matrix (Android, iOS, Desktop, Server)
 
+### Auto-Generated Content (Diagrams, Screenshots)
+
+**Workflows NEVER push commits to PR branches.** Generated content is updated post-merge on `main` via follow-up PRs.
+
+**How it works:**
+1. Code merges to `main` → `auto-generate.yml` runs
+2. Generates diagrams + analysis + screenshots
+3. Creates follow-up PRs on `auto/update-generated-content` and `auto/update-screenshots`
+4. Uses `GITHUB_TOKEN` (not `BOT_PAT`) — loop-proof by design
+5. `ci-trigger-auto-prs.yml` dispatches CI on the auto PRs
+
+**During PR review:** A non-blocking `check_generated_content` job in CI warns if diagrams/analysis would change (informational only, does not block merge).
+
+**BOT_PAT usage:** Only for dispatching CI workflows on auto PRs (never for pushing commits).
+
 ## Session Resume Points
 
-**Last Updated: 2026-02-07**
+**Last Updated: 2026-02-08**
 
 ### Ready Tasks
 Run `bd ready` to see current tasks. Top priorities:
@@ -371,10 +386,9 @@ Run `bd ready` to see current tasks. Top priorities:
 2. `bb-sys` (P3 epic) — Login: Google Sign-In with ID Token Verification
 
 ### Recent Completions
+- CI architecture reset: workflows never push to PR branches (PRs #429, #430)
 - Multi-environment server deployment (PRs #405-#411)
-- Comprehensive IAM permissions audit and fix (PR #408)
 - Server deployed to dev and prod (image `eed5b36`)
-- Staging destroyed to free RDS quota (free-tier limit)
 
 ### Known Issues
 - **Screenshot tests with relative time** are flaky — components showing "X days ago" change based on test run date (tracked in `bb-9k1`)
@@ -384,6 +398,7 @@ Run `bd ready` to see current tasks. Top priorities:
 ### Context
 - CI uses unified "ci" job for required checks
 - Docs-only PRs skip expensive builds via path filtering
+- Generated content (diagrams, screenshots) updated post-merge via `auto-generate.yml`
 - Accelerated development strategy in `.agent/AGENTS.md`
 - **Never use sleep** — find productive work while CI runs
 - Server NLB endpoints expose port 80 (TCP → gRPC 50051); no HTTP health endpoint exposed externally
