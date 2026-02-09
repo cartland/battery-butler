@@ -9,11 +9,15 @@
 #   create PRs. GitHub prevents GITHUB_TOKEN from triggering other workflows
 #   to avoid infinite loops. This means CI never runs on those PRs.
 #
-#   This workflow uses workflow_run trigger + BOT_PAT to dispatch CI after
-#   the auto-generate workflow completes, ensuring auto-generated PRs get
-#   proper CI status.
+#   This workflow closes and immediately reopens the PR using BOT_PAT.
+#   The reopen event (from a PAT, not GITHUB_TOKEN) triggers ci.yml's
+#   pull_request handler, and the resulting checks properly attach to the PR.
 #
-#   BOT_PAT is ONLY used here for dispatching — never for pushing commits.
+#   workflow_dispatch cannot be used here because dispatched runs don't
+#   associate their check runs with PRs — the required "ci" check would
+#   never appear on the PR even though CI ran on the branch.
+#
+#   BOT_PAT is ONLY used here for reopening — never for pushing commits.
 #
 # =============================================================================
 
@@ -59,17 +63,25 @@ jobs:
               const pr = prs[0];
               console.log(`Found PR #${pr.number}: ${pr.title} (${branch})`);
 
-              // Trigger the CI workflow on this PR's branch
+              // Close and immediately reopen the PR.
+              // This triggers a pull_request:reopened event from BOT_PAT,
+              // which ci.yml handles natively. Unlike workflow_dispatch,
+              // the resulting check runs properly attach to the PR.
               try {
-                await github.rest.actions.createWorkflowDispatch({
-                  owner,
-                  repo,
-                  workflow_id: 'ci.yml',
-                  ref: branch
+                await github.rest.pulls.update({
+                  owner, repo,
+                  pull_number: pr.number,
+                  state: 'closed'
                 });
-                console.log(`Triggered CI workflow on ${branch}`);
+                console.log(`Closed PR #${pr.number}`);
+
+                await github.rest.pulls.update({
+                  owner, repo,
+                  pull_number: pr.number,
+                  state: 'open'
+                });
+                console.log(`Reopened PR #${pr.number} — CI should trigger`);
               } catch (error) {
-                // workflow_dispatch might fail if already running or branch gone
-                console.log(`Note: ${error.message}`);
+                console.log(`Error on PR #${pr.number}: ${error.message}`);
               }
             }
