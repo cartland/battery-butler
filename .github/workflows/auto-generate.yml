@@ -1,0 +1,145 @@
+# =============================================================================
+# AUTO-GENERATE CONTENT WORKFLOW
+# =============================================================================
+#
+# PURPOSE:
+#   Generates architecture diagrams, code share analysis, and screenshot
+#   baselines on main, then creates follow-up PRs with any changes.
+#
+# DESIGN:
+#   Workflows NEVER push commits to PR branches. This eliminates the entire
+#   class of CI loop/blocking problems caused by the old update-diagrams.yml
+#   and update-screenshots.yml workflows (see PRs #426, #428 for history).
+#
+#   Instead, generated content is updated post-merge on main via follow-up PRs
+#   created with peter-evans/create-pull-request using GITHUB_TOKEN.
+#
+#   GITHUB_TOKEN pushes don't trigger workflows (GitHub's built-in loop
+#   prevention), so ci-trigger-auto-prs.yml dispatches CI separately.
+#
+# =============================================================================
+
+name: Auto-Generate Content
+
+on:
+  # Run after code merges to main
+  push:
+    branches: [main]
+    paths:
+      - '**/*.kt'
+      - '**/*.java'
+      - '**/*.swift'
+      - '**/build.gradle.kts'
+      - 'settings.gradle.kts'
+      - 'compose-app/**'
+      - 'presentation-*/**'
+      - 'android-screenshot-tests/**'
+
+  # Weekly refresh to catch any drift
+  schedule:
+    - cron: '0 6 * * 1'  # Monday at 6 AM UTC
+
+  # Manual trigger for testing
+  workflow_dispatch:
+
+concurrency:
+  group: auto-generate
+  cancel-in-progress: true
+
+env:
+  ORG_GRADLE_PROJECT_PRODUCTION_SERVER_URL: ${{ secrets.PRODUCTION_SERVER_URL }}
+  ORG_GRADLE_PROJECT_GOOGLE_WEB_CLIENT_ID: ${{ secrets.GOOGLE_WEB_CLIENT_ID }}
+
+jobs:
+  # ===========================================================================
+  # Job 1: Diagrams + Code Share Analysis
+  # ===========================================================================
+  diagrams-and-analysis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - uses: ./.github/actions/setup-java-gradle
+
+      - name: Generate Diagrams and Code Share Analysis
+        run: ./gradlew generateMermaidGraph analyzeCodeShare
+
+      - name: Validate Generated Files
+        run: ./scripts/validate-generated.sh --diagrams --analysis
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v8
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "docs: Auto-update architecture diagrams and analysis"
+          title: "docs: Auto-update architecture diagrams and analysis"
+          body: |
+            Auto-generated diagram and code share analysis updates.
+
+            This PR was automatically created by the Auto-Generate Content workflow
+            after a code change was merged to main.
+
+            **Source commit:** ${{ github.sha }}
+            **Triggered by:** ${{ github.event_name }}
+          branch: auto/update-generated-content
+          base: main
+          delete-branch: true
+          labels: automated
+
+  # ===========================================================================
+  # Job 2: Screenshot Baselines
+  # ===========================================================================
+  screenshots:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - uses: ./.github/actions/setup-java-gradle
+
+      - name: Clean Old Screenshots
+        run: |
+          SCREENSHOT_DIR="android-screenshot-tests/src/screenshotTestDebug/reference"
+          if [ -d "$SCREENSHOT_DIR" ]; then
+            echo "Removing old screenshot baselines..."
+            rm -rf "$SCREENSHOT_DIR"
+            echo "Old baselines removed."
+          fi
+
+      - name: Generate Screenshots
+        run: ./gradlew :android-screenshot-tests:updateDebugScreenshotTest
+
+      - name: Validate Generated Files
+        run: ./scripts/validate-generated.sh --screenshots
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v8
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "test: Auto-update Android screenshot baselines"
+          title: "test: Auto-update Android screenshot baselines"
+          body: |
+            Auto-generated screenshot baseline updates.
+
+            This PR was automatically created by the Auto-Generate Content workflow
+            after a UI code change was merged to main.
+
+            **Source commit:** ${{ github.sha }}
+            **Triggered by:** ${{ github.event_name }}
+          branch: auto/update-screenshots
+          base: main
+          delete-branch: true
+          labels: automated

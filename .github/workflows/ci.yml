@@ -313,6 +313,33 @@ jobs:
           path: server/app/build/libs/
           retention-days: 90
 
+  # Non-blocking check: warn if generated content (diagrams, analysis) is out of date
+  # This does NOT block PRs — it's informational only. The auto-generate workflow
+  # updates generated content post-merge on main via follow-up PRs.
+  check_generated_content:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup-java-gradle
+      - name: Generate diagrams and analysis
+        run: ./gradlew generateMermaidGraph analyzeCodeShare
+      - name: Check for drift
+        run: |
+          if git diff --quiet docs/diagrams/ docs/Code_Share_Analysis.md; then
+            echo "Generated content is up to date"
+          else
+            echo "::warning::Generated content (diagrams/analysis) would change with this PR."
+            echo "::warning::This is informational only — content will be updated automatically"
+            echo "::warning::after merge via the Auto-Generate Content workflow."
+            echo ""
+            echo "Files that would change:"
+            git diff --name-only docs/diagrams/ docs/Code_Share_Analysis.md
+          fi
+
   # Single required status check that works with path filtering
   # This job passes if all required jobs passed OR were skipped (docs-only changes)
   ci:
