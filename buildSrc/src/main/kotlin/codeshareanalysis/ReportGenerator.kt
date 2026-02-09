@@ -1,19 +1,13 @@
 package codeshareanalysis
 
-import java.time.Instant
-import java.time.format.DateTimeFormatter
-
 class ReportGenerator {
     fun generate(result: CodeScanner.ScanResult): String {
         val sb = StringBuilder()
-
-        val timestamp = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
 
         sb.appendLine("# Code Share Analysis")
         sb.appendLine()
         sb.appendLine("This document provides a breakdown of the codebase by application layer and module.")
         sb.appendLine("Total Lines of Code: ${result.totalLines}")
-        sb.appendLine("Generated at: $timestamp")
         sb.appendLine()
 
         sb.appendLine("## Application Breakdown")
