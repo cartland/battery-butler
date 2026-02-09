@@ -96,12 +96,12 @@ Keeping the build and tests healthy is a top priority. When you identify or fix 
 - **CI Workflow Synchronization**:
   - **When changing JDK version**: Update ALL workflow files in `.github/workflows/` that use `setup-java`.
   - **When changing Gradle version**: Verify all workflows use compatible settings.
-  - **When changing tooling requirements**: Check auxiliary workflows (update-diagrams.yml, update-screenshots.yml) in addition to main CI.
+  - **When changing tooling requirements**: Check `auto-generate.yml` in addition to main CI.
   - **Checklist for tooling changes**:
-    1. `ci.yml` - Main CI workflow
-    2. `update-diagrams.yml` - Auto-updates architecture diagrams
-    3. `update-screenshots.yml` - Auto-updates Android screenshots
-    4. Any other workflows in `.github/workflows/`
+    1. `ci.yml` - Main CI workflow (includes `check_generated_content` drift check)
+    2. `auto-generate.yml` - Post-merge generation of diagrams, analysis, screenshots
+    3. Any other workflows in `.github/workflows/`
+  - **Generated content architecture**: Workflows NEVER push commits to PR branches. Generated content (diagrams, analysis, screenshots) is updated post-merge on `main` via follow-up PRs created by `auto-generate.yml`.
 
 ## Branch Management
 
