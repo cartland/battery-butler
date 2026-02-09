@@ -87,9 +87,35 @@ jobs:
 
     steps:
       # =========================================================================
+      # STEP 0: Prevent infinite loops
+      # =========================================================================
+      # When this workflow pushes a diagram commit via BOT_PAT, the push
+      # triggers a new pull_request event. The github.actor check above
+      # doesn't catch this because BOT_PAT sets the actor to the PAT owner.
+      # So we check the HEAD commit message to detect our own commits.
+      - name: Check for bot commit (prevent loops)
+        id: check-loop
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            COMMIT_MSG=$(gh api repos/${{ github.repository }}/commits/${{ github.event.pull_request.head.sha }} --jq .commit.message | head -1)
+          else
+            COMMIT_MSG="${{ github.event.head_commit.message }}"
+          fi
+          if [[ "$COMMIT_MSG" == docs:\ Auto-update* ]]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            echo "Skipping: HEAD commit is a diagram auto-update (loop prevention)"
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+            echo "Proceeding: HEAD commit is '$COMMIT_MSG'"
+          fi
+
+      # =========================================================================
       # STEP 1: Check if BOT_PAT is configured
       # =========================================================================
       - name: Check PAT Configuration
+        if: steps.check-loop.outputs.skip != 'true'
         id: check-pat
         run: |
           if [ -z "${{ secrets.BOT_PAT }}" ]; then
@@ -111,7 +137,7 @@ jobs:
       # =========================================================================
       # For PRs with BOT_PAT: checkout the PR branch with push access
       - name: Checkout (PR with PAT)
-        if: github.event_name == 'pull_request' && steps.check-pat.outputs.configured == 'true'
+        if: steps.check-loop.outputs.skip != 'true' && github.event_name == 'pull_request' && steps.check-pat.outputs.configured == 'true'
         uses: actions/checkout@v6
         with:
           ref: ${{ github.head_ref }}
@@ -120,7 +146,7 @@ jobs:
 
       # For PRs without PAT or main push: regular checkout
       - name: Checkout (Standard)
-        if: github.event_name != 'pull_request' || steps.check-pat.outputs.configured != 'true'
+        if: steps.check-loop.outputs.skip != 'true' && (github.event_name != 'pull_request' || steps.check-pat.outputs.configured != 'true')
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
@@ -129,11 +155,13 @@ jobs:
       # STEP 3: Setup build environment
       # =========================================================================
       - uses: ./.github/actions/setup-java-gradle
+        if: steps.check-loop.outputs.skip != 'true'
 
       # =========================================================================
       # STEP 4: Generate diagrams
       # =========================================================================
       - name: Generate Diagrams and Code Share Analysis
+        if: steps.check-loop.outputs.skip != 'true'
         run: ./gradlew generateMermaidGraph analyzeCodeShare
 
       # =========================================================================
@@ -142,6 +170,7 @@ jobs:
       # This step fails the build if generation produced nothing or is obviously broken.
       # Without this check, a broken generator could silently "succeed" with empty output.
       - name: Validate Generated Files
+        if: steps.check-loop.outputs.skip != 'true'
         run: |
           echo "Validating that diagram and analysis generation produced valid output..."
           ./scripts/validate-generated.sh --diagrams --analysis
@@ -151,7 +180,7 @@ jobs:
       # =========================================================================
       # For PRs with BOT_PAT: commit directly to PR branch
       - name: Commit to PR Branch
-        if: github.event_name == 'pull_request' && steps.check-pat.outputs.configured == 'true'
+        if: steps.check-loop.outputs.skip != 'true' && github.event_name == 'pull_request' && steps.check-pat.outputs.configured == 'true'
         id: commit-to-pr
         run: |
           # Configure git
@@ -196,7 +225,7 @@ jobs:
       # =========================================================================
       # This prevents accumulation of outdated PRs that can have merge conflicts
       - name: Close Stale Auto-Update PRs
-        if: github.event_name == 'push' || github.event_name == 'schedule' || (github.event_name == 'pull_request' && steps.check-pat.outputs.configured != 'true')
+        if: steps.check-loop.outputs.skip != 'true' && (github.event_name == 'push' || github.event_name == 'schedule' || (github.event_name == 'pull_request' && steps.check-pat.outputs.configured != 'true'))
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -226,7 +255,7 @@ jobs:
       # NOTE: Using BOT_PAT (if available) is required to trigger CI on the created PR.
       # When using GITHUB_TOKEN, GitHub Actions prevents triggering workflows to avoid loops.
       - name: Create Pull Request (Fallback)
-        if: github.event_name == 'push' || github.event_name == 'schedule' || (github.event_name == 'pull_request' && steps.check-pat.outputs.configured != 'true')
+        if: steps.check-loop.outputs.skip != 'true' && (github.event_name == 'push' || github.event_name == 'schedule' || (github.event_name == 'pull_request' && steps.check-pat.outputs.configured != 'true'))
         uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ steps.check-pat.outputs.configured == 'true' && secrets.BOT_PAT || secrets.GITHUB_TOKEN }}
