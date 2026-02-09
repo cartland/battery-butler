@@ -2,7 +2,7 @@
 
 This document provides a breakdown of the codebase by application layer and module.
 Total Lines of Code: 20307
-Generated at: 2026-02-09T03:01:59.412311189Z
+Generated at: 2026-02-09T03:03:12.258070959Z
 
 ## Application Breakdown
 * Shared Code: 14,295 lines (70.4%)
