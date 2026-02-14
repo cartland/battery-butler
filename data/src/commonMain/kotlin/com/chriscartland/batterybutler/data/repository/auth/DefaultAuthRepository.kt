@@ -10,6 +10,8 @@ import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.model.User
 import com.chriscartland.batterybutler.domain.repository.AuthRepository
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -42,6 +44,7 @@ class DefaultAuthRepository(
 
     private val _authState = MutableStateFlow<AuthState>(AuthState.Unknown)
     override val authState: StateFlow<AuthState> = _authState.asStateFlow()
+    private var expiryJob: Job? = null
 
     override val currentUser: Flow<User?> = authState.map { state ->
         when (state) {
@@ -55,7 +58,11 @@ class DefaultAuthRepository(
         scope.launch {
             tokenStorage.storedToken.collect { storedToken ->
                 if (_authState.value is AuthState.Unknown) {
-                    _authState.value = storedToken?.toAuthState() ?: AuthState.Unauthenticated
+                    val newState = storedToken?.toAuthState() ?: AuthState.Unauthenticated
+                    _authState.value = newState
+                    if (newState is AuthState.Authenticated && storedToken != null) {
+                        scheduleTokenExpiry(storedToken.expiresAtMs)
+                    }
                 }
             }
         }
@@ -102,6 +109,7 @@ class DefaultAuthRepository(
                     photoUrl = user.photoUrl,
                 )
                 tokenStorage.saveToken(storedToken)
+                scheduleTokenExpiry(storedToken.expiresAtMs)
 
                 _authState.value = AuthState.Authenticated(user)
                 Result.Success(user)
@@ -116,6 +124,7 @@ class DefaultAuthRepository(
 
     override suspend fun signOut() {
         log.i { "Signing out" }
+        expiryJob?.cancel()
         googleSignInBridge.signOut()
         tokenStorage.clearToken()
         _authState.value = AuthState.Unauthenticated
@@ -136,6 +145,23 @@ class DefaultAuthRepository(
 
     override fun clearError() {
         if (_authState.value is AuthState.Failed) {
+            _authState.value = AuthState.Unauthenticated
+        }
+    }
+
+    private fun scheduleTokenExpiry(expiresAtMs: Long) {
+        expiryJob?.cancel()
+        val delayMs = expiresAtMs - Clock.System.now().toEpochMilliseconds()
+        if (delayMs <= 0) {
+            log.i { "Token already expired, signing out" }
+            _authState.value = AuthState.Unauthenticated
+            return
+        }
+        log.d { "Scheduling token expiry in ${delayMs / 1000}s" }
+        expiryJob = scope.launch {
+            delay(delayMs)
+            log.i { "Session token expired" }
+            tokenStorage.clearToken()
             _authState.value = AuthState.Unauthenticated
         }
     }
