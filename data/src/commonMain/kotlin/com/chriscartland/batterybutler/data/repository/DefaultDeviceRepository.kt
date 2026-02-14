@@ -11,6 +11,7 @@ import com.chriscartland.batterybutler.domain.model.SyncStatus
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,6 +19,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 import kotlin.coroutines.cancellation.CancellationException
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 @Inject
 class DefaultDeviceRepository(
@@ -30,32 +33,64 @@ class DefaultDeviceRepository(
 
     init {
         scope.launch {
-            try {
-                remoteDataSource.subscribe().collect { update ->
-                    Logger.d("BatteryButlerRepo") { "DefaultDeviceRepository received update! Size=${update.devices.size}" }
+            subscribeWithRetry()
+        }
+    }
 
-                    if (update.isFullSnapshot) {
-                        // Design decision: We upsert rather than clear the local DB.
-                        // This prevents data loss if the network is flaky and avoids
-                        // orphaning local-only data. Stale data becomes harmless since
-                        // the server is authoritative. Revisit when implementing
-                        // offline-first with conflict resolution.
-                    } else {
-                        // Apply deletions from server (incremental sync only)
-                        update.deletedDeviceTypeIds.forEach { localDataSource.deleteDeviceType(it) }
-                        update.deletedDeviceIds.forEach { localDataSource.deleteDevice(it) }
-                        update.deletedEventIds.forEach { localDataSource.deleteEvent(it) }
-                    }
-                    // Use batch operations for better performance
-                    localDataSource.addDeviceTypes(update.deviceTypes)
-                    localDataSource.addDevices(update.devices)
-                    localDataSource.addEvents(update.events)
+    /**
+     * Subscribes to remote updates with exponential backoff on failure.
+     *
+     * On each successful connection, resets the backoff delay.
+     * On failure, waits with increasing delay: 1s -> 2s -> 4s -> 8s -> ... -> 30s max.
+     */
+    private suspend fun subscribeWithRetry() {
+        var backoffMs = INITIAL_BACKOFF_MS
+        while (true) {
+            try {
+                _syncStatus.value = SyncStatus.Syncing
+                remoteDataSource.subscribe().collect { update ->
+                    // Reset backoff on successful data receipt
+                    backoffMs = INITIAL_BACKOFF_MS
+                    _syncStatus.value = SyncStatus.Success
+
+                    applyRemoteUpdate(update)
                 }
+                // subscribe() completed normally (server closed stream) — reconnect
+                Logger.d(TAG) { "Subscribe stream ended, reconnecting..." }
             } catch (e: Exception) {
                 if (e is CancellationException) throw e
-                Logger.e("BatteryButlerRepo", e) { "Error receiving remote updates" }
+                Logger.e(TAG, e) { "Subscribe failed, retrying in ${backoffMs}ms" }
+                _syncStatus.value = SyncStatus.Failed(
+                    DataError.Network.ConnectionFailed(
+                        message = "Sync disconnected",
+                        cause = e.message,
+                    ),
+                )
             }
+            delay(backoffMs.milliseconds)
+            backoffMs = (backoffMs * 2).coerceAtMost(MAX_BACKOFF_MS)
         }
+    }
+
+    private suspend fun applyRemoteUpdate(update: RemoteUpdate) {
+        Logger.d(TAG) { "Received update: ${update.devices.size} devices" }
+
+        if (update.isFullSnapshot) {
+            // Design decision: We upsert rather than clear the local DB.
+            // This prevents data loss if the network is flaky and avoids
+            // orphaning local-only data. Stale data becomes harmless since
+            // the server is authoritative. Revisit when implementing
+            // offline-first with conflict resolution.
+        } else {
+            // Apply deletions from server (incremental sync only)
+            update.deletedDeviceTypeIds.forEach { localDataSource.deleteDeviceType(it) }
+            update.deletedDeviceIds.forEach { localDataSource.deleteDevice(it) }
+            update.deletedEventIds.forEach { localDataSource.deleteEvent(it) }
+        }
+        // Use batch operations for better performance
+        localDataSource.addDeviceTypes(update.deviceTypes)
+        localDataSource.addDevices(update.devices)
+        localDataSource.addEvents(update.events)
     }
 
     override fun getAllDevices(): Flow<List<Device>> = localDataSource.getAllDevices()
@@ -159,5 +194,11 @@ class DefaultDeviceRepository(
 
     override fun dismissSyncStatus() {
         _syncStatus.value = SyncStatus.Idle
+    }
+
+    private companion object {
+        const val TAG = "DefaultDeviceRepo"
+        val INITIAL_BACKOFF_MS = 1.seconds.inWholeMilliseconds
+        val MAX_BACKOFF_MS = 30.seconds.inWholeMilliseconds
     }
 }
