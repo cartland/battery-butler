@@ -76,6 +76,7 @@ Keeping the build and tests healthy is a top priority. When you identify or fix 
 
 - **Session Start**:
   - Run `bd ready` to see current tasks. Run `bd list` for all open issues.
+  - For team sessions, use Claude's TaskCreate/TaskList for coordination — not `bd`.
 
 - **Bash Commands**:
   - **Always** run bash commands as separate tool calls instead of combining them with `&&`, `||`, or `for` loops.
