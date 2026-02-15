@@ -71,9 +71,11 @@ Keeping the build and tests healthy is a top priority. When you identify or fix 
   - Use `AppConfig` or `BuildConfig` to access these values in code, do NOT hardcode them.
 
 - **Self Improvements**:
-  - **Always** update `.agent/` documentation when learning a critical piece of information that will improve future agent performance. This ensures continuous learning and improvement for all agents.
-  - **Always** update `.agent/rules.md` when adding new rules or best practices for the project.
+  - **Always** update `.agent/` documentation when learning a critical piece of information that will improve future agent performance. Workflow rules go in `AGENTS.md`; project knowledge goes in `project.md`.
   - **Always** run `/dump-context` before ending a session where significant work was done. This captures tasks, decisions, and operational knowledge into beads and docs.
+
+- **Session Start**:
+  - Run `bd ready` to see current tasks. Run `bd list` for all open issues.
 
 - **Bash Commands**:
   - **Always** run bash commands as separate tool calls instead of combining them with `&&`, `||`, or `for` loops.
