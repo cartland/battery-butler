@@ -3,6 +3,7 @@ package com.chriscartland.batterybutler.composeapp.feature.login
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chriscartland.batterybutler.domain.model.AuthState
@@ -24,11 +25,12 @@ fun LoginScreen(
     modifier: Modifier = Modifier,
 ) {
     val authState by viewModel.authState.collectAsStateWithLifecycle()
+    val currentOnLoginSuccess by rememberUpdatedState(onLoginSuccess)
 
     // Navigate on successful authentication
     LaunchedEffect(authState) {
         if (authState is AuthState.Authenticated) {
-            onLoginSuccess()
+            currentOnLoginSuccess()
         }
     }
 

@@ -36,6 +36,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -78,23 +79,25 @@ import com.chriscartland.batterybutler.presentationmodel.adddevicetype.AddDevice
 @Composable
 fun AddDeviceTypeContent(
     uiState: AddDeviceTypeUiState,
-    onSuggestIcon: (String) -> Unit = {},
-    onConsumeSuggestedIcon: () -> Unit = {},
     onDeviceTypeAdded: (DeviceTypeInput) -> Unit,
     onBatchAdd: (String) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    onSuggestIcon: (String) -> Unit = {},
+    onConsumeSuggestedIcon: () -> Unit = {},
 ) {
     var name by rememberSaveable { mutableStateOf("") }
     var selectedIcon by rememberSaveable { mutableStateOf<String?>("videogame_asset") }
     var batteryType by rememberSaveable { mutableStateOf("AA") }
-    var batteryQuantity by rememberSaveable { mutableStateOf(1) }
+    var batteryQuantity by rememberSaveable { mutableIntStateOf(1) }
     val focusManager = LocalFocusManager.current
+
+    val currentOnConsumeSuggestedIcon by androidx.compose.runtime.rememberUpdatedState(onConsumeSuggestedIcon)
 
     androidx.compose.runtime.LaunchedEffect(uiState.suggestedIcon) {
         uiState.suggestedIcon?.let {
             selectedIcon = it
-            onConsumeSuggestedIcon()
+            currentOnConsumeSuggestedIcon()
         }
     }
 

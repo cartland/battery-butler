@@ -103,6 +103,17 @@ jobs:
       - name: Run Lint
         run: ./gradlew lint --stacktrace
 
+  validation_detekt:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup-java-gradle
+      - name: Run Detekt
+        run: ./gradlew detekt --stacktrace
+
   validation_test:
     needs: changes
     if: needs.changes.outputs.code == 'true'
@@ -347,6 +358,7 @@ jobs:
       - changes
       - validation_spotless
       - validation_lint
+      - validation_detekt
       - validation_test
       - validation_instrumented
       - validation_architecture
@@ -363,6 +375,7 @@ jobs:
           # Check if any job failed (skipped jobs are OK)
           if [[ "${{ needs.validation_spotless.result }}" == "failure" ]] || \
              [[ "${{ needs.validation_lint.result }}" == "failure" ]] || \
+             [[ "${{ needs.validation_detekt.result }}" == "failure" ]] || \
              [[ "${{ needs.validation_test.result }}" == "failure" ]] || \
              [[ "${{ needs.validation_instrumented.result }}" == "failure" ]] || \
              [[ "${{ needs.validation_architecture.result }}" == "failure" ]] || \

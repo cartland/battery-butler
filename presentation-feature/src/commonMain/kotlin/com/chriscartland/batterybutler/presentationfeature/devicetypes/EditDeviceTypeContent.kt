@@ -33,6 +33,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -63,7 +64,7 @@ fun EditDeviceTypeContent(
 ) {
     var name by remember { mutableStateOf("") }
     var batteryType by remember { mutableStateOf("") }
-    var batteryQuantity by remember { mutableStateOf(1) }
+    var batteryQuantity by remember { mutableIntStateOf(1) }
     var defaultIcon by remember { mutableStateOf("devices_other") }
     var isInitialized by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }

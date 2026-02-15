@@ -192,6 +192,7 @@ actual class GoogleSignInBridge {
         }
     }
 
+    @Suppress("SwallowedException")
     actual suspend fun signOut() {
         val manager = credentialManager ?: return
         try {

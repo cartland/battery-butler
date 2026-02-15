@@ -39,6 +39,7 @@ import kotlinx.serialization.Serializable
 
 // Preview removed as we can't easily preview with DI and Interfaces
 @OptIn(ExperimentalMaterial3Api::class)
+@Suppress("ViewModelInjection")
 @Composable
 fun App(
     component: AppComponent,
