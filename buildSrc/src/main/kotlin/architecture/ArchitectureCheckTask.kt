@@ -20,7 +20,7 @@ open class ArchitectureCheckTask : DefaultTask() {
             ":presentation-model",
         ),
         ":presentation-model" to listOf(":domain"),
-        ":viewmodel" to listOf(":usecase", ":domain", ":presentation-model"),
+        ":viewmodel" to listOf(":usecase", ":domain", ":presentation-model", ":ai"),
         ":presentation-core" to listOf(":domain", ":presentation-model", ":compose-resources"),
         ":presentation-feature" to listOf(
             ":presentation-core",

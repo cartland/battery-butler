@@ -7,8 +7,12 @@ plugins {
 kotlin {
     androidLibrary {
         namespace = "com.chriscartland.batterybutler.datanetwork"
-        compileSdk = libs.versions.android.compileSdk.get().toInt()
-        minSdk = libs.versions.android.minSdk.get().toInt()
+        compileSdk = libs.versions.android.compileSdk
+            .get()
+            .toInt()
+        minSdk = libs.versions.android.minSdk
+            .get()
+            .toInt()
     }
     jvm("desktop")
 
@@ -88,8 +92,6 @@ kotlin {
         languageSettings.optIn("kotlin.time.ExperimentalTime")
     }
 }
-
-
 
 wire {
     sourcePath {

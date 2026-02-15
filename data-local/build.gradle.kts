@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidKotlinMultiplatformLibrary)
@@ -10,8 +8,12 @@ plugins {
 kotlin {
     androidLibrary {
         namespace = "com.chriscartland.batterybutler.datalocal"
-        compileSdk = libs.versions.android.compileSdk.get().toInt()
-        minSdk = libs.versions.android.minSdk.get().toInt()
+        compileSdk = libs.versions.android.compileSdk
+            .get()
+            .toInt()
+        minSdk = libs.versions.android.minSdk
+            .get()
+            .toInt()
     }
 
     jvm {
@@ -58,8 +60,6 @@ kotlin {
     }
 }
 
-
-
 room {
     schemaDirectory("$projectDir/schemas")
 }
@@ -67,8 +67,6 @@ room {
 ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
 }
-
-
 
 dependencies {
     // Room: Use platform-specific KSP. Room generates 'actual' implementation.

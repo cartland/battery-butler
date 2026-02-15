@@ -8,7 +8,7 @@ plugins {
 
 kotlin {
     // androidTarget configured by convention
-    
+
     androidLibrary {
         namespace = "com.chriscartland.batterybutler.presentationfeature"
     }
@@ -41,5 +41,3 @@ kotlin {
         languageSettings.optIn("kotlin.time.ExperimentalTime")
     }
 }
-
-

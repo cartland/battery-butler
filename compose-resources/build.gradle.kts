@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     // TODO: Migrate to libs.plugins.androidKotlinMultiplatformLibrary (com.android.kotlin.multiplatform.library)
@@ -31,8 +29,6 @@ kotlin {
     }
 }
 
-
-
 compose.resources {
     publicResClass = true
     packageOfResClass = "com.chriscartland.batterybutler.composeresources.generated.resources"
@@ -40,8 +36,12 @@ compose.resources {
 
 android {
     namespace = "com.chriscartland.batterybutler.composeresources"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
+    compileSdk = libs.versions.android.compileSdk
+        .get()
+        .toInt()
     defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk
+            .get()
+            .toInt()
     }
 }

@@ -1,6 +1,7 @@
 package com.chriscartland.batterybutler.data.repository.auth
 
 import co.touchlab.kermit.Logger
+import com.chriscartland.batterybutler.data.di.Singleton
 import com.chriscartland.batterybutler.datalocal.auth.AuthTokenStorage
 import com.chriscartland.batterybutler.datalocal.auth.StoredAuthToken
 import com.chriscartland.batterybutler.datanetwork.auth.GoogleSignInBridge
@@ -24,8 +25,6 @@ import me.tatarka.inject.annotations.Inject
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
-
-import com.chriscartland.batterybutler.data.di.Singleton
 
 /**
  * Default implementation of [AuthRepository].

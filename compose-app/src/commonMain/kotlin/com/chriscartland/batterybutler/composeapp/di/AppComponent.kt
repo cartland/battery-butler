@@ -2,6 +2,7 @@ package com.chriscartland.batterybutler.composeapp.di
 
 import com.chriscartland.batterybutler.ai.AiEngine
 import com.chriscartland.batterybutler.ai.NoOpAiEngine
+import com.chriscartland.batterybutler.data.di.Singleton
 import com.chriscartland.batterybutler.data.repository.DefaultFeatureFlagProvider
 import com.chriscartland.batterybutler.data.repository.StaticAppInfoRepository
 import com.chriscartland.batterybutler.datalocal.auth.AuthTokenStorage
@@ -39,7 +40,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
-import com.chriscartland.batterybutler.data.di.Singleton
 
 @Component
 @Singleton

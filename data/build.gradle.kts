@@ -7,7 +7,7 @@ plugins {
 
 kotlin {
     // androidTarget configured by convention
-    
+
     androidLibrary {
         namespace = "com.chriscartland.batterybutler.data"
     }
@@ -55,8 +55,6 @@ kotlin {
         languageSettings.optIn("kotlin.time.ExperimentalTime")
     }
 }
-
-
 
 dependencies {
     add("kspCommonMainMetadata", libs.kotlin.inject.compiler)
