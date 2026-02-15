@@ -6,7 +6,7 @@ echo "Connecting App to Cloud..."
 # 1. Set Server URL to Production (Explicitly, although default should work)
 # This uses the default production URL from SharedServerConfig.
 # To override, uncomment and set specific URL.
-# URL="http://battery-butler-nlb-847feaa773351518.elb.us-west-1.amazonaws.com:80"
+# URL="http://bb-prod-nlb-4eb873d58dfc1664.elb.us-west-1.amazonaws.com:80"
 # adb shell am broadcast \
 #   -n com.chriscartland.batterybutler/com.chriscartland.batterybutler.composeapp.ServerUrlReceiver \
 #   -a com.chriscartland.batterybutler.SET_SERVER_URL \

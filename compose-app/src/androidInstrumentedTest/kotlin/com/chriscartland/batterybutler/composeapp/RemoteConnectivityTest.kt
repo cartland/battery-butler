@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit
 @RunWith(AndroidJUnit4::class)
 class RemoteConnectivityTest {
     companion object {
-        const val PRODUCTION_SERVER_URL = "http://battery-butler-nlb-847feaa773351518.elb.us-west-1.amazonaws.com:80"
+        const val PRODUCTION_SERVER_URL = "http://bb-prod-nlb-4eb873d58dfc1664.elb.us-west-1.amazonaws.com:80"
     }
 
     @Test

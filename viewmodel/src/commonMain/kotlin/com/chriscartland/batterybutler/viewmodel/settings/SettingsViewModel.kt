@@ -37,7 +37,7 @@ class SettingsViewModel(
     val availableNetworkModes = listOf(
         NetworkMode.Mock,
         NetworkMode.GrpcLocal("http://10.0.2.2:50051"), // Hardcoded default for UI list.
-        NetworkMode.GrpcAws("http://battery-butler-nlb-847feaa773351518.elb.us-west-1.amazonaws.com:80"),
+        NetworkMode.GrpcAws("http://bb-prod-nlb-4eb873d58dfc1664.elb.us-west-1.amazonaws.com:80"),
     )
 
     private val _appVersion = MutableStateFlow<AppVersion>(AppVersion.Unavailable)
