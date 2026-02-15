@@ -68,6 +68,7 @@ jobs:
       contents: read
     outputs:
       image-tag: ${{ steps.meta.outputs.sha }}
+      full-sha: ${{ steps.meta.outputs.full-sha }}
     env:
       USE_OIDC: ${{ secrets.AWS_DEPLOY_ROLE_ARN != '' }}
 
@@ -154,6 +155,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
+      statuses: write
     env:
       USE_OIDC: ${{ secrets.AWS_DEPLOY_ROLE_ARN != '' }}
 
@@ -237,3 +239,15 @@ jobs:
         echo '```' >> $GITHUB_STEP_SUMMARY
         echo "gh workflow run server-deploy-staging.yml -f image_tag=${{ needs.build.outputs.image-tag }}" >> $GITHUB_STEP_SUMMARY
         echo '```' >> $GITHUB_STEP_SUMMARY
+
+    - name: Set Commit Deploy Status
+      if: always() && needs.build.outputs.full-sha != ''
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        STATE=${{ job.status == 'success' && 'success' || 'failure' }}
+        gh api repos/${{ github.repository }}/statuses/${{ needs.build.outputs.full-sha }} \
+          -f state="$STATE" \
+          -f context="deploy/dev" \
+          -f description="Dev: ${{ needs.build.outputs.image-tag }}" \
+          -f target_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"

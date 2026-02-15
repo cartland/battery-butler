@@ -107,11 +107,14 @@ jobs:
     permissions:
       id-token: write
       contents: read
+      statuses: write
     env:
       USE_OIDC: ${{ secrets.AWS_DEPLOY_ROLE_ARN != '' }}
 
     steps:
     - uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
@@ -216,3 +219,20 @@ jobs:
         echo '```' >> $GITHUB_STEP_SUMMARY
         echo "gh workflow run server-rollback.yml -f environment=prod -f image_tag=<previous-tag>" >> $GITHUB_STEP_SUMMARY
         echo '```' >> $GITHUB_STEP_SUMMARY
+
+    - name: Set Commit Deploy Status
+      if: always()
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        FULL_SHA=$(git rev-parse "${{ inputs.image_tag }}" 2>/dev/null || echo "")
+        if [ -z "$FULL_SHA" ]; then
+          echo "Could not resolve ${{ inputs.image_tag }} to full SHA, skipping status"
+          exit 0
+        fi
+        STATE=${{ job.status == 'success' && 'success' || 'failure' }}
+        gh api repos/${{ github.repository }}/statuses/$FULL_SHA \
+          -f state="$STATE" \
+          -f context="deploy/prod" \
+          -f description="Prod: ${{ inputs.image_tag }}" \
+          -f target_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
