@@ -383,29 +383,6 @@ CI uses `dorny/paths-filter` to skip expensive builds for non-code changes:
 
 **BOT_PAT usage:** Only for dispatching CI workflows on auto PRs (never for pushing commits).
 
-## Session Resume Points
+## Session Start
 
-**Last Updated: 2026-02-08**
-
-### Ready Tasks
-Run `bd ready` to see current tasks. Top priorities:
-1. `bb-jj7` (P3 epic) — Split terraform into shared and per-environment configs
-2. `bb-sys` (P3 epic) — Login: Google Sign-In with ID Token Verification
-
-### Recent Completions
-- CI architecture reset: workflows never push to PR branches (PRs #429, #430)
-- Multi-environment server deployment (PRs #405-#411)
-- Server deployed to dev and prod (image `eed5b36`)
-
-### Known Issues
-- **Screenshot tests with relative time** are flaky — components showing "X days ago" change based on test run date (tracked in `bb-9k1`)
-- **Dependabot workflow PRs** need manual merge via web UI
-- **Staging unavailable** — destroyed to stay within free-tier RDS instance quota; re-deploy after AWS account upgrade
-
-### Context
-- CI uses unified "ci" job for required checks
-- Docs-only PRs skip expensive builds via path filtering
-- Generated content (diagrams, screenshots) updated post-merge via `auto-generate.yml`
-- Accelerated development strategy in `.agent/AGENTS.md`
-- **Never use sleep** — find productive work while CI runs
-- Server NLB endpoints expose port 80 (TCP → gRPC 50051); no HTTP health endpoint exposed externally
+Run `bd ready` to see current tasks. Run `bd list` for all open issues.
