@@ -1,6 +1,6 @@
-# Claude Code Instructions
+# Google Antigravity Instructions
 
-This file provides the initial instructions for Claude Code.
+This file provides the initial instructions for Google Antigravity.
 
 **First Action:** Read the contribution guidelines and project knowledge:
 1. `.agent/AGENTS.md` — Workflow rules for all AI agents
@@ -14,8 +14,6 @@ When you discover something that would help future sessions:
 1. Add it to the appropriate file
 2. Create a PR for the update (don't leave it uncommitted)
 3. Be specific and actionable
-
-**Run `/dump-context` before ending any session where significant work was done.** This captures tasks, decisions, and operational knowledge into beads and documentation so nothing is lost between sessions.
 
 ## Session Start
 

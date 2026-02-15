@@ -6,10 +6,22 @@ This document outlines the shared principles and workflow for all AI agents cont
 
 1.  **Single Source of Truth**: This directory, `.agent/`, is the single source of truth for all AI agent instructions.
     *   **`AGENTS.md` (This file):** The high-level charter and core workflow.
-    *   **`rules.md`:** An agent-specific entry point for internal technical guidelines.
+    *   **`project.md`:** Project-specific technical knowledge (architecture, builds, deployment, testing, task management).
     *   **`workflows/`:** Step-by-step playbooks for common tasks, serving as both detailed instructions for agents and user-triggerable commands (e.g., slash commands).
 2.  **Consistency**: All agents must follow the workflows defined here to ensure predictable and consistent contributions.
 3.  **Spotless is Mandatory**: All changes must be formatted by running `./scripts/spotless-apply.sh` before being committed. Full validation happens on PRs.
+
+## Agent Role
+
+By default, the agent operates as a **diligent junior software engineer**, meticulously following instructions, adhering to project conventions, and focusing on thorough implementation and testing.
+
+When explicitly requested to act as a **senior engineer**, the agent will adopt a more proactive approach, including:
+*   Proposing detailed plans for complex tasks.
+*   Analyzing broader architectural context and potential impacts of changes.
+*   Suggesting strategic improvements or refactoring opportunities.
+*   Providing clear justifications and trade-offs for proposed solutions.
+
+Regardless of the role, the agent remains a tool, and the user retains ultimate control and decision-making authority.
 
 ## 🚨 Critical Rules
 
@@ -191,7 +203,7 @@ This file provides the initial instructions for AGENT_NAME.
 PRs that **only** modify the following files are **highest priority after broken builds**:
 
 - `.agent/` - Agent instructions and workflows
-- `CLAUDE.md` or `*/CLAUDE.md` - Claude Code instructions
+- `CLAUDE.md`, `GEMINI.md`, `ANTIGRAVITY.md`, `AGENTS.md` - Agent entry points
 - `.beads/` - Task tracking data
 
 **Why P0.5?** These PRs establish shared understanding across all agents:
@@ -448,8 +460,8 @@ gh pr merge 209 --squash
 gh pr merge 214 --squash
 gh pr merge 215 --squash
 
-# 2. Monitor main CI for the batch
-gh run list --branch main --limit 1 --watch
+# 2. Check main CI for the batch (don't use --watch)
+gh run list --branch main --limit 1
 
 # 3. If any failure, identify and revert the culprit
 ```
@@ -458,14 +470,15 @@ gh run list --branch main --limit 1 --watch
 
 ```bash
 # 1. Run local validation on each PR branch
-git checkout <branch> && ./gradlew spotlessCheck test --quiet
+git checkout <branch>
+./gradlew spotlessCheck test --quiet
 
 # 2. Merge 2-3 at once if local validation passes
 gh pr merge 200 --squash
 gh pr merge 201 --squash
 
-# 3. Wait for main CI before next batch
-gh run list --branch main --limit 1 --watch
+# 3. Check main CI before next batch (don't use --watch)
+gh run list --branch main --limit 1
 ```
 
 #### Parallel Work While CI Runs
@@ -475,14 +488,6 @@ While CI is running:
 - Run local validation on next batch
 - Create new PRs for other tasks
 - Review and approve pending PRs
-
-```bash
-# Rebase multiple branches in parallel
-for branch in feat/a feat/b feat/c; do
-  git checkout $branch && git rebase origin/main && git push -f &
-done
-wait
-```
 
 #### Failure Recovery
 
@@ -494,9 +499,11 @@ If main breaks after batch merge:
 4. **Learn** - Move that PR type to higher risk category
 
 ```bash
-# Revert last merge if needed
+# Revert last merge if needed (create PR, don't push directly to main)
+git checkout -b agent/revert-broken-merge origin/main
 git revert HEAD --no-edit
-git push origin main
+git push -u origin agent/revert-broken-merge
+gh pr create --title "revert: Fix broken main" --body "Reverting last merge"
 ```
 
 #### Velocity Metrics
