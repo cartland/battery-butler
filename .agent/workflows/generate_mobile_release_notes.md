@@ -147,6 +147,29 @@ git log <start>..<end> --oneline | grep -oP '#\d+'
 
 If a commit has no PR number, link to the commit SHA instead.
 
+## Step 5: Update PR Description
+
+After committing the release notes, update the current PR description to list every PR mentioned in the release notes. This creates bidirectional links in GitHub — each referenced PR will show a backlink to this PR.
+
+**Each PR link must be on its own line.** GitHub expands PR links inline, so putting multiple on one line creates a mess. A brief description on the same line is fine.
+
+```bash
+gh pr edit <number> --body "$(cat <<'EOF'
+## Summary
+Mobile release notes for [android/N].
+
+## Referenced PRs
+- https://github.com/cartland/battery-butler/pull/123 — Description
+- https://github.com/cartland/battery-butler/pull/124 — Description
+- https://github.com/cartland/battery-butler/pull/125 — Description
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+EOF
+)"
+```
+
+List every PR from the "Detailed Changes" and "Dependencies" tables, one per line as a full URL so GitHub creates the cross-reference.
+
 ## Tips
 
 - When in doubt about whether a commit is mobile-relevant, include it — the user can trim.
