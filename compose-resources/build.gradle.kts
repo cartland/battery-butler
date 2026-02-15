@@ -2,6 +2,9 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
+    // TODO: Migrate to libs.plugins.androidKotlinMultiplatformLibrary (com.android.kotlin.multiplatform.library)
+    // blocked by: New plugin does not generate AAR by default, causing missing assets/resources in consumer apps.
+    // Upgrade when consumer is KMP or plugin supports AAR generation.
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)

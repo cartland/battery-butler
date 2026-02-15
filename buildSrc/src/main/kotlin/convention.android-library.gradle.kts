@@ -4,6 +4,8 @@ import org.gradle.kotlin.dsl.get
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
+    // TODO: Use libs.plugins.androidKotlinMultiplatformLibrary
+    // blocked by: buildSrc precompiled script plugins cannot access version catalog accessors easily.
     id("com.android.kotlin.multiplatform.library")
     id("org.jetbrains.kotlin.multiplatform")
 }
