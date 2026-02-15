@@ -25,6 +25,8 @@ import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
+import com.chriscartland.batterybutler.data.di.Singleton
+
 /**
  * Default implementation of [AuthRepository].
  *
@@ -38,6 +40,7 @@ import kotlin.time.ExperimentalTime
  * session token. Falls back to local-only auth if the server is unreachable.
  */
 @OptIn(ExperimentalTime::class)
+@Singleton
 @Inject
 class DefaultAuthRepository(
     private val googleSignInBridge: GoogleSignInBridge,
@@ -199,6 +202,29 @@ class DefaultAuthRepository(
         }
     }
 
+    override suspend fun setExternalToken(token: String) {
+        log.w { "Setting external token manually (Debug/Test only)" }
+        // Create a fake user from the token structure if possible, or just a dummy user
+        val user = User(
+            id = "external-user",
+            email = "test@example.com",
+            displayName = "Test User",
+            photoUrl = null,
+        )
+        val storedToken = StoredAuthToken(
+            accessToken = token,
+            refreshToken = null,
+            expiresAtMs = Clock.System.now().toEpochMilliseconds() + LOCAL_TOKEN_EXPIRY_MS,
+            userId = user.id,
+            email = user.email,
+            displayName = user.displayName,
+            photoUrl = user.photoUrl,
+        )
+        tokenStorage.saveToken(storedToken)
+        scheduleTokenExpiry(storedToken.expiresAtMs)
+        _authState.value = AuthState.Authenticated(user)
+    }
+
     private fun scheduleTokenExpiry(expiresAtMs: Long) {
         expiryJob?.cancel()
         val delayMs = expiresAtMs - Clock.System.now().toEpochMilliseconds()
@@ -208,7 +234,8 @@ class DefaultAuthRepository(
             return
         }
         log.d { "Scheduling token expiry in ${delayMs / 1000}s" }
-        expiryJob = scope.launch {
+        // Use Default dispatcher to avoid blocking Main thread idle checks in tests
+        expiryJob = scope.launch(kotlinx.coroutines.Dispatchers.Default) {
             delay(delayMs)
             log.i { "Session token expired" }
             tokenStorage.clearToken()

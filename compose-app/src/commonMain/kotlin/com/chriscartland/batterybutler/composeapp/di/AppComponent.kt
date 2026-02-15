@@ -13,6 +13,7 @@ import com.chriscartland.batterybutler.datanetwork.grpc.NetworkComponent
 import com.chriscartland.batterybutler.domain.model.AppVersion
 import com.chriscartland.batterybutler.domain.model.FeatureFlag
 import com.chriscartland.batterybutler.domain.repository.AppInfoRepository
+import com.chriscartland.batterybutler.domain.repository.AuthRepository
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.domain.repository.FeatureFlagProvider
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
@@ -38,6 +39,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
+import com.chriscartland.batterybutler.data.di.Singleton
 
 @Component
 @Singleton
@@ -67,6 +69,7 @@ abstract class AppComponent(
     abstract val settingsViewModel: SettingsViewModel
     abstract val featureFlagProvider: FeatureFlagProvider
     abstract val networkModeRepository: NetworkModeRepository
+    abstract val authRepository: AuthRepository
     abstract override val appScope: CoroutineScope
 
     @Provides

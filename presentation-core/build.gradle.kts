@@ -1,6 +1,6 @@
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidLibrary)
+
     id("convention.android-library")
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
@@ -40,7 +40,8 @@ kotlin {
         }
     }
 
-    androidTarget {
+    androidLibrary {
+        namespace = "com.chriscartland.batterybutler.presentationcore"
         compilations.configureEach {
             if (name == "debug") {
                 defaultSourceSet.kotlin.srcDir("src/screenshotTest/kotlin")
@@ -49,9 +50,7 @@ kotlin {
     }
 }
 
-android {
-    namespace = "com.chriscartland.batterybutler.presentationcore"
-}
+
 
 tasks.register("printCompilations") {
     doLast {

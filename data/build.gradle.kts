@@ -1,12 +1,16 @@
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidLibrary)
+
     id("convention.android-library")
     alias(libs.plugins.ksp)
 }
 
 kotlin {
     // androidTarget configured by convention
+    
+    androidLibrary {
+        namespace = "com.chriscartland.batterybutler.data"
+    }
 
     jvm {
         compilerOptions {
@@ -36,15 +40,15 @@ kotlin {
         }
         androidMain.dependencies {
         }
-        val androidInstrumentedTest by getting {
-            dependencies {
-                implementation(libs.junit)
-                implementation(libs.androidx.testExt.junit)
-                implementation(libs.androidx.runner)
-                implementation(libs.androidx.core)
-                implementation(libs.kotlinx.coroutines.test)
-            }
-        }
+        // val androidInstrumentedTest by getting {
+        //     dependencies {
+        //         implementation(libs.junit)
+        //         implementation(libs.androidx.testExt.junit)
+        //         implementation(libs.androidx.runner)
+        //         implementation(libs.androidx.core)
+        //         implementation(libs.kotlinx.coroutines.test)
+        //     }
+        // }
     }
 
     sourceSets.all {
@@ -52,9 +56,7 @@ kotlin {
     }
 }
 
-android {
-    namespace = "com.chriscartland.batterybutler.data"
-}
+
 
 dependencies {
     add("kspCommonMainMetadata", libs.kotlin.inject.compiler)

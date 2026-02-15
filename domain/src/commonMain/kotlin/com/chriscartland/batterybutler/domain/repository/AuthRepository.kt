@@ -75,4 +75,10 @@ interface AuthRepository {
      * No-op if not in failed state.
      */
     fun clearError()
+
+    /**
+     * Manually sets an external token (e.g. for testing or debug).
+     * This bypasses normal authentication flows.
+     */
+    suspend fun setExternalToken(token: String)
 }

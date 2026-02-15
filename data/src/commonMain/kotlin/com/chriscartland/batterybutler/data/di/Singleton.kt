@@ -1,4 +1,4 @@
-package com.chriscartland.batterybutler.composeapp.di
+package com.chriscartland.batterybutler.data.di
 
 import me.tatarka.inject.annotations.Scope
 

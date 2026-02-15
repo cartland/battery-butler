@@ -54,6 +54,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
 
             implementation(project(":data"))
+            implementation(project(":domain"))
             implementation(project(":presentation-core"))
             implementation(project(":viewmodel"))
             implementation(project(":ai"))

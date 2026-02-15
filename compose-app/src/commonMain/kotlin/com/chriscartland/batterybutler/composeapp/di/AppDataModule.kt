@@ -17,6 +17,7 @@ import com.chriscartland.batterybutler.domain.repository.AuthRepository
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
 import me.tatarka.inject.annotations.Provides
+import com.chriscartland.batterybutler.data.di.Singleton
 
 interface AppDataModule : DataComponent {
     @Provides

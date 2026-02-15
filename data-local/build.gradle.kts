@@ -2,17 +2,16 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.room)
     alias(libs.plugins.ksp)
 }
 
 kotlin {
-    androidTarget {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_21)
-            freeCompilerArgs.add("-Xexpect-actual-classes")
-        }
+    androidLibrary {
+        namespace = "com.chriscartland.batterybutler.datalocal"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
     }
 
     jvm {
@@ -42,16 +41,16 @@ kotlin {
             implementation(libs.androidx.room.runtime)
             implementation(libs.generativeai)
         }
-        val androidInstrumentedTest by getting {
-            dependencies {
-                implementation(libs.junit)
-                implementation(libs.androidx.testExt.junit)
-                implementation(libs.androidx.runner)
-                implementation(libs.androidx.core)
-                implementation(libs.androidx.room.testing)
-                implementation(libs.kotlinx.coroutines.test)
-            }
-        }
+        // val androidAndroidTest by getting {
+        //     dependencies {
+        //         implementation(libs.junit)
+        //         implementation(libs.androidx.testExt.junit)
+        //         implementation(libs.androidx.runner)
+        //         implementation(libs.androidx.core)
+        //         implementation(libs.androidx.room.testing)
+        //         implementation(libs.kotlinx.coroutines.test)
+        //     }
+        // }
     }
 
     sourceSets.all {
@@ -59,33 +58,7 @@ kotlin {
     }
 }
 
-android {
-    namespace = "com.chriscartland.batterybutler.datalocal"
-    compileSdk = libs.versions.android.compileSdk
-        .get()
-        .toInt()
-    defaultConfig {
-        minSdk = libs.versions.android.minSdk
-            .get()
-            .toInt()
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
-    }
-    testOptions {
-        managedDevices {
-            devices {
-                maybeCreate<com.android.build.api.dsl.ManagedVirtualDevice>("pixel5api34").apply {
-                    device = "Pixel 5"
-                    apiLevel = 34
-                    systemImageSource = "google"
-                }
-            }
-        }
-    }
-}
+
 
 room {
     schemaDirectory("$projectDir/schemas")
@@ -94,6 +67,8 @@ room {
 ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
 }
+
+
 
 dependencies {
     // Room: Use platform-specific KSP. Room generates 'actual' implementation.

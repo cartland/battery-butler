@@ -34,8 +34,15 @@ class MainActivity : ComponentActivity() {
 
         // DEBUG: Register receiver for ADB control
         // adb shell am broadcast -a com.chriscartland.batterybutler.SET_NETWORK_MODE --es mode "GRPC_LOCAL"
-        debugNetworkReceiver = DebugNetworkReceiver(component.setNetworkModeUseCase, component.appScope)
-        val filter = IntentFilter(DebugNetworkReceiver.ACTION_SET_NETWORK_MODE)
+        debugNetworkReceiver = DebugNetworkReceiver(
+            component.setNetworkModeUseCase,
+            component.authRepository,
+            component.appScope,
+        )
+        val filter = IntentFilter().apply {
+            addAction(DebugNetworkReceiver.ACTION_SET_NETWORK_MODE)
+            addAction(DebugNetworkReceiver.ACTION_SET_AUTH_TOKEN)
+        }
         ContextCompat.registerReceiver(
             this,
             debugNetworkReceiver,

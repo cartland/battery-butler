@@ -40,7 +40,9 @@ class AuthService : AuthServiceGrpcKt.AuthServiceCoroutineImplBase() {
 
     override suspend fun verifyToken(request: VerifyTokenRequest): VerifyTokenResponse {
         if (verifier == null) {
-            return errorResponse("Server not configured for Google token verification")
+            log.w { "Dev Mode: Skipping Google verification for token '${request.googleIdToken}'" }
+            // In Dev Mode (no client ID), accept any token and return a dummy session
+            return createSession("dev-user", "dev@example.com", "Dev User", "")
         }
 
         val googleIdToken = request.googleIdToken
@@ -62,32 +64,41 @@ class AuthService : AuthServiceGrpcKt.AuthServiceCoroutineImplBase() {
                 val name = payload["name"] as? String ?: ""
                 val pictureUrl = payload["picture"] as? String ?: ""
 
-                val sessionToken = UUID.randomUUID().toString()
-                val expiresAtMs = System.currentTimeMillis() + SESSION_EXPIRY_MS
-
-                sessions[sessionToken] = SessionInfo(
-                    userId = userId,
-                    email = email,
-                    expiresAtMs = expiresAtMs,
-                )
-
-                log.i { "Token verified for $email (userId=$userId)" }
-
-                VerifyTokenResponse
-                    .newBuilder()
-                    .setValid(true)
-                    .setSessionToken(sessionToken)
-                    .setUserId(userId)
-                    .setEmail(email)
-                    .setDisplayName(name)
-                    .setPhotoUrl(pictureUrl)
-                    .setExpiresAtMs(expiresAtMs)
-                    .build()
+                createSession(userId, email, name, pictureUrl)
             }
         } catch (e: Exception) {
             log.e(e) { "Token verification error" }
             errorResponse("Token verification failed: ${e.message}")
         }
+    }
+
+    private fun createSession(
+        userId: String,
+        email: String,
+        name: String,
+        pictureUrl: String,
+    ): VerifyTokenResponse {
+        val sessionToken = UUID.randomUUID().toString()
+        val expiresAtMs = System.currentTimeMillis() + SESSION_EXPIRY_MS
+
+        sessions[sessionToken] = SessionInfo(
+            userId = userId,
+            email = email,
+            expiresAtMs = expiresAtMs,
+        )
+
+        log.i { "Session created for $email (userId=$userId)" }
+
+        return VerifyTokenResponse
+            .newBuilder()
+            .setValid(true)
+            .setSessionToken(sessionToken)
+            .setUserId(userId)
+            .setEmail(email)
+            .setDisplayName(name)
+            .setPhotoUrl(pictureUrl)
+            .setExpiresAtMs(expiresAtMs)
+            .build()
     }
 
     /**

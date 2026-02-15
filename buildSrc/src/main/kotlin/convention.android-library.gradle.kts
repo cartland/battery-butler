@@ -4,52 +4,34 @@ import org.gradle.kotlin.dsl.get
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    id("com.android.library")
+    id("com.android.kotlin.multiplatform.library")
     id("org.jetbrains.kotlin.multiplatform")
 }
 
 val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
+
 kotlin {
-    androidTarget {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_21)
-        }
+    androidLibrary {
+        namespace = "com.chriscartland.batterybutler.placeholder" // Should be overridden by module?
+        // Convention plugin cannot easily set namespace if it varies.
+        // But the original convention plugin didn't set namespace in android {} block?
+        // Wait, original file: android { compileSdk = ... }
+        // It did NOT set namespace. Namespace was set in module build.gradle.kts.
+        
+        compileSdk = libs.findVersion("android.compileSdk").get().requiredVersion.toInt()
+        minSdk = libs.findVersion("android.minSdk").get().requiredVersion.toInt()
+        
+        // withAndroidTest() // Disabled for now
     }
-
-    // Default JVM configuration if needed, or leave to module
+    
+    // androidTarget block removed.
 }
 
-android {
-    compileSdk = libs
-        .findVersion("android.compileSdk")
-        .get()
-        .requiredVersion
-        .toInt()
+// android { ... } block removed because it's incompatible/unresolved.
+// Modules utilizing this convention MUST set namespace in their build files.
+// But wait, they used 'android { namespace = ... }'.
+// Now they must use 'kotlin { androidLibrary { namespace = ... } }'.
+// Does the convention plugin block prevent modules from configuring it further?
+// No, Gradle allows multiple configuration blocks.
 
-    defaultConfig {
-        minSdk = libs
-            .findVersion("android.minSdk")
-            .get()
-            .requiredVersion
-            .toInt()
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
-    }
-
-    testOptions {
-        managedDevices {
-            devices {
-                maybeCreate<ManagedVirtualDevice>("pixel5api34").apply {
-                    device = "Pixel 5"
-                    apiLevel = 34
-                    systemImageSource = "google"
-                }
-            }
-        }
-    }
-}

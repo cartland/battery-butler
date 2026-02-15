@@ -1,11 +1,15 @@
 plugins {
-    alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.wire)
 }
 
 kotlin {
-    androidTarget()
+    androidLibrary {
+        namespace = "com.chriscartland.batterybutler.datanetwork"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+    }
     jvm("desktop")
 
     // Wire Plugin generates code automatically. No custom task needed for Wire.
@@ -85,21 +89,7 @@ kotlin {
     }
 }
 
-android {
-    namespace = "com.chriscartland.batterybutler.datanetwork"
-    compileSdk = libs.versions.android.compileSdk
-        .get()
-        .toInt()
-    defaultConfig {
-        minSdk = libs.versions.android.minSdk
-            .get()
-            .toInt()
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
-    }
-}
+
 
 wire {
     sourcePath {
