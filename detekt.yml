@@ -567,3 +567,21 @@ style:
     active: true
     excludeImports:
       - 'java.util.*'
+
+Compose:
+  PreviewPublic:
+    active: false
+  ParameterNaming:
+    active: false
+  ModifierMissing:
+    active: false
+  CompositionLocalAllowlist:
+    active: true
+    allowedCompositionLocals:
+      - 'LocalAiAvailable'
+      - 'LocalAiAction'
+      - 'LocalAppStrings'
+      - 'LocalFileSaver'
+      - 'LocalShareHandler'
+
+

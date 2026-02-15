@@ -71,7 +71,7 @@ fun HomeScreenContent(
     onGroupOptionSelected: (GroupOption) -> Unit,
     onSortOptionToggle: () -> Unit,
     onSortOptionSelected: (SortOption) -> Unit,
-    onDeviceClick: (String) -> Unit,
+    onDeviceClick: (Device) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     nowInstant: Instant = Clock.System.now(),
@@ -227,8 +227,9 @@ fun HomeScreenFilterRow(
 @Composable
 fun HomeScreenList(
     state: HomeUiState,
-    onDeviceClick: (String) -> Unit,
+    onDeviceClick: (Device) -> Unit,
     contentPadding: androidx.compose.foundation.layout.PaddingValues,
+    modifier: Modifier = Modifier,
     nowInstant: Instant = Clock.System.now(),
 ) {
     val allDevices = state.groupedDevices.values.flatten()
@@ -242,7 +243,7 @@ fun HomeScreenList(
         )
     } else {
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
+            modifier = modifier.fillMaxSize(),
             contentPadding = contentPadding,
         ) {
             state.groupedDevices.forEach { (groupName, devices) ->
@@ -267,7 +268,7 @@ fun HomeScreenList(
                     DeviceListItem(
                         device = device,
                         deviceType = state.deviceTypes[device.typeId],
-                        onClick = { onDeviceClick(device.id) },
+                        onClick = { onDeviceClick(device) },
                         nowInstant = nowInstant,
                     )
                 }
@@ -280,7 +281,7 @@ fun HomeScreenList(
 /**
  * Returns a user-friendly error message for sync failures.
  */
-private fun getSyncErrorMessage(error: DataError): String =
+fun getSyncErrorMessage(error: DataError): String =
     when (error) {
         is DataError.Network.ConnectionFailed ->
             "Can't connect to server. Your changes are saved locally."

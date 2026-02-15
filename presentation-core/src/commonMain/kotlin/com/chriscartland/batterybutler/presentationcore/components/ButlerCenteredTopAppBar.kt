@@ -25,10 +25,10 @@ import com.chriscartland.batterybutler.presentationcore.theme.LocalAiAvailable
 @Composable
 fun ButlerCenteredTopAppBar(
     title: String,
+    modifier: Modifier = Modifier,
     onBack: (() -> Unit)? = null,
     navigationIcon: @Composable (() -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {},
-    modifier: Modifier = Modifier,
 ) {
     val isAiAvailable = LocalAiAvailable.current
     val onAiClick = LocalAiAction.current

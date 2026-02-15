@@ -226,7 +226,7 @@ fun HistoryScreen(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun DevicesScreenPreview() {
     BatteryButlerTheme {
@@ -252,7 +252,7 @@ fun DevicesScreenPreview() {
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun TypesScreenPreview() {
     BatteryButlerTheme {
@@ -276,7 +276,7 @@ fun TypesScreenPreview() {
 }
 
 @OptIn(ExperimentalTime::class)
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun HistoryScreenPreview() {
     BatteryButlerTheme {

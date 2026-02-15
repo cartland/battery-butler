@@ -141,12 +141,13 @@ fun DeviceTypeIconItem(
     iconName: String,
     isSelected: Boolean,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = androidx.compose.foundation.layout.Arrangement
             .spacedBy(4.dp),
-        modifier = Modifier.clickable { onClick() },
+        modifier = modifier.clickable { onClick() },
     ) {
         Box(
             modifier = Modifier
