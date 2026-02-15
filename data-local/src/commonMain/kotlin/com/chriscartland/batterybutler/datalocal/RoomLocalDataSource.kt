@@ -46,7 +46,7 @@ class RoomLocalDataSource(
     }
 
     override suspend fun deleteDevice(id: String) {
-        dao.deleteDevice(id)
+        dao.softDeleteDevice(id)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -76,7 +76,7 @@ class RoomLocalDataSource(
     }
 
     override suspend fun deleteDeviceType(id: String) {
-        dao.deleteDeviceType(id)
+        dao.softDeleteDeviceType(id)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -114,6 +114,6 @@ class RoomLocalDataSource(
     }
 
     override suspend fun deleteEvent(id: String) {
-        dao.deleteEvent(id)
+        dao.softDeleteEvent(id)
     }
 }

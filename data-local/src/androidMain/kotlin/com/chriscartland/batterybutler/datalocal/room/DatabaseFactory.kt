@@ -19,7 +19,7 @@ actual class DatabaseFactory(
                 name = dbFile.absolutePath,
                 factory = { AppDatabaseConstructor.initialize() },
             ).setDriver(BundledSQLiteDriver())
-            .addMigrations(MIGRATION_3_4, MIGRATION_4_5)
+            .addMigrations(MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
             .build()
     }
 }

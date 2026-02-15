@@ -3,8 +3,10 @@ package com.chriscartland.batterybutler.datalocal.room.entity
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.chriscartland.batterybutler.domain.model.Device
+import kotlinx.datetime.Clock
 import kotlin.time.Instant
 
+@OptIn(kotlin.time.ExperimentalTime::class)
 @Entity(tableName = "devices")
 data class DeviceEntity(
     @PrimaryKey val id: String,
@@ -14,6 +16,9 @@ data class DeviceEntity(
     val lastUpdated: Long, // Store as Long (ms)
     val location: String?,
     val imagePath: String?,
+    val isSynced: Boolean = false,
+    val isDeleted: Boolean = false,
+    val lastModified: Long = Clock.System.now().toEpochMilliseconds(),
 )
 
 fun DeviceEntity.toDomain(): Device =
@@ -27,7 +32,11 @@ fun DeviceEntity.toDomain(): Device =
         imagePath = imagePath,
     )
 
-fun Device.toEntity(): DeviceEntity =
+fun Device.toEntity(
+    isSynced: Boolean = false,
+    isDeleted: Boolean = false,
+    lastModified: Long = Clock.System.now().toEpochMilliseconds(),
+): DeviceEntity =
     DeviceEntity(
         id = id,
         name = name,
@@ -36,4 +45,7 @@ fun Device.toEntity(): DeviceEntity =
         lastUpdated = lastUpdated.toEpochMilliseconds(),
         location = location,
         imagePath = imagePath,
+        isSynced = isSynced,
+        isDeleted = isDeleted,
+        lastModified = lastModified,
     )
