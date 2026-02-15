@@ -46,6 +46,8 @@ kermit = "2.0.4"
 generativeai = "0.9.0"
 okhttp = "4.12.0"
 okio = "3.9.0"
+googleApiClient = "2.2.0"
+googleHttpClientGson = "1.43.3"
 serializationJson = "1.10.0"
 protobufPlugin = "0.9.4"
 awsSdk = "2.41.24"
@@ -114,6 +116,8 @@ wire-runtime = { group = "com.squareup.wire", name = "wire-runtime", version.ref
 wire-grpc-client = { group = "com.squareup.wire", name = "wire-grpc-client", version.ref = "wire" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 okio = { group = "com.squareup.okio", name = "okio", version.ref = "okio" }
+google-api-client = { group = "com.google.api-client", name = "google-api-client", version.ref = "googleApiClient" }
+google-http-client-gson = { group = "com.google.http-client", name = "google-http-client-gson", version.ref = "googleHttpClientGson" }
 screenshot-validation-api = { group = "com.android.tools.screenshot", name = "screenshot-validation-api", version.ref = "screenshot" }
 aws-secretsmanager = { group = "software.amazon.awssdk", name = "secretsmanager", version.ref = "awsSdk" }
 aws-sts = { group = "software.amazon.awssdk", name = "sts", version.ref = "awsSdk" }

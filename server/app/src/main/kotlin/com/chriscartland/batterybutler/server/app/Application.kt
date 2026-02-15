@@ -29,10 +29,14 @@ fun main() {
 
 fun startGrpcServer(port: Int = 50051): Server {
     val repository = PostgresDeviceRepository()
+    val authService = AuthService()
+    val authInterceptor = AuthInterceptor(authService)
     val grpcServer = ServerBuilder
         .forPort(port)
+        .intercept(authInterceptor)
         .addService(BatteryService())
         .addService(SyncService(repository).also { Logger.d("BatteryButlerApp") { "SyncService Registered" } })
+        .addService(authService.also { Logger.d("BatteryButlerApp") { "AuthService Registered" } })
         .build()
     grpcServer.start()
     Logger.i("BatteryButlerApp") { "gRPC server started on port $port" }

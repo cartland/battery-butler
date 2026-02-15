@@ -4,6 +4,7 @@ import com.chriscartland.batterybutler.ai.AiEngine
 import com.chriscartland.batterybutler.ai.NoOpAiEngine
 import com.chriscartland.batterybutler.data.repository.DefaultFeatureFlagProvider
 import com.chriscartland.batterybutler.data.repository.StaticAppInfoRepository
+import com.chriscartland.batterybutler.datalocal.auth.AuthTokenStorage
 import com.chriscartland.batterybutler.datalocal.preferences.DataStoreFactory
 import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
 import com.chriscartland.batterybutler.datanetwork.auth.GoogleSignInBridge
@@ -32,6 +33,8 @@ import com.squareup.wire.GrpcClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
 
@@ -96,12 +99,21 @@ abstract class AppComponent(
     fun provideDelegatingGrpcClient(
         networkModeRepository: NetworkModeRepository,
         scope: CoroutineScope,
-    ): DelegatingGrpcClient =
-        DelegatingGrpcClient(
+        authTokenStorage: AuthTokenStorage,
+    ): DelegatingGrpcClient {
+        val cachedToken = MutableStateFlow<String?>(null)
+        scope.launch {
+            authTokenStorage.storedToken.collect { stored ->
+                cachedToken.value = stored?.accessToken
+            }
+        }
+        return DelegatingGrpcClient(
             factory = networkComponent::createGrpcClient,
             networkModeRepository = networkModeRepository,
             scope = scope,
+            tokenProvider = { cachedToken.value },
         )
+    }
 
     @Provides
     @Singleton

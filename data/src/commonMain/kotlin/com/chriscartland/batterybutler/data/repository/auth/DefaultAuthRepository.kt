@@ -9,6 +9,8 @@ import com.chriscartland.batterybutler.domain.model.AuthState
 import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.model.User
 import com.chriscartland.batterybutler.domain.repository.AuthRepository
+import com.chriscartland.batterybutler.proto.AuthServiceClient
+import com.chriscartland.batterybutler.proto.VerifyTokenRequest
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -19,6 +21,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -27,16 +30,18 @@ import kotlin.time.ExperimentalTime
  *
  * Handles:
  * - Google Sign-In flow via [GoogleSignInBridge]
+ * - Server token verification via [AuthServiceClient]
  * - Token persistence via [AuthTokenStorage]
  * - Session state management
  *
- * Note: Server token verification is not yet implemented.
- * Currently stores the Google ID token directly (for local-only auth).
+ * After Google Sign-In, verifies the ID token with the server to get a
+ * session token. Falls back to local-only auth if the server is unreachable.
  */
 @OptIn(ExperimentalTime::class)
 @Inject
 class DefaultAuthRepository(
     private val googleSignInBridge: GoogleSignInBridge,
+    private val authServiceClient: AuthServiceClient,
     private val tokenStorage: AuthTokenStorage,
     private val scope: CoroutineScope,
 ) : AuthRepository {
@@ -88,31 +93,7 @@ class DefaultAuthRepository(
                 val googleToken = result.data
                 log.i { "Google Sign-In successful for ${googleToken.email}" }
 
-                // TODO: Verify token with server and get session token
-                // For now, use Google ID token directly (local-only auth)
-
-                val user = User(
-                    id = googleToken.idToken.take(32), // Use part of token as temp ID
-                    email = googleToken.email,
-                    displayName = googleToken.displayName,
-                    photoUrl = googleToken.photoUrl,
-                )
-
-                // Store the token
-                val storedToken = StoredAuthToken(
-                    accessToken = googleToken.idToken,
-                    refreshToken = null, // No refresh token without server
-                    expiresAtMs = Clock.System.now().toEpochMilliseconds() + TOKEN_EXPIRY_MS,
-                    userId = user.id,
-                    email = user.email,
-                    displayName = user.displayName,
-                    photoUrl = user.photoUrl,
-                )
-                tokenStorage.saveToken(storedToken)
-                scheduleTokenExpiry(storedToken.expiresAtMs)
-
-                _authState.value = AuthState.Authenticated(user)
-                Result.Success(user)
+                verifyWithServer(googleToken.idToken, googleToken.email, googleToken.displayName, googleToken.photoUrl)
             }
             is Result.Error -> {
                 log.w { "Google Sign-In failed: ${result.error.message}" }
@@ -131,17 +112,86 @@ class DefaultAuthRepository(
     }
 
     override suspend fun refreshToken(): Result<Unit, AuthError> {
-        // TODO: Implement token refresh with server
-        // For now, if token is expired, user needs to sign in again
-        val currentToken = tokenStorage.storedToken
-        log.w { "Token refresh not implemented" }
+        // Session tokens are not refreshable — user must sign in again
+        log.w { "Token refresh not supported, user must re-authenticate" }
         return Result.Error(
             AuthError.Token.Expired(
                 message = "Session expired",
-                cause = "Token refresh not yet implemented",
+                cause = "Please sign in again",
             ),
         )
     }
+
+    /**
+     * Verify the Google ID token with the server to get a session token.
+     * Falls back to local-only auth if the server is unreachable.
+     */
+    private suspend fun verifyWithServer(
+        idToken: String,
+        email: String?,
+        displayName: String?,
+        photoUrl: String?,
+    ): Result<User, AuthError> =
+        try {
+            val response = authServiceClient
+                .VerifyToken()
+                .execute(VerifyTokenRequest(google_id_token = idToken))
+
+            if (response.valid) {
+                log.i { "Server verified token for ${response.email}" }
+                val user = User(
+                    id = response.user_id,
+                    email = response.email,
+                    displayName = response.display_name,
+                    photoUrl = response.photo_url,
+                )
+                val storedToken = StoredAuthToken(
+                    accessToken = response.session_token,
+                    refreshToken = null,
+                    expiresAtMs = response.expires_at_ms,
+                    userId = user.id,
+                    email = user.email,
+                    displayName = user.displayName,
+                    photoUrl = user.photoUrl,
+                )
+                tokenStorage.saveToken(storedToken)
+                scheduleTokenExpiry(storedToken.expiresAtMs)
+                _authState.value = AuthState.Authenticated(user)
+                Result.Success(user)
+            } else {
+                log.w { "Server rejected token: ${response.error_message}" }
+                val error = AuthError.Token.Invalid(
+                    message = "Server rejected token",
+                    cause = response.error_message,
+                )
+                _authState.value = AuthState.Failed(error)
+                Result.Error(error)
+            }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            // Server unreachable — fall back to local-only auth
+            log.w(e) { "Server verification failed, using local-only auth" }
+            val user = User(
+                id = idToken.take(32),
+                email = email,
+                displayName = displayName,
+                photoUrl = photoUrl,
+            )
+            val storedToken = StoredAuthToken(
+                accessToken = idToken,
+                refreshToken = null,
+                expiresAtMs = Clock.System.now().toEpochMilliseconds() + LOCAL_TOKEN_EXPIRY_MS,
+                userId = user.id,
+                email = user.email,
+                displayName = user.displayName,
+                photoUrl = user.photoUrl,
+            )
+            tokenStorage.saveToken(storedToken)
+            scheduleTokenExpiry(storedToken.expiresAtMs)
+            _authState.value = AuthState.Authenticated(user)
+            Result.Success(user)
+        }
 
     override fun clearError() {
         if (_authState.value is AuthState.Failed) {
@@ -184,7 +234,7 @@ class DefaultAuthRepository(
     }
 
     private companion object {
-        // 1 hour token expiry for local-only auth
-        const val TOKEN_EXPIRY_MS = 60 * 60 * 1000L
+        // 1 hour token expiry for local-only auth fallback
+        const val LOCAL_TOKEN_EXPIRY_MS = 60 * 60 * 1000L
     }
 }

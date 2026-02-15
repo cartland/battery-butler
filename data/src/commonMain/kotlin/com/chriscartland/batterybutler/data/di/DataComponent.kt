@@ -22,6 +22,8 @@ import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.repository.AuthRepository
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
+import com.chriscartland.batterybutler.proto.AuthServiceClient
+import com.chriscartland.batterybutler.proto.GrpcAuthServiceClient
 import com.chriscartland.batterybutler.proto.GrpcSyncServiceClient
 import com.chriscartland.batterybutler.proto.SyncServiceClient
 import com.squareup.wire.GrpcClient
@@ -71,6 +73,9 @@ interface DataComponent {
 
     @Provides
     fun provideSyncServiceClient(client: GrpcClient): SyncServiceClient = GrpcSyncServiceClient(client)
+
+    @Provides
+    fun provideAuthServiceClient(client: GrpcClient): AuthServiceClient = GrpcAuthServiceClient(client)
 
     @Provides
     fun provideAuthTokenStorage(storage: DataStoreAuthTokenStorage): AuthTokenStorage = storage

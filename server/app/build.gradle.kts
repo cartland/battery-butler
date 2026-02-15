@@ -65,6 +65,8 @@ dependencies {
     implementation(libs.exposed.java.time)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.h2)
+    implementation(libs.google.api.client)
+    implementation(libs.google.http.client.gson)
 }
 
 sourceSets {
