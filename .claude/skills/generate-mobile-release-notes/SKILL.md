@@ -1,3 +1,8 @@
+---
+description: Analyze commits between mobile release tags and generate MOBILE_RELEASE_NOTES.md with public and detailed sections.
+allowed-tools: Bash(*), Read, Write, Edit, Glob, Grep
+---
+
 # Generate Mobile Release Notes
 
 Analyze commits between mobile release tags and produce structured release notes.
@@ -88,7 +93,7 @@ Then add a section for the new release (prepended after the header, before older
 ```markdown
 ## [android/N] — YYYY-MM-DD
 
-Range: `previous-tag..android/N` (X mobile-relevant commits out of Y total)
+From tag `previous-tag` to tag `android/N` (X mobile-relevant commits out of Y total)
 
 ### What's New
 
