@@ -5,6 +5,7 @@ import androidx.compose.ui.window.application
 import com.chriscartland.batterybutler.ai.NoOpAiEngine
 import com.chriscartland.batterybutler.composeapp.di.AppComponent
 import com.chriscartland.batterybutler.composeapp.di.create
+import com.chriscartland.batterybutler.data.provider.DefaultDispatcherProvider
 import com.chriscartland.batterybutler.datalocal.preferences.DataStoreFactory
 import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
 import com.chriscartland.batterybutler.datanetwork.auth.GoogleSignInBridge
@@ -29,7 +30,8 @@ fun main() =
                 ?: System.getProperty("google.web.client.id")
                 ?: ""
             val googleSignInBridge = GoogleSignInBridge()
-            googleSignInBridge.initialize(googleClientId.ifBlank { null })
+            val dispatcherProvider = DefaultDispatcherProvider()
+            googleSignInBridge.initialize(googleClientId.ifBlank { null }, dispatcherProvider)
             val component =
                 AppComponent::class.create(
                     databaseFactory,

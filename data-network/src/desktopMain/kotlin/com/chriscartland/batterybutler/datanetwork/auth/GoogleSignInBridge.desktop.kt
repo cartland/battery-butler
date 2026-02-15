@@ -2,6 +2,7 @@ package com.chriscartland.batterybutler.datanetwork.auth
 
 import com.chriscartland.batterybutler.domain.model.AuthError
 import com.chriscartland.batterybutler.domain.model.Result
+import com.chriscartland.batterybutler.domain.provider.DispatcherProvider
 import com.sun.net.httpserver.HttpServer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -32,10 +33,15 @@ import kotlin.coroutines.resume
  */
 actual class GoogleSignInBridge {
     private var clientId: String? = null
+    private var dispatcherProvider: DispatcherProvider? = null
     private val json = Json { ignoreUnknownKeys = true }
 
-    fun initialize(clientId: String?) {
+    fun initialize(
+        clientId: String?,
+        dispatcherProvider: DispatcherProvider,
+    ) {
         this.clientId = clientId
+        this.dispatcherProvider = dispatcherProvider
         if (clientId.isNullOrBlank()) {
             println("Google Sign-In (Desktop): Not configured")
             println("  Set GOOGLE_WEB_CLIENT_ID environment variable")
@@ -60,12 +66,13 @@ actual class GoogleSignInBridge {
             val codeChallenge = generateCodeChallenge(codeVerifier)
 
             // Start local server and get auth code
-            val (authCode, redirectUri) = withContext(Dispatchers.IO) {
+            val dispatcher = dispatcherProvider?.io ?: Dispatchers.IO
+            val (authCode, redirectUri) = withContext(dispatcher) {
                 awaitAuthCode(id, codeChallenge)
             }
 
             // Exchange code for tokens
-            val tokenResponse = withContext(Dispatchers.IO) {
+            val tokenResponse = withContext(dispatcher) {
                 exchangeCodeForTokens(authCode, id, codeVerifier, redirectUri)
             }
 

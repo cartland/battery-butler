@@ -9,6 +9,7 @@ import com.chriscartland.batterybutler.domain.model.AuthError
 import com.chriscartland.batterybutler.domain.model.AuthState
 import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.model.User
+import com.chriscartland.batterybutler.domain.provider.DispatcherProvider
 import com.chriscartland.batterybutler.domain.repository.AuthRepository
 import com.chriscartland.batterybutler.proto.AuthServiceClient
 import com.chriscartland.batterybutler.proto.VerifyTokenRequest
@@ -46,6 +47,7 @@ class DefaultAuthRepository(
     private val authServiceClient: AuthServiceClient,
     private val tokenStorage: AuthTokenStorage,
     private val scope: CoroutineScope,
+    private val dispatcherProvider: DispatcherProvider,
 ) : AuthRepository {
     private val log = Logger.withTag("DefaultAuthRepository")
 
@@ -234,7 +236,7 @@ class DefaultAuthRepository(
         }
         log.d { "Scheduling token expiry in ${delayMs / 1000}s" }
         // Use Default dispatcher to avoid blocking Main thread idle checks in tests
-        expiryJob = scope.launch(kotlinx.coroutines.Dispatchers.Default) {
+        expiryJob = scope.launch(dispatcherProvider.default) {
             delay(delayMs)
             log.i { "Session token expired" }
             tokenStorage.clearToken()

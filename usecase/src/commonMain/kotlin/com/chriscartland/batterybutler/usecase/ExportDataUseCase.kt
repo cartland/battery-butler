@@ -3,8 +3,8 @@ package com.chriscartland.batterybutler.usecase
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
+import com.chriscartland.batterybutler.domain.provider.DispatcherProvider
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
@@ -15,6 +15,7 @@ import me.tatarka.inject.annotations.Inject
 @Inject
 class ExportDataUseCase(
     private val deviceRepository: DeviceRepository,
+    private val dispatcherProvider: DispatcherProvider,
 ) {
     private val json = Json {
         prettyPrint = true
@@ -22,7 +23,7 @@ class ExportDataUseCase(
     }
 
     suspend operator fun invoke(): String =
-        withContext(Dispatchers.Default) {
+        withContext(dispatcherProvider.default) {
             val devices = deviceRepository.getAllDevices().first()
             val types = deviceRepository.getAllDeviceTypes().first()
             val events = deviceRepository.getAllEvents().first()

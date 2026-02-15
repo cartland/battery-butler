@@ -5,6 +5,7 @@ import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.SyncStatus
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
+import com.chriscartland.batterybutler.testcommon.TestDispatcherProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +23,7 @@ class ExportDataUseCaseTest {
     fun `export empty repository returns valid JSON structure`() =
         runTest {
             val repository = TestExportRepository()
-            val useCase = ExportDataUseCase(repository)
+            val useCase = ExportDataUseCase(repository, TestDispatcherProvider())
 
             val result = useCase()
 
@@ -50,7 +51,7 @@ class ExportDataUseCaseTest {
                     location = "Kitchen",
                 ),
             )
-            val useCase = ExportDataUseCase(repository)
+            val useCase = ExportDataUseCase(repository, TestDispatcherProvider())
 
             val result = useCase()
 
@@ -73,7 +74,7 @@ class ExportDataUseCaseTest {
                     batteryQuantity = 1,
                 ),
             )
-            val useCase = ExportDataUseCase(repository)
+            val useCase = ExportDataUseCase(repository, TestDispatcherProvider())
 
             val result = useCase()
 
@@ -97,7 +98,7 @@ class ExportDataUseCaseTest {
                     notes = "Replaced during maintenance",
                 ),
             )
-            val useCase = ExportDataUseCase(repository)
+            val useCase = ExportDataUseCase(repository, TestDispatcherProvider())
 
             val result = useCase()
 
@@ -138,7 +139,7 @@ class ExportDataUseCaseTest {
                     notes = null,
                 ),
             )
-            val useCase = ExportDataUseCase(repository)
+            val useCase = ExportDataUseCase(repository, TestDispatcherProvider())
 
             val result = useCase()
 
@@ -172,7 +173,7 @@ class ExportDataUseCaseTest {
             )
             repository.deviceTypes.add(DeviceType(id = "type-1", name = "Type 1"))
             repository.deviceTypes.add(DeviceType(id = "type-2", name = "Type 2"))
-            val useCase = ExportDataUseCase(repository)
+            val useCase = ExportDataUseCase(repository, TestDispatcherProvider())
 
             val result = useCase()
 
@@ -195,7 +196,7 @@ class ExportDataUseCaseTest {
                     lastUpdated = Instant.DISTANT_PAST,
                 ),
             )
-            val useCase = ExportDataUseCase(repository)
+            val useCase = ExportDataUseCase(repository, TestDispatcherProvider())
 
             val result = useCase()
 
@@ -219,7 +220,7 @@ class ExportDataUseCaseTest {
                     lastUpdated = Instant.DISTANT_PAST,
                 ),
             )
-            val useCase = ExportDataUseCase(repository)
+            val useCase = ExportDataUseCase(repository, TestDispatcherProvider())
 
             val result = useCase()
 

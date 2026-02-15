@@ -94,4 +94,8 @@ class FakeAuthRepository : AuthRepository {
             _authState.value = AuthState.Unauthenticated
         }
     }
+
+    override suspend fun setExternalToken(token: String) {
+        // No-op for now
+    }
 }

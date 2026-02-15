@@ -2,6 +2,7 @@ package com.chriscartland.batterybutler.data.di
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import com.chriscartland.batterybutler.data.provider.DefaultDispatcherProvider
 import com.chriscartland.batterybutler.data.repository.DataStoreNetworkModeRepository
 import com.chriscartland.batterybutler.data.repository.DefaultDeviceRepository
 import com.chriscartland.batterybutler.data.repository.auth.DefaultAuthRepository
@@ -19,6 +20,7 @@ import com.chriscartland.batterybutler.datanetwork.RemoteDataSource
 import com.chriscartland.batterybutler.datanetwork.auth.GoogleSignInBridge
 import com.chriscartland.batterybutler.datanetwork.grpc.NetworkComponent
 import com.chriscartland.batterybutler.domain.model.NetworkMode
+import com.chriscartland.batterybutler.domain.provider.DispatcherProvider
 import com.chriscartland.batterybutler.domain.repository.AuthRepository
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
@@ -82,4 +84,7 @@ interface DataComponent {
 
     @Provides
     fun provideAuthRepository(repo: DefaultAuthRepository): AuthRepository = repo
+
+    @Provides
+    fun provideDispatcherProvider(provider: DefaultDispatcherProvider): DispatcherProvider = provider
 }

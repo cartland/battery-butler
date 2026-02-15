@@ -13,6 +13,7 @@ import com.chriscartland.batterybutler.datanetwork.grpc.DelegatingGrpcClient
 import com.chriscartland.batterybutler.datanetwork.grpc.NetworkComponent
 import com.chriscartland.batterybutler.domain.model.AppVersion
 import com.chriscartland.batterybutler.domain.model.FeatureFlag
+import com.chriscartland.batterybutler.domain.provider.DispatcherProvider
 import com.chriscartland.batterybutler.domain.repository.AppInfoRepository
 import com.chriscartland.batterybutler.domain.repository.AuthRepository
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
@@ -34,7 +35,6 @@ import com.chriscartland.batterybutler.viewmodel.login.LoginViewModel
 import com.chriscartland.batterybutler.viewmodel.settings.SettingsViewModel
 import com.squareup.wire.GrpcClient
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -70,6 +70,7 @@ abstract class AppComponent(
     abstract val featureFlagProvider: FeatureFlagProvider
     abstract val networkModeRepository: NetworkModeRepository
     abstract val authRepository: AuthRepository
+    abstract val dispatcherProvider: DispatcherProvider
     abstract override val appScope: CoroutineScope
 
     @Provides
@@ -92,7 +93,7 @@ abstract class AppComponent(
 
     @Provides
     @Singleton
-    fun provideAppScope(): CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    fun provideAppScope(dispatcherProvider: DispatcherProvider): CoroutineScope = CoroutineScope(SupervisorJob() + dispatcherProvider.default)
 
     @Provides
     fun provideDatabaseFactory(): DatabaseFactory = databaseFactory
