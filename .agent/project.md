@@ -94,61 +94,31 @@ xcodebuild -project ios-app-swift-ui/...      # iOS
 
 Release scripts check for existing tags, increment correctly, provide confirmation prompts, and ensure you're on the right commit.
 
-## Task Management with `bd` (Beads)
+## Task Management
 
-**Beads is the primary task tracking system for this project.**
+### Two Task Systems
 
-Use `bd` CLI for all task/issue management. **Never modify `.beads/issues.jsonl` directly.**
+- **`bd` (beads)** — Cross-session project tracking. Persists in git. Use for epics, bugs, features that span multiple sessions.
+- **Claude's TaskCreate/TaskList** — Within-session team coordination. Ephemeral. Use for breaking work into subtasks during a team session.
 
-Beads is an AI-native issue tracker that lives in the repository. Issues are stored in `.beads/issues.jsonl` (JSONL format for easy git merging) while SQLite is used as a local cache.
+**Rules:**
+- Teammates in a Claude Code team use TaskCreate/TaskList for coordination (never `bd`)
+- Use `bd` at session start (`bd ready`) and session end (`bd close`) for project-level items
+- Don't duplicate: if it's a single-session task, it doesn't need a bead
 
-### Session Workflow
+### `bd` Quick Reference
+
+Use `bd` CLI for all task/issue management. **Never modify `.beads/issues.jsonl` directly.** Run `bd help` for full command list.
+
 ```bash
-# Start of session
-bd list                    # See pending tasks
-bd ready                   # See tasks ready to work on
-
-# When you identify new work
-bd create "Task title" --type task --priority P2
-
-# When you complete work
-bd close <id> --reason "Fixed in PR #123"
-```
-
-### Quick Reference
-```bash
+# Session workflow
 bd list              # List all open issues
 bd ready             # Show tasks ready to work on (no blockers)
 bd show <id>         # View full task details
-bd close <id>        # Mark task complete
+bd create "Title" --type task --priority P2  # Create a task
+bd close <id> --reason "Fixed in PR #123"    # Mark complete
 bd search "login"    # Search by text
 ```
-
-### Creating Issues
-```bash
-# Create a task
-bd create "Fix the login button" --type task --priority P2
-
-# Create an epic
-bd create "User Authentication" --type epic --priority P2 \
-  --description "Implement login flow with Google Sign-In..."
-
-# Create a bug
-bd create "App crashes on startup" --type bug --priority P1
-
-# With full options
-bd create "Title" \
-  --type task|bug|feature|epic|chore \
-  --priority P0|P1|P2|P3|P4 \
-  --description "Detailed description..." \
-  --labels "ui,android"
-```
-
-### Issue Types & Priorities
-
-**Types:** `task` (default), `bug`, `feature`, `epic`, `chore`
-
-**Priorities:** P0 (critical) > P1 (high) > P2 (normal, default) > P3 (low) > P4 (nice to have)
 
 ### Committing Beads Changes
 
