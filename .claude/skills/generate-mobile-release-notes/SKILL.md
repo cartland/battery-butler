@@ -93,7 +93,7 @@ Then add a section for the new release (prepended after the header, before older
 ```markdown
 ## [android/N] — YYYY-MM-DD
 
-Range: `previous-tag..android/N` (X mobile-relevant commits out of Y total)
+From tag `previous-tag` to tag `android/N` (X mobile-relevant commits out of Y total)
 
 ### What's New
 
