@@ -2,16 +2,13 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidKotlinMultiplatformLibrary)
+    alias(libs.plugins.androidLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
 }
 
 kotlin {
-    androidLibrary {
-        namespace = "com.chriscartland.batterybutler.composeresources"
-        compileSdk = libs.versions.android.compileSdk.get().toInt()
-        minSdk = libs.versions.android.minSdk.get().toInt()
+    androidTarget {
     }
 
     jvm()
@@ -36,4 +33,12 @@ kotlin {
 compose.resources {
     publicResClass = true
     packageOfResClass = "com.chriscartland.batterybutler.composeresources.generated.resources"
+}
+
+android {
+    namespace = "com.chriscartland.batterybutler.composeresources"
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
+    defaultConfig {
+        minSdk = libs.versions.android.minSdk.get().toInt()
+    }
 }
