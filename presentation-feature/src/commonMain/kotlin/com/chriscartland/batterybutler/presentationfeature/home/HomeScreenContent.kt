@@ -277,10 +277,10 @@ fun HomeScreenList(
     }
 }
 
-@OptIn(ExperimentalTime::class)
 /**
  * Returns a user-friendly error message for sync failures.
  */
+@OptIn(ExperimentalTime::class)
 fun getSyncErrorMessage(error: DataError): String =
     when (error) {
         is DataError.Network.ConnectionFailed ->

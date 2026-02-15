@@ -162,7 +162,7 @@ fun DevicesScreen(
             onGroupOptionSelected = onGroupOptionSelected,
             onSortOptionToggle = onSortOptionToggle,
             onSortOptionSelected = onSortOptionSelected,
-            onDeviceClick = onDeviceClick,
+            onDeviceClick = { onDeviceClick(it.id) },
             modifier = Modifier.padding(innerPadding),
             contentPadding = fabPadding,
         )
