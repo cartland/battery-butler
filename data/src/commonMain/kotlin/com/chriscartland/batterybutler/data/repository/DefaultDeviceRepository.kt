@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 import kotlin.coroutines.cancellation.CancellationException
@@ -99,17 +100,17 @@ class DefaultDeviceRepository(
 
     override suspend fun addDevice(device: Device) {
         localDataSource.addDevice(device)
-        pushUpdate(devices = listOf(device))
+        scope.launch { sync() }
     }
 
     override suspend fun updateDevice(device: Device) {
         localDataSource.updateDevice(device)
-        pushUpdate(devices = listOf(device))
+        scope.launch { sync() }
     }
 
     override suspend fun deleteDevice(id: String) {
         localDataSource.deleteDevice(id)
-        pushUpdate(deletedDeviceIds = listOf(id))
+        scope.launch { sync() }
     }
 
     override fun getAllDeviceTypes(): Flow<List<DeviceType>> = localDataSource.getAllDeviceTypes()
@@ -118,17 +119,17 @@ class DefaultDeviceRepository(
 
     override suspend fun addDeviceType(type: DeviceType) {
         localDataSource.addDeviceType(type)
-        pushUpdate(deviceTypes = listOf(type))
+        scope.launch { sync() }
     }
 
     override suspend fun updateDeviceType(type: DeviceType) {
         localDataSource.updateDeviceType(type)
-        pushUpdate(deviceTypes = listOf(type))
+        scope.launch { sync() }
     }
 
     override suspend fun deleteDeviceType(id: String) {
         localDataSource.deleteDeviceType(id)
-        pushUpdate(deletedDeviceTypeIds = listOf(id))
+        scope.launch { sync() }
     }
 
     override fun getEventsForDevice(deviceId: String): Flow<List<BatteryEvent>> = localDataSource.getEventsForDevice(deviceId)
@@ -139,56 +140,74 @@ class DefaultDeviceRepository(
 
     override suspend fun addEvent(event: BatteryEvent) {
         localDataSource.addEvent(event)
-        pushUpdate(events = listOf(event))
+        scope.launch { sync() }
     }
 
     override suspend fun updateEvent(event: BatteryEvent) {
         localDataSource.updateEvent(event)
-        pushUpdate(events = listOf(event))
+        scope.launch { sync() }
     }
 
     override suspend fun deleteEvent(id: String) {
         localDataSource.deleteEvent(id)
-        pushUpdate(deletedEventIds = listOf(id))
+        scope.launch { sync() }
     }
 
-    private fun pushUpdate(
-        deviceTypes: List<DeviceType> = emptyList(),
-        devices: List<Device> = emptyList(),
-        events: List<BatteryEvent> = emptyList(),
-        deletedDeviceTypeIds: List<String> = emptyList(),
-        deletedDeviceIds: List<String> = emptyList(),
-        deletedEventIds: List<String> = emptyList(),
-    ) {
-        scope.launch {
-            _syncStatus.value = SyncStatus.Syncing
-            try {
-                val success = remoteDataSource.push(
-                    RemoteUpdate(
-                        isFullSnapshot = false,
-                        deviceTypes = deviceTypes,
-                        devices = devices,
-                        events = events,
-                        deletedDeviceTypeIds = deletedDeviceTypeIds,
-                        deletedDeviceIds = deletedDeviceIds,
-                        deletedEventIds = deletedEventIds,
-                    ),
-                )
-                if (success) {
-                    _syncStatus.value = SyncStatus.Success
-                    // UI layer is responsible for dismissing Success state after showing feedback
-                } else {
-                    _syncStatus.value = SyncStatus.Failed(
-                        DataError.Network.PushFailed("Server rejected sync request"),
-                    )
-                }
-            } catch (e: Exception) {
-                if (e is CancellationException) throw e
-                Logger.e("DefaultDeviceRepo", e) { "Push failed" }
+    private suspend fun sync() {
+        _syncStatus.value = SyncStatus.Syncing
+        try {
+            // 1. Snapshot unsynced data
+            val unsyncedTypes = localDataSource.getUnsyncedActiveDeviceTypes().first()
+            val deletedTypeIds = localDataSource.getUnsyncedDeletedDeviceTypeIds().first()
+
+            val unsyncedDevices = localDataSource.getUnsyncedActiveDevices().first()
+            val deletedDeviceIds = localDataSource.getUnsyncedDeletedDeviceIds().first()
+
+            val unsyncedEvents = localDataSource.getUnsyncedActiveEvents().first()
+            val deletedEventIds = localDataSource.getUnsyncedDeletedEventIds().first()
+
+            // 2. Short-circuit if nothing to sync
+            if (unsyncedTypes.isEmpty() &&
+                deletedTypeIds.isEmpty() &&
+                unsyncedDevices.isEmpty() &&
+                deletedDeviceIds.isEmpty() &&
+                unsyncedEvents.isEmpty() &&
+                deletedEventIds.isEmpty()
+            ) {
+                _syncStatus.value = SyncStatus.Idle // Or Success? Idle seems appropriate if nothing happened.
+                return
+            }
+
+            // 3. Push to server
+            val success = remoteDataSource.push(
+                RemoteUpdate(
+                    isFullSnapshot = false,
+                    deviceTypes = unsyncedTypes,
+                    devices = unsyncedDevices,
+                    events = unsyncedEvents,
+                    deletedDeviceTypeIds = deletedTypeIds,
+                    deletedDeviceIds = deletedDeviceIds,
+                    deletedEventIds = deletedEventIds,
+                ),
+            )
+
+            // 4. Mark as synced on success
+            if (success) {
+                localDataSource.markDeviceTypesSynced(unsyncedTypes.map { it.id } + deletedTypeIds)
+                localDataSource.markDevicesSynced(unsyncedDevices.map { it.id } + deletedDeviceIds)
+                localDataSource.markEventsSynced(unsyncedEvents.map { it.id } + deletedEventIds)
+                _syncStatus.value = SyncStatus.Success
+            } else {
                 _syncStatus.value = SyncStatus.Failed(
-                    DataError.Unknown(e.message ?: "Unknown error", e.toString()),
+                    DataError.Network.PushFailed("Server rejected sync request"),
                 )
             }
+        } catch (e: Exception) {
+            if (e is CancellationException) throw e
+            Logger.e(TAG, e) { "Sync failed" }
+            _syncStatus.value = SyncStatus.Failed(
+                DataError.Unknown(e.message ?: "Unknown error", e.toString()),
+            )
         }
     }
 

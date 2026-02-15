@@ -116,4 +116,64 @@ class RoomLocalDataSource(
     override suspend fun deleteEvent(id: String) {
         dao.softDeleteEvent(id)
     }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun getUnsyncedActiveDevices(): Flow<List<Device>> =
+        databaseProvider.database.flatMapLatest { db ->
+            db.deviceDao().getUnsyncedActiveDevices().map { entities ->
+                entities.map { it.toDomain() }
+            }
+        }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun getUnsyncedDeletedDeviceIds(): Flow<List<String>> =
+        databaseProvider.database.flatMapLatest { db ->
+            db.deviceDao().getUnsyncedDeletedDeviceIds()
+        }
+
+    override suspend fun markDevicesSynced(ids: List<String>) {
+        ids.forEach { id ->
+            dao.markDeviceSynced(id, isSynced = true)
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun getUnsyncedActiveDeviceTypes(): Flow<List<DeviceType>> =
+        databaseProvider.database.flatMapLatest { db ->
+            db.deviceDao().getUnsyncedActiveDeviceTypes().map { entities ->
+                entities.map { it.toDomain() }
+            }
+        }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun getUnsyncedDeletedDeviceTypeIds(): Flow<List<String>> =
+        databaseProvider.database.flatMapLatest { db ->
+            db.deviceDao().getUnsyncedDeletedDeviceTypeIds()
+        }
+
+    override suspend fun markDeviceTypesSynced(ids: List<String>) {
+        ids.forEach { id ->
+            dao.markDeviceTypeSynced(id, isSynced = true)
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun getUnsyncedActiveEvents(): Flow<List<BatteryEvent>> =
+        databaseProvider.database.flatMapLatest { db ->
+            db.deviceDao().getUnsyncedActiveEvents().map { entities ->
+                entities.map { it.toDomain() }
+            }
+        }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun getUnsyncedDeletedEventIds(): Flow<List<String>> =
+        databaseProvider.database.flatMapLatest { db ->
+            db.deviceDao().getUnsyncedDeletedEventIds()
+        }
+
+    override suspend fun markEventsSynced(ids: List<String>) {
+        ids.forEach { id ->
+            dao.markEventSynced(id, isSynced = true)
+        }
+    }
 }

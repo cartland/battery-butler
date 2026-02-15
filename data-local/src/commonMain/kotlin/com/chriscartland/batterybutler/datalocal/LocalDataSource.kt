@@ -43,4 +43,23 @@ interface LocalDataSource {
     suspend fun updateEvent(event: BatteryEvent)
 
     suspend fun deleteEvent(id: String)
+
+    // Sync Methods
+    fun getUnsyncedActiveDevices(): Flow<List<Device>>
+
+    fun getUnsyncedDeletedDeviceIds(): Flow<List<String>>
+
+    suspend fun markDevicesSynced(ids: List<String>)
+
+    fun getUnsyncedActiveDeviceTypes(): Flow<List<DeviceType>>
+
+    fun getUnsyncedDeletedDeviceTypeIds(): Flow<List<String>>
+
+    suspend fun markDeviceTypesSynced(ids: List<String>)
+
+    fun getUnsyncedActiveEvents(): Flow<List<BatteryEvent>>
+
+    fun getUnsyncedDeletedEventIds(): Flow<List<String>>
+
+    suspend fun markEventsSynced(ids: List<String>)
 }

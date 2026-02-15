@@ -110,4 +110,23 @@ interface DeviceDao {
         id: String,
         isSynced: Boolean,
     )
+
+    // Sync Queries
+    @Query("SELECT * FROM devices WHERE isSynced = 0 AND isDeleted = 0")
+    fun getUnsyncedActiveDevices(): Flow<List<DeviceEntity>>
+
+    @Query("SELECT id FROM devices WHERE isSynced = 0 AND isDeleted = 1")
+    fun getUnsyncedDeletedDeviceIds(): Flow<List<String>>
+
+    @Query("SELECT * FROM device_types WHERE isSynced = 0 AND isDeleted = 0")
+    fun getUnsyncedActiveDeviceTypes(): Flow<List<DeviceTypeEntity>>
+
+    @Query("SELECT id FROM device_types WHERE isSynced = 0 AND isDeleted = 1")
+    fun getUnsyncedDeletedDeviceTypeIds(): Flow<List<String>>
+
+    @Query("SELECT * FROM battery_events WHERE isSynced = 0 AND isDeleted = 0")
+    fun getUnsyncedActiveEvents(): Flow<List<BatteryEventEntity>>
+
+    @Query("SELECT id FROM battery_events WHERE isSynced = 0 AND isDeleted = 1")
+    fun getUnsyncedDeletedEventIds(): Flow<List<String>>
 }

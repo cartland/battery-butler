@@ -405,10 +405,17 @@ class FakeLocalDataSource : LocalDataSource {
 
     override suspend fun updateDevice(device: Device) {
         updatedDevices.add(device)
+        val index = devices.indexOfFirst { it.id == device.id }
+        if (index != -1) {
+            devices[index] = device
+        } else {
+            devices.add(device)
+        }
     }
 
     override suspend fun deleteDevice(id: String) {
         deletedDeviceIds.add(id)
+        devices.removeAll { it.id == id }
     }
 
     override fun getAllDeviceTypes(): Flow<List<DeviceType>> = deviceTypesFlow
@@ -425,10 +432,17 @@ class FakeLocalDataSource : LocalDataSource {
 
     override suspend fun updateDeviceType(type: DeviceType) {
         updatedDeviceTypes.add(type)
+        val index = deviceTypes.indexOfFirst { it.id == type.id }
+        if (index != -1) {
+            deviceTypes[index] = type
+        } else {
+            deviceTypes.add(type)
+        }
     }
 
     override suspend fun deleteDeviceType(id: String) {
         deletedDeviceTypeIds.add(id)
+        deviceTypes.removeAll { it.id == id }
     }
 
     override fun getEventsForDevice(deviceId: String): Flow<List<BatteryEvent>> = emptyFlow()
@@ -447,10 +461,41 @@ class FakeLocalDataSource : LocalDataSource {
 
     override suspend fun updateEvent(event: BatteryEvent) {
         updatedEvents.add(event)
+        val index = events.indexOfFirst { it.id == event.id }
+        if (index != -1) {
+            events[index] = event
+        } else {
+            events.add(event)
+        }
     }
 
     override suspend fun deleteEvent(id: String) {
         deletedEventIds.add(id)
+        events.removeAll { it.id == id }
+    }
+
+    override fun getUnsyncedActiveDevices(): Flow<List<Device>> = flowOf(devices)
+
+    override fun getUnsyncedDeletedDeviceIds(): Flow<List<String>> = flowOf(deletedDeviceIds)
+
+    override suspend fun markDevicesSynced(ids: List<String>) {
+        // No-op for now in fake
+    }
+
+    override fun getUnsyncedActiveDeviceTypes(): Flow<List<DeviceType>> = flowOf(deviceTypes)
+
+    override fun getUnsyncedDeletedDeviceTypeIds(): Flow<List<String>> = flowOf(deletedDeviceTypeIds)
+
+    override suspend fun markDeviceTypesSynced(ids: List<String>) {
+        // No-op for now in fake
+    }
+
+    override fun getUnsyncedActiveEvents(): Flow<List<BatteryEvent>> = flowOf(events)
+
+    override fun getUnsyncedDeletedEventIds(): Flow<List<String>> = flowOf(deletedEventIds)
+
+    override suspend fun markEventsSynced(ids: List<String>) {
+        // No-op for now in fake
     }
 }
 
