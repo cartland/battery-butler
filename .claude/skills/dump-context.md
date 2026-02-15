@@ -1,3 +1,7 @@
+---
+description: Capture session knowledge (tasks, decisions, workarounds) into beads and docs before session ends.
+---
+
 # Dump Context
 
 Capture conversation knowledge into durable artifacts before a session ends or context is compacted. This prevents loss of decisions, tasks, workarounds, and architecture knowledge.

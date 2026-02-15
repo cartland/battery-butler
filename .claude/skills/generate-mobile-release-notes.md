@@ -1,3 +1,7 @@
+---
+description: Analyze commits between mobile release tags and generate MOBILE_RELEASE_NOTES.md with public and detailed sections.
+---
+
 # Generate Mobile Release Notes
 
 Analyze commits between mobile release tags and produce structured release notes.
