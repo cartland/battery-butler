@@ -199,5 +199,51 @@ class PostgresDeviceRepository : ServerDeviceRepository {
         dbUpdateSignal.emit(Unit)
     }
 
-    override fun getUpdates(): Flow<RemoteUpdate> = flow { }
+    override fun getUpdates(): Flow<RemoteUpdate> =
+        flow {
+            // Emit an initial full snapshot, then re-emit on every DB mutation
+            emit(queryFullSnapshot())
+            dbUpdateSignal.collect {
+                emit(queryFullSnapshot())
+            }
+        }
+
+    private suspend fun queryFullSnapshot(): RemoteUpdate =
+        newSuspendedTransaction {
+            val devices = Devices.selectAll().map {
+                Device(
+                    id = it[Devices.id],
+                    name = it[Devices.name],
+                    typeId = it[Devices.typeId],
+                    batteryLastReplaced = it[Devices.batteryLastReplaced].toKotlinInstant(),
+                    lastUpdated = it[Devices.lastUpdated].toKotlinInstant(),
+                    location = it[Devices.location],
+                    imagePath = it[Devices.imagePath],
+                )
+            }
+            val deviceTypes = DeviceTypes.selectAll().map {
+                DeviceType(
+                    id = it[DeviceTypes.id],
+                    name = it[DeviceTypes.name],
+                    batteryType = it[DeviceTypes.batteryType],
+                    batteryQuantity = it[DeviceTypes.batteryQuantity],
+                    defaultIcon = it[DeviceTypes.defaultIcon],
+                )
+            }
+            val events = BatteryEvents.selectAll().map {
+                BatteryEvent(
+                    id = it[BatteryEvents.id],
+                    deviceId = it[BatteryEvents.deviceId],
+                    date = it[BatteryEvents.timestamp].toKotlinInstant(),
+                    notes = it[BatteryEvents.notes] ?: "",
+                    batteryType = it[BatteryEvents.batteryType],
+                )
+            }
+            RemoteUpdate(
+                isFullSnapshot = true,
+                deviceTypes = deviceTypes,
+                devices = devices,
+                events = events,
+            )
+        }
 }

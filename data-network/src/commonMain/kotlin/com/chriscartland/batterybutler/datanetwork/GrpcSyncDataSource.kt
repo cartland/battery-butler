@@ -30,6 +30,10 @@ class GrpcSyncDataSource(
                 // CRITICAL: We MUST send an initial request to trigger the stream
                 // Even though it's empty, the server waits for one message.
                 requestChannel.send(Unit)
+                // Half-close the request stream so the server receives END_STREAM
+                // and invokes the subscribe handler. Without this, server-streaming
+                // RPCs via Wire hang because the server waits for the client to finish.
+                requestChannel.close()
 
                 responseChannel
                     .consumeAsFlow()
