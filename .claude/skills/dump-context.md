@@ -45,40 +45,29 @@ Rules:
 
 Update these files with knowledge from the conversation:
 
-#### `CLAUDE.md` — Session Resume Points
-Replace the "Session Resume Points" section with current state:
-- **Ready Tasks**: Top priorities from `bd ready`
-- **Recent Completions**: Work completed this session
-- **Known Issues**: Bugs, flaky tests, environment issues discovered
-- **Context**: Important state that a new session needs to know
+#### `.agent/project.md` — Project Knowledge
+Add to the appropriate section:
+- New commands or workflows discovered
+- Build system quirks or workarounds
+- Testing patterns
+- Deployment changes
+
+#### `.agent/AGENTS.md` — Workflow Rules
+Add if applicable:
+- New workflow rules
+- Changes to merge/CI process
+- Mistakes to avoid
 
 #### Other Documentation (if applicable)
 - `CHANGELOG.md` — add entries for completed/merged work
 - `README.md`, `server/README.md`, etc. — new setup steps, changed behavior
 - Remove outdated information discovered during the session
 
-### Phase 4: Update Agent Instructions
-
-Update instruction files with operational knowledge from the conversation:
-
-#### `CLAUDE.md` — Project-Specific Knowledge
-Add to the appropriate subsection:
-- New commands or workflows discovered
-- Mistakes to avoid (add to "Common Mistakes to Avoid" or similar)
-- Build system quirks or workarounds
-- Testing patterns
-
-#### `.agent/AGENTS.md`
-Add if applicable:
-- New workflow rules
-- Changes to merge/CI process
-- New risk categories for PRs
-
 ### Phase 5: Commit via PR
 
 1. Stage all changes:
    ```bash
-   git add .beads/ CLAUDE.md .agent/AGENTS.md
+   git add .beads/ .agent/project.md .agent/AGENTS.md
    # Add any other updated docs
    ```
 
@@ -102,7 +91,7 @@ Add if applicable:
    - `bb-yyy`: <title>
 
    ## Docs Updated
-   - `CLAUDE.md`: Session resume points, [other sections]
+   - `.agent/project.md`: [sections updated]
    - [Other files]
    EOF
    )"
@@ -114,6 +103,6 @@ This is a P0.5 priority PR (instruction/beads only) — merge immediately when C
 
 - Phase 2 (beads) is the most important — tasks lost in conversation are tasks forgotten
 - Be aggressive about creating beads — it's better to have a bead you close as "not needed" than to lose a task
-- Session Resume Points should be concise but complete — a fresh session should be able to pick up exactly where you left off
+- Don't put session-specific state in docs — use `bd` for tasks and let `bd ready` be the resume point
 - Don't update docs with speculative information — only document things confirmed during the session
 - If the conversation was short or trivial, skip phases that don't apply (not every session needs all 5 phases)
