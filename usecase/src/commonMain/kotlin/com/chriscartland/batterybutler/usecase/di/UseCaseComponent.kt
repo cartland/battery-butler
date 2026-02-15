@@ -9,6 +9,7 @@ import com.chriscartland.batterybutler.usecase.BatchAddDevicesUseCase
 import com.chriscartland.batterybutler.usecase.DeleteBatteryEventUseCase
 import com.chriscartland.batterybutler.usecase.DeleteDeviceTypeUseCase
 import com.chriscartland.batterybutler.usecase.DeleteDeviceUseCase
+import com.chriscartland.batterybutler.usecase.DeviceToolHandler
 import com.chriscartland.batterybutler.usecase.DismissSyncStatusUseCase
 import com.chriscartland.batterybutler.usecase.ExportDataUseCase
 import com.chriscartland.batterybutler.usecase.GetAppVersionUseCase
@@ -18,6 +19,7 @@ import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.GetDevicesUseCase
 import com.chriscartland.batterybutler.usecase.GetEventDetailUseCase
 import com.chriscartland.batterybutler.usecase.GetSyncStatusUseCase
+import com.chriscartland.batterybutler.usecase.SendChatMessageUseCase
 import com.chriscartland.batterybutler.usecase.SetNetworkModeUseCase
 import com.chriscartland.batterybutler.usecase.SuggestDeviceIconUseCase
 import com.chriscartland.batterybutler.usecase.UpdateBatteryEventUseCase
@@ -65,4 +67,8 @@ abstract class UseCaseComponent {
     abstract val getAppVersionUseCase: GetAppVersionUseCase
     abstract val exportDataUseCase: ExportDataUseCase
     abstract val suggestDeviceIconUseCase: SuggestDeviceIconUseCase
+
+    // AI chat
+    abstract val deviceToolHandler: DeviceToolHandler
+    abstract val sendChatMessageUseCase: SendChatMessageUseCase
 }
