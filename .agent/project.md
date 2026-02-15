@@ -151,8 +151,8 @@ Multi-environment deployment pipeline: dev -> staging -> prod. Same Docker image
 
 **Deploy commands:**
 ```bash
-# Check latest dev image tag
-gh run list --workflow=server-build.yml --limit 1
+# Check what's deployed right now
+./scripts/deploy-status.sh
 
 # Promote to staging
 gh workflow run server-deploy-staging.yml -f image_tag=<sha>
@@ -163,7 +163,15 @@ gh workflow run server-deploy-prod.yml -f image_tag=<sha>
 # Test endpoints
 grpcurl -plaintext -proto protos/com/chriscartland/batterybutler/protos/battery_service.proto \
   <nlb-dns>:80 com.chriscartland.batterybutler.proto.BatteryService/GetServerStatus
+
+# Run E2E tests against a live environment
+E2E_SERVER_URL=http://<nlb-dns>:80 ./scripts/e2e-tests.sh --remote
 ```
+
+**Deployment observability:**
+- `./scripts/deploy-status.sh` -- Shows image tag, status, commit, and drift warnings for each environment
+- GitHub commit statuses (`deploy/dev`, `deploy/staging`, `deploy/prod`) -- Annotated on each commit after deploy, visible on GitHub commit pages
+- Deploy workflows always check prod vs dev drift (run `deploy-status.sh` at session start)
 
 **Key architecture decisions:**
 - ECR is managed outside terraform (data source, not resource) to avoid state lock issues
