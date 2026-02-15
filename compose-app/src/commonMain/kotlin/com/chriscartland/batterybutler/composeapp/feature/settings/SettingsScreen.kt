@@ -22,6 +22,7 @@ fun SettingsScreen(
 ) {
     val exportData by viewModel.exportData.collectAsStateWithLifecycle()
     val appVersion by viewModel.appVersion.collectAsStateWithLifecycle()
+    val currentUser by viewModel.currentUser.collectAsStateWithLifecycle()
     val fileSaver = LocalFileSaver.current
 
     LaunchedEffect(exportData) {
@@ -41,6 +42,8 @@ fun SettingsScreen(
         onExportData = viewModel::onExportData,
         onBack = onBack,
         appVersion = appVersion ?: AppVersion.Desktop("Loading..."),
+        currentUser = currentUser,
+        onSignOut = viewModel::signOut,
         modifier = modifier,
     )
 }

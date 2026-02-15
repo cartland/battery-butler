@@ -17,6 +17,7 @@ import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
 import com.chriscartland.batterybutler.datalocal.room.DeviceDao
 import com.chriscartland.batterybutler.datanetwork.RemoteDataSource
 import com.chriscartland.batterybutler.domain.model.FeatureFlag
+import com.chriscartland.batterybutler.domain.repository.AuthRepository
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.domain.repository.FeatureFlagProvider
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
@@ -45,6 +46,7 @@ abstract class NativeComponent(
     @get:Provides val dataStoreFactory: DataStoreFactory,
     @get:Provides val aiEngine: AiEngine,
     @get:Provides val remoteDataSource: RemoteDataSource,
+    @get:Provides val authRepository: AuthRepository,
 ) {
     abstract val homeViewModel: HomeViewModel
     abstract val addDeviceViewModel: AddDeviceViewModel
