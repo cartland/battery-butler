@@ -498,11 +498,13 @@ class FakeLocalDataSource : LocalDataSource {
         // No-op for now in fake
     }
 
-    override suspend fun cleanTombstones(retentionPeriodMs: Long) {
+    override suspend fun cleanTombstones(
+        retentionPeriodMs: Long,
+        now: kotlin.time.Instant,
+    ) {
         // No-op for now in fake, or could simulate cleanup
     }
 }
-
 
 class FakeRemoteDataSource : RemoteDataSource {
     val pushedUpdates = mutableListOf<RemoteUpdate>()

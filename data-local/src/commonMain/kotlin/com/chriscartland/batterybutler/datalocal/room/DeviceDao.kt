@@ -140,4 +140,3 @@ interface DeviceDao {
     @Query("DELETE FROM battery_events WHERE isDeleted = 1 AND isSynced = 1 AND lastModified < :threshold")
     suspend fun deleteEventTombstones(threshold: Long): Int
 }
-

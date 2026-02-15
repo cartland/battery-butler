@@ -4,6 +4,7 @@ import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import kotlinx.coroutines.flow.Flow
+import kotlin.time.Clock
 
 interface LocalDataSource {
     fun getAllDevices(): Flow<List<Device>>
@@ -63,5 +64,8 @@ interface LocalDataSource {
 
     suspend fun markEventsSynced(ids: List<String>)
 
-    suspend fun cleanTombstones(retentionPeriodMs: Long)
+    suspend fun cleanTombstones(
+        retentionPeriodMs: Long,
+        now: kotlin.time.Instant = Clock.System.now(),
+    )
 }

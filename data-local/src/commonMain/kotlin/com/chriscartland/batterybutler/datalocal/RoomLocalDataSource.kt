@@ -177,11 +177,13 @@ class RoomLocalDataSource(
         }
     }
 
-    override suspend fun cleanTombstones(retentionPeriodMs: Long) {
-        val threshold = kotlin.time.Clock.System.now().toEpochMilliseconds() - retentionPeriodMs
+    override suspend fun cleanTombstones(
+        retentionPeriodMs: Long,
+        now: kotlin.time.Instant,
+    ) {
+        val threshold = now.toEpochMilliseconds() - retentionPeriodMs
         dao.deleteDeviceTypeTombstones(threshold)
         dao.deleteDeviceTombstones(threshold)
         dao.deleteEventTombstones(threshold)
     }
 }
-
