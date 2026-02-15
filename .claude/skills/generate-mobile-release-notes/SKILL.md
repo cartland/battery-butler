@@ -1,6 +1,6 @@
 ---
 description: Analyze commits between mobile release tags and generate MOBILE_RELEASE_NOTES.md with public and detailed sections.
-allowed-tools: Bash(git:*), Bash(sort:*), Bash(wc:*), Bash(grep:*), Read, Write, Edit, Glob, Grep
+allowed-tools: Bash(*), Read, Write, Edit, Glob, Grep
 ---
 
 # Generate Mobile Release Notes
