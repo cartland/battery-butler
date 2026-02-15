@@ -137,6 +137,13 @@ Key types (see `domain/model/DataResult.kt`):
 - **Unit tests**: `./gradlew test` - must pass
 - **Screenshot tests**: `./gradlew :android-screenshot-tests:validateDebugScreenshotTest` - failures indicate UI changes, not broken infrastructure
 - **Instrumented tests**: Require running emulator, network failures are expected if server isn't running
+- **E2E tests** (`e2e-tests/`): Wire gRPC client tests against a real server. NOT included in CI or `validate.sh`.
+  ```bash
+  ./scripts/e2e-tests.sh                    # Auto-starts local server
+  ./scripts/e2e-tests.sh --remote           # Uses E2E_SERVER_URL env var
+  E2E_SERVER_URL=http://<nlb>:80 ./scripts/e2e-tests.sh --remote  # Against cloud
+  ./gradlew :e2e-tests:test -De2e.server.url=http://localhost:50051  # Direct
+  ```
 
 ### Common Commands
 ```bash
