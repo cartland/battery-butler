@@ -7,6 +7,11 @@ import com.chriscartland.batterybutler.datalocal.preferences.DataStoreFactory
 import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
 import com.chriscartland.batterybutler.datanetwork.RemoteDataSource
 import com.chriscartland.batterybutler.datanetwork.RemoteDataSourceState
+import com.chriscartland.batterybutler.domain.model.AuthError
+import com.chriscartland.batterybutler.domain.model.AuthState
+import com.chriscartland.batterybutler.domain.model.Result
+import com.chriscartland.batterybutler.domain.model.User
+import com.chriscartland.batterybutler.domain.repository.AuthRepository
 import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,11 +40,39 @@ class IosNativeHelper {
 
             override suspend fun push(update: RemoteUpdate): Boolean = true
         }
+        val noOpAuthRepository = object : AuthRepository {
+            override val authState: StateFlow<AuthState> =
+                MutableStateFlow(AuthState.Unauthenticated)
+            override val currentUser: Flow<User?> = flowOf(null)
+
+            override fun isSignInAvailable(): Boolean = false
+
+            override suspend fun signInWithGoogle(): Result<User, AuthError> =
+                Result.Error(
+                    AuthError.Configuration.NotConfigured(
+                        message = "Not available",
+                        cause = "Auth not configured for iOS native",
+                    ),
+                )
+
+            override suspend fun signOut() {}
+
+            override suspend fun refreshToken(): Result<Unit, AuthError> =
+                Result.Error(
+                    AuthError.Token.Expired(
+                        message = "Not available",
+                        cause = "Auth not configured for iOS native",
+                    ),
+                )
+
+            override fun clearError() {}
+        }
         val component = InjectNativeComponent(
             databaseFactory,
             dataStoreFactory,
             noOpAiEngine,
             noOpRemoteDataSource,
+            noOpAuthRepository,
         )
         return component
     }
