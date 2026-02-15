@@ -176,4 +176,12 @@ class RoomLocalDataSource(
             dao.markEventSynced(id, isSynced = true)
         }
     }
+
+    override suspend fun cleanTombstones(retentionPeriodMs: Long) {
+        val threshold = kotlin.time.Clock.System.now().toEpochMilliseconds() - retentionPeriodMs
+        dao.deleteDeviceTypeTombstones(threshold)
+        dao.deleteDeviceTombstones(threshold)
+        dao.deleteEventTombstones(threshold)
+    }
 }
+

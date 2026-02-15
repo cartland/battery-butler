@@ -9,7 +9,7 @@ import com.chriscartland.batterybutler.datalocal.room.entity.BatteryEventEntity
 import com.chriscartland.batterybutler.datalocal.room.entity.DeviceEntity
 import com.chriscartland.batterybutler.datalocal.room.entity.DeviceTypeEntity
 import kotlinx.coroutines.flow.Flow
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 
 @Dao
 interface DeviceDao {
@@ -129,4 +129,15 @@ interface DeviceDao {
 
     @Query("SELECT id FROM battery_events WHERE isSynced = 0 AND isDeleted = 1")
     fun getUnsyncedDeletedEventIds(): Flow<List<String>>
+
+    // Tombstone Cleaning
+    @Query("DELETE FROM devices WHERE isDeleted = 1 AND isSynced = 1 AND lastModified < :threshold")
+    suspend fun deleteDeviceTombstones(threshold: Long): Int
+
+    @Query("DELETE FROM device_types WHERE isDeleted = 1 AND isSynced = 1 AND lastModified < :threshold")
+    suspend fun deleteDeviceTypeTombstones(threshold: Long): Int
+
+    @Query("DELETE FROM battery_events WHERE isDeleted = 1 AND isSynced = 1 AND lastModified < :threshold")
+    suspend fun deleteEventTombstones(threshold: Long): Int
 }
+

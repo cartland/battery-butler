@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 import kotlin.coroutines.cancellation.CancellationException
+import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
@@ -34,6 +35,13 @@ class DefaultDeviceRepository(
 
     init {
         scope.launch {
+            // Clean up old tombstones on startup
+            try {
+                localDataSource.cleanTombstones(TOMBSTONE_RETENTION.inWholeMilliseconds)
+            } catch (e: Exception) {
+                if (e is CancellationException) throw e
+                Logger.e(TAG, e) { "Failed to clean tombstones" }
+            }
             subscribeWithRetry()
         }
     }
@@ -219,5 +227,6 @@ class DefaultDeviceRepository(
         const val TAG = "DefaultDeviceRepo"
         val INITIAL_BACKOFF_MS = 1.seconds.inWholeMilliseconds
         val MAX_BACKOFF_MS = 30.seconds.inWholeMilliseconds
+        val TOMBSTONE_RETENTION = 30.days
     }
 }

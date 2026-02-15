@@ -497,7 +497,12 @@ class FakeLocalDataSource : LocalDataSource {
     override suspend fun markEventsSynced(ids: List<String>) {
         // No-op for now in fake
     }
+
+    override suspend fun cleanTombstones(retentionPeriodMs: Long) {
+        // No-op for now in fake, or could simulate cleanup
+    }
 }
+
 
 class FakeRemoteDataSource : RemoteDataSource {
     val pushedUpdates = mutableListOf<RemoteUpdate>()

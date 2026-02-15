@@ -3,7 +3,7 @@ package com.chriscartland.batterybutler.datalocal.room.entity
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlin.time.Instant
 
 @Entity(tableName = "battery_events")

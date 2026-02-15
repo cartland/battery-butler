@@ -62,4 +62,6 @@ interface LocalDataSource {
     fun getUnsyncedDeletedEventIds(): Flow<List<String>>
 
     suspend fun markEventsSynced(ids: List<String>)
+
+    suspend fun cleanTombstones(retentionPeriodMs: Long)
 }

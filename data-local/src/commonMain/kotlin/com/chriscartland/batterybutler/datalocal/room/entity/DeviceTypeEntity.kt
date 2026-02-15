@@ -3,7 +3,7 @@ package com.chriscartland.batterybutler.datalocal.room.entity
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.chriscartland.batterybutler.domain.model.DeviceType
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 
 @Entity(tableName = "device_types")
 data class DeviceTypeEntity(
