@@ -8,7 +8,7 @@ Each section covers one release tag range. "What's New" is user-facing language 
 
 ## [Unreleased] — 2026-02-15
 
-Range: `android/2` (fc2dede) .. `7cff3a9` (26 mobile-relevant commits out of 135 total)
+From tag `android/2` to commit `7cff3a9` (26 mobile-relevant commits out of 135 total)
 
 ### What's New
 
