@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 import kotlin.coroutines.cancellation.CancellationException
+import kotlin.time.Clock
 
 @Inject
 class AiChatViewModel(
@@ -30,7 +31,7 @@ class AiChatViewModel(
         if (text.isBlank() || _isProcessing.value) return
 
         val userMessage = AiMessage(
-            id = "user_${System.currentTimeMillis()}",
+            id = "user_${Clock.System.now().toEpochMilliseconds()}",
             role = AiRole.USER,
             text = text,
         )
@@ -49,7 +50,7 @@ class AiChatViewModel(
             } catch (e: Exception) {
                 if (e is CancellationException) throw e
                 val errorMessage = AiMessage(
-                    id = "error_${System.currentTimeMillis()}",
+                    id = "error_${Clock.System.now().toEpochMilliseconds()}",
                     role = AiRole.MODEL,
                     text = "Error: ${e.message}",
                 )
