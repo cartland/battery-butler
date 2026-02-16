@@ -20,7 +20,13 @@ open class ArchitectureCheckTask : DefaultTask() {
             ":presentation-model",
         ),
         ":presentation-model" to listOf(":domain"),
-        ":viewmodel" to listOf(":usecase", ":domain", ":presentation-model"),
+        // :viewmodel depends on :ai for its data types (AiMessage, AiRole), not for
+        // AI engine logic. Use cases like SendChatMessageUseCase return Flow<AiMessage>,
+        // so the viewmodel must reference these types to consume use case results. This is
+        // analogous to :viewmodel depending on :domain — both provide the shared vocabulary
+        // that use cases speak in. The viewmodel still delegates all behavior to use cases;
+        // the :ai dependency is purely for type references.
+        ":viewmodel" to listOf(":usecase", ":domain", ":presentation-model", ":ai"),
         ":presentation-core" to listOf(":domain", ":presentation-model", ":compose-resources"),
         ":presentation-feature" to listOf(
             ":presentation-core",
