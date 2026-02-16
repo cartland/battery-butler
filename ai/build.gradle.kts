@@ -1,24 +1,25 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.ksp)
 }
 
 kotlin {
-    androidTarget {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_21)
-            freeCompilerArgs.add("-Xexpect-actual-classes")
-        }
+    androidLibrary {
+        namespace = "com.chriscartland.batterybutler.ai"
+        compileSdk = libs.versions.android.compileSdk
+            .get()
+            .toInt()
+        minSdk = libs.versions.android.minSdk
+            .get()
+            .toInt()
+    }
+    jvmToolchain(21)
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 
-    jvm {
-        compilerOptions {
-            freeCompilerArgs.add("-Xexpect-actual-classes")
-        }
-    }
+    jvm()
 
     iosX64()
     iosArm64()
@@ -32,34 +33,6 @@ kotlin {
         }
         androidMain.dependencies {
             implementation(libs.generativeai)
-        }
-    }
-}
-
-android {
-    namespace = "com.chriscartland.batterybutler.ai"
-    compileSdk = libs.versions.android.compileSdk
-        .get()
-        .toInt()
-    defaultConfig {
-        minSdk = libs.versions.android.minSdk
-            .get()
-            .toInt()
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
-    }
-    testOptions {
-        managedDevices {
-            devices {
-                maybeCreate<com.android.build.api.dsl.ManagedVirtualDevice>("pixel5api34").apply {
-                    device = "Pixel 5"
-                    apiLevel = 34
-                    systemImageSource = "google"
-                }
-            }
         }
     }
 }

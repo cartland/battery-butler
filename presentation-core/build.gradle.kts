@@ -1,13 +1,13 @@
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidLibrary)
     id("convention.android-library")
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
 }
 
 kotlin {
-    // androidTarget configured by convention
+    androidLibrary {
+        namespace = "com.chriscartland.batterybutler.presentationcore"
+    }
 
     jvm()
 
@@ -40,17 +40,13 @@ kotlin {
         }
     }
 
-    androidTarget {
+    targets.named("android") {
         compilations.configureEach {
             if (name == "debug") {
                 defaultSourceSet.kotlin.srcDir("src/screenshotTest/kotlin")
             }
         }
     }
-}
-
-android {
-    namespace = "com.chriscartland.batterybutler.presentationcore"
 }
 
 tasks.register("printCompilations") {
@@ -70,8 +66,7 @@ tasks.register("printCompilations") {
         android.sourceSets.forEach { ss ->
             println("Android SourceSet: ${ss.name}")
             println("  Java: ${ss.java.srcDirs}")
-            println("  Kotlin: ${ss.java.srcDirs}") // AndroidSourceSet treats python/kotlin often as 'java' in old api or 'kotlin' in new.
-            // But let's just dump java srcDirs which usually includes kotlin in AGP
+            println("  Kotlin: ${ss.java.srcDirs}")
         }
     }
 }

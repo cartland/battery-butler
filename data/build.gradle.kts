@@ -1,12 +1,14 @@
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidLibrary)
     id("convention.android-library")
     alias(libs.plugins.ksp)
 }
 
 kotlin {
-    // androidTarget configured by convention
+    androidLibrary {
+        namespace = "com.chriscartland.batterybutler.data"
+        withDeviceTest {
+        }
+    }
 
     jvm {
         compilerOptions {
@@ -36,7 +38,7 @@ kotlin {
         }
         androidMain.dependencies {
         }
-        val androidInstrumentedTest by getting {
+        val androidDeviceTest by getting {
             dependencies {
                 implementation(libs.junit)
                 implementation(libs.androidx.testExt.junit)
@@ -50,10 +52,6 @@ kotlin {
     sourceSets.all {
         languageSettings.optIn("kotlin.time.ExperimentalTime")
     }
-}
-
-android {
-    namespace = "com.chriscartland.batterybutler.data"
 }
 
 dependencies {

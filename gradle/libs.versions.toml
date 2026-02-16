@@ -147,7 +147,7 @@ kotlinAndroid = { id = "org.jetbrains.kotlin.android" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
-androidKotlinMultiplatformLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
+androidKotlinMultiplatformLibrary = { id = "com.android.kotlin.multiplatform.library" }
 room = { id = "androidx.room", version.ref = "androidx-room" }
 skie = { id = "co.touchlab.skie", version.ref = "skie" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
