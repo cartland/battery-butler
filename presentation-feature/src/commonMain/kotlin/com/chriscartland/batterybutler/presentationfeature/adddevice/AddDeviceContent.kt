@@ -17,6 +17,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DevicesOther
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
@@ -75,6 +76,7 @@ fun AddDeviceContent(
     onManageDeviceTypesClick: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    isLoading: Boolean = false,
 ) {
     var name by rememberSaveable { mutableStateOf("") }
     var location by rememberSaveable { mutableStateOf("") }
@@ -89,33 +91,44 @@ fun AddDeviceContent(
                 title = composeStringResource(Res.string.add_device_title),
                 onBack = onBack,
                 navigationIcon = {
-                    TextButton(onClick = onBack) {
+                    TextButton(onClick = onBack, enabled = !isLoading) {
                         Text(composeStringResource(Res.string.action_cancel), color = MaterialTheme.colorScheme.primary)
                     }
                 },
                 actions = {
-                    TextButton(onClick = {
-                        selectedType?.let { type ->
-                            if (name.isNotBlank()) {
-                                onAddDevice(
-                                    DeviceInput(
-                                        name = name,
-                                        location = location.takeIf { it.isNotBlank() },
-                                        typeId = type.id,
-                                    ),
-                                )
+                    TextButton(
+                        onClick = {
+                            selectedType?.let { type ->
+                                if (name.isNotBlank()) {
+                                    onAddDevice(
+                                        DeviceInput(
+                                            name = name,
+                                            location = location.takeIf { it.isNotBlank() },
+                                            typeId = type.id,
+                                        ),
+                                    )
+                                }
                             }
+                        },
+                        enabled = !isLoading && name.isNotBlank() && selectedType != null,
+                    ) {
+                        if (isLoading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                strokeWidth = 2.dp,
+                                color = MaterialTheme.colorScheme.primary,
+                            )
+                        } else {
+                            Text(
+                                composeStringResource(Res.string.action_save),
+                                color = if (name.isNotBlank() && selectedType != null) {
+                                    MaterialTheme.colorScheme.primary
+                                } else {
+                                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                                },
+                                fontWeight = FontWeight.Bold,
+                            )
                         }
-                    }) {
-                        Text(
-                            composeStringResource(Res.string.action_save),
-                            color = if (name.isNotBlank() && selectedType != null) {
-                                MaterialTheme.colorScheme.primary
-                            } else {
-                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
-                            },
-                            fontWeight = FontWeight.Bold,
-                        )
                     }
                 },
             )
@@ -143,6 +156,7 @@ fun AddDeviceContent(
                 selectedType = selectedType,
                 onTypeSelected = { selectedType = it },
                 onManageDeviceTypesClick = onManageDeviceTypesClick,
+                isLoading = isLoading,
             )
         }
     }
@@ -171,6 +185,7 @@ fun AddDeviceManualSection(
     selectedType: DeviceType?,
     onTypeSelected: (DeviceType) -> Unit,
     onManageDeviceTypesClick: () -> Unit,
+    isLoading: Boolean = false,
 ) {
     var expanded by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
@@ -189,6 +204,7 @@ fun AddDeviceManualSection(
             value = name,
             onValueChange = onNameChange,
             label = { Text(composeStringResource(Res.string.label_device_name)) },
+            enabled = !isLoading,
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
@@ -201,6 +217,7 @@ fun AddDeviceManualSection(
             value = location,
             onValueChange = onLocationChange,
             label = { Text(composeStringResource(Res.string.label_location)) },
+            enabled = !isLoading,
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
@@ -237,6 +254,7 @@ fun AddDeviceManualSection(
                         null
                     },
                     readOnly = true,
+                    enabled = !isLoading,
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                     modifier = Modifier
                         .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
@@ -273,6 +291,7 @@ fun AddDeviceManualSection(
             // Manage Button
             OutlinedButton(
                 onClick = onManageDeviceTypesClick,
+                enabled = !isLoading,
                 shape = RoundedCornerShape(12.dp),
                 contentPadding = PaddingValues(0.dp),
                 modifier = Modifier.size(56.dp),
@@ -331,6 +350,7 @@ fun AddDeviceContentPreview() {
             onBatchAdd = {},
             onManageDeviceTypesClick = {},
             onBack = {},
+            isLoading = false,
         )
     }
 }
