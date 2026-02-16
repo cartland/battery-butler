@@ -1,14 +1,19 @@
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.androidKotlinMultiplatformLibrary)
 }
 
 kotlin {
-    androidTarget {
-        compilerOptions {
-            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
-        }
+    androidLibrary {
+        namespace = "com.chriscartland.batterybutler.testcommon"
+        compileSdk = libs.versions.android.compileSdk
+            .get()
+            .toInt()
+        minSdk = libs.versions.android.minSdk
+            .get()
+            .toInt()
     }
+    jvmToolchain(21)
 
     jvm()
 
@@ -22,21 +27,5 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             implementation(libs.kotlinx.coroutines.core)
         }
-    }
-}
-
-android {
-    namespace = "com.chriscartland.batterybutler.testcommon"
-    compileSdk = libs.versions.android.compileSdk
-        .get()
-        .toInt()
-    defaultConfig {
-        minSdk = libs.versions.android.minSdk
-            .get()
-            .toInt()
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
     }
 }

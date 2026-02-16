@@ -1,13 +1,13 @@
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidLibrary)
     id("convention.android-library")
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
 }
 
 kotlin {
-    // androidTarget configured by convention
+    androidLibrary {
+        namespace = "com.chriscartland.batterybutler.presentationfeature"
+    }
 
     jvm()
 
@@ -31,18 +31,13 @@ kotlin {
 
             api(project(":presentation-model"))
         }
+
+        androidMain.dependencies {
+            implementation(compose.uiTooling)
+        }
     }
 
     sourceSets.all {
         languageSettings.optIn("kotlin.time.ExperimentalTime")
-    }
-}
-
-android {
-    namespace = "com.chriscartland.batterybutler.presentationfeature"
-
-    // Add Android-specific dependencies here
-    dependencies {
-        debugImplementation(compose.uiTooling)
     }
 }
