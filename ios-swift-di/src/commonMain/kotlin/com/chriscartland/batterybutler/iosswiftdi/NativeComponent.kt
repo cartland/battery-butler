@@ -3,6 +3,7 @@ package com.chriscartland.batterybutler.iosswiftdi
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.chriscartland.batterybutler.ai.NoOpAiEngine
+import com.chriscartland.batterybutler.data.provider.DefaultDispatcherProvider
 import com.chriscartland.batterybutler.data.repository.DataStoreNetworkModeRepository
 import com.chriscartland.batterybutler.data.repository.DefaultDeviceRepository
 import com.chriscartland.batterybutler.data.repository.DefaultFeatureFlagProvider
@@ -16,6 +17,7 @@ import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
 import com.chriscartland.batterybutler.datalocal.room.DeviceDao
 import com.chriscartland.batterybutler.datanetwork.BuildConfig
 import com.chriscartland.batterybutler.datanetwork.RemoteDataSource
+import com.chriscartland.batterybutler.domain.model.DispatcherProvider
 import com.chriscartland.batterybutler.domain.model.FeatureFlag
 import com.chriscartland.batterybutler.domain.model.ProductionServerUrl
 import com.chriscartland.batterybutler.domain.model.ai.AiEngine
@@ -118,4 +120,7 @@ abstract class NativeComponent(
     fun provideAppInfoRepository(
         impl: com.chriscartland.batterybutler.data.repository.StaticAppInfoRepository,
     ): com.chriscartland.batterybutler.domain.repository.AppInfoRepository = impl
+
+    @Provides
+    fun provideDispatcherProvider(impl: DefaultDispatcherProvider): DispatcherProvider = impl
 }
