@@ -31,6 +31,20 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ---
 
+## 2026-02-16
+
+### Fixes
+
+- **Time-dependent screenshot tests** ([#465](https://github.com/cartland/battery-butler/pull/465)): `DevicesScreen` and `AddBatteryEventContent` previews were rendering live dates via `Clock.System.now()`, causing screenshot baselines to drift on every CI run. Added `nowInstant` parameter to `DevicesScreen` (forwarded through the composable chain) and `initialDate` default parameter to `AddBatteryEventContent`. Previews now use fixed instants matching the project standard (`2026-01-18T17:00:00Z`).
+
+### CI/CD Improvements
+
+- **Narrower CI path filters** ([#465](https://github.com/cartland/battery-butler/pull/465)): Refined `dorny/paths-filter` patterns so module README files (e.g., `domain/README.md`) don't trigger the full build matrix. Added `.claude/**` to the docs-only filter.
+
+- **Clearer auto-generated PR titles** ([#466](https://github.com/cartland/battery-butler/pull/466)): Auto-generated PRs now use `(generated)` conventional commit scope — `chore(generated): Regenerate screenshot baselines` and `docs(generated): Regenerate architecture diagrams and analysis` — making them instantly recognizable in git log.
+
+---
+
 ## 2026-02-15
 
 ### Fixes
