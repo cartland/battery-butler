@@ -46,19 +46,27 @@ class AddDeviceViewModel(
             initialValue = emptyList(),
         )
 
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
     @OptIn(ExperimentalUuidApi::class)
     fun addDevice(input: DeviceInput) {
         viewModelScope.launch {
-            val newDevice = Device(
-                id = Uuid.random().toString(),
-                name = input.name,
-                location = input.location,
-                typeId = input.typeId,
-                imagePath = input.imagePath,
-                batteryLastReplaced = Instant.fromEpochMilliseconds(0),
-                lastUpdated = Clock.System.now(),
-            )
-            addDeviceUseCase(newDevice)
+            _isLoading.value = true
+            try {
+                val newDevice = Device(
+                    id = Uuid.random().toString(),
+                    name = input.name,
+                    location = input.location,
+                    typeId = input.typeId,
+                    imagePath = input.imagePath,
+                    batteryLastReplaced = Instant.fromEpochMilliseconds(0),
+                    lastUpdated = Clock.System.now(),
+                )
+                addDeviceUseCase(newDevice)
+            } finally {
+                _isLoading.value = false
+            }
         }
     }
 

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Inbox
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -31,6 +32,7 @@ fun EmptyStateContent(
     title: String,
     message: String,
     modifier: Modifier = Modifier,
+    action: (@Composable () -> Unit)? = null,
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
@@ -61,6 +63,10 @@ fun EmptyStateContent(
             maxLines = 3,
             overflow = TextOverflow.Ellipsis,
         )
+        if (action != null) {
+            Spacer(modifier = Modifier.height(24.dp))
+            action()
+        }
     }
 }
 
@@ -72,6 +78,11 @@ fun EmptyStateContentPreview() {
             icon = Icons.Default.Inbox,
             title = "No Items",
             message = "There are no items to display. Add some to get started.",
+            action = {
+                Button(onClick = {}) {
+                    Text("Add Item")
+                }
+            },
         )
     }
 }

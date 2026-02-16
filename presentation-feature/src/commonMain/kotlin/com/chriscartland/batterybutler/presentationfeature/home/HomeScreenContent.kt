@@ -1,10 +1,8 @@
 package com.chriscartland.batterybutler.presentationfeature.home
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,6 +36,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
@@ -72,6 +71,7 @@ fun HomeScreenContent(
     onSortOptionToggle: () -> Unit,
     onSortOptionSelected: (SortOption) -> Unit,
     onDeviceClick: (Device) -> Unit,
+    onAddDeviceClick: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     nowInstant: Instant = Clock.System.now(),
@@ -118,12 +118,49 @@ fun HomeScreenContent(
             start = innerPadding.calculateStartPadding(layoutDirection) + contentPadding.calculateStartPadding(layoutDirection),
             end = innerPadding.calculateEndPadding(layoutDirection) + contentPadding.calculateEndPadding(layoutDirection),
         )
-        HomeScreenList(
-            state = state,
-            onDeviceClick = onDeviceClick,
-            contentPadding = mergedPadding,
-            nowInstant = nowInstant,
-        )
+        Box(modifier = Modifier.fillMaxSize()) {
+            HomeScreenList(
+                state = state,
+                onDeviceClick = onDeviceClick,
+                onAddDeviceClick = onAddDeviceClick,
+                contentPadding = mergedPadding,
+                nowInstant = nowInstant,
+            )
+
+            // Sync status indicator overlay
+            AnimatedVisibility(
+                visible = state.syncStatus is SyncStatus.Syncing,
+                enter = fadeIn(),
+                exit = fadeOut(),
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = mergedPadding.calculateTopPadding() + 8.dp),
+            ) {
+                Surface(
+                    shape = MaterialTheme.shapes.small,
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f),
+                    shadowElevation = 4.dp,
+                    tonalElevation = 4.dp,
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .padding(horizontal = 12.dp, vertical = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(12.dp),
+                            strokeWidth = 2.dp,
+                        )
+                        Text(
+                            text = "Syncing...",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -136,30 +173,6 @@ fun HomeScreenFilterRow(
     onSortOptionSelected: (SortOption) -> Unit,
 ) {
     Column {
-        // Sync status indicator with smooth animation
-        AnimatedVisibility(
-            visible = state.syncStatus is SyncStatus.Syncing,
-            enter = expandVertically() + fadeIn(),
-            exit = shrinkVertically() + fadeOut(),
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(16.dp),
-                    strokeWidth = 2.dp,
-                )
-                Text(
-                    text = "Syncing...",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.primary,
-                )
-            }
-        }
-
         // Filter Row
         Row(
             modifier = Modifier
@@ -228,6 +241,7 @@ fun HomeScreenFilterRow(
 fun HomeScreenList(
     state: HomeUiState,
     onDeviceClick: (Device) -> Unit,
+    onAddDeviceClick: () -> Unit,
     contentPadding: androidx.compose.foundation.layout.PaddingValues,
     modifier: Modifier = Modifier,
     nowInstant: Instant = Clock.System.now(),
@@ -240,6 +254,11 @@ fun HomeScreenList(
             title = composeStringResource(Res.string.empty_devices_title),
             message = composeStringResource(Res.string.empty_devices_message),
             modifier = Modifier.padding(contentPadding),
+            action = {
+                androidx.compose.material3.Button(onClick = onAddDeviceClick) {
+                    Text("Add Device")
+                }
+            },
         )
     } else {
         LazyColumn(
@@ -326,6 +345,7 @@ fun HomeScreenPreview() {
             onSortOptionToggle = {},
             onSortOptionSelected = {},
             onDeviceClick = {},
+            onAddDeviceClick = {},
             nowInstant = nowInstant,
         )
     }
@@ -364,6 +384,7 @@ fun HomeScreenListPreview() {
                 deviceTypes = mapOf("type1" to type),
             ),
             onDeviceClick = {},
+            onAddDeviceClick = {},
             contentPadding = androidx.compose.foundation.layout
                 .PaddingValues(16.dp),
             nowInstant = nowInstant,
