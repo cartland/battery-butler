@@ -1,9 +1,9 @@
 package com.chriscartland.batterybutler.usecase
 
-import com.chriscartland.batterybutler.ai.AiEngine
-import com.chriscartland.batterybutler.ai.AiMessage
-import com.chriscartland.batterybutler.ai.AiRole
-import com.chriscartland.batterybutler.ai.ToolHandler
+import com.chriscartland.batterybutler.domain.model.ai.AiEngine
+import com.chriscartland.batterybutler.domain.model.ai.AiMessage
+import com.chriscartland.batterybutler.domain.model.ai.AiRole
+import com.chriscartland.batterybutler.domain.model.ai.ToolHandler
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf

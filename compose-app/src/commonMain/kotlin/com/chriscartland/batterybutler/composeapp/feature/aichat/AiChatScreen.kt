@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.chriscartland.batterybutler.ai.AiRole
+import com.chriscartland.batterybutler.domain.model.ai.AiRole
 import com.chriscartland.batterybutler.presentationfeature.aichat.AiChatContent
 import com.chriscartland.batterybutler.presentationfeature.aichat.ChatUiMessage
 import com.chriscartland.batterybutler.viewmodel.aichat.AiChatViewModel
