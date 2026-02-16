@@ -8,12 +8,22 @@ After making code changes (features, fixes, CI/CD, infrastructure), project docu
 
 ## Step 1: Identify What Changed
 
-Examine the diff against `origin/main`:
+Determine the scope of recent changes using whichever approach fits:
 
+**On a feature branch with unmerged work:**
 ```bash
 git diff origin/main --stat
 git diff origin/main --name-only
 ```
+
+**Changes already merged (branch is up-to-date with main):**
+```bash
+git log origin/main --oneline -20
+git show <merge-commit> --stat
+git diff <before-sha>..<after-sha> --stat
+```
+
+**No specific diff target:** Review the conversation context for what changed this session, then read affected files directly.
 
 Categorize into: code changes, CI/CD changes, infrastructure changes, build changes.
 

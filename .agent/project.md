@@ -94,7 +94,7 @@ The production server URL flows through the system as follows:
 
 **DI pattern for modules without data-network dependency:**
 - `ProductionServerUrl` data class (in `domain/model/`) wraps the URL for type-safe injection
-- `AppComponent` provides it from `BuildConfig.PRODUCTION_SERVER_URL`
+- `AppComponent` (Android/Desktop) and `NativeComponent` (iOS) provide it from `BuildConfig.PRODUCTION_SERVER_URL`
 - ViewModels and other components receive it via constructor injection
 
 **Key rules:**
