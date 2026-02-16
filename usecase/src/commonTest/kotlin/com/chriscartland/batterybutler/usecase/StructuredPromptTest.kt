@@ -1,13 +1,13 @@
 package com.chriscartland.batterybutler.usecase
 
-import com.chriscartland.batterybutler.ai.AiEngine
-import com.chriscartland.batterybutler.ai.AiMessage
-import com.chriscartland.batterybutler.ai.AiRole
-import com.chriscartland.batterybutler.ai.ToolHandler
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.SyncStatus
+import com.chriscartland.batterybutler.domain.model.ai.AiEngine
+import com.chriscartland.batterybutler.domain.model.ai.AiMessage
+import com.chriscartland.batterybutler.domain.model.ai.AiRole
+import com.chriscartland.batterybutler.domain.model.ai.ToolHandler
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

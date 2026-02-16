@@ -2,8 +2,8 @@ package com.chriscartland.batterybutler.viewmodel.aichat
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.chriscartland.batterybutler.ai.AiMessage
-import com.chriscartland.batterybutler.ai.AiRole
+import com.chriscartland.batterybutler.domain.model.ai.AiMessage
+import com.chriscartland.batterybutler.domain.model.ai.AiRole
 import com.chriscartland.batterybutler.usecase.SendChatMessageUseCase
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
