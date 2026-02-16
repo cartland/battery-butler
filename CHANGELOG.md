@@ -35,19 +35,23 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ### Fixes
 
-- **P0: Release builds using stale server URL**: `release-android.yml` was missing the `ORG_GRADLE_PROJECT_PRODUCTION_SERVER_URL` env var, causing every release build to use the `gradle.properties` fallback instead of the GitHub secret. Added the env var to match `ci.yml`.
+- **P0: Release builds using stale server URL** ([#459](https://github.com/cartland/battery-butler/pull/459)): `release-android.yml` was missing the `ORG_GRADLE_PROJECT_PRODUCTION_SERVER_URL` env var, causing every release build to use the `gradle.properties` fallback instead of the GitHub secret. Added the env var to match `ci.yml`.
 
-- **Hardcoded NLB hostnames**: Eliminated literal NLB hostnames from `SettingsViewModel` and `RemoteConnectivityTest`. Introduced `ProductionServerUrl` value class in the domain module for type-safe DI injection, provided by `AppComponent` via `BuildConfig`.
+- **Hardcoded NLB hostnames** ([#459](https://github.com/cartland/battery-butler/pull/459)): Eliminated literal NLB hostnames from `SettingsViewModel` and `RemoteConnectivityTest`. Introduced `ProductionServerUrl` data class in the domain module for type-safe DI injection, provided by `AppComponent` and `NativeComponent` via `BuildConfig`.
+
+- **Architecture check: allow :viewmodel -> :ai** ([#459](https://github.com/cartland/battery-butler/pull/459)): Added `:ai` to `:viewmodel`'s allowed dependencies. The viewmodel needs `AiMessage`/`AiRole` types exposed in use case return types — this is a type-reference dependency, not a logic dependency.
 
 ### CI/CD Improvements
 
-- **Auto-sync terraform output to GitHub secrets**: Deploy workflows now capture the NLB DNS name after `terraform apply` and sync it to GitHub secrets (`PRODUCTION_SERVER_URL` for prod, `DEV_SERVER_URL` for dev). Uses `BOT_PAT` with `continue-on-error` so failed syncs don't fail deploys.
+- **Auto-sync terraform output to GitHub secrets** ([#459](https://github.com/cartland/battery-butler/pull/459)): Deploy workflows now capture the NLB DNS name after `terraform apply` and sync it to GitHub secrets (`PRODUCTION_SERVER_URL` for prod, `DEV_SERVER_URL` for dev). Uses `BOT_PAT` with `continue-on-error` so failed syncs don't fail deploys.
 
-- **Server connectivity validation before release**: Added a health check step to `release-android.yml` that verifies the production server is reachable before uploading to Play Store. Catches stale URLs before they reach users.
+- **Server connectivity validation before release** ([#459](https://github.com/cartland/battery-butler/pull/459)): Added a health check step to `release-android.yml` that verifies the production server is reachable before uploading to Play Store. Catches stale URLs before they reach users.
 
 ### Documentation
 
-- **Server URL management docs**: Added comprehensive documentation to `.agent/project.md` explaining how the server URL flows from terraform through GitHub secrets to BuildConfig. Updated `AGENTS.md` configuration rules, `server/README.md` secrets table, and module READMEs.
+- **Server URL management docs** ([#459](https://github.com/cartland/battery-butler/pull/459)): Added comprehensive documentation to `.agent/project.md` explaining how the server URL flows from terraform through GitHub secrets to BuildConfig. Updated `AGENTS.md` configuration rules, `server/README.md` secrets table, and module READMEs.
+
+- **Update project docs skill** ([#460](https://github.com/cartland/battery-butler/pull/460)): Added Claude Code skill and agent workflow for systematically updating project documentation after code changes.
 
 ---
 
