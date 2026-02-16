@@ -20,6 +20,23 @@ The app works entirely offline and syncs bidirectionally when online:
 - Changes sync to server when connectivity is available
 - Server changes sync back to local on reconnect
 
+### Module Dependencies
+
+Architecture is enforced by `buildSrc/.../ArchitectureCheckTask.kt`. Key rules:
+- `:domain` depends on nothing (pure interfaces and models)
+- `:usecase` depends on `:domain`, `:presentation-model`
+- `:viewmodel` depends on `:usecase`, `:domain`, `:presentation-model`
+- `:ai` contains platform implementations (`AndroidAiEngine`, `NoOpAiEngine`); interfaces live in `:domain:model:ai`
+- `:data` provides implementations of domain interfaces
+
+### Coroutine Dispatching
+
+Use `DispatcherProvider` (in `:domain:model`) instead of hardcoding `Dispatchers.Default/IO/Main`:
+- Inject `DispatcherProvider` into use cases and repositories
+- `DefaultDispatcherProvider` (in `:data:provider`) provides real dispatchers
+- Tests use `UnconfinedTestDispatcher` for synchronous execution
+- kotlinx-coroutines 1.10.2+ provides `Dispatchers.IO` in common code (no expect/actual needed)
+
 ### Error Handling
 
 **Project code NEVER throws exceptions except `CancellationException`.**
