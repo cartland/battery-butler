@@ -1,8 +1,8 @@
 package com.chriscartland.batterybutler.usecase
 
 import co.touchlab.kermit.Logger
-import com.chriscartland.batterybutler.ai.AiEngine
 import com.chriscartland.batterybutler.domain.model.DeviceIcons
+import com.chriscartland.batterybutler.domain.repository.AiEngine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import me.tatarka.inject.annotations.Inject

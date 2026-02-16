@@ -1,12 +1,12 @@
 package com.chriscartland.batterybutler.viewmodel.adddevice
 
-import com.chriscartland.batterybutler.ai.AiEngine
-import com.chriscartland.batterybutler.ai.AiMessage
-import com.chriscartland.batterybutler.ai.ToolHandler
+import com.chriscartland.batterybutler.domain.model.AiMessage
 import com.chriscartland.batterybutler.domain.model.DeviceInput
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.FeatureFlag
+import com.chriscartland.batterybutler.domain.repository.AiEngine
 import com.chriscartland.batterybutler.domain.repository.FeatureFlagProvider
+import com.chriscartland.batterybutler.domain.repository.ToolHandler
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
 import com.chriscartland.batterybutler.usecase.AddDeviceUseCase
 import com.chriscartland.batterybutler.usecase.BatchAddDevicesUseCase

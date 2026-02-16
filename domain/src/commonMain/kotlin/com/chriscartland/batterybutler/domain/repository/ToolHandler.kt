@@ -1,4 +1,4 @@
-package com.chriscartland.batterybutler.ai
+package com.chriscartland.batterybutler.domain.repository
 
 fun interface ToolHandler {
     suspend fun execute(

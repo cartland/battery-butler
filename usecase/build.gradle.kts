@@ -24,7 +24,7 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.domain)
             implementation(project(":presentation-model"))
-            implementation(project(":ai"))
+
             implementation(libs.kotlinx.datetime)
             implementation(libs.kotlin.inject.runtime)
             implementation(libs.kotlinx.coroutines.core)

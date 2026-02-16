@@ -1,0 +1,18 @@
+Refactor: Move AI components to Domain
+
+## Summary
+Moved AI-related components from `:ai` module to `:domain` module to resolve architecture violations (`:viewmodel` -> `:ai`).
+
+## Changes
+- Moved `AiEngine`, `ToolHandler` to `domain.repository`.
+- Moved `AiMessage`, `AiRole`, `AiToolNames`, `AiToolParams`, `AiConstants` to `domain.model`.
+- Updated imports in `:viewmodel`, `:usecase`, `:ai`, `:compose-app`, `:ios-swift-di`.
+- Removed `:ai` dependency from `:viewmodel` and `:usecase`.
+
+## Validation
+- `checkArchitecture` passed.
+- `lint` passed.
+- Unit tests passed.
+- Android instrumented tests passed.
+- Desktop build passed.
+- iOS build passed.

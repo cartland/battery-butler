@@ -29,7 +29,7 @@ kotlin {
         commonMain.dependencies {
             implementation(project(":domain"))
 
-            implementation(libs.androidx.room.runtime)
+            api(libs.androidx.room.runtime)
             implementation(libs.sqlite.bundled)
             implementation(libs.kotlin.inject.runtime)
             implementation(libs.kotlinx.coroutines.core)

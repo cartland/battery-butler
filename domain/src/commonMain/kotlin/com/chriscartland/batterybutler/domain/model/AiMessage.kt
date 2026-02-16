@@ -1,4 +1,4 @@
-package com.chriscartland.batterybutler.ai
+package com.chriscartland.batterybutler.domain.model
 
 data class AiMessage(
     val id: String,

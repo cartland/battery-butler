@@ -38,7 +38,7 @@ kotlin {
 
             api(project(":presentation-model"))
             implementation(project(":domain"))
-            implementation(project(":ai"))
+
             implementation(projects.usecase)
             implementation(libs.kotlinx.datetime)
             implementation(libs.uuid)

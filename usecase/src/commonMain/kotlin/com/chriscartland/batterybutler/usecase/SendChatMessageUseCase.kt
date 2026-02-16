@@ -1,7 +1,7 @@
 package com.chriscartland.batterybutler.usecase
 
-import com.chriscartland.batterybutler.ai.AiEngine
-import com.chriscartland.batterybutler.ai.AiMessage
+import com.chriscartland.batterybutler.domain.model.AiMessage
+import com.chriscartland.batterybutler.domain.repository.AiEngine
 import kotlinx.coroutines.flow.Flow
 import me.tatarka.inject.annotations.Inject
 

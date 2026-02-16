@@ -1,5 +1,6 @@
-package com.chriscartland.batterybutler.ai
+package com.chriscartland.batterybutler.domain.repository
 
+import com.chriscartland.batterybutler.domain.model.AiMessage
 import kotlinx.coroutines.flow.Flow
 
 interface AiEngine {
