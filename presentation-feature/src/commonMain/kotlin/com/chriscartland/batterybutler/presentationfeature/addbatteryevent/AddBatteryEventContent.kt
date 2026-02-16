@@ -50,7 +50,7 @@ import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
 @Composable
 fun AddBatteryEventContent(
     devices: List<Device>,
@@ -61,6 +61,11 @@ fun AddBatteryEventContent(
     onAddDeviceClick: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    initialDate: String = Clock.System
+        .now()
+        .toLocalDateTime(TimeZone.currentSystemDefault())
+        .date
+        .toString(),
 ) {
     var aiInput by remember { mutableStateOf("") }
     var deviceIdInput by remember { mutableStateOf("") }
@@ -157,14 +162,7 @@ fun AddBatteryEventContent(
             val selectedDevice = devices.find { it.id == deviceIdInput }
 
             // Date Selection
-            val today = remember {
-                Clock.System
-                    .now()
-                    .toLocalDateTime(TimeZone.currentSystemDefault())
-                    .date
-                    .toString()
-            }
-            var dateInput by remember { mutableStateOf(today) }
+            var dateInput by remember { mutableStateOf(initialDate) }
 
             ExposedDropdownMenuBox(
                 expanded = expanded,
@@ -251,6 +249,7 @@ fun AddBatteryEventContentPreview() {
             onBatchAdd = {},
             onAddDeviceClick = {},
             onBack = {},
+            initialDate = "2026-01-18", // Use fixed dates for stable screenshots
         )
     }
 }

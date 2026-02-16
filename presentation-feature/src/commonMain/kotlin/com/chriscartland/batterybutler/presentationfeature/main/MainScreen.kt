@@ -138,6 +138,7 @@ fun MainScreenShell(
     )
 }
 
+@OptIn(ExperimentalTime::class)
 @Composable
 fun DevicesScreen(
     state: HomeUiState,
@@ -149,6 +150,7 @@ fun DevicesScreen(
     onGroupOptionSelected: (GroupOption) -> Unit,
     onSortOptionToggle: () -> Unit,
     onSortOptionSelected: (SortOption) -> Unit,
+    nowInstant: Instant = Clock.System.now(),
 ) {
     MainScreenShell(
         currentTab = MainTab.Devices,
@@ -165,6 +167,7 @@ fun DevicesScreen(
             onDeviceClick = { onDeviceClick(it.id) },
             modifier = Modifier.padding(innerPadding),
             contentPadding = fabPadding,
+            nowInstant = nowInstant,
         )
     }
 }
@@ -248,6 +251,7 @@ fun DevicesScreenPreview() {
             onGroupOptionSelected = {},
             onSortOptionToggle = {},
             onSortOptionSelected = {},
+            nowInstant = now, // Use fixed dates for stable screenshots
         )
     }
 }
