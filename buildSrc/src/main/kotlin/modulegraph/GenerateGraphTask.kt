@@ -4,6 +4,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import java.io.File
+import javax.inject.Inject
 
 abstract class GenerateGraphTask : DefaultTask() {
     private val config = GraphConfig.default
@@ -77,6 +78,9 @@ abstract class GenerateGraphTask : DefaultTask() {
         }
     }
 
+    @get:javax.inject.Inject
+    abstract val execOperations: org.gradle.process.ExecOperations
+
     private fun generateSvg(
         inputMmd: File,
         outputSvg: File,
@@ -85,7 +89,7 @@ abstract class GenerateGraphTask : DefaultTask() {
             .firstOrNull { File(it).exists() } ?: "npx"
 
         println("Generating SVG for ${inputMmd.name} using $npxPath...")
-        project.exec {
+        execOperations.exec {
             // Pass empty string as separate argument without quotes for Gradle to handle
             commandLine(
                 npxPath,

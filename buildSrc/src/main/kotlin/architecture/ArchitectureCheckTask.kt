@@ -69,7 +69,7 @@ open class ArchitectureCheckTask : DefaultTask() {
                 // Detailed check: Inspect declared dependencies
                 config.dependencies.forEach { dep ->
                     if (dep is org.gradle.api.artifacts.ProjectDependency) {
-                        val depPath = dep.dependencyProject.path
+                        val depPath = dep.path
                         if (depPath != moduleName) { // self-dependency is separate issue, usually ignored
                             val isAllowed = allowed?.any { rule ->
                                 if (rule == "*") {
