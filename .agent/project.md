@@ -93,7 +93,7 @@ The production server URL flows through the system as follows:
 4. Code accesses via `com.chriscartland.batterybutler.datanetwork.BuildConfig.PRODUCTION_SERVER_URL`
 
 **DI pattern for modules without data-network dependency:**
-- `ProductionServerUrl` value class (in `domain/model/`) wraps the URL for type-safe injection
+- `ProductionServerUrl` data class (in `domain/model/`) wraps the URL for type-safe injection
 - `AppComponent` provides it from `BuildConfig.PRODUCTION_SERVER_URL`
 - ViewModels and other components receive it via constructor injection
 
