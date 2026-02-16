@@ -33,6 +33,12 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ## 2026-02-16
 
+### Refactoring
+
+- **Move AI types to domain module** ([#470](https://github.com/cartland/battery-butler/pull/470)): Moved AI vocabulary types (`AiEngine`, `AiMessage`, `AiRole`, `ToolHandler`, `AiToolNames`, `AiToolParams`, `AiConstants`) from `:ai` to `:domain:model:ai`. Eliminates architecture violations where `:usecase` and `:viewmodel` depended on `:ai`. Updated architecture check to enforce the new dependency rules.
+
+- **Add DispatcherProvider** ([#476](https://github.com/cartland/battery-butler/pull/476)): Introduced `DispatcherProvider` interface in `:domain` and `DefaultDispatcherProvider` implementation in `:data` to replace hardcoded `Dispatchers.Default` in `ExportDataUseCase`. Improves testability by allowing tests to inject `UnconfinedTestDispatcher`.
+
 ### Fixes
 
 - **Time-dependent screenshot tests** ([#465](https://github.com/cartland/battery-butler/pull/465)): `DevicesScreen` and `AddBatteryEventContent` previews were rendering live dates via `Clock.System.now()`, causing screenshot baselines to drift on every CI run. Added `nowInstant` parameter to `DevicesScreen` (forwarded through the composable chain) and `initialDate` default parameter to `AddBatteryEventContent`. Previews now use fixed instants matching the project standard (`2026-01-18T17:00:00Z`).
