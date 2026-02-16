@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.chriscartland.batterybutler.domain.model.AppVersion
 import com.chriscartland.batterybutler.domain.model.AuthState
 import com.chriscartland.batterybutler.domain.model.NetworkMode
+import com.chriscartland.batterybutler.domain.model.ProductionServerUrl
 import com.chriscartland.batterybutler.domain.model.User
 import com.chriscartland.batterybutler.domain.repository.AuthRepository
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
@@ -26,6 +27,7 @@ class SettingsViewModel(
     private val networkModeRepository: NetworkModeRepository,
     private val getAppVersionUseCase: GetAppVersionUseCase,
     private val authRepository: AuthRepository,
+    productionServerUrl: ProductionServerUrl,
 ) : ViewModel() {
     val networkMode: StateFlow<NetworkMode> = networkModeRepository.networkMode
         .stateIn(
@@ -37,7 +39,7 @@ class SettingsViewModel(
     val availableNetworkModes = listOf(
         NetworkMode.Mock,
         NetworkMode.GrpcLocal("http://10.0.2.2:50051"), // Hardcoded default for UI list.
-        NetworkMode.GrpcAws("http://bb-prod-nlb-4eb873d58dfc1664.elb.us-west-1.amazonaws.com:80"),
+        NetworkMode.GrpcAws(productionServerUrl.url),
     )
 
     private val _appVersion = MutableStateFlow<AppVersion>(AppVersion.Unavailable)

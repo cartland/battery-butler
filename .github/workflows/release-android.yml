@@ -14,6 +14,7 @@ on:
 # Google Play hard limit is 2,100,000,000.
 env:
   VERSION_CODE_SAFETY_LIMIT: 1000000
+  ORG_GRADLE_PROJECT_PRODUCTION_SERVER_URL: ${{ secrets.PRODUCTION_SERVER_URL }}
 
 permissions:
   contents: read
@@ -93,6 +94,21 @@ jobs:
           name: release-bundle
           path: compose-app/build/outputs/bundle/release/*.aab
           retention-days: 30
+
+      - name: Validate Server Connectivity
+        run: |
+          SERVER_URL="${{ secrets.PRODUCTION_SERVER_URL }}"
+          if [ -z "$SERVER_URL" ]; then
+            echo "::error::PRODUCTION_SERVER_URL secret is not set"
+            exit 1
+          fi
+          HOST_PORT=$(echo "$SERVER_URL" | sed 's|http://||' | sed 's|/$||')
+          if ! timeout 10 bash -c "echo > /dev/tcp/${HOST_PORT%:*}/${HOST_PORT#*:}" 2>/dev/null; then
+            echo "::error::Cannot reach server at $SERVER_URL"
+            echo "::error::The NLB hostname may be stale. Check ./scripts/deploy-status.sh"
+            exit 1
+          fi
+          echo "Server reachable at $SERVER_URL"
 
       - name: Upload to Play Store (Internal Track)
         uses: r0adkll/upload-google-play@v1

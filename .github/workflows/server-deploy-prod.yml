@@ -178,6 +178,20 @@ jobs:
       working-directory: server/terraform
       run: terraform apply tfplan
 
+    - name: Capture NLB DNS Name
+      id: nlb
+      working-directory: server/terraform
+      run: |
+        NLB_DNS=$(terraform output -raw nlb_dns_name)
+        echo "nlb_url=http://${NLB_DNS}:80" >> $GITHUB_OUTPUT
+
+    - name: Sync PRODUCTION_SERVER_URL Secret
+      continue-on-error: true
+      env:
+        GH_TOKEN: ${{ secrets.BOT_PAT }}
+      run: |
+        gh secret set PRODUCTION_SERVER_URL --body "${{ steps.nlb.outputs.nlb_url }}"
+
     - name: Force ECS Deployment
       run: |
         aws ecs update-service \
