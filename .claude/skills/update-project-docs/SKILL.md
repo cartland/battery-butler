@@ -18,12 +18,25 @@ Analyze recent code changes and update all project documentation to reflect them
 
 ### Phase 1: Identify What Changed
 
-Determine the scope of recent changes by examining the git diff against `origin/main`:
+Determine the scope of recent changes. Use whichever approach fits the current situation:
 
+**If on a feature branch with uncommitted or unmerged work:**
 ```bash
 git diff origin/main --stat
 git diff origin/main --name-only
 ```
+
+**If changes were already merged (branch is up-to-date with main):**
+```bash
+# Look at recent commits on main to find what was merged this session
+git log origin/main --oneline -20
+# Examine specific merged PRs
+git show <merge-commit> --stat
+# Or diff a range of recent commits
+git diff <before-sha>..<after-sha> --stat
+```
+
+**If invoked without a specific diff target**, review the conversation context to identify what code changes were made this session, then read the affected files directly.
 
 Categorize changes into:
 1. **Code changes** — new files, modified modules, new types/patterns
