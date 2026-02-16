@@ -40,7 +40,7 @@ class DeviceTypeListViewModel(
         ) { config, list ->
             var sortedList = when (config.sort) {
                 DeviceTypeSortOption.NAME -> list.sortedBy { it.name }
-                DeviceTypeSortOption.BATTERY_TYPE -> list.sortedWith(compareBy<DeviceType> { it.batteryType ?: "" }.thenBy { it.name })
+                DeviceTypeSortOption.BATTERY_TYPE -> list.sortedWith(compareBy<DeviceType> { it.batteryType }.thenBy { it.name })
             }
             if (!config.isSortAscending) {
                 sortedList = sortedList.reversed()
@@ -48,7 +48,7 @@ class DeviceTypeListViewModel(
 
             val groupedList = when (config.group) {
                 DeviceTypeGroupOption.NONE -> mapOf("All Types" to sortedList)
-                DeviceTypeGroupOption.BATTERY_TYPE -> sortedList.groupBy { it.batteryType ?: "Unknown Battery" }
+                DeviceTypeGroupOption.BATTERY_TYPE -> sortedList.groupBy { it.batteryType }
             }
 
             val finalGroupedList = if (config.group != DeviceTypeGroupOption.NONE) {
