@@ -60,8 +60,12 @@ fun AddBatteryEventContent(
     onBatchAdd: (String) -> Unit,
     onAddDeviceClick: () -> Unit,
     onBack: () -> Unit,
-    initialDate: String = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date.toString(),
     modifier: Modifier = Modifier,
+    initialDate: String = Clock.System
+        .now()
+        .toLocalDateTime(TimeZone.currentSystemDefault())
+        .date
+        .toString(),
 ) {
     var aiInput by remember { mutableStateOf("") }
     var deviceIdInput by remember { mutableStateOf("") }
