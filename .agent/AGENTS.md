@@ -69,6 +69,8 @@ Keeping the build and tests healthy is a top priority. When you identify or fix 
 - **Configuration**:
   - **Always** check `local.properties` for sensitive or environment-specific configuration (e.g., API Keys, Server URLs).
   - Use `AppConfig` or `BuildConfig` to access these values in code, do NOT hardcode them.
+  - **NEVER hardcode NLB hostnames or server URLs** in Kotlin source files. Use `BuildConfig.PRODUCTION_SERVER_URL` from data-network, or `ProductionServerUrl` (domain model) for modules without data-network dependency.
+  - Server URL source of truth is the GitHub secret `PRODUCTION_SERVER_URL`, auto-synced from terraform output after deploys. See `.agent/project.md` → "Server URL Management" for the full flow.
 
 - **Self Improvements**:
   - **Always** update `.agent/` documentation when learning a critical piece of information that will improve future agent performance. Workflow rules go in `AGENTS.md`; project knowledge goes in `project.md`.

@@ -76,8 +76,16 @@ To enable the AI features (Gemini), you need an API Key.
 2.  Add it to your `local.properties` file:
     ```properties
     GEMINI_API_KEY=your_api_key_here
-    PRODUCTION_SERVER_URL=http://your-server-url:port (Optional, defaults to internal AWS NLB)
     ```
+
+### Server URL (Optional)
+
+Local builds use the `PRODUCTION_SERVER_URL` value from `gradle.properties` by default. CI builds override this via the `PRODUCTION_SERVER_URL` GitHub secret (auto-synced from terraform after each deploy). To override locally:
+
+```properties
+# In gradle.properties (or pass via -P flag)
+PRODUCTION_SERVER_URL=http://your-server-url:port
+```
 
 ## 🔐 Google Sign-In Configuration (Optional)
 
