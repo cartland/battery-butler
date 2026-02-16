@@ -1,6 +1,7 @@
 package com.chriscartland.batterybutler.viewmodel.home
 
 import com.chriscartland.batterybutler.domain.model.DeviceType
+import com.chriscartland.batterybutler.domain.model.DispatcherProvider
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.presentationmodel.home.GroupOption
 import com.chriscartland.batterybutler.presentationmodel.home.SortOption
@@ -11,10 +12,12 @@ import com.chriscartland.batterybutler.usecase.ExportDataUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.GetDevicesUseCase
 import com.chriscartland.batterybutler.usecase.GetSyncStatusUseCase
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -213,11 +216,18 @@ class HomeViewModelTest {
             assertEquals(1, state.groupedDevices["Bedroom"]?.size)
         }
 
+    private val testDispatcherProvider = object : DispatcherProvider {
+        private val dispatcher: CoroutineDispatcher = UnconfinedTestDispatcher()
+        override val default: CoroutineDispatcher = dispatcher
+        override val io: CoroutineDispatcher = dispatcher
+        override val main: CoroutineDispatcher = dispatcher
+    }
+
     private fun createViewModel(repo: DeviceRepository): HomeViewModel =
         HomeViewModel(
             getDevicesUseCase = GetDevicesUseCase(repo),
             getDeviceTypesUseCase = GetDeviceTypesUseCase(repo),
-            exportDataUseCase = ExportDataUseCase(repo),
+            exportDataUseCase = ExportDataUseCase(repo, testDispatcherProvider),
             getSyncStatusUseCase = GetSyncStatusUseCase(repo),
             dismissSyncStatusUseCase = DismissSyncStatusUseCase(repo),
         )
