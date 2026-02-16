@@ -82,8 +82,20 @@ grpcurl -plaintext -proto protos/com/chriscartland/batterybutler/protos/battery_
 | `AWS_DEPLOY_ROLE_ARN` | (Optional) OIDC role ARN for keyless auth |
 | `TF_STATE_BUCKET` | S3 bucket for Terraform state |
 | `TF_LOCK_TABLE` | DynamoDB table for state locking |
+| `BOT_PAT` | GitHub PAT with `repo` scope (used to auto-sync server URL secrets) |
+| `PRODUCTION_SERVER_URL` | Production NLB URL (auto-synced by prod deploy workflow) |
+| `DEV_SERVER_URL` | Dev NLB URL (auto-synced by dev deploy workflow) |
 
 See `AWS_SETUP.md` for detailed setup instructions.
+
+### Auto-Synced Secrets
+
+Deploy workflows automatically update server URL secrets after each `terraform apply`:
+
+- `server-build.yml` (dev deploy) → syncs `DEV_SERVER_URL`
+- `server-deploy-prod.yml` (prod deploy) → syncs `PRODUCTION_SERVER_URL`
+
+This ensures the Android release workflow (`release-android.yml`) always builds against the correct NLB hostname, even after infrastructure recreates. The sync uses `BOT_PAT` with `continue-on-error` so a failed sync doesn't fail the deploy.
 
 ## IAM Permissions
 

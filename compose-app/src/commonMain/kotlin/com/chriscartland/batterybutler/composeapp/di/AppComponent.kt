@@ -7,11 +7,13 @@ import com.chriscartland.batterybutler.data.repository.StaticAppInfoRepository
 import com.chriscartland.batterybutler.datalocal.auth.AuthTokenStorage
 import com.chriscartland.batterybutler.datalocal.preferences.DataStoreFactory
 import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
+import com.chriscartland.batterybutler.datanetwork.BuildConfig
 import com.chriscartland.batterybutler.datanetwork.auth.GoogleSignInBridge
 import com.chriscartland.batterybutler.datanetwork.grpc.DelegatingGrpcClient
 import com.chriscartland.batterybutler.datanetwork.grpc.NetworkComponent
 import com.chriscartland.batterybutler.domain.model.AppVersion
 import com.chriscartland.batterybutler.domain.model.FeatureFlag
+import com.chriscartland.batterybutler.domain.model.ProductionServerUrl
 import com.chriscartland.batterybutler.domain.repository.AppInfoRepository
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.domain.repository.FeatureFlagProvider
@@ -68,6 +70,10 @@ abstract class AppComponent(
     abstract val featureFlagProvider: FeatureFlagProvider
     abstract val networkModeRepository: NetworkModeRepository
     abstract override val appScope: CoroutineScope
+
+    @Provides
+    @Singleton
+    fun provideProductionServerUrl(): ProductionServerUrl = ProductionServerUrl(BuildConfig.PRODUCTION_SERVER_URL)
 
     @Provides
     @Singleton

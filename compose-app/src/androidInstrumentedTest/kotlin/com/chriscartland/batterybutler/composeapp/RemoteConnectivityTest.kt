@@ -1,6 +1,7 @@
 package com.chriscartland.batterybutler.composeapp
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.chriscartland.batterybutler.datanetwork.BuildConfig
 import com.squareup.wire.GrpcClient
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
@@ -12,7 +13,7 @@ import java.util.concurrent.TimeUnit
 @RunWith(AndroidJUnit4::class)
 class RemoteConnectivityTest {
     companion object {
-        const val PRODUCTION_SERVER_URL = "http://battery-butler-nlb-847feaa773351518.elb.us-west-1.amazonaws.com:80"
+        val PRODUCTION_SERVER_URL = BuildConfig.PRODUCTION_SERVER_URL
     }
 
     @Test

@@ -26,6 +26,7 @@ The domain module defines the core business entities, models, and repository con
 | `NetworkMode` | Sealed interface: Mock, GrpcLocal, GrpcAws |
 | `SyncStatus` | Sealed interface: Idle, Syncing, Success, Failed |
 | `AppVersion` | Platform-specific version info (Android, iOS, Desktop) |
+| `ProductionServerUrl` | Inline value class wrapping server URL for type-safe DI |
 
 ### Input DTOs
 

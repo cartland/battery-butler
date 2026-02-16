@@ -15,8 +15,10 @@ import com.chriscartland.batterybutler.datalocal.preferences.PreferencesDataSour
 import com.chriscartland.batterybutler.datalocal.room.AppDatabase
 import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
 import com.chriscartland.batterybutler.datalocal.room.DeviceDao
+import com.chriscartland.batterybutler.datanetwork.BuildConfig
 import com.chriscartland.batterybutler.datanetwork.RemoteDataSource
 import com.chriscartland.batterybutler.domain.model.FeatureFlag
+import com.chriscartland.batterybutler.domain.model.ProductionServerUrl
 import com.chriscartland.batterybutler.domain.repository.AuthRepository
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.domain.repository.FeatureFlagProvider
@@ -101,6 +103,10 @@ abstract class NativeComponent(
         }
         return DefaultFeatureFlagProvider(enabledFeatures)
     }
+
+    @Provides
+    @SharedSingleton
+    fun provideProductionServerUrl(): ProductionServerUrl = ProductionServerUrl(BuildConfig.PRODUCTION_SERVER_URL)
 
     @Provides
     fun provideAppVersion(): com.chriscartland.batterybutler.domain.model.AppVersion =

@@ -80,6 +80,28 @@ xcodebuild -project ios-app-swift-ui/...      # iOS
 - **Bazel disk cache issue**: When running `bazel build` in scripts called from Xcode, use `--disk_cache=""` to ensure outputs are materialized locally. The disk cache can return metadata without creating actual files.
 - **iOS protos**: Run `./scripts/generate-protos.sh` before iOS builds if proto files changed. The script generates Swift protobuf files from Bazel.
 
+## Server URL Management
+
+The production server URL flows through the system as follows:
+
+**Source of truth:** GitHub secret `PRODUCTION_SERVER_URL`, auto-synced from terraform output after each deploy.
+
+**How it propagates:**
+1. Terraform creates NLB → deploy workflows capture `nlb_dns_name` → `gh secret set PRODUCTION_SERVER_URL`
+2. CI workflows set `ORG_GRADLE_PROJECT_PRODUCTION_SERVER_URL` env var from the secret
+3. Gradle reads it as a project property → `data-network/build.gradle.kts` generates `BuildConfig.kt`
+4. Code accesses via `com.chriscartland.batterybutler.datanetwork.BuildConfig.PRODUCTION_SERVER_URL`
+
+**DI pattern for modules without data-network dependency:**
+- `ProductionServerUrl` value class (in `domain/model/`) wraps the URL for type-safe injection
+- `AppComponent` provides it from `BuildConfig.PRODUCTION_SERVER_URL`
+- ViewModels and other components receive it via constructor injection
+
+**Key rules:**
+- **NEVER hardcode NLB hostnames** in Kotlin source — use `BuildConfig.PRODUCTION_SERVER_URL` or `ProductionServerUrl`
+- `gradle.properties` has a fallback value for local dev only; CI always overrides it
+- `release-android.yml` validates server connectivity before uploading to Play Store
+
 ## Releases
 
 **NEVER push git tags manually. Always use the release scripts.**
@@ -143,9 +165,9 @@ git commit -m "chore(beads): Update task tracking"
 Multi-environment deployment pipeline: dev -> staging -> prod. Same Docker image SHA promoted through environments.
 
 **Workflows:**
-- `server-build.yml` -- Auto-deploys to dev on push to main (server changes)
+- `server-build.yml` -- Auto-deploys to dev on push to main (server changes), syncs `DEV_SERVER_URL` secret
 - `server-deploy-staging.yml` -- Manual trigger with `image_tag` input
-- `server-deploy-prod.yml` -- Manual trigger with approval gate (GitHub Environment)
+- `server-deploy-prod.yml` -- Manual trigger with approval gate, syncs `PRODUCTION_SERVER_URL` secret
 - `server-destroy.yml` -- Tear down staging/dev infrastructure
 - `server-rollback.yml` -- Emergency rollback
 
@@ -178,6 +200,8 @@ E2E_SERVER_URL=http://<nlb-dns>:80 ./scripts/e2e-tests.sh --remote
 - Each environment has separate terraform state (`server/{env}/terraform.tfstate`)
 - Concurrency groups prevent parallel deploys to same environment
 - IAM permissions documented in `server/iam_policy.json` -- update AWS Console manually when changed
+- Deploy workflows auto-sync NLB hostname to GitHub secrets (`PRODUCTION_SERVER_URL`, `DEV_SERVER_URL`)
+- `release-android.yml` validates server connectivity before Play Store upload
 
 **AWS free-tier limitations:**
 - Only `db.t3.micro` RDS instances allowed

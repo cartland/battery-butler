@@ -31,6 +31,26 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ---
 
+## 2026-02-15
+
+### Fixes
+
+- **P0: Release builds using stale server URL**: `release-android.yml` was missing the `ORG_GRADLE_PROJECT_PRODUCTION_SERVER_URL` env var, causing every release build to use the `gradle.properties` fallback instead of the GitHub secret. Added the env var to match `ci.yml`.
+
+- **Hardcoded NLB hostnames**: Eliminated literal NLB hostnames from `SettingsViewModel` and `RemoteConnectivityTest`. Introduced `ProductionServerUrl` value class in the domain module for type-safe DI injection, provided by `AppComponent` via `BuildConfig`.
+
+### CI/CD Improvements
+
+- **Auto-sync terraform output to GitHub secrets**: Deploy workflows now capture the NLB DNS name after `terraform apply` and sync it to GitHub secrets (`PRODUCTION_SERVER_URL` for prod, `DEV_SERVER_URL` for dev). Uses `BOT_PAT` with `continue-on-error` so failed syncs don't fail deploys.
+
+- **Server connectivity validation before release**: Added a health check step to `release-android.yml` that verifies the production server is reachable before uploading to Play Store. Catches stale URLs before they reach users.
+
+### Documentation
+
+- **Server URL management docs**: Added comprehensive documentation to `.agent/project.md` explaining how the server URL flows from terraform through GitHub secrets to BuildConfig. Updated `AGENTS.md` configuration rules, `server/README.md` secrets table, and module READMEs.
+
+---
+
 ## 2026-02-07
 
 ### Features
