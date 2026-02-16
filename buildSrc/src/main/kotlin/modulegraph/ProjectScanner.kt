@@ -35,7 +35,7 @@ class ProjectScanner(
                 if (config != null) {
                     config.dependencies.forEach { dep ->
                         if (dep is ProjectDependency) {
-                            edges.add(subproject.path to dep.dependencyProject.path)
+                            edges.add(subproject.path to dep.path)
                         }
                     }
                 }
