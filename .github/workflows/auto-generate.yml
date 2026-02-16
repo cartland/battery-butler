@@ -78,10 +78,10 @@ jobs:
         uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "docs: Auto-update architecture diagrams and analysis"
-          title: "docs: Auto-update architecture diagrams and analysis"
+          commit-message: "docs(generated): Regenerate architecture diagrams and analysis"
+          title: "docs(generated): Regenerate architecture diagrams and analysis"
           body: |
-            Auto-generated diagram and code share analysis updates.
+            Architecture diagrams and code share analysis regenerated to match current code.
 
             This PR was automatically created by the Auto-Generate Content workflow
             after a code change was merged to main.
@@ -129,10 +129,10 @@ jobs:
         uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "test: Auto-update Android screenshot baselines"
-          title: "test: Auto-update Android screenshot baselines"
+          commit-message: "chore(generated): Regenerate screenshot baselines"
+          title: "chore(generated): Regenerate screenshot baselines"
           body: |
-            Auto-generated screenshot baseline updates.
+            Screenshot reference images regenerated to match current UI.
 
             This PR was automatically created by the Auto-Generate Content workflow
             after a UI code change was merged to main.
