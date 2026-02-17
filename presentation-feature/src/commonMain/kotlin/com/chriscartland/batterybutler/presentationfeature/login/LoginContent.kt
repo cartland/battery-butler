@@ -166,10 +166,10 @@ private fun LoginForm(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Guest/Skip Option (Optional)
-                AppButton(
+                OutlinedButton(
                     onClick = onSkipLogin,
                     modifier = Modifier.fillMaxWidth(),
-                    enabled = true, // Enabled for bypass
+                    enabled = true,
                     shape = RoundedCornerShape(12.dp),
                 ) {
                     Text("Continue as Guest")
