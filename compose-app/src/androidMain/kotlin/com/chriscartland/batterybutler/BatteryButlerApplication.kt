@@ -26,17 +26,17 @@ class BatteryButlerApplication : Application() {
         val dataStoreFactory = DataStoreFactory(this)
         val networkComponent = NetworkComponent(this)
         val aiConfig = BuildConfigAiConfig()
-        
+
         // AI Setup
         val settings = SharedPreferencesSettings(getSharedPreferences("ai_prefs", MODE_PRIVATE))
         val aiPreferencesRepository = AiPreferencesRepositoryImpl(settings)
         val cloudAiEngine = AndroidAiEngine(aiConfig)
         val onDeviceAiEngine = OnDeviceAiEngine(this)
-        
+
         val aiEngine = DynamicAiEngine(
             cloudEngine = cloudAiEngine,
             onDeviceEngine = onDeviceAiEngine,
-            aiPreferencesRepository = aiPreferencesRepository
+            aiPreferencesRepository = aiPreferencesRepository,
         )
 
         val appVersion = AppVersion.Android(

@@ -18,11 +18,10 @@ class DynamicAiEngine(
     private val onDeviceEngine: OnDeviceAiEngine,
     private val aiPreferencesRepository: AiPreferencesRepository,
 ) : AiEngine {
-
     override val isAvailable: Flow<Boolean> = combine(
         aiPreferencesRepository.aiEngineType,
         cloudEngine.isAvailable,
-        onDeviceEngine.isAvailable
+        onDeviceEngine.isAvailable,
     ) { type, cloud, onDevice ->
         when (type) {
             AiEngineType.Cloud -> cloud
@@ -34,7 +33,7 @@ class DynamicAiEngine(
     override val compatibility: Flow<Boolean> = combine(
         aiPreferencesRepository.aiEngineType,
         cloudEngine.compatibility,
-        onDeviceEngine.compatibility
+        onDeviceEngine.compatibility,
     ) { type, cloud, onDevice ->
         when (type) {
             AiEngineType.Cloud -> cloud
@@ -45,19 +44,20 @@ class DynamicAiEngine(
 
     override suspend fun generateResponse(
         prompt: String,
-        toolHandler: ToolHandler?
-    ): Flow<AiMessage> = aiPreferencesRepository.aiEngineType.flatMapLatest { type ->
-        when (type) {
-            AiEngineType.Cloud -> cloudEngine.generateResponse(prompt, toolHandler)
-            AiEngineType.OnDevice -> onDeviceEngine.generateResponse(prompt, toolHandler)
-            AiEngineType.NoOp -> flowOf(
-                AiMessage(
-                    id = "noop",
-                    role = AiRole.MODEL,
-                    text = "AI is disabled in settings.",
-                    isPartial = false
+        toolHandler: ToolHandler?,
+    ): Flow<AiMessage> =
+        aiPreferencesRepository.aiEngineType.flatMapLatest { type ->
+            when (type) {
+                AiEngineType.Cloud -> cloudEngine.generateResponse(prompt, toolHandler)
+                AiEngineType.OnDevice -> onDeviceEngine.generateResponse(prompt, toolHandler)
+                AiEngineType.NoOp -> flowOf(
+                    AiMessage(
+                        id = "noop",
+                        role = AiRole.MODEL,
+                        text = "AI is disabled in settings.",
+                        isPartial = false,
+                    ),
                 )
-            )
+            }
         }
-    }
 }

@@ -29,6 +29,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.composeresources.composeStringResource
 import com.chriscartland.batterybutler.composeresources.generated.resources.Res
+import com.chriscartland.batterybutler.composeresources.generated.resources.ai_engine_cloud
+import com.chriscartland.batterybutler.composeresources.generated.resources.ai_engine_noop
+import com.chriscartland.batterybutler.composeresources.generated.resources.ai_engine_on_device
+import com.chriscartland.batterybutler.composeresources.generated.resources.ai_engine_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_grpc_aws
 import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_grpc_local
 import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_mock
@@ -36,15 +40,9 @@ import com.chriscartland.batterybutler.domain.model.AppVersion
 import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.model.User
 import com.chriscartland.batterybutler.domain.model.ai.AiEngineType
-import com.chriscartland.batterybutler.presentationcore.components.AppCard
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.presentationcore.components.ExpandableSelectionControl
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
-import com.chriscartland.batterybutler.presentationfeature.components.AppButton
-import com.chriscartland.batterybutler.composeresources.generated.resources.ai_engine_title
-import com.chriscartland.batterybutler.composeresources.generated.resources.ai_engine_cloud
-import com.chriscartland.batterybutler.composeresources.generated.resources.ai_engine_on_device
-import com.chriscartland.batterybutler.composeresources.generated.resources.ai_engine_noop
 
 @Composable
 fun SettingsContent(

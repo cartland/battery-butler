@@ -15,7 +15,7 @@ class AiPreferencesRepositoryImpl(
 ) : AiPreferencesRepository {
     private val _aiEngineType = MutableStateFlow(
         AiEngineType.entries.find { it.name == settings.getString(KEY_AI_ENGINE_TYPE, AiEngineType.Cloud.name) }
-            ?: AiEngineType.Cloud
+            ?: AiEngineType.Cloud,
     )
     override val aiEngineType: Flow<AiEngineType> = _aiEngineType.asStateFlow()
 
