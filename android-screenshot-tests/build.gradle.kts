@@ -76,7 +76,7 @@ tasks.register("cleanReferenceScreenshots") {
 }
 
 tasks.whenTaskAdded {
-    if (name == "updateDebugScreenshotTest") {
+    if (name == "updateDebugScreenshotTest" && !project.hasProperty("retainedReferenceScreenshots")) {
         dependsOn("cleanReferenceScreenshots")
     }
 }
