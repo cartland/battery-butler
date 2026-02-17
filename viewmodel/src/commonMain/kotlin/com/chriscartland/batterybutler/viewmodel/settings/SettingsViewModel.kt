@@ -3,11 +3,13 @@ package com.chriscartland.batterybutler.viewmodel.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chriscartland.batterybutler.domain.model.AppVersion
+import com.chriscartland.batterybutler.domain.model.ai.AiEngineType
 import com.chriscartland.batterybutler.domain.model.AuthState
 import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.model.ProductionServerUrl
 import com.chriscartland.batterybutler.domain.model.User
 import com.chriscartland.batterybutler.domain.repository.AuthRepository
+import com.chriscartland.batterybutler.domain.repository.AiPreferencesRepository
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
 import com.chriscartland.batterybutler.usecase.ExportDataUseCase
 import com.chriscartland.batterybutler.usecase.GetAppVersionUseCase
@@ -27,6 +29,7 @@ class SettingsViewModel(
     private val networkModeRepository: NetworkModeRepository,
     private val getAppVersionUseCase: GetAppVersionUseCase,
     private val authRepository: AuthRepository,
+    private val aiPreferencesRepository: AiPreferencesRepository,
     productionServerUrl: ProductionServerUrl,
 ) : ViewModel() {
     val networkMode: StateFlow<NetworkMode> = networkModeRepository.networkMode
@@ -41,6 +44,17 @@ class SettingsViewModel(
         NetworkMode.GrpcLocal("http://10.0.2.2:50051"), // Hardcoded default for UI list.
         NetworkMode.GrpcAws(productionServerUrl.url),
     )
+
+    val aiEngineType = aiPreferencesRepository.aiEngineType
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), AiEngineType.Cloud)
+
+    val availableAiEngines = AiEngineType.entries
+
+    fun onAiEngineSelected(type: AiEngineType) {
+        viewModelScope.launch {
+            aiPreferencesRepository.setAiEngineType(type)
+        }
+    }
 
     private val _appVersion = MutableStateFlow<AppVersion>(AppVersion.Unavailable)
     val appVersion: StateFlow<AppVersion> = _appVersion.asStateFlow()

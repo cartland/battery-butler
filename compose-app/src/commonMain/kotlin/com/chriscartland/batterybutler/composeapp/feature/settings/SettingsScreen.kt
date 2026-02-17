@@ -35,13 +35,17 @@ fun SettingsScreen(
         }
     }
     val networkMode by viewModel.networkMode.collectAsStateWithLifecycle()
+    val aiEngineType by viewModel.aiEngineType.collectAsStateWithLifecycle()
     SettingsContent(
         networkMode = networkMode,
         availableNetworkModes = viewModel.availableNetworkModes,
         onNetworkModeSelected = viewModel::onNetworkModeSelected,
+        aiEngineType = aiEngineType,
+        availableAiEngines = viewModel.availableAiEngines,
+        onAiEngineSelected = viewModel::onAiEngineSelected,
         onExportData = viewModel::onExportData,
         onBack = onBack,
-        appVersion = appVersion ?: AppVersion.Desktop("Loading..."),
+        appVersion = appVersion,
         currentUser = currentUser,
         onSignOut = viewModel::signOut,
         modifier = modifier,

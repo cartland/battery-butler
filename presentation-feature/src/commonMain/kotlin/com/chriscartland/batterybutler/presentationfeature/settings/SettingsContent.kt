@@ -35,15 +35,25 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.netw
 import com.chriscartland.batterybutler.domain.model.AppVersion
 import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.model.User
+import com.chriscartland.batterybutler.domain.model.ai.AiEngineType
+import com.chriscartland.batterybutler.presentationcore.components.AppCard
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.presentationcore.components.ExpandableSelectionControl
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import com.chriscartland.batterybutler.presentationfeature.components.AppButton
+import com.chriscartland.batterybutler.composeresources.generated.resources.ai_engine_title
+import com.chriscartland.batterybutler.composeresources.generated.resources.ai_engine_cloud
+import com.chriscartland.batterybutler.composeresources.generated.resources.ai_engine_on_device
+import com.chriscartland.batterybutler.composeresources.generated.resources.ai_engine_noop
 
 @Composable
 fun SettingsContent(
     networkMode: NetworkMode,
     availableNetworkModes: List<NetworkMode>,
     onNetworkModeSelected: (NetworkMode) -> Unit,
+    aiEngineType: AiEngineType,
+    availableAiEngines: List<AiEngineType>,
+    onAiEngineSelected: (AiEngineType) -> Unit,
     onExportData: () -> Unit,
     onBack: () -> Unit,
     appVersion: AppVersion,
@@ -144,6 +154,21 @@ fun SettingsContent(
                 },
             )
 
+            // AI Engine Card
+            ExpandableSelectionControl(
+                title = composeStringResource(Res.string.ai_engine_title),
+                currentSelection = aiEngineType,
+                options = availableAiEngines,
+                onOptionSelected = onAiEngineSelected,
+                optionLabel = { mode ->
+                    when (mode) {
+                        AiEngineType.Cloud -> composeStringResource(Res.string.ai_engine_cloud)
+                        AiEngineType.OnDevice -> composeStringResource(Res.string.ai_engine_on_device)
+                        AiEngineType.NoOp -> composeStringResource(Res.string.ai_engine_noop)
+                    }
+                },
+            )
+
             // Export Data Card
             Card(
                 colors = CardDefaults.cardColors(
@@ -226,6 +251,9 @@ fun SettingsContentPreview() {
             networkMode = NetworkMode.Mock,
             availableNetworkModes = listOf(NetworkMode.Mock),
             onNetworkModeSelected = {},
+            aiEngineType = AiEngineType.Cloud,
+            availableAiEngines = AiEngineType.entries,
+            onAiEngineSelected = {},
             onExportData = {},
             onBack = {},
             appVersion = AppVersion.Android("1.0.0", 123),
