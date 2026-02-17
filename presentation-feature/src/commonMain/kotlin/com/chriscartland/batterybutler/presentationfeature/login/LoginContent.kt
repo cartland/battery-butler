@@ -161,8 +161,18 @@ private fun LoginForm(
                         color = MaterialTheme.colorScheme.onPrimary,
                         strokeWidth = 2.dp,
                     )
-                } else {
-                    Text("Sign in with Google")
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Guest/Skip Option (Optional)
+                AppButton(
+                    onClick = onSkipLogin,
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = true, // Enabled for bypass
+                    shape = RoundedCornerShape(12.dp),
+                ) {
+                    Text("Continue as Guest")
                 }
             }
         } else {
