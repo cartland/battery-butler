@@ -15,7 +15,7 @@ for file in android-screenshot-tests/src/screenshotTest/kotlin/com/chriscartland
     echo "Running screenshot generation for $classname"
     echo "----------------------------------------------------------------"
     
-    ./gradlew :android-screenshot-tests:updateDebugScreenshotTest --tests "$classname" -PretainedReferenceScreenshots -Djava.awt.headless=true
+    ./gradlew :android-screenshot-tests:updateDebugScreenshotTest --tests "$classname" -PretainedReferenceScreenshots
 done
 
 echo "All screenshot tests completed."
