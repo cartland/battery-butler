@@ -7,6 +7,7 @@ import com.chriscartland.batterybutler.data.provider.DefaultDispatcherProvider
 import com.chriscartland.batterybutler.data.repository.DataStoreNetworkModeRepository
 import com.chriscartland.batterybutler.data.repository.DefaultDeviceRepository
 import com.chriscartland.batterybutler.data.repository.DefaultFeatureFlagProvider
+import com.chriscartland.batterybutler.data.repository.InMemoryAiPreferencesRepository
 import com.chriscartland.batterybutler.datalocal.LocalDataSource
 import com.chriscartland.batterybutler.datalocal.RoomLocalDataSource
 import com.chriscartland.batterybutler.datalocal.preferences.DataStoreFactory
@@ -21,6 +22,7 @@ import com.chriscartland.batterybutler.domain.model.DispatcherProvider
 import com.chriscartland.batterybutler.domain.model.FeatureFlag
 import com.chriscartland.batterybutler.domain.model.ProductionServerUrl
 import com.chriscartland.batterybutler.domain.model.ai.AiEngine
+import com.chriscartland.batterybutler.domain.repository.AiPreferencesRepository
 import com.chriscartland.batterybutler.domain.repository.AuthRepository
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.domain.repository.FeatureFlagProvider
@@ -123,4 +125,8 @@ abstract class NativeComponent(
 
     @Provides
     fun provideDispatcherProvider(impl: DefaultDispatcherProvider): DispatcherProvider = impl
+
+    @Provides
+    @SharedSingleton
+    fun provideAiPreferencesRepository(): AiPreferencesRepository = InMemoryAiPreferencesRepository()
 }

@@ -39,6 +39,7 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation(libs.generativeai)
             implementation(libs.kotlinx.coroutines.play.services)
+            implementation(libs.multiplatform.settings)
         }
         commonMain.dependencies {
             implementation(compose.runtime)

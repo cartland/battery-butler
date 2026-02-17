@@ -29,6 +29,7 @@ kotlin {
         commonMain.dependencies {
             implementation(project(":domain"))
             implementation(project(":presentation-model"))
+            implementation(libs.kotlin.inject.runtime)
             implementation(libs.kotlinx.coroutines.core)
         }
         androidMain.dependencies {
