@@ -1,5 +1,6 @@
 package com.chriscartland.batterybutler.androidscreenshottests
 
+import android.content.res.Configuration
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.android.tools.screenshot.PreviewTest
@@ -9,7 +10,8 @@ import com.chriscartland.batterybutler.presentationcore.components.ButlerCentere
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBarWithAiPreview
 
 @PreviewTest
-@Preview(showBackground = true)
+@Preview(name = "Light", showBackground = true)
+@Preview(name = "Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun TopAppBarDefaultPreviewTest() {
     ScreenshotTestTheme {
@@ -18,7 +20,8 @@ fun TopAppBarDefaultPreviewTest() {
 }
 
 @PreviewTest
-@Preview(showBackground = true)
+@Preview(name = "Light", showBackground = true)
+@Preview(name = "Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun TopAppBarWithAiActionPreviewTest() {
     ScreenshotTestTheme {
@@ -27,7 +30,8 @@ fun TopAppBarWithAiActionPreviewTest() {
 }
 
 @PreviewTest
-@Preview(showBackground = true)
+@Preview(name = "Light", showBackground = true)
+@Preview(name = "Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun TopAppBarWithMenuActionsPreviewTest() {
     ScreenshotTestTheme {

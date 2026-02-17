@@ -1,5 +1,6 @@
 package com.chriscartland.batterybutler.androidscreenshottests
 
+import android.content.res.Configuration
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.android.tools.screenshot.PreviewTest
@@ -10,7 +11,8 @@ import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
 @PreviewTest
-@Preview(showBackground = true)
+@Preview(name = "Light", showBackground = true)
+@Preview(name = "Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun AddDeviceAiSectionPreviewTest() {
     ScreenshotTestTheme {
@@ -20,7 +22,8 @@ fun AddDeviceAiSectionPreviewTest() {
 
 @OptIn(ExperimentalTime::class)
 @PreviewTest
-@Preview(showBackground = true)
+@Preview(name = "Light", showBackground = true)
+@Preview(name = "Dark", showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun AddDeviceManualSectionPreviewTest() {
     ScreenshotTestTheme {
