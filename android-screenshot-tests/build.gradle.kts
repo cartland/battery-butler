@@ -31,11 +31,7 @@ android {
     }
     experimentalProperties["android.experimental.enableScreenshotTest"] = true
     
-    testOptions {
-        unitTests.all {
-            it.systemProperty("java.awt.headless", "true")
-        }
-    }
+
 }
 
 kotlin {
