@@ -38,4 +38,8 @@ tasks.test {
         "e2e.server.url",
         System.getProperty("e2e.server.url") ?: "http://localhost:50051",
     )
+    systemProperty(
+        "e2e.auth.token",
+        System.getProperty("e2e.auth.token") ?: "",
+    )
 }

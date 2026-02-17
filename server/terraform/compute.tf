@@ -90,6 +90,30 @@ resource "aws_security_group" "ecs_service" {
   }
 }
 
+locals {
+  base_env = [
+    {
+      name  = "SERVER_LABEL"
+      value = "AWS Cloud (${var.environment})"
+    },
+    {
+      name  = "ENVIRONMENT"
+      value = var.environment
+    },
+    {
+      name  = "DB_SECRET_NAME"
+      value = aws_secretsmanager_secret.db_credentials.name
+    }
+  ]
+  e2e_env = var.e2e_test_token != "" ? [
+    {
+      name  = "E2E_TEST_TOKEN"
+      value = var.e2e_test_token
+    }
+  ] : []
+  container_env = concat(local.base_env, local.e2e_env)
+}
+
 resource "aws_ecs_task_definition" "server" {
   family                   = "battery-butler-${var.environment}-server"
   network_mode             = "awsvpc"
@@ -118,20 +142,7 @@ resource "aws_ecs_task_definition" "server" {
           "awslogs-stream-prefix" = "ecs"
         }
       }
-      environment = [
-        {
-          name  = "SERVER_LABEL"
-          value = "AWS Cloud (${var.environment})"
-        },
-        {
-          name  = "ENVIRONMENT"
-          value = var.environment
-        },
-        {
-          name  = "DB_SECRET_NAME"
-          value = aws_secretsmanager_secret.db_credentials.name
-        }
-      ]
+      environment = local.container_env
     }
   ])
 
