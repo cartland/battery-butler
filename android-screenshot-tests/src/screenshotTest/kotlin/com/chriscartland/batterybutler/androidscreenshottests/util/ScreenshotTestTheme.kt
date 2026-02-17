@@ -4,13 +4,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import com.chriscartland.batterybutler.composeresources.LocalAppStrings
 
+import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+
 /**
  * Theme wrapper for screenshot tests.
  *
  * This composable injects the [ScreenshotAppStrings] implementation into the [LocalAppStrings]
- * CompositionLocal. This ensures that any composables running within this theme (i.e., previews
- * being screenshot-tested) can resolve string resources correctly using the local XML file
- * instead of failing or showing placeholders.
+ * CompositionLocal. It also applies the [BatteryButlerTheme] to ensure that screenshot tests
+ * match the production app's visual style.
  *
  * Usage:
  * ```
@@ -22,7 +23,9 @@ import com.chriscartland.batterybutler.composeresources.LocalAppStrings
  */
 @Composable
 fun ScreenshotTestTheme(content: @Composable () -> Unit) {
-    CompositionLocalProvider(LocalAppStrings provides ScreenshotAppStrings()) {
-        content()
+    BatteryButlerTheme {
+        CompositionLocalProvider(LocalAppStrings provides ScreenshotAppStrings()) {
+            content()
+        }
     }
 }
