@@ -210,7 +210,8 @@ jobs:
       run: |
         terraform apply -auto-approve \
           -var-file=environments/dev.tfvars \
-          -var="image_tag=${{ needs.build.outputs.image-tag }}"
+          -var="image_tag=${{ needs.build.outputs.image-tag }}" \
+          -var="e2e_test_token=${{ secrets.E2E_TEST_TOKEN }}"
 
     - name: Capture NLB DNS Name
       id: nlb

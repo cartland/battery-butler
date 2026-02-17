@@ -4,16 +4,20 @@
 # Usage:
 #   ./scripts/e2e-tests.sh              # Against local server (auto-started)
 #   ./scripts/e2e-tests.sh --remote     # Against E2E_SERVER_URL env var
-#   E2E_SERVER_URL=http://...:80 ./scripts/e2e-tests.sh --remote
+#   E2E_SERVER_URL=http://...:80 E2E_AUTH_TOKEN=<token> ./scripts/e2e-tests.sh --remote
 
 set -e
 cd "$(dirname "$0")/.."
 
 if [ "$1" = "--remote" ]; then
     URL="${E2E_SERVER_URL:?Set E2E_SERVER_URL for remote testing}"
+    AUTH_TOKEN="${E2E_AUTH_TOKEN:-}"
 else
+    AUTH_TOKEN=$(uuidgen | tr '[:upper:]' '[:lower:]')
+    echo "Generated E2E test token for local session"
+
     echo "Starting local server in background..."
-    ./gradlew :server:app:run &
+    E2E_TEST_TOKEN="$AUTH_TOKEN" ./gradlew :server:app:run &
     SERVER_PID=$!
     trap "kill $SERVER_PID 2>/dev/null || true" EXIT
 
@@ -34,4 +38,10 @@ else
 fi
 
 echo "Running E2E tests against: $URL"
-./gradlew :e2e-tests:test -De2e.server.url="$URL" --info
+
+GRADLE_ARGS="-De2e.server.url=$URL"
+if [ -n "$AUTH_TOKEN" ]; then
+    GRADLE_ARGS="$GRADLE_ARGS -De2e.auth.token=$AUTH_TOKEN"
+fi
+
+./gradlew :e2e-tests:test $GRADLE_ARGS --info

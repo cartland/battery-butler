@@ -30,11 +30,25 @@ class AuthService : AuthServiceGrpcKt.AuthServiceCoroutineImplBase() {
     // Replace with DB-backed store when persistence is needed.
     private val sessions = ConcurrentHashMap<String, SessionInfo>()
 
+    private val e2eTestToken: String? = System.getenv("E2E_TEST_TOKEN")
+
     init {
         if (clientId == null) {
             log.w { "GOOGLE_CLIENT_ID not set — VerifyToken will reject all requests" }
         } else {
             log.i { "AuthService initialized with Google Client ID" }
+        }
+        if (e2eTestToken != null) {
+            if (e2eTestToken.isBlank()) {
+                log.w { "E2E_TEST_TOKEN is set but blank — ignoring" }
+            } else {
+                sessions[e2eTestToken] = SessionInfo(
+                    userId = E2E_TEST_USER_ID,
+                    email = E2E_TEST_EMAIL,
+                    expiresAtMs = Long.MAX_VALUE,
+                )
+                log.i { "E2E test token mode ACTIVE — synthetic test session registered" }
+            }
         }
     }
 
@@ -116,7 +130,9 @@ class AuthService : AuthServiceGrpcKt.AuthServiceCoroutineImplBase() {
         val expiresAtMs: Long,
     )
 
-    private companion object {
-        const val SESSION_EXPIRY_MS = 24 * 60 * 60 * 1000L // 24 hours
+    companion object {
+        private const val SESSION_EXPIRY_MS = 24 * 60 * 60 * 1000L // 24 hours
+        const val E2E_TEST_USER_ID = "e2e-test-user"
+        const val E2E_TEST_EMAIL = "e2e-test@test.local"
     }
 }

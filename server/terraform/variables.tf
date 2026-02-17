@@ -54,3 +54,10 @@ variable "image_tag" {
   type        = string
   description = "Docker image tag to deploy (typically a git SHA)"
 }
+
+variable "e2e_test_token" {
+  type        = string
+  description = "E2E test token for synthetic auth. Only set for dev."
+  default     = ""
+  sensitive   = true
+}

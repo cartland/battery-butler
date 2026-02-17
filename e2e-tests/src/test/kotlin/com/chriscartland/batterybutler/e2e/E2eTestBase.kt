@@ -38,15 +38,28 @@ abstract class E2eTestBase {
     @Before
     fun setUpClients() {
         val serverUrl = System.getProperty("e2e.server.url") ?: "http://localhost:50051"
+        val authToken = System.getProperty("e2e.auth.token")
 
-        val okHttpClient = OkHttpClient
+        val okHttpClientBuilder = OkHttpClient
             .Builder()
             .protocols(listOf(Protocol.H2_PRIOR_KNOWLEDGE))
             .connectTimeout(10, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)
             .callTimeout(60, TimeUnit.SECONDS)
-            .build()
+
+        if (!authToken.isNullOrBlank()) {
+            okHttpClientBuilder.addInterceptor { chain ->
+                val request = chain
+                    .request()
+                    .newBuilder()
+                    .addHeader("authorization", "Bearer $authToken")
+                    .build()
+                chain.proceed(request)
+            }
+        }
+
+        val okHttpClient = okHttpClientBuilder.build()
 
         val grpcClient = GrpcClient
             .Builder()
