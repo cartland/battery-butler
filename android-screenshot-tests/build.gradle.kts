@@ -30,8 +30,6 @@ android {
         compose = true
     }
     experimentalProperties["android.experimental.enableScreenshotTest"] = true
-    
-
 }
 
 kotlin {

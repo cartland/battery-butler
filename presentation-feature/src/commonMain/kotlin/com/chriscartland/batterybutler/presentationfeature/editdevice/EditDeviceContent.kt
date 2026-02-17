@@ -246,7 +246,7 @@ fun EditDeviceContent(
                             },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.errorContainer,
-                                contentColor = MaterialTheme.colorScheme.error,
+                                contentColor = MaterialTheme.colorScheme.onErrorContainer,
                             ),
                             modifier = Modifier.fillMaxWidth().height(56.dp),
                             shape = RoundedCornerShape(12.dp),

@@ -355,16 +355,18 @@ fun HomeScreenPreview() {
 @Composable
 fun HomeScreenFilterRowPreview() {
     BatteryButlerTheme {
-        HomeScreenFilterRow(
-            state = HomeUiState(
-                groupedDevices = emptyMap(),
-                deviceTypes = emptyMap(),
-            ),
-            onGroupOptionToggle = {},
-            onGroupOptionSelected = {},
-            onSortOptionToggle = {},
-            onSortOptionSelected = {},
-        )
+        Surface {
+            HomeScreenFilterRow(
+                state = HomeUiState(
+                    groupedDevices = emptyMap(),
+                    deviceTypes = emptyMap(),
+                ),
+                onGroupOptionToggle = {},
+                onGroupOptionSelected = {},
+                onSortOptionToggle = {},
+                onSortOptionSelected = {},
+            )
+        }
     }
 }
 

@@ -28,6 +28,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -306,15 +307,17 @@ fun AddDeviceManualSection(
 @Composable
 fun AddDeviceAiSectionPreview() {
     BatteryButlerTheme {
-        AddDeviceAiSection(
-            aiMessages = listOf(
-                com.chriscartland.batterybutler.domain.model.BatchOperationResult
-                    .Progress(composeStringResource(Res.string.status_processing)),
-                com.chriscartland.batterybutler.domain.model.BatchOperationResult
-                    .Success(composeStringResource(Res.string.status_confirmed)),
-            ),
-            onBatchAdd = {},
-        )
+        Surface {
+            AddDeviceAiSection(
+                aiMessages = listOf(
+                    com.chriscartland.batterybutler.domain.model.BatchOperationResult
+                        .Progress(composeStringResource(Res.string.status_processing)),
+                    com.chriscartland.batterybutler.domain.model.BatchOperationResult
+                        .Success(composeStringResource(Res.string.status_confirmed)),
+                ),
+                onBatchAdd = {},
+            )
+        }
     }
 }
 
@@ -323,18 +326,20 @@ fun AddDeviceAiSectionPreview() {
 @Composable
 fun AddDeviceManualSectionPreview() {
     BatteryButlerTheme {
-        AddDeviceManualSection(
-            name = "My Device",
-            onNameChange = {},
-            location = "Kitchen",
-            onLocationChange = {},
-            deviceTypes = listOf(
-                DeviceType("1", "Smoke Detector", "detector_smoke"),
-            ),
-            selectedType = DeviceType("1", "Smoke Detector", "detector_smoke"),
-            onTypeSelected = {},
-            onManageDeviceTypesClick = {},
-        )
+        Surface {
+            AddDeviceManualSection(
+                name = "My Device",
+                onNameChange = {},
+                location = "Kitchen",
+                onLocationChange = {},
+                deviceTypes = listOf(
+                    DeviceType("1", "Smoke Detector", "detector_smoke"),
+                ),
+                selectedType = DeviceType("1", "Smoke Detector", "detector_smoke"),
+                onTypeSelected = {},
+                onManageDeviceTypesClick = {},
+            )
+        }
     }
 }
 
