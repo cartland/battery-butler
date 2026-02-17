@@ -30,8 +30,6 @@ android {
         compose = true
     }
     experimentalProperties["android.experimental.enableScreenshotTest"] = true
-    
-
 }
 
 kotlin {
@@ -70,7 +68,7 @@ tasks.register<Exec>("generateScreenshotGallery") {
     description = "Generates a Markdown gallery of all reference screenshots."
     // Script is located at project_root/scripts/generate-screenshot-gallery.sh
     // build.gradle.kts is in android-screenshot-tests/
-    // So distinct path is ../scripts/generate-screenshot-gallery.sh from projectDir? 
+    // So distinct path is ../scripts/generate-screenshot-gallery.sh from projectDir?
     // Gradle executes in projectDir usually.
     workingDir = rootProject.projectDir
     commandLine("./scripts/generate-screenshot-gallery.sh")
