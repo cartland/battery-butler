@@ -90,11 +90,15 @@ xcodebuild -project ios-app-swift-ui/...      # iOS
 - **Instrumented tests**: Require running emulator, network failures are expected if server isn't running
 - **E2E tests** (`e2e-tests/`): Wire gRPC client tests against a real server. NOT included in CI or `validate.sh`.
   ```bash
-  ./scripts/e2e-tests.sh                    # Auto-starts local server
-  ./scripts/e2e-tests.sh --remote           # Uses E2E_SERVER_URL env var
-  E2E_SERVER_URL=http://<nlb>:80 ./scripts/e2e-tests.sh --remote  # Against cloud
-  ./gradlew :e2e-tests:test -De2e.server.url=http://localhost:50051  # Direct
+  ./scripts/e2e-tests.sh                    # Auto-starts local server (auto-generates auth token)
+  ./scripts/e2e-tests.sh --remote           # Uses E2E_SERVER_URL and E2E_AUTH_TOKEN env vars
+  E2E_SERVER_URL=http://<nlb>:80 E2E_AUTH_TOKEN=<token> ./scripts/e2e-tests.sh --remote  # Against cloud
+  ./gradlew :e2e-tests:test -De2e.server.url=http://localhost:50051 -De2e.auth.token=<token>  # Direct
   ```
+  - **E2E Auth**: Server reads `E2E_TEST_TOKEN` env var and pre-seeds a synthetic session. Tests attach the token as a Bearer header via OkHttp interceptor. This tests the real auth path (not a bypass).
+  - **Local mode**: Script auto-generates a UUID token and passes it to both server and tests.
+  - **Remote mode**: Token must match the `E2E_TEST_TOKEN` GitHub secret deployed to the dev server. Token value stored in `local.properties` (gitignored).
+  - **GitHub secret**: `E2E_TEST_TOKEN` — only set for dev environment. After setting/rotating, must redeploy dev for the container to pick it up.
 
 ## Build System
 
