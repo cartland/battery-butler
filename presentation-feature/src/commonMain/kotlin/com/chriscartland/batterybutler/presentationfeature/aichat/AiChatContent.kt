@@ -4,10 +4,18 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.union
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -58,6 +66,8 @@ fun AiChatContent(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
+        // Handle bottom inset manually in ChatInputBar to coordinate with IME
+        contentWindowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top),
         topBar = {
             ButlerCenteredTopAppBar(
                 title = "AI Assistant",
@@ -85,6 +95,13 @@ fun AiChatContent(
                     }
                 },
                 isProcessing = isProcessing,
+                modifier = Modifier.windowInsetsPadding(
+                    // Horizontal safe drawing (sides)
+                    // + Union of IME and Navigation Bars for smooth bottom handling
+                    WindowInsets.safeDrawing
+                        .only(WindowInsetsSides.Horizontal)
+                        .union(WindowInsets.ime.union(WindowInsets.navigationBars)),
+                ),
             )
         },
     ) { innerPadding ->
