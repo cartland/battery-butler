@@ -3,7 +3,6 @@ package com.chriscartland.batterybutler.androidscreenshottests.util
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import com.chriscartland.batterybutler.composeresources.LocalAppStrings
-
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 
 /**
