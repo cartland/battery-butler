@@ -46,7 +46,7 @@ find "$REFERENCE_DIR" -name "*.png" | sort | while read -r filepath; do
     
     echo "" >> "$CONTENT_FILE"
     echo "### $test_name" >> "$CONTENT_FILE"
-    echo "![$test_name]($relative_path)" >> "$CONTENT_FILE"
+    echo "<img src=\"$relative_path\" width=\"300\" />" >> "$CONTENT_FILE"
     
 done
 
