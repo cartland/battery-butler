@@ -21,6 +21,7 @@ junit = "4.13.2"
 kotlin = "2.3.0"
 kotlinx-coroutines = "1.10.2"
 ktor = "3.2.0"
+
 logback = "1.5.32"
 spotless = "7.0.4"
 kotlinStdlib = "2.3.0"
@@ -36,6 +37,7 @@ kotlinx-datetime = "0.7.1-0.6.x-compat"
 uuid = "0.8.4"
 mediapipe-genai = "0.10.29"
 localagents-fc = "0.1.0"
+mlkit-genai-prompt = "1.0.0-beta1"
 protobufVersion = "4.33.5"
 grpcJava = "1.63.0"
 grpc-kotlin = "1.4.1"
@@ -104,6 +106,9 @@ compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", ve
 compose-ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "composeMultiplatform" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serializationJson" }
 generativeai = { group = "com.google.ai.client.generativeai", name = "generativeai", version.ref = "generativeai" }
+mediapipe-tasks-genai = { module = "com.google.mediapipe:tasks-genai", version.ref = "mediapipe-genai" }
+localagents-fc = { module = "com.google.ai.edge.localagents:localagents-fc", version.ref = "localagents-fc" }
+mlkit-genai-prompt = { module = "com.google.mlkit:genai-prompt", version.ref = "mlkit-genai-prompt" }
 kotlinx-coroutines-play-services = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-play-services", version.ref = "kotlinx-coroutines" }
 protobuf-java = { group = "com.google.protobuf", name = "protobuf-java", version.ref = "protobufVersion" }
 protobuf-kotlin = { group = "com.google.protobuf", name = "protobuf-kotlin", version.ref = "protobufVersion" }

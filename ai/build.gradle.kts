@@ -34,6 +34,9 @@ kotlin {
         }
         androidMain.dependencies {
             implementation(libs.generativeai)
+            implementation(libs.mlkit.genai.prompt)
+            implementation(libs.kotlinx.serialization.json)
+            implementation(libs.kotlinx.coroutines.play.services)
         }
     }
 }
