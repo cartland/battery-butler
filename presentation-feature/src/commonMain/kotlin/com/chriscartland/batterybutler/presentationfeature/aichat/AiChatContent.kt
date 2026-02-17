@@ -37,6 +37,15 @@ import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.union
+
 @Composable
 fun AiChatContent(
     messages: List<ChatUiMessage>,
@@ -58,6 +67,8 @@ fun AiChatContent(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
+        // Handle bottom inset manually in ChatInputBar to coordinate with IME
+        contentWindowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top),
         topBar = {
             ButlerCenteredTopAppBar(
                 title = "AI Assistant",
@@ -85,6 +96,12 @@ fun AiChatContent(
                     }
                 },
                 isProcessing = isProcessing,
+                modifier = Modifier.windowInsetsPadding(
+                    // Horizontal safe drawing (sides) 
+                    // + Union of IME and Navigation Bars for smooth bottom handling
+                    WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)
+                        .union(WindowInsets.ime.union(WindowInsets.navigationBars))
+                ),
             )
         },
     ) { innerPadding ->
