@@ -377,19 +377,26 @@ jobs:
     steps:
       - name: Check CI Status
         run: |
-          # Check if any job failed (skipped jobs are OK)
-          if [[ "${{ needs.validation_spotless.result }}" == "failure" ]] || \
-             [[ "${{ needs.validation_lint.result }}" == "failure" ]] || \
-             [[ "${{ needs.validation_detekt.result }}" == "failure" ]] || \
-             [[ "${{ needs.validation_test.result }}" == "failure" ]] || \
-             [[ "${{ needs.validation_instrumented.result }}" == "failure" ]] || \
-             [[ "${{ needs.validation_architecture.result }}" == "failure" ]] || \
-             [[ "${{ needs.build_android.result }}" == "failure" ]] || \
-             [[ "${{ needs.build_ios_compose.result }}" == "failure" ]] || \
-             [[ "${{ needs.build_ios_native.result }}" == "failure" ]] || \
-             [[ "${{ needs.build_desktop.result }}" == "failure" ]] || \
-             [[ "${{ needs.build_server.result }}" == "failure" ]]; then
-            echo "One or more jobs failed"
+          # Check if any job failed or was cancelled (skipped jobs are OK)
+          FAILED=false
+          for result in \
+            "${{ needs.validation_spotless.result }}" \
+            "${{ needs.validation_lint.result }}" \
+            "${{ needs.validation_detekt.result }}" \
+            "${{ needs.validation_test.result }}" \
+            "${{ needs.validation_instrumented.result }}" \
+            "${{ needs.validation_architecture.result }}" \
+            "${{ needs.build_android.result }}" \
+            "${{ needs.build_ios_compose.result }}" \
+            "${{ needs.build_ios_native.result }}" \
+            "${{ needs.build_desktop.result }}" \
+            "${{ needs.build_server.result }}"; do
+            if [[ "$result" == "failure" || "$result" == "cancelled" ]]; then
+              FAILED=true
+            fi
+          done
+          if [[ "$FAILED" == "true" ]]; then
+            echo "One or more jobs failed or were cancelled"
             exit 1
           fi
           echo "All jobs passed or were skipped (docs-only change)"
