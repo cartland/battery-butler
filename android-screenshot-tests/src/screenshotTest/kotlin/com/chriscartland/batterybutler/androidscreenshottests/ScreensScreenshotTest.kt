@@ -18,7 +18,8 @@ import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
 @PreviewTest
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Light")
+@Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun HomeScreenPreviewTest() {
     ScreenshotTestTheme {
@@ -27,7 +28,8 @@ fun HomeScreenPreviewTest() {
 }
 
 @PreviewTest
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Light")
+@Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun DeviceTypeListScreenPreviewTest() {
     ScreenshotTestTheme {
@@ -36,7 +38,8 @@ fun DeviceTypeListScreenPreviewTest() {
 }
 
 @PreviewTest
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Light")
+@Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun HistoryListScreenPreviewTest() {
     ScreenshotTestTheme {
@@ -45,7 +48,8 @@ fun HistoryListScreenPreviewTest() {
 }
 
 @PreviewTest
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Light")
+@Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun AddDeviceTypeScreenPreviewTest() {
     ScreenshotTestTheme {
@@ -54,7 +58,8 @@ fun AddDeviceTypeScreenPreviewTest() {
 }
 
 @PreviewTest
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Light")
+@Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun AddBatteryEventScreenPreviewTest() {
     ScreenshotTestTheme {
@@ -63,7 +68,8 @@ fun AddBatteryEventScreenPreviewTest() {
 }
 
 @PreviewTest
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Light")
+@Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun DeviceDetailScreenPreviewTest() {
     ScreenshotTestTheme {
@@ -72,7 +78,8 @@ fun DeviceDetailScreenPreviewTest() {
 }
 
 @PreviewTest
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Light")
+@Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun EditDeviceScreenPreviewTest() {
     ScreenshotTestTheme {
@@ -81,7 +88,8 @@ fun EditDeviceScreenPreviewTest() {
 }
 
 @PreviewTest
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Light")
+@Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun EditDeviceTypeScreenPreviewTest() {
     ScreenshotTestTheme {
@@ -90,7 +98,8 @@ fun EditDeviceTypeScreenPreviewTest() {
 }
 
 @PreviewTest
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Light")
+@Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun EventDetailScreenPreviewTest() {
     ScreenshotTestTheme {
@@ -99,7 +108,8 @@ fun EventDetailScreenPreviewTest() {
 }
 
 @PreviewTest
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Light")
+@Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun SettingsScreenPreviewTest() {
     ScreenshotTestTheme {

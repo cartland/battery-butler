@@ -63,6 +63,17 @@ dependencies {
     implementation(libs.kotlinx.datetime)
 }
 
+tasks.register<Exec>("generateScreenshotGallery") {
+    group = "screenshot"
+    description = "Generates a Markdown gallery of all reference screenshots."
+    // Script is located at project_root/scripts/generate-screenshot-gallery.sh
+    // build.gradle.kts is in android-screenshot-tests/
+    // So distinct path is ../scripts/generate-screenshot-gallery.sh from projectDir?
+    // Gradle executes in projectDir usually.
+    workingDir = rootProject.projectDir
+    commandLine("./scripts/generate-screenshot-gallery.sh")
+}
+
 tasks.register("cleanReferenceScreenshots") {
     group = "screenshot"
     description = "Cleans the reference screenshots directory."
@@ -77,6 +88,9 @@ tasks.register("cleanReferenceScreenshots") {
 
 tasks.whenTaskAdded {
     if (name == "updateDebugScreenshotTest") {
-        dependsOn("cleanReferenceScreenshots")
+        if (!project.hasProperty("retainedReferenceScreenshots")) {
+            dependsOn("cleanReferenceScreenshots")
+        }
+        finalizedBy("generateScreenshotGallery")
     }
 }

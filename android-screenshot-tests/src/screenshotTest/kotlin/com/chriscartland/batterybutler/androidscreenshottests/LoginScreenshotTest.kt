@@ -10,7 +10,8 @@ import com.chriscartland.batterybutler.presentationfeature.login.LoginContentNot
 import com.chriscartland.batterybutler.presentationfeature.login.LoginContentUnauthenticatedPreview
 
 @PreviewTest
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Light")
+@Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun LoginContentUnauthenticatedPreviewTest() {
     ScreenshotTestTheme {
@@ -19,7 +20,8 @@ fun LoginContentUnauthenticatedPreviewTest() {
 }
 
 @PreviewTest
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Light")
+@Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun LoginContentAuthenticatingPreviewTest() {
     ScreenshotTestTheme {
@@ -28,7 +30,8 @@ fun LoginContentAuthenticatingPreviewTest() {
 }
 
 @PreviewTest
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Light")
+@Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun LoginContentNotConfiguredPreviewTest() {
     ScreenshotTestTheme {
@@ -37,7 +40,8 @@ fun LoginContentNotConfiguredPreviewTest() {
 }
 
 @PreviewTest
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Light")
+@Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun LoginContentErrorPreviewTest() {
     ScreenshotTestTheme {

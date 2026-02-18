@@ -11,7 +11,13 @@ import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
 @PreviewTest
-@Preview(device = "id:pixel_5", showBackground = true)
+@Preview(device = "id:pixel_5", showBackground = true, name = "Light")
+@Preview(
+    device = "id:pixel_5",
+    showBackground = true,
+    name = "Dark",
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES,
+)
 @Composable
 fun DevicesScreenPreviewTest() {
     ScreenshotTestTheme {
@@ -21,7 +27,13 @@ fun DevicesScreenPreviewTest() {
 
 @OptIn(ExperimentalTime::class)
 @PreviewTest
-@Preview(device = "id:pixel_5", showBackground = true)
+@Preview(device = "id:pixel_5", showBackground = true, name = "Light")
+@Preview(
+    device = "id:pixel_5",
+    showBackground = true,
+    name = "Dark",
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES,
+)
 @Composable
 fun TypesScreenPreviewTest() {
     ScreenshotTestTheme {
@@ -31,7 +43,13 @@ fun TypesScreenPreviewTest() {
 
 @OptIn(ExperimentalTime::class)
 @PreviewTest
-@Preview(device = "id:pixel_5", showBackground = true)
+@Preview(device = "id:pixel_5", showBackground = true, name = "Light")
+@Preview(
+    device = "id:pixel_5",
+    showBackground = true,
+    name = "Dark",
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES,
+)
 @Composable
 fun HistoryScreenPreviewTest() {
     ScreenshotTestTheme {

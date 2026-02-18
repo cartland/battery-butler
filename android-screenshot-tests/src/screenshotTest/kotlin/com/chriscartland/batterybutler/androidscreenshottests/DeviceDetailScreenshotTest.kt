@@ -9,7 +9,8 @@ import com.chriscartland.batterybutler.presentationfeature.devicedetail.DeviceDe
 import com.chriscartland.batterybutler.presentationfeature.devicedetail.DeviceDetailNotFoundPreview
 
 @PreviewTest
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Light")
+@Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun DeviceDetailSuccessPreviewTest() {
     ScreenshotTestTheme {
@@ -18,7 +19,8 @@ fun DeviceDetailSuccessPreviewTest() {
 }
 
 @PreviewTest
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Light")
+@Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun DeviceDetailLoadingPreviewTest() {
     ScreenshotTestTheme {
@@ -27,7 +29,8 @@ fun DeviceDetailLoadingPreviewTest() {
 }
 
 @PreviewTest
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Light")
+@Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun DeviceDetailNotFoundPreviewTest() {
     ScreenshotTestTheme {

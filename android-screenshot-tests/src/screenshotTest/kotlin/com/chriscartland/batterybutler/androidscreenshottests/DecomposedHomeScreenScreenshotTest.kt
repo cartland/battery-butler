@@ -10,7 +10,8 @@ import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
 @PreviewTest
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Light")
+@Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun HomeScreenFilterRowPreviewTest() {
     ScreenshotTestTheme {
@@ -20,7 +21,8 @@ fun HomeScreenFilterRowPreviewTest() {
 
 @OptIn(ExperimentalTime::class)
 @PreviewTest
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Light")
+@Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun HomeScreenListPreviewTest() {
     ScreenshotTestTheme {

@@ -7,7 +7,8 @@ import com.chriscartland.batterybutler.androidscreenshottests.util.ScreenshotTes
 import com.chriscartland.batterybutler.presentationfeature.adddevice.AddDeviceContentPreview
 
 @PreviewTest
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Light")
+@Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun AddDeviceEmptyPreviewTest() {
     ScreenshotTestTheme {
