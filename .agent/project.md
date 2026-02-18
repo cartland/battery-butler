@@ -26,8 +26,19 @@ Architecture is enforced by `buildSrc/.../ArchitectureCheckTask.kt`. Key rules:
 - `:domain` depends on nothing (pure interfaces and models)
 - `:usecase` depends on `:domain`, `:presentation-model`
 - `:viewmodel` depends on `:usecase`, `:domain`, `:presentation-model`
-- `:ai` contains platform implementations (`AndroidAiEngine`, `NoOpAiEngine`); interfaces live in `:domain:model:ai`
+- `:ai` contains platform implementations (`AndroidAiEngine`, `DynamicAiEngine`, `OnDeviceAiEngine`, `NoOpAiEngine`); interfaces live in `:domain:model:ai`
 - `:data` provides implementations of domain interfaces
+
+### DI Wiring (kotlin-inject)
+
+- `AppComponent` constructor parameters are the DI roots — ALL platform creation sites must be updated when parameters change:
+  - Android: `BatteryButlerApplication.kt`
+  - Desktop: `compose-app/src/desktopMain/.../Main.kt`
+  - iOS Compose: `IosComponentHelper.kt` (3 files: iosArm64Main, iosSimulatorArm64Main, iosX64Main)
+  - iOS Native: `NativeComponent.kt` in `ios-swift-di` (uses `@Provides` methods, not constructor params)
+- Non-Android platforms use `InMemoryAiPreferencesRepository` (in `:data`); Android uses `AiPreferencesRepositoryImpl` with `SharedPreferencesSettings`
+- Modules using `@Inject` need BOTH `kotlin-inject-runtime` (commonMain) AND `kotlin-inject-compiler` (KSP)
+- `multiplatform-settings` is `implementation` in `:data` — not transitive. Add directly to modules using platform-specific Settings classes (e.g. `SharedPreferencesSettings`)
 
 ### Coroutine Dispatching
 
