@@ -260,10 +260,11 @@ CI uses `dorny/paths-filter` to skip expensive builds for non-code changes:
 
 **How it works:**
 1. Code merges to `main` -> `auto-generate.yml` runs
-2. Generates diagrams + analysis + screenshots
-3. Creates follow-up PRs on `auto/update-generated-content` and `auto/update-screenshots`
-4. Uses `GITHUB_TOKEN` (not `BOT_PAT`) -- loop-proof by design
-5. `ci-trigger-auto-prs.yml` dispatches CI on the auto PRs
+2. Generates diagrams + analysis (Job 1) and screenshots sequentially (Job 2)
+3. Screenshots use `scripts/generate-screenshots-sequentially.sh` to avoid OOM on CI runners
+4. Creates follow-up PRs on `auto/update-generated-content` and `auto/update-screenshots`
+5. Uses `GITHUB_TOKEN` (not `BOT_PAT`) -- loop-proof by design
+6. `ci-trigger-auto-prs.yml` dispatches CI on auto PRs (runs on any workflow completion, not just success)
 
 ### Dependabot PRs
 
