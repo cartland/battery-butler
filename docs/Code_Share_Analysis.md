@@ -1,32 +1,32 @@
 # Code Share Analysis
 
 This document provides a breakdown of the codebase by application layer and module.
-Total Lines of Code: 22344
+Total Lines of Code: 22517
 
 ## Application Breakdown
-* Shared Code: 15,839 lines (70.9%)
+* Shared Code: 15,960 lines (70.9%)
 * Other: 2,018 lines (9.0%)
-* CMP Android, iOS, Desktop: 1,765 lines (7.9%)
+* CMP Android, iOS, Desktop: 1,771 lines (7.9%)
 * Server: 1,146 lines (5.1%)
 * iOS Swift App: 1,028 lines (4.6%)
-* Android Screenshot Tests: 548 lines (2.5%)
+* Android Screenshot Tests: 594 lines (2.6%)
 
 ## Module Breakdown
-* `:presentation-feature`: 4,009 lines (17.9%)
-* `:viewmodel`: 2,164 lines (9.7%)
-* `:usecase`: 1,987 lines (8.9%)
-* `:domain`: 1,889 lines (8.5%)
-* `:compose-app`: 1,765 lines (7.9%)
-* `:data-network`: 1,716 lines (7.7%)
-* `:presentation-core`: 1,599 lines (7.2%)
+* `:presentation-feature`: 4,023 lines (17.9%)
+* `:viewmodel`: 2,164 lines (9.6%)
+* `:usecase`: 1,987 lines (8.8%)
+* `:domain`: 1,889 lines (8.4%)
+* `:compose-app`: 1,771 lines (7.9%)
+* `:data-network`: 1,716 lines (7.6%)
+* `:presentation-core`: 1,617 lines (7.2%)
 * `:data`: 1,300 lines (5.8%)
 * `:iosAppSwiftUI.xcodeproj`: 1,028 lines (4.6%)
 * `:server:app`: 960 lines (4.3%)
 * `:data-local`: 828 lines (3.7%)
 * `:buildSrc`: 801 lines (3.6%)
-* `:android-screenshot-tests`: 548 lines (2.5%)
+* `:android-screenshot-tests`: 594 lines (2.6%)
+* `:ai`: 366 lines (1.6%)
 * `:test-common`: 318 lines (1.4%)
-* `:ai`: 277 lines (1.2%)
 * `:e2e-tests`: 271 lines (1.2%)
 * `:ios-swift-di`: 211 lines (0.9%)
 * `:fixtures`: 209 lines (0.9%)
