@@ -112,7 +112,9 @@ class OnDeviceAiEngine(
             } else {
                 null
             }
-        } catch (@Suppress("SwallowedException") _: Exception) {
+        } catch (
+            @Suppress("SwallowedException") _: Exception,
+        ) {
             null
         }
     }
