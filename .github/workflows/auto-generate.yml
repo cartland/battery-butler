@@ -98,7 +98,7 @@ jobs:
   # ===========================================================================
   screenshots:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
 
     permissions:
       contents: write
@@ -110,17 +110,8 @@ jobs:
 
       - uses: ./.github/actions/setup-java-gradle
 
-      - name: Clean Old Screenshots
-        run: |
-          SCREENSHOT_DIR="android-screenshot-tests/src/screenshotTestDebug/reference"
-          if [ -d "$SCREENSHOT_DIR" ]; then
-            echo "Removing old screenshot baselines..."
-            rm -rf "$SCREENSHOT_DIR"
-            echo "Old baselines removed."
-          fi
-
-      - name: Generate Screenshots
-        run: ./gradlew :android-screenshot-tests:updateDebugScreenshotTest
+      - name: Generate Screenshots Sequentially
+        run: ./scripts/generate-screenshots-sequentially.sh
 
       - name: Validate Generated Files
         run: ./scripts/validate-generated.sh --screenshots

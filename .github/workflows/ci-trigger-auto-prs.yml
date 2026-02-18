@@ -30,8 +30,8 @@ on:
 
 jobs:
   trigger-ci:
-    # Only run if the triggering workflow succeeded
-    if: github.event.workflow_run.conclusion == 'success'
+    # Run on any completion — individual jobs may succeed even if others fail.
+    # The script already handles missing PRs gracefully.
     runs-on: ubuntu-latest
 
     steps:
