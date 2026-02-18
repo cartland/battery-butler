@@ -5,6 +5,7 @@ import androidx.compose.ui.window.application
 import com.chriscartland.batterybutler.ai.NoOpAiEngine
 import com.chriscartland.batterybutler.composeapp.di.AppComponent
 import com.chriscartland.batterybutler.composeapp.di.create
+import com.chriscartland.batterybutler.data.repository.InMemoryAiPreferencesRepository
 import com.chriscartland.batterybutler.datalocal.preferences.DataStoreFactory
 import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
 import com.chriscartland.batterybutler.datanetwork.auth.GoogleSignInBridge
@@ -37,6 +38,7 @@ fun main() =
                     NoOpAiEngine,
                     networkComponent,
                     appVersion,
+                    InMemoryAiPreferencesRepository(),
                     googleSignInBridge,
                 )
             val shareHandler = DesktopShareHandler()

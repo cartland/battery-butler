@@ -14,6 +14,7 @@ import com.chriscartland.batterybutler.domain.model.AppVersion
 import com.chriscartland.batterybutler.domain.model.FeatureFlag
 import com.chriscartland.batterybutler.domain.model.ProductionServerUrl
 import com.chriscartland.batterybutler.domain.model.ai.AiEngine
+import com.chriscartland.batterybutler.domain.repository.AiPreferencesRepository
 import com.chriscartland.batterybutler.domain.repository.AppInfoRepository
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.domain.repository.FeatureFlagProvider
@@ -50,6 +51,7 @@ abstract class AppComponent(
     @get:Provides val aiEngine: AiEngine,
     override val networkComponent: NetworkComponent,
     @get:Provides val appVersion: AppVersion,
+    @get:Provides val aiPreferencesRepository: AiPreferencesRepository,
     @get:Provides override val googleSignInBridge: GoogleSignInBridge,
 ) : UseCaseComponent(),
     AppDataModule {

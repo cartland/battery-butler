@@ -25,6 +25,7 @@ kotlin {
             implementation(project(":domain"))
             api(project(":data-network"))
             api(project(":data-local"))
+            implementation(libs.multiplatform.settings)
 
             implementation(libs.kotlin.inject.runtime)
             implementation(libs.kotlinx.coroutines.core)

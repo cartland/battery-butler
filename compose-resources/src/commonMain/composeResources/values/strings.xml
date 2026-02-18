@@ -24,6 +24,12 @@
     <string name="network_mode_grpc_local">gRPC Local</string>
     <string name="network_mode_grpc_aws">AWS Cloud</string>
 
+    <!-- AI Engine -->
+    <string name="ai_engine_title">AI Engine</string>
+    <string name="ai_engine_cloud">Cloud (Gemini API)</string>
+    <string name="ai_engine_on_device">On-Device (MediaPipe)</string>
+    <string name="ai_engine_noop">Disabled</string>
+
     <!-- Add Device Type -->
     <string name="add_device_type_title">New Device Type</string>
     <string name="label_icon">Icon</string>

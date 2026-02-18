@@ -1,6 +1,7 @@
 package com.chriscartland.batterybutler.composeapp.di
 
 import com.chriscartland.batterybutler.ai.NoOpAiEngine
+import com.chriscartland.batterybutler.data.repository.InMemoryAiPreferencesRepository
 import com.chriscartland.batterybutler.datalocal.preferences.DataStoreFactory
 import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
 import com.chriscartland.batterybutler.datanetwork.auth.GoogleSignInBridge
@@ -24,6 +25,7 @@ actual object IosComponentHelper {
             NoOpAiEngine,
             networkComponent,
             appVersion,
+            InMemoryAiPreferencesRepository(),
             googleSignInBridge,
         )
     }
