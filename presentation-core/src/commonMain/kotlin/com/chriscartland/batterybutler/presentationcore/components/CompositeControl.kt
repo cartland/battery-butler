@@ -104,12 +104,14 @@ fun CompositeControl(
 @Composable
 fun CompositeControlPreview() {
     BatteryButlerTheme {
-        CompositeControl(
-            label = "Battery Level",
-            isActive = true,
-            isAscending = true,
-            onClicked = {},
-            onDirectionToggle = {},
-        )
+        Surface {
+            CompositeControl(
+                label = "Battery Level",
+                isActive = true,
+                isAscending = true,
+                onClicked = {},
+                onDirectionToggle = {},
+            )
+        }
     }
 }

@@ -18,6 +18,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -54,50 +55,54 @@ fun LoginContent(
     onDismissError: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(
+    Surface(
         modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center,
+        color = MaterialTheme.colorScheme.background,
     ) {
-        when (authState) {
-            is AuthState.Unknown -> {
-                // Loading while checking stored credentials
-                CircularProgressIndicator()
-            }
-            is AuthState.Authenticating -> {
-                // Sign-in in progress
-                LoginForm(
-                    isSignInAvailable = isSignInAvailable,
-                    isLoading = true,
-                    onGoogleSignIn = onGoogleSignIn,
-                    onSkipLogin = onSkipLogin,
-                )
-            }
-            is AuthState.Unauthenticated -> {
-                LoginForm(
-                    isSignInAvailable = isSignInAvailable,
-                    isLoading = false,
-                    onGoogleSignIn = onGoogleSignIn,
-                    onSkipLogin = onSkipLogin,
-                )
-            }
-            is AuthState.Authenticated -> {
-                // This state is handled by navigation (navigate to main screen)
-                // Show nothing or a brief loading indicator
-                CircularProgressIndicator()
-            }
-            is AuthState.Failed -> {
-                // Show login form with error dialog
-                LoginForm(
-                    isSignInAvailable = isSignInAvailable,
-                    isLoading = false,
-                    onGoogleSignIn = onGoogleSignIn,
-                    onSkipLogin = onSkipLogin,
-                )
-                ErrorDialog(
-                    error = authState.error,
-                    onDismiss = onDismissError,
-                    onRetry = onGoogleSignIn,
-                )
+        Box(
+            contentAlignment = Alignment.Center,
+        ) {
+            when (authState) {
+                is AuthState.Unknown -> {
+                    // Loading while checking stored credentials
+                    CircularProgressIndicator()
+                }
+                is AuthState.Authenticating -> {
+                    // Sign-in in progress
+                    LoginForm(
+                        isSignInAvailable = isSignInAvailable,
+                        isLoading = true,
+                        onGoogleSignIn = onGoogleSignIn,
+                        onSkipLogin = onSkipLogin,
+                    )
+                }
+                is AuthState.Unauthenticated -> {
+                    LoginForm(
+                        isSignInAvailable = isSignInAvailable,
+                        isLoading = false,
+                        onGoogleSignIn = onGoogleSignIn,
+                        onSkipLogin = onSkipLogin,
+                    )
+                }
+                is AuthState.Authenticated -> {
+                    // This state is handled by navigation (navigate to main screen)
+                    // Show nothing or a brief loading indicator
+                    CircularProgressIndicator()
+                }
+                is AuthState.Failed -> {
+                    // Show login form with error dialog
+                    LoginForm(
+                        isSignInAvailable = isSignInAvailable,
+                        isLoading = false,
+                        onGoogleSignIn = onGoogleSignIn,
+                        onSkipLogin = onSkipLogin,
+                    )
+                    ErrorDialog(
+                        error = authState.error,
+                        onDismiss = onDismissError,
+                        onRetry = onGoogleSignIn,
+                    )
+                }
             }
         }
     }

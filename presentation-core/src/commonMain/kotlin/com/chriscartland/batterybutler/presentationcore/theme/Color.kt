@@ -21,11 +21,23 @@ val SurfaceDark = Color(0xFF252927)
 val OnBackgroundDark = Color(0xFFE3E2E6)
 val OnSurfaceDark = Color(0xFFE3E2E6)
 
-val Error = Color(0xFFBA1A1A)
 val OnPrimary = Color.White
 val OnSecondary = Color.White
 val OnTertiary = Color.White
-val OnError = Color.White
+
+// Error Colors
+val ErrorLight = Color(0xFFBA1A1A)
+val OnErrorLight = Color.White
+val ErrorContainerLight = Color(0xFFFFDAD6)
+val OnErrorContainerLight = Color(0xFF410002)
+
+val ErrorDark = Color(0xFFFFB4AB)
+val OnErrorDark = Color(0xFF690005)
+val ErrorContainerDark = Color(0xFF93000A)
+val OnErrorContainerDark = Color(0xFFFFDAD6)
+
+val Error = ErrorLight // Backward compatibility if needed, but prefer specific
+val OnError = OnErrorLight
 
 // Container colors
 val TertiaryContainerLight = Color(0xFFD5E3EC) // Light blue-grey container
