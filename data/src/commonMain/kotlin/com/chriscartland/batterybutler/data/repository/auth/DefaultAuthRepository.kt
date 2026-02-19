@@ -150,8 +150,8 @@ class DefaultAuthRepository(
         // Check network mode first
         val currentMode = networkModeRepository.networkMode.first()
         if (currentMode is NetworkMode.None) {
-             log.i { "Network Mode None: Skipping server verification, using local-only auth" }
-             return fallbackToLocalAuth(idToken, email, displayName, photoUrl)
+            log.i { "Network Mode None: Skipping server verification, using local-only auth" }
+            return fallbackToLocalAuth(idToken, email, displayName, photoUrl)
         }
 
         return try {

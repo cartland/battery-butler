@@ -52,10 +52,10 @@ class DefaultDeviceRepository(
         while (true) {
             val currentMode = networkModeRepository.networkMode.first()
             if (currentMode is NetworkMode.None) {
-                 // In offline mode, just wait and check again later (poll slowly)
-                 // or ideally we would react to mode changes, but polling is simpler for this loop
-                 delay(5000)
-                 continue
+                // In offline mode, just wait and check again later (poll slowly)
+                // or ideally we would react to mode changes, but polling is simpler for this loop
+                delay(5000)
+                continue
             }
 
             try {
@@ -175,8 +175,8 @@ class DefaultDeviceRepository(
         scope.launch {
             val currentMode = networkModeRepository.networkMode.first()
             if (currentMode is NetworkMode.None) {
-                 Logger.d(TAG) { "Network Mode None: Skipping push update" }
-                 return@launch
+                Logger.d(TAG) { "Network Mode None: Skipping push update" }
+                return@launch
             }
 
             _syncStatus.value = SyncStatus.Syncing
