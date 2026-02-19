@@ -32,6 +32,7 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.Res
 import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_grpc_aws
 import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_grpc_local
 import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_mock
+import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_none
 import com.chriscartland.batterybutler.domain.model.AppVersion
 import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.model.User
@@ -133,6 +134,7 @@ fun SettingsContent(
                 onOptionSelected = onNetworkModeSelected,
                 optionLabel = { mode ->
                     when (mode) {
+                        is NetworkMode.None -> composeStringResource(Res.string.network_mode_none)
                         is NetworkMode.Mock -> composeStringResource(Res.string.network_mode_mock)
                         is NetworkMode.GrpcLocal -> composeStringResource(
                             Res.string.network_mode_grpc_local,

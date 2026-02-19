@@ -35,6 +35,7 @@ class DynamicDatabaseProvider(
                     NetworkMode.Mock -> DatabaseConstants.DEVELOPMENT_DATABASE_NAME
                     is NetworkMode.GrpcLocal,
                     is NetworkMode.GrpcAws,
+                    NetworkMode.None,
                     -> DatabaseConstants.PRODUCTION_DATABASE_NAME
                 }
 

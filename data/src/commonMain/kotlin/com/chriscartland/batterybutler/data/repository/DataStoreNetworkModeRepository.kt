@@ -23,10 +23,11 @@ class DataStoreNetworkModeRepository(
     }
 
     private companion object {
-        val DEFAULT_MODE = NetworkMode.Mock
+        val DEFAULT_MODE = NetworkMode.None
 
         // Storage format: "type:url" or "type" for types without URL
         private const val TYPE_MOCK = "mock"
+        private const val TYPE_NONE = "none"
         private const val TYPE_GRPC_LOCAL = "grpc_local"
         private const val TYPE_GRPC_AWS = "grpc_aws"
         private const val SEPARATOR = ":"
@@ -38,6 +39,7 @@ class DataStoreNetworkModeRepository(
 
             return when (type) {
                 TYPE_MOCK -> NetworkMode.Mock
+                TYPE_NONE -> NetworkMode.None
                 TYPE_GRPC_LOCAL -> NetworkMode.GrpcLocal(url)
                 TYPE_GRPC_AWS -> NetworkMode.GrpcAws(url)
                 else -> DEFAULT_MODE
@@ -47,6 +49,7 @@ class DataStoreNetworkModeRepository(
         fun NetworkMode.toStorageValue(): String =
             when (this) {
                 is NetworkMode.Mock -> TYPE_MOCK
+                is NetworkMode.None -> TYPE_NONE
                 is NetworkMode.GrpcLocal -> "$TYPE_GRPC_LOCAL$SEPARATOR${url.orEmpty()}"
                 is NetworkMode.GrpcAws -> "$TYPE_GRPC_AWS$SEPARATOR${url.orEmpty()}"
             }

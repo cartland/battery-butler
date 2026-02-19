@@ -7,8 +7,10 @@ import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.DataError
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
+import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.model.SyncStatus
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
+import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
 import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -16,6 +18,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 import kotlin.coroutines.cancellation.CancellationException
@@ -26,6 +29,7 @@ import kotlin.time.Duration.Companion.seconds
 class DefaultDeviceRepository(
     private val localDataSource: LocalDataSource,
     private val remoteDataSource: RemoteDataSource,
+    private val networkModeRepository: NetworkModeRepository,
     private val scope: CoroutineScope,
 ) : DeviceRepository {
     private val _syncStatus = MutableStateFlow<SyncStatus>(SyncStatus.Idle)
@@ -46,6 +50,14 @@ class DefaultDeviceRepository(
     private suspend fun subscribeWithRetry() {
         var backoffMs = INITIAL_BACKOFF_MS
         while (true) {
+            val currentMode = networkModeRepository.networkMode.first()
+            if (currentMode is NetworkMode.None) {
+                 // In offline mode, just wait and check again later (poll slowly)
+                 // or ideally we would react to mode changes, but polling is simpler for this loop
+                 delay(5000)
+                 continue
+            }
+
             try {
                 _syncStatus.value = SyncStatus.Syncing
                 remoteDataSource.subscribe().collect { update ->
@@ -161,6 +173,12 @@ class DefaultDeviceRepository(
         deletedEventIds: List<String> = emptyList(),
     ) {
         scope.launch {
+            val currentMode = networkModeRepository.networkMode.first()
+            if (currentMode is NetworkMode.None) {
+                 Logger.d(TAG) { "Network Mode None: Skipping push update" }
+                 return@launch
+            }
+
             _syncStatus.value = SyncStatus.Syncing
             try {
                 val success = remoteDataSource.push(
