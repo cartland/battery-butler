@@ -117,8 +117,8 @@ jobs:
           packageName: com.chriscartland.batterybutler
           releaseFiles: compose-app/build/outputs/bundle/release/*.aab
           track: internal
-          status: draft
-          whatsNewDirectory: distribution/whatsnew
+          status: completed
+          whatsNewDirectory: distribution/android/play-store/whatsnew
 
       - name: Cleanup Keystore
         if: always()

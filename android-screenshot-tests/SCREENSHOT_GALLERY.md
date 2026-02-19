@@ -1,6 +1,6 @@
 # Screenshot Gallery
 
-Generated on Tue Feb 17 02:02:00 PST 2026
+Generated on Wed Feb 18 19:13:50 PST 2026
 
 ## Table of Contents
 - [AddDeviceScreenshotTestKt](#adddevicescreenshottestkt)
@@ -11,6 +11,9 @@ Generated on Tue Feb 17 02:02:00 PST 2026
 - [DeviceIconsScreenshotTestKt](#deviceiconsscreenshottestkt)
 - [LoginScreenshotTestKt](#loginscreenshottestkt)
 - [MainTabsScreenshotTestKt](#maintabsscreenshottestkt)
+- [PlayStoreScreenshotTestKt](#playstorescreenshottestkt)
+- [PlayStoreTablet10ScreenshotTestKt](#playstoretablet10screenshottestkt)
+- [PlayStoreTabletScreenshotTestKt](#playstoretabletscreenshottestkt)
 - [ScreensScreenshotTestKt](#screensscreenshottestkt)
 - [SettingsScreenshotTestKt](#settingsscreenshottestkt)
 - [TopAppBarScreenshotTestKt](#topappbarscreenshottestkt)
@@ -145,6 +148,57 @@ Generated on Tue Feb 17 02:02:00 PST 2026
 
 ### TypesScreenPreviewTest_Light_67c33cac_0
 <img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/MainTabsScreenshotTestKt/TypesScreenPreviewTest_Light_67c33cac_0.png" width="300" />
+
+## PlayStoreScreenshotTestKt
+
+### PlayStoreAddDeviceTest_Light_67c33cac_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/PlayStoreScreenshotTestKt/PlayStoreAddDeviceTest_Light_67c33cac_0.png" width="300" />
+
+### PlayStoreDeviceDetailTest_Light_67c33cac_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/PlayStoreScreenshotTestKt/PlayStoreDeviceDetailTest_Light_67c33cac_0.png" width="300" />
+
+### PlayStoreHistoryTest_Light_67c33cac_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/PlayStoreScreenshotTestKt/PlayStoreHistoryTest_Light_67c33cac_0.png" width="300" />
+
+### PlayStoreHomeScreenTest_Light_67c33cac_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/PlayStoreScreenshotTestKt/PlayStoreHomeScreenTest_Light_67c33cac_0.png" width="300" />
+
+### PlayStoreSettingsTest_Light_67c33cac_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/PlayStoreScreenshotTestKt/PlayStoreSettingsTest_Light_67c33cac_0.png" width="300" />
+
+## PlayStoreTablet10ScreenshotTestKt
+
+### Tablet10AddDeviceTest_Light_e0cb19f2_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/PlayStoreTablet10ScreenshotTestKt/Tablet10AddDeviceTest_Light_e0cb19f2_0.png" width="300" />
+
+### Tablet10DeviceDetailTest_Light_e0cb19f2_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/PlayStoreTablet10ScreenshotTestKt/Tablet10DeviceDetailTest_Light_e0cb19f2_0.png" width="300" />
+
+### Tablet10HistoryTest_Light_e0cb19f2_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/PlayStoreTablet10ScreenshotTestKt/Tablet10HistoryTest_Light_e0cb19f2_0.png" width="300" />
+
+### Tablet10HomeScreenTest_Light_e0cb19f2_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/PlayStoreTablet10ScreenshotTestKt/Tablet10HomeScreenTest_Light_e0cb19f2_0.png" width="300" />
+
+### Tablet10SettingsTest_Light_e0cb19f2_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/PlayStoreTablet10ScreenshotTestKt/Tablet10SettingsTest_Light_e0cb19f2_0.png" width="300" />
+
+## PlayStoreTabletScreenshotTestKt
+
+### TabletAddDeviceTest_Light_f2235168_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/PlayStoreTabletScreenshotTestKt/TabletAddDeviceTest_Light_f2235168_0.png" width="300" />
+
+### TabletDeviceDetailTest_Light_f2235168_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/PlayStoreTabletScreenshotTestKt/TabletDeviceDetailTest_Light_f2235168_0.png" width="300" />
+
+### TabletHistoryTest_Light_f2235168_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/PlayStoreTabletScreenshotTestKt/TabletHistoryTest_Light_f2235168_0.png" width="300" />
+
+### TabletHomeScreenTest_Light_f2235168_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/PlayStoreTabletScreenshotTestKt/TabletHomeScreenTest_Light_f2235168_0.png" width="300" />
+
+### TabletSettingsTest_Light_f2235168_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/PlayStoreTabletScreenshotTestKt/TabletSettingsTest_Light_f2235168_0.png" width="300" />
 
 ## ScreensScreenshotTestKt
 

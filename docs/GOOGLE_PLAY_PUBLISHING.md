@@ -146,14 +146,14 @@ Note: You must select an existing `android/N` tag. Running on a branch will fail
 The action will:
 1. Build the app with the specified versionCode (versionName is defined in `compose-app/build.gradle.kts`)
 2. Sign with your release keystore
-3. Upload to internal test track with release notes from `distribution/whatsnew/`
+3. Upload to internal test track with release notes from `distribution/android/play-store/whatsnew/`
 
 ## Release Notes
 
 Edit the release notes before publishing:
 
 ```
-distribution/whatsnew/en-US
+distribution/android/play-store/whatsnew/en-US
 ```
 
 The file contains plain text that appears in Google Play. You can add additional
