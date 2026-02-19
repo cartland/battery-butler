@@ -32,6 +32,7 @@ class DelegatingRemoteDataSource(
         networkModeRepository.networkMode
             .flatMapLatest { mode ->
                 when (mode) {
+                    NetworkMode.None -> kotlinx.coroutines.flow.flowOf(RemoteDataSourceState.NotStarted)
                     NetworkMode.Mock -> mockDataSource.state
                     is NetworkMode.GrpcLocal, is NetworkMode.GrpcAws -> {
                         delegatingGrpcClient.clientState.map { clientState ->
@@ -49,6 +50,7 @@ class DelegatingRemoteDataSource(
     override fun subscribe(): Flow<RemoteUpdate> =
         networkModeRepository.networkMode.flatMapLatest { mode ->
             when (mode) {
+                NetworkMode.None -> kotlinx.coroutines.flow.emptyFlow()
                 NetworkMode.Mock -> mockDataSource.subscribe()
                 is NetworkMode.GrpcLocal -> {
                     // Wait for the client to be ready
@@ -69,6 +71,10 @@ class DelegatingRemoteDataSource(
         val mode = networkModeRepository.networkMode.first()
         Logger.d("DelegatingRemoteDS") { "push() called with mode=$mode" }
         return when (mode) {
+            NetworkMode.None -> {
+                Logger.d("DelegatingRemoteDS") { "Pushing to None (no-op)" }
+                true
+            }
             NetworkMode.Mock -> {
                 Logger.d("DelegatingRemoteDS") { "Pushing to Mock (no-op)" }
                 mockDataSource.push(update)

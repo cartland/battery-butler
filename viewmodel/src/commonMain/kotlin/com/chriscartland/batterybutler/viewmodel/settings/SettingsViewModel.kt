@@ -36,10 +36,11 @@ class SettingsViewModel(
         .stateIn(
             viewModelScope,
             defaultWhileSubscribed(),
-            NetworkMode.Mock,
+            NetworkMode.None,
         )
 
     val availableNetworkModes = listOf(
+        NetworkMode.None,
         NetworkMode.Mock,
         NetworkMode.GrpcLocal("http://10.0.2.2:50051"), // Hardcoded default for UI list.
         NetworkMode.GrpcAws(productionServerUrl.url),

@@ -6,9 +6,11 @@ import com.chriscartland.batterybutler.datalocal.auth.StoredAuthToken
 import com.chriscartland.batterybutler.datanetwork.auth.GoogleSignInBridge
 import com.chriscartland.batterybutler.domain.model.AuthError
 import com.chriscartland.batterybutler.domain.model.AuthState
+import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.model.User
 import com.chriscartland.batterybutler.domain.repository.AuthRepository
+import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
 import com.chriscartland.batterybutler.proto.AuthServiceClient
 import com.chriscartland.batterybutler.proto.VerifyTokenRequest
 import kotlinx.coroutines.CoroutineScope
@@ -18,6 +20,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
@@ -43,6 +46,7 @@ class DefaultAuthRepository(
     private val googleSignInBridge: GoogleSignInBridge,
     private val authServiceClient: AuthServiceClient,
     private val tokenStorage: AuthTokenStorage,
+    private val networkModeRepository: NetworkModeRepository,
     private val scope: CoroutineScope,
 ) : AuthRepository {
     private val log = Logger.withTag("DefaultAuthRepository")
@@ -76,6 +80,17 @@ class DefaultAuthRepository(
     override fun isSignInAvailable(): Boolean = googleSignInBridge.isConfigured()
 
     override suspend fun signInWithGoogle(): Result<User, AuthError> {
+        val currentMode = networkModeRepository.networkMode.first()
+        if (currentMode is NetworkMode.None) {
+            log.w { "Network Mode is None (Offline), skipping Google Sign-In" }
+            return Result.Error(
+                AuthError.SignIn.NetworkError(
+                    message = "Offline Mode Enabled",
+                    cause = "Network Mode is set to None",
+                ),
+            )
+        }
+
         if (!googleSignInBridge.isConfigured()) {
             log.w { "Google Sign-In not configured" }
             val error = AuthError.Configuration.NotConfigured(
@@ -131,8 +146,15 @@ class DefaultAuthRepository(
         email: String?,
         displayName: String?,
         photoUrl: String?,
-    ): Result<User, AuthError> =
-        try {
+    ): Result<User, AuthError> {
+        // Check network mode first
+        val currentMode = networkModeRepository.networkMode.first()
+        if (currentMode is NetworkMode.None) {
+            log.i { "Network Mode None: Skipping server verification, using local-only auth" }
+            return fallbackToLocalAuth(idToken, email, displayName, photoUrl)
+        }
+
+        return try {
             val response = authServiceClient
                 .VerifyToken()
                 .execute(VerifyTokenRequest(google_id_token = idToken))
@@ -172,26 +194,36 @@ class DefaultAuthRepository(
         } catch (e: Exception) {
             // Server unreachable — fall back to local-only auth
             log.w(e) { "Server verification failed, using local-only auth" }
-            val user = User(
-                id = idToken.take(32),
-                email = email,
-                displayName = displayName,
-                photoUrl = photoUrl,
-            )
-            val storedToken = StoredAuthToken(
-                accessToken = idToken,
-                refreshToken = null,
-                expiresAtMs = Clock.System.now().toEpochMilliseconds() + LOCAL_TOKEN_EXPIRY_MS,
-                userId = user.id,
-                email = user.email,
-                displayName = user.displayName,
-                photoUrl = user.photoUrl,
-            )
-            tokenStorage.saveToken(storedToken)
-            scheduleTokenExpiry(storedToken.expiresAtMs)
-            _authState.value = AuthState.Authenticated(user)
-            Result.Success(user)
+            fallbackToLocalAuth(idToken, email, displayName, photoUrl)
         }
+    }
+
+    private suspend fun fallbackToLocalAuth(
+        idToken: String,
+        email: String?,
+        displayName: String?,
+        photoUrl: String?,
+    ): Result<User, AuthError> {
+        val user = User(
+            id = idToken.take(32),
+            email = email,
+            displayName = displayName,
+            photoUrl = photoUrl,
+        )
+        val storedToken = StoredAuthToken(
+            accessToken = idToken,
+            refreshToken = null,
+            expiresAtMs = Clock.System.now().toEpochMilliseconds() + LOCAL_TOKEN_EXPIRY_MS,
+            userId = user.id,
+            email = user.email,
+            displayName = user.displayName,
+            photoUrl = user.photoUrl,
+        )
+        tokenStorage.saveToken(storedToken)
+        scheduleTokenExpiry(storedToken.expiresAtMs)
+        _authState.value = AuthState.Authenticated(user)
+        return Result.Success(user)
+    }
 
     override fun clearError() {
         if (_authState.value is AuthState.Failed) {

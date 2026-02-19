@@ -20,6 +20,7 @@
     <string name="tab_history">History</string>
 
     <!-- Network Mode -->
+    <string name="network_mode_none">None (Offline)</string>
     <string name="network_mode_mock">Mock</string>
     <string name="network_mode_grpc_local">gRPC Local</string>
     <string name="network_mode_grpc_aws">AWS Cloud</string>

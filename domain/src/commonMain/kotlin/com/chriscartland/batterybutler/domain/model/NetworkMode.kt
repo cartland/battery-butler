@@ -14,6 +14,11 @@ sealed interface NetworkMode {
     data object Mock : NetworkMode
 
     /**
+     * Network disabled. App operates locally only.
+     */
+    data object None : NetworkMode
+
+    /**
      * Local development server mode.
      * @param url Optional override URL.
      */
