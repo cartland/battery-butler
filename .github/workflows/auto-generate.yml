@@ -74,7 +74,20 @@ jobs:
       - name: Validate Generated Files
         run: ./scripts/validate-generated.sh --diagrams --analysis
 
+      - name: Check for meaningful changes
+        id: check-changes
+        run: |
+          # Check if any diagram or analysis content files changed
+          CONTENT_CHANGES=$(git diff --name-only -- '*.mmd' '*.svg' 'docs/Code_Share_Analysis.md' | wc -l | tr -d ' ')
+          echo "content_changes=$CONTENT_CHANGES" >> $GITHUB_OUTPUT
+          if [ "$CONTENT_CHANGES" -eq 0 ]; then
+            echo "No diagram or analysis content changes detected — skipping PR creation"
+          else
+            echo "$CONTENT_CHANGES content file(s) changed"
+          fi
+
       - name: Create Pull Request
+        if: steps.check-changes.outputs.content_changes != '0'
         uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -116,7 +129,20 @@ jobs:
       - name: Validate Generated Files
         run: ./scripts/validate-generated.sh --screenshots
 
+      - name: Check for meaningful changes
+        id: check-changes
+        run: |
+          # Check if any .png files actually changed (not just gallery markdown)
+          PNG_CHANGES=$(git diff --name-only -- '*.png' | wc -l | tr -d ' ')
+          echo "png_changes=$PNG_CHANGES" >> $GITHUB_OUTPUT
+          if [ "$PNG_CHANGES" -eq 0 ]; then
+            echo "No screenshot PNG changes detected — skipping PR creation"
+          else
+            echo "$PNG_CHANGES screenshot PNG(s) changed"
+          fi
+
       - name: Create Pull Request
+        if: steps.check-changes.outputs.png_changes != '0'
         uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
