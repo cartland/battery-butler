@@ -10,6 +10,9 @@ Promote the server Docker image from dev to production.
 > [!CAUTION]
 > **Agent Rule:** NEVER promote to production without explicit user permission.
 > Always show the current deployment state and confirm before proceeding.
+>
+> **This is the only path to production.** All deploys go to dev first.
+> Prod is always a promotion of a dev-validated image — never a direct deploy.
 
 ## Steps
 
