@@ -50,6 +50,7 @@ import com.chriscartland.batterybutler.domain.model.DataError
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.SyncStatus
+import com.chriscartland.batterybutler.presentationcore.components.AddItemCard
 import com.chriscartland.batterybutler.presentationcore.components.CompositeControl
 import com.chriscartland.batterybutler.presentationcore.components.DeviceListItem
 import com.chriscartland.batterybutler.presentationcore.components.EmptyStateContent
@@ -291,6 +292,9 @@ fun HomeScreenList(
                         nowInstant = nowInstant,
                     )
                 }
+            }
+            item {
+                AddItemCard("Add a device", onAddDeviceClick)
             }
         }
     }

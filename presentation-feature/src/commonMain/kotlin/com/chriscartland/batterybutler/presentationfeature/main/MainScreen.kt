@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
@@ -12,6 +12,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -38,6 +39,8 @@ import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import com.chriscartland.batterybutler.presentationcore.theme.LocalAiAction
+import com.chriscartland.batterybutler.presentationcore.theme.LocalAiAvailable
 import com.chriscartland.batterybutler.presentationfeature.devicetypes.DeviceTypeListContent
 import com.chriscartland.batterybutler.presentationfeature.history.HistoryListContent
 import com.chriscartland.batterybutler.presentationfeature.home.HomeScreenContent
@@ -82,12 +85,13 @@ fun MainScreenShell(
     currentTab: MainTab,
     onTabSelected: (MainTab) -> Unit,
     onSettingsClick: () -> Unit,
-    onAddClick: () -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable (PaddingValues, PaddingValues) -> Unit,
 ) {
     var fabHeightPx by remember { mutableIntStateOf(0) }
     val density = LocalDensity.current
+    val isAiAvailable = LocalAiAvailable.current
+    val onAiClick = LocalAiAction.current
 
     Scaffold(
         modifier = modifier,
@@ -105,15 +109,19 @@ fun MainScreenShell(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = onAddClick,
-                modifier = Modifier.onGloballyPositioned { coordinates ->
-                    if (coordinates.size.height > 0) {
-                        fabHeightPx = coordinates.size.height
-                    }
-                },
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Add")
+            if (isAiAvailable) {
+                FloatingActionButton(
+                    onClick = onAiClick,
+                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                    modifier = Modifier.onGloballyPositioned { coordinates ->
+                        if (coordinates.size.height > 0) {
+                            fabHeightPx = coordinates.size.height
+                        }
+                    },
+                ) {
+                    Icon(Icons.Default.AutoAwesome, contentDescription = "AI Assistant")
+                }
             }
         },
         bottomBar = {
@@ -156,7 +164,6 @@ fun DevicesScreen(
         currentTab = MainTab.Devices,
         onTabSelected = onTabSelected,
         onSettingsClick = onSettingsClick,
-        onAddClick = onAddDeviceClick,
     ) { innerPadding, fabPadding ->
         HomeScreenContent(
             state = state,
@@ -189,11 +196,11 @@ fun TypesScreen(
         currentTab = MainTab.Types,
         onTabSelected = onTabSelected,
         onSettingsClick = onSettingsClick,
-        onAddClick = onAddTypeClick,
     ) { innerPadding, fabPadding ->
         DeviceTypeListContent(
             state = state,
             onEditType = onEditType,
+            onAddTypeClick = onAddTypeClick,
             onSortOptionSelected = onSortOptionSelected,
             onGroupOptionSelected = onGroupOptionSelected,
             onSortDirectionToggle = onSortDirectionToggle,
@@ -218,11 +225,11 @@ fun HistoryScreen(
         currentTab = MainTab.History,
         onTabSelected = onTabSelected,
         onSettingsClick = onSettingsClick,
-        onAddClick = onAddEventClick,
     ) { innerPadding, fabPadding ->
         HistoryListContent(
             state = state,
             onEventClick = onEventClick,
+            onAddEventClick = onAddEventClick,
             modifier = Modifier.padding(innerPadding),
             contentPadding = fabPadding,
             nowInstant = nowInstant,

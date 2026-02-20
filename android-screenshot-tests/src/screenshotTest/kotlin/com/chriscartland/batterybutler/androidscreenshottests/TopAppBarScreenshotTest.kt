@@ -6,7 +6,6 @@ import com.android.tools.screenshot.PreviewTest
 import com.chriscartland.batterybutler.androidscreenshottests.util.ScreenshotTestTheme
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBarPreview
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBarWithActionsPreview
-import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBarWithAiPreview
 
 @PreviewTest
 @Preview(showBackground = true, name = "Light")
@@ -15,16 +14,6 @@ import com.chriscartland.batterybutler.presentationcore.components.ButlerCentere
 fun TopAppBarDefaultPreviewTest() {
     ScreenshotTestTheme {
         ButlerCenteredTopAppBarPreview()
-    }
-}
-
-@PreviewTest
-@Preview(showBackground = true, name = "Light")
-@Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun TopAppBarWithAiActionPreviewTest() {
-    ScreenshotTestTheme {
-        ButlerCenteredTopAppBarWithAiPreview()
     }
 }
 
