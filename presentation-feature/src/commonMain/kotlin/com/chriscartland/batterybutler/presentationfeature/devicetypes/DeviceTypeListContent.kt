@@ -33,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.composeresources.composeStringResource
 import com.chriscartland.batterybutler.domain.model.DeviceType
+import com.chriscartland.batterybutler.presentationcore.components.AddItemCard
 import com.chriscartland.batterybutler.presentationcore.components.CompositeControl
 import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMapper
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
@@ -46,6 +47,7 @@ import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeS
 fun DeviceTypeListContent(
     state: DeviceTypeListUiState,
     onEditType: (String) -> Unit,
+    onAddTypeClick: () -> Unit,
     onSortOptionSelected: (DeviceTypeSortOption) -> Unit,
     onGroupOptionSelected: (DeviceTypeGroupOption) -> Unit,
     onSortDirectionToggle: () -> Unit,
@@ -164,6 +166,9 @@ fun DeviceTypeListContent(
                                     )
                                 }
                             }
+                            item {
+                                AddItemCard("Add a device type", onAddTypeClick)
+                            }
                         }
                     }
                 }
@@ -179,6 +184,7 @@ fun DeviceTypeListContentEmptyPreview() {
         DeviceTypeListContent(
             state = DeviceTypeListUiState.Success(groupedTypes = emptyMap()),
             onEditType = {},
+            onAddTypeClick = {},
             onSortOptionSelected = {},
             onGroupOptionSelected = {},
             onSortDirectionToggle = {},
@@ -202,6 +208,7 @@ fun DeviceTypeListContentPreview() {
         DeviceTypeListContent(
             state = state,
             onEditType = {},
+            onAddTypeClick = {},
             onSortOptionSelected = {},
             onGroupOptionSelected = {},
             onSortDirectionToggle = {},

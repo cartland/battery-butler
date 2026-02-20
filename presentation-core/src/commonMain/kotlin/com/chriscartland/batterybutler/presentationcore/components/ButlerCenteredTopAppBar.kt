@@ -3,14 +3,10 @@ package com.chriscartland.batterybutler.presentationcore.components
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -18,8 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
-import com.chriscartland.batterybutler.presentationcore.theme.LocalAiAction
-import com.chriscartland.batterybutler.presentationcore.theme.LocalAiAvailable
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -30,9 +24,6 @@ fun ButlerCenteredTopAppBar(
     navigationIcon: @Composable (() -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {},
 ) {
-    val isAiAvailable = LocalAiAvailable.current
-    val onAiClick = LocalAiAction.current
-
     CenterAlignedTopAppBar(
         title = { Text(title, modifier = Modifier.testTag("TopBarTitle")) },
         navigationIcon = {
@@ -49,20 +40,6 @@ fun ButlerCenteredTopAppBar(
         },
         actions = {
             actions()
-            if (isAiAvailable) {
-                FilledTonalIconButton(
-                    onClick = onAiClick,
-                    colors = IconButtonDefaults.filledTonalIconButtonColors(
-                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
-                    ),
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.AutoAwesome,
-                        contentDescription = "AI Assistant",
-                    )
-                }
-            }
         },
         modifier = modifier,
         colors = TopAppBarDefaults.topAppBarColors(),
@@ -82,26 +59,13 @@ fun ButlerCenteredTopAppBarPreview() {
 
 @Preview(showBackground = true)
 @Composable
-fun ButlerCenteredTopAppBarWithAiPreview() {
-    BatteryButlerTheme {
-        androidx.compose.runtime.CompositionLocalProvider(LocalAiAvailable provides true) {
-            ButlerCenteredTopAppBar(
-                title = "AI Enabled",
-                onBack = {},
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
 fun ButlerCenteredTopAppBarWithActionsPreview() {
     BatteryButlerTheme {
         ButlerCenteredTopAppBar(
             title = "With Actions",
             actions = {
                 IconButton(onClick = {}) {
-                    Icon(Icons.Default.AutoAwesome, contentDescription = "Sample Action")
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Sample Action")
                 }
             },
         )
