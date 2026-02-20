@@ -1,19 +1,57 @@
-# Navigation 3: Official Project Guidance
+# Navigation
 
-This document outlines the standard patterns and best practices for implementing screen navigation in the "Battery Butler" application.
+## Overview
 
-#### Core Principle
+Battery Butler uses the Navigation 3 library (`androidx.navigation3`) for state-driven navigation. The UI is a direct function of a list of keys representing the back stack — we modify this list to navigate, and the UI updates automatically.
 
-Our navigation is state-driven. The UI is a direct function of a list of keys representing the back stack. We modify this list to navigate, and the UI updates automatically.
+## App Navigation Structure
 
-#### 1. Defining Navigation Keys
+The app uses a **Stack-based Tab System** where tabs are integral parts of the navigation stack, rather than parallel containers.
 
-Any `@Serializable` object can serve as a navigation key. There is no need to implement a shared base interface, as the Navigation 3 library can use any serializable type. This allows each feature module to define its own keys independently.
+The navigation structure consists of two layers:
+1. **Base Tab Layer**: The foundation of the app (Devices, Types, History).
+2. **Configuration Layer**: Stacks on top of the base layer (Add, Edit, Details).
 
-*   **Requirement:** All keys must be annotated with `@Serializable`.
-*   **Implementation:** Keys should be a `data object` for screens without parameters or a `data class` for screens that require arguments.
+### Base Tab Layer
 
-**Example:**
+The "Devices" screen serves as the root of the application. Other tabs are pushed onto the stack.
+
+- **Devices Tab** (Home)
+    - Stack: `[Devices]`
+- **Types Tab**
+    - Stack: `[Devices, Types]`
+    - Back Action: Pops `Types` → Returns to `Devices`.
+- **History Tab**
+    - Stack: `[Devices, History]`
+    - Back Action: Pops `History` → Returns to `Devices`.
+
+### Configuration Layer
+
+Configuration screens (Add, Edit, Settings) are pushed on top of the *current* Base Tab stack.
+
+**Examples:**
+- **Adding a Device**:
+    - Stack: `[Devices, Add Device]`
+- **Adding a Type from Types Tab**:
+    - Stack: `[Devices, Types, Add Type]`
+- **Nested Configuration**:
+    - Stack: `[Devices, History, Add History, Edit Device, Add Type]`
+
+### Tab Switching Behavior
+
+- Clicking "Devices" clears the stack above `Devices` (or resets to `[Devices]`).
+- Clicking "Types" sets the stack to `[Devices, Types]`.
+- Clicking "History" sets the stack to `[Devices, History]`.
+- "Add" actions can be triggered from any state (e.g., `[Devices, Add History]` is valid).
+
+## Implementation Patterns
+
+### Navigation Keys
+
+Any `@Serializable` object can serve as a navigation key. There is no need to implement a shared base interface, as Navigation 3 can use any serializable type.
+
+* **Requirement:** All keys must be annotated with `@Serializable`.
+* **Implementation:** Keys should be a `data object` for screens without parameters or a `data class` for screens that require arguments.
 
 ```kotlin
 // in :feature:home:api
@@ -25,13 +63,9 @@ data object HomeKey : NavKey
 data class ProductDetailKey(val productId: String) : NavKey
 ```
 
-#### 2. Creating and Managing the Back Stack
+### Back Stack Management
 
-The back stack's state should be created and managed at the Composable level.
-
-*   **Requirement:** Use the `@Composable fun rememberNavBackStack()` function to create the back stack instance.
-
-**Example:**
+The back stack's state should be created and managed at the Composable level using `rememberNavBackStack()`.
 
 ```kotlin
 @Composable
@@ -41,14 +75,12 @@ fun AppNavigation() {
 }
 ```
 
-#### 3. Resolving Keys to Screens
+### Key-to-Screen Resolution
 
-To resolve a navigation key to its corresponding screen Composable, we use a `when` expression inside the `entryProvider`.
+A `when` expression inside the `entryProvider` resolves navigation keys to screen Composables.
 
-*   **Requirement:** The `entryProvider` lambda for the `NavDisplay` **must** be implemented using a `when` expression on the key.
-*   **Important:** You **must** include an `else` branch to handle unknown keys gracefully, for example by logging an error or displaying a "Not Found" screen. This prevents crashes if a key from a module is not yet handled in the main `composeApp`.
-
-**Example:**
+* **Requirement:** The `entryProvider` lambda for `NavDisplay` **must** use a `when` expression on the key.
+* **Important:** You **must** include an `else` branch to handle unknown keys gracefully (e.g., logging an error or displaying a "Not Found" screen).
 
 ```kotlin
 NavDisplay(
@@ -64,13 +96,10 @@ NavDisplay(
 )
 ```
 
-#### 4. ViewModel Scoping
+### ViewModel Scoping
 
-Every major screen should have its own ViewModel to manage its UI state and business logic.
+Every major screen should have its own ViewModel scoped to the lifecycle of its corresponding `NavEntry`. This is achieved by adding `rememberViewModelStoreNavEntryDecorator()` to the `NavDisplay`.
 
-* **Requirement:** ViewModels must be scoped to the lifecycle of their corresponding `NavEntry`. This is achieved by adding the `rememberViewModelStoreNavEntryDecorator()` to the `NavDisplay`.
-
-**Example:**
 ```kotlin
 NavDisplay(
     entryDecorators = listOf(rememberViewModelStoreNavEntryDecorator()),
@@ -81,20 +110,22 @@ NavDisplay(
 val viewModel: HomeViewModel = viewModel() // This is now scoped correctly
 ```
 
-#### 5. Handling Navigation Events
+### Navigation Events
 
-We will use a pattern that separates business logic from the final navigation action.
+Business logic is separated from the final navigation action:
 
-* **Requirement:** The Composable UI element (e.g., `Button`) should call a method on the ViewModel to handle user actions. The ViewModel performs any necessary business logic and updates its state. The Composable observes this state and triggers the actual navigation by modifying the `backStack` directly.
+1. **UI Action:** `Button(onClick = { viewModel.save() })`.
+2. **ViewModel Logic:** The `save()` function calls a repository and, upon success, updates a state flow: `_navigationEvent.value = GoBack`.
+3. **UI Reaction:** A `LaunchedEffect` in the screen Composable observes `viewModel.navigationEvent` and, when it sees `GoBack`, calls `backStack.removeLast()`.
 
-**Example Flow:**
-1.  **UI Action:** `Button(onClick = { viewModel.save() })`.
-2.  **ViewModel Logic:** The `save()` function in the `HomeViewModel` calls a repository and, upon success, updates a state flow: `_navigationEvent.value = GoBack`.
-3.  **UI Reaction:** A `LaunchedEffect` in the `HomeScreen` Composable observes `viewModel.navigationEvent` and, when it sees `GoBack`, it calls `backStack.removeLast()`.
+## Implementation Details
 
----
-This guide defines a consistent, safe, and testable approach. The following advanced topics are deferred for now, and library defaults will be used:
+- **Navigation Library**: Navigation 3 (`androidx.navigation3`).
+- **Keys**: All screens are defined as `@Serializable` keys in `App.kt`.
+- **Shell**: `MainScreenShell` provides the `Scaffold`, `TopAppBar`, and `NavigationBar` for the Base Tab Layer screens.
 
-* **Deferred:** Per-entry `metadata`.
-* **Deferred:** Custom `Scenes` and `SceneStrategy` for adaptive layouts.
-* **Deferred:** Custom screen transition animations.
+## Deferred Topics
+
+- Per-entry `metadata`.
+- Custom `Scenes` and `SceneStrategy` for adaptive layouts.
+- Custom screen transition animations.
