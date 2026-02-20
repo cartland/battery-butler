@@ -1,26 +1,31 @@
 package com.chriscartland.batterybutler.data.repository
 
-import com.chriscartland.batterybutler.datalocal.LocalDataSource
 import com.chriscartland.batterybutler.datanetwork.RemoteDataSource
 import com.chriscartland.batterybutler.datanetwork.RemoteDataSourceState
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
+import com.chriscartland.batterybutler.domain.model.DataError
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
+import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.model.SyncStatus
 import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
-import kotlinx.coroutines.CompletableDeferred
+import com.chriscartland.batterybutler.testcommon.FakeLocalDataSource
+import com.chriscartland.batterybutler.testcommon.FakeNetworkModeRepository
+import com.chriscartland.batterybutler.testcommon.FakeRemoteDataSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -31,6 +36,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertTrue
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -54,15 +60,19 @@ class DefaultDeviceRepositoryTest {
      * The returned scope must be cancelled at the end of the test to stop the subscribe retry loop.
      */
     private fun createRepo(
-        local: FakeLocalDataSource,
-        remote: FakeRemoteDataSource,
+        local: FakeLocalDataSource = FakeLocalDataSource(),
+        remote: RemoteDataSource = FakeRemoteDataSource(),
+        networkMode: FakeNetworkModeRepository = FakeNetworkModeRepository(NetworkMode.Mock),
     ): Pair<DefaultDeviceRepository, CoroutineScope> {
         val repoScope = CoroutineScope(testDispatcher + Job())
-        val repo = DefaultDeviceRepository(local, remote, repoScope)
+        val repo = DefaultDeviceRepository(local, remote, networkMode, repoScope)
         return repo to repoScope
     }
 
-    // Device Tests
+    // ───────────────────────────────────────────────────────
+    // Device CRUD Tests
+    // ───────────────────────────────────────────────────────
+
     @Test
     fun `addDevice saves to local and pushes to remote`() =
         runTest(testDispatcher) {
@@ -111,7 +121,10 @@ class DefaultDeviceRepositoryTest {
             repoScope.cancel()
         }
 
-    // Device Type Tests
+    // ───────────────────────────────────────────────────────
+    // Device Type CRUD Tests
+    // ───────────────────────────────────────────────────────
+
     @Test
     fun `addDeviceType saves to local and pushes to remote`() =
         runTest(testDispatcher) {
@@ -159,7 +172,10 @@ class DefaultDeviceRepositoryTest {
             repoScope.cancel()
         }
 
-    // Battery Event Tests
+    // ───────────────────────────────────────────────────────
+    // Battery Event CRUD Tests
+    // ───────────────────────────────────────────────────────
+
     @Test
     fun `addEvent saves to local and pushes to remote`() =
         runTest(testDispatcher) {
@@ -207,17 +223,18 @@ class DefaultDeviceRepositoryTest {
             repoScope.cancel()
         }
 
-    // Flow delegation tests
+    // ───────────────────────────────────────────────────────
+    // Flow Delegation Tests
+    // ───────────────────────────────────────────────────────
+
     @Test
     fun `getAllDevices returns flow from local data source`() =
         runTest(testDispatcher) {
             val local = FakeLocalDataSource()
-            val remote = FakeRemoteDataSource()
             val device = createDevice(id = "1", name = "Test")
             local.setDevicesForFlow(listOf(device))
-            val (repo, repoScope) = createRepo(local, remote)
+            val (repo, repoScope) = createRepo(local)
 
-            // The repository delegates to local
             val flow = repo.getAllDevices()
             assertEquals(local.getAllDevices(), flow)
             repoScope.cancel()
@@ -227,60 +244,38 @@ class DefaultDeviceRepositoryTest {
     fun `getAllDeviceTypes returns flow from local data source`() =
         runTest(testDispatcher) {
             val local = FakeLocalDataSource()
-            val remote = FakeRemoteDataSource()
             val type = DeviceType(id = "type-1", name = "Test")
             local.setDeviceTypesForFlow(listOf(type))
-            val (repo, repoScope) = createRepo(local, remote)
+            val (repo, repoScope) = createRepo(local)
 
             val flow = repo.getAllDeviceTypes()
             assertEquals(local.getAllDeviceTypes(), flow)
             repoScope.cancel()
         }
 
-    // Remote push failure test
-    @Test
-    fun `pushUpdate handles remote failure gracefully`() =
-        runTest(testDispatcher) {
-            val local = FakeLocalDataSource()
-            val remote = FakeRemoteDataSource()
-            remote.shouldFail = true
-            val (repo, repoScope) = createRepo(local, remote)
-            val device = createDevice(id = "1", name = "Test Device")
+    // ───────────────────────────────────────────────────────
+    // SyncStatus State Transition Tests
+    // ───────────────────────────────────────────────────────
 
-            repo.addDevice(device)
-            advanceUntilIdle()
-
-            // Device should still be saved locally
-            assertEquals(1, local.devices.size)
-            // Remote push was attempted
-            assertEquals(1, remote.pushedUpdates.size)
-            repoScope.cancel()
-        }
-
-    // SyncStatus state transition tests
     @Test
     fun `syncStatus transitions to Syncing when push starts`() =
         runTest(testDispatcher) {
             val local = FakeLocalDataSource()
             val remote = FakeRemoteDataSource()
-            remote.suspendPush = true // Suspend to capture intermediate state
+            remote.suspendPush = true
             val (repo, repoScope) = createRepo(local, remote)
             val device = createDevice(id = "1", name = "Test Device")
 
-            // Collect sync status values
             val states = mutableListOf<SyncStatus>()
             val job = backgroundScope.launch {
                 repo.syncStatus.collect { states.add(it) }
             }
 
             repo.addDevice(device)
-            // Advance just enough for the push to start but not complete
             testDispatcher.scheduler.advanceTimeBy(10)
 
-            // Should have seen Syncing (from subscribe init or from push)
             assertTrue(states.any { it is SyncStatus.Syncing })
 
-            // Let the push complete
             remote.resumePush()
             advanceUntilIdle()
 
@@ -289,7 +284,7 @@ class DefaultDeviceRepositoryTest {
         }
 
     @Test
-    fun `syncStatus is Failed after push fails`() =
+    fun `syncStatus is Failed after push returns false`() =
         runTest(testDispatcher) {
             val local = FakeLocalDataSource()
             val remote = FakeRemoteDataSource()
@@ -300,9 +295,9 @@ class DefaultDeviceRepositoryTest {
             repo.addDevice(device)
             advanceUntilIdle()
 
-            // After failed push, syncStatus should be Failed
             val status = repo.syncStatus.value
-            assertTrue(status is SyncStatus.Failed, "Expected Failed but got $status")
+            assertIs<SyncStatus.Failed>(status)
+            assertIs<DataError.Network.PushFailed>(status.error)
             repoScope.cancel()
         }
 
@@ -317,9 +312,7 @@ class DefaultDeviceRepositoryTest {
             repo.addDevice(device)
             advanceUntilIdle()
 
-            // After successful push, syncStatus should be Success (UI layer handles dismissal)
-            val status = repo.syncStatus.value
-            assertEquals(SyncStatus.Success, status)
+            assertEquals(SyncStatus.Success, repo.syncStatus.value)
             repoScope.cancel()
         }
 
@@ -333,17 +326,492 @@ class DefaultDeviceRepositoryTest {
 
             repo.addDevice(device)
             advanceUntilIdle()
-
-            // Verify we're in Success state
             assertEquals(SyncStatus.Success, repo.syncStatus.value)
 
-            // Dismiss the sync status (simulating what UI layer does)
             repo.dismissSyncStatus()
 
-            // Should return to Idle
             assertEquals(SyncStatus.Idle, repo.syncStatus.value)
             repoScope.cancel()
         }
+
+    @Test
+    fun `push failure preserves local data`() =
+        runTest(testDispatcher) {
+            val local = FakeLocalDataSource()
+            val remote = FakeRemoteDataSource()
+            remote.shouldFail = true
+            val (repo, repoScope) = createRepo(local, remote)
+            val device = createDevice(id = "1", name = "Test Device")
+
+            repo.addDevice(device)
+            advanceUntilIdle()
+
+            assertEquals(1, local.devices.size)
+            assertEquals(device, local.devices[0])
+            assertEquals(1, remote.pushedUpdates.size)
+            repoScope.cancel()
+        }
+
+    // ───────────────────────────────────────────────────────
+    // Network Mode Tests (NEW)
+    // ───────────────────────────────────────────────────────
+
+    @Test
+    fun `push is skipped when network mode is None`() =
+        runTest(testDispatcher) {
+            val local = FakeLocalDataSource()
+            val remote = FakeRemoteDataSource()
+            val networkMode = FakeNetworkModeRepository(NetworkMode.None)
+            val (repo, repoScope) = createRepo(local, remote, networkMode)
+            val device = createDevice(id = "1", name = "Offline Device")
+
+            repo.addDevice(device)
+            // Use advanceTimeBy instead of advanceUntilIdle because the subscribe
+            // loop polls with delay(5000) in None mode, causing advanceUntilIdle to loop forever.
+            testDispatcher.scheduler.advanceTimeBy(100)
+            testDispatcher.scheduler.runCurrent()
+
+            // Local save still happens
+            assertEquals(1, local.devices.size)
+            // Remote push is skipped
+            assertEquals(0, remote.pushedUpdates.size)
+            repoScope.cancel()
+        }
+
+    // ───────────────────────────────────────────────────────
+    // Delete Push Tests (NEW)
+    // ───────────────────────────────────────────────────────
+
+    @Test
+    fun `deleteDevice pushes deletion ID not full object`() =
+        runTest(testDispatcher) {
+            val local = FakeLocalDataSource()
+            val remote = FakeRemoteDataSource()
+            val (repo, repoScope) = createRepo(local, remote)
+
+            repo.deleteDevice("device-42")
+            advanceUntilIdle()
+
+            assertEquals(1, remote.pushedUpdates.size)
+            val pushed = remote.pushedUpdates[0]
+            assertEquals(listOf("device-42"), pushed.deletedDeviceIds)
+            assertTrue(pushed.devices.isEmpty())
+            assertTrue(pushed.events.isEmpty())
+            assertTrue(pushed.deviceTypes.isEmpty())
+            repoScope.cancel()
+        }
+
+    @Test
+    fun `deleteDeviceType pushes deletion ID`() =
+        runTest(testDispatcher) {
+            val local = FakeLocalDataSource()
+            val remote = FakeRemoteDataSource()
+            val (repo, repoScope) = createRepo(local, remote)
+
+            repo.deleteDeviceType("type-99")
+            advanceUntilIdle()
+
+            assertEquals(1, remote.pushedUpdates.size)
+            val pushed = remote.pushedUpdates[0]
+            assertEquals(listOf("type-99"), pushed.deletedDeviceTypeIds)
+            assertTrue(pushed.devices.isEmpty())
+            repoScope.cancel()
+        }
+
+    @Test
+    fun `deleteEvent pushes deletion ID`() =
+        runTest(testDispatcher) {
+            val local = FakeLocalDataSource()
+            val remote = FakeRemoteDataSource()
+            val (repo, repoScope) = createRepo(local, remote)
+
+            repo.deleteEvent("event-77")
+            advanceUntilIdle()
+
+            assertEquals(1, remote.pushedUpdates.size)
+            val pushed = remote.pushedUpdates[0]
+            assertEquals(listOf("event-77"), pushed.deletedEventIds)
+            assertTrue(pushed.devices.isEmpty())
+            repoScope.cancel()
+        }
+
+    // ───────────────────────────────────────────────────────
+    // Edge Case Tests (NEW)
+    // ───────────────────────────────────────────────────────
+
+    @Test
+    fun `multiple rapid updates do not corrupt state`() =
+        runTest(testDispatcher) {
+            val local = FakeLocalDataSource()
+            val remote = FakeRemoteDataSource()
+            val (repo, repoScope) = createRepo(local, remote)
+
+            val devices = (1..10).map {
+                createDevice(id = "d$it", name = "Device $it")
+            }
+
+            // Fire all adds rapidly
+            devices.forEach { repo.addDevice(it) }
+            advanceUntilIdle()
+
+            assertEquals(10, local.devices.size)
+            assertEquals(10, remote.pushedUpdates.size)
+            repoScope.cancel()
+        }
+
+    @Test
+    fun `push exception produces Failed with Unknown error`() =
+        runTest(testDispatcher) {
+            val local = FakeLocalDataSource()
+            val remote = ThrowingRemoteDataSource()
+            val (repo, repoScope) = createRepo(local, remote)
+            val device = createDevice(id = "1", name = "Test")
+
+            repo.addDevice(device)
+            advanceUntilIdle()
+
+            assertEquals(1, local.devices.size)
+            val status = repo.syncStatus.value
+            assertIs<SyncStatus.Failed>(status)
+            assertIs<DataError.Unknown>(status.error)
+            repoScope.cancel()
+        }
+
+    // ───────────────────────────────────────────────────────
+    // applyRemoteUpdate Tests (direct, no subscribe loop)
+    // ───────────────────────────────────────────────────────
+
+    @Test
+    fun `applyRemoteUpdate stores data in local data source`() =
+        runTest(testDispatcher) {
+            val local = FakeLocalDataSource()
+            val (repo, repoScope) = createRepo(local)
+            val device = createDevice(id = "d1", name = "Hallway Detector")
+            val type = DeviceType(id = "t1", name = "Smoke Detector")
+            val event = createBatteryEvent(id = "e1", deviceId = "d1")
+
+            repo.applyRemoteUpdate(
+                RemoteUpdate(
+                    isFullSnapshot = false,
+                    deviceTypes = listOf(type),
+                    devices = listOf(device),
+                    events = listOf(event),
+                ),
+            )
+
+            assertEquals(1, local.devices.size)
+            assertEquals(device, local.devices[0])
+            assertEquals(1, local.deviceTypes.size)
+            assertEquals(type, local.deviceTypes[0])
+            assertEquals(1, local.events.size)
+            assertEquals(event, local.events[0])
+            repoScope.cancel()
+        }
+
+    @Test
+    fun `applyRemoteUpdate applies deletions for incremental sync`() =
+        runTest(testDispatcher) {
+            val local = FakeLocalDataSource()
+            local.addDevice(createDevice(id = "d1", name = "Old"))
+            local.addDeviceType(DeviceType(id = "t1", name = "Old Type"))
+            local.addEvent(createBatteryEvent(id = "e1", deviceId = "d1"))
+
+            val (repo, repoScope) = createRepo(local)
+            repo.applyRemoteUpdate(
+                RemoteUpdate(
+                    isFullSnapshot = false,
+                    deviceTypes = emptyList(),
+                    devices = emptyList(),
+                    events = emptyList(),
+                    deletedDeviceIds = listOf("d1"),
+                    deletedDeviceTypeIds = listOf("t1"),
+                    deletedEventIds = listOf("e1"),
+                ),
+            )
+
+            assertTrue(local.deletedDeviceIds.contains("d1"))
+            assertTrue(local.deletedDeviceTypeIds.contains("t1"))
+            assertTrue(local.deletedEventIds.contains("e1"))
+            repoScope.cancel()
+        }
+
+    @Test
+    fun `applyRemoteUpdate does NOT apply deletions for full snapshot`() =
+        runTest(testDispatcher) {
+            val local = FakeLocalDataSource()
+            local.addDevice(createDevice(id = "d1", name = "Keep Me"))
+            val (repo, repoScope) = createRepo(local)
+
+            repo.applyRemoteUpdate(
+                RemoteUpdate(
+                    isFullSnapshot = true,
+                    deviceTypes = emptyList(),
+                    devices = emptyList(),
+                    events = emptyList(),
+                    deletedDeviceIds = listOf("d1"),
+                    deletedDeviceTypeIds = listOf("t1"),
+                    deletedEventIds = listOf("e1"),
+                ),
+            )
+
+            assertTrue(local.deletedDeviceIds.isEmpty())
+            assertTrue(local.deletedDeviceTypeIds.isEmpty())
+            assertTrue(local.deletedEventIds.isEmpty())
+            repoScope.cancel()
+        }
+
+    @Test
+    fun `applyRemoteUpdate handles empty update gracefully`() =
+        runTest(testDispatcher) {
+            val local = FakeLocalDataSource()
+            val (repo, repoScope) = createRepo(local)
+
+            repo.applyRemoteUpdate(
+                RemoteUpdate(
+                    isFullSnapshot = false,
+                    deviceTypes = emptyList(),
+                    devices = emptyList(),
+                    events = emptyList(),
+                ),
+            )
+
+            assertEquals(0, local.devices.size)
+            assertEquals(0, local.deviceTypes.size)
+            assertEquals(0, local.events.size)
+            repoScope.cancel()
+        }
+
+    // ───────────────────────────────────────────────────────
+    // Subscribe Behavior Tests
+    // ───────────────────────────────────────────────────────
+
+    @Test
+    fun `subscribe stores received updates in local data source`() =
+        runTest(testDispatcher) {
+            val local = FakeLocalDataSource()
+            val remote = ControllableRemoteDataSource()
+            val device = createDevice(id = "d1", name = "Subscribed Device")
+            val channel = Channel<RemoteUpdate>(Channel.UNLIMITED)
+            remote.onSubscribe = { channel.receiveAsFlow() }
+
+            val (repo, repoScope) = createRepo(local, remote)
+            testDispatcher.scheduler.advanceTimeBy(100)
+            testDispatcher.scheduler.runCurrent()
+
+            channel.trySend(
+                RemoteUpdate(
+                    isFullSnapshot = false,
+                    devices = listOf(device),
+                    deviceTypes = emptyList(),
+                    events = emptyList(),
+                ),
+            )
+            testDispatcher.scheduler.advanceTimeBy(100)
+            testDispatcher.scheduler.runCurrent()
+
+            assertEquals(1, local.devices.size)
+            assertEquals(device, local.devices[0])
+            repoScope.cancel()
+        }
+
+    @Test
+    fun `subscribe sets syncStatus to Success on update`() =
+        runTest(testDispatcher) {
+            val local = FakeLocalDataSource()
+            val remote = ControllableRemoteDataSource()
+            val channel = Channel<RemoteUpdate>(Channel.UNLIMITED)
+            remote.onSubscribe = { channel.receiveAsFlow() }
+
+            val (repo, repoScope) = createRepo(local, remote)
+            testDispatcher.scheduler.advanceTimeBy(100)
+            testDispatcher.scheduler.runCurrent()
+
+            channel.trySend(
+                RemoteUpdate(
+                    isFullSnapshot = false,
+                    devices = emptyList(),
+                    deviceTypes = emptyList(),
+                    events = emptyList(),
+                ),
+            )
+            testDispatcher.scheduler.advanceTimeBy(100)
+            testDispatcher.scheduler.runCurrent()
+
+            assertEquals(SyncStatus.Success, repo.syncStatus.value)
+            repoScope.cancel()
+        }
+
+    @Test
+    fun `subscribe processes multiple updates`() =
+        runTest(testDispatcher) {
+            val local = FakeLocalDataSource()
+            val remote = ControllableRemoteDataSource()
+            val channel = Channel<RemoteUpdate>(Channel.UNLIMITED)
+            remote.onSubscribe = { channel.receiveAsFlow() }
+
+            val (repo, repoScope) = createRepo(local, remote)
+            testDispatcher.scheduler.advanceTimeBy(100)
+            testDispatcher.scheduler.runCurrent()
+
+            repeat(3) { i ->
+                channel.trySend(
+                    RemoteUpdate(
+                        isFullSnapshot = false,
+                        devices = listOf(createDevice(id = "d$i", name = "Device $i")),
+                        deviceTypes = emptyList(),
+                        events = emptyList(),
+                    ),
+                )
+                testDispatcher.scheduler.advanceTimeBy(100)
+                testDispatcher.scheduler.runCurrent()
+            }
+
+            assertEquals(3, local.devices.size)
+            repoScope.cancel()
+        }
+
+    @Test
+    fun `subscribe failure sets syncStatus to Failed ConnectionFailed`() =
+        runTest(testDispatcher) {
+            val remote = ControllableRemoteDataSource()
+            remote.onSubscribe = { throw RuntimeException("Connection refused") }
+
+            val (repo, repoScope) = createRepo(remote = remote)
+            testDispatcher.scheduler.advanceTimeBy(100)
+            testDispatcher.scheduler.runCurrent()
+
+            val status = repo.syncStatus.value
+            assertIs<SyncStatus.Failed>(status)
+            assertIs<DataError.Network.ConnectionFailed>(status.error)
+            repoScope.cancel()
+        }
+
+    @Test
+    fun `subscribe reconnects when stream ends normally`() =
+        runTest(testDispatcher) {
+            val remote = ControllableRemoteDataSource()
+            remote.onSubscribe = { emptyFlow() }
+
+            val (repo, repoScope) = createRepo(remote = remote)
+            // First subscribe attempt
+            testDispatcher.scheduler.advanceTimeBy(100)
+            testDispatcher.scheduler.runCurrent()
+            val firstCount = remote.subscribeCallCount
+
+            // After stream ends, wait past the 1s backoff for reconnect
+            testDispatcher.scheduler.advanceTimeBy(1500)
+            testDispatcher.scheduler.runCurrent()
+
+            assertTrue(
+                remote.subscribeCallCount > firstCount,
+                "Expected reconnect, calls: ${remote.subscribeCallCount}",
+            )
+            repoScope.cancel()
+        }
+
+    // ───────────────────────────────────────────────────────
+    // Backoff Tests
+    // ───────────────────────────────────────────────────────
+
+    @Test
+    fun `nextBackoff doubles and caps correctly`() {
+        assertEquals(2000L, DefaultDeviceRepository.nextBackoff(1000))
+        assertEquals(4000L, DefaultDeviceRepository.nextBackoff(2000))
+        assertEquals(16000L, DefaultDeviceRepository.nextBackoff(8000))
+        // Cap at MAX_BACKOFF_MS
+        assertEquals(
+            DefaultDeviceRepository.MAX_BACKOFF_MS,
+            DefaultDeviceRepository.nextBackoff(DefaultDeviceRepository.MAX_BACKOFF_MS),
+        )
+        assertEquals(
+            DefaultDeviceRepository.MAX_BACKOFF_MS,
+            DefaultDeviceRepository.nextBackoff(20_000),
+        )
+    }
+
+    @Test
+    fun `subscribe retries with increasing backoff on repeated failures`() =
+        runTest(testDispatcher) {
+            val remote = ControllableRemoteDataSource()
+            remote.onSubscribe = { throw RuntimeException("fail") }
+
+            val (repo, repoScope) = createRepo(remote = remote)
+            // First attempt
+            testDispatcher.scheduler.advanceTimeBy(100)
+            testDispatcher.scheduler.runCurrent()
+            val c1 = remote.subscribeCallCount
+            assertTrue(c1 >= 1, "First subscribe should happen, got $c1")
+
+            // After first failure: 1s backoff. Advance 1.5s → should retry.
+            testDispatcher.scheduler.advanceTimeBy(1500)
+            testDispatcher.scheduler.runCurrent()
+            val c2 = remote.subscribeCallCount
+            assertTrue(c2 > c1, "Should retry after 1s backoff")
+
+            // After second failure at t≈1000: 2s backoff → retry at t≈3000.
+            // Current clock is t≈1600. Advance 1300ms → t≈2900, still before retry.
+            testDispatcher.scheduler.advanceTimeBy(1300)
+            testDispatcher.scheduler.runCurrent()
+            assertEquals(c2, remote.subscribeCallCount, "Should not retry before 2s backoff")
+
+            // Advance 200ms more → t≈3100, past the 2s backoff → should retry.
+            testDispatcher.scheduler.advanceTimeBy(200)
+            testDispatcher.scheduler.runCurrent()
+            assertTrue(remote.subscribeCallCount > c2, "Should retry after 2s backoff")
+
+            repoScope.cancel()
+        }
+
+    @Test
+    fun `backoff resets after successful data receipt`() =
+        runTest(testDispatcher) {
+            val remote = ControllableRemoteDataSource()
+            val emptyUpdate = RemoteUpdate(
+                isFullSnapshot = false,
+                devices = emptyList(),
+                deviceTypes = emptyList(),
+                events = emptyList(),
+            )
+            val results = mutableListOf<() -> Flow<RemoteUpdate>>(
+                { throw RuntimeException("fail 1") },
+                { throw RuntimeException("fail 2") },
+                { flowOf(emptyUpdate) }, // success → resets backoff, then stream completes
+                { throw RuntimeException("fail 3") },
+                { flow { awaitCancellation() } },
+            )
+            var idx = 0
+            remote.onSubscribe = {
+                val factory = results.getOrElse(idx) { { flow<RemoteUpdate> { awaitCancellation() } } }
+                idx++
+                factory()
+            }
+
+            val (repo, repoScope) = createRepo(remote = remote)
+            // Call 1: fails → backoff 1s
+            testDispatcher.scheduler.advanceTimeBy(100)
+            testDispatcher.scheduler.runCurrent()
+
+            // Call 2: after 1s backoff, fails → backoff 2s
+            testDispatcher.scheduler.advanceTimeBy(1500)
+            testDispatcher.scheduler.runCurrent()
+
+            // Call 3: after 2s backoff, succeeds (emits data → resets backoff), stream completes
+            testDispatcher.scheduler.advanceTimeBy(2500)
+            testDispatcher.scheduler.runCurrent()
+
+            // If backoff NOT reset: next backoff would be 4s (doubled from 2s).
+            // If backoff IS reset: next backoff is 1s (INITIAL_BACKOFF_MS).
+            // Wait 1.5s — enough for reset backoff (1s), not enough for non-reset (4s).
+            testDispatcher.scheduler.advanceTimeBy(1500)
+            testDispatcher.scheduler.runCurrent()
+
+            assertTrue(idx >= 4, "Backoff should have reset to 1s, expected 4 calls, got $idx")
+            repoScope.cancel()
+        }
+
+    // ───────────────────────────────────────────────────────
+    // Helpers
+    // ───────────────────────────────────────────────────────
 
     private fun createDevice(
         id: String,
@@ -369,111 +837,39 @@ class DefaultDeviceRepositoryTest {
         )
 }
 
-class FakeLocalDataSource : LocalDataSource {
-    val devices = mutableListOf<Device>()
-    val updatedDevices = mutableListOf<Device>()
-    val deletedDeviceIds = mutableListOf<String>()
-    val deviceTypes = mutableListOf<DeviceType>()
-    val updatedDeviceTypes = mutableListOf<DeviceType>()
-    val deletedDeviceTypeIds = mutableListOf<String>()
-    val events = mutableListOf<BatteryEvent>()
-    val updatedEvents = mutableListOf<BatteryEvent>()
-    val deletedEventIds = mutableListOf<String>()
-
-    private var devicesFlow: Flow<List<Device>> = emptyFlow()
-    private var deviceTypesFlow: Flow<List<DeviceType>> = emptyFlow()
-
-    fun setDevicesForFlow(devices: List<Device>) {
-        devicesFlow = flowOf(devices)
-    }
-
-    fun setDeviceTypesForFlow(types: List<DeviceType>) {
-        deviceTypesFlow = flowOf(types)
-    }
-
-    override fun getAllDevices(): Flow<List<Device>> = devicesFlow
-
-    override fun getDeviceById(id: String): Flow<Device?> = emptyFlow()
-
-    override suspend fun addDevice(device: Device) {
-        devices.add(device)
-    }
-
-    override suspend fun addDevices(devices: List<Device>) {
-        this.devices.addAll(devices)
-    }
-
-    override suspend fun updateDevice(device: Device) {
-        updatedDevices.add(device)
-    }
-
-    override suspend fun deleteDevice(id: String) {
-        deletedDeviceIds.add(id)
-    }
-
-    override fun getAllDeviceTypes(): Flow<List<DeviceType>> = deviceTypesFlow
-
-    override fun getDeviceTypeById(id: String): Flow<DeviceType?> = emptyFlow()
-
-    override suspend fun addDeviceType(type: DeviceType) {
-        deviceTypes.add(type)
-    }
-
-    override suspend fun addDeviceTypes(types: List<DeviceType>) {
-        deviceTypes.addAll(types)
-    }
-
-    override suspend fun updateDeviceType(type: DeviceType) {
-        updatedDeviceTypes.add(type)
-    }
-
-    override suspend fun deleteDeviceType(id: String) {
-        deletedDeviceTypeIds.add(id)
-    }
-
-    override fun getEventsForDevice(deviceId: String): Flow<List<BatteryEvent>> = emptyFlow()
-
-    override fun getAllEvents(): Flow<List<BatteryEvent>> = emptyFlow()
-
-    override fun getEventById(id: String): Flow<BatteryEvent?> = emptyFlow()
-
-    override suspend fun addEvent(event: BatteryEvent) {
-        events.add(event)
-    }
-
-    override suspend fun addEvents(events: List<BatteryEvent>) {
-        this.events.addAll(events)
-    }
-
-    override suspend fun updateEvent(event: BatteryEvent) {
-        updatedEvents.add(event)
-    }
-
-    override suspend fun deleteEvent(id: String) {
-        deletedEventIds.add(id)
-    }
-}
-
-class FakeRemoteDataSource : RemoteDataSource {
-    val pushedUpdates = mutableListOf<RemoteUpdate>()
-    var shouldFail = false
-    var suspendPush = false
-    private var pushDeferred: CompletableDeferred<Unit>? = null
-
-    override val state: StateFlow<RemoteDataSourceState> = MutableStateFlow(RemoteDataSourceState.NotStarted)
+/**
+ * A [RemoteDataSource] where push() always throws an exception (not returning false).
+ * Used to test the catch-all exception handling in pushUpdate.
+ */
+private class ThrowingRemoteDataSource : RemoteDataSource {
+    override val state: StateFlow<RemoteDataSourceState> =
+        MutableStateFlow(RemoteDataSourceState.NotStarted)
 
     override fun subscribe(): Flow<RemoteUpdate> = flow { awaitCancellation() }
 
-    override suspend fun push(update: RemoteUpdate): Boolean {
-        pushedUpdates.add(update)
-        if (suspendPush) {
-            pushDeferred = CompletableDeferred()
-            pushDeferred?.await()
-        }
-        return !shouldFail
+    override suspend fun push(update: RemoteUpdate): Boolean = throw RuntimeException("Network error")
+}
+
+/**
+ * A [RemoteDataSource] with controllable subscribe behavior.
+ * Each test configures [onSubscribe] to return the desired flow.
+ */
+private class ControllableRemoteDataSource : RemoteDataSource {
+    var onSubscribe: () -> Flow<RemoteUpdate> = { flow { awaitCancellation() } }
+    val pushedUpdates = mutableListOf<RemoteUpdate>()
+    var subscribeCallCount = 0
+        private set
+
+    override val state: StateFlow<RemoteDataSourceState> =
+        MutableStateFlow(RemoteDataSourceState.NotStarted)
+
+    override fun subscribe(): Flow<RemoteUpdate> {
+        subscribeCallCount++
+        return onSubscribe()
     }
 
-    fun resumePush() {
-        pushDeferred?.complete(Unit)
+    override suspend fun push(update: RemoteUpdate): Boolean {
+        pushedUpdates.add(update)
+        return true
     }
 }
