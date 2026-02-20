@@ -1,24 +1,17 @@
 package com.chriscartland.batterybutler.presentationfeature.editdevice
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DevicesOther
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -28,9 +21,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -66,7 +59,7 @@ fun EditDeviceContent(
     uiState: EditDeviceUiState,
     onSave: (DeviceInput) -> Unit,
     onDelete: () -> Unit,
-    onManageDeviceTypesClick: () -> Unit,
+    onAddDeviceTypeClick: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -162,78 +155,69 @@ fun EditDeviceContent(
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        // Type Dropdown & Manage Button
+                        // Type Dropdown
                         val selectedType = state.deviceTypes.find { it.id == selectedTypeId }
                         var expanded by remember { mutableStateOf(false) }
 
-                        Row(
-                            modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalAlignment = Alignment.Bottom,
+                        ExposedDropdownMenuBox(
+                            expanded = expanded,
+                            onExpandedChange = { expanded = !expanded },
                         ) {
-                            ExposedDropdownMenuBox(
+                            OutlinedTextField(
+                                modifier = Modifier
+                                    .menuAnchor(
+                                        ExposedDropdownMenuAnchorType.PrimaryNotEditable,
+                                        enabled = true,
+                                    ).fillMaxWidth(),
+                                readOnly = true,
+                                value = selectedType?.name ?: "Select Type",
+                                onValueChange = {},
+                                label = { Text("Device Type") },
+                                leadingIcon = if (selectedType != null) {
+                                    {
+                                        Icon(
+                                            imageVector = DeviceIconMapper.getIcon(
+                                                selectedType.defaultIcon,
+                                            ),
+                                            contentDescription = null,
+                                        )
+                                    }
+                                } else {
+                                    null
+                                },
+                                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                                colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                            )
+                            ExposedDropdownMenu(
                                 expanded = expanded,
-                                onExpandedChange = { expanded = !expanded },
-                                modifier = Modifier.weight(1f),
+                                onDismissRequest = { expanded = false },
                             ) {
-                                OutlinedTextField(
-                                    modifier = Modifier
-                                        .menuAnchor(
-                                            ExposedDropdownMenuAnchorType.PrimaryNotEditable,
-                                            enabled = true,
-                                        ).fillMaxWidth(),
-                                    readOnly = true,
-                                    value = selectedType?.name ?: "Select Type",
-                                    onValueChange = {},
-                                    label = { Text("Device Type") },
-                                    leadingIcon = if (selectedType != null) {
-                                        {
+                                state.deviceTypes.forEach { type ->
+                                    DropdownMenuItem(
+                                        text = { Text(type.name) },
+                                        leadingIcon = {
                                             Icon(
                                                 imageVector = DeviceIconMapper.getIcon(
-                                                    selectedType.defaultIcon,
+                                                    type.defaultIcon,
                                                 ),
                                                 contentDescription = null,
                                             )
-                                        }
-                                    } else {
-                                        null
-                                    },
-                                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                                    colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
-                                )
-                                ExposedDropdownMenu(
-                                    expanded = expanded,
-                                    onDismissRequest = { expanded = false },
-                                ) {
-                                    state.deviceTypes.forEach { type ->
-                                        DropdownMenuItem(
-                                            text = { Text(type.name) },
-                                            leadingIcon = {
-                                                Icon(
-                                                    imageVector = DeviceIconMapper.getIcon(
-                                                        type.defaultIcon,
-                                                    ),
-                                                    contentDescription = null,
-                                                )
-                                            },
-                                            onClick = {
-                                                selectedTypeId = type.id
-                                                expanded = false
-                                            },
-                                            contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                                        )
-                                    }
+                                        },
+                                        onClick = {
+                                            selectedTypeId = type.id
+                                            expanded = false
+                                        },
+                                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                                    )
                                 }
-                            }
-
-                            // Manage Button
-                            OutlinedButton(
-                                onClick = onManageDeviceTypesClick,
-                                shape = RoundedCornerShape(12.dp),
-                                contentPadding = PaddingValues(0.dp),
-                                modifier = Modifier.size(56.dp),
-                            ) {
-                                Icon(androidx.compose.material.icons.Icons.Default.DevicesOther, contentDescription = "Manage Types")
+                                HorizontalDivider()
+                                DropdownMenuItem(
+                                    text = { Text("Add New Device Type...", fontWeight = FontWeight.Bold) },
+                                    onClick = {
+                                        onAddDeviceTypeClick()
+                                        expanded = false
+                                    },
+                                )
                             }
                         }
 
@@ -299,7 +283,7 @@ fun EditDeviceContentPreview() {
             ),
             onSave = {},
             onDelete = {},
-            onManageDeviceTypesClick = {},
+            onAddDeviceTypeClick = {},
             onBack = {},
         )
     }

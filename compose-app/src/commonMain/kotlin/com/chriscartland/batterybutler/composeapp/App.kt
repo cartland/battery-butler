@@ -162,7 +162,7 @@ fun App(
                                 AddDeviceScreen(
                                     viewModel = viewModel { component.addDeviceViewModel },
                                     onDeviceAdded = { backStack.removeLastOrNull() },
-                                    onManageDeviceTypesClick = { backStack.navigateTo(Screen.Types) },
+                                    onAddDeviceTypeClick = { backStack.navigateTo(Screen.AddDeviceType) },
                                     onBack = { backStack.removeLastOrNull() },
                                 )
                             }
@@ -222,7 +222,7 @@ fun App(
                                             backStack.removeLastOrNull()
                                         }
                                     },
-                                    onManageDeviceTypesClick = { backStack.navigateTo(Screen.Types) },
+                                    onAddDeviceTypeClick = { backStack.navigateTo(Screen.AddDeviceType) },
                                 )
                             }
                             entry<Screen.EditDeviceType> {
