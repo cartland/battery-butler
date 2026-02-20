@@ -100,7 +100,7 @@ xcodebuild -project ios-app-swift-ui/...      # iOS
   - Use `Instant.parse("2026-01-18T17:00:00Z")` as the standard fixed instant in previews
   - Pass explicit `nowInstant` / date parameters through the full composable chain — don't rely on defaults
   - `updateDebugScreenshotTest` and `validateDebugScreenshotTest` can't run in the same Gradle invocation (the update task's clean step deletes references mid-build)
-- **Instrumented tests**: Require running emulator, network failures are expected if server isn't running
+- **Instrumented tests**: Require running emulator, all tests are offline-capable (no server needed)
 - **E2E tests** (`e2e-tests/`): Wire gRPC client tests against a real server. NOT included in CI or `validate.sh`.
   ```bash
   ./scripts/e2e-tests.sh                    # Auto-starts local server (auto-generates auth token)
