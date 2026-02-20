@@ -234,6 +234,10 @@ git commit -m "chore(beads): Update task tracking"
 
 Multi-environment deployment pipeline: dev -> staging -> prod. Same Docker image SHA promoted through environments.
 
+**Deployment rules:**
+- **All deploys go to dev first.** Never deploy directly to prod.
+- **Prod is always a promotion from dev.** Use `./scripts/promote-server.sh` (or `/promote-server`) to promote the dev image to prod. This ensures prod only runs images that have been validated on dev.
+
 **Workflows:**
 - `server-build.yml` -- Auto-deploys to dev on push to main (server changes), syncs `DEV_SERVER_URL` secret
 - `server-deploy-staging.yml` -- Manual trigger with `image_tag` input

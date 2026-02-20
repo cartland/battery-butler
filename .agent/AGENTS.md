@@ -38,7 +38,13 @@ Regardless of the role, the agent remains a tool, and the user retains ultimate 
     *   Tags trigger production releases and cannot be easily undone.
     *   Release scripts provide safety checks, version validation, and confirmation prompts.
 
-3.  **ALWAYS Ask Before Destructive or Irreversible Actions**:
+3.  **NEVER Deploy Directly to Production**:
+    *   **All server deploys go to dev first.** Use `/deploy-server` or `./scripts/release-server.sh`.
+    *   **Prod is always a promotion from dev.** Use `/promote-server` or `./scripts/promote-server.sh`.
+    *   **NEVER** run `gh workflow run server-deploy-prod.yml` directly — always use the promote script.
+    *   Validate on dev (E2E tests, manual checks) before promoting to prod.
+
+4.  **ALWAYS Ask Before Destructive or Irreversible Actions**:
     *   Creating tags, deploying, force-pushing, deleting branches on remote, or any action that affects production requires explicit confirmation.
     *   When uncertain about scope, ask clarifying questions before proceeding.
 
