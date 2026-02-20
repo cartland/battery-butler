@@ -66,6 +66,7 @@ graph TD
     Data --> DataLocal
     Data --> DataNetwork
     Data --> Domain
+    Data --> TestCommon
 
     DataLocal --> Domain
 
@@ -100,6 +101,8 @@ graph TD
 
     ServerDomain --> Domain
 
+    TestCommon --> DataLocal
+    TestCommon --> DataNetwork
     TestCommon --> Domain
 
     Usecase --> Domain
