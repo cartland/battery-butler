@@ -11,7 +11,7 @@ import com.chriscartland.batterybutler.viewmodel.adddevice.AddDeviceViewModel
 fun AddDeviceScreen(
     viewModel: AddDeviceViewModel,
     onDeviceAdded: () -> Unit,
-    onManageDeviceTypesClick: () -> Unit,
+    onAddDeviceTypeClick: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -29,7 +29,7 @@ fun AddDeviceScreen(
             onDeviceAdded()
         },
         onBatchAdd = viewModel::batchAddDevices,
-        onManageDeviceTypesClick = onManageDeviceTypesClick,
+        onAddDeviceTypeClick = onAddDeviceTypeClick,
         onBack = onBack,
         modifier = modifier,
         isLoading = isLoading,

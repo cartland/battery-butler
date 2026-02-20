@@ -2,12 +2,8 @@ package com.chriscartland.batterybutler.presentationfeature.adddevice
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -15,17 +11,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DevicesOther
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -51,7 +45,6 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.acti
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_save
 import com.chriscartland.batterybutler.composeresources.generated.resources.add_device_manual_entry
 import com.chriscartland.batterybutler.composeresources.generated.resources.add_device_title
-import com.chriscartland.batterybutler.composeresources.generated.resources.content_desc_manage_types
 import com.chriscartland.batterybutler.composeresources.generated.resources.label_device_name
 import com.chriscartland.batterybutler.composeresources.generated.resources.label_device_type
 import com.chriscartland.batterybutler.composeresources.generated.resources.label_location
@@ -74,7 +67,7 @@ fun AddDeviceContent(
     isAiBatchImportEnabled: Boolean,
     onAddDevice: (DeviceInput) -> Unit,
     onBatchAdd: (String) -> Unit,
-    onManageDeviceTypesClick: () -> Unit,
+    onAddDeviceTypeClick: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
     isLoading: Boolean = false,
@@ -156,7 +149,7 @@ fun AddDeviceContent(
                 deviceTypes = deviceTypes,
                 selectedType = selectedType,
                 onTypeSelected = { selectedType = it },
-                onManageDeviceTypesClick = onManageDeviceTypesClick,
+                onAddDeviceTypeClick = onAddDeviceTypeClick,
                 isLoading = isLoading,
             )
         }
@@ -185,7 +178,7 @@ fun AddDeviceManualSection(
     deviceTypes: List<DeviceType>,
     selectedType: DeviceType?,
     onTypeSelected: (DeviceType) -> Unit,
-    onManageDeviceTypesClick: () -> Unit,
+    onAddDeviceTypeClick: () -> Unit,
     isLoading: Boolean = false,
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -228,76 +221,66 @@ fun AddDeviceManualSection(
         )
 
         // Device Type Selection
-        Row(
-            modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.Bottom,
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = !expanded },
         ) {
-            ExposedDropdownMenuBox(
-                expanded = expanded,
-                onExpandedChange = { expanded = !expanded },
-                modifier = Modifier.weight(1f),
-            ) {
-                OutlinedTextField(
-                    value = selectedType?.name ?: "",
-                    onValueChange = {},
-                    label = { Text(composeStringResource(Res.string.label_device_type)) },
-                    leadingIcon = if (selectedType != null) {
-                        {
-                            Icon(
-                                imageVector = DeviceIconMapper.getIcon(
-                                    selectedType.defaultIcon,
-                                ),
-                                contentDescription = null,
-                            )
-                        }
-                    } else {
-                        null
-                    },
-                    readOnly = true,
-                    enabled = !isLoading,
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                    modifier = Modifier
-                        .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
-                        .fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
-                )
-
-                ExposedDropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false },
-                ) {
-                    deviceTypes.forEach { type ->
-                        DropdownMenuItem(
-                            text = { Text(type.name) },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = DeviceIconMapper
-                                        .getIcon(
-                                            type.defaultIcon,
-                                        ),
-                                    contentDescription = null,
-                                )
-                            },
-                            onClick = {
-                                onTypeSelected(type)
-                                expanded = false
-                            },
+            OutlinedTextField(
+                value = selectedType?.name ?: "",
+                onValueChange = {},
+                label = { Text(composeStringResource(Res.string.label_device_type)) },
+                leadingIcon = if (selectedType != null) {
+                    {
+                        Icon(
+                            imageVector = DeviceIconMapper.getIcon(
+                                selectedType.defaultIcon,
+                            ),
+                            contentDescription = null,
                         )
                     }
-                }
-            }
-
-            // Manage Button
-            OutlinedButton(
-                onClick = onManageDeviceTypesClick,
+                } else {
+                    null
+                },
+                readOnly = true,
                 enabled = !isLoading,
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                modifier = Modifier
+                    .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+                    .fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                contentPadding = PaddingValues(0.dp),
-                modifier = Modifier.size(56.dp),
+                colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+            )
+
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
             ) {
-                Icon(Icons.Default.DevicesOther, contentDescription = composeStringResource(Res.string.content_desc_manage_types))
+                deviceTypes.forEach { type ->
+                    DropdownMenuItem(
+                        text = { Text(type.name) },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = DeviceIconMapper
+                                    .getIcon(
+                                        type.defaultIcon,
+                                    ),
+                                contentDescription = null,
+                            )
+                        },
+                        onClick = {
+                            onTypeSelected(type)
+                            expanded = false
+                        },
+                    )
+                }
+                HorizontalDivider()
+                DropdownMenuItem(
+                    text = { Text("Add New Device Type...", fontWeight = FontWeight.Bold) },
+                    onClick = {
+                        onAddDeviceTypeClick()
+                        expanded = false
+                    },
+                )
             }
         }
     }
@@ -337,7 +320,7 @@ fun AddDeviceManualSectionPreview() {
                 ),
                 selectedType = DeviceType("1", "Smoke Detector", "detector_smoke"),
                 onTypeSelected = {},
-                onManageDeviceTypesClick = {},
+                onAddDeviceTypeClick = {},
             )
         }
     }
@@ -353,7 +336,7 @@ fun AddDeviceContentPreview() {
             isAiBatchImportEnabled = true,
             onAddDevice = {},
             onBatchAdd = {},
-            onManageDeviceTypesClick = {},
+            onAddDeviceTypeClick = {},
             onBack = {},
             isLoading = false,
         )
