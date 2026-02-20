@@ -64,7 +64,12 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-echo "=== Server Release Script ==="
+echo "============================================"
+echo "  SERVER RELEASE — DEPLOYS TO DEV ONLY"
+echo "============================================"
+echo ""
+echo "This script creates a release tag that triggers deployment to DEV."
+echo "To promote to production, use: ./scripts/promote-server.sh"
 echo ""
 
 # Ensure we're on a clean working tree
@@ -178,9 +183,13 @@ if git push origin "$NEW_TAG"; then
     echo -e "${GREEN}=== Release Initiated ===${NC}"
     echo ""
     echo "Tag $NEW_TAG has been pushed."
+    echo "This will deploy to DEV only."
     echo ""
     echo "Monitor the release workflow at:"
     echo "  https://github.com/cartland/battery-butler/actions/workflows/release-server.yml"
+    echo ""
+    echo "After validating on dev, promote to production with:"
+    echo "  ./scripts/promote-server.sh"
     echo ""
 else
     echo -e "${RED}Failed to push tag. Cleaning up local tag...${NC}"
