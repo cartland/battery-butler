@@ -1,3 +1,8 @@
+---
+description: Deploy the gRPC server to AWS using Terraform and Jib, or trigger deployment via release tag.
+allowed-tools: Bash(*), Read, Glob, Grep
+---
+
 # Deploy Server
 
 Deploy the gRPC server to AWS using Terraform and Jib.
@@ -13,6 +18,25 @@ Deploy the gRPC server to AWS using Terraform and Jib.
 - GitHub secrets configured (see `/setup-aws`)
 
 ## Steps
+
+### Option A: Via Release Tag (Recommended)
+
+1. Check current deployment state:
+   ```bash
+   ./scripts/deploy-status.sh
+   ```
+
+2. Run the release script:
+   ```bash
+   ./scripts/release-server.sh --allow-duplicate-tag --confirm-release
+   ```
+
+3. Monitor the release workflow:
+   ```bash
+   gh run list --workflow=release-server.yml --limit 1
+   ```
+
+### Option B: Manual Terraform Deploy
 
 1. Navigate to Terraform directory:
    ```bash
@@ -57,3 +81,4 @@ The server is automatically deployed via GitHub Actions when changes are pushed 
 - The infrastructure includes: VPC, ECS Fargate, RDS PostgreSQL, ALB, ECR
 - Terraform state is stored in S3 with DynamoDB locking
 - Container is built using Jib (no Docker daemon required)
+- Use `./scripts/deploy-status.sh` to check what's deployed across environments

@@ -1,6 +1,11 @@
+---
+description: Run project tests — unit, instrumented, screenshot, E2E, or the full suite.
+allowed-tools: Bash(*), Read, Glob, Grep
+---
+
 # Run Tests
 
-Run project tests (unit tests and instrumented tests).
+Run project tests (unit tests, instrumented tests, screenshot tests, E2E tests).
 
 ## Unit Tests
 
@@ -40,11 +45,16 @@ Verify screenshots:
 ./gradlew :android-screenshot-tests:validateDebugScreenshotTest
 ```
 
-## iOS Tests
+## E2E Tests
 
-Run iOS tests (requires Xcode):
+Run against local server (auto-started):
 ```bash
-xcodebuild test -project iosApp/iosApp.xcodeproj -scheme iosApp -destination 'platform=iOS Simulator,name=iPhone 15'
+./scripts/e2e-tests.sh
+```
+
+Run against a remote environment:
+```bash
+E2E_SERVER_URL=http://<nlb>:80 E2E_AUTH_TOKEN=<token> ./scripts/e2e-tests.sh --remote
 ```
 
 ## Full Test Suite
@@ -59,4 +69,5 @@ Run all tests (as done in CI):
 - Unit tests are fast and don't require Android/iOS runtime
 - Instrumented tests require an emulator or connected device
 - Screenshot tests generate visual regression baselines
+- E2E tests require a running server (local or remote)
 - The validate script runs the complete CI test suite locally
