@@ -172,6 +172,25 @@ The production server URL flows through the system as follows:
 - `gradle.properties` has a fallback value for local dev only; CI always overrides it
 - `release-android.yml` validates server connectivity before uploading to Play Store
 
+## Secrets Management
+
+**GitHub Secrets** (write-only — values can't be read back):
+- `GEMINI_API_KEY` — Gemini AI API key, written to `local.properties` during Android release builds
+- `E2E_TEST_TOKEN` — Pre-seeds synthetic auth session on dev server
+- `PRODUCTION_SERVER_URL` — Auto-synced from terraform after each deploy
+- `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD` — Android signing
+- `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` — Play Store upload
+
+**Local secrets** in `local.properties` (gitignored) — can get overwritten by IDE/Gradle:
+- Back up important keys to macOS Keychain:
+  ```bash
+  # Save
+  security add-generic-password -a "KEY_NAME" -s "battery-butler" -w "value" -U
+  # Retrieve
+  security find-generic-password -a "KEY_NAME" -s "battery-butler" -w
+  ```
+- Currently stored in Keychain: `GEMINI_API_KEY`
+
 ## Releases
 
 **NEVER push git tags manually. Always use the release scripts.**
@@ -180,8 +199,11 @@ The production server URL flows through the system as follows:
 # Android release
 ./scripts/release-android.sh
 
-# Server release (future)
+# Server release
 ./scripts/release-server.sh
+
+# Promote server dev → prod
+./scripts/promote-server.sh
 ```
 
 Release scripts check for existing tags, increment correctly, provide confirmation prompts, and ensure you're on the right commit.
