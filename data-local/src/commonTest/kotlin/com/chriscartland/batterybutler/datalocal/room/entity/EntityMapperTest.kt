@@ -1,8 +1,6 @@
 package com.chriscartland.batterybutler.datalocal.room.entity
 
-import com.chriscartland.batterybutler.domain.model.BatteryEvent
-import com.chriscartland.batterybutler.domain.model.Device
-import com.chriscartland.batterybutler.domain.model.DeviceType
+import com.chriscartland.batterybutler.testcommon.TestDevices
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -15,7 +13,7 @@ class EntityMapperTest {
 
     @Test
     fun `Device round-trip preserves all fields`() {
-        val device = Device(
+        val device = TestDevices.createDevice(
             id = "dev-1",
             name = "Smoke Detector",
             typeId = "type-smoke",
@@ -32,10 +30,7 @@ class EntityMapperTest {
 
     @Test
     fun `Device round-trip with null location and imagePath`() {
-        val device = Device(
-            id = "dev-1",
-            name = "Test Device",
-            typeId = "type-1",
+        val device = TestDevices.createDevice(
             batteryLastReplaced = Instant.parse("2024-01-01T00:00:00Z"),
             lastUpdated = Instant.parse("2024-01-01T00:00:00Z"),
             location = null,
@@ -71,10 +66,7 @@ class EntityMapperTest {
     @Test
     fun `Device toEntity maps timestamps to epoch millis`() {
         val instant = Instant.parse("2024-06-15T10:30:00Z")
-        val device = Device(
-            id = "dev-1",
-            name = "Test Device",
-            typeId = "type-1",
+        val device = TestDevices.createDevice(
             batteryLastReplaced = instant,
             lastUpdated = instant,
         )
@@ -89,7 +81,7 @@ class EntityMapperTest {
 
     @Test
     fun `DeviceType round-trip preserves all fields`() {
-        val deviceType = DeviceType(
+        val deviceType = TestDevices.createDeviceType(
             id = "type-1",
             name = "Thermostat",
             defaultIcon = "thermostat",
@@ -104,9 +96,7 @@ class EntityMapperTest {
 
     @Test
     fun `DeviceType round-trip with null defaultIcon`() {
-        val deviceType = DeviceType(
-            id = "type-1",
-            name = "Test Type",
+        val deviceType = TestDevices.createDeviceType(
             defaultIcon = null,
         )
 
@@ -137,7 +127,7 @@ class EntityMapperTest {
 
     @Test
     fun `BatteryEvent round-trip preserves all fields`() {
-        val event = BatteryEvent(
+        val event = TestDevices.createBatteryEvent(
             id = "evt-1",
             deviceId = "dev-1",
             date = Instant.parse("2024-06-15T10:30:00Z"),
@@ -152,9 +142,7 @@ class EntityMapperTest {
 
     @Test
     fun `BatteryEvent round-trip with null notes and batteryType`() {
-        val event = BatteryEvent(
-            id = "evt-1",
-            deviceId = "dev-1",
+        val event = TestDevices.createBatteryEvent(
             date = Instant.parse("2024-01-01T00:00:00Z"),
             batteryType = null,
             notes = null,
@@ -187,10 +175,7 @@ class EntityMapperTest {
 
     @Test
     fun `zero timestamp round-trips correctly`() {
-        val device = Device(
-            id = "dev-1",
-            name = "Test Device",
-            typeId = "type-1",
+        val device = TestDevices.createDevice(
             batteryLastReplaced = Instant.fromEpochMilliseconds(0),
             lastUpdated = Instant.fromEpochMilliseconds(0),
         )
@@ -206,9 +191,7 @@ class EntityMapperTest {
     @Test
     fun `negative timestamp round-trips correctly`() {
         val negativeInstant = Instant.fromEpochMilliseconds(-86400000L) // 1 day before epoch
-        val event = BatteryEvent(
-            id = "evt-1",
-            deviceId = "dev-1",
+        val event = TestDevices.createBatteryEvent(
             date = negativeInstant,
         )
 

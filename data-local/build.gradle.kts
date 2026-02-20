@@ -45,6 +45,7 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.test)
+            implementation(project(":test-common"))
         }
         androidMain.dependencies {
             implementation(libs.androidx.room.runtime)
