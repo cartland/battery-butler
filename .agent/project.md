@@ -92,26 +92,57 @@ xcodebuild -project ios-app-swift-ui/...      # iOS
 
 ## Testing
 
-- **Unit tests**: `./gradlew test` - must pass
-  - **Coroutine test gotcha**: `DefaultDeviceRepository` has an infinite `subscribeWithRetry()` loop in `init`. Never use `advanceUntilIdle()` in tests that create this repository with a subscribe source that throws or completes (it schedules infinite tasks). Use `testDispatcher.scheduler.advanceTimeBy(ms)` + `runCurrent()` instead, and always call `repoScope.cancel()` at end.
-  - `applyRemoteUpdate` and `nextBackoff` are `internal` for direct testing without the subscribe loop
-- **Screenshot tests**: `./gradlew :android-screenshot-tests:validateDebugScreenshotTest` - failures indicate UI changes, not broken infrastructure
-  - **All preview composables must be time-deterministic** — never let `Clock.System.now()` reach a screenshot preview
-  - Use `Instant.parse("2026-01-18T17:00:00Z")` as the standard fixed instant in previews
-  - Pass explicit `nowInstant` / date parameters through the full composable chain — don't rely on defaults
-  - `updateDebugScreenshotTest` and `validateDebugScreenshotTest` can't run in the same Gradle invocation (the update task's clean step deletes references mid-build)
-- **Instrumented tests**: Require running emulator, network failures are expected if server isn't running
-- **E2E tests** (`e2e-tests/`): Wire gRPC client tests against a real server. NOT included in CI or `validate.sh`.
+### Test Types
+
+| Type | Command | Server? | Emulator? | CI Job |
+|------|---------|---------|-----------|--------|
+| Unit | `./gradlew test` | No | No | `validation_test` |
+| Instrumented | `./scripts/test.sh` | No | Yes | `validation_instrumented` |
+| Screenshot | `./gradlew :android-screenshot-tests:validateDebugScreenshotTest` | No | No | `validation_screenshots` |
+| E2E | `./scripts/e2e-tests.sh` | Yes | No | Manual only |
+
+### When Tests Run
+
+| Trigger | Unit | Instrumented | Screenshot | E2E |
+|---------|------|-------------|------------|-----|
+| PR with code changes | Yes | Yes | Yes | No |
+| PR with docs only | No | No | No | No |
+| `./scripts/validate.sh` (local) | Yes | Yes | Yes | No |
+| Manual | — | — | — | Yes |
+
+### Unit Tests (`./gradlew test`)
+- Pure Kotlin tests across all modules (domain, data, viewmodel, usecase, server, etc.)
+- Located in `src/commonTest/`, `src/test/`
+- **Coroutine test gotcha**: `DefaultDeviceRepository` has an infinite `subscribeWithRetry()` loop in `init`. Never use `advanceUntilIdle()` in tests that create this repository with a subscribe source that throws or completes (it schedules infinite tasks). Use `testDispatcher.scheduler.advanceTimeBy(ms)` + `runCurrent()` instead, and always call `repoScope.cancel()` at end.
+- `applyRemoteUpdate` and `nextBackoff` are `internal` for direct testing without the subscribe loop
+
+### Instrumented Tests (`scripts/test.sh`)
+- Require an Android emulator (CI uses managed Pixel 5 API 34 with KVM)
+- All tests are offline-capable — no server needed (app defaults to `NetworkMode.None`)
+- `compose-app/src/androidInstrumentedTest/`: `ComposeUITest` (UI navigation), `ExampleInstrumentedTest` (app context)
+- `data/src/androidInstrumentedTest/`: `DatabaseSanityTest` (Room schema), `MigrationTest` (Room migrations 3→4→5)
+
+### Screenshot Tests
+- Pixel-perfect UI regression tests against reference images
+- Failures indicate UI changes, not broken infrastructure
+- **All preview composables must be time-deterministic** — never let `Clock.System.now()` reach a screenshot preview
+- Use `Instant.parse("2026-01-18T17:00:00Z")` as the standard fixed instant in previews
+- Pass explicit `nowInstant` / date parameters through the full composable chain — don't rely on defaults
+- `updateDebugScreenshotTest` and `validateDebugScreenshotTest` can't run in the same Gradle invocation (the update task's clean step deletes references mid-build)
+
+### E2E Tests (`e2e-tests/`)
+- Wire gRPC client tests against a real server (`SyncPushE2eTest`, `ServerHealthE2eTest`)
+- NOT included in CI or `validate.sh` — manual only
   ```bash
   ./scripts/e2e-tests.sh                    # Auto-starts local server (auto-generates auth token)
   ./scripts/e2e-tests.sh --remote           # Uses E2E_SERVER_URL and E2E_AUTH_TOKEN env vars
   E2E_SERVER_URL=http://<nlb>:80 E2E_AUTH_TOKEN=<token> ./scripts/e2e-tests.sh --remote  # Against cloud
   ./gradlew :e2e-tests:test -De2e.server.url=http://localhost:50051 -De2e.auth.token=<token>  # Direct
   ```
-  - **E2E Auth**: Server reads `E2E_TEST_TOKEN` env var and pre-seeds a synthetic session. Tests attach the token as a Bearer header via OkHttp interceptor. This tests the real auth path (not a bypass).
-  - **Local mode**: Script auto-generates a UUID token and passes it to both server and tests.
-  - **Remote mode**: Token must match the `E2E_TEST_TOKEN` GitHub secret deployed to the dev server. Token value stored in `local.properties` (gitignored).
-  - **GitHub secret**: `E2E_TEST_TOKEN` — only set for dev environment. After setting/rotating, must redeploy dev for the container to pick it up.
+- **E2E Auth**: Server reads `E2E_TEST_TOKEN` env var and pre-seeds a synthetic session. Tests attach the token as a Bearer header via OkHttp interceptor. This tests the real auth path (not a bypass).
+- **Local mode**: Script auto-generates a UUID token and passes it to both server and tests.
+- **Remote mode**: Token must match the `E2E_TEST_TOKEN` GitHub secret deployed to the dev server. Token value stored in `local.properties` (gitignored).
+- **GitHub secret**: `E2E_TEST_TOKEN` — only set for dev environment. After setting/rotating, must redeploy dev for the container to pick it up.
 
 ## Build System
 

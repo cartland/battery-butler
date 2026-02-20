@@ -86,7 +86,6 @@ kotlin {
                 implementation(libs.androidx.runner)
                 implementation(libs.androidx.core)
                 implementation(libs.compose.ui.test.junit4)
-                implementation(libs.wire.grpc.client)
             }
         }
     }

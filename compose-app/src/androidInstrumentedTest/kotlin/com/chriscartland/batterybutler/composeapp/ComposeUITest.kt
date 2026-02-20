@@ -3,6 +3,7 @@ package com.chriscartland.batterybutler.composeapp
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Rule
@@ -16,7 +17,9 @@ class ComposeUITest {
 
     @Test
     fun testAppLaunch() {
-        // App launches automatically with createAndroidComposeRule
+        // App launches at Login screen — skip to Devices
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithText("Continue without signing in").performClick()
         composeTestRule.waitForIdle()
 
         // Check if "Devices" title is displayed (Tag ensures we check TopAppBar)

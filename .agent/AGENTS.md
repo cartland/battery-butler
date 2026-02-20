@@ -61,7 +61,7 @@ Keeping the build and tests healthy is a top priority. When you identify or fix 
 
 4. **Test Categories**:
    - **Unit tests**: Must pass (`./gradlew test`)
-   - **Instrumented tests**: Must run (network failures are acceptable if server isn't available)
+   - **Instrumented tests**: Must run (all tests are offline-capable, no server needed)
    - **Screenshot tests**: Must run (baseline mismatches indicate UI changes, not broken infrastructure)
 
 ## Project Technical Rules
