@@ -28,7 +28,7 @@
     <!-- AI Engine -->
     <string name="ai_engine_title">AI Engine</string>
     <string name="ai_engine_cloud">Cloud (Gemini API)</string>
-    <string name="ai_engine_on_device">On-Device (MediaPipe)</string>
+    <string name="ai_engine_on_device">On-Device (Gemini Nano)</string>
     <string name="ai_engine_noop">Disabled</string>
 
     <!-- Add Device Type -->
