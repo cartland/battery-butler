@@ -143,6 +143,7 @@ xcodebuild -project ios-app-swift-ui/...      # iOS
 - **Local mode**: Script auto-generates a UUID token and passes it to both server and tests.
 - **Remote mode**: Token must match the `E2E_TEST_TOKEN` GitHub secret deployed to the dev server. Token value stored in `local.properties` (gitignored).
 - **GitHub secret**: `E2E_TEST_TOKEN` — only set for dev environment. After setting/rotating, must redeploy dev for the container to pick it up.
+- **Build cache disabled**: E2E tests use `outputs.cacheIf { false }` because they test a live server whose state is external to Gradle inputs. Without this, Gradle can serve stale cached results instead of actually running the tests.
 
 ## Build System
 

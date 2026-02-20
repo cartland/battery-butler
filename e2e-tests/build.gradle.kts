@@ -34,6 +34,10 @@ tasks.test {
     // Prevents ./gradlew test from failing in CI where no server is available.
     onlyIf { System.getProperty("e2e.server.url") != null || gradle.startParameter.taskNames.any { it.contains("e2e-tests") } }
 
+    // E2E tests hit a live server — never cache results since server state can change
+    // independently of Gradle inputs.
+    outputs.cacheIf { false }
+
     systemProperty(
         "e2e.server.url",
         System.getProperty("e2e.server.url") ?: "http://localhost:50051",
