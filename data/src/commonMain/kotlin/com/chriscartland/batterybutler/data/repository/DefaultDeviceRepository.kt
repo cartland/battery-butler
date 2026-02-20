@@ -80,11 +80,11 @@ class DefaultDeviceRepository(
                 )
             }
             delay(backoffMs.milliseconds)
-            backoffMs = (backoffMs * 2).coerceAtMost(MAX_BACKOFF_MS)
+            backoffMs = nextBackoff(backoffMs)
         }
     }
 
-    private suspend fun applyRemoteUpdate(update: RemoteUpdate) {
+    internal suspend fun applyRemoteUpdate(update: RemoteUpdate) {
         Logger.d(TAG) { "Received update: ${update.devices.size} devices" }
 
         if (update.isFullSnapshot) {
@@ -214,9 +214,12 @@ class DefaultDeviceRepository(
         _syncStatus.value = SyncStatus.Idle
     }
 
-    private companion object {
+    internal companion object {
         const val TAG = "DefaultDeviceRepo"
         val INITIAL_BACKOFF_MS = 1.seconds.inWholeMilliseconds
         val MAX_BACKOFF_MS = 30.seconds.inWholeMilliseconds
+
+        /** Pure backoff calculation: doubles the current value, capped at [MAX_BACKOFF_MS]. */
+        internal fun nextBackoff(currentMs: Long): Long = (currentMs * 2).coerceAtMost(MAX_BACKOFF_MS)
     }
 }

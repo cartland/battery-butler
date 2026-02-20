@@ -42,6 +42,10 @@ kotlin {
             implementation(libs.androidx.datastore.preferences.core)
             implementation(libs.okio)
         }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+            implementation(libs.kotlinx.coroutines.test)
+        }
         androidMain.dependencies {
             implementation(libs.androidx.room.runtime)
             implementation(libs.generativeai)

@@ -9,7 +9,7 @@ import com.chriscartland.batterybutler.proto.ProtoBatteryEvent
 import com.chriscartland.batterybutler.proto.ProtoDevice
 import com.chriscartland.batterybutler.proto.ProtoDeviceType
 import com.chriscartland.batterybutler.proto.SyncUpdate
-import org.junit.Test
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.time.Instant

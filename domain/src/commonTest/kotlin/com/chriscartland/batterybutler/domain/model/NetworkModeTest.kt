@@ -85,6 +85,7 @@ class NetworkModeTest {
     fun `when expression covers all variants`() {
         val modes = listOf(
             NetworkMode.Mock,
+            NetworkMode.None,
             NetworkMode.GrpcLocal("http://localhost"),
             NetworkMode.GrpcAws("https://aws.example.com"),
         )
@@ -92,6 +93,7 @@ class NetworkModeTest {
         for (mode in modes) {
             val description = when (mode) {
                 is NetworkMode.Mock -> "mock"
+                is NetworkMode.None -> "none"
                 is NetworkMode.GrpcLocal -> "local"
                 is NetworkMode.GrpcAws -> "aws"
             }

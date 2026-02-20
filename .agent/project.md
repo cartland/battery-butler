@@ -93,6 +93,8 @@ xcodebuild -project ios-app-swift-ui/...      # iOS
 ## Testing
 
 - **Unit tests**: `./gradlew test` - must pass
+  - **Coroutine test gotcha**: `DefaultDeviceRepository` has an infinite `subscribeWithRetry()` loop in `init`. Never use `advanceUntilIdle()` in tests that create this repository with a subscribe source that throws or completes (it schedules infinite tasks). Use `testDispatcher.scheduler.advanceTimeBy(ms)` + `runCurrent()` instead, and always call `repoScope.cancel()` at end.
+  - `applyRemoteUpdate` and `nextBackoff` are `internal` for direct testing without the subscribe loop
 - **Screenshot tests**: `./gradlew :android-screenshot-tests:validateDebugScreenshotTest` - failures indicate UI changes, not broken infrastructure
   - **All preview composables must be time-deterministic** — never let `Clock.System.now()` reach a screenshot preview
   - Use `Instant.parse("2026-01-18T17:00:00Z")` as the standard fixed instant in previews

@@ -24,6 +24,8 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(project(":domain"))
+            implementation(project(":data-local"))
+            implementation(project(":data-network"))
             implementation(libs.kotlinx.datetime)
             implementation(libs.kotlinx.coroutines.core)
         }
