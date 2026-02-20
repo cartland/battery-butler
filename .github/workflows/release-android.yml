@@ -79,6 +79,10 @@ jobs:
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > ${{ github.workspace }}/release.keystore
 
+      - name: Write API keys to local.properties
+        run: |
+          echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> local.properties
+
       - name: Build Release Bundle
         run: |
           ./gradlew :compose-app:bundleRelease --stacktrace \
