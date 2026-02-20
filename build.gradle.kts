@@ -46,6 +46,7 @@ plugins {
     alias(libs.plugins.spotless) apply false
     alias(libs.plugins.detekt) apply false
     id("architecture.check")
+    id("preview.coverage.check")
 }
 
 allprojects {

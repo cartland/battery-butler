@@ -59,6 +59,19 @@ fun HistoryListContent(
 }
 
 @OptIn(ExperimentalTime::class)
+@Preview(showBackground = true)
+@Composable
+fun HistoryListContentEmptyPreview() {
+    BatteryButlerTheme {
+        HistoryListContent(
+            state = HistoryListUiState.Success(items = emptyList()),
+            onEventClick = { _, _ -> },
+            nowInstant = Instant.parse("2026-01-18T17:00:00Z"),
+        )
+    }
+}
+
+@OptIn(ExperimentalTime::class)
 @Preview
 @Composable
 fun HistoryListContentPreview() {
