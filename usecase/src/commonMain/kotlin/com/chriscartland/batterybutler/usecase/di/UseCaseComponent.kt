@@ -19,6 +19,7 @@ import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.GetDevicesUseCase
 import com.chriscartland.batterybutler.usecase.GetEventDetailUseCase
 import com.chriscartland.batterybutler.usecase.GetSyncStatusUseCase
+import com.chriscartland.batterybutler.usecase.PreloadCommonTypesUseCase
 import com.chriscartland.batterybutler.usecase.SendChatMessageUseCase
 import com.chriscartland.batterybutler.usecase.SetNetworkModeUseCase
 import com.chriscartland.batterybutler.usecase.SuggestDeviceIconUseCase
@@ -52,6 +53,9 @@ abstract class UseCaseComponent {
     abstract val deleteBatteryEventUseCase: DeleteBatteryEventUseCase
     abstract val getBatteryEventsUseCase: GetBatteryEventsUseCase
     abstract val getEventDetailUseCase: GetEventDetailUseCase
+
+    // Preload operations
+    abstract val preloadCommonTypesUseCase: PreloadCommonTypesUseCase
 
     // Batch operations (AI-driven)
     abstract val batchAddDevicesUseCase: BatchAddDevicesUseCase

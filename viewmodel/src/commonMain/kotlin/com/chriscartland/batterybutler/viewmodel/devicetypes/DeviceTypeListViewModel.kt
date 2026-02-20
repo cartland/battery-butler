@@ -7,12 +7,14 @@ import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeG
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeListUiState
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeSortOption
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
+import com.chriscartland.batterybutler.usecase.PreloadCommonTypesUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
 import com.chriscartland.batterybutler.viewmodel.toSortedMap
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 import kotlin.comparisons.naturalOrder
 import kotlin.comparisons.reverseOrder
@@ -20,6 +22,7 @@ import kotlin.comparisons.reverseOrder
 @Inject
 class DeviceTypeListViewModel(
     private val getDeviceTypesUseCase: GetDeviceTypesUseCase,
+    private val preloadCommonTypesUseCase: PreloadCommonTypesUseCase,
 ) : ViewModel() {
     private val sortOptionFlow = MutableStateFlow(DeviceTypeSortOption.NAME)
     private val groupOptionFlow = MutableStateFlow(DeviceTypeGroupOption.NONE)
@@ -85,6 +88,12 @@ class DeviceTypeListViewModel(
 
     fun toggleGroupDirection() {
         isGroupAscendingFlow.value = !isGroupAscendingFlow.value
+    }
+
+    fun preloadCommonTypes() {
+        viewModelScope.launch {
+            preloadCommonTypesUseCase()
+        }
     }
 }
 
