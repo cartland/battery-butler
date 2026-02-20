@@ -174,6 +174,21 @@ fun DeviceTypeListContent(
 
 @Preview(showBackground = true)
 @Composable
+fun DeviceTypeListContentEmptyPreview() {
+    BatteryButlerTheme {
+        DeviceTypeListContent(
+            state = DeviceTypeListUiState.Success(groupedTypes = emptyMap()),
+            onEditType = {},
+            onSortOptionSelected = {},
+            onGroupOptionSelected = {},
+            onSortDirectionToggle = {},
+            onGroupDirectionToggle = {},
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
 fun DeviceTypeListContentPreview() {
     BatteryButlerTheme {
         val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")

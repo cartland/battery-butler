@@ -26,5 +26,9 @@ gradlePlugin {
             id = "architecture.check"
             implementationClass = "architecture.ArchitecturePlugin"
         }
+        create("previewCoverageCheck") {
+            id = "preview.coverage.check"
+            implementationClass = "screenshotcoverage.PreviewCoveragePlugin"
+        }
     }
 }

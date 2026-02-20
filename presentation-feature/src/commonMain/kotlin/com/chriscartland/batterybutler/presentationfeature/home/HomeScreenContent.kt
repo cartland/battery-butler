@@ -351,6 +351,24 @@ fun HomeScreenPreview() {
     }
 }
 
+@OptIn(ExperimentalTime::class)
+@Preview(showBackground = true)
+@Composable
+fun HomeScreenEmptyPreview() {
+    BatteryButlerTheme {
+        HomeScreenContent(
+            state = HomeUiState(groupedDevices = emptyMap(), deviceTypes = emptyMap()),
+            onGroupOptionToggle = {},
+            onGroupOptionSelected = {},
+            onSortOptionToggle = {},
+            onSortOptionSelected = {},
+            onDeviceClick = {},
+            onAddDeviceClick = {},
+            nowInstant = Instant.parse("2026-01-18T17:00:00Z"),
+        )
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenFilterRowPreview() {

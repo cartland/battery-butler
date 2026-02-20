@@ -78,3 +78,6 @@ ios-app-swift-ui/Generated/
 keystore.properties
 keystore_base64.txt
 .reports/
+
+# Generated reports
+docs/Preview_Coverage_Report.md
