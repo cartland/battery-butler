@@ -7,6 +7,10 @@ import me.tatarka.inject.annotations.Inject
 @Inject
 class UpdateBatteryEventUseCase(
     private val deviceRepository: DeviceRepository,
+    private val updateDeviceLastReplaced: UpdateDeviceLastReplacedUseCase,
 ) {
-    suspend operator fun invoke(event: BatteryEvent) = deviceRepository.updateEvent(event)
+    suspend operator fun invoke(event: BatteryEvent) {
+        deviceRepository.updateEvent(event)
+        updateDeviceLastReplaced(event.deviceId)
+    }
 }

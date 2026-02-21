@@ -39,7 +39,7 @@ class UpdateDeviceLastReplacedUseCaseTest {
         }
 
     @Test
-    fun `invoke does not update device when no events are newer`() =
+    fun `invoke corrects device timestamp when latest event is older than current`() =
         runTest {
             val repo = TestRepository()
             val currentDate = Instant.parse("2024-06-15T10:30:00Z")
@@ -52,8 +52,8 @@ class UpdateDeviceLastReplacedUseCaseTest {
             val useCase = UpdateDeviceLastReplacedUseCase(repo)
             val result = useCase("d1")
 
-            assertFalse(result)
-            assertEquals(currentDate, repo.devices.first().batteryLastReplaced)
+            assertTrue(result)
+            assertEquals(oldDate, repo.devices.first().batteryLastReplaced)
         }
 
     @Test
@@ -68,16 +68,55 @@ class UpdateDeviceLastReplacedUseCaseTest {
         }
 
     @Test
-    fun `invoke returns false when no events exist for device`() =
+    fun `invoke resets to epoch zero when no events exist for device`() =
         runTest {
             val repo = TestRepository()
-            val device = TestDevices.createDevice(id = "d1")
+            val device =
+                TestDevices.createDevice(
+                    id = "d1",
+                    batteryLastReplaced = Instant.parse("2024-01-01T00:00:00Z"),
+                )
+            repo.devices.add(device)
+
+            val useCase = UpdateDeviceLastReplacedUseCase(repo)
+            val result = useCase("d1")
+
+            assertTrue(result)
+            assertEquals(Instant.fromEpochMilliseconds(0), repo.devices.first().batteryLastReplaced)
+        }
+
+    @Test
+    fun `invoke returns false when no events and device already at epoch zero`() =
+        runTest {
+            val repo = TestRepository()
+            val device =
+                TestDevices.createDevice(
+                    id = "d1",
+                    batteryLastReplaced = Instant.fromEpochMilliseconds(0),
+                )
             repo.devices.add(device)
 
             val useCase = UpdateDeviceLastReplacedUseCase(repo)
             val result = useCase("d1")
 
             assertFalse(result)
+        }
+
+    @Test
+    fun `invoke returns false when latest event matches current timestamp`() =
+        runTest {
+            val repo = TestRepository()
+            val date = Instant.parse("2024-06-15T10:30:00Z")
+            val device = TestDevices.createDevice(id = "d1", batteryLastReplaced = date)
+            val event = BatteryEvent(id = "e1", deviceId = "d1", date = date)
+            repo.devices.add(device)
+            repo.events.add(event)
+
+            val useCase = UpdateDeviceLastReplacedUseCase(repo)
+            val result = useCase("d1")
+
+            assertFalse(result)
+            assertEquals(date, repo.devices.first().batteryLastReplaced)
         }
 
     @Test

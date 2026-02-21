@@ -9,8 +9,8 @@ import kotlin.time.Instant
  * Updates a device's [batteryLastReplaced] timestamp to the most recent battery event date.
  *
  * This use case queries all battery events for the device and sets the device's
- * [batteryLastReplaced] to the date of the most recent event. It only updates the
- * device if the most recent event date is newer than the current timestamp.
+ * [batteryLastReplaced] to the date of the most recent event. If no events remain,
+ * it resets the timestamp to epoch 0.
  *
  * This encapsulates the business rule: "A device's last replaced date should always
  * reflect the most recent battery replacement event."
@@ -28,10 +28,10 @@ class UpdateDeviceLastReplacedUseCase(
     suspend operator fun invoke(deviceId: String): Boolean {
         val device = deviceRepository.getDeviceById(deviceId).first() ?: return false
         val events = deviceRepository.getEventsForDevice(deviceId).first()
-        val latestEvent = events.maxByOrNull { it.date } ?: return false
+        val latestDate = events.maxByOrNull { it.date }?.date ?: Instant.fromEpochMilliseconds(0)
 
-        return if (latestEvent.date > device.batteryLastReplaced) {
-            deviceRepository.updateDevice(device.copy(batteryLastReplaced = latestEvent.date))
+        return if (latestDate != device.batteryLastReplaced) {
+            deviceRepository.updateDevice(device.copy(batteryLastReplaced = latestDate))
             true
         } else {
             false
