@@ -27,6 +27,7 @@ Architecture is enforced by `buildSrc/.../ArchitectureCheckTask.kt`. Key rules:
 - `:usecase` depends on `:domain`, `:presentation-model`
 - `:viewmodel` depends on `:usecase`, `:domain`, `:presentation-model`
 - `:ai` contains platform implementations (`AndroidAiEngine`, `DynamicAiEngine`, `OnDeviceAiEngine`, `NoOpAiEngine`); interfaces live in `:domain:model:ai`
+- `:usecase` contains `SendChatMessageUseCase` (augments AI messages with time + user context) and `BuildAiContextUseCase` (builds user inventory summary from DeviceRepository)
 - `:data` provides implementations of domain interfaces
 
 ### DI Wiring (kotlin-inject)
@@ -73,6 +74,21 @@ Key types (see `domain/model/DataResult.kt`):
 - `DataResult<T>` - Success/Error wrapper for operations
 - `DataError` - Sealed hierarchy: Network, Database, Ai, Unknown
 - Catch library exceptions at data layer boundaries, return typed errors
+
+### UI Theme Constants
+
+Padding constants live in `presentation-core/.../theme/Padding.kt`. Use `Padding.standard` (16.dp), `Padding.small` (8.dp), `Padding.large` (24.dp), etc. instead of hardcoded dp values.
+
+Icon sizes live in `presentation-core/.../theme/IconSize.kt`.
+
+### AI Architecture
+
+AI messages are augmented in `SendChatMessageUseCase` before reaching the AI engine:
+1. **Time context**: Current date/time/timezone prepended via `buildTimeContext()`
+2. **User context**: Device inventory, types, and recent events via `BuildAiContextUseCase`
+3. The augmented message is sent to `AiEngine.generateResponse()`
+
+The AI system instruction (in `AndroidAiEngine`) is immutable after model creation (Gemini API constraint), so dynamic context is prepended to user messages rather than modifying the system instruction.
 
 ## Common Commands
 
@@ -135,6 +151,9 @@ xcodebuild -project ios-app-swift-ui/...      # iOS
 
 ### Detekt
 - Composable functions must order params: no-default params first, then `modifier: Modifier = Modifier`, then other defaulted params, then trailing lambda. Detekt's compose rule enforces this.
+
+### Spotless / ktlint
+- ktlint enforces the **single top-level declaration filename rule**: if a `.kt` file contains only one top-level declaration (class, object, etc.), the file must be named after that declaration. If you remove a declaration leaving only one, rename the file accordingly.
 
 ### E2E Tests (`e2e-tests/`)
 - Wire gRPC client tests against a real server (`SyncPushE2eTest`, `ServerHealthE2eTest`)
