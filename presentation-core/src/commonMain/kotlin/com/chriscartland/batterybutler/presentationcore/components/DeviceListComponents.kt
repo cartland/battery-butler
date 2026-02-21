@@ -5,15 +5,10 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BatteryFull
-import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -59,63 +54,16 @@ fun DeviceListItem(
         }
     }
 
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 6.dp)
-            .clickable { onClick() },
-        shape = MaterialTheme.shapes.medium,
-    ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            // Icon
-            val iconName = deviceType?.defaultIcon
-            Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(MaterialTheme.shapes.small)
-                    .background(MaterialTheme.colorScheme.primaryContainer),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    imageVector = DeviceIconMapper.getIcon(iconName),
-                    contentDescription = deviceType?.name ?: "Device Icon",
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                    modifier = Modifier.size(IconSize.Medium),
-                )
-            }
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            // Name and Type/Location
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = device.name,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                val typeName = deviceType?.name ?: "Unknown Type"
-                val location = device.location
-                val secondaryText = if (location.isNullOrBlank()) {
-                    typeName
-                } else {
-                    "$typeName • $location"
-                }
-
-                Text(
-                    text = secondaryText,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
-
-            // Battery
+    ButlerListItemCard(
+        onClick = onClick,
+        modifier = modifier,
+        leading = {
+            ButlerIconBox(
+                icon = DeviceIconMapper.getIcon(deviceType?.defaultIcon),
+                contentDescription = deviceType?.name ?: "Device Icon",
+            )
+        },
+        trailing = {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.width(60.dp),
@@ -132,7 +80,30 @@ fun DeviceListItem(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
+        },
+    ) {
+        Text(
+            text = device.name,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+        val typeName = deviceType?.name ?: "Unknown Type"
+        val location = device.location
+        val secondaryText = if (location.isNullOrBlank()) {
+            typeName
+        } else {
+            "$typeName • $location"
         }
+
+        Text(
+            text = secondaryText,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
     }
 }
 

@@ -1,6 +1,5 @@
 package com.chriscartland.batterybutler.presentationfeature.history
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -64,7 +63,7 @@ fun HistoryListContent(
                                 deviceName = item.deviceName,
                                 deviceTypeName = item.deviceTypeName,
                                 deviceLocation = item.deviceLocation,
-                                modifier = Modifier.clickable {
+                                onClick = {
                                     onEventClick(item.event.id, item.event.deviceId)
                                 },
                                 nowInstant = nowInstant,

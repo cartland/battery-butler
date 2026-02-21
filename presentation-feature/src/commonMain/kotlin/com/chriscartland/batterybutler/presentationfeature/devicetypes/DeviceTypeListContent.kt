@@ -1,7 +1,6 @@
 package com.chriscartland.batterybutler.presentationfeature.devicetypes
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,8 +20,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
@@ -45,7 +42,7 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.empt
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationcore.components.AddItemCard
 import com.chriscartland.batterybutler.presentationcore.components.CompositeControl
-import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMapper
+import com.chriscartland.batterybutler.presentationcore.components.DeviceTypeListItem
 import com.chriscartland.batterybutler.presentationcore.components.EmptyStateContent
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationfeature.util.labelRes
@@ -160,8 +157,6 @@ fun DeviceTypeListContent(
                                 modifier = Modifier.fillMaxSize(),
                                 contentPadding = PaddingValues(
                                     top = 16.dp,
-                                    start = 16.dp,
-                                    end = 16.dp,
                                     bottom = 16.dp + contentPadding.calculateBottomPadding(),
                                 ),
                             ) {
@@ -184,17 +179,9 @@ fun DeviceTypeListContent(
                                     }
 
                                     items(types, key = { it.id }) { type ->
-                                        ListItem(
-                                            headlineContent = { Text(type.name, fontWeight = FontWeight.Medium) },
-                                            supportingContent = { Text("${type.batteryQuantity} x ${type.batteryType}") },
-                                            leadingContent = {
-                                                Icon(
-                                                    imageVector = DeviceIconMapper.getIcon(type.defaultIcon),
-                                                    contentDescription = "Device type icon",
-                                                    tint = MaterialTheme.colorScheme.primary,
-                                                )
-                                            },
-                                            modifier = Modifier.clickable { onEditType(type.id) },
+                                        DeviceTypeListItem(
+                                            deviceType = type,
+                                            onClick = { onEditType(type.id) },
                                         )
                                     }
                                 }
