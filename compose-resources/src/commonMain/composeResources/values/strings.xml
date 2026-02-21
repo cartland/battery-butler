@@ -81,4 +81,7 @@
     <string name="empty_devices_message">Tap + to add your first device</string>
     <string name="empty_history_title">No battery events</string>
     <string name="empty_history_message">Record battery replacements to see them here</string>
+    <string name="empty_types_title">No device types yet</string>
+    <string name="empty_types_message">Add types to categorize your devices</string>
+    <string name="action_load_common_types">Load Common Types</string>
 </resources>

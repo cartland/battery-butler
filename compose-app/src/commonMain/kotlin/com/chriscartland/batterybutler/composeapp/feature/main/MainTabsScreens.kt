@@ -69,6 +69,7 @@ fun TypesScreenRoot(
         onSettingsClick = onSettingsClick,
         onAddTypeClick = onAddTypeClick,
         onEditType = onEditType,
+        onPreloadTypes = { viewModel.preloadCommonTypes() },
         onSortOptionSelected = { viewModel.onSortOptionSelected(it) },
         onGroupOptionSelected = { viewModel.onGroupOptionSelected(it) },
         onSortDirectionToggle = { viewModel.toggleSortDirection() },

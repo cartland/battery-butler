@@ -7,11 +7,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -19,6 +24,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,10 +38,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.composeresources.composeStringResource
+import com.chriscartland.batterybutler.composeresources.generated.resources.Res
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_load_common_types
+import com.chriscartland.batterybutler.composeresources.generated.resources.empty_types_message
+import com.chriscartland.batterybutler.composeresources.generated.resources.empty_types_title
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationcore.components.AddItemCard
 import com.chriscartland.batterybutler.presentationcore.components.CompositeControl
 import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMapper
+import com.chriscartland.batterybutler.presentationcore.components.EmptyStateContent
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationfeature.util.labelRes
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeGroupOption
@@ -48,6 +59,7 @@ fun DeviceTypeListContent(
     state: DeviceTypeListUiState,
     onEditType: (String) -> Unit,
     onAddTypeClick: () -> Unit,
+    onPreloadTypes: () -> Unit,
     onSortOptionSelected: (DeviceTypeSortOption) -> Unit,
     onGroupOptionSelected: (DeviceTypeGroupOption) -> Unit,
     onSortDirectionToggle: () -> Unit,
@@ -62,112 +74,133 @@ fun DeviceTypeListContent(
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
                 is DeviceTypeListUiState.Success -> {
-                    Column {
-                        // Filter Row
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 8.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        ) {
-                            var sortExpanded by remember { mutableStateOf(false) }
-                            var groupExpanded by remember { mutableStateOf(false) }
-
-                            // Sort Button (First)
-                            Box {
-                                CompositeControl(
-                                    label = "Sort: ${composeStringResource(state.sortOption.labelRes())}",
-                                    isActive = true, // Sort is always active
-                                    isAscending = state.isSortAscending,
-                                    onClicked = { sortExpanded = true },
-                                    onDirectionToggle = { onSortDirectionToggle() },
-                                )
-                                DropdownMenu(
-                                    expanded = sortExpanded,
-                                    onDismissRequest = { sortExpanded = false },
-                                ) {
-                                    DeviceTypeSortOption.entries.forEach { option ->
-                                        DropdownMenuItem(
-                                            text = { Text(composeStringResource(option.labelRes())) },
-                                            onClick = {
-                                                onSortOptionSelected(option)
-                                                sortExpanded = false
-                                            },
-                                        )
+                    val allTypes = state.groupedTypes.values.flatten()
+                    if (allTypes.isEmpty()) {
+                        EmptyStateContent(
+                            icon = Icons.AutoMirrored.Filled.List,
+                            title = composeStringResource(Res.string.empty_types_title),
+                            message = composeStringResource(Res.string.empty_types_message),
+                            modifier = Modifier.padding(contentPadding),
+                            action = {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Button(onClick = onAddTypeClick) {
+                                        Text("Add Type")
+                                    }
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    OutlinedButton(onClick = onPreloadTypes) {
+                                        Text(composeStringResource(Res.string.action_load_common_types))
                                     }
                                 }
-                            }
+                            },
+                        )
+                    } else {
+                        Column {
+                            // Filter Row
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            ) {
+                                var sortExpanded by remember { mutableStateOf(false) }
+                                var groupExpanded by remember { mutableStateOf(false) }
 
-                            // Group Button (Second)
-                            Box {
-                                CompositeControl(
-                                    label = "Group: ${composeStringResource(state.groupOption.labelRes())}",
-                                    isActive = state.groupOption != DeviceTypeGroupOption.NONE,
-                                    isAscending = state.isGroupAscending,
-                                    onClicked = { groupExpanded = true },
-                                    onDirectionToggle = { onGroupDirectionToggle() },
-                                )
-                                DropdownMenu(
-                                    expanded = groupExpanded,
-                                    onDismissRequest = { groupExpanded = false },
-                                ) {
-                                    DeviceTypeGroupOption.entries.forEach { option ->
-                                        DropdownMenuItem(
-                                            text = { Text(composeStringResource(option.labelRes())) },
-                                            onClick = {
-                                                onGroupOptionSelected(option)
-                                                groupExpanded = false
-                                            },
-                                        )
-                                    }
-                                }
-                            }
-                        }
-
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
-                            contentPadding = PaddingValues(
-                                top = 16.dp,
-                                start = 16.dp,
-                                end = 16.dp,
-                                bottom = 16.dp + contentPadding.calculateBottomPadding(),
-                            ),
-                        ) {
-                            state.groupedTypes.forEach { (groupName, types) ->
-                                if (state.groupOption != DeviceTypeGroupOption.NONE) {
-                                    stickyHeader {
-                                        Surface(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            color = MaterialTheme.colorScheme.surfaceVariant,
-                                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        ) {
-                                            Text(
-                                                text = groupName,
-                                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                                                style = MaterialTheme.typography.labelLarge,
-                                                fontWeight = FontWeight.Bold,
+                                // Sort Button (First)
+                                Box {
+                                    CompositeControl(
+                                        label = "Sort: ${composeStringResource(state.sortOption.labelRes())}",
+                                        isActive = true, // Sort is always active
+                                        isAscending = state.isSortAscending,
+                                        onClicked = { sortExpanded = true },
+                                        onDirectionToggle = { onSortDirectionToggle() },
+                                    )
+                                    DropdownMenu(
+                                        expanded = sortExpanded,
+                                        onDismissRequest = { sortExpanded = false },
+                                    ) {
+                                        DeviceTypeSortOption.entries.forEach { option ->
+                                            DropdownMenuItem(
+                                                text = { Text(composeStringResource(option.labelRes())) },
+                                                onClick = {
+                                                    onSortOptionSelected(option)
+                                                    sortExpanded = false
+                                                },
                                             )
                                         }
                                     }
                                 }
 
-                                items(types, key = { it.id }) { type ->
-                                    ListItem(
-                                        headlineContent = { Text(type.name, fontWeight = FontWeight.Medium) },
-                                        supportingContent = { Text("${type.batteryQuantity} x ${type.batteryType}") },
-                                        leadingContent = {
-                                            Icon(
-                                                imageVector = DeviceIconMapper.getIcon(type.defaultIcon),
-                                                contentDescription = "Device type icon",
-                                                tint = MaterialTheme.colorScheme.primary,
-                                            )
-                                        },
-                                        modifier = Modifier.clickable { onEditType(type.id) },
+                                // Group Button (Second)
+                                Box {
+                                    CompositeControl(
+                                        label = "Group: ${composeStringResource(state.groupOption.labelRes())}",
+                                        isActive = state.groupOption != DeviceTypeGroupOption.NONE,
+                                        isAscending = state.isGroupAscending,
+                                        onClicked = { groupExpanded = true },
+                                        onDirectionToggle = { onGroupDirectionToggle() },
                                     )
+                                    DropdownMenu(
+                                        expanded = groupExpanded,
+                                        onDismissRequest = { groupExpanded = false },
+                                    ) {
+                                        DeviceTypeGroupOption.entries.forEach { option ->
+                                            DropdownMenuItem(
+                                                text = { Text(composeStringResource(option.labelRes())) },
+                                                onClick = {
+                                                    onGroupOptionSelected(option)
+                                                    groupExpanded = false
+                                                },
+                                            )
+                                        }
+                                    }
                                 }
                             }
-                            item {
-                                AddItemCard("Add a device type", onAddTypeClick)
+
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize(),
+                                contentPadding = PaddingValues(
+                                    top = 16.dp,
+                                    start = 16.dp,
+                                    end = 16.dp,
+                                    bottom = 16.dp + contentPadding.calculateBottomPadding(),
+                                ),
+                            ) {
+                                state.groupedTypes.forEach { (groupName, types) ->
+                                    if (state.groupOption != DeviceTypeGroupOption.NONE) {
+                                        stickyHeader {
+                                            Surface(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                color = MaterialTheme.colorScheme.surfaceVariant,
+                                                contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            ) {
+                                                Text(
+                                                    text = groupName,
+                                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                                                    style = MaterialTheme.typography.labelLarge,
+                                                    fontWeight = FontWeight.Bold,
+                                                )
+                                            }
+                                        }
+                                    }
+
+                                    items(types, key = { it.id }) { type ->
+                                        ListItem(
+                                            headlineContent = { Text(type.name, fontWeight = FontWeight.Medium) },
+                                            supportingContent = { Text("${type.batteryQuantity} x ${type.batteryType}") },
+                                            leadingContent = {
+                                                Icon(
+                                                    imageVector = DeviceIconMapper.getIcon(type.defaultIcon),
+                                                    contentDescription = "Device type icon",
+                                                    tint = MaterialTheme.colorScheme.primary,
+                                                )
+                                            },
+                                            modifier = Modifier.clickable { onEditType(type.id) },
+                                        )
+                                    }
+                                }
+                                item {
+                                    AddItemCard("Add a device type", onAddTypeClick)
+                                }
                             }
                         }
                     }
@@ -185,6 +218,7 @@ fun DeviceTypeListContentEmptyPreview() {
             state = DeviceTypeListUiState.Success(groupedTypes = emptyMap()),
             onEditType = {},
             onAddTypeClick = {},
+            onPreloadTypes = {},
             onSortOptionSelected = {},
             onGroupOptionSelected = {},
             onSortDirectionToggle = {},
@@ -209,6 +243,7 @@ fun DeviceTypeListContentPreview() {
             state = state,
             onEditType = {},
             onAddTypeClick = {},
+            onPreloadTypes = {},
             onSortOptionSelected = {},
             onGroupOptionSelected = {},
             onSortDirectionToggle = {},

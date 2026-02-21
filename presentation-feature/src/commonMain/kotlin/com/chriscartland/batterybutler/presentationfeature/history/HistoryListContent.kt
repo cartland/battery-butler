@@ -4,16 +4,24 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.chriscartland.batterybutler.composeresources.composeStringResource
+import com.chriscartland.batterybutler.composeresources.generated.resources.Res
+import com.chriscartland.batterybutler.composeresources.generated.resources.empty_history_message
+import com.chriscartland.batterybutler.composeresources.generated.resources.empty_history_title
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.presentationcore.components.AddItemCard
+import com.chriscartland.batterybutler.presentationcore.components.EmptyStateContent
 import com.chriscartland.batterybutler.presentationcore.components.HistoryListItem
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationmodel.history.HistoryItemUiModel
@@ -38,24 +46,33 @@ fun HistoryListContent(
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
             is HistoryListUiState.Success -> {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = contentPadding,
-                ) {
-                    items(state.items, key = { it.event.id }) { item ->
-                        HistoryListItem(
-                            event = item.event,
-                            deviceName = item.deviceName,
-                            deviceTypeName = item.deviceTypeName,
-                            deviceLocation = item.deviceLocation,
-                            modifier = Modifier.clickable {
-                                onEventClick(item.event.id, item.event.deviceId)
-                            },
-                            nowInstant = nowInstant,
-                        )
-                    }
-                    item {
-                        AddItemCard("Add a battery event", onAddEventClick)
+                if (state.items.isEmpty()) {
+                    EmptyStateContent(
+                        icon = Icons.Default.History,
+                        title = composeStringResource(Res.string.empty_history_title),
+                        message = composeStringResource(Res.string.empty_history_message),
+                        modifier = Modifier.padding(contentPadding),
+                    )
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = contentPadding,
+                    ) {
+                        items(state.items, key = { it.event.id }) { item ->
+                            HistoryListItem(
+                                event = item.event,
+                                deviceName = item.deviceName,
+                                deviceTypeName = item.deviceTypeName,
+                                deviceLocation = item.deviceLocation,
+                                modifier = Modifier.clickable {
+                                    onEventClick(item.event.id, item.event.deviceId)
+                                },
+                                nowInstant = nowInstant,
+                            )
+                        }
+                        item {
+                            AddItemCard("Add a battery event", onAddEventClick)
+                        }
                     }
                 }
             }
