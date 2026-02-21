@@ -133,6 +133,9 @@ xcodebuild -project ios-app-swift-ui/...      # iOS
 - When refactoring shared components (e.g. list items), ALL screen-level baselines that embed those components will change — regenerate everything, not just the component tests
 - **Preview coverage enforcement**: `./gradlew checkPreviewCoverage` scans `presentation-core` and `presentation-feature` for `@Preview` composables and verifies each has a corresponding screenshot test import. Fails the build on gaps. Also generates `docs/Preview_Coverage_Report.md` (gitignored). When adding a new `@Preview`, also add a screenshot test or the coverage check will fail.
 
+### Detekt
+- Composable functions must order params: no-default params first, then `modifier: Modifier = Modifier`, then other defaulted params, then trailing lambda. Detekt's compose rule enforces this.
+
 ### E2E Tests (`e2e-tests/`)
 - Wire gRPC client tests against a real server (`SyncPushE2eTest`, `ServerHealthE2eTest`)
 - NOT included in CI or `validate.sh` — manual only
