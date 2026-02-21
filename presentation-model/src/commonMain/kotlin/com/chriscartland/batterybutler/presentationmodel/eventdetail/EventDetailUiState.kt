@@ -11,7 +11,7 @@ sealed interface EventDetailUiState {
 
     data class Success(
         val event: BatteryEvent,
-        val device: Device,
+        val device: Device?,
         val deviceType: DeviceType?,
     ) : EventDetailUiState
 }
