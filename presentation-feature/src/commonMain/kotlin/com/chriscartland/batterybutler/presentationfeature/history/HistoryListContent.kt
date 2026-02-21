@@ -57,6 +57,9 @@ fun HistoryListContent(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = contentPadding,
                     ) {
+                        item {
+                            AddItemCard("Add a battery event", onAddEventClick)
+                        }
                         items(state.items, key = { it.event.id }) { item ->
                             HistoryListItem(
                                 event = item.event,
@@ -68,9 +71,6 @@ fun HistoryListContent(
                                 },
                                 nowInstant = nowInstant,
                             )
-                        }
-                        item {
-                            AddItemCard("Add a battery event", onAddEventClick)
                         }
                     }
                 }

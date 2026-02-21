@@ -267,6 +267,9 @@ fun HomeScreenList(
             modifier = modifier.fillMaxSize(),
             contentPadding = contentPadding,
         ) {
+            item {
+                AddItemCard("Add a device", onAddDeviceClick)
+            }
             state.groupedDevices.forEach { (groupName, devices) ->
                 if (state.groupOption != GroupOption.NONE) {
                     stickyHeader {
@@ -293,9 +296,6 @@ fun HomeScreenList(
                         nowInstant = nowInstant,
                     )
                 }
-            }
-            item {
-                AddItemCard("Add a device", onAddDeviceClick)
             }
         }
     }
