@@ -31,8 +31,8 @@ import com.chriscartland.batterybutler.presentationcore.theme.IconSize
 @Composable
 fun ButlerListItemCard(
     onClick: () -> Unit,
-    modifier: Modifier = Modifier,
     leading: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
     trailing: (@Composable () -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
