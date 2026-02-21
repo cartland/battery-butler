@@ -1,10 +1,10 @@
 # Code Share Analysis
 
 This document provides a breakdown of the codebase by application layer and module.
-Total Lines of Code: 27420
+Total Lines of Code: 27465
 
 ## Application Breakdown
-* Shared Code: 19,854 lines (72.4%)
+* Shared Code: 19,899 lines (72.5%)
 * Other: 2,367 lines (8.6%)
 * CMP Android, iOS, Desktop: 1,720 lines (6.3%)
 * Server: 1,533 lines (5.6%)
@@ -12,7 +12,7 @@ Total Lines of Code: 27420
 * Android Screenshot Tests: 918 lines (3.3%)
 
 ## Module Breakdown
-* `:presentation-feature`: 4,362 lines (15.9%)
+* `:presentation-feature`: 4,407 lines (16.0%)
 * `:viewmodel`: 3,493 lines (12.7%)
 * `:usecase`: 2,465 lines (9.0%)
 * `:data-network`: 2,336 lines (8.5%)
