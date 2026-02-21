@@ -2,7 +2,6 @@ package com.chriscartland.batterybutler.presentationfeature.devicedetail
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -313,7 +312,7 @@ fun DeviceDetailBody(
                 deviceName = device.name,
                 deviceTypeName = deviceType?.name ?: unknownTypeName,
                 deviceLocation = device.location,
-                modifier = Modifier.clickable { onEventClick(event.id) },
+                onClick = { onEventClick(event.id) },
                 nowInstant = nowInstant,
             )
         }

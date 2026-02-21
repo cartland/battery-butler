@@ -3,9 +3,6 @@ package com.chriscartland.batterybutler.presentationcore.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -35,76 +32,70 @@ fun HistoryListItem(
     deviceName: String,
     deviceTypeName: String,
     deviceLocation: String?,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
     nowInstant: Instant = Clock.System.now(),
 ) {
     val date = event.date.toLocalDateTime(TimeZone.currentSystemDefault())
     val month = date.month.name.take(3)
     val day = date.day.toString().padStart(2, '0')
+    val daysAgo = calculateDaysAgo(event.date, nowInstant)
 
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
-            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp))
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically,
+    ButlerListItemCard(
+        onClick = onClick,
+        modifier = modifier,
+        leading = {
+            Column(
+                modifier = Modifier
+                    .size(50.dp)
+                    .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(10.dp)),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text(
+                    text = month,
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Text(
+                    text = day,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+            }
+        },
+        trailing = {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.width(60.dp),
+            ) {
+                Icon(
+                    imageVector = Icons.Default.BatteryFull,
+                    contentDescription = "Battery replacement",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Text(
+                    text = if (daysAgo == 1) "1 day" else "$daysAgo days",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        },
     ) {
-        Column(
-            modifier = Modifier
-                .size(50.dp)
-                .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(10.dp)),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Text(
-                text = month,
-                style = MaterialTheme.typography.labelSmall,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Text(
-                text = day,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-        }
-
-        val daysAgo = calculateDaysAgo(event.date, nowInstant)
-
-        Column(
-            modifier = Modifier.weight(1f).padding(horizontal = 16.dp),
-        ) {
-            Text(
-                text = deviceName,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            val subText = if (deviceLocation != null) "$deviceTypeName • $deviceLocation" else deviceTypeName
-            Text(
-                text = subText,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.width(60.dp),
-        ) {
-            Icon(
-                imageVector = Icons.Default.BatteryFull,
-                contentDescription = "Battery replacement",
-                tint = MaterialTheme.colorScheme.primary,
-            )
-            Text(
-                text = if (daysAgo == 1) "1 day" else "$daysAgo days",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
+        Text(
+            text = deviceName,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+        val subText = if (deviceLocation != null) "$deviceTypeName • $deviceLocation" else deviceTypeName
+        Text(
+            text = subText,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 
@@ -133,6 +124,7 @@ fun HistoryListItemPreview() {
             deviceName = "Kitchen Smoke",
             deviceTypeName = "Smoke Alarm",
             deviceLocation = "Kitchen",
+            onClick = {},
             nowInstant = nowInstant,
         )
     }

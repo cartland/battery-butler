@@ -1,18 +1,18 @@
 package com.chriscartland.batterybutler.presentationcore.components
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 
 @Composable
-fun AddItemCard(
-    text: String,
+fun DeviceTypeListItem(
+    deviceType: DeviceType,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -21,25 +21,34 @@ fun AddItemCard(
         modifier = modifier,
         leading = {
             ButlerIconBox(
-                icon = Icons.Default.Add,
-                contentDescription = text,
+                icon = DeviceIconMapper.getIcon(deviceType.defaultIcon),
+                contentDescription = "Device type icon",
             )
         },
     ) {
         Text(
-            text = text,
+            text = deviceType.name,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+        Text(
+            text = "${deviceType.batteryQuantity} x ${deviceType.batteryType}",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
         )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun AddItemCardPreview() {
+fun DeviceTypeListItemPreview() {
     BatteryButlerTheme {
-        AddItemCard(
-            text = "Add a device",
+        DeviceTypeListItem(
+            deviceType = DeviceType("type1", "Smoke Alarm", "detector_smoke"),
             onClick = {},
         )
     }
