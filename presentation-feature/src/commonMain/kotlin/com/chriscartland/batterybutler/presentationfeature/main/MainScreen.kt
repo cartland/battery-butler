@@ -9,28 +9,20 @@ import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.composeresources.composeStringResource
 import com.chriscartland.batterybutler.composeresources.generated.resources.Res
+import com.chriscartland.batterybutler.composeresources.generated.resources.tab_ai
 import com.chriscartland.batterybutler.composeresources.generated.resources.tab_devices
 import com.chriscartland.batterybutler.composeresources.generated.resources.tab_history
 import com.chriscartland.batterybutler.composeresources.generated.resources.tab_types
@@ -39,8 +31,9 @@ import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
-import com.chriscartland.batterybutler.presentationcore.theme.LocalAiAction
 import com.chriscartland.batterybutler.presentationcore.theme.LocalAiAvailable
+import com.chriscartland.batterybutler.presentationfeature.aichat.AiTabContent
+import com.chriscartland.batterybutler.presentationfeature.aichat.ChatUiMessage
 import com.chriscartland.batterybutler.presentationfeature.devicetypes.DeviceTypeListContent
 import com.chriscartland.batterybutler.presentationfeature.history.HistoryListContent
 import com.chriscartland.batterybutler.presentationfeature.home.HomeScreenContent
@@ -63,6 +56,7 @@ enum class MainTab {
     Devices,
     Types,
     History,
+    AI,
 }
 
 fun MainTab.labelRes(): StringResource =
@@ -70,6 +64,7 @@ fun MainTab.labelRes(): StringResource =
         MainTab.Devices -> Res.string.tab_devices
         MainTab.Types -> Res.string.tab_types
         MainTab.History -> Res.string.tab_history
+        MainTab.AI -> Res.string.tab_ai
     }
 
 fun MainTab.icon(): ImageVector =
@@ -77,6 +72,7 @@ fun MainTab.icon(): ImageVector =
         MainTab.Devices -> Icons.Default.Home
         MainTab.Types -> Icons.AutoMirrored.Filled.List
         MainTab.History -> Icons.Default.History
+        MainTab.AI -> Icons.Default.AutoAwesome
     }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -86,12 +82,10 @@ fun MainScreenShell(
     onTabSelected: (MainTab) -> Unit,
     onSettingsClick: () -> Unit,
     modifier: Modifier = Modifier,
-    content: @Composable (PaddingValues, PaddingValues) -> Unit,
+    content: @Composable (PaddingValues) -> Unit,
 ) {
-    var fabHeightPx by remember { mutableIntStateOf(0) }
-    val density = LocalDensity.current
     val isAiAvailable = LocalAiAvailable.current
-    val onAiClick = LocalAiAction.current
+    val visibleTabs = if (isAiAvailable) MainTab.entries else MainTab.entries.filter { it != MainTab.AI }
 
     Scaffold(
         modifier = modifier,
@@ -108,25 +102,9 @@ fun MainScreenShell(
                 },
             )
         },
-        floatingActionButton = {
-            if (isAiAvailable) {
-                FloatingActionButton(
-                    onClick = onAiClick,
-                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
-                    modifier = Modifier.onGloballyPositioned { coordinates ->
-                        if (coordinates.size.height > 0) {
-                            fabHeightPx = coordinates.size.height
-                        }
-                    },
-                ) {
-                    Icon(Icons.Default.AutoAwesome, contentDescription = "AI Assistant")
-                }
-            }
-        },
         bottomBar = {
             NavigationBar {
-                MainTab.entries.forEach { tab ->
+                visibleTabs.forEach { tab ->
                     NavigationBarItem(
                         selected = currentTab == tab,
                         onClick = { onTabSelected(tab) },
@@ -138,10 +116,7 @@ fun MainScreenShell(
             }
         },
         content = { innerPadding ->
-            val fabPaddingDp = with(density) { fabHeightPx.toDp() }
-            val extraBottomPadding = if (fabHeightPx > 0) fabPaddingDp + 24.dp else 0.dp
-            val fabPadding = PaddingValues(bottom = extraBottomPadding)
-            content(innerPadding, fabPadding)
+            content(innerPadding)
         },
     )
 }
@@ -164,7 +139,7 @@ fun DevicesScreen(
         currentTab = MainTab.Devices,
         onTabSelected = onTabSelected,
         onSettingsClick = onSettingsClick,
-    ) { innerPadding, fabPadding ->
+    ) { innerPadding ->
         HomeScreenContent(
             state = state,
             onGroupOptionToggle = onGroupOptionToggle,
@@ -174,7 +149,6 @@ fun DevicesScreen(
             onDeviceClick = { onDeviceClick(it.id) },
             onAddDeviceClick = onAddDeviceClick,
             modifier = Modifier.padding(innerPadding),
-            contentPadding = fabPadding,
             nowInstant = nowInstant,
         )
     }
@@ -197,7 +171,7 @@ fun TypesScreen(
         currentTab = MainTab.Types,
         onTabSelected = onTabSelected,
         onSettingsClick = onSettingsClick,
-    ) { innerPadding, fabPadding ->
+    ) { innerPadding ->
         DeviceTypeListContent(
             state = state,
             onEditType = onEditType,
@@ -208,7 +182,6 @@ fun TypesScreen(
             onSortDirectionToggle = onSortDirectionToggle,
             onGroupDirectionToggle = onGroupDirectionToggle,
             modifier = Modifier.padding(innerPadding),
-            contentPadding = fabPadding,
         )
     }
 }
@@ -227,14 +200,37 @@ fun HistoryScreen(
         currentTab = MainTab.History,
         onTabSelected = onTabSelected,
         onSettingsClick = onSettingsClick,
-    ) { innerPadding, fabPadding ->
+    ) { innerPadding ->
         HistoryListContent(
             state = state,
             onEventClick = onEventClick,
             onAddEventClick = onAddEventClick,
             modifier = Modifier.padding(innerPadding),
-            contentPadding = fabPadding,
             nowInstant = nowInstant,
+        )
+    }
+}
+
+@Composable
+fun AiScreen(
+    messages: List<ChatUiMessage>,
+    isProcessing: Boolean,
+    onSendMessage: (String) -> Unit,
+    onClearChat: () -> Unit,
+    onTabSelected: (MainTab) -> Unit,
+    onSettingsClick: () -> Unit,
+) {
+    MainScreenShell(
+        currentTab = MainTab.AI,
+        onTabSelected = onTabSelected,
+        onSettingsClick = onSettingsClick,
+    ) { innerPadding ->
+        AiTabContent(
+            messages = messages,
+            isProcessing = isProcessing,
+            onSendMessage = onSendMessage,
+            onClearChat = onClearChat,
+            modifier = Modifier.padding(innerPadding),
         )
     }
 }

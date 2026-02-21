@@ -17,21 +17,3 @@ object IconSize {
     val Medium = 24.dp
     val Large = 32.dp
 }
-
-/**
- * Standard spacing values for Battery Butler.
- *
- * Use these to maintain consistent layout spacing:
- * - [Spacing.ExtraSmall]: 4dp - Tight spacing, compact layouts
- * - [Spacing.Small]: 8dp - Standard small gap
- * - [Spacing.Medium]: 16dp - Default content padding
- * - [Spacing.Large]: 24dp - Section spacing
- * - [Spacing.ExtraLarge]: 32dp - Large gaps, screen padding
- */
-object Spacing {
-    val ExtraSmall = 4.dp
-    val Small = 8.dp
-    val Medium = 16.dp
-    val Large = 24.dp
-    val ExtraLarge = 32.dp
-}

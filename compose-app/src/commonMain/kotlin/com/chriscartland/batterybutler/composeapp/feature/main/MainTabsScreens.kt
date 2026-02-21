@@ -4,12 +4,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.chriscartland.batterybutler.domain.model.ai.AiRole
 import com.chriscartland.batterybutler.presentationcore.util.LocalFileSaver
 import com.chriscartland.batterybutler.presentationcore.util.generateFileTimestamp
+import com.chriscartland.batterybutler.presentationfeature.aichat.ChatUiMessage
+import com.chriscartland.batterybutler.presentationfeature.main.AiScreen
 import com.chriscartland.batterybutler.presentationfeature.main.DevicesScreen
 import com.chriscartland.batterybutler.presentationfeature.main.HistoryScreen
 import com.chriscartland.batterybutler.presentationfeature.main.MainTab
 import com.chriscartland.batterybutler.presentationfeature.main.TypesScreen
+import com.chriscartland.batterybutler.viewmodel.aichat.AiChatViewModel
 import com.chriscartland.batterybutler.viewmodel.devicetypes.DeviceTypeListViewModel
 import com.chriscartland.batterybutler.viewmodel.history.HistoryListViewModel
 import com.chriscartland.batterybutler.viewmodel.home.HomeViewModel
@@ -93,5 +97,30 @@ fun HistoryScreenRoot(
         onSettingsClick = onSettingsClick,
         onAddEventClick = onAddEventClick,
         onEventClick = onEventClick,
+    )
+}
+
+@Composable
+fun AiScreenRoot(
+    viewModel: AiChatViewModel,
+    onTabSelected: (MainTab) -> Unit,
+    onSettingsClick: () -> Unit,
+) {
+    val messages by viewModel.messages.collectAsStateWithLifecycle()
+    val isProcessing by viewModel.isProcessing.collectAsStateWithLifecycle()
+    val uiMessages = messages.map { msg ->
+        ChatUiMessage(
+            id = msg.id,
+            text = msg.text,
+            isUser = msg.role == AiRole.USER,
+        )
+    }
+    AiScreen(
+        messages = uiMessages,
+        isProcessing = isProcessing,
+        onSendMessage = viewModel::sendMessage,
+        onClearChat = viewModel::clearChat,
+        onTabSelected = onTabSelected,
+        onSettingsClick = onSettingsClick,
     )
 }

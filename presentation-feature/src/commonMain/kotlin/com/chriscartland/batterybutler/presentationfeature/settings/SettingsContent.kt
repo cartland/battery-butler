@@ -44,6 +44,7 @@ import com.chriscartland.batterybutler.domain.model.ai.AiEngineType
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.presentationcore.components.ExpandableSelectionControl
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import com.chriscartland.batterybutler.presentationcore.theme.Padding
 
 @Composable
 fun SettingsContent(
@@ -73,8 +74,8 @@ fun SettingsContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+                .padding(Padding.standard),
+            verticalArrangement = Arrangement.spacedBy(Padding.standard),
         ) {
             // Account Card
             if (currentUser != null) {
@@ -88,7 +89,7 @@ fun SettingsContent(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp),
+                            .padding(Padding.standard),
                     ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -182,9 +183,9 @@ fun SettingsContent(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
+                        .padding(Padding.standard),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(Padding.standard),
                 ) {
                     Icon(
                         imageVector = Icons.Default.Download,
@@ -218,7 +219,7 @@ fun SettingsContent(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
+                        .padding(Padding.standard),
                 ) {
                     Text(
                         text = "App version",

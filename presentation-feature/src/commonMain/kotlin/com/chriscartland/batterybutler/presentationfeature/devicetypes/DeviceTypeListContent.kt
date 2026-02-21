@@ -45,6 +45,7 @@ import com.chriscartland.batterybutler.presentationcore.components.CompositeCont
 import com.chriscartland.batterybutler.presentationcore.components.DeviceTypeListItem
 import com.chriscartland.batterybutler.presentationcore.components.EmptyStateContent
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import com.chriscartland.batterybutler.presentationcore.theme.Padding
 import com.chriscartland.batterybutler.presentationfeature.util.labelRes
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeGroupOption
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeListUiState
@@ -96,8 +97,8 @@ fun DeviceTypeListContent(
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    .padding(horizontal = Padding.standard, vertical = Padding.small),
+                                horizontalArrangement = Arrangement.spacedBy(Padding.small),
                             ) {
                                 var sortExpanded by remember { mutableStateOf(false) }
                                 var groupExpanded by remember { mutableStateOf(false) }
@@ -156,8 +157,8 @@ fun DeviceTypeListContent(
                             LazyColumn(
                                 modifier = Modifier.fillMaxSize(),
                                 contentPadding = PaddingValues(
-                                    top = 16.dp,
-                                    bottom = 16.dp + contentPadding.calculateBottomPadding(),
+                                    top = Padding.standard,
+                                    bottom = Padding.standard + contentPadding.calculateBottomPadding(),
                                 ),
                             ) {
                                 state.groupedTypes.forEach { (groupName, types) ->
@@ -170,7 +171,7 @@ fun DeviceTypeListContent(
                                             ) {
                                                 Text(
                                                     text = groupName,
-                                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                                                    modifier = Modifier.padding(horizontal = Padding.standard, vertical = Padding.small),
                                                     style = MaterialTheme.typography.labelLarge,
                                                     fontWeight = FontWeight.Bold,
                                                 )

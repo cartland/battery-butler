@@ -2,6 +2,7 @@ package com.chriscartland.batterybutler.presentationcore.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,6 +20,9 @@ fun AddItemCard(
     ButlerListItemCard(
         onClick = onClick,
         modifier = modifier,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+        ),
         leading = {
             ButlerIconBox(
                 icon = Icons.Default.Add,
@@ -30,6 +34,7 @@ fun AddItemCard(
             text = text,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onSecondaryContainer,
         )
     }
 }

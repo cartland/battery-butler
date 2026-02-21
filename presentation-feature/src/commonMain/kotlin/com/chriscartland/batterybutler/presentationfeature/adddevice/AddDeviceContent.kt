@@ -58,6 +58,7 @@ import com.chriscartland.batterybutler.presentationcore.components.AiBatchImport
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMapper
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import com.chriscartland.batterybutler.presentationcore.theme.Padding
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -134,8 +135,8 @@ fun AddDeviceContent(
                 .fillMaxSize()
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp),
+                .padding(Padding.standard),
+            verticalArrangement = Arrangement.spacedBy(Padding.large),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             if (isAiBatchImportEnabled) {
@@ -186,7 +187,7 @@ fun AddDeviceManualSection(
 
     // Manual Section
     Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(Padding.standard),
         modifier = Modifier.fillMaxWidth(),
     ) {
         Text(

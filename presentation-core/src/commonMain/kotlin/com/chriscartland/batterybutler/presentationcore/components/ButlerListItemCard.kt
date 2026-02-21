@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BatteryFull
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,29 +29,32 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationcore.theme.IconSize
+import com.chriscartland.batterybutler.presentationcore.theme.Padding
 
 @Composable
 fun ButlerListItemCard(
     onClick: () -> Unit,
     leading: @Composable () -> Unit,
     modifier: Modifier = Modifier,
+    colors: CardColors = CardDefaults.cardColors(),
     trailing: (@Composable () -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Card(
+        colors = colors,
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 6.dp)
+            .padding(horizontal = Padding.standard, vertical = 6.dp)
             .clickable { onClick() },
         shape = MaterialTheme.shapes.medium,
     ) {
         Row(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(Padding.standard),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             leading()
 
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(Padding.standard))
 
             Column(modifier = Modifier.weight(1f)) {
                 content()
