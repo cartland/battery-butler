@@ -11,7 +11,6 @@ import com.chriscartland.batterybutler.usecase.UpdateBatteryEventUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -52,10 +51,10 @@ class EventDetailViewModel(
                 kotlinx.coroutines.flow.flowOf(EventDetailUiState.NotFound)
             } else {
                 combine(
-                    getDeviceDetailUseCase(event.deviceId).filterNotNull(),
+                    getDeviceDetailUseCase(event.deviceId),
                     getDeviceTypesUseCase(),
                 ) { device, types ->
-                    val deviceType = types.find { it.id == device.typeId }
+                    val deviceType = device?.let { d -> types.find { it.id == d.typeId } }
                     EventDetailUiState.Success(
                         event = event,
                         device = device,

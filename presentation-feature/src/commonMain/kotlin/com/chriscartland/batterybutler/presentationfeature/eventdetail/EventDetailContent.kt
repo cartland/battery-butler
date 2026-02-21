@@ -144,7 +144,7 @@ fun EventDetailContent(
                         }
 
                         Text(
-                            text = uiState.device.name,
+                            text = uiState.device?.name ?: "Unknown Device",
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
                         )
@@ -215,6 +215,27 @@ fun EventDetailContentPreview() {
             event = event,
             device = device,
             deviceType = type,
+        )
+        EventDetailContent(
+            uiState = state,
+            onUpdateDate = {},
+            onDeleteEvent = {},
+            onBack = {},
+        )
+    }
+}
+
+@OptIn(ExperimentalTime::class)
+@Preview
+@Composable
+fun EventDetailContentDeletedDevicePreview() {
+    BatteryButlerTheme {
+        val now = Instant.parse("2026-01-18T17:00:00Z")
+        val event = BatteryEvent("evt1", "dev1", now)
+        val state = EventDetailUiState.Success(
+            event = event,
+            device = null,
+            deviceType = null,
         )
         EventDetailContent(
             uiState = state,

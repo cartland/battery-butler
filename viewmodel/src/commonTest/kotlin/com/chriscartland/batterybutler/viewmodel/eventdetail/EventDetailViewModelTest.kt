@@ -9,6 +9,7 @@ import com.chriscartland.batterybutler.usecase.GetDeviceDetailUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.GetEventDetailUseCase
 import com.chriscartland.batterybutler.usecase.UpdateBatteryEventUseCase
+import com.chriscartland.batterybutler.usecase.UpdateDeviceLastReplacedUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -140,13 +141,15 @@ class EventDetailViewModelTest {
     private fun createViewModel(
         repo: FakeDeviceRepository,
         eventId: String,
-    ): EventDetailViewModel =
-        EventDetailViewModel(
+    ): EventDetailViewModel {
+        val updateDeviceLastReplaced = UpdateDeviceLastReplacedUseCase(repo)
+        return EventDetailViewModel(
             eventId = eventId,
             getEventDetailUseCase = GetEventDetailUseCase(repo),
             getDeviceDetailUseCase = GetDeviceDetailUseCase(repo),
             getDeviceTypesUseCase = GetDeviceTypesUseCase(repo),
-            updateBatteryEventUseCase = UpdateBatteryEventUseCase(repo),
-            deleteBatteryEventUseCase = DeleteBatteryEventUseCase(repo),
+            updateBatteryEventUseCase = UpdateBatteryEventUseCase(repo, updateDeviceLastReplaced),
+            deleteBatteryEventUseCase = DeleteBatteryEventUseCase(repo, updateDeviceLastReplaced),
         )
+    }
 }

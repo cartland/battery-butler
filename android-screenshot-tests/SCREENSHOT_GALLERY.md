@@ -298,6 +298,12 @@ Generated on Sat Feb 21 07:11:00 UTC 2026
 ### EditDeviceTypeScreenPreviewTest_Light_fc5b723e_0
 <img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/EditDeviceTypeScreenPreviewTest_Light_fc5b723e_0.png" width="300" />
 
+### EventDetailDeletedDeviceScreenPreviewTest_Dark_77106447_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/EventDetailDeletedDeviceScreenPreviewTest_Dark_77106447_0.png" width="300" />
+
+### EventDetailDeletedDeviceScreenPreviewTest_Light_fc5b723e_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/EventDetailDeletedDeviceScreenPreviewTest_Light_fc5b723e_0.png" width="300" />
+
 ### EventDetailScreenPreviewTest_Dark_77106447_0
 <img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/EventDetailScreenPreviewTest_Dark_77106447_0.png" width="300" />
 
