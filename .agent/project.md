@@ -327,6 +327,10 @@ CI uses `dorny/paths-filter` to skip expensive builds for non-code changes:
 5. Uses `GITHUB_TOKEN` (not `BOT_PAT`) -- loop-proof by design
 6. `ci-trigger-auto-prs.yml` dispatches CI on auto PRs (runs on any workflow completion, not just success)
 
+### Concurrency Group Gotcha
+
+CI uses concurrency groups to prevent parallel runs on the same branch. If a `workflow_dispatch` run starts while a `pull_request` run is in-flight, the `pull_request` run gets cancelled. The `ci` gate treats `cancelled` as failure. **PR status checks only track `pull_request`-event runs**, so a successful `workflow_dispatch` run won't clear the red status. Fix: push a new commit to the PR branch to trigger a fresh `pull_request` CI run.
+
 ### Dependabot PRs
 
 Dependabot is configured (`.github/dependabot.yml`) for weekly updates.
