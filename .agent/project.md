@@ -129,6 +129,8 @@ xcodebuild -project ios-app-swift-ui/...      # iOS
 - Use `Instant.parse("2026-01-18T17:00:00Z")` as the standard fixed instant in previews
 - Pass explicit `nowInstant` / date parameters through the full composable chain — don't rely on defaults
 - `updateDebugScreenshotTest` and `validateDebugScreenshotTest` can't run in the same Gradle invocation (the update task's clean step deletes references mid-build)
+- **Never use `--tests` filter with `updateDebugScreenshotTest`** — the gallery generator deletes reference images for non-included test classes. Always use `scripts/generate-screenshots-sequentially.sh` to regenerate all baselines safely (runs one test file at a time to avoid OOM)
+- When refactoring shared components (e.g. list items), ALL screen-level baselines that embed those components will change — regenerate everything, not just the component tests
 - **Preview coverage enforcement**: `./gradlew checkPreviewCoverage` scans `presentation-core` and `presentation-feature` for `@Preview` composables and verifies each has a corresponding screenshot test import. Fails the build on gaps. Also generates `docs/Preview_Coverage_Report.md` (gitignored). When adding a new `@Preview`, also add a screenshot test or the coverage check will fail.
 
 ### E2E Tests (`e2e-tests/`)
