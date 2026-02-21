@@ -146,10 +146,10 @@ jobs:
         uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "chore(generated): Regenerate screenshot baselines"
-          title: "chore(generated): Regenerate screenshot baselines"
+          commit-message: "chore(generated): Regenerate screenshots"
+          title: "chore(generated): Regenerate screenshots"
           body: |
-            Screenshot reference images regenerated to match current UI.
+            Screenshots regenerated to match current UI.
 
             This PR was automatically created by the Auto-Generate Content workflow
             after a UI code change was merged to main.
