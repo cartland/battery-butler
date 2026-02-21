@@ -43,6 +43,7 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.acti
 import com.chriscartland.batterybutler.composeresources.generated.resources.empty_types_message
 import com.chriscartland.batterybutler.composeresources.generated.resources.empty_types_title
 import com.chriscartland.batterybutler.domain.model.DeviceType
+import com.chriscartland.batterybutler.presentationcore.components.AddItemCard
 import com.chriscartland.batterybutler.presentationcore.components.CompositeControl
 import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMapper
 import com.chriscartland.batterybutler.presentationcore.components.EmptyStateContent
@@ -197,12 +198,32 @@ fun DeviceTypeListContent(
                                         )
                                     }
                                 }
+                                item {
+                                    AddItemCard("Add a device type", onAddTypeClick)
+                                }
                             }
                         }
                     }
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DeviceTypeListContentEmptyPreview() {
+    BatteryButlerTheme {
+        DeviceTypeListContent(
+            state = DeviceTypeListUiState.Success(groupedTypes = emptyMap()),
+            onEditType = {},
+            onAddTypeClick = {},
+            onPreloadTypes = {},
+            onSortOptionSelected = {},
+            onGroupOptionSelected = {},
+            onSortDirectionToggle = {},
+            onGroupDirectionToggle = {},
+        )
     }
 }
 

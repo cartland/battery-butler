@@ -20,6 +20,7 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.Res
 import com.chriscartland.batterybutler.composeresources.generated.resources.empty_history_message
 import com.chriscartland.batterybutler.composeresources.generated.resources.empty_history_title
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
+import com.chriscartland.batterybutler.presentationcore.components.AddItemCard
 import com.chriscartland.batterybutler.presentationcore.components.EmptyStateContent
 import com.chriscartland.batterybutler.presentationcore.components.HistoryListItem
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
@@ -34,6 +35,7 @@ import kotlin.time.Instant
 fun HistoryListContent(
     state: HistoryListUiState,
     onEventClick: (String, String) -> Unit,
+    onAddEventClick: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     nowInstant: Instant = Clock.System.now(),
@@ -68,10 +70,27 @@ fun HistoryListContent(
                                 nowInstant = nowInstant,
                             )
                         }
+                        item {
+                            AddItemCard("Add a battery event", onAddEventClick)
+                        }
                     }
                 }
             }
         }
+    }
+}
+
+@OptIn(ExperimentalTime::class)
+@Preview(showBackground = true)
+@Composable
+fun HistoryListContentEmptyPreview() {
+    BatteryButlerTheme {
+        HistoryListContent(
+            state = HistoryListUiState.Success(items = emptyList()),
+            onEventClick = { _, _ -> },
+            onAddEventClick = {},
+            nowInstant = Instant.parse("2026-01-18T17:00:00Z"),
+        )
     }
 }
 
@@ -91,6 +110,7 @@ fun HistoryListContentPreview() {
         HistoryListContent(
             state = state,
             onEventClick = { _, _ -> },
+            onAddEventClick = {},
             nowInstant = nowInstant,
         )
     }

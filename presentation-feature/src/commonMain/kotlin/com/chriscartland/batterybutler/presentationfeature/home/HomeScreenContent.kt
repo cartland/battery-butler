@@ -50,6 +50,7 @@ import com.chriscartland.batterybutler.domain.model.DataError
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.SyncStatus
+import com.chriscartland.batterybutler.presentationcore.components.AddItemCard
 import com.chriscartland.batterybutler.presentationcore.components.CompositeControl
 import com.chriscartland.batterybutler.presentationcore.components.DeviceListItem
 import com.chriscartland.batterybutler.presentationcore.components.EmptyStateContent
@@ -292,6 +293,9 @@ fun HomeScreenList(
                     )
                 }
             }
+            item {
+                AddItemCard("Add a device", onAddDeviceClick)
+            }
         }
     }
 }
@@ -347,6 +351,24 @@ fun HomeScreenPreview() {
             onDeviceClick = {},
             onAddDeviceClick = {},
             nowInstant = nowInstant,
+        )
+    }
+}
+
+@OptIn(ExperimentalTime::class)
+@Preview(showBackground = true)
+@Composable
+fun HomeScreenEmptyPreview() {
+    BatteryButlerTheme {
+        HomeScreenContent(
+            state = HomeUiState(groupedDevices = emptyMap(), deviceTypes = emptyMap()),
+            onGroupOptionToggle = {},
+            onGroupOptionSelected = {},
+            onSortOptionToggle = {},
+            onSortOptionSelected = {},
+            onDeviceClick = {},
+            onAddDeviceClick = {},
+            nowInstant = Instant.parse("2026-01-18T17:00:00Z"),
         )
     }
 }
