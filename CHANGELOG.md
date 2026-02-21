@@ -31,6 +31,20 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ---
 
+## 2026-02-21
+
+### Features
+
+- **Check for updates in Settings** ([#554](https://github.com/cartland/battery-butler/pull/554)): Added a "Check for updates" card in Settings that opens the Google Play Store listing via `LocalUriHandler`. Appears between Export Data and App Version.
+
+### Fixes
+
+- **Add cards hard to reach at bottom of lists** ([#554](https://github.com/cartland/battery-butler/pull/554)): Moved "Add" cards from the bottom to the top of LazyColumn in Home (devices), Device Types, and History screens so they're always visible without scrolling through long lists.
+
+- **AI tab chat input excessive bottom padding** ([#554](https://github.com/cartland/battery-butler/pull/554)): Removed redundant `WindowInsets.navigationBars` from the AI tab input Row. The parent Scaffold already includes navigation bar insets via `innerPadding`, which was doubling the bottom space.
+
+---
+
 ## 2026-02-16
 
 ### Refactoring
