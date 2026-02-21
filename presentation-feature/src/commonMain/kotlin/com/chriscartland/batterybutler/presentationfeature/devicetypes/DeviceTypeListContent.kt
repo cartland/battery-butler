@@ -161,6 +161,9 @@ fun DeviceTypeListContent(
                                     bottom = Padding.standard + contentPadding.calculateBottomPadding(),
                                 ),
                             ) {
+                                item {
+                                    AddItemCard("Add a device type", onAddTypeClick)
+                                }
                                 state.groupedTypes.forEach { (groupName, types) ->
                                     if (state.groupOption != DeviceTypeGroupOption.NONE) {
                                         stickyHeader {
@@ -185,9 +188,6 @@ fun DeviceTypeListContent(
                                             onClick = { onEditType(type.id) },
                                         )
                                     }
-                                }
-                                item {
-                                    AddItemCard("Add a device type", onAddTypeClick)
                                 }
                             }
                         }

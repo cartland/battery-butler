@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
@@ -115,7 +114,7 @@ fun AiTabContent(
                 .windowInsetsPadding(
                     WindowInsets.safeDrawing
                         .only(WindowInsetsSides.Horizontal)
-                        .union(WindowInsets.ime.union(WindowInsets.navigationBars)),
+                        .union(WindowInsets.ime),
                 ).padding(horizontal = 16.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
