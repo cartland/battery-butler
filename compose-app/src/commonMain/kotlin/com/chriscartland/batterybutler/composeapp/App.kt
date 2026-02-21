@@ -26,6 +26,7 @@ import com.chriscartland.batterybutler.composeapp.feature.devicetypes.EditDevice
 import com.chriscartland.batterybutler.composeapp.feature.editdevice.EditDeviceScreen
 import com.chriscartland.batterybutler.composeapp.feature.eventdetail.EventDetailScreen
 import com.chriscartland.batterybutler.composeapp.feature.login.LoginScreen
+import com.chriscartland.batterybutler.composeapp.feature.main.AiScreenRoot
 import com.chriscartland.batterybutler.composeapp.feature.main.DevicesScreenRoot
 import com.chriscartland.batterybutler.composeapp.feature.main.HistoryScreenRoot
 import com.chriscartland.batterybutler.composeapp.feature.main.TypesScreenRoot
@@ -100,11 +101,18 @@ fun App(
                                 backStack.add(Screen.History)
                             }
 
+                            val navigateToAi = {
+                                backStack.clear()
+                                backStack.add(Screen.Devices)
+                                backStack.add(Screen.AiTab)
+                            }
+
                             val onTabSelected: (MainTab) -> Unit = { selectedTab ->
                                 when (selectedTab) {
                                     MainTab.Devices -> navigateToDevices()
                                     MainTab.Types -> navigateToTypes()
                                     MainTab.History -> navigateToHistory()
+                                    MainTab.AI -> navigateToAi()
                                 }
                             }
 
@@ -244,6 +252,14 @@ fun App(
                                 )
                             }
 
+                            entry<Screen.AiTab> {
+                                AiScreenRoot(
+                                    viewModel = viewModel { component.aiChatViewModel },
+                                    onTabSelected = onTabSelected,
+                                    onSettingsClick = { backStack.navigateTo(Screen.Settings) },
+                                )
+                            }
+
                             entry<Screen.AiChat> {
                                 AiChatScreen(
                                     viewModel = viewModel { component.aiChatViewModel },
@@ -280,6 +296,9 @@ sealed interface Screen {
 
     @Serializable
     data object AiChat : Screen
+
+    @Serializable
+    data object AiTab : Screen
 
     @Serializable
     data object AddDevice : Screen

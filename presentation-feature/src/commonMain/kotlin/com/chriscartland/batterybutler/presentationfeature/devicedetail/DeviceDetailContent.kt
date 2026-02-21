@@ -58,6 +58,7 @@ import com.chriscartland.batterybutler.presentationcore.components.ButlerCentere
 import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMapper
 import com.chriscartland.batterybutler.presentationcore.components.HistoryListItem
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import com.chriscartland.batterybutler.presentationcore.theme.Padding
 import com.chriscartland.batterybutler.presentationmodel.devicedetail.DeviceDetailUiState
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -135,7 +136,7 @@ fun DeviceDetailBody(
     val recordReplacementDescription = composeStringResource(Res.string.action_record_replacement_description)
 
     LazyColumn(
-        modifier = modifier.padding(horizontal = 16.dp),
+        modifier = modifier.padding(horizontal = Padding.standard),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
@@ -212,7 +213,7 @@ fun DeviceDetailBody(
 
         // Stats Grid
         item {
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Padding.standard)) {
                 // Battery Type Card
                 StatCard(
                     icon = Icons.Default.BatteryFull,

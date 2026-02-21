@@ -55,6 +55,7 @@ import com.chriscartland.batterybutler.presentationcore.components.CompositeCont
 import com.chriscartland.batterybutler.presentationcore.components.DeviceListItem
 import com.chriscartland.batterybutler.presentationcore.components.EmptyStateContent
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import com.chriscartland.batterybutler.presentationcore.theme.Padding
 import com.chriscartland.batterybutler.presentationfeature.util.labelRes
 import com.chriscartland.batterybutler.presentationmodel.home.GroupOption
 import com.chriscartland.batterybutler.presentationmodel.home.HomeUiState
@@ -178,8 +179,8 @@ fun HomeScreenFilterRow(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                .padding(horizontal = Padding.standard, vertical = Padding.small),
+            horizontalArrangement = Arrangement.spacedBy(Padding.small),
         ) {
             var sortExpanded by remember { mutableStateOf(false) }
             var groupExpanded by remember { mutableStateOf(false) }
@@ -276,7 +277,7 @@ fun HomeScreenList(
                         ) {
                             Text(
                                 text = groupName,
-                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                                modifier = Modifier.padding(horizontal = Padding.standard, vertical = Padding.small),
                                 style = MaterialTheme.typography.labelLarge,
                                 fontWeight = FontWeight.Bold,
                             )

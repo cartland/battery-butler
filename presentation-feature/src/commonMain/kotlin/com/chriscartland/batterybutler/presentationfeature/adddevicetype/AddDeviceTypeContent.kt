@@ -73,6 +73,7 @@ import com.chriscartland.batterybutler.presentationcore.components.ButlerCentere
 import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMapper
 import com.chriscartland.batterybutler.presentationcore.components.DeviceTypeIconItem
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import com.chriscartland.batterybutler.presentationcore.theme.Padding
 import com.chriscartland.batterybutler.presentationmodel.adddevicetype.AddDeviceTypeUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -152,8 +153,8 @@ fun AddDeviceTypeContent(
                 .fillMaxSize()
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp),
+                .padding(horizontal = Padding.standard),
+            verticalArrangement = Arrangement.spacedBy(Padding.large),
         ) {
             // AI Section (only shown when AI is available)
             if (uiState.isAiBatchImportEnabled) {
