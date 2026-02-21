@@ -6,6 +6,34 @@ Each section covers one release tag range. "What's New" is user-facing language 
 
 ---
 
+## [android/9] — 2026-02-21
+
+From tag `android/8` to tag `android/9` (2 mobile-relevant commits out of 9 total)
+
+### What's New
+
+**AI moves to the main navigation**
+- The AI assistant now has its own tab in the bottom navigation bar instead of a floating button
+- AI responses now include awareness of your current date, time, and timezone
+- AI can now see your device inventory, battery types, and replacement history for more personalized responses
+
+**Visual polish**
+- "Add" cards now use a distinct secondary color so they stand out from content cards
+- Consistent spacing across all screens
+
+**Bug fix**
+- Editing or deleting a battery replacement event now correctly recalculates the device's "days since last replaced" counter
+- Events for deleted devices now display gracefully with "Unknown Device" instead of being hidden
+
+### Detailed Changes
+
+| PR | Description |
+|----|-------------|
+| [#549](https://github.com/cartland/battery-butler/pull/549) | UI consistency (padding, card colors, AI tab) and AI context enhancements (time, user inventory) |
+| [#547](https://github.com/cartland/battery-butler/pull/547) | Recalculate device batteryLastReplaced after event edit/delete; handle deleted devices in event detail |
+
+---
+
 ## [android/8] — 2026-02-21
 
 From tag `android/3` to tag `android/8` (30 mobile-relevant commits out of 82 total)
