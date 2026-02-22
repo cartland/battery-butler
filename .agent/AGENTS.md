@@ -80,6 +80,7 @@ Keeping the build and tests healthy is a top priority. When you identify or fix 
 
 - **Self Improvements**:
   - **Always** update `.agent/` documentation when learning a critical piece of information that will improve future agent performance. Workflow rules go in `AGENTS.md`; project knowledge goes in `project.md`.
+  - **Proactively suggest and implement meta-improvements**: Whenever you notice a repetitive task, recurring CI failures from the same root cause, or manual procedures that should be automated, you MUST suggest creating a new workflow (`.agent/workflows/` and `.claude/skills/`), an automation script (`scripts/`), Github Actions, or Git Hooks (e.g. `pre-commit` / `pre-push`). Actively engineer the project to require less manual agentic intervention in the future.
   - **Always** run `/dump-context` before ending a session where significant work was done. This captures tasks, decisions, and operational knowledge into beads and docs.
 
 - **Session Start**:

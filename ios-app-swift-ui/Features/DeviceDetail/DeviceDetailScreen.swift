@@ -3,9 +3,13 @@ import shared
 
 struct DeviceDetailScreen: View {
     @StateObject private var wrapper: DeviceDetailViewModelWrapper
+    private let component: NativeComponent
+    private let deviceId: String
     
-    init(factory: DeviceDetailViewModelFactory, deviceId: String) {
-        let viewModel = factory.create(deviceId: deviceId)
+    init(component: NativeComponent, deviceId: String) {
+        self.deviceId = deviceId
+        self.component = component
+        let viewModel = component.deviceDetailViewModelFactory.create(deviceId: deviceId)
         _wrapper = StateObject(wrappedValue: DeviceDetailViewModelWrapper(viewModel))
     }
     
@@ -62,12 +66,17 @@ struct DeviceDetailScreen: View {
                                 .foregroundColor(.secondary)
                         } else {
                             ForEach(success.events, id: \.self) { event in
-                                HStack {
-                                    Text(event.date.description) // Format
-                                    Spacer()
-                                    Text("Replaced")
+                                NavigationLink(destination: EventDetailScreen(eventId: event.id, component: component)) {
+                                    HStack {
+                                        let dateString = Date(timeIntervalSince1970: TimeInterval(event.date.toEpochMilliseconds()) / 1000.0).formatted(date: .abbreviated, time: .shortened)
+                                        Text(dateString)
+                                            .foregroundColor(.primary)
+                                        Spacer()
+                                        Text("Details")
+                                            .foregroundColor(.accentColor)
+                                    }
+                                    .padding(.vertical, 4)
                                 }
-                                .padding(.vertical, 4)
                             }
                         }
                     }
