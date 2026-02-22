@@ -28,13 +28,18 @@ import com.chriscartland.batterybutler.domain.repository.AuthRepository
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.domain.repository.FeatureFlagProvider
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
+import com.chriscartland.batterybutler.viewmodel.addbatteryevent.AddBatteryEventViewModel
 import com.chriscartland.batterybutler.viewmodel.adddevice.AddDeviceViewModel
 import com.chriscartland.batterybutler.viewmodel.adddevicetype.AddDeviceTypeViewModel
+import com.chriscartland.batterybutler.viewmodel.aichat.AiChatViewModel
 import com.chriscartland.batterybutler.viewmodel.devicedetail.DeviceDetailViewModelFactory
 import com.chriscartland.batterybutler.viewmodel.devicetypes.DeviceTypeListViewModel
 import com.chriscartland.batterybutler.viewmodel.devicetypes.EditDeviceTypeViewModelFactory
+import com.chriscartland.batterybutler.viewmodel.editdevice.EditDeviceViewModelFactory
+import com.chriscartland.batterybutler.viewmodel.eventdetail.EventDetailViewModelFactory
 import com.chriscartland.batterybutler.viewmodel.history.HistoryListViewModel
 import com.chriscartland.batterybutler.viewmodel.home.HomeViewModel
+import com.chriscartland.batterybutler.viewmodel.login.LoginViewModel
 import com.chriscartland.batterybutler.viewmodel.settings.SettingsViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -63,6 +68,11 @@ abstract class NativeComponent(
     abstract val deviceDetailViewModelFactory: DeviceDetailViewModelFactory
     abstract val addDeviceTypeViewModel: AddDeviceTypeViewModel
     abstract val editDeviceTypeViewModelFactory: EditDeviceTypeViewModelFactory
+    abstract val editDeviceViewModelFactory: EditDeviceViewModelFactory
+    abstract val aiChatViewModel: AiChatViewModel
+    abstract val addBatteryEventViewModel: AddBatteryEventViewModel
+    abstract val eventDetailViewModelFactory: EventDetailViewModelFactory
+    abstract val loginViewModel: LoginViewModel
 
     // Can add other ViewModels as needed for the native app
 
