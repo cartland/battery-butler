@@ -100,6 +100,7 @@ Keeping the build and tests healthy is a top priority. When you identify or fix 
 
 - **Pull Requests**:
   - **Always** ensure the Pull Request title and description accurately reflect the final changes. If the scope of a branch evolves, update the PR description before merging.
+  - **Always verify PR state before reporting it to the user.** Never assume a PR's merge status, auto-merge status, or check status from memory — query it with `gh pr view <N> --json state,mergedAt,autoMergeRequest,mergeable`. Auto-merge can be silently cleared when the base branch updates or checks restart.
   - See **PR Merge Workflow** section below for merge sequencing and broken build handling.
 
 - **iOS Builds**:
