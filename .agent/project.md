@@ -75,6 +75,26 @@ Key types (see `domain/model/DataResult.kt`):
 - `DataError` - Sealed hierarchy: Network, Database, Ai, Unknown
 - Catch library exceptions at data layer boundaries, return typed errors
 
+### Single Responsibility Principle
+
+Classes should have one reason to change. See `docs/architecture/adr-004-single-responsibility-principle.md` for full guidelines and examples.
+
+**Red flags** (consider extracting):
+- Identical logic duplicated across 3+ locations
+- Class >150 lines with clearly separable concerns
+- Mixing CRUD with infrastructure (sync, caching, retry logic)
+- Two unrelated groups of tests in one test file
+
+**Extraction checklist:**
+1. Identify the seam (minimal interaction points between responsibilities)
+2. Create an interface if the new class will be injected
+3. Move code to a new class, keeping the same behavior
+4. Update DI bindings (`DataComponent`, `AppDataModule`, `NativeComponent`)
+5. Split tests into focused test files
+6. Run `./gradlew test` to verify no regressions
+
+**Established patterns:** SyncManager extraction (data module), FindOrCreate use cases (usecase module), `sortAndGroup()` utility (viewmodel module), Screen sealed interface separation (compose-app module).
+
 ### UI Theme Constants
 
 Padding constants live in `presentation-core/.../theme/Padding.kt`. Use `Padding.standard` (16.dp), `Padding.small` (8.dp), `Padding.large` (24.dp), etc. instead of hardcoded dp values.
@@ -134,8 +154,8 @@ ruby ios-app-swift-ui/sync_pbxproj.rb         # Sync Swift files to Xcode
 ### Unit Tests (`./gradlew test`)
 - Pure Kotlin tests across all modules (domain, data, viewmodel, usecase, server, etc.)
 - Located in `src/commonTest/`, `src/test/`
-- **Coroutine test gotcha**: `DefaultDeviceRepository` has an infinite `subscribeWithRetry()` loop in `init`. Never use `advanceUntilIdle()` in tests that create this repository with a subscribe source that throws or completes (it schedules infinite tasks). Use `testDispatcher.scheduler.advanceTimeBy(ms)` + `runCurrent()` instead, and always call `repoScope.cancel()` at end.
-- `applyRemoteUpdate` and `nextBackoff` are `internal` for direct testing without the subscribe loop
+- **Coroutine test gotcha**: `DefaultSyncManager` has an infinite `subscribeWithRetry()` loop in `init`. Never use `advanceUntilIdle()` in tests that create a SyncManager with a subscribe source that throws or completes (it schedules infinite tasks). Use `testDispatcher.scheduler.advanceTimeBy(ms)` + `runCurrent()` instead, and always call `scope.cancel()` at end.
+- `applyRemoteUpdate` and `nextBackoff` are `internal` on `DefaultSyncManager` for direct testing without the subscribe loop
 
 ### Instrumented Tests (`scripts/test.sh`)
 - Require an Android emulator (CI uses managed Pixel 5 API 34 with KVM)
