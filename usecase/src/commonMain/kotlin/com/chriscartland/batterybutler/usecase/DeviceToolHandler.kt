@@ -8,12 +8,10 @@ import com.chriscartland.batterybutler.domain.model.ai.AiToolNames
 import com.chriscartland.batterybutler.domain.model.ai.AiToolParams
 import com.chriscartland.batterybutler.domain.model.ai.ToolHandler
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
-import kotlinx.coroutines.flow.first
 import kotlinx.datetime.atStartOfDayIn
 import me.tatarka.inject.annotations.Inject
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Clock
-import kotlin.time.Instant
 
 /**
  * A [ToolHandler] that handles all Battery Butler AI tools:
@@ -24,6 +22,8 @@ import kotlin.time.Instant
 @Inject
 class DeviceToolHandler(
     private val deviceRepository: DeviceRepository,
+    private val findOrCreateDeviceTypeUseCase: FindOrCreateDeviceTypeUseCase,
+    private val findOrCreateDeviceUseCase: FindOrCreateDeviceUseCase,
 ) : ToolHandler {
     override suspend fun execute(
         name: String,
@@ -45,24 +45,14 @@ class DeviceToolHandler(
         val name = args[AiToolParams.NAME] as? String ?: return "Error: Missing name"
         val typeName = args[AiToolParams.TYPE] as? String
 
-        val typeId = if (!typeName.isNullOrBlank()) {
-            val existingTypes = deviceRepository.getAllDeviceTypes().first()
-            existingTypes.find { it.name == typeName }?.id
-                ?: uuid4().toString().also { newTypeId ->
-                    deviceRepository.addDeviceType(
-                        DeviceType(id = newTypeId, name = typeName, defaultIcon = "default"),
-                    )
-                }
-        } else {
-            "default_type"
-        }
+        val typeId = findOrCreateDeviceTypeUseCase(typeName)
 
         deviceRepository.addDevice(
             Device(
                 id = uuid4().toString(),
                 name = name,
                 typeId = typeId,
-                batteryLastReplaced = Instant.fromEpochMilliseconds(0),
+                batteryLastReplaced = kotlin.time.Instant.fromEpochMilliseconds(0),
                 lastUpdated = Clock.System.now(),
             ),
         )
@@ -85,29 +75,7 @@ class DeviceToolHandler(
         val dateStr = args[AiToolParams.DATE] as? String ?: return "Error: Missing date"
         val deviceTypeName = args[AiToolParams.DEVICE_TYPE] as? String
 
-        // Find or create device
-        val existingDevices = deviceRepository.getAllDevices().first()
-        val targetDevice = existingDevices.find { it.name == deviceName }
-            ?: run {
-                val typeId = if (!deviceTypeName.isNullOrBlank()) {
-                    val existingTypes = deviceRepository.getAllDeviceTypes().first()
-                    existingTypes.find { it.name == deviceTypeName }?.id
-                        ?: uuid4().toString().also { newTypeId ->
-                            deviceRepository.addDeviceType(
-                                DeviceType(newTypeId, deviceTypeName, "default"),
-                            )
-                        }
-                } else {
-                    "default_type"
-                }
-                Device(
-                    id = uuid4().toString(),
-                    name = deviceName,
-                    typeId = typeId,
-                    batteryLastReplaced = Instant.fromEpochMilliseconds(0),
-                    lastUpdated = Clock.System.now(),
-                ).also { deviceRepository.addDevice(it) }
-            }
+        val targetDevice = findOrCreateDeviceUseCase(deviceName, deviceTypeName)
 
         // Parse date
         val date = kotlinx.datetime.LocalDate.parse(dateStr)

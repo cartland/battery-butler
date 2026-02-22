@@ -5,6 +5,8 @@ import androidx.datastore.preferences.core.Preferences
 import com.chriscartland.batterybutler.data.di.DataComponent
 import com.chriscartland.batterybutler.data.repository.DataStoreNetworkModeRepository
 import com.chriscartland.batterybutler.data.repository.DefaultDeviceRepository
+import com.chriscartland.batterybutler.data.repository.DefaultSyncManager
+import com.chriscartland.batterybutler.data.repository.SyncManager
 import com.chriscartland.batterybutler.data.repository.auth.DefaultAuthRepository
 import com.chriscartland.batterybutler.datalocal.auth.AuthTokenStorage
 import com.chriscartland.batterybutler.datalocal.auth.DataStoreAuthTokenStorage
@@ -38,6 +40,10 @@ interface AppDataModule : DataComponent {
     @Provides
     @Singleton
     override fun provideRemoteDataSource(dataSource: DelegatingRemoteDataSource): RemoteDataSource = super.provideRemoteDataSource(dataSource)
+
+    @Provides
+    @Singleton
+    override fun provideSyncManager(manager: DefaultSyncManager): SyncManager = super.provideSyncManager(manager)
 
     @Provides
     @Singleton

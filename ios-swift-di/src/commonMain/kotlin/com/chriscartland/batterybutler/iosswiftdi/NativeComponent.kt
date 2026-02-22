@@ -7,7 +7,9 @@ import com.chriscartland.batterybutler.data.provider.DefaultDispatcherProvider
 import com.chriscartland.batterybutler.data.repository.DataStoreNetworkModeRepository
 import com.chriscartland.batterybutler.data.repository.DefaultDeviceRepository
 import com.chriscartland.batterybutler.data.repository.DefaultFeatureFlagProvider
+import com.chriscartland.batterybutler.data.repository.DefaultSyncManager
 import com.chriscartland.batterybutler.data.repository.InMemoryAiPreferencesRepository
+import com.chriscartland.batterybutler.data.repository.SyncManager
 import com.chriscartland.batterybutler.datalocal.LocalDataSource
 import com.chriscartland.batterybutler.datalocal.RoomLocalDataSource
 import com.chriscartland.batterybutler.datalocal.preferences.DataStoreFactory
@@ -86,6 +88,10 @@ abstract class NativeComponent(
     @Provides
     @SharedSingleton
     fun provideLocalDataSource(dataSource: RoomLocalDataSource): LocalDataSource = dataSource
+
+    @Provides
+    @SharedSingleton
+    fun provideSyncManager(manager: DefaultSyncManager): SyncManager = manager
 
     @Provides
     @SharedSingleton

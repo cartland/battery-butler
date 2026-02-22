@@ -13,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
@@ -34,6 +33,8 @@ import com.chriscartland.batterybutler.composeapp.feature.main.DevicesScreenRoot
 import com.chriscartland.batterybutler.composeapp.feature.main.HistoryScreenRoot
 import com.chriscartland.batterybutler.composeapp.feature.main.TypesScreenRoot
 import com.chriscartland.batterybutler.composeapp.feature.settings.SettingsScreen
+import com.chriscartland.batterybutler.composeapp.navigation.Screen
+import com.chriscartland.batterybutler.composeapp.navigation.navigateTo
 import com.chriscartland.batterybutler.composeapp.util.ScreenListSaver
 import com.chriscartland.batterybutler.composeresources.LocalAppStrings
 import com.chriscartland.batterybutler.domain.model.FeatureFlag
@@ -45,7 +46,6 @@ import com.chriscartland.batterybutler.presentationcore.util.LocalFileSaver
 import com.chriscartland.batterybutler.presentationcore.util.LocalShareHandler
 import com.chriscartland.batterybutler.presentationcore.util.ShareHandler
 import com.chriscartland.batterybutler.presentationfeature.main.MainTab
-import kotlinx.serialization.Serializable
 
 private val slideTransitionMetadata =
     NavDisplay.transitionSpec {
@@ -290,68 +290,5 @@ fun App(
                 }
             } // CompositionLocalProvider
         }
-    }
-}
-
-@Serializable
-sealed interface Screen {
-    @Serializable
-    data object Login : Screen
-
-    @Serializable
-    data object Devices : Screen
-
-    @Serializable
-    data object History : Screen
-
-    @Serializable
-    data object Types : Screen
-
-    @Serializable
-    data object Settings : Screen
-
-    @Serializable
-    data object AiChat : Screen
-
-    @Serializable
-    data object AiTab : Screen
-
-    @Serializable
-    data object AddDevice : Screen
-
-    @Serializable
-    data object AddBatteryEvent : Screen
-
-    @Serializable
-    data object AddDeviceType : Screen
-
-    @Serializable
-    data class DeviceDetail(
-        val deviceId: String,
-    ) : Screen
-
-    @Serializable
-    data class EditDevice(
-        val deviceId: String,
-    ) : Screen
-
-    @Serializable
-    data class EventDetail(
-        val eventId: String,
-    ) : Screen
-
-    @Serializable
-    data class EditDeviceType(
-        val typeId: String,
-    ) : Screen
-}
-
-/**
- * Safely navigates to a screen, preventing duplicate navigation from rapid clicks.
- * If the last screen in the back stack matches the target screen, the navigation is skipped.
- */
-private fun SnapshotStateList<Screen>.navigateTo(screen: Screen) {
-    if (lastOrNull() != screen) {
-        add(screen)
     }
 }

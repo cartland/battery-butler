@@ -4,8 +4,6 @@ import com.benasher44.uuid.uuid4
 import com.chriscartland.batterybutler.domain.model.BatchOperationResult
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.DataError
-import com.chriscartland.batterybutler.domain.model.Device
-import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.ai.AiEngine
 import com.chriscartland.batterybutler.domain.model.ai.AiToolNames
 import com.chriscartland.batterybutler.domain.model.ai.AiToolParams
@@ -13,17 +11,15 @@ import com.chriscartland.batterybutler.domain.model.ai.ToolHandler
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.datetime.atStartOfDayIn
 import me.tatarka.inject.annotations.Inject
 import kotlin.coroutines.cancellation.CancellationException
-import kotlin.time.Clock
-import kotlin.time.Instant
 
 @Inject
 class BatchAddBatteryEventsUseCase(
     private val aiEngine: AiEngine,
     private val deviceRepository: DeviceRepository,
+    private val findOrCreateDeviceUseCase: FindOrCreateDeviceUseCase,
 ) {
     private val systemInstructions =
         """
@@ -43,46 +39,24 @@ class BatchAddBatteryEventsUseCase(
                         val deviceTypeName = args[AiToolParams.DEVICE_TYPE] as? String
 
                         try {
-                            // 1. Find or Create Device
-                            val existingDevices = deviceRepository.getAllDevices().first()
-                            val targetDevice = existingDevices.find { it.name == deviceName }
-                                ?: run {
-                                    // Find or Create Device Type
-                                    val typeId = if (!deviceTypeName.isNullOrBlank()) {
-                                        val existingTypes = deviceRepository.getAllDeviceTypes().first()
-                                        existingTypes.find { it.name == deviceTypeName }?.id
-                                            ?: uuid4().toString().also { newTypeId ->
-                                                deviceRepository.addDeviceType(DeviceType(newTypeId, deviceTypeName, "default"))
-                                            }
-                                    } else {
-                                        "default_type"
-                                    }
+                            val targetDevice = findOrCreateDeviceUseCase(deviceName, deviceTypeName)
 
-                                    Device(
-                                        id = uuid4().toString(),
-                                        name = deviceName,
-                                        typeId = typeId,
-                                        batteryLastReplaced = Instant.fromEpochMilliseconds(0),
-                                        lastUpdated = Clock.System.now(),
-                                    ).also { deviceRepository.addDevice(it) }
-                                }
-
-                            // 2. Parse Date
+                            // Parse Date
                             val date = kotlinx.datetime.LocalDate.parse(dateStr)
                             val kxInstant = date.atStartOfDayIn(kotlinx.datetime.TimeZone.currentSystemDefault())
                             val instant = kotlin.time.Instant.fromEpochMilliseconds(kxInstant.toEpochMilliseconds())
 
-                            // 3. Add Battery Event
+                            // Add Battery Event
                             val event = BatteryEvent(
                                 id = uuid4().toString(),
-                                batteryType = "AA", // Placeholder or from args if available
+                                batteryType = "AA",
                                 deviceId = targetDevice.id,
                                 date = instant,
                                 notes = "Imported via AI",
                             )
                             deviceRepository.addEvent(event)
 
-                            // 4. Update Device if newer
+                            // Update Device if newer
                             if (instant > targetDevice.batteryLastReplaced) {
                                 deviceRepository.updateDevice(targetDevice.copy(batteryLastReplaced = instant))
                             }

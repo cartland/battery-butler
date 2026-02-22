@@ -56,17 +56,19 @@ class DefaultDeviceRepositoryTest {
     }
 
     /**
-     * Creates a [DefaultDeviceRepository] with a child scope that shares the test dispatcher.
+     * Creates a [DefaultDeviceRepository] backed by a real [DefaultSyncManager].
      * The returned scope must be cancelled at the end of the test to stop the subscribe retry loop.
+     * The [DefaultSyncManager] is also returned for tests that need direct access.
      */
     private fun createRepo(
         local: FakeLocalDataSource = FakeLocalDataSource(),
         remote: RemoteDataSource = FakeRemoteDataSource(),
         networkMode: FakeNetworkModeRepository = FakeNetworkModeRepository(NetworkMode.Mock),
-    ): Pair<DefaultDeviceRepository, CoroutineScope> {
+    ): RepoTestHarness {
         val repoScope = CoroutineScope(testDispatcher + Job())
-        val repo = DefaultDeviceRepository(local, remote, networkMode, repoScope)
-        return repo to repoScope
+        val syncManager = DefaultSyncManager(local, remote, networkMode, repoScope)
+        val repo = DefaultDeviceRepository(local, syncManager)
+        return RepoTestHarness(repo, syncManager, repoScope)
     }
 
     // ───────────────────────────────────────────────────────
@@ -78,7 +80,7 @@ class DefaultDeviceRepositoryTest {
         runTest(testDispatcher) {
             val local = FakeLocalDataSource()
             val remote = FakeRemoteDataSource()
-            val (repo, repoScope) = createRepo(local, remote)
+            val (repo, _, repoScope) = createRepo(local, remote)
             val device = createDevice(id = "1", name = "Test Device")
 
             repo.addDevice(device)
@@ -96,7 +98,7 @@ class DefaultDeviceRepositoryTest {
         runTest(testDispatcher) {
             val local = FakeLocalDataSource()
             val remote = FakeRemoteDataSource()
-            val (repo, repoScope) = createRepo(local, remote)
+            val (repo, _, repoScope) = createRepo(local, remote)
             val device = createDevice(id = "1", name = "Updated Device")
 
             repo.updateDevice(device)
@@ -112,7 +114,7 @@ class DefaultDeviceRepositoryTest {
         runTest(testDispatcher) {
             val local = FakeLocalDataSource()
             val remote = FakeRemoteDataSource()
-            val (repo, repoScope) = createRepo(local, remote)
+            val (repo, _, repoScope) = createRepo(local, remote)
 
             repo.deleteDevice("device-1")
             advanceUntilIdle()
@@ -130,7 +132,7 @@ class DefaultDeviceRepositoryTest {
         runTest(testDispatcher) {
             val local = FakeLocalDataSource()
             val remote = FakeRemoteDataSource()
-            val (repo, repoScope) = createRepo(local, remote)
+            val (repo, _, repoScope) = createRepo(local, remote)
             val type = DeviceType(id = "type-1", name = "Smoke Detector")
 
             repo.addDeviceType(type)
@@ -147,7 +149,7 @@ class DefaultDeviceRepositoryTest {
         runTest(testDispatcher) {
             val local = FakeLocalDataSource()
             val remote = FakeRemoteDataSource()
-            val (repo, repoScope) = createRepo(local, remote)
+            val (repo, _, repoScope) = createRepo(local, remote)
             val type = DeviceType(id = "type-1", name = "Updated Type")
 
             repo.updateDeviceType(type)
@@ -163,7 +165,7 @@ class DefaultDeviceRepositoryTest {
         runTest(testDispatcher) {
             val local = FakeLocalDataSource()
             val remote = FakeRemoteDataSource()
-            val (repo, repoScope) = createRepo(local, remote)
+            val (repo, _, repoScope) = createRepo(local, remote)
 
             repo.deleteDeviceType("type-1")
             advanceUntilIdle()
@@ -181,7 +183,7 @@ class DefaultDeviceRepositoryTest {
         runTest(testDispatcher) {
             val local = FakeLocalDataSource()
             val remote = FakeRemoteDataSource()
-            val (repo, repoScope) = createRepo(local, remote)
+            val (repo, _, repoScope) = createRepo(local, remote)
             val event = createBatteryEvent(id = "event-1", deviceId = "device-1")
 
             repo.addEvent(event)
@@ -198,7 +200,7 @@ class DefaultDeviceRepositoryTest {
         runTest(testDispatcher) {
             val local = FakeLocalDataSource()
             val remote = FakeRemoteDataSource()
-            val (repo, repoScope) = createRepo(local, remote)
+            val (repo, _, repoScope) = createRepo(local, remote)
             val event = createBatteryEvent(id = "event-1", deviceId = "device-1")
 
             repo.updateEvent(event)
@@ -214,7 +216,7 @@ class DefaultDeviceRepositoryTest {
         runTest(testDispatcher) {
             val local = FakeLocalDataSource()
             val remote = FakeRemoteDataSource()
-            val (repo, repoScope) = createRepo(local, remote)
+            val (repo, _, repoScope) = createRepo(local, remote)
 
             repo.deleteEvent("event-1")
             advanceUntilIdle()
@@ -233,7 +235,7 @@ class DefaultDeviceRepositoryTest {
             val local = FakeLocalDataSource()
             val device = createDevice(id = "1", name = "Test")
             local.setDevicesForFlow(listOf(device))
-            val (repo, repoScope) = createRepo(local)
+            val (repo, _, repoScope) = createRepo(local)
 
             val flow = repo.getAllDevices()
             assertEquals(local.getAllDevices(), flow)
@@ -246,7 +248,7 @@ class DefaultDeviceRepositoryTest {
             val local = FakeLocalDataSource()
             val type = DeviceType(id = "type-1", name = "Test")
             local.setDeviceTypesForFlow(listOf(type))
-            val (repo, repoScope) = createRepo(local)
+            val (repo, _, repoScope) = createRepo(local)
 
             val flow = repo.getAllDeviceTypes()
             assertEquals(local.getAllDeviceTypes(), flow)
@@ -263,7 +265,7 @@ class DefaultDeviceRepositoryTest {
             val local = FakeLocalDataSource()
             val remote = FakeRemoteDataSource()
             remote.suspendPush = true
-            val (repo, repoScope) = createRepo(local, remote)
+            val (repo, _, repoScope) = createRepo(local, remote)
             val device = createDevice(id = "1", name = "Test Device")
 
             val states = mutableListOf<SyncStatus>()
@@ -289,7 +291,7 @@ class DefaultDeviceRepositoryTest {
             val local = FakeLocalDataSource()
             val remote = FakeRemoteDataSource()
             remote.shouldFail = true
-            val (repo, repoScope) = createRepo(local, remote)
+            val (repo, _, repoScope) = createRepo(local, remote)
             val device = createDevice(id = "1", name = "Test Device")
 
             repo.addDevice(device)
@@ -306,7 +308,7 @@ class DefaultDeviceRepositoryTest {
         runTest(testDispatcher) {
             val local = FakeLocalDataSource()
             val remote = FakeRemoteDataSource()
-            val (repo, repoScope) = createRepo(local, remote)
+            val (repo, _, repoScope) = createRepo(local, remote)
             val device = createDevice(id = "1", name = "Test Device")
 
             repo.addDevice(device)
@@ -321,7 +323,7 @@ class DefaultDeviceRepositoryTest {
         runTest(testDispatcher) {
             val local = FakeLocalDataSource()
             val remote = FakeRemoteDataSource()
-            val (repo, repoScope) = createRepo(local, remote)
+            val (repo, _, repoScope) = createRepo(local, remote)
             val device = createDevice(id = "1", name = "Test Device")
 
             repo.addDevice(device)
@@ -340,7 +342,7 @@ class DefaultDeviceRepositoryTest {
             val local = FakeLocalDataSource()
             val remote = FakeRemoteDataSource()
             remote.shouldFail = true
-            val (repo, repoScope) = createRepo(local, remote)
+            val (repo, _, repoScope) = createRepo(local, remote)
             val device = createDevice(id = "1", name = "Test Device")
 
             repo.addDevice(device)
@@ -353,7 +355,7 @@ class DefaultDeviceRepositoryTest {
         }
 
     // ───────────────────────────────────────────────────────
-    // Network Mode Tests (NEW)
+    // Network Mode Tests
     // ───────────────────────────────────────────────────────
 
     @Test
@@ -362,7 +364,7 @@ class DefaultDeviceRepositoryTest {
             val local = FakeLocalDataSource()
             val remote = FakeRemoteDataSource()
             val networkMode = FakeNetworkModeRepository(NetworkMode.None)
-            val (repo, repoScope) = createRepo(local, remote, networkMode)
+            val (repo, _, repoScope) = createRepo(local, remote, networkMode)
             val device = createDevice(id = "1", name = "Offline Device")
 
             repo.addDevice(device)
@@ -379,7 +381,7 @@ class DefaultDeviceRepositoryTest {
         }
 
     // ───────────────────────────────────────────────────────
-    // Delete Push Tests (NEW)
+    // Delete Push Tests
     // ───────────────────────────────────────────────────────
 
     @Test
@@ -387,7 +389,7 @@ class DefaultDeviceRepositoryTest {
         runTest(testDispatcher) {
             val local = FakeLocalDataSource()
             val remote = FakeRemoteDataSource()
-            val (repo, repoScope) = createRepo(local, remote)
+            val (repo, _, repoScope) = createRepo(local, remote)
 
             repo.deleteDevice("device-42")
             advanceUntilIdle()
@@ -406,7 +408,7 @@ class DefaultDeviceRepositoryTest {
         runTest(testDispatcher) {
             val local = FakeLocalDataSource()
             val remote = FakeRemoteDataSource()
-            val (repo, repoScope) = createRepo(local, remote)
+            val (repo, _, repoScope) = createRepo(local, remote)
 
             repo.deleteDeviceType("type-99")
             advanceUntilIdle()
@@ -423,7 +425,7 @@ class DefaultDeviceRepositoryTest {
         runTest(testDispatcher) {
             val local = FakeLocalDataSource()
             val remote = FakeRemoteDataSource()
-            val (repo, repoScope) = createRepo(local, remote)
+            val (repo, _, repoScope) = createRepo(local, remote)
 
             repo.deleteEvent("event-77")
             advanceUntilIdle()
@@ -436,7 +438,7 @@ class DefaultDeviceRepositoryTest {
         }
 
     // ───────────────────────────────────────────────────────
-    // Edge Case Tests (NEW)
+    // Edge Case Tests
     // ───────────────────────────────────────────────────────
 
     @Test
@@ -444,7 +446,7 @@ class DefaultDeviceRepositoryTest {
         runTest(testDispatcher) {
             val local = FakeLocalDataSource()
             val remote = FakeRemoteDataSource()
-            val (repo, repoScope) = createRepo(local, remote)
+            val (repo, _, repoScope) = createRepo(local, remote)
 
             val devices = (1..10).map {
                 createDevice(id = "d$it", name = "Device $it")
@@ -464,7 +466,7 @@ class DefaultDeviceRepositoryTest {
         runTest(testDispatcher) {
             val local = FakeLocalDataSource()
             val remote = ThrowingRemoteDataSource()
-            val (repo, repoScope) = createRepo(local, remote)
+            val (repo, _, repoScope) = createRepo(local, remote)
             val device = createDevice(id = "1", name = "Test")
 
             repo.addDevice(device)
@@ -478,19 +480,19 @@ class DefaultDeviceRepositoryTest {
         }
 
     // ───────────────────────────────────────────────────────
-    // applyRemoteUpdate Tests (direct, no subscribe loop)
+    // applyRemoteUpdate Tests (via SyncManager)
     // ───────────────────────────────────────────────────────
 
     @Test
     fun `applyRemoteUpdate stores data in local data source`() =
         runTest(testDispatcher) {
             val local = FakeLocalDataSource()
-            val (repo, repoScope) = createRepo(local)
+            val (_, syncManager, repoScope) = createRepo(local)
             val device = createDevice(id = "d1", name = "Hallway Detector")
             val type = DeviceType(id = "t1", name = "Smoke Detector")
             val event = createBatteryEvent(id = "e1", deviceId = "d1")
 
-            repo.applyRemoteUpdate(
+            syncManager.applyRemoteUpdate(
                 RemoteUpdate(
                     isFullSnapshot = false,
                     deviceTypes = listOf(type),
@@ -516,8 +518,8 @@ class DefaultDeviceRepositoryTest {
             local.addDeviceType(DeviceType(id = "t1", name = "Old Type"))
             local.addEvent(createBatteryEvent(id = "e1", deviceId = "d1"))
 
-            val (repo, repoScope) = createRepo(local)
-            repo.applyRemoteUpdate(
+            val (_, syncManager, repoScope) = createRepo(local)
+            syncManager.applyRemoteUpdate(
                 RemoteUpdate(
                     isFullSnapshot = false,
                     deviceTypes = emptyList(),
@@ -540,9 +542,9 @@ class DefaultDeviceRepositoryTest {
         runTest(testDispatcher) {
             val local = FakeLocalDataSource()
             local.addDevice(createDevice(id = "d1", name = "Keep Me"))
-            val (repo, repoScope) = createRepo(local)
+            val (_, syncManager, repoScope) = createRepo(local)
 
-            repo.applyRemoteUpdate(
+            syncManager.applyRemoteUpdate(
                 RemoteUpdate(
                     isFullSnapshot = true,
                     deviceTypes = emptyList(),
@@ -564,9 +566,9 @@ class DefaultDeviceRepositoryTest {
     fun `applyRemoteUpdate handles empty update gracefully`() =
         runTest(testDispatcher) {
             val local = FakeLocalDataSource()
-            val (repo, repoScope) = createRepo(local)
+            val (_, syncManager, repoScope) = createRepo(local)
 
-            repo.applyRemoteUpdate(
+            syncManager.applyRemoteUpdate(
                 RemoteUpdate(
                     isFullSnapshot = false,
                     deviceTypes = emptyList(),
@@ -594,7 +596,7 @@ class DefaultDeviceRepositoryTest {
             val channel = Channel<RemoteUpdate>(Channel.UNLIMITED)
             remote.onSubscribe = { channel.receiveAsFlow() }
 
-            val (repo, repoScope) = createRepo(local, remote)
+            val (_, _, repoScope) = createRepo(local, remote)
             testDispatcher.scheduler.advanceTimeBy(100)
             testDispatcher.scheduler.runCurrent()
 
@@ -622,7 +624,7 @@ class DefaultDeviceRepositoryTest {
             val channel = Channel<RemoteUpdate>(Channel.UNLIMITED)
             remote.onSubscribe = { channel.receiveAsFlow() }
 
-            val (repo, repoScope) = createRepo(local, remote)
+            val (repo, _, repoScope) = createRepo(local, remote)
             testDispatcher.scheduler.advanceTimeBy(100)
             testDispatcher.scheduler.runCurrent()
 
@@ -649,7 +651,7 @@ class DefaultDeviceRepositoryTest {
             val channel = Channel<RemoteUpdate>(Channel.UNLIMITED)
             remote.onSubscribe = { channel.receiveAsFlow() }
 
-            val (repo, repoScope) = createRepo(local, remote)
+            val (_, _, repoScope) = createRepo(local, remote)
             testDispatcher.scheduler.advanceTimeBy(100)
             testDispatcher.scheduler.runCurrent()
 
@@ -676,7 +678,7 @@ class DefaultDeviceRepositoryTest {
             val remote = ControllableRemoteDataSource()
             remote.onSubscribe = { throw RuntimeException("Connection refused") }
 
-            val (repo, repoScope) = createRepo(remote = remote)
+            val (repo, _, repoScope) = createRepo(remote = remote)
             testDispatcher.scheduler.advanceTimeBy(100)
             testDispatcher.scheduler.runCurrent()
 
@@ -692,7 +694,7 @@ class DefaultDeviceRepositoryTest {
             val remote = ControllableRemoteDataSource()
             remote.onSubscribe = { emptyFlow() }
 
-            val (repo, repoScope) = createRepo(remote = remote)
+            val (_, _, repoScope) = createRepo(remote = remote)
             // First subscribe attempt
             testDispatcher.scheduler.advanceTimeBy(100)
             testDispatcher.scheduler.runCurrent()
@@ -715,17 +717,17 @@ class DefaultDeviceRepositoryTest {
 
     @Test
     fun `nextBackoff doubles and caps correctly`() {
-        assertEquals(2000L, DefaultDeviceRepository.nextBackoff(1000))
-        assertEquals(4000L, DefaultDeviceRepository.nextBackoff(2000))
-        assertEquals(16000L, DefaultDeviceRepository.nextBackoff(8000))
+        assertEquals(2000L, DefaultSyncManager.nextBackoff(1000))
+        assertEquals(4000L, DefaultSyncManager.nextBackoff(2000))
+        assertEquals(16000L, DefaultSyncManager.nextBackoff(8000))
         // Cap at MAX_BACKOFF_MS
         assertEquals(
-            DefaultDeviceRepository.MAX_BACKOFF_MS,
-            DefaultDeviceRepository.nextBackoff(DefaultDeviceRepository.MAX_BACKOFF_MS),
+            DefaultSyncManager.MAX_BACKOFF_MS,
+            DefaultSyncManager.nextBackoff(DefaultSyncManager.MAX_BACKOFF_MS),
         )
         assertEquals(
-            DefaultDeviceRepository.MAX_BACKOFF_MS,
-            DefaultDeviceRepository.nextBackoff(20_000),
+            DefaultSyncManager.MAX_BACKOFF_MS,
+            DefaultSyncManager.nextBackoff(20_000),
         )
     }
 
@@ -735,7 +737,7 @@ class DefaultDeviceRepositoryTest {
             val remote = ControllableRemoteDataSource()
             remote.onSubscribe = { throw RuntimeException("fail") }
 
-            val (repo, repoScope) = createRepo(remote = remote)
+            val (_, _, repoScope) = createRepo(remote = remote)
             // First attempt
             testDispatcher.scheduler.advanceTimeBy(100)
             testDispatcher.scheduler.runCurrent()
@@ -786,7 +788,7 @@ class DefaultDeviceRepositoryTest {
                 factory()
             }
 
-            val (repo, repoScope) = createRepo(remote = remote)
+            val (_, _, repoScope) = createRepo(remote = remote)
             // Call 1: fails → backoff 1s
             testDispatcher.scheduler.advanceTimeBy(100)
             testDispatcher.scheduler.runCurrent()
@@ -836,6 +838,12 @@ class DefaultDeviceRepositoryTest {
             date = Instant.DISTANT_PAST,
         )
 }
+
+private data class RepoTestHarness(
+    val repo: DefaultDeviceRepository,
+    val syncManager: DefaultSyncManager,
+    val scope: CoroutineScope,
+)
 
 /**
  * A [RemoteDataSource] where push() always throws an exception (not returning false).

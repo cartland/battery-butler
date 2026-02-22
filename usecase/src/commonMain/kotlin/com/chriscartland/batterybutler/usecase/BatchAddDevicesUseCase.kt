@@ -4,7 +4,6 @@ import com.benasher44.uuid.uuid4
 import com.chriscartland.batterybutler.domain.model.BatchOperationResult
 import com.chriscartland.batterybutler.domain.model.DataError
 import com.chriscartland.batterybutler.domain.model.Device
-import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.ai.AiEngine
 import com.chriscartland.batterybutler.domain.model.ai.AiToolNames
 import com.chriscartland.batterybutler.domain.model.ai.AiToolParams
@@ -12,7 +11,6 @@ import com.chriscartland.batterybutler.domain.model.ai.ToolHandler
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.first
 import me.tatarka.inject.annotations.Inject
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Clock
@@ -22,6 +20,7 @@ import kotlin.time.Instant
 class BatchAddDevicesUseCase(
     private val aiEngine: AiEngine,
     private val deviceRepository: DeviceRepository,
+    private val findOrCreateDeviceTypeUseCase: FindOrCreateDeviceTypeUseCase,
 ) {
     private val systemInstructions =
         """
@@ -39,22 +38,7 @@ class BatchAddDevicesUseCase(
                         val typeName = args[AiToolParams.TYPE] as? String
 
                         try {
-                            val typeId = if (!typeName.isNullOrBlank()) {
-                                // Smart deduplication: find existing type or create new one
-                                val existingTypes = deviceRepository.getAllDeviceTypes().first()
-                                existingTypes.find { it.name == typeName }?.id
-                                    ?: uuid4().toString().also { newTypeId ->
-                                        deviceRepository.addDeviceType(
-                                            DeviceType(
-                                                id = newTypeId,
-                                                name = typeName,
-                                                defaultIcon = "default",
-                                            ),
-                                        )
-                                    }
-                            } else {
-                                "default_type"
-                            }
+                            val typeId = findOrCreateDeviceTypeUseCase(typeName)
 
                             deviceRepository.addDevice(
                                 Device(
