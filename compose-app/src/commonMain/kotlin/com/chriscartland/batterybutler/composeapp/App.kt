@@ -1,7 +1,10 @@
 package com.chriscartland.batterybutler.composeapp
 
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -43,6 +46,15 @@ import com.chriscartland.batterybutler.presentationcore.util.LocalShareHandler
 import com.chriscartland.batterybutler.presentationcore.util.ShareHandler
 import com.chriscartland.batterybutler.presentationfeature.main.MainTab
 import kotlinx.serialization.Serializable
+
+private val slideTransitionMetadata =
+    NavDisplay.transitionSpec {
+        slideInHorizontally(tween(300)) { it } + fadeIn(tween(300)) togetherWith
+            slideOutHorizontally(tween(300)) { -it / 3 } + fadeOut(tween(300))
+    } + NavDisplay.popTransitionSpec {
+        slideInHorizontally(tween(300)) { -it / 3 } + fadeIn(tween(300)) togetherWith
+            slideOutHorizontally(tween(300)) { it } + fadeOut(tween(300))
+    }
 
 // Preview removed as we can't easily preview with DI and Interfaces
 @OptIn(ExperimentalMaterial3Api::class)
@@ -166,7 +178,7 @@ fun App(
                                 )
                             }
 
-                            entry<Screen.AddDevice> {
+                            entry<Screen.AddDevice>(metadata = slideTransitionMetadata) {
                                 AddDeviceScreen(
                                     viewModel = viewModel { component.addDeviceViewModel },
                                     onDeviceAdded = { backStack.removeLastOrNull() },
@@ -175,7 +187,7 @@ fun App(
                                 )
                             }
 
-                            entry<Screen.AddBatteryEvent> {
+                            entry<Screen.AddBatteryEvent>(metadata = slideTransitionMetadata) {
                                 AddBatteryEventScreen(
                                     viewModel = viewModel { component.addBatteryEventViewModel },
                                     onEventAdded = { backStack.removeLastOrNull() },
@@ -184,7 +196,7 @@ fun App(
                                 )
                             }
 
-                            entry<Screen.AddDeviceType> {
+                            entry<Screen.AddDeviceType>(metadata = slideTransitionMetadata) {
                                 AddDeviceTypeScreen(
                                     viewModel = viewModel { component.addDeviceTypeViewModel },
                                     onDeviceTypeAdded = { backStack.removeLastOrNull() },
@@ -192,7 +204,7 @@ fun App(
                                 )
                             }
 
-                            entry<Screen.DeviceDetail> {
+                            entry<Screen.DeviceDetail>(metadata = slideTransitionMetadata) {
                                 val args = it
                                 val viewModel = viewModel(key = "DeviceDetail-${args.deviceId}") {
                                     component.deviceDetailViewModelFactory.create(args.deviceId)
@@ -205,7 +217,7 @@ fun App(
                                 )
                             }
 
-                            entry<Screen.EventDetail> {
+                            entry<Screen.EventDetail>(metadata = slideTransitionMetadata) {
                                 val args = it
                                 val viewModel = viewModel(key = "EventDetail-${args.eventId}") {
                                     component.eventDetailViewModelFactory.create(args.eventId)
@@ -216,7 +228,7 @@ fun App(
                                 )
                             }
 
-                            entry<Screen.EditDevice> {
+                            entry<Screen.EditDevice>(metadata = slideTransitionMetadata) {
                                 val args = it
                                 val viewModel = viewModel(key = "EditDevice-${args.deviceId}") {
                                     component.editDeviceViewModelFactory.create(args.deviceId)
@@ -233,7 +245,7 @@ fun App(
                                     onAddDeviceTypeClick = { backStack.navigateTo(Screen.AddDeviceType) },
                                 )
                             }
-                            entry<Screen.EditDeviceType> {
+                            entry<Screen.EditDeviceType>(metadata = slideTransitionMetadata) {
                                 val args = it
                                 val viewModel = viewModel(key = "EditDeviceType-${args.typeId}") {
                                     component.editDeviceTypeViewModelFactory.create(args.typeId)
@@ -245,7 +257,7 @@ fun App(
                                 )
                             }
 
-                            entry<Screen.Settings> {
+                            entry<Screen.Settings>(metadata = slideTransitionMetadata) {
                                 SettingsScreen(
                                     viewModel = viewModel { component.settingsViewModel },
                                     onBack = { backStack.removeLastOrNull() },
@@ -260,7 +272,7 @@ fun App(
                                 )
                             }
 
-                            entry<Screen.AiChat> {
+                            entry<Screen.AiChat>(metadata = slideTransitionMetadata) {
                                 AiChatScreen(
                                     viewModel = viewModel { component.aiChatViewModel },
                                     onBack = { backStack.removeLastOrNull() },
@@ -268,7 +280,11 @@ fun App(
                             }
                         },
                         transitionSpec = {
-                            fadeIn() togetherWith fadeOut()
+                            fadeIn(tween(150)) togetherWith fadeOut(tween(150))
+                        },
+                        popTransitionSpec = {
+                            slideInHorizontally(tween(300)) { -it / 3 } + fadeIn(tween(300)) togetherWith
+                                slideOutHorizontally(tween(300)) { it } + fadeOut(tween(300))
                         },
                     )
                 }

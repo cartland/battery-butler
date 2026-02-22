@@ -81,6 +81,10 @@ Padding constants live in `presentation-core/.../theme/Padding.kt`. Use `Padding
 
 Icon sizes live in `presentation-core/.../theme/IconSize.kt`.
 
+### UI Architecture Mapping
+
+For a detailed breakdown of how the shared Compose Multiplatform UI maps to the native SwiftUI implementation (and why they intuitively differ structurally), see `docs/UI_SCREENS_MAPPING.md`.
+
 ### AI Architecture
 
 AI messages are augmented in `SendChatMessageUseCase` before reaching the AI engine:
@@ -104,6 +108,7 @@ The AI system instruction (in `AndroidAiEngine`) is immutable after model creati
 ./gradlew :compose-app:desktopJar             # Desktop
 ./gradlew :server:app:build                   # Server
 xcodebuild -project ios-app-swift-ui/...      # iOS
+ruby ios-app-swift-ui/sync_pbxproj.rb         # Sync Swift files to Xcode
 ```
 
 ## Testing
