@@ -173,6 +173,7 @@ fun DeviceIconsPreview() {
                 modifier = Modifier.padding(innerPadding).fillMaxSize(),
             ) {
                 items(DeviceIconMapper.AvailableIcons) { iconName: String ->
+                    val accent = DeviceIconMapper.getResolvedIconAccent(iconName)
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.padding(8.dp),
@@ -180,6 +181,8 @@ fun DeviceIconsPreview() {
                         ButlerIconBox(
                             icon = DeviceIconMapper.getIcon(iconName),
                             contentDescription = iconName,
+                            containerColor = accent.container,
+                            contentColor = accent.content,
                         )
                         Text(
                             text = iconName,
