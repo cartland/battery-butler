@@ -121,7 +121,7 @@ tasks.whenTaskAdded {
                     timeout to detect this, then use the sequential script instead.
                     ===========================================================
 
-                    """.trimIndent()
+                    """.trimIndent(),
                 )
             }
         }
