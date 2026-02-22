@@ -35,6 +35,8 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ### Features
 
+- **Dev Server network mode** ([#560](https://github.com/cartland/battery-butler/pull/560)): Added `GrpcDev` variant to `NetworkMode` so users can switch between Prod Server, Dev Server, Local, Mock, and None in Settings. Includes `DevServerUrl` domain wrapper, `BuildConfig.DEV_SERVER_URL` generation, DI wiring, and CI workflow support. Renamed "AWS Cloud" label to "Prod Server".
+
 - **Check for updates in Settings** ([#554](https://github.com/cartland/battery-butler/pull/554)): Added a "Check for updates" card in Settings that opens the Google Play Store listing via `LocalUriHandler`. Appears between Export Data and App Version.
 
 ### Fixes
