@@ -104,6 +104,7 @@ The AI system instruction (in `AndroidAiEngine`) is immutable after model creati
 ./gradlew :compose-app:desktopJar             # Desktop
 ./gradlew :server:app:build                   # Server
 xcodebuild -project ios-app-swift-ui/...      # iOS
+ruby ios-app-swift-ui/sync_pbxproj.rb         # Sync Swift files to Xcode
 ```
 
 ## Testing
