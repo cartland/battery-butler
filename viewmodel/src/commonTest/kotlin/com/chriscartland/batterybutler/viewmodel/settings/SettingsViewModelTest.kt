@@ -2,6 +2,7 @@ package com.chriscartland.batterybutler.viewmodel.settings
 
 import com.chriscartland.batterybutler.domain.model.AppVersion
 import com.chriscartland.batterybutler.domain.model.AuthState
+import com.chriscartland.batterybutler.domain.model.DevServerUrl
 import com.chriscartland.batterybutler.domain.model.DispatcherProvider
 import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.model.ProductionServerUrl
@@ -320,5 +321,6 @@ class SettingsViewModelTest {
             authRepository = authRepository,
             aiPreferencesRepository = aiPreferencesRepository,
             productionServerUrl = ProductionServerUrl("http://test-server:80"),
+            devServerUrl = DevServerUrl("http://test-dev-server:80"),
         )
 }

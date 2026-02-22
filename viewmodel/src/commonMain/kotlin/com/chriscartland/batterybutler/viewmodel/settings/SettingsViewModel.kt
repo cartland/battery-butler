@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chriscartland.batterybutler.domain.model.AppVersion
 import com.chriscartland.batterybutler.domain.model.AuthState
+import com.chriscartland.batterybutler.domain.model.DevServerUrl
 import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.model.ProductionServerUrl
 import com.chriscartland.batterybutler.domain.model.User
@@ -31,6 +32,7 @@ class SettingsViewModel(
     private val authRepository: AuthRepository,
     private val aiPreferencesRepository: AiPreferencesRepository,
     productionServerUrl: ProductionServerUrl,
+    devServerUrl: DevServerUrl,
 ) : ViewModel() {
     val networkMode: StateFlow<NetworkMode> = networkModeRepository.networkMode
         .stateIn(
@@ -40,10 +42,11 @@ class SettingsViewModel(
         )
 
     val availableNetworkModes = listOf(
-        NetworkMode.None,
-        NetworkMode.Mock,
-        NetworkMode.GrpcLocal("http://10.0.2.2:50051"), // Hardcoded default for UI list.
         NetworkMode.GrpcAws(productionServerUrl.url),
+        NetworkMode.GrpcDev(devServerUrl.url),
+        NetworkMode.GrpcLocal("http://10.0.2.2:50051"), // Hardcoded default for UI list.
+        NetworkMode.Mock,
+        NetworkMode.None,
     )
 
     val aiEngineType = aiPreferencesRepository.aiEngineType

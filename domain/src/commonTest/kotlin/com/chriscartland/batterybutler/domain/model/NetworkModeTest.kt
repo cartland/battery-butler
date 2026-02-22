@@ -71,14 +71,39 @@ class NetworkModeTest {
     }
 
     @Test
+    fun `GrpcDev stores url`() {
+        val mode = NetworkMode.GrpcDev(url = "http://dev.example.com")
+
+        assertEquals("http://dev.example.com", mode.url)
+    }
+
+    @Test
+    fun `GrpcDev can have null url`() {
+        val mode = NetworkMode.GrpcDev(url = null)
+
+        assertNull(mode.url)
+    }
+
+    @Test
+    fun `GrpcDev instances with same url are equal`() {
+        val mode1 = NetworkMode.GrpcDev(url = "http://dev.example.com")
+        val mode2 = NetworkMode.GrpcDev(url = "http://dev.example.com")
+
+        assertEquals(mode1, mode2)
+        assertEquals(mode1.hashCode(), mode2.hashCode())
+    }
+
+    @Test
     fun `sealed interface variants are distinguishable`() {
         val mock: NetworkMode = NetworkMode.Mock
         val local: NetworkMode = NetworkMode.GrpcLocal("http://localhost")
         val aws: NetworkMode = NetworkMode.GrpcAws("https://aws.example.com")
+        val dev: NetworkMode = NetworkMode.GrpcDev("http://dev.example.com")
 
         assertIs<NetworkMode.Mock>(mock)
         assertIs<NetworkMode.GrpcLocal>(local)
         assertIs<NetworkMode.GrpcAws>(aws)
+        assertIs<NetworkMode.GrpcDev>(dev)
     }
 
     @Test
@@ -88,6 +113,7 @@ class NetworkModeTest {
             NetworkMode.None,
             NetworkMode.GrpcLocal("http://localhost"),
             NetworkMode.GrpcAws("https://aws.example.com"),
+            NetworkMode.GrpcDev("http://dev.example.com"),
         )
 
         for (mode in modes) {
@@ -96,6 +122,7 @@ class NetworkModeTest {
                 is NetworkMode.None -> "none"
                 is NetworkMode.GrpcLocal -> "local"
                 is NetworkMode.GrpcAws -> "aws"
+                is NetworkMode.GrpcDev -> "dev"
             }
             // If we get here without error, the when is exhaustive
             assertTrue(description.isNotEmpty())
@@ -106,7 +133,10 @@ class NetworkModeTest {
     fun `different variant types with same url are not equal`() {
         val local = NetworkMode.GrpcLocal(url = "http://example.com")
         val aws = NetworkMode.GrpcAws(url = "http://example.com")
+        val dev = NetworkMode.GrpcDev(url = "http://example.com")
 
         assertNotEquals<NetworkMode>(local, aws)
+        assertNotEquals<NetworkMode>(local, dev)
+        assertNotEquals<NetworkMode>(aws, dev)
     }
 }

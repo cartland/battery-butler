@@ -34,7 +34,7 @@ class DelegatingRemoteDataSource(
                 when (mode) {
                     NetworkMode.None -> kotlinx.coroutines.flow.flowOf(RemoteDataSourceState.NotStarted)
                     NetworkMode.Mock -> mockDataSource.state
-                    is NetworkMode.GrpcLocal, is NetworkMode.GrpcAws -> {
+                    is NetworkMode.GrpcLocal, is NetworkMode.GrpcAws, is NetworkMode.GrpcDev -> {
                         delegatingGrpcClient.clientState.map { clientState ->
                             when (clientState) {
                                 GrpcClientState.Uninitialized -> RemoteDataSourceState.NotStarted
@@ -58,7 +58,7 @@ class DelegatingRemoteDataSource(
                         .mapNotNull { (it as? GrpcClientState.Ready)?.client }
                         .flatMapLatest<GrpcClient, RemoteUpdate> { grpcDataSource.subscribe() }
                 }
-                is NetworkMode.GrpcAws -> {
+                is NetworkMode.GrpcAws, is NetworkMode.GrpcDev -> {
                     // Wait for the client to be ready
                     delegatingGrpcClient.clientState
                         .mapNotNull { (it as? GrpcClientState.Ready)?.client }
@@ -79,7 +79,7 @@ class DelegatingRemoteDataSource(
                 Logger.d("DelegatingRemoteDS") { "Pushing to Mock (no-op)" }
                 mockDataSource.push(update)
             }
-            is NetworkMode.GrpcLocal, is NetworkMode.GrpcAws -> {
+            is NetworkMode.GrpcLocal, is NetworkMode.GrpcAws, is NetworkMode.GrpcDev -> {
                 // Wait for the client to be ready before pushing
                 Logger.d("DelegatingRemoteDS") { "Waiting for gRPC client to be ready..." }
                 delegatingGrpcClient.clientState.first { it is GrpcClientState.Ready }

@@ -18,6 +18,7 @@ import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
 import com.chriscartland.batterybutler.datalocal.room.DeviceDao
 import com.chriscartland.batterybutler.datanetwork.BuildConfig
 import com.chriscartland.batterybutler.datanetwork.RemoteDataSource
+import com.chriscartland.batterybutler.domain.model.DevServerUrl
 import com.chriscartland.batterybutler.domain.model.DispatcherProvider
 import com.chriscartland.batterybutler.domain.model.FeatureFlag
 import com.chriscartland.batterybutler.domain.model.ProductionServerUrl
@@ -111,6 +112,10 @@ abstract class NativeComponent(
     @Provides
     @SharedSingleton
     fun provideProductionServerUrl(): ProductionServerUrl = ProductionServerUrl(BuildConfig.PRODUCTION_SERVER_URL)
+
+    @Provides
+    @SharedSingleton
+    fun provideDevServerUrl(): DevServerUrl = DevServerUrl(BuildConfig.DEV_SERVER_URL)
 
     @Provides
     fun provideAppVersion(): com.chriscartland.batterybutler.domain.model.AppVersion =
