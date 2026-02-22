@@ -14,7 +14,9 @@ class DeviceToolHandlerTest {
     private fun createHandler(
         repo: FakeDeviceRepository = FakeDeviceRepository(),
     ): Pair<DeviceToolHandler, FakeDeviceRepository> {
-        val handler = DeviceToolHandler(repo)
+        val findOrCreateType = FindOrCreateDeviceTypeUseCase(repo)
+        val findOrCreateDevice = FindOrCreateDeviceUseCase(repo, findOrCreateType)
+        val handler = DeviceToolHandler(repo, findOrCreateType, findOrCreateDevice)
         return handler to repo
     }
 
@@ -43,7 +45,9 @@ class DeviceToolHandlerTest {
             val repo = FakeDeviceRepository()
             val existingType = TestDevices.createDeviceType(id = "type-123", name = "Thermostat")
             repo.setDeviceTypes(listOf(existingType))
-            val handler = DeviceToolHandler(repo)
+            val findOrCreateType = FindOrCreateDeviceTypeUseCase(repo)
+            val findOrCreateDevice = FindOrCreateDeviceUseCase(repo, findOrCreateType)
+            val handler = DeviceToolHandler(repo, findOrCreateType, findOrCreateDevice)
 
             val result = handler.execute(
                 AiToolNames.ADD_DEVICE,
@@ -169,7 +173,9 @@ class DeviceToolHandlerTest {
                 batteryLastReplaced = Instant.fromEpochMilliseconds(0),
             )
             repo.setDevices(listOf(device))
-            val handler = DeviceToolHandler(repo)
+            val findOrCreateType = FindOrCreateDeviceTypeUseCase(repo)
+            val findOrCreateDevice = FindOrCreateDeviceUseCase(repo, findOrCreateType)
+            val handler = DeviceToolHandler(repo, findOrCreateType, findOrCreateDevice)
 
             val result = handler.execute(
                 AiToolNames.RECORD_BATTERY_REPLACEMENT,
@@ -212,7 +218,9 @@ class DeviceToolHandlerTest {
                 batteryLastReplaced = Instant.fromEpochMilliseconds(0),
             )
             repo.setDevices(listOf(device))
-            val handler = DeviceToolHandler(repo)
+            val findOrCreateType = FindOrCreateDeviceTypeUseCase(repo)
+            val findOrCreateDevice = FindOrCreateDeviceUseCase(repo, findOrCreateType)
+            val handler = DeviceToolHandler(repo, findOrCreateType, findOrCreateDevice)
 
             handler.execute(
                 AiToolNames.RECORD_BATTERY_REPLACEMENT,
@@ -234,7 +242,9 @@ class DeviceToolHandlerTest {
                 batteryLastReplaced = recentInstant,
             )
             repo.setDevices(listOf(device))
-            val handler = DeviceToolHandler(repo)
+            val findOrCreateType = FindOrCreateDeviceTypeUseCase(repo)
+            val findOrCreateDevice = FindOrCreateDeviceUseCase(repo, findOrCreateType)
+            val handler = DeviceToolHandler(repo, findOrCreateType, findOrCreateDevice)
 
             handler.execute(
                 AiToolNames.RECORD_BATTERY_REPLACEMENT,
