@@ -1,6 +1,7 @@
 package com.chriscartland.batterybutler.presentationcore.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,13 +42,16 @@ fun ButlerListItemCard(
     trailing: (@Composable () -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
+    val borderColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+    val shape = MaterialTheme.shapes.medium
     Card(
         colors = colors,
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = Padding.standard, vertical = 6.dp)
+            .border(1.dp, borderColor, shape)
             .clickable { onClick() },
-        shape = MaterialTheme.shapes.medium,
+        shape = shape,
     ) {
         Row(
             modifier = Modifier.padding(Padding.standard),
@@ -72,18 +77,20 @@ fun ButlerIconBox(
     icon: ImageVector,
     contentDescription: String?,
     modifier: Modifier = Modifier,
+    containerColor: Color = MaterialTheme.colorScheme.primaryContainer,
+    contentColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
 ) {
     Box(
         modifier = modifier
             .size(48.dp)
             .clip(MaterialTheme.shapes.small)
-            .background(MaterialTheme.colorScheme.primaryContainer),
+            .background(containerColor),
         contentAlignment = Alignment.Center,
     ) {
         Icon(
             imageVector = icon,
             contentDescription = contentDescription,
-            tint = MaterialTheme.colorScheme.onPrimaryContainer,
+            tint = contentColor,
             modifier = Modifier.size(IconSize.Medium),
         )
     }
