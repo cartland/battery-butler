@@ -25,7 +25,7 @@ struct HomeScreen: View {
                     Section(header: Text(key)) {
                         ForEach(state.groupedDevices[key] ?? [], id: \.id) { device in
                             NavigationLink(destination: DeviceDetailScreen(
-                                factory: component.deviceDetailViewModelFactory,
+                                component: component,
                                 deviceId: device.id
                             )) {
                                 DeviceRow(device: device)

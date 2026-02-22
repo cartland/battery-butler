@@ -3,7 +3,6 @@ import shared
 
 struct DeviceDetailScreen: View {
     @StateObject private var wrapper: DeviceDetailViewModelWrapper
-    @State private var isEditing = false
     private let component: NativeComponent
     private let deviceId: String
     
@@ -82,16 +81,6 @@ struct DeviceDetailScreen: View {
                         }
                     }
                     .padding()
-                }
-                .toolbar {
-                    Button("Edit") {
-                        isEditing = true
-                    }
-                }
-                .sheet(isPresented: $isEditing) {
-                    NavigationView {
-                        EditDeviceScreen(factory: component.editDeviceViewModelFactory, deviceId: deviceId)
-                    }
                 }
             } else if wrapper.state is DeviceDetailUiStateNotFound {
                 Text("Device not found")
