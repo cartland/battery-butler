@@ -27,6 +27,8 @@
 		24ABD57C2F1CEC230036E1DD /* DeviceTypeListScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24ABD5722F1CEC230036E1DD /* DeviceTypeListScreen.swift */; };
 		24ABD57D2F1CEC230036E1DD /* AddDeviceTypeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24ABD5702F1CEC230036E1DD /* AddDeviceTypeScreen.swift */; };
 		24ABD57E2F1CEC230036E1DD /* DeviceTypeRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24ABD5742F1CEC230036E1DD /* DeviceTypeRow.swift */; };
+		2DE1B6694136CD9A6C1F59F1 /* AddBatteryEventScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D72CC944623B8A4B1937E7D /* AddBatteryEventScreen.swift */; };
+		96F0272E00A7B1ECEB35FC77 /* AddBatteryEventViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A949AD47BB98756505C2715 /* AddBatteryEventViewModelWrapper.swift */; };
 		AG1000000000000000000002 /* Generated in Sources */ = {isa = PBXBuildFile; fileRef = AG1000000000000000000001 /* Generated */; };
 /* End PBXBuildFile section */
 
@@ -51,6 +53,8 @@
 		24ABD5742F1CEC230036E1DD /* DeviceTypeRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceTypeRow.swift; sourceTree = "<group>"; };
 		24ABD5752F1CEC230036E1DD /* EditDeviceTypeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDeviceTypeScreen.swift; sourceTree = "<group>"; };
 		24ABD5762F1CEC230036E1DD /* EditDeviceTypeViewModelWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDeviceTypeViewModelWrapper.swift; sourceTree = "<group>"; };
+		7A949AD47BB98756505C2715 /* AddBatteryEventViewModelWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddBatteryEventViewModelWrapper.swift; sourceTree = "<group>"; };
+		9D72CC944623B8A4B1937E7D /* AddBatteryEventScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddBatteryEventScreen.swift; sourceTree = "<group>"; };
 		AG1000000000000000000001 /* Generated */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Generated; sourceTree = "<group>"; };
 		B9DA97B12DC1472C00A4DA20 /* BatteryButler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BatteryButler.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -76,6 +80,8 @@
 		};
 		B9DA98002DC14AA900A4DA20 /* Configuration */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = Configuration;
 			sourceTree = "<group>";
 		};
@@ -164,6 +170,7 @@
 				2462959A2F14EEF40047C600 /* Home */,
 				2462959D2F14EEF40047C600 /* Main */,
 				246295A02F14EEF40047C600 /* Settings */,
+				B9FE4579C321985D87F1B4C0 /* AddBatteryEvent */,
 			);
 			path = Features;
 			sourceTree = "<group>";
@@ -202,6 +209,16 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		B9FE4579C321985D87F1B4C0 /* AddBatteryEvent */ = {
+			isa = PBXGroup;
+			children = (
+				9D72CC944623B8A4B1937E7D /* AddBatteryEventScreen.swift */,
+				7A949AD47BB98756505C2715 /* AddBatteryEventViewModelWrapper.swift */,
+			);
+			name = AddBatteryEvent;
+			path = AddBatteryEvent;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -223,8 +240,6 @@
 				B9DA97B32DC1472C00A4DA20 /* iosApp */,
 			);
 			name = iosAppSwiftUI;
-			packageProductDependencies = (
-			);
 			productName = iosAppSwiftUI;
 			productReference = B9DA97B12DC1472C00A4DA20 /* BatteryButler.app */;
 			productType = "com.apple.product-type.application";
@@ -340,6 +355,8 @@
 				246295AE2F14EEF40047C600 /* SettingsScreen.swift in Sources */,
 				246295AF2F14EEF40047C600 /* DeviceDetailViewModelWrapper.swift in Sources */,
 				AG1000000000000000000002 /* Generated in Sources */,
+				2DE1B6694136CD9A6C1F59F1 /* AddBatteryEventScreen.swift in Sources */,
+				96F0272E00A7B1ECEB35FC77 /* AddBatteryEventViewModelWrapper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
