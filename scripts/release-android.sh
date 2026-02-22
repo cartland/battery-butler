@@ -22,17 +22,25 @@ NC='\033[0m' # No Color
 # Parse flags
 ALLOW_DUPLICATE_TAG=false
 CONFIRM_RELEASE=false
+CONFIRM_HASH=""
+DRY_RUN=false
 
 show_help() {
     echo "Usage: ./scripts/release-android.sh [OPTIONS]"
     echo ""
     echo "Options:"
-    echo "  --allow-duplicate-tag  Skip prompt when commit already has an android/* tag"
-    echo "  --confirm-release      Skip final release confirmation prompt"
-    echo "  -h, --help             Show this help message"
+    echo "  --allow-duplicate-tag      Skip prompt when commit already has an android/* tag"
+    echo "  --confirm-release          Skip final release confirmation prompt"
+    echo "  --confirm-hash <sha>       Required when releasing from a non-main branch."
+    echo "                             Must match HEAD's full SHA as a safety confirmation."
+    echo "  --dry-run                  Show what would happen without creating or pushing tags"
+    echo "  -h, --help                 Show this help message"
     echo ""
     echo "For fully non-interactive mode, use both flags:"
     echo "  ./scripts/release-android.sh --allow-duplicate-tag --confirm-release"
+    echo ""
+    echo "Releasing from a non-main branch:"
+    echo "  ./scripts/release-android.sh --confirm-hash \$(git rev-parse HEAD)"
 }
 
 while [[ $# -gt 0 ]]; do
@@ -43,6 +51,14 @@ while [[ $# -gt 0 ]]; do
             ;;
         --confirm-release)
             CONFIRM_RELEASE=true
+            shift
+            ;;
+        --confirm-hash)
+            CONFIRM_HASH="$2"
+            shift 2
+            ;;
+        --dry-run)
+            DRY_RUN=true
             shift
             ;;
         -h|--help)
@@ -92,8 +108,38 @@ NEW_TAG="android/$NEXT_VERSION"
 CURRENT_COMMIT=$(git rev-parse HEAD)
 CURRENT_COMMIT_SHORT=$(git rev-parse --short HEAD)
 
+# Detect current branch
+CURRENT_BRANCH=$(git branch --show-current)
+if [ -z "$CURRENT_BRANCH" ]; then
+    CURRENT_BRANCH="(detached HEAD)"
+fi
+
+# Branch safety gate
+if [ "$CURRENT_BRANCH" != "main" ]; then
+    if [ -z "$CONFIRM_HASH" ]; then
+        echo -e "${RED}Error: Not on main branch (currently on '$CURRENT_BRANCH').${NC}"
+        echo ""
+        echo "Releasing from a non-main branch requires explicit confirmation."
+        echo "If you intended this, re-run with:"
+        echo ""
+        echo "  ./scripts/release-android.sh --confirm-hash $(git rev-parse HEAD)"
+        echo ""
+        exit 1
+    elif [ "$CONFIRM_HASH" != "$CURRENT_COMMIT" ]; then
+        echo -e "${RED}Error: --confirm-hash does not match HEAD.${NC}"
+        echo "  Provided: $CONFIRM_HASH"
+        echo "  HEAD:     $CURRENT_COMMIT"
+        exit 1
+    else
+        echo -e "${YELLOW}Warning: Releasing from non-main branch '$CURRENT_BRANCH'.${NC}"
+        echo "  --confirm-hash matches HEAD, proceeding."
+        echo ""
+    fi
+fi
+
 echo ""
 echo "=== Release Details ==="
+echo "  Branch:     $CURRENT_BRANCH"
 echo "  New tag:    $NEW_TAG"
 echo "  Commit:     $CURRENT_COMMIT_SHORT"
 echo "  Full SHA:   $CURRENT_COMMIT"
@@ -130,6 +176,15 @@ else
         echo "Aborted."
         exit 0
     fi
+fi
+
+if [ "$DRY_RUN" = true ]; then
+    echo -e "${YELLOW}=== Dry Run ===${NC}"
+    echo "Would create tag $NEW_TAG on commit $CURRENT_COMMIT_SHORT"
+    echo "Would push tag to origin"
+    echo ""
+    echo "No tags were created or pushed."
+    exit 0
 fi
 
 # Create the tag
