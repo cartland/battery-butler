@@ -3,6 +3,7 @@ package com.chriscartland.batterybutler.presentationcore.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
@@ -17,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,6 +33,23 @@ import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
 import kotlin.time.Instant
 
+/**
+ * Returns a color based on battery age in days.
+ * - 0-179 days: default gray (normal)
+ * - 180-364 days: dark amber (warning, WCAG AA contrast ≥ 4.5:1)
+ * - 365+ days: error red (danger)
+ * - null (no replacement date): default gray
+ */
+@Composable
+private fun batteryAgeColor(days: Int?): Color {
+    if (days == null) return MaterialTheme.colorScheme.onSurfaceVariant
+    return when {
+        days >= 365 -> MaterialTheme.colorScheme.error
+        days >= 180 -> if (isSystemInDarkTheme()) Color(0xFFE5A100) else Color(0xFF956D00)
+        else -> MaterialTheme.colorScheme.onSurfaceVariant
+    }
+}
+
 @OptIn(kotlin.time.ExperimentalTime::class)
 @Composable
 fun DeviceListItem(
@@ -40,19 +59,25 @@ fun DeviceListItem(
     modifier: Modifier = Modifier,
     nowInstant: Instant = Clock.System.now(),
 ) {
-    val daysSinceBatteryChange = remember(device.batteryLastReplaced, nowInstant) {
+    val daysInt = remember(device.batteryLastReplaced, nowInstant) {
         if (device.batteryLastReplaced.toEpochMilliseconds() == 0L) {
-            "N/A"
+            null
         } else {
             val timeZone = TimeZone.currentSystemDefault()
-            val now = nowInstant
-                .toLocalDateTime(timeZone)
-                .date
+            val now = nowInstant.toLocalDateTime(timeZone).date
             val eventDate = device.batteryLastReplaced.toLocalDateTime(timeZone).date
-            val days = eventDate.daysUntil(now)
-            if (days == 1) "1 day" else "$days days"
+            eventDate.daysUntil(now)
         }
     }
+
+    val daysSinceBatteryChange = when {
+        daysInt == null -> "N/A"
+        daysInt == 1 -> "1 day"
+        else -> "$daysInt days"
+    }
+
+    val ageColor = batteryAgeColor(daysInt)
+    val ageFontWeight = if (daysInt != null && daysInt >= 365) FontWeight.Bold else null
 
     ButlerListItemCard(
         onClick = onClick,
@@ -71,13 +96,14 @@ fun DeviceListItem(
                 Icon(
                     imageVector = Icons.Default.BatteryFull,
                     contentDescription = "Battery Age",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    tint = ageColor,
                     modifier = Modifier.size(IconSize.Medium),
                 )
                 Text(
                     text = daysSinceBatteryChange,
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = ageColor,
+                    fontWeight = ageFontWeight,
                 )
             }
         },
@@ -161,6 +187,60 @@ fun DeviceListItemPreview() {
         val nowInstant = Instant.parse("2026-01-18T17:00:00Z")
         val batteryReplacedInstant = Instant.parse("2026-01-13T17:00:00Z") // 5 days ago
         val device = Device("dev1", "Kitchen Smoke", "type1", batteryReplacedInstant, nowInstant, "Kitchen")
+        val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
+        DeviceListItem(
+            device = device,
+            deviceType = type,
+            onClick = {},
+            nowInstant = nowInstant,
+        )
+    }
+}
+
+@OptIn(kotlin.time.ExperimentalTime::class)
+@Preview(showBackground = true)
+@Composable
+fun DeviceListItemRecentPreview() {
+    BatteryButlerTheme {
+        val nowInstant = Instant.parse("2026-01-18T17:00:00Z")
+        val batteryReplacedInstant = Instant.parse("2026-01-13T17:00:00Z") // 5 days ago
+        val device = Device("dev1", "Kitchen Smoke", "type1", batteryReplacedInstant, nowInstant, "Kitchen")
+        val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
+        DeviceListItem(
+            device = device,
+            deviceType = type,
+            onClick = {},
+            nowInstant = nowInstant,
+        )
+    }
+}
+
+@OptIn(kotlin.time.ExperimentalTime::class)
+@Preview(showBackground = true)
+@Composable
+fun DeviceListItemOldPreview() {
+    BatteryButlerTheme {
+        val nowInstant = Instant.parse("2026-01-18T17:00:00Z")
+        val batteryReplacedInstant = Instant.parse("2025-07-02T17:00:00Z") // 200 days ago
+        val device = Device("dev2", "Hallway CO Detector", "type2", batteryReplacedInstant, nowInstant, "Hallway")
+        val type = DeviceType("type2", "CO Detector", "detector_co")
+        DeviceListItem(
+            device = device,
+            deviceType = type,
+            onClick = {},
+            nowInstant = nowInstant,
+        )
+    }
+}
+
+@OptIn(kotlin.time.ExperimentalTime::class)
+@Preview(showBackground = true)
+@Composable
+fun DeviceListItemVeryOldPreview() {
+    BatteryButlerTheme {
+        val nowInstant = Instant.parse("2026-01-18T17:00:00Z")
+        val batteryReplacedInstant = Instant.parse("2024-12-02T17:00:00Z") // 412 days ago
+        val device = Device("dev3", "Bedroom Smoke", "type1", batteryReplacedInstant, nowInstant, "Bedroom")
         val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
         DeviceListItem(
             device = device,

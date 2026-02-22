@@ -1,16 +1,12 @@
 package com.chriscartland.batterybutler.presentationcore.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.Brush
@@ -53,23 +49,56 @@ import androidx.compose.material.icons.filled.Tv
 import androidx.compose.material.icons.filled.VideogameAsset
 import androidx.compose.material.icons.filled.Watch
 import androidx.compose.material.icons.filled.WaterDrop
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.domain.model.DeviceIcons
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import com.chriscartland.batterybutler.presentationcore.theme.IconAccent
+import com.chriscartland.batterybutler.presentationcore.theme.IconAccentBlue
+import com.chriscartland.batterybutler.presentationcore.theme.IconAccentGreen
+import com.chriscartland.batterybutler.presentationcore.theme.IconAccentOrange
+import com.chriscartland.batterybutler.presentationcore.theme.IconAccentPink
+import com.chriscartland.batterybutler.presentationcore.theme.IconAccentPurple
+import com.chriscartland.batterybutler.presentationcore.theme.IconAccentRed
+import com.chriscartland.batterybutler.presentationcore.theme.IconAccentSlate
+import com.chriscartland.batterybutler.presentationcore.theme.IconAccentTeal
 
 data object DeviceIconMapper {
     val AvailableIcons = DeviceIcons.AvailableIcons
+
+    fun getIconAccent(iconName: String?): IconAccent =
+        when (iconName) {
+            // Smart home / security → Blue
+            "lock", "garage_home", "router", "power" -> IconAccentBlue
+            // Sensors / motion → Orange
+            "sensors" -> IconAccentOrange
+            // Controls / remotes / gaming → Purple
+            "smart_button", "settings_remote", "videogame_asset",
+            "game_controller", "mouse", "keyboard",
+            -> IconAccentPurple
+            // Safety / detectors → Red
+            "detector_smoke" -> IconAccentRed
+            // Climate → Teal
+            "thermostat", "water_drop" -> IconAccentTeal
+            // Time → Green
+            "schedule" -> IconAccentGreen
+            // Toys / fun → Pink
+            "toys" -> IconAccentPink
+            // Electronics → Blue
+            "smartphone", "tablet", "laptop", "tv",
+            "headphones", "speaker", "camera", "watch",
+            -> IconAccentBlue
+            // Tools / utility / everything else → Slate
+            else -> IconAccentSlate
+        }
 
     fun getIcon(iconName: String?): ImageVector =
         when (iconName) {
@@ -139,20 +168,10 @@ fun DeviceIconsPreview() {
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.padding(8.dp),
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .size(56.dp)
-                                .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.primaryContainer),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Icon(
-                                imageVector = DeviceIconMapper.getIcon(iconName),
-                                contentDescription = iconName,
-                                tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                                modifier = Modifier.size(24.dp),
-                            )
-                        }
+                        ButlerIconBox(
+                            icon = DeviceIconMapper.getIcon(iconName),
+                            contentDescription = iconName,
+                        )
                         Text(
                             text = iconName,
                             style = MaterialTheme.typography.bodySmall,
