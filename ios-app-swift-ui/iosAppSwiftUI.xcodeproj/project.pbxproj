@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0B8A00C05740714CA09EA3DF /* AiChatViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9127CC9BB55BC761853552F0 /* AiChatViewModelWrapper.swift */; };
 		1211B65CDB19EBD3475155ED /* AddBatteryEventViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348ECD40844BC056AA8019FF /* AddBatteryEventViewModelWrapper.swift */; };
 		14C9539A085FC4157ED6ECCB /* EventDetailViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 484371A677F858AB3865E844 /* EventDetailViewModelWrapper.swift */; };
 		246295A22F14EEF40047C600 /* AddDeviceScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2462958F2F14EEF40047C600 /* AddDeviceScreen.swift */; };
@@ -29,6 +30,7 @@
 		24ABD57C2F1CEC230036E1DD /* DeviceTypeListScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24ABD5722F1CEC230036E1DD /* DeviceTypeListScreen.swift */; };
 		24ABD57D2F1CEC230036E1DD /* AddDeviceTypeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24ABD5702F1CEC230036E1DD /* AddDeviceTypeScreen.swift */; };
 		24ABD57E2F1CEC230036E1DD /* DeviceTypeRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24ABD5742F1CEC230036E1DD /* DeviceTypeRow.swift */; };
+		77177175D5AE0F2363AB6DDA /* AiChatScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18BC9C9B9E6E29A48DCAC5C2 /* AiChatScreen.swift */; };
 		7B995C9514A7E13CDD597E53 /* EventDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB2BC212BA886F9EA0057B5 /* EventDetailScreen.swift */; };
 		9E310559114A9C3509F5106D /* LoginScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05276AAFBE18E0BD342E186F /* LoginScreen.swift */; };
 		9EC6A2E16CEA57929E345F5C /* LoginViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D976428F6B0003DDB354405 /* LoginViewModelWrapper.swift */; };
@@ -38,6 +40,7 @@
 
 /* Begin PBXFileReference section */
 		05276AAFBE18E0BD342E186F /* LoginScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LoginScreen.swift; sourceTree = "<group>"; };
+		18BC9C9B9E6E29A48DCAC5C2 /* AiChatScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AiChatScreen.swift; sourceTree = "<group>"; };
 		2462958D2F14EEF40047C600 /* ViewModelWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModelWrapper.swift; sourceTree = "<group>"; };
 		2462958F2F14EEF40047C600 /* AddDeviceScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDeviceScreen.swift; sourceTree = "<group>"; };
 		246295902F14EEF40047C600 /* AddDeviceViewModelWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDeviceViewModelWrapper.swift; sourceTree = "<group>"; };
@@ -62,6 +65,7 @@
 		484371A677F858AB3865E844 /* EventDetailViewModelWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EventDetailViewModelWrapper.swift; sourceTree = "<group>"; };
 		4D976428F6B0003DDB354405 /* LoginViewModelWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LoginViewModelWrapper.swift; sourceTree = "<group>"; };
 		6161923E993256241FF44A49 /* AddBatteryEventScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddBatteryEventScreen.swift; sourceTree = "<group>"; };
+		9127CC9BB55BC761853552F0 /* AiChatViewModelWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AiChatViewModelWrapper.swift; sourceTree = "<group>"; };
 		AG1000000000000000000001 /* Generated */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Generated; sourceTree = "<group>"; };
 		B9DA97B12DC1472C00A4DA20 /* BatteryButler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BatteryButler.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EBB2BC212BA886F9EA0057B5 /* EventDetailScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EventDetailScreen.swift; sourceTree = "<group>"; };
@@ -181,6 +185,7 @@
 				CB1D9BAD62F8FB251D54465C /* Login */,
 				A382FF30859CC658F115A300 /* EventDetail */,
 				581FFFAFC6E283226D9E0CCD /* AddBatteryEvent */,
+				831712F7D857EFE960AE9AA7 /* AiChat */,
 			);
 			path = Features;
 			sourceTree = "<group>";
@@ -207,6 +212,16 @@
 			);
 			name = AddBatteryEvent;
 			path = AddBatteryEvent;
+			sourceTree = "<group>";
+		};
+		831712F7D857EFE960AE9AA7 /* AiChat */ = {
+			isa = PBXGroup;
+			children = (
+				18BC9C9B9E6E29A48DCAC5C2 /* AiChatScreen.swift */,
+				9127CC9BB55BC761853552F0 /* AiChatViewModelWrapper.swift */,
+			);
+			name = AiChat;
+			path = AiChat;
 			sourceTree = "<group>";
 		};
 		A382FF30859CC658F115A300 /* EventDetail */ = {
@@ -391,6 +406,8 @@
 				14C9539A085FC4157ED6ECCB /* EventDetailViewModelWrapper.swift in Sources */,
 				F6F9C4B2E592FAFBFA1FD460 /* AddBatteryEventScreen.swift in Sources */,
 				1211B65CDB19EBD3475155ED /* AddBatteryEventViewModelWrapper.swift in Sources */,
+				77177175D5AE0F2363AB6DDA /* AiChatScreen.swift in Sources */,
+				0B8A00C05740714CA09EA3DF /* AiChatViewModelWrapper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

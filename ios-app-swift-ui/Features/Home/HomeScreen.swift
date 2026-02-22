@@ -5,6 +5,7 @@ struct HomeScreen: View {
     @StateObject var viewModelWrapper: HomeViewModelWrapper
     private let component: NativeComponent // Using Component to access other VMs
     @State private var isAddDevicePresented = false
+    @State private var isAddEventPresented = false
     
     init(component: NativeComponent) {
         self.component = component
@@ -45,16 +46,31 @@ struct HomeScreen: View {
             }
 
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button(action: {
-                    isAddDevicePresented = true
-                }) {
-                    Image(systemName: "plus")
-                        .accessibilityLabel("Add device")
+                HStack(spacing: 16) {
+                    NavigationLink(destination: AiChatScreen(viewModel: component.aiChatViewModel)) {
+                        Image(systemName: "wand.and.stars")
+                            .accessibilityLabel("AI Chat")
+                    }
+                    Button(action: {
+                        isAddEventPresented = true
+                    }) {
+                        Image(systemName: "bolt.badge.plus")
+                            .accessibilityLabel("Add battery event")
+                    }
+                    Button(action: {
+                        isAddDevicePresented = true
+                    }) {
+                        Image(systemName: "plus")
+                            .accessibilityLabel("Add device")
+                    }
                 }
             }
         }
         .sheet(isPresented: $isAddDevicePresented) {
             AddDeviceScreen(viewModel: component.addDeviceViewModel)
+        }
+        .sheet(isPresented: $isAddEventPresented) {
+            AddBatteryEventScreen(viewModel: component.addBatteryEventViewModel)
         }
     }
 }
