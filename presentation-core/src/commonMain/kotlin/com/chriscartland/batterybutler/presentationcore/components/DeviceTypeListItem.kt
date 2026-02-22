@@ -1,6 +1,5 @@
 package com.chriscartland.batterybutler.presentationcore.components
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,9 +16,6 @@ fun DeviceTypeListItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val accent = DeviceIconMapper.getIconAccent(deviceType.defaultIcon)
-    val isDark = isSystemInDarkTheme()
-
     ButlerListItemCard(
         onClick = onClick,
         modifier = modifier,
@@ -27,8 +23,6 @@ fun DeviceTypeListItem(
             ButlerIconBox(
                 icon = DeviceIconMapper.getIcon(deviceType.defaultIcon),
                 contentDescription = "Device type icon",
-                containerColor = if (isDark) accent.containerDark else accent.containerLight,
-                contentColor = if (isDark) accent.contentDark else accent.contentLight,
             )
         },
     ) {

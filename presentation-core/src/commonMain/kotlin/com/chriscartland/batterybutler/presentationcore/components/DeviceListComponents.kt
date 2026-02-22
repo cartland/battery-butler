@@ -79,9 +79,6 @@ fun DeviceListItem(
     val ageColor = batteryAgeColor(daysInt)
     val ageFontWeight = if (daysInt != null && daysInt >= 365) FontWeight.Bold else null
 
-    val accent = DeviceIconMapper.getIconAccent(deviceType?.defaultIcon)
-    val isDark = isSystemInDarkTheme()
-
     ButlerListItemCard(
         onClick = onClick,
         modifier = modifier,
@@ -89,8 +86,6 @@ fun DeviceListItem(
             ButlerIconBox(
                 icon = DeviceIconMapper.getIcon(deviceType?.defaultIcon),
                 contentDescription = deviceType?.name ?: "Device Icon",
-                containerColor = if (isDark) accent.containerDark else accent.containerLight,
-                contentColor = if (isDark) accent.contentDark else accent.contentLight,
             )
         },
         trailing = {
