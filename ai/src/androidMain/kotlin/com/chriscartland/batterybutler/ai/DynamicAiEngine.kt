@@ -8,7 +8,7 @@ import com.chriscartland.batterybutler.domain.model.ai.ToolHandler
 import com.chriscartland.batterybutler.domain.repository.AiPreferencesRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import me.tatarka.inject.annotations.Inject
 
@@ -45,19 +45,19 @@ class DynamicAiEngine(
     override suspend fun generateResponse(
         prompt: String,
         toolHandler: ToolHandler?,
-    ): Flow<AiMessage> =
-        aiPreferencesRepository.aiEngineType.flatMapLatest { type ->
-            when (type) {
-                AiEngineType.Cloud -> cloudEngine.generateResponse(prompt, toolHandler)
-                AiEngineType.OnDevice -> onDeviceEngine.generateResponse(prompt, toolHandler)
-                AiEngineType.NoOp -> flowOf(
-                    AiMessage(
-                        id = "noop",
-                        role = AiRole.MODEL,
-                        text = "AI is disabled in settings.",
-                        isPartial = false,
-                    ),
-                )
-            }
+    ): Flow<AiMessage> {
+        val type = aiPreferencesRepository.aiEngineType.first()
+        return when (type) {
+            AiEngineType.Cloud -> cloudEngine.generateResponse(prompt, toolHandler)
+            AiEngineType.OnDevice -> onDeviceEngine.generateResponse(prompt, toolHandler)
+            AiEngineType.NoOp -> flowOf(
+                AiMessage(
+                    id = "noop",
+                    role = AiRole.MODEL,
+                    text = "AI is disabled in settings.",
+                    isPartial = false,
+                ),
+            )
         }
+    }
 }
