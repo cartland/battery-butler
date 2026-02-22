@@ -10,6 +10,7 @@ import com.chriscartland.batterybutler.domain.repository.FeatureFlagProvider
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
 import com.chriscartland.batterybutler.usecase.AddDeviceUseCase
 import com.chriscartland.batterybutler.usecase.BatchAddDevicesUseCase
+import com.chriscartland.batterybutler.usecase.FindOrCreateDeviceTypeUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -160,7 +161,11 @@ class AddDeviceViewModelTest {
         AddDeviceViewModel(
             addDeviceUseCase = AddDeviceUseCase(repo),
             getDeviceTypesUseCase = GetDeviceTypesUseCase(repo),
-            batchAddDevicesUseCase = BatchAddDevicesUseCase(FakeAiEngine(), repo),
+            batchAddDevicesUseCase = BatchAddDevicesUseCase(
+                FakeAiEngine(),
+                repo,
+                FindOrCreateDeviceTypeUseCase(repo),
+            ),
             featureFlagProvider = FakeFeatureFlagProvider(),
         )
 }

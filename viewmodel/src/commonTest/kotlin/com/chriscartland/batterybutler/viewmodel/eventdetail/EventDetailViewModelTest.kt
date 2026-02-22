@@ -76,7 +76,7 @@ class EventDetailViewModelTest {
             val state = viewModel.uiState.first { it is EventDetailUiState.Success }
             assertIs<EventDetailUiState.Success>(state)
             assertEquals("event-1", state.event.id)
-            assertEquals("Smoke Detector", state.device.name)
+            assertEquals("Smoke Detector", state.device?.name)
             assertEquals("Smoke Detector Type", state.deviceType?.name)
         }
 

@@ -13,7 +13,7 @@ import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.GetDevicesUseCase
 import com.chriscartland.batterybutler.usecase.GetSyncStatusUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
-import com.chriscartland.batterybutler.viewmodel.toSortedMap
+import com.chriscartland.batterybutler.viewmodel.sortAndGroup
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,8 +22,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
-import kotlin.comparisons.naturalOrder
-import kotlin.comparisons.reverseOrder
 
 @Inject
 class HomeViewModel(
@@ -75,30 +73,27 @@ class HomeViewModel(
     ) { config, devices, types, syncStatus ->
         val typeMap = types.associateBy { it.id }
 
-        // Sort
-        var sortedDevices = when (config.sort) {
-            SortOption.NAME -> devices.sortedBy { it.name }
-            SortOption.LOCATION -> devices.sortedWith(compareBy<Device> { it.location ?: "" }.thenBy { it.name })
-            SortOption.BATTERY_AGE -> devices.sortedBy { it.batteryLastReplaced }
-            SortOption.TYPE -> devices.sortedBy { typeMap[it.typeId]?.name ?: "" }
-        }
-        if (!config.isSortAscending) {
-            sortedDevices = sortedDevices.reversed()
+        val sortComparator = when (config.sort) {
+            SortOption.NAME -> compareBy<Device> { it.name }
+            SortOption.LOCATION -> compareBy<Device> { it.location ?: "" }.thenBy { it.name }
+            SortOption.BATTERY_AGE -> compareBy { it.batteryLastReplaced }
+            SortOption.TYPE -> compareBy { typeMap[it.typeId]?.name ?: "" }
         }
 
-        // Group
-        val groupedDevices = when (config.group) {
-            GroupOption.NONE -> mapOf("All Devices" to sortedDevices)
-            GroupOption.TYPE -> sortedDevices.groupBy { typeMap[it.typeId]?.name ?: "Unknown" }
-            GroupOption.LOCATION -> sortedDevices.groupBy { it.location ?: "Unknown Location" }
+        val groupKeySelector = when (config.group) {
+            GroupOption.NONE -> null
+            GroupOption.TYPE -> { device: Device -> typeMap[device.typeId]?.name ?: "Unknown" }
+            GroupOption.LOCATION -> { device: Device -> device.location ?: "Unknown Location" }
         }
 
-        val finalGroupedDevices = if (config.group != GroupOption.NONE) {
-            val comparator = if (config.isGroupAscending) naturalOrder<String>() else reverseOrder()
-            groupedDevices.toSortedMap(comparator)
-        } else {
-            groupedDevices
-        }
+        val finalGroupedDevices = sortAndGroup(
+            items = devices,
+            sortComparator = sortComparator,
+            isSortAscending = config.isSortAscending,
+            groupKeySelector = groupKeySelector,
+            defaultGroupName = "All Devices",
+            isGroupAscending = config.isGroupAscending,
+        )
 
         HomeUiState(
             groupedDevices = finalGroupedDevices,

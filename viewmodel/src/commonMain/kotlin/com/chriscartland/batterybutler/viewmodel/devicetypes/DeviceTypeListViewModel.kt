@@ -9,15 +9,13 @@ import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeS
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.PreloadCommonTypesUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
-import com.chriscartland.batterybutler.viewmodel.toSortedMap
+import com.chriscartland.batterybutler.viewmodel.sortAndGroup
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
-import kotlin.comparisons.naturalOrder
-import kotlin.comparisons.reverseOrder
 
 @Inject
 class DeviceTypeListViewModel(
@@ -41,25 +39,24 @@ class DeviceTypeListViewModel(
             },
             getDeviceTypesUseCase(),
         ) { config, list ->
-            var sortedList = when (config.sort) {
-                DeviceTypeSortOption.NAME -> list.sortedBy { it.name }
-                DeviceTypeSortOption.BATTERY_TYPE -> list.sortedWith(compareBy<DeviceType> { it.batteryType }.thenBy { it.name })
-            }
-            if (!config.isSortAscending) {
-                sortedList = sortedList.reversed()
+            val sortComparator = when (config.sort) {
+                DeviceTypeSortOption.NAME -> compareBy<DeviceType> { it.name }
+                DeviceTypeSortOption.BATTERY_TYPE -> compareBy<DeviceType> { it.batteryType }.thenBy { it.name }
             }
 
-            val groupedList = when (config.group) {
-                DeviceTypeGroupOption.NONE -> mapOf("All Types" to sortedList)
-                DeviceTypeGroupOption.BATTERY_TYPE -> sortedList.groupBy { it.batteryType }
+            val groupKeySelector = when (config.group) {
+                DeviceTypeGroupOption.NONE -> null
+                DeviceTypeGroupOption.BATTERY_TYPE -> { type: DeviceType -> type.batteryType }
             }
 
-            val finalGroupedList = if (config.group != DeviceTypeGroupOption.NONE) {
-                val comparator = if (config.isGroupAscending) naturalOrder<String>() else reverseOrder()
-                groupedList.toSortedMap(comparator)
-            } else {
-                groupedList
-            }
+            val finalGroupedList = sortAndGroup(
+                items = list,
+                sortComparator = sortComparator,
+                isSortAscending = config.isSortAscending,
+                groupKeySelector = groupKeySelector,
+                defaultGroupName = "All Types",
+                isGroupAscending = config.isGroupAscending,
+            )
 
             DeviceTypeListUiState.Success(
                 groupedTypes = finalGroupedList,

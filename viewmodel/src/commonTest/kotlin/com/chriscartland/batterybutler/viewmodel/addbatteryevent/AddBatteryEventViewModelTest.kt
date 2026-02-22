@@ -9,6 +9,8 @@ import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
 import com.chriscartland.batterybutler.testcommon.TestDevices
 import com.chriscartland.batterybutler.usecase.AddBatteryEventUseCase
 import com.chriscartland.batterybutler.usecase.BatchAddBatteryEventsUseCase
+import com.chriscartland.batterybutler.usecase.FindOrCreateDeviceTypeUseCase
+import com.chriscartland.batterybutler.usecase.FindOrCreateDeviceUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceDetailUseCase
 import com.chriscartland.batterybutler.usecase.GetDevicesUseCase
 import com.chriscartland.batterybutler.usecase.UpdateDeviceLastReplacedUseCase
@@ -138,7 +140,11 @@ class AddBatteryEventViewModelTest {
             getDevicesUseCase = GetDevicesUseCase(repo),
             getDeviceDetailUseCase = GetDeviceDetailUseCase(repo),
             updateDeviceUseCase = UpdateDeviceUseCase(repo),
-            batchAddBatteryEventsUseCase = BatchAddBatteryEventsUseCase(FakeAiEngine(), repo),
+            batchAddBatteryEventsUseCase = BatchAddBatteryEventsUseCase(
+                FakeAiEngine(),
+                repo,
+                FindOrCreateDeviceUseCase(repo, FindOrCreateDeviceTypeUseCase(repo)),
+            ),
             featureFlagProvider = FakeFeatureFlagProvider(),
         )
 }

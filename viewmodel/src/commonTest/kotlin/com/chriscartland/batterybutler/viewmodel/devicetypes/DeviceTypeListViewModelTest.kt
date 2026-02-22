@@ -6,6 +6,7 @@ import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeS
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
 import com.chriscartland.batterybutler.testcommon.TestDevices
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
+import com.chriscartland.batterybutler.usecase.PreloadCommonTypesUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -187,5 +188,6 @@ class DeviceTypeListViewModelTest {
     private fun createViewModel(repo: FakeDeviceRepository): DeviceTypeListViewModel =
         DeviceTypeListViewModel(
             getDeviceTypesUseCase = GetDeviceTypesUseCase(repo),
+            preloadCommonTypesUseCase = PreloadCommonTypesUseCase(repo),
         )
 }
