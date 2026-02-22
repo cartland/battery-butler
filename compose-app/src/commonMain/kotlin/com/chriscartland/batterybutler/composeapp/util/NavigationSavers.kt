@@ -3,7 +3,7 @@ package com.chriscartland.batterybutler.composeapp.util
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import com.chriscartland.batterybutler.composeapp.Screen
+import com.chriscartland.batterybutler.composeapp.navigation.Screen
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 

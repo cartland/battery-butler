@@ -2,7 +2,7 @@ package com.chriscartland.batterybutler.composeapp.util
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.saveable.SaverScope
-import com.chriscartland.batterybutler.composeapp.Screen
+import com.chriscartland.batterybutler.composeapp.navigation.Screen
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
