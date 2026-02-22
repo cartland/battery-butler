@@ -51,8 +51,12 @@ class DelegatingGrpcClient(
                             }
                         }
                     }
-                    is NetworkMode.GrpcAws -> {
-                        val url = mode.url
+                    is NetworkMode.GrpcAws, is NetworkMode.GrpcDev -> {
+                        val url = when (mode) {
+                            is NetworkMode.GrpcAws -> mode.url
+                            is NetworkMode.GrpcDev -> mode.url
+                            else -> null
+                        }
                         if (url.isNullOrBlank()) {
                             GrpcClientState.InvalidConfiguration
                         } else {

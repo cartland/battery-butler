@@ -30,6 +30,7 @@ class DataStoreNetworkModeRepository(
         private const val TYPE_NONE = "none"
         private const val TYPE_GRPC_LOCAL = "grpc_local"
         private const val TYPE_GRPC_AWS = "grpc_aws"
+        private const val TYPE_GRPC_DEV = "grpc_dev"
         private const val SEPARATOR = ":"
 
         fun String.toNetworkMode(): NetworkMode {
@@ -42,6 +43,7 @@ class DataStoreNetworkModeRepository(
                 TYPE_NONE -> NetworkMode.None
                 TYPE_GRPC_LOCAL -> NetworkMode.GrpcLocal(url)
                 TYPE_GRPC_AWS -> NetworkMode.GrpcAws(url)
+                TYPE_GRPC_DEV -> NetworkMode.GrpcDev(url)
                 else -> DEFAULT_MODE
             }
         }
@@ -52,6 +54,7 @@ class DataStoreNetworkModeRepository(
                 is NetworkMode.None -> TYPE_NONE
                 is NetworkMode.GrpcLocal -> "$TYPE_GRPC_LOCAL$SEPARATOR${url.orEmpty()}"
                 is NetworkMode.GrpcAws -> "$TYPE_GRPC_AWS$SEPARATOR${url.orEmpty()}"
+                is NetworkMode.GrpcDev -> "$TYPE_GRPC_DEV$SEPARATOR${url.orEmpty()}"
             }
     }
 }

@@ -36,6 +36,7 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.ai_e
 import com.chriscartland.batterybutler.composeresources.generated.resources.ai_engine_on_device
 import com.chriscartland.batterybutler.composeresources.generated.resources.ai_engine_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_grpc_aws
+import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_grpc_dev
 import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_grpc_local
 import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_mock
 import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_none
@@ -154,6 +155,9 @@ fun SettingsContent(
                         )
                         is NetworkMode.GrpcAws -> composeStringResource(
                             Res.string.network_mode_grpc_aws,
+                        )
+                        is NetworkMode.GrpcDev -> composeStringResource(
+                            Res.string.network_mode_grpc_dev,
                         )
                     }
                 },

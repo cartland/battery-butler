@@ -33,4 +33,12 @@ sealed interface NetworkMode {
     data class GrpcAws(
         val url: String?,
     ) : NetworkMode
+
+    /**
+     * Dev server mode.
+     * @param url Optional override URL.
+     */
+    data class GrpcDev(
+        val url: String?,
+    ) : NetworkMode
 }

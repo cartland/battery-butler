@@ -31,6 +31,7 @@ class DebugNetworkReceiver(
             val mode = when (modeString) {
                 "GRPC_LOCAL" -> NetworkMode.GrpcLocal("http://10.0.2.2:50051") // Hardcoded Android Emulator Localhost
                 "GRPC_AWS" -> NetworkMode.GrpcAws(BuildConfig.PRODUCTION_SERVER_URL)
+                "GRPC_DEV" -> NetworkMode.GrpcDev(BuildConfig.DEV_SERVER_URL)
                 "MOCK" -> NetworkMode.Mock
                 else -> null
             }

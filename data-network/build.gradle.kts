@@ -39,6 +39,7 @@ kotlin {
 
         doLast {
             val serverUrl = (project.findProperty("PRODUCTION_SERVER_URL") as? String)
+            val devServerUrl = (project.findProperty("DEV_SERVER_URL") as? String)
 
             val file = buildConfigDir.get().file("com/chriscartland/batterybutler/datanetwork/BuildConfig.kt").asFile
             file.parentFile.mkdirs()
@@ -48,6 +49,7 @@ kotlin {
 
                 object BuildConfig {
                     const val PRODUCTION_SERVER_URL = "$serverUrl"
+                    const val DEV_SERVER_URL = "$devServerUrl"
                 }
                 """.trimIndent(),
             )

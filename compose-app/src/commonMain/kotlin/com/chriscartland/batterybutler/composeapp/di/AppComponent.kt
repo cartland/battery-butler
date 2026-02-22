@@ -11,6 +11,7 @@ import com.chriscartland.batterybutler.datanetwork.auth.GoogleSignInBridge
 import com.chriscartland.batterybutler.datanetwork.grpc.DelegatingGrpcClient
 import com.chriscartland.batterybutler.datanetwork.grpc.NetworkComponent
 import com.chriscartland.batterybutler.domain.model.AppVersion
+import com.chriscartland.batterybutler.domain.model.DevServerUrl
 import com.chriscartland.batterybutler.domain.model.FeatureFlag
 import com.chriscartland.batterybutler.domain.model.ProductionServerUrl
 import com.chriscartland.batterybutler.domain.model.ai.AiEngine
@@ -76,6 +77,10 @@ abstract class AppComponent(
     @Provides
     @Singleton
     fun provideProductionServerUrl(): ProductionServerUrl = ProductionServerUrl(BuildConfig.PRODUCTION_SERVER_URL)
+
+    @Provides
+    @Singleton
+    fun provideDevServerUrl(): DevServerUrl = DevServerUrl(BuildConfig.DEV_SERVER_URL)
 
     @Provides
     @Singleton

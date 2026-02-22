@@ -41,7 +41,7 @@ Development implementation:
 
 Routes to appropriate data source based on `NetworkMode`:
 - `Mock` → MockRemoteDataSource
-- `GrpcLocal` / `GrpcAws` → GrpcSyncDataSource
+- `GrpcLocal` / `GrpcAws` / `GrpcDev` → GrpcSyncDataSource
 
 ### SyncMapper
 
