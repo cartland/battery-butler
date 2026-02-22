@@ -278,8 +278,8 @@ fun SettingsContent(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     val versionText = when (appVersion) {
-                        is AppVersion.Android -> "${appVersion.versionName} (${appVersion.versionCode})"
-                        is AppVersion.Ios -> "${appVersion.versionName} (${appVersion.buildNumber})"
+                        is AppVersion.Android -> "${appVersion.versionName}-${appVersion.versionCode}"
+                        is AppVersion.Ios -> "${appVersion.versionName}-${appVersion.buildNumber}"
                         is AppVersion.Desktop -> appVersion.versionName
                         is AppVersion.Unavailable -> "Unavailable"
                     }
