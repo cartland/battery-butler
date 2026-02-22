@@ -52,4 +52,3 @@ val OutlineDark = Color(0xFF928F86) // Lighter warm grey for dark mode
 // Battery Age Warning Colors (180-364 days)
 val BatteryWarningLight = Color(0xFF956D00) // Dark amber (WCAG AA on linen)
 val BatteryWarningDark = Color(0xFFE5A100) // Bright amber (WCAG AA on dark)
-
