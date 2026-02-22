@@ -36,7 +36,7 @@ import kotlin.time.Instant
 /**
  * Returns a color based on battery age in days.
  * - 0-179 days: default gray (normal)
- * - 180-364 days: amber/orange (warning)
+ * - 180-364 days: dark amber (warning, WCAG AA contrast ≥ 4.5:1)
  * - 365+ days: error red (danger)
  * - null (no replacement date): default gray
  */
@@ -45,7 +45,7 @@ private fun batteryAgeColor(days: Int?): Color {
     if (days == null) return MaterialTheme.colorScheme.onSurfaceVariant
     return when {
         days >= 365 -> MaterialTheme.colorScheme.error
-        days >= 180 -> if (isSystemInDarkTheme()) Color(0xFFE5A100) else Color(0xFFB8860B)
+        days >= 180 -> if (isSystemInDarkTheme()) Color(0xFFE5A100) else Color(0xFF956D00)
         else -> MaterialTheme.colorScheme.onSurfaceVariant
     }
 }
