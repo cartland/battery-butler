@@ -23,12 +23,19 @@ Release the Android app to Play Store internal testing by creating a release tag
 1. Check current state:
    ```bash
    git fetch origin --tags
+   git branch --show-current
    git tag -l 'android/*' --format='%(refname:short) %(objectname:short) %(creatordate:short)' | sort -t/ -k2 -n | tail -5
    ```
 
+   **Branch check:** If not on `main`, warn the user that releasing from a non-main branch is unusual and may not be intended. Ask for explicit confirmation before proceeding. If the user confirms, pass `--confirm-hash $(git rev-parse HEAD)` to the release script in step 2.
+
 2. Run the release script:
    ```bash
+   # On main:
    ./scripts/release-android.sh --confirm-release
+
+   # On a non-main branch (only after user confirms):
+   ./scripts/release-android.sh --confirm-release --confirm-hash $(git rev-parse HEAD)
    ```
 
    The script will:
