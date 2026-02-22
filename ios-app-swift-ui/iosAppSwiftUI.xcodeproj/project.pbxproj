@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		14C9539A085FC4157ED6ECCB /* EventDetailViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 484371A677F858AB3865E844 /* EventDetailViewModelWrapper.swift */; };
 		246295A22F14EEF40047C600 /* AddDeviceScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2462958F2F14EEF40047C600 /* AddDeviceScreen.swift */; };
 		246295A32F14EEF40047C600 /* MainTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2462959C2F14EEF40047C600 /* MainTab.swift */; };
 		246295A42F14EEF40047C600 /* MainScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2462959B2F14EEF40047C600 /* MainScreen.swift */; };
@@ -27,14 +28,14 @@
 		24ABD57C2F1CEC230036E1DD /* DeviceTypeListScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24ABD5722F1CEC230036E1DD /* DeviceTypeListScreen.swift */; };
 		24ABD57D2F1CEC230036E1DD /* AddDeviceTypeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24ABD5702F1CEC230036E1DD /* AddDeviceTypeScreen.swift */; };
 		24ABD57E2F1CEC230036E1DD /* DeviceTypeRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24ABD5742F1CEC230036E1DD /* DeviceTypeRow.swift */; };
-		38144439D4022923998D00BB /* EventDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EF49CBDB2A84384263B016E /* EventDetailScreen.swift */; };
-		64706D01D5A2869E16C86497 /* EventDetailViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 015C24281179AF8C450171C3 /* EventDetailViewModelWrapper.swift */; };
+		7B995C9514A7E13CDD597E53 /* EventDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB2BC212BA886F9EA0057B5 /* EventDetailScreen.swift */; };
+		9E310559114A9C3509F5106D /* LoginScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05276AAFBE18E0BD342E186F /* LoginScreen.swift */; };
+		9EC6A2E16CEA57929E345F5C /* LoginViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D976428F6B0003DDB354405 /* LoginViewModelWrapper.swift */; };
 		AG1000000000000000000002 /* Generated in Sources */ = {isa = PBXBuildFile; fileRef = AG1000000000000000000001 /* Generated */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		015C24281179AF8C450171C3 /* EventDetailViewModelWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EventDetailViewModelWrapper.swift; sourceTree = "<group>"; };
-		0EF49CBDB2A84384263B016E /* EventDetailScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EventDetailScreen.swift; sourceTree = "<group>"; };
+		05276AAFBE18E0BD342E186F /* LoginScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LoginScreen.swift; sourceTree = "<group>"; };
 		2462958D2F14EEF40047C600 /* ViewModelWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModelWrapper.swift; sourceTree = "<group>"; };
 		2462958F2F14EEF40047C600 /* AddDeviceScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDeviceScreen.swift; sourceTree = "<group>"; };
 		246295902F14EEF40047C600 /* AddDeviceViewModelWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDeviceViewModelWrapper.swift; sourceTree = "<group>"; };
@@ -55,8 +56,11 @@
 		24ABD5742F1CEC230036E1DD /* DeviceTypeRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceTypeRow.swift; sourceTree = "<group>"; };
 		24ABD5752F1CEC230036E1DD /* EditDeviceTypeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDeviceTypeScreen.swift; sourceTree = "<group>"; };
 		24ABD5762F1CEC230036E1DD /* EditDeviceTypeViewModelWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDeviceTypeViewModelWrapper.swift; sourceTree = "<group>"; };
+		484371A677F858AB3865E844 /* EventDetailViewModelWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EventDetailViewModelWrapper.swift; sourceTree = "<group>"; };
+		4D976428F6B0003DDB354405 /* LoginViewModelWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LoginViewModelWrapper.swift; sourceTree = "<group>"; };
 		AG1000000000000000000001 /* Generated */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Generated; sourceTree = "<group>"; };
 		B9DA97B12DC1472C00A4DA20 /* BatteryButler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BatteryButler.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		EBB2BC212BA886F9EA0057B5 /* EventDetailScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EventDetailScreen.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -170,7 +174,8 @@
 				2462959A2F14EEF40047C600 /* Home */,
 				2462959D2F14EEF40047C600 /* Main */,
 				246295A02F14EEF40047C600 /* Settings */,
-				8EA4E6F9E3301363FECDEC6C /* EventDetail */,
+				CB1D9BAD62F8FB251D54465C /* Login */,
+				A382FF30859CC658F115A300 /* EventDetail */,
 			);
 			path = Features;
 			sourceTree = "<group>";
@@ -189,11 +194,11 @@
 			path = DeviceTypes;
 			sourceTree = "<group>";
 		};
-		8EA4E6F9E3301363FECDEC6C /* EventDetail */ = {
+		A382FF30859CC658F115A300 /* EventDetail */ = {
 			isa = PBXGroup;
 			children = (
-				0EF49CBDB2A84384263B016E /* EventDetailScreen.swift */,
-				015C24281179AF8C450171C3 /* EventDetailViewModelWrapper.swift */,
+				EBB2BC212BA886F9EA0057B5 /* EventDetailScreen.swift */,
+				484371A677F858AB3865E844 /* EventDetailViewModelWrapper.swift */,
 			);
 			name = EventDetail;
 			path = EventDetail;
@@ -217,6 +222,16 @@
 				B9DA97B12DC1472C00A4DA20 /* BatteryButler.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		CB1D9BAD62F8FB251D54465C /* Login */ = {
+			isa = PBXGroup;
+			children = (
+				05276AAFBE18E0BD342E186F /* LoginScreen.swift */,
+				4D976428F6B0003DDB354405 /* LoginViewModelWrapper.swift */,
+			);
+			name = Login;
+			path = Login;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -355,8 +370,10 @@
 				246295AE2F14EEF40047C600 /* SettingsScreen.swift in Sources */,
 				246295AF2F14EEF40047C600 /* DeviceDetailViewModelWrapper.swift in Sources */,
 				AG1000000000000000000002 /* Generated in Sources */,
-				38144439D4022923998D00BB /* EventDetailScreen.swift in Sources */,
-				64706D01D5A2869E16C86497 /* EventDetailViewModelWrapper.swift in Sources */,
+				9E310559114A9C3509F5106D /* LoginScreen.swift in Sources */,
+				9EC6A2E16CEA57929E345F5C /* LoginViewModelWrapper.swift in Sources */,
+				7B995C9514A7E13CDD597E53 /* EventDetailScreen.swift in Sources */,
+				14C9539A085FC4157ED6ECCB /* EventDetailViewModelWrapper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

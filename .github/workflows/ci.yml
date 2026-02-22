@@ -147,6 +147,45 @@ jobs:
       - name: Run Instrumented Tests
         run: ./scripts/test.sh
 
+  validation_ios_ui:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+      - name: Cache Gradle
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-ios-${{ hashFiles('**/*.gradle*', '**/libs.versions.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-ios-
+            ${{ runner.os }}-gradle-
+      - name: Cache Bazel
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.cache/bazel
+            ~/.cache/bazelisk
+          key: ${{ runner.os }}-bazel-${{ hashFiles('WORKSPACE', 'MODULE.bazel', 'protos/**') }}
+          restore-keys: |
+            ${{ runner.os }}-bazel-
+      - name: Verify iOS App (SwiftUI) Compilation
+        run: |
+          cd ios-app-swift-ui
+          xcodebuild -project iosAppSwiftUI.xcodeproj -configuration Debug -scheme iosAppSwiftUI -destination 'generic/platform=iOS Simulator' clean build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+
   validation_architecture:
     needs: changes
     if: needs.changes.outputs.code == 'true'
@@ -367,6 +406,7 @@ jobs:
       - validation_detekt
       - validation_test
       - validation_instrumented
+      - validation_ios_ui
       - validation_architecture
       - build_android
       - build_ios_compose
@@ -386,6 +426,7 @@ jobs:
             "${{ needs.validation_detekt.result }}" \
             "${{ needs.validation_test.result }}" \
             "${{ needs.validation_instrumented.result }}" \
+            "${{ needs.validation_ios_ui.result }}" \
             "${{ needs.validation_architecture.result }}" \
             "${{ needs.build_android.result }}" \
             "${{ needs.build_ios_compose.result }}" \

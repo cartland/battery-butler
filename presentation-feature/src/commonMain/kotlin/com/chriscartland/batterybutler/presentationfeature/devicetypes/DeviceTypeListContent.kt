@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,6 +24,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -65,8 +69,32 @@ fun DeviceTypeListContent(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
-    Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-        Box {
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        topBar = {
+            if (state is DeviceTypeListUiState.Success &&
+                state.groupedTypes.values
+                    .flatten()
+                    .isNotEmpty()
+            ) {
+                DeviceTypeFilterRow(
+                    state = state,
+                    onSortOptionSelected = onSortOptionSelected,
+                    onGroupOptionSelected = onGroupOptionSelected,
+                    onSortDirectionToggle = onSortDirectionToggle,
+                    onGroupDirectionToggle = onGroupDirectionToggle,
+                )
+            }
+        },
+    ) { innerPadding ->
+        val layoutDirection = LocalLayoutDirection.current
+        val mergedPadding = PaddingValues(
+            top = innerPadding.calculateTopPadding() + contentPadding.calculateTopPadding(),
+            bottom = innerPadding.calculateBottomPadding() + contentPadding.calculateBottomPadding(),
+            start = innerPadding.calculateStartPadding(layoutDirection) + contentPadding.calculateStartPadding(layoutDirection),
+            end = innerPadding.calculateEndPadding(layoutDirection) + contentPadding.calculateEndPadding(layoutDirection),
+        )
+        Box(modifier = Modifier.fillMaxSize()) {
             when (state) {
                 DeviceTypeListUiState.Loading -> {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
@@ -78,7 +106,7 @@ fun DeviceTypeListContent(
                             icon = Icons.AutoMirrored.Filled.List,
                             title = composeStringResource(Res.string.empty_types_title),
                             message = composeStringResource(Res.string.empty_types_message),
-                            modifier = Modifier.padding(contentPadding),
+                            modifier = Modifier.padding(mergedPadding),
                             action = {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                     Button(onClick = onAddTypeClick) {
@@ -92,105 +120,111 @@ fun DeviceTypeListContent(
                             },
                         )
                     } else {
-                        Column {
-                            // Filter Row
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = Padding.standard, vertical = Padding.small),
-                                horizontalArrangement = Arrangement.spacedBy(Padding.small),
-                            ) {
-                                var sortExpanded by remember { mutableStateOf(false) }
-                                var groupExpanded by remember { mutableStateOf(false) }
-
-                                // Sort Button (First)
-                                Box {
-                                    CompositeControl(
-                                        label = "Sort: ${composeStringResource(state.sortOption.labelRes())}",
-                                        isActive = true, // Sort is always active
-                                        isAscending = state.isSortAscending,
-                                        onClicked = { sortExpanded = true },
-                                        onDirectionToggle = { onSortDirectionToggle() },
-                                    )
-                                    DropdownMenu(
-                                        expanded = sortExpanded,
-                                        onDismissRequest = { sortExpanded = false },
-                                    ) {
-                                        DeviceTypeSortOption.entries.forEach { option ->
-                                            DropdownMenuItem(
-                                                text = { Text(composeStringResource(option.labelRes())) },
-                                                onClick = {
-                                                    onSortOptionSelected(option)
-                                                    sortExpanded = false
-                                                },
-                                            )
-                                        }
-                                    }
-                                }
-
-                                // Group Button (Second)
-                                Box {
-                                    CompositeControl(
-                                        label = "Group: ${composeStringResource(state.groupOption.labelRes())}",
-                                        isActive = state.groupOption != DeviceTypeGroupOption.NONE,
-                                        isAscending = state.isGroupAscending,
-                                        onClicked = { groupExpanded = true },
-                                        onDirectionToggle = { onGroupDirectionToggle() },
-                                    )
-                                    DropdownMenu(
-                                        expanded = groupExpanded,
-                                        onDismissRequest = { groupExpanded = false },
-                                    ) {
-                                        DeviceTypeGroupOption.entries.forEach { option ->
-                                            DropdownMenuItem(
-                                                text = { Text(composeStringResource(option.labelRes())) },
-                                                onClick = {
-                                                    onGroupOptionSelected(option)
-                                                    groupExpanded = false
-                                                },
-                                            )
-                                        }
-                                    }
-                                }
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = mergedPadding,
+                        ) {
+                            item {
+                                AddItemCard("Add a device type", onAddTypeClick)
                             }
-
-                            LazyColumn(
-                                modifier = Modifier.fillMaxSize(),
-                                contentPadding = PaddingValues(
-                                    top = Padding.standard,
-                                    bottom = Padding.standard + contentPadding.calculateBottomPadding(),
-                                ),
-                            ) {
-                                item {
-                                    AddItemCard("Add a device type", onAddTypeClick)
-                                }
-                                state.groupedTypes.forEach { (groupName, types) ->
-                                    if (state.groupOption != DeviceTypeGroupOption.NONE) {
-                                        stickyHeader {
-                                            Surface(
-                                                modifier = Modifier.fillMaxWidth(),
-                                                color = MaterialTheme.colorScheme.surfaceVariant,
-                                                contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                            ) {
-                                                Text(
-                                                    text = groupName,
-                                                    modifier = Modifier.padding(horizontal = Padding.standard, vertical = Padding.small),
-                                                    style = MaterialTheme.typography.labelLarge,
-                                                    fontWeight = FontWeight.Bold,
-                                                )
-                                            }
+                            state.groupedTypes.forEach { (groupName, types) ->
+                                if (state.groupOption != DeviceTypeGroupOption.NONE) {
+                                    stickyHeader {
+                                        Surface(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            color = MaterialTheme.colorScheme.surfaceVariant,
+                                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        ) {
+                                            Text(
+                                                text = groupName,
+                                                modifier = Modifier.padding(horizontal = Padding.standard, vertical = Padding.small),
+                                                style = MaterialTheme.typography.labelLarge,
+                                                fontWeight = FontWeight.Bold,
+                                            )
                                         }
                                     }
+                                }
 
-                                    items(types, key = { it.id }) { type ->
-                                        DeviceTypeListItem(
-                                            deviceType = type,
-                                            onClick = { onEditType(type.id) },
-                                        )
-                                    }
+                                items(types, key = { it.id }) { type ->
+                                    DeviceTypeListItem(
+                                        deviceType = type,
+                                        onClick = { onEditType(type.id) },
+                                    )
                                 }
                             }
                         }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun DeviceTypeFilterRow(
+    state: DeviceTypeListUiState.Success,
+    onSortOptionSelected: (DeviceTypeSortOption) -> Unit,
+    onGroupOptionSelected: (DeviceTypeGroupOption) -> Unit,
+    onSortDirectionToggle: () -> Unit,
+    onGroupDirectionToggle: () -> Unit,
+) {
+    Column {
+        // Filter Row
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = Padding.standard, vertical = Padding.small),
+            horizontalArrangement = Arrangement.spacedBy(Padding.small),
+        ) {
+            var sortExpanded by remember { mutableStateOf(false) }
+            var groupExpanded by remember { mutableStateOf(false) }
+
+            // Sort Button (First)
+            Box {
+                CompositeControl(
+                    label = "Sort: ${composeStringResource(state.sortOption.labelRes())}",
+                    isActive = true, // Sort is always active
+                    isAscending = state.isSortAscending,
+                    onClicked = { sortExpanded = true },
+                    onDirectionToggle = { onSortDirectionToggle() },
+                )
+                DropdownMenu(
+                    expanded = sortExpanded,
+                    onDismissRequest = { sortExpanded = false },
+                ) {
+                    DeviceTypeSortOption.entries.forEach { option ->
+                        DropdownMenuItem(
+                            text = { Text(composeStringResource(option.labelRes())) },
+                            onClick = {
+                                onSortOptionSelected(option)
+                                sortExpanded = false
+                            },
+                        )
+                    }
+                }
+            }
+
+            // Group Button (Second)
+            Box {
+                CompositeControl(
+                    label = "Group: ${composeStringResource(state.groupOption.labelRes())}",
+                    isActive = state.groupOption != DeviceTypeGroupOption.NONE,
+                    isAscending = state.isGroupAscending,
+                    onClicked = { groupExpanded = true },
+                    onDirectionToggle = { onGroupDirectionToggle() },
+                )
+                DropdownMenu(
+                    expanded = groupExpanded,
+                    onDismissRequest = { groupExpanded = false },
+                ) {
+                    DeviceTypeGroupOption.entries.forEach { option ->
+                        DropdownMenuItem(
+                            text = { Text(composeStringResource(option.labelRes())) },
+                            onClick = {
+                                onGroupOptionSelected(option)
+                                groupExpanded = false
+                            },
+                        )
                     }
                 }
             }
@@ -237,5 +271,27 @@ fun DeviceTypeListContentPreview() {
             onSortDirectionToggle = {},
             onGroupDirectionToggle = {},
         )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DeviceTypeFilterRowPreview() {
+    BatteryButlerTheme {
+        Surface {
+            DeviceTypeFilterRow(
+                state = DeviceTypeListUiState.Success(
+                    groupedTypes = emptyMap(),
+                    sortOption = DeviceTypeSortOption.NAME,
+                    groupOption = DeviceTypeGroupOption.NONE,
+                    isSortAscending = true,
+                    isGroupAscending = true,
+                ),
+                onSortOptionSelected = {},
+                onGroupOptionSelected = {},
+                onSortDirectionToggle = {},
+                onGroupDirectionToggle = {},
+            )
+        }
     }
 }

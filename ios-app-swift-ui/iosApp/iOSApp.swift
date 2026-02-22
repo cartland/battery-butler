@@ -4,6 +4,7 @@ import shared
 @main
 struct iOSApp: App {
     let component: NativeComponent
+    @State private var isAuthenticated = false
     
     init() {
         self.component = IosNativeHelper().createComponent()
@@ -11,7 +12,15 @@ struct iOSApp: App {
     
     var body: some Scene {
         WindowGroup {
-            MainScreen(component: component)
+            if isAuthenticated {
+                MainScreen(component: component)
+            } else {
+                LoginScreen(viewModel: component.loginViewModel, onLoginSuccess: {
+                    isAuthenticated = true
+                }, onSkipLogin: {
+                    isAuthenticated = true
+                })
+            }
         }
     }
 }

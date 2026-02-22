@@ -31,6 +31,14 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ---
 
+## 2026-02-22
+
+### Documentation
+
+- **UI Screens Mapping**: Added `docs/UI_SCREENS_MAPPING.md` detailing the mapping between the shared Compose Multiplatform UI and the native SwiftUI implementation. Explains the structural asymmetry between Compose's `MainScreenShell` vs SwiftUI's `TabView` architecture.
+
+---
+
 ## 2026-02-21
 
 ### Features
