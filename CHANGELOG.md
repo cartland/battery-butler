@@ -33,6 +33,14 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ## 2026-02-22
 
+### Refactoring
+
+- **Theme SRP cleanup** ([#589](https://github.com/cartland/battery-butler/pull/589)): Extracted `IconAccent` data class and category vals from `Color.kt` into `IconAccent.kt`. Introduced `ButlerColors` data class + `LocalButlerColors` composition local for custom app colors beyond Material3. Battery warning amber color now uses `LocalButlerColors.current.batteryWarning` instead of inline `isSystemInDarkTheme()` check.
+
+### Fixes
+
+- **Screenshot OOM guard** ([#589](https://github.com/cartland/battery-butler/pull/589)): Added `doFirst` guard to `updateDebugScreenshotTest` and `validateDebugScreenshotTest` that blocks all-at-once runs by default. Developers are directed to `generate-screenshots-sequentially.sh`, with `-PforceAllScreenshots` as an opt-in escape hatch.
+
 ### Documentation
 
 - **UI Screens Mapping**: Added `docs/UI_SCREENS_MAPPING.md` detailing the mapping between the shared Compose Multiplatform UI and the native SwiftUI implementation. Explains the structural asymmetry between Compose's `MainScreenShell` vs SwiftUI's `TabView` architecture.

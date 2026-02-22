@@ -101,6 +101,10 @@ Padding constants live in `presentation-core/.../theme/Padding.kt`. Use `Padding
 
 Icon sizes live in `presentation-core/.../theme/IconSize.kt`.
 
+Custom app colors beyond Material3 live in `ButlerColors` (data class) provided via `LocalButlerColors` composition local. Access with `LocalButlerColors.current.batteryWarning`. New custom colors should be added to `ButlerColors`, provided in `BatteryButlerTheme`, and defined in `Color.kt`.
+
+Icon accent colors (`IconAccent` data class + per-category vals) live in `presentation-core/.../theme/IconAccent.kt`.
+
 ### UI Architecture Mapping
 
 For a detailed breakdown of how the shared Compose Multiplatform UI maps to the native SwiftUI implementation (and why they intuitively differ structurally), see `docs/UI_SCREENS_MAPPING.md`.
