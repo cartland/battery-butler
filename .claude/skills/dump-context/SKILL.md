@@ -60,7 +60,7 @@ Add to the appropriate section:
 Add if applicable:
 - New workflow rules
 - Changes to merge/CI process
-- Mistakes to avoid
+- Mistakes to avoid — **especially cases where the agent reported incorrect state to the user** (e.g., wrong PR merge status, assumed auto-merge was set, missed merge conflicts). These must become explicit verification rules so the mistake cannot recur.
 
 #### Other Documentation (if applicable)
 - `CHANGELOG.md` — add entries for completed/merged work
