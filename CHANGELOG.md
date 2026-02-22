@@ -45,6 +45,8 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 - **AI tab chat input excessive bottom padding** ([#554](https://github.com/cartland/battery-butler/pull/554)): Removed redundant `WindowInsets.navigationBars` from the AI tab input Row. The parent Scaffold already includes navigation bar insets via `innerPadding`, which was doubling the bottom space.
 
+- **ServerSyncMapper notes and imagePath bugs** ([#559](https://github.com/cartland/battery-butler/pull/559)): Fixed `notes` mapping converting empty proto string to empty string instead of `null`, and `imagePath` field being omitted entirely in both `ProtoDevice.toDomain()` and `Device.toProto()`.
+
 ---
 
 ## 2026-02-16
