@@ -1,6 +1,5 @@
 package com.chriscartland.batterybutler.presentationcore.components
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -156,7 +155,6 @@ data object DeviceIconMapper {
 @Composable
 fun DeviceIconsPreview() {
     BatteryButlerTheme {
-        val isDark = isSystemInDarkTheme()
         Scaffold(
             topBar = { ButlerCenteredTopAppBar(title = "Device Icons", onBack = {}) },
         ) { innerPadding ->
@@ -166,7 +164,6 @@ fun DeviceIconsPreview() {
                 modifier = Modifier.padding(innerPadding).fillMaxSize(),
             ) {
                 items(DeviceIconMapper.AvailableIcons) { iconName: String ->
-                    val accent = DeviceIconMapper.getIconAccent(iconName)
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.padding(8.dp),
@@ -174,8 +171,6 @@ fun DeviceIconsPreview() {
                         ButlerIconBox(
                             icon = DeviceIconMapper.getIcon(iconName),
                             contentDescription = iconName,
-                            containerColor = if (isDark) accent.containerDark else accent.containerLight,
-                            contentColor = if (isDark) accent.contentDark else accent.contentLight,
                         )
                         Text(
                             text = iconName,

@@ -125,7 +125,8 @@ fun SettingsContent(
                         Button(
                             onClick = onSignOut,
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.error,
+                                containerColor = MaterialTheme.colorScheme.errorContainer,
+                                contentColor = MaterialTheme.colorScheme.onErrorContainer,
                             ),
                             modifier = Modifier.fillMaxWidth(),
                         ) {
