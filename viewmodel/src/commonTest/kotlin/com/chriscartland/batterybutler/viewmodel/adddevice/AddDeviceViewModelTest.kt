@@ -163,7 +163,7 @@ class AddDeviceViewModelTest {
             getDeviceTypesUseCase = GetDeviceTypesUseCase(repo),
             batchAddDevicesUseCase = BatchAddDevicesUseCase(
                 FakeAiEngine(),
-                repo,
+                AddDeviceUseCase(repo),
                 FindOrCreateDeviceTypeUseCase(repo),
             ),
             featureFlagProvider = FakeFeatureFlagProvider(),

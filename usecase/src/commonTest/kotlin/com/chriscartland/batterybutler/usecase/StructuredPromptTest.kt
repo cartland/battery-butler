@@ -93,7 +93,7 @@ class StructuredPromptTest {
         runTest {
             val engine = CapturingAiEngine()
             val repo = MockRepository()
-            val useCase = BatchAddDevicesUseCase(engine, repo, FindOrCreateDeviceTypeUseCase(repo))
+            val useCase = BatchAddDevicesUseCase(engine, AddDeviceUseCase(repo), FindOrCreateDeviceTypeUseCase(repo))
 
             useCase("Kitchen Smoke Detector").toList()
 
@@ -111,7 +111,8 @@ class StructuredPromptTest {
             val repo = MockRepository()
             val findOrCreateType = FindOrCreateDeviceTypeUseCase(repo)
             val findOrCreateDevice = FindOrCreateDeviceUseCase(repo, findOrCreateType)
-            val useCase = BatchAddBatteryEventsUseCase(engine, repo, findOrCreateDevice)
+            val addBatteryEventUseCase = AddBatteryEventUseCase(repo, UpdateDeviceLastReplacedUseCase(repo))
+            val useCase = BatchAddBatteryEventsUseCase(engine, addBatteryEventUseCase, findOrCreateDevice)
 
             useCase("2023-01-01 Remote").toList()
 

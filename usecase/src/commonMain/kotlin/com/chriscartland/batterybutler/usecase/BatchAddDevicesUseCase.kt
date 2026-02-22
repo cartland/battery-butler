@@ -8,7 +8,6 @@ import com.chriscartland.batterybutler.domain.model.ai.AiEngine
 import com.chriscartland.batterybutler.domain.model.ai.AiToolNames
 import com.chriscartland.batterybutler.domain.model.ai.AiToolParams
 import com.chriscartland.batterybutler.domain.model.ai.ToolHandler
-import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import me.tatarka.inject.annotations.Inject
@@ -19,7 +18,7 @@ import kotlin.time.Instant
 @Inject
 class BatchAddDevicesUseCase(
     private val aiEngine: AiEngine,
-    private val deviceRepository: DeviceRepository,
+    private val addDeviceUseCase: AddDeviceUseCase,
     private val findOrCreateDeviceTypeUseCase: FindOrCreateDeviceTypeUseCase,
 ) {
     private val systemInstructions =
@@ -40,7 +39,7 @@ class BatchAddDevicesUseCase(
                         try {
                             val typeId = findOrCreateDeviceTypeUseCase(typeName)
 
-                            deviceRepository.addDevice(
+                            addDeviceUseCase(
                                 Device(
                                     id = uuid4().toString(),
                                     name = name,

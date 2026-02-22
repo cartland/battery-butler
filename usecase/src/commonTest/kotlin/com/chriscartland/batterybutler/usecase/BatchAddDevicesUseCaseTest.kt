@@ -42,7 +42,7 @@ class BatchAddDevicesUseCaseTest {
         runTest {
             val repo = FakeDeviceRepository()
             val engine = FakeAiEngine()
-            val useCase = BatchAddDevicesUseCase(engine, repo, FindOrCreateDeviceTypeUseCase(repo))
+            val useCase = BatchAddDevicesUseCase(engine, AddDeviceUseCase(repo), FindOrCreateDeviceTypeUseCase(repo))
 
             val results = useCase("Add Test Device").toList()
 
