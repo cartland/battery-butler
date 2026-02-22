@@ -26,15 +26,17 @@ Release the Android app to Play Store internal testing by creating a release tag
    git tag -l 'android/*' --format='%(refname:short) %(objectname:short) %(creatordate:short)' | sort -t/ -k2 -n | tail -5
    ```
 
-2. Run the release script with non-interactive flags:
+2. Run the release script:
    ```bash
-   ./scripts/release-android.sh --allow-duplicate-tag --confirm-release
+   ./scripts/release-android.sh --confirm-release
    ```
 
    The script will:
    - Find the highest existing `android/N` tag
    - Create `android/N+1` on the current commit
    - Push the tag to trigger the `release-android.yml` workflow
+
+   > **Note:** Do NOT use `--allow-duplicate-tag` for normal releases. That flag is only for rollback scenarios where you intentionally re-tag an older commit. Without the flag, the script will warn and prompt if the commit already has a tag — which is the desired safety check.
 
 3. Monitor the release workflow:
    ```bash
