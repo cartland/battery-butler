@@ -64,3 +64,9 @@ val IconAccentSlate = IconAccent(
     containerDark = Color(0xFF2A2A28), // Dark warm gray
     contentDark = Color(0xFFA0A098), // Light warm gray
 )
+
+fun IconAccent.resolve(isDark: Boolean): ResolvedIconAccent =
+    ResolvedIconAccent(
+        container = if (isDark) containerDark else containerLight,
+        content = if (isDark) contentDark else contentLight,
+    )

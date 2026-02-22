@@ -1,5 +1,6 @@
 package com.chriscartland.batterybutler.presentationcore.components
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -70,6 +71,8 @@ import com.chriscartland.batterybutler.presentationcore.theme.IconAccentPurple
 import com.chriscartland.batterybutler.presentationcore.theme.IconAccentRed
 import com.chriscartland.batterybutler.presentationcore.theme.IconAccentSlate
 import com.chriscartland.batterybutler.presentationcore.theme.IconAccentTeal
+import com.chriscartland.batterybutler.presentationcore.theme.ResolvedIconAccent
+import com.chriscartland.batterybutler.presentationcore.theme.resolve
 
 data object DeviceIconMapper {
     val AvailableIcons = DeviceIcons.AvailableIcons
@@ -99,6 +102,12 @@ data object DeviceIconMapper {
             // Tools / utility / everything else → Slate
             else -> IconAccentSlate
         }
+
+    @Composable
+    fun getResolvedIconAccent(iconName: String?): ResolvedIconAccent {
+        val isDark = isSystemInDarkTheme()
+        return getIconAccent(iconName).resolve(isDark)
+    }
 
     fun getIcon(iconName: String?): ImageVector =
         when (iconName) {
