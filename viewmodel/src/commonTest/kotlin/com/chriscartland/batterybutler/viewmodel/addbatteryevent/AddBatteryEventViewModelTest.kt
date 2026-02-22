@@ -142,7 +142,7 @@ class AddBatteryEventViewModelTest {
             updateDeviceUseCase = UpdateDeviceUseCase(repo),
             batchAddBatteryEventsUseCase = BatchAddBatteryEventsUseCase(
                 FakeAiEngine(),
-                repo,
+                AddBatteryEventUseCase(repo, UpdateDeviceLastReplacedUseCase(repo)),
                 FindOrCreateDeviceUseCase(repo, FindOrCreateDeviceTypeUseCase(repo)),
             ),
             featureFlagProvider = FakeFeatureFlagProvider(),

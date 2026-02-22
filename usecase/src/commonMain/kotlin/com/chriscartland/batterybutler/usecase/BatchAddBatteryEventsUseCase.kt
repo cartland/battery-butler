@@ -8,7 +8,6 @@ import com.chriscartland.batterybutler.domain.model.ai.AiEngine
 import com.chriscartland.batterybutler.domain.model.ai.AiToolNames
 import com.chriscartland.batterybutler.domain.model.ai.AiToolParams
 import com.chriscartland.batterybutler.domain.model.ai.ToolHandler
-import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.datetime.atStartOfDayIn
@@ -18,7 +17,7 @@ import kotlin.coroutines.cancellation.CancellationException
 @Inject
 class BatchAddBatteryEventsUseCase(
     private val aiEngine: AiEngine,
-    private val deviceRepository: DeviceRepository,
+    private val addBatteryEventUseCase: AddBatteryEventUseCase,
     private val findOrCreateDeviceUseCase: FindOrCreateDeviceUseCase,
 ) {
     private val systemInstructions =
@@ -46,7 +45,7 @@ class BatchAddBatteryEventsUseCase(
                             val kxInstant = date.atStartOfDayIn(kotlinx.datetime.TimeZone.currentSystemDefault())
                             val instant = kotlin.time.Instant.fromEpochMilliseconds(kxInstant.toEpochMilliseconds())
 
-                            // Add Battery Event
+                            // Add Battery Event (also updates device's batteryLastReplaced)
                             val event = BatteryEvent(
                                 id = uuid4().toString(),
                                 batteryType = "AA",
@@ -54,12 +53,7 @@ class BatchAddBatteryEventsUseCase(
                                 date = instant,
                                 notes = "Imported via AI",
                             )
-                            deviceRepository.addEvent(event)
-
-                            // Update Device if newer
-                            if (instant > targetDevice.batteryLastReplaced) {
-                                deviceRepository.updateDevice(targetDevice.copy(batteryLastReplaced = instant))
-                            }
+                            addBatteryEventUseCase(event)
 
                             "Success: Recorded battery replacement for '$deviceName' on $dateStr"
                         } catch (e: Exception) {
