@@ -6,6 +6,85 @@ Each section covers one release tag range. "What's New" is user-facing language 
 
 ---
 
+## [android/11] — 2026-02-22
+
+From tag `android/10` to tag `android/11` (15 mobile-relevant commits out of 29 total)
+
+### What's New
+
+**iOS app screens**
+- AI Chat, Add Battery Event, Event Detail, and Login screens now implemented in the native iOS SwiftUI app
+- Root routing and navigation flow wired up for the full iOS experience
+
+**Category accent colors**
+- Device icons now display color-coded backgrounds based on their category (blue for electronics, orange for sensors, purple for remotes, etc.)
+- Colors adapt automatically to light and dark themes
+
+**Battery age warnings**
+- Devices now show visual age indicators: gray for recent, amber for 6–12 months, bold red for 1 year+
+- Card borders added throughout for better visual separation
+
+**Smoother navigation**
+- Contextual slide transitions between screens instead of default crossfades
+
+**Bug fixes & polish**
+- AI chat loading spinner now correctly stops after sending a message
+- AI tab renamed to "Assistant"
+- Version display changed to "name-code" format in Settings
+- Device type list padding fixed for consistent layout
+- Sign-out button fix in Settings
+
+**Under the hood**
+- Refactored batch use cases and sync manager for single-responsibility compliance
+- Extracted reusable FindOrCreateDevice and FindOrCreateDeviceType use cases
+- Moved battery age logic and icon accent resolution to theme level
+
+### Detailed Changes
+
+| PR | Description |
+|----|-------------|
+| [#593](https://github.com/cartland/battery-butler/pull/593) | Wire category accent colors into device icon boxes |
+| [#590](https://github.com/cartland/battery-butler/pull/590) | Add resolve-at-theme-level pattern for IconAccent |
+| [#589](https://github.com/cartland/battery-butler/pull/589) | Move battery age logic out of theme into components |
+| [#588](https://github.com/cartland/battery-butler/pull/588) | Batch use cases delegate to individual use cases |
+| [#584](https://github.com/cartland/battery-butler/pull/584) | Add battery age warnings, card borders, and sign-out button fix |
+| [#582](https://github.com/cartland/battery-butler/pull/582) | SRP improvements across 4 modules (compose-app, data, usecase, viewmodel) |
+| [#578](https://github.com/cartland/battery-butler/pull/578) | iOS: Implement LoginScreen and root routing |
+| [#577](https://github.com/cartland/battery-butler/pull/577) | iOS: Implement EventDetailScreen |
+| [#576](https://github.com/cartland/battery-butler/pull/576) | iOS: Implement AddBatteryEventScreen |
+| [#575](https://github.com/cartland/battery-butler/pull/575) | iOS: Implement AiChatScreen |
+| [#574](https://github.com/cartland/battery-butler/pull/574) | Add contextual navigation transitions |
+| [#570](https://github.com/cartland/battery-butler/pull/570) | Fix AI chat loading spinner never stops after message sent |
+| [#571](https://github.com/cartland/battery-butler/pull/571) | Change version display format to name-code with hyphen |
+| [#569](https://github.com/cartland/battery-butler/pull/569) | Rename AI tab to Assistant |
+| [#567](https://github.com/cartland/battery-butler/pull/567) | Use Scaffold pattern in DeviceTypeListContent for consistent padding |
+
+---
+
+## [android/10] — 2026-02-22
+
+From tag `android/9` to tag `android/10` (2 mobile-relevant commits out of 14 total)
+
+### What's New
+
+**Dev Server mode**
+- New "Dev Server" option in network mode settings for testing against the development environment
+- Automatically configures the correct server URL when selected
+
+**UI improvements**
+- "Add" cards moved to the top of device, types, and history lists for easier access
+- New "Check for Updates" option in Settings
+- Fixed AI tab bottom padding
+
+### Detailed Changes
+
+| PR | Description |
+|----|-------------|
+| [#560](https://github.com/cartland/battery-butler/pull/560) | Add Dev Server option to network mode settings |
+| [#554](https://github.com/cartland/battery-butler/pull/554) | Move Add cards to top of lists, add Check for Updates, fix AI tab padding |
+
+---
+
 ## [android/9] — 2026-02-21
 
 From tag `android/8` to tag `android/9` (2 mobile-relevant commits out of 9 total)
