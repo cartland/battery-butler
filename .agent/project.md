@@ -177,25 +177,35 @@ xcodebuild -project ios-app-swift-ui/...      # iOS
 
 ## Server URL Management
 
-The production server URL flows through the system as follows:
+Server URLs (prod and dev) flow through the system as follows:
 
-**Source of truth:** GitHub secret `PRODUCTION_SERVER_URL`, auto-synced from terraform output after each deploy.
+**Source of truth:** GitHub secrets `PRODUCTION_SERVER_URL` and `DEV_SERVER_URL`, auto-synced from terraform output after each deploy.
 
 **How it propagates:**
-1. Terraform creates NLB → deploy workflows capture `nlb_dns_name` → `gh secret set PRODUCTION_SERVER_URL`
-2. CI workflows set `ORG_GRADLE_PROJECT_PRODUCTION_SERVER_URL` env var from the secret
-3. Gradle reads it as a project property → `data-network/build.gradle.kts` generates `BuildConfig.kt`
-4. Code accesses via `com.chriscartland.batterybutler.datanetwork.BuildConfig.PRODUCTION_SERVER_URL`
+1. Terraform creates NLB → deploy workflows capture `nlb_dns_name` → `gh secret set PRODUCTION_SERVER_URL` / `DEV_SERVER_URL`
+2. CI workflows set `ORG_GRADLE_PROJECT_PRODUCTION_SERVER_URL` and `ORG_GRADLE_PROJECT_DEV_SERVER_URL` env vars from the secrets
+3. Gradle reads them as project properties → `data-network/build.gradle.kts` generates `BuildConfig.kt` with both constants
+4. Code accesses via `BuildConfig.PRODUCTION_SERVER_URL` and `BuildConfig.DEV_SERVER_URL`
 
 **DI pattern for modules without data-network dependency:**
-- `ProductionServerUrl` data class (in `domain/model/`) wraps the URL for type-safe injection
-- `AppComponent` (Android/Desktop) and `NativeComponent` (iOS) provide it from `BuildConfig.PRODUCTION_SERVER_URL`
-- ViewModels and other components receive it via constructor injection
+- `ProductionServerUrl` and `DevServerUrl` data classes (in `domain/model/`) wrap the URLs for type-safe injection
+- `AppComponent` (Android/Desktop) and `NativeComponent` (iOS) provide both from BuildConfig
+- ViewModels and other components receive them via constructor injection
+
+**NetworkMode variants:**
+- `NetworkMode.GrpcAws(url)` — Prod server
+- `NetworkMode.GrpcDev(url)` — Dev server
+- `NetworkMode.GrpcLocal(url)` — Local development server
+- `NetworkMode.Mock` — Offline mock data
+- `NetworkMode.None` — Network disabled (default)
+
+Settings UI displays them in this order: Prod Server / Dev Server / gRPC Local / Mock / None (Offline).
 
 **Key rules:**
-- **NEVER hardcode NLB hostnames** in Kotlin source — use `BuildConfig.PRODUCTION_SERVER_URL` or `ProductionServerUrl`
-- `gradle.properties` has a fallback value for local dev only; CI always overrides it
+- **NEVER hardcode NLB hostnames** in Kotlin source — use `BuildConfig.PRODUCTION_SERVER_URL` / `BuildConfig.DEV_SERVER_URL` or `ProductionServerUrl` / `DevServerUrl`
+- `gradle.properties` has fallback values for local dev only; CI always overrides from secrets
 - `release-android.yml` validates server connectivity before uploading to Play Store
+- When adding a new NetworkMode variant, update all `when` branches (check: DelegatingGrpcClient, DelegatingRemoteDataSource, DynamicDatabaseProvider, DataStoreNetworkModeRepository, SettingsContent, DebugNetworkReceiver, NetworkModeTest)
 
 ## Secrets Management
 
@@ -203,6 +213,7 @@ The production server URL flows through the system as follows:
 - `GEMINI_API_KEY` — Gemini AI API key, written to `local.properties` during Android release builds
 - `E2E_TEST_TOKEN` — Pre-seeds synthetic auth session on dev server
 - `PRODUCTION_SERVER_URL` — Auto-synced from terraform after each deploy
+- `DEV_SERVER_URL` — Auto-synced from terraform after each dev deploy
 - `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD` — Android signing
 - `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` — Play Store upload
 
