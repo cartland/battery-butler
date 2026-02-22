@@ -5,6 +5,8 @@ import androidx.datastore.preferences.core.Preferences
 import com.chriscartland.batterybutler.data.provider.DefaultDispatcherProvider
 import com.chriscartland.batterybutler.data.repository.DataStoreNetworkModeRepository
 import com.chriscartland.batterybutler.data.repository.DefaultDeviceRepository
+import com.chriscartland.batterybutler.data.repository.DefaultSyncManager
+import com.chriscartland.batterybutler.data.repository.SyncManager
 import com.chriscartland.batterybutler.data.repository.auth.DefaultAuthRepository
 import com.chriscartland.batterybutler.datalocal.LocalDataSource
 import com.chriscartland.batterybutler.datalocal.RoomLocalDataSource
@@ -57,6 +59,9 @@ interface DataComponent {
 
     @Provides
     fun providePreferencesDataSource(dataSource: DataStorePreferencesDataSource): PreferencesDataSource = dataSource
+
+    @Provides
+    fun provideSyncManager(manager: DefaultSyncManager): SyncManager = manager
 
     @Provides
     fun provideDeviceRepository(repo: DefaultDeviceRepository): DeviceRepository = repo
