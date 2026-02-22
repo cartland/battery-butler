@@ -581,6 +581,7 @@ Compose:
       - 'LocalAiAvailable'
       - 'LocalAiAction'
       - 'LocalAppStrings'
+      - 'LocalButlerColors'
       - 'LocalFileSaver'
       - 'LocalShareHandler'
 

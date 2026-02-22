@@ -3,7 +3,6 @@ package com.chriscartland.batterybutler.presentationcore.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
@@ -27,6 +26,7 @@ import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationcore.theme.IconSize
+import com.chriscartland.batterybutler.presentationcore.theme.LocalButlerColors
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.daysUntil
 import kotlinx.datetime.toLocalDateTime
@@ -36,7 +36,7 @@ import kotlin.time.Instant
 /**
  * Returns a color based on battery age in days.
  * - 0-179 days: default gray (normal)
- * - 180-364 days: dark amber (warning, WCAG AA contrast ≥ 4.5:1)
+ * - 180-364 days: dark amber (warning, WCAG AA contrast >= 4.5:1)
  * - 365+ days: error red (danger)
  * - null (no replacement date): default gray
  */
@@ -45,7 +45,7 @@ private fun batteryAgeColor(days: Int?): Color {
     if (days == null) return MaterialTheme.colorScheme.onSurfaceVariant
     return when {
         days >= 365 -> MaterialTheme.colorScheme.error
-        days >= 180 -> if (isSystemInDarkTheme()) Color(0xFFE5A100) else Color(0xFF956D00)
+        days >= 180 -> LocalButlerColors.current.batteryWarning
         else -> MaterialTheme.colorScheme.onSurfaceVariant
     }
 }

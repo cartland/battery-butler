@@ -93,4 +93,37 @@ tasks.whenTaskAdded {
         }
         finalizedBy("generateScreenshotGallery")
     }
+    if (name in listOf("updateDebugScreenshotTest", "validateDebugScreenshotTest")) {
+        doFirst {
+            val isSequentialScript = project.hasProperty("retainedReferenceScreenshots")
+            val isForced = project.hasProperty("forceAllScreenshots")
+            if (!isSequentialScript && !isForced) {
+                error(
+                    """
+
+                    ===========================================================
+                    BLOCKED: Running all screenshot tests in a single Gradle
+                    invocation may cause OutOfMemoryError.
+                    ===========================================================
+
+                    Use the sequential script instead:
+                      ./scripts/generate-screenshots-sequentially.sh
+
+                    To force a single-invocation run (e.g. on a machine with
+                    enough memory), add the Gradle property:
+                      -PforceAllScreenshots
+
+                    Example:
+                      ./gradlew :android-screenshot-tests:$name -PforceAllScreenshots
+
+                    If the task hangs or is killed, the environment likely does
+                    not have enough memory. Consider wrapping the command in a
+                    timeout to detect this, then use the sequential script instead.
+                    ===========================================================
+
+                    """.trimIndent(),
+                )
+            }
+        }
+    }
 }

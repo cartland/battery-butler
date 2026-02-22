@@ -5,6 +5,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 
 private val LightColorScheme = lightColorScheme(
     primary = PrimaryLight,
@@ -52,10 +53,15 @@ fun BatteryButlerTheme(
     content: @Composable () -> Unit,
 ) {
     val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
-
-    MaterialTheme(
-        colorScheme = colorScheme,
-        shapes = BatteryButlerShapes,
-        content = content,
+    val butlerColors = ButlerColors(
+        batteryWarning = if (darkTheme) BatteryWarningDark else BatteryWarningLight,
     )
+
+    CompositionLocalProvider(LocalButlerColors provides butlerColors) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            shapes = BatteryButlerShapes,
+            content = content,
+        )
+    }
 }
