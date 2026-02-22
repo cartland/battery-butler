@@ -260,8 +260,9 @@ When multiple PRs are ready to merge:
 
 1. **Merge ONE at a time**
 2. **Wait for main CI** after each merge (check with `gh run list --branch main`)
-3. **If CI fails**, stop merging and fix immediately
-4. **Decide: Rebase or Direct Merge** (see below)
+3. **Check remaining open PRs for merge conflicts** after each merge (`gh pr view <N> --json mergeable`). PRs touching shared files (`.beads/issues.jsonl`, `.agent/project.md`, `CHANGELOG.md`) are especially prone to conflicts. Rebase immediately if conflicting.
+4. **If CI fails**, stop merging and fix immediately
+5. **Decide: Rebase or Direct Merge** (see below)
 
 ### Rebase vs Direct Merge Decision
 
