@@ -62,6 +62,7 @@ internal object ServerSyncMapper {
             name = name,
             typeId = typeId,
             location = location.takeIf { it.isNotEmpty() },
+            imagePath = imagePath.takeIf { it.isNotEmpty() },
             batteryLastReplaced = batteryLastReplacedTimestampMs
                 .takeIf { it > 0 }
                 ?.let { Instant.fromEpochMilliseconds(it) }
@@ -79,6 +80,7 @@ internal object ServerSyncMapper {
             .setName(name)
             .setTypeId(typeId)
             .setLocation(location ?: "")
+            .setImagePath(imagePath ?: "")
             .setBatteryLastReplacedTimestampMs(batteryLastReplaced.toEpochMilliseconds())
             .setLastUpdatedTimestampMs(lastUpdated.toEpochMilliseconds())
             .build()
@@ -88,7 +90,7 @@ internal object ServerSyncMapper {
             id = id,
             deviceId = deviceId,
             date = Instant.fromEpochMilliseconds(dateTimestampMs),
-            notes = notes,
+            notes = notes.takeIf { it.isNotEmpty() },
         )
 
     private fun BatteryEvent.toProto(): ProtoBatteryEvent =

@@ -137,12 +137,8 @@ class ServerSyncMapperTest {
         assertNull(domain.deviceTypes[0].defaultIcon)
     }
 
-    // BUG: Server ProtoBatteryEvent.toDomain() uses `notes = notes` instead of
-    // `notes = notes.takeIf { it.isNotEmpty() }`. This means an empty proto notes
-    // field becomes domain notes = "" instead of null.
-    // Client mapper correctly handles this with .takeIf { it.isNotEmpty() }.
     @Test
-    fun `toDomain maps empty notes to empty string instead of null - BUG`() {
+    fun `toDomain maps empty notes to null`() {
         val proto = SyncUpdate
             .newBuilder()
             .addEvents(
@@ -156,16 +152,11 @@ class ServerSyncMapperTest {
                     .build(),
             ).build()
         val domain = ServerSyncMapper.toDomain(proto)
-        // BUG: Should be null, but server returns empty string.
-        // Server line ~91: `notes = notes` should be `notes = notes.takeIf { it.isNotEmpty() }`
-        assertEquals("", domain.events[0].notes)
+        assertNull(domain.events[0].notes)
     }
 
-    // BUG: Server ProtoDevice.toDomain() does not map imagePath.
-    // Client mapper correctly maps: `imagePath = image_path.takeIf { it.isNotEmpty() }`
-    // Server omits imagePath entirely, so it always defaults to null regardless of proto value.
     @Test
-    fun `toDomain does not map imagePath - BUG missing field mapping`() {
+    fun `toDomain maps imagePath correctly`() {
         val proto = SyncUpdate
             .newBuilder()
             .addDevices(
@@ -178,8 +169,23 @@ class ServerSyncMapperTest {
                     .build(),
             ).build()
         val domain = ServerSyncMapper.toDomain(proto)
-        // BUG: imagePath is never mapped from proto — always null.
-        // Server ProtoDevice.toDomain() is missing: imagePath = imagePath.takeIf { it.isNotEmpty() }
+        assertEquals("/images/device.jpg", domain.devices[0].imagePath)
+    }
+
+    @Test
+    fun `toDomain maps empty imagePath to null`() {
+        val proto = SyncUpdate
+            .newBuilder()
+            .addDevices(
+                ProtoDevice
+                    .newBuilder()
+                    .setId("dev1")
+                    .setName("Device 1")
+                    .setTypeId("type1")
+                    .setImagePath("")
+                    .build(),
+            ).build()
+        val domain = ServerSyncMapper.toDomain(proto)
         assertNull(domain.devices[0].imagePath)
     }
 
@@ -276,9 +282,8 @@ class ServerSyncMapperTest {
         assertEquals(original, roundTripped.deviceTypes[0])
     }
 
-    // Round-trip Device loses imagePath due to the missing mapping bug.
     @Test
-    fun `round-trip Device preserves data except imagePath`() {
+    fun `round-trip Device preserves all data including imagePath`() {
         val original = Device(
             id = "dev1",
             name = "Kitchen Alarm",
@@ -297,15 +302,7 @@ class ServerSyncMapperTest {
 
         val roundTripped = ServerSyncMapper.toDomain(ServerSyncMapper.toProto(update))
 
-        // All fields preserved except imagePath (BUG: missing mapping)
-        assertEquals(original.id, roundTripped.devices[0].id)
-        assertEquals(original.name, roundTripped.devices[0].name)
-        assertEquals(original.typeId, roundTripped.devices[0].typeId)
-        assertEquals(original.location, roundTripped.devices[0].location)
-        assertEquals(original.batteryLastReplaced, roundTripped.devices[0].batteryLastReplaced)
-        assertEquals(original.lastUpdated, roundTripped.devices[0].lastUpdated)
-        // BUG: imagePath is lost in round-trip because server toDomain() doesn't map it
-        assertNull(roundTripped.devices[0].imagePath)
+        assertEquals(original, roundTripped.devices[0])
     }
 
     @Test
@@ -328,10 +325,8 @@ class ServerSyncMapperTest {
         assertEquals(original, roundTripped.events[0])
     }
 
-    // BUG: Round-trip with null notes → toProto sends "" → toDomain returns ""
-    // instead of null. Client mapper handles this correctly.
     @Test
-    fun `round-trip BatteryEvent with null notes returns empty string - BUG`() {
+    fun `round-trip BatteryEvent with null notes preserves null`() {
         val original = BatteryEvent(
             id = "ev1",
             deviceId = "dev1",
@@ -347,9 +342,7 @@ class ServerSyncMapperTest {
 
         val roundTripped = ServerSyncMapper.toDomain(ServerSyncMapper.toProto(update))
 
-        // BUG: notes should be null after round-trip, but server returns ""
-        // because toProto maps null → "" and toDomain doesn't convert "" → null
-        assertEquals("", roundTripped.events[0].notes)
+        assertEquals(original, roundTripped.events[0])
     }
 
     // --- Deleted IDs ---
