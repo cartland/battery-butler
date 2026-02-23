@@ -4,19 +4,23 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
@@ -27,19 +31,20 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
-import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.composeresources.composeStringResource
 import com.chriscartland.batterybutler.composeresources.generated.resources.Res
 import com.chriscartland.batterybutler.composeresources.generated.resources.tab_ai
@@ -51,7 +56,6 @@ import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
-import com.chriscartland.batterybutler.presentationcore.theme.IconSize
 import com.chriscartland.batterybutler.presentationcore.theme.LocalAiAvailable
 import com.chriscartland.batterybutler.presentationcore.theme.Padding
 import com.chriscartland.batterybutler.presentationfeature.aichat.AiTabContent
@@ -141,43 +145,31 @@ fun MainScreenShell(
         bottomBar = {
             Column {
                 if (!isAiExpanded && isAiAvailable) {
-                    Surface(
+                    val interactionSource = remember { MutableInteractionSource() }
+                    val isPressed = interactionSource.collectIsPressedAsState()
+                    LaunchedEffect(isPressed.value) {
+                        if (isPressed.value) onAiExpandedChange(true)
+                    }
+                    OutlinedTextField(
+                        value = "",
+                        onValueChange = {},
+                        readOnly = true,
+                        placeholder = { Text("Ask AI...") },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.AutoAwesome,
+                                contentDescription = null,
+                            )
+                        },
+                        singleLine = true,
+                        interactionSource = interactionSource,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(
                                 horizontal = Padding.standard,
                                 vertical = Padding.small,
-                            ).clickable { onAiExpandedChange(true) },
-                        shape = OutlinedTextFieldDefaults.shape,
-                        color = MaterialTheme.colorScheme.surface,
-                        border = OutlinedTextFieldDefaults.colors().run {
-                            androidx.compose.foundation.BorderStroke(
-                                1.dp,
-                                MaterialTheme.colorScheme.outline,
-                            )
-                        },
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(
-                                horizontal = Padding.standard,
-                                vertical = 12.dp,
                             ),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.AutoAwesome,
-                                contentDescription = null,
-                                modifier = Modifier.size(IconSize.Small),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                            Text(
-                                text = "Ask AI...",
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.padding(start = Padding.small),
-                            )
-                        }
-                    }
+                    )
                 }
                 NavigationBar {
                     visibleTabs.forEach { tab ->
@@ -231,12 +223,43 @@ fun MainScreenShell(
                             .padding(top = innerPadding.calculateTopPadding()),
                         color = MaterialTheme.colorScheme.surface,
                     ) {
-                        AiTabContent(
-                            messages = aiMessages,
-                            isProcessing = isAiProcessing,
-                            onSendMessage = onSendAiMessage,
-                            onClearChat = onClearAiChat,
-                        )
+                        Column {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(
+                                        start = Padding.standard,
+                                        end = Padding.small,
+                                    ),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.AutoAwesome,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary,
+                                )
+                                Spacer(modifier = Modifier.width(Padding.small))
+                                Text(
+                                    text = "AI Chat",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    modifier = Modifier.weight(1f),
+                                )
+                                IconButton(
+                                    onClick = { onAiExpandedChange(false) },
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Close,
+                                        contentDescription = "Close AI chat",
+                                    )
+                                }
+                            }
+                            AiTabContent(
+                                messages = aiMessages,
+                                isProcessing = isAiProcessing,
+                                onSendMessage = onSendAiMessage,
+                                onClearChat = onClearAiChat,
+                            )
+                        }
                     }
                 }
             }
