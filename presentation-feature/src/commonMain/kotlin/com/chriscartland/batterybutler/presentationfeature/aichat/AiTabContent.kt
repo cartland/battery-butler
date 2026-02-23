@@ -22,7 +22,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -52,7 +51,6 @@ fun AiTabContent(
     messages: List<ChatUiMessage>,
     isProcessing: Boolean,
     onSendMessage: (String) -> Unit,
-    onClearChat: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var inputText by rememberSaveable { mutableStateOf("") }
@@ -128,14 +126,6 @@ fun AiTabContent(
                 enabled = !isProcessing,
                 shape = RoundedCornerShape(24.dp),
             )
-            if (messages.isNotEmpty()) {
-                IconButton(onClick = onClearChat) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Clear chat",
-                    )
-                }
-            }
             IconButton(
                 onClick = {
                     if (inputText.isNotBlank()) {
@@ -214,7 +204,6 @@ fun AiTabContentPreview() {
             ),
             isProcessing = false,
             onSendMessage = {},
-            onClearChat = {},
         )
     }
 }
@@ -227,7 +216,6 @@ fun AiTabContentEmptyPreview() {
             messages = emptyList(),
             isProcessing = false,
             onSendMessage = {},
-            onClearChat = {},
         )
     }
 }

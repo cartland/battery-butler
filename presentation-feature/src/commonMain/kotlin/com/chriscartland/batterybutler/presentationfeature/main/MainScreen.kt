@@ -21,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
@@ -250,6 +251,14 @@ fun MainScreenShell(
                                     style = MaterialTheme.typography.titleMedium,
                                     modifier = Modifier.weight(1f),
                                 )
+                                if (aiMessages.isNotEmpty()) {
+                                    IconButton(onClick = onClearAiChat) {
+                                        Icon(
+                                            imageVector = Icons.Default.Delete,
+                                            contentDescription = "Clear chat",
+                                        )
+                                    }
+                                }
                                 IconButton(
                                     onClick = { onAiExpandedChange(false) },
                                 ) {
@@ -263,7 +272,6 @@ fun MainScreenShell(
                                 messages = aiMessages,
                                 isProcessing = isAiProcessing,
                                 onSendMessage = onSendAiMessage,
-                                onClearChat = onClearAiChat,
                                 modifier = Modifier.weight(1f),
                             )
                         }
