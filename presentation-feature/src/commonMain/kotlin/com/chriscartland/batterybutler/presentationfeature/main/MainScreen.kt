@@ -205,7 +205,7 @@ fun MainScreenShell(
         content = { innerPadding ->
             val layoutDirection = LocalLayoutDirection.current
             val contentModifier = Modifier.padding(
-                top = innerPadding.calculateTopPadding() + Padding.standard,
+                top = innerPadding.calculateTopPadding(),
                 start = innerPadding.calculateStartPadding(layoutDirection),
                 end = innerPadding.calculateEndPadding(layoutDirection),
             )
