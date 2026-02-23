@@ -210,7 +210,7 @@ fun MainScreenShell(
                 end = innerPadding.calculateEndPadding(layoutDirection),
             )
             val bottomContentPadding = PaddingValues(
-                top = Padding.small,
+                top = Padding.standard,
                 bottom = innerPadding.calculateBottomPadding() + Padding.standard,
             )
 
