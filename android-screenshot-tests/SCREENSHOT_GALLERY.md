@@ -1,9 +1,10 @@
 # Screenshot Gallery
 
-Generated on Sun Feb 22 22:36:11 UTC 2026
+Generated on Sun Feb 22 18:30:49 PST 2026
 
 ## Table of Contents
 - [AddDeviceScreenshotTestKt](#adddevicescreenshottestkt)
+- [AiOverlayScreenshotTestKt](#aioverlayscreenshottestkt)
 - [ComponentsScreenshotTestKt](#componentsscreenshottestkt)
 - [DecomposedAddDeviceScreenshotTestKt](#decomposedadddevicescreenshottestkt)
 - [DecomposedHomeScreenScreenshotTestKt](#decomposedhomescreenscreenshottestkt)
@@ -26,6 +27,20 @@ Generated on Sun Feb 22 22:36:11 UTC 2026
 
 ### AddDeviceEmptyPreviewTest_Light_fc5b723e_0
 <img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/AddDeviceScreenshotTestKt/AddDeviceEmptyPreviewTest_Light_fc5b723e_0.png" width="300" />
+
+## AiOverlayScreenshotTestKt
+
+### AiBarCollapsedPreviewTest_Dark_2c2e8f1f_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/AiOverlayScreenshotTestKt/AiBarCollapsedPreviewTest_Dark_2c2e8f1f_0.png" width="300" />
+
+### AiBarCollapsedPreviewTest_Light_67c33cac_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/AiOverlayScreenshotTestKt/AiBarCollapsedPreviewTest_Light_67c33cac_0.png" width="300" />
+
+### AiOverlayExpandedPreviewTest_Dark_2c2e8f1f_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/AiOverlayScreenshotTestKt/AiOverlayExpandedPreviewTest_Dark_2c2e8f1f_0.png" width="300" />
+
+### AiOverlayExpandedPreviewTest_Light_67c33cac_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/AiOverlayScreenshotTestKt/AiOverlayExpandedPreviewTest_Light_67c33cac_0.png" width="300" />
 
 ## ComponentsScreenshotTestKt
 

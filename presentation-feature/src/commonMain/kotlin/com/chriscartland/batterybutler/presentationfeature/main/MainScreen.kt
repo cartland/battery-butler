@@ -1,7 +1,19 @@
 package com.chriscartland.batterybutler.presentationfeature.main
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.AutoAwesome
@@ -11,15 +23,23 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.composeresources.composeStringResource
 import com.chriscartland.batterybutler.composeresources.generated.resources.Res
 import com.chriscartland.batterybutler.composeresources.generated.resources.tab_ai
@@ -31,7 +51,9 @@ import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import com.chriscartland.batterybutler.presentationcore.theme.IconSize
 import com.chriscartland.batterybutler.presentationcore.theme.LocalAiAvailable
+import com.chriscartland.batterybutler.presentationcore.theme.Padding
 import com.chriscartland.batterybutler.presentationfeature.aichat.AiTabContent
 import com.chriscartland.batterybutler.presentationfeature.aichat.ChatUiMessage
 import com.chriscartland.batterybutler.presentationfeature.devicetypes.DeviceTypeListContent
@@ -81,42 +103,143 @@ fun MainScreenShell(
     currentTab: MainTab,
     onTabSelected: (MainTab) -> Unit,
     onSettingsClick: () -> Unit,
+    aiMessages: List<ChatUiMessage>,
+    isAiProcessing: Boolean,
+    isAiExpanded: Boolean,
+    onAiExpandedChange: (Boolean) -> Unit,
+    onSendAiMessage: (String) -> Unit,
+    onClearAiChat: () -> Unit,
     modifier: Modifier = Modifier,
-    content: @Composable (PaddingValues) -> Unit,
+    content: @Composable (Modifier, PaddingValues) -> Unit,
 ) {
     val isAiAvailable = LocalAiAvailable.current
-    val visibleTabs = if (isAiAvailable) MainTab.entries else MainTab.entries.filter { it != MainTab.AI }
+    val visibleTabs = MainTab.entries.filter { it != MainTab.AI }
 
     Scaffold(
         modifier = modifier,
         topBar = {
-            ButlerCenteredTopAppBar(
-                title = composeStringResource(currentTab.labelRes()),
-                actions = {
-                    IconButton(onClick = onSettingsClick) {
-                        Icon(
-                            imageVector = Icons.Default.Settings,
-                            contentDescription = "Settings",
-                        )
-                    }
+            Box(
+                modifier = if (isAiExpanded) {
+                    Modifier.clickable { onAiExpandedChange(false) }
+                } else {
+                    Modifier
                 },
-            )
+            ) {
+                ButlerCenteredTopAppBar(
+                    title = composeStringResource(currentTab.labelRes()),
+                    actions = {
+                        IconButton(onClick = onSettingsClick) {
+                            Icon(
+                                imageVector = Icons.Default.Settings,
+                                contentDescription = "Settings",
+                            )
+                        }
+                    },
+                )
+            }
         },
         bottomBar = {
-            NavigationBar {
-                visibleTabs.forEach { tab ->
-                    NavigationBarItem(
-                        selected = currentTab == tab,
-                        onClick = { onTabSelected(tab) },
-                        icon = { Icon(tab.icon(), contentDescription = composeStringResource(tab.labelRes())) },
-                        label = { Text(composeStringResource(tab.labelRes())) },
-                        modifier = Modifier.testTag("BottomNav_${tab.name}"),
-                    )
+            Column {
+                if (!isAiExpanded && isAiAvailable) {
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                horizontal = Padding.standard,
+                                vertical = Padding.small,
+                            ).clickable { onAiExpandedChange(true) },
+                        shape = OutlinedTextFieldDefaults.shape,
+                        color = MaterialTheme.colorScheme.surface,
+                        border = OutlinedTextFieldDefaults.colors().run {
+                            androidx.compose.foundation.BorderStroke(
+                                1.dp,
+                                MaterialTheme.colorScheme.outline,
+                            )
+                        },
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(
+                                horizontal = Padding.standard,
+                                vertical = 12.dp,
+                            ),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.AutoAwesome,
+                                contentDescription = null,
+                                modifier = Modifier.size(IconSize.Small),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                            Text(
+                                text = "Ask AI...",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(start = Padding.small),
+                            )
+                        }
+                    }
+                }
+                NavigationBar {
+                    visibleTabs.forEach { tab ->
+                        NavigationBarItem(
+                            selected = currentTab == tab,
+                            onClick = {
+                                if (isAiExpanded) onAiExpandedChange(false)
+                                onTabSelected(tab)
+                            },
+                            icon = {
+                                Icon(
+                                    tab.icon(),
+                                    contentDescription = composeStringResource(tab.labelRes()),
+                                )
+                            },
+                            label = { Text(composeStringResource(tab.labelRes())) },
+                            colors = NavigationBarItemDefaults.colors(
+                                selectedIconColor = MaterialTheme.colorScheme.primary,
+                                selectedTextColor = MaterialTheme.colorScheme.primary,
+                                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            ),
+                            modifier = Modifier.testTag("BottomNav_${tab.name}"),
+                        )
+                    }
                 }
             }
         },
         content = { innerPadding ->
-            content(innerPadding)
+            val layoutDirection = LocalLayoutDirection.current
+            val contentModifier = Modifier.padding(
+                top = innerPadding.calculateTopPadding() + Padding.standard,
+                start = innerPadding.calculateStartPadding(layoutDirection),
+                end = innerPadding.calculateEndPadding(layoutDirection),
+            )
+            val bottomContentPadding = PaddingValues(
+                bottom = innerPadding.calculateBottomPadding() + Padding.standard,
+            )
+
+            Box(modifier = Modifier.fillMaxSize()) {
+                content(contentModifier, bottomContentPadding)
+
+                AnimatedVisibility(
+                    visible = isAiExpanded,
+                    enter = slideInVertically(initialOffsetY = { it }),
+                    exit = slideOutVertically(targetOffsetY = { it }),
+                ) {
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(top = innerPadding.calculateTopPadding()),
+                        color = MaterialTheme.colorScheme.surface,
+                    ) {
+                        AiTabContent(
+                            messages = aiMessages,
+                            isProcessing = isAiProcessing,
+                            onSendMessage = onSendAiMessage,
+                            onClearChat = onClearAiChat,
+                        )
+                    }
+                }
+            }
         },
     )
 }
@@ -133,13 +256,25 @@ fun DevicesScreen(
     onGroupOptionSelected: (GroupOption) -> Unit,
     onSortOptionToggle: () -> Unit,
     onSortOptionSelected: (SortOption) -> Unit,
+    aiMessages: List<ChatUiMessage>,
+    isAiProcessing: Boolean,
+    isAiExpanded: Boolean,
+    onAiExpandedChange: (Boolean) -> Unit,
+    onSendAiMessage: (String) -> Unit,
+    onClearAiChat: () -> Unit,
     nowInstant: Instant = Clock.System.now(),
 ) {
     MainScreenShell(
         currentTab = MainTab.Devices,
         onTabSelected = onTabSelected,
         onSettingsClick = onSettingsClick,
-    ) { innerPadding ->
+        aiMessages = aiMessages,
+        isAiProcessing = isAiProcessing,
+        isAiExpanded = isAiExpanded,
+        onAiExpandedChange = onAiExpandedChange,
+        onSendAiMessage = onSendAiMessage,
+        onClearAiChat = onClearAiChat,
+    ) { contentModifier, bottomContentPadding ->
         HomeScreenContent(
             state = state,
             onGroupOptionToggle = onGroupOptionToggle,
@@ -148,7 +283,8 @@ fun DevicesScreen(
             onSortOptionSelected = onSortOptionSelected,
             onDeviceClick = { onDeviceClick(it.id) },
             onAddDeviceClick = onAddDeviceClick,
-            modifier = Modifier.padding(innerPadding),
+            modifier = contentModifier,
+            contentPadding = bottomContentPadding,
             nowInstant = nowInstant,
         )
     }
@@ -166,12 +302,24 @@ fun TypesScreen(
     onGroupOptionSelected: (DeviceTypeGroupOption) -> Unit,
     onSortDirectionToggle: () -> Unit,
     onGroupDirectionToggle: () -> Unit,
+    aiMessages: List<ChatUiMessage>,
+    isAiProcessing: Boolean,
+    isAiExpanded: Boolean,
+    onAiExpandedChange: (Boolean) -> Unit,
+    onSendAiMessage: (String) -> Unit,
+    onClearAiChat: () -> Unit,
 ) {
     MainScreenShell(
         currentTab = MainTab.Types,
         onTabSelected = onTabSelected,
         onSettingsClick = onSettingsClick,
-    ) { innerPadding ->
+        aiMessages = aiMessages,
+        isAiProcessing = isAiProcessing,
+        isAiExpanded = isAiExpanded,
+        onAiExpandedChange = onAiExpandedChange,
+        onSendAiMessage = onSendAiMessage,
+        onClearAiChat = onClearAiChat,
+    ) { contentModifier, bottomContentPadding ->
         DeviceTypeListContent(
             state = state,
             onEditType = onEditType,
@@ -181,7 +329,8 @@ fun TypesScreen(
             onGroupOptionSelected = onGroupOptionSelected,
             onSortDirectionToggle = onSortDirectionToggle,
             onGroupDirectionToggle = onGroupDirectionToggle,
-            modifier = Modifier.padding(innerPadding),
+            modifier = contentModifier,
+            contentPadding = bottomContentPadding,
         )
     }
 }
@@ -194,43 +343,32 @@ fun HistoryScreen(
     onSettingsClick: () -> Unit,
     onAddEventClick: () -> Unit,
     onEventClick: (String, String) -> Unit,
+    aiMessages: List<ChatUiMessage>,
+    isAiProcessing: Boolean,
+    isAiExpanded: Boolean,
+    onAiExpandedChange: (Boolean) -> Unit,
+    onSendAiMessage: (String) -> Unit,
+    onClearAiChat: () -> Unit,
     nowInstant: Instant = Clock.System.now(),
 ) {
     MainScreenShell(
         currentTab = MainTab.History,
         onTabSelected = onTabSelected,
         onSettingsClick = onSettingsClick,
-    ) { innerPadding ->
+        aiMessages = aiMessages,
+        isAiProcessing = isAiProcessing,
+        isAiExpanded = isAiExpanded,
+        onAiExpandedChange = onAiExpandedChange,
+        onSendAiMessage = onSendAiMessage,
+        onClearAiChat = onClearAiChat,
+    ) { contentModifier, bottomContentPadding ->
         HistoryListContent(
             state = state,
             onEventClick = onEventClick,
             onAddEventClick = onAddEventClick,
-            modifier = Modifier.padding(innerPadding),
+            modifier = contentModifier,
+            contentPadding = bottomContentPadding,
             nowInstant = nowInstant,
-        )
-    }
-}
-
-@Composable
-fun AiScreen(
-    messages: List<ChatUiMessage>,
-    isProcessing: Boolean,
-    onSendMessage: (String) -> Unit,
-    onClearChat: () -> Unit,
-    onTabSelected: (MainTab) -> Unit,
-    onSettingsClick: () -> Unit,
-) {
-    MainScreenShell(
-        currentTab = MainTab.AI,
-        onTabSelected = onTabSelected,
-        onSettingsClick = onSettingsClick,
-    ) { innerPadding ->
-        AiTabContent(
-            messages = messages,
-            isProcessing = isProcessing,
-            onSendMessage = onSendMessage,
-            onClearChat = onClearChat,
-            modifier = Modifier.padding(innerPadding),
         )
     }
 }
@@ -239,7 +377,6 @@ fun AiScreen(
 @Composable
 fun DevicesScreenPreview() {
     BatteryButlerTheme {
-        // Wrap the preview in the theme
         val now = Instant.parse("2026-01-18T17:00:00Z")
         val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
         val device = Device("dev1", "Kitchen Smoke", "type1", now, now, "Kitchen")
@@ -257,7 +394,13 @@ fun DevicesScreenPreview() {
             onGroupOptionSelected = {},
             onSortOptionToggle = {},
             onSortOptionSelected = {},
-            nowInstant = now, // Use fixed dates for stable screenshots
+            aiMessages = emptyList(),
+            isAiProcessing = false,
+            isAiExpanded = false,
+            onAiExpandedChange = {},
+            onSendAiMessage = {},
+            onClearAiChat = {},
+            nowInstant = now,
         )
     }
 }
@@ -266,7 +409,6 @@ fun DevicesScreenPreview() {
 @Composable
 fun TypesScreenPreview() {
     BatteryButlerTheme {
-        // Wrap the preview in the theme
         val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
         val state = DeviceTypeListUiState.Success(
             groupedTypes = mapOf("All" to listOf(type)),
@@ -282,6 +424,12 @@ fun TypesScreenPreview() {
             onGroupOptionSelected = {},
             onSortDirectionToggle = {},
             onGroupDirectionToggle = {},
+            aiMessages = emptyList(),
+            isAiProcessing = false,
+            isAiExpanded = false,
+            onAiExpandedChange = {},
+            onSendAiMessage = {},
+            onClearAiChat = {},
         )
     }
 }
@@ -291,7 +439,6 @@ fun TypesScreenPreview() {
 @Composable
 fun HistoryScreenPreview() {
     BatteryButlerTheme {
-        // Use fixed dates for stable screenshots
         val nowInstant = Instant.parse("2026-01-18T17:00:00Z")
         val eventInstant = Instant.parse("2026-01-11T17:00:00Z") // 7 days ago
         val event = BatteryEvent("evt1", "dev1", eventInstant)
@@ -305,7 +452,88 @@ fun HistoryScreenPreview() {
             onSettingsClick = {},
             onAddEventClick = {},
             onEventClick = { _, _ -> },
+            aiMessages = emptyList(),
+            isAiProcessing = false,
+            isAiExpanded = false,
+            onAiExpandedChange = {},
+            onSendAiMessage = {},
+            onClearAiChat = {},
             nowInstant = nowInstant,
         )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun AiBarCollapsedPreview() {
+    BatteryButlerTheme {
+        CompositionLocalProvider(LocalAiAvailable provides true) {
+            val now = Instant.parse("2026-01-18T17:00:00Z")
+            val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
+            val device = Device("dev1", "Kitchen Smoke", "type1", now, now, "Kitchen")
+            val state = HomeUiState(
+                groupedDevices = mapOf("All" to listOf(device)),
+                deviceTypes = mapOf("type1" to type),
+            )
+            DevicesScreen(
+                state = state,
+                onTabSelected = {},
+                onSettingsClick = {},
+                onAddDeviceClick = {},
+                onDeviceClick = {},
+                onGroupOptionToggle = {},
+                onGroupOptionSelected = {},
+                onSortOptionToggle = {},
+                onSortOptionSelected = {},
+                aiMessages = emptyList(),
+                isAiProcessing = false,
+                isAiExpanded = false,
+                onAiExpandedChange = {},
+                onSendAiMessage = {},
+                onClearAiChat = {},
+                nowInstant = now,
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun AiOverlayExpandedPreview() {
+    BatteryButlerTheme {
+        CompositionLocalProvider(LocalAiAvailable provides true) {
+            val now = Instant.parse("2026-01-18T17:00:00Z")
+            val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
+            val device = Device("dev1", "Kitchen Smoke", "type1", now, now, "Kitchen")
+            val state = HomeUiState(
+                groupedDevices = mapOf("All" to listOf(device)),
+                deviceTypes = mapOf("type1" to type),
+            )
+            DevicesScreen(
+                state = state,
+                onTabSelected = {},
+                onSettingsClick = {},
+                onAddDeviceClick = {},
+                onDeviceClick = {},
+                onGroupOptionToggle = {},
+                onGroupOptionSelected = {},
+                onSortOptionToggle = {},
+                onSortOptionSelected = {},
+                aiMessages = listOf(
+                    ChatUiMessage("1", "Add a smoke detector in the kitchen", isUser = true),
+                    ChatUiMessage(
+                        "2",
+                        "I've added a smoke detector device in the kitchen for you.",
+                        isUser = false,
+                    ),
+                ),
+                isAiProcessing = false,
+                isAiExpanded = true,
+                onAiExpandedChange = {},
+                onSendAiMessage = {},
+                onClearAiChat = {},
+                nowInstant = now,
+            )
+        }
     }
 }

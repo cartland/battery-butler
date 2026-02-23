@@ -11,8 +11,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
@@ -28,7 +32,6 @@ import com.chriscartland.batterybutler.composeapp.feature.devicetypes.EditDevice
 import com.chriscartland.batterybutler.composeapp.feature.editdevice.EditDeviceScreen
 import com.chriscartland.batterybutler.composeapp.feature.eventdetail.EventDetailScreen
 import com.chriscartland.batterybutler.composeapp.feature.login.LoginScreen
-import com.chriscartland.batterybutler.composeapp.feature.main.AiScreenRoot
 import com.chriscartland.batterybutler.composeapp.feature.main.DevicesScreenRoot
 import com.chriscartland.batterybutler.composeapp.feature.main.HistoryScreenRoot
 import com.chriscartland.batterybutler.composeapp.feature.main.TypesScreenRoot
@@ -38,6 +41,7 @@ import com.chriscartland.batterybutler.composeapp.navigation.navigateTo
 import com.chriscartland.batterybutler.composeapp.util.ScreenListSaver
 import com.chriscartland.batterybutler.composeresources.LocalAppStrings
 import com.chriscartland.batterybutler.domain.model.FeatureFlag
+import com.chriscartland.batterybutler.domain.model.ai.AiRole
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationcore.theme.LocalAiAction
 import com.chriscartland.batterybutler.presentationcore.theme.LocalAiAvailable
@@ -45,7 +49,9 @@ import com.chriscartland.batterybutler.presentationcore.util.FileSaver
 import com.chriscartland.batterybutler.presentationcore.util.LocalFileSaver
 import com.chriscartland.batterybutler.presentationcore.util.LocalShareHandler
 import com.chriscartland.batterybutler.presentationcore.util.ShareHandler
+import com.chriscartland.batterybutler.presentationfeature.aichat.ChatUiMessage
 import com.chriscartland.batterybutler.presentationfeature.main.MainTab
+import com.chriscartland.batterybutler.viewmodel.aichat.AiChatViewModel
 
 private val slideTransitionMetadata =
     NavDisplay.transitionSpec {
@@ -77,9 +83,36 @@ fun App(
             }
 
             val isAiEnabled = component.featureFlagProvider.isEnabled(FeatureFlag.AI_BATCH_IMPORT)
+
+            // Hoist AI ViewModel at App scope so it persists across tab switches
+            val aiViewModel: AiChatViewModel = viewModel { component.aiChatViewModel }
+            val aiMessages by aiViewModel.messages.collectAsStateWithLifecycle()
+            val isAiProcessing by aiViewModel.isProcessing.collectAsStateWithLifecycle()
+            var isAiExpanded by rememberSaveable { mutableStateOf(false) }
+
+            val aiUiMessages = aiMessages.map { msg ->
+                ChatUiMessage(
+                    id = msg.id,
+                    text = msg.text,
+                    isUser = msg.role == AiRole.USER,
+                )
+            }
+
+            // Determine active tab name from current back stack
+            val currentTabName = when (backStack.lastOrNull()) {
+                is Screen.Devices -> MainTab.Devices.name
+                is Screen.Types -> MainTab.Types.name
+                is Screen.History -> MainTab.History.name
+                else -> null
+            }
+
+            val onSendAiMessage: (String) -> Unit = { text ->
+                aiViewModel.sendMessage(text, activeTab = currentTabName)
+            }
+
             CompositionLocalProvider(
                 LocalAiAvailable provides isAiEnabled,
-                LocalAiAction provides { backStack.navigateTo(Screen.AiChat) },
+                LocalAiAction provides { isAiExpanded = true },
             ) {
                 Surface(
                     color = MaterialTheme.colorScheme.background,
@@ -113,18 +146,12 @@ fun App(
                                 backStack.add(Screen.History)
                             }
 
-                            val navigateToAi = {
-                                backStack.clear()
-                                backStack.add(Screen.Devices)
-                                backStack.add(Screen.AiTab)
-                            }
-
                             val onTabSelected: (MainTab) -> Unit = { selectedTab ->
                                 when (selectedTab) {
                                     MainTab.Devices -> navigateToDevices()
                                     MainTab.Types -> navigateToTypes()
                                     MainTab.History -> navigateToHistory()
-                                    MainTab.AI -> navigateToAi()
+                                    MainTab.AI -> {} // AI is now an overlay, not a tab
                                 }
                             }
 
@@ -151,6 +178,12 @@ fun App(
                                     onDeviceClick = { deviceId ->
                                         backStack.navigateTo(Screen.DeviceDetail(deviceId))
                                     },
+                                    aiMessages = aiUiMessages,
+                                    isAiProcessing = isAiProcessing,
+                                    isAiExpanded = isAiExpanded,
+                                    onAiExpandedChange = { isAiExpanded = it },
+                                    onSendAiMessage = onSendAiMessage,
+                                    onClearAiChat = aiViewModel::clearChat,
                                 )
                             }
 
@@ -162,6 +195,12 @@ fun App(
                                     onSettingsClick = { backStack.navigateTo(Screen.Settings) },
                                     onAddTypeClick = { backStack.navigateTo(Screen.AddDeviceType) },
                                     onEditType = { typeId -> backStack.navigateTo(Screen.EditDeviceType(typeId)) },
+                                    aiMessages = aiUiMessages,
+                                    isAiProcessing = isAiProcessing,
+                                    isAiExpanded = isAiExpanded,
+                                    onAiExpandedChange = { isAiExpanded = it },
+                                    onSendAiMessage = onSendAiMessage,
+                                    onClearAiChat = aiViewModel::clearChat,
                                 )
                             }
 
@@ -175,6 +214,12 @@ fun App(
                                     onEventClick = { eventId, deviceId ->
                                         backStack.navigateTo(Screen.EventDetail(eventId))
                                     },
+                                    aiMessages = aiUiMessages,
+                                    isAiProcessing = isAiProcessing,
+                                    isAiExpanded = isAiExpanded,
+                                    onAiExpandedChange = { isAiExpanded = it },
+                                    onSendAiMessage = onSendAiMessage,
+                                    onClearAiChat = aiViewModel::clearChat,
                                 )
                             }
 
@@ -264,17 +309,9 @@ fun App(
                                 )
                             }
 
-                            entry<Screen.AiTab> {
-                                AiScreenRoot(
-                                    viewModel = viewModel { component.aiChatViewModel },
-                                    onTabSelected = onTabSelected,
-                                    onSettingsClick = { backStack.navigateTo(Screen.Settings) },
-                                )
-                            }
-
                             entry<Screen.AiChat>(metadata = slideTransitionMetadata) {
                                 AiChatScreen(
-                                    viewModel = viewModel { component.aiChatViewModel },
+                                    viewModel = aiViewModel,
                                     onBack = { backStack.removeLastOrNull() },
                                 )
                             }

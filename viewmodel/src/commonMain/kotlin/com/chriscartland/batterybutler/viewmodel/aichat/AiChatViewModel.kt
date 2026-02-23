@@ -27,7 +27,10 @@ class AiChatViewModel(
 
     private var currentJob: Job? = null
 
-    fun sendMessage(text: String) {
+    fun sendMessage(
+        text: String,
+        activeTab: String? = null,
+    ) {
         if (text.isBlank() || _isProcessing.value) return
 
         val userMessage = AiMessage(
@@ -38,9 +41,15 @@ class AiChatViewModel(
         _messages.update { it + userMessage }
         _isProcessing.value = true
 
+        val augmentedText = if (activeTab != null) {
+            "[Active tab: $activeTab]\n\n$text"
+        } else {
+            text
+        }
+
         currentJob = viewModelScope.launch {
             try {
-                sendChatMessageUseCase(text).collect { aiMessage ->
+                sendChatMessageUseCase(augmentedText).collect { aiMessage ->
                     // Replace partial messages with the final one
                     _messages.update { current ->
                         val withoutPartial = current.filter { !it.isPartial }
