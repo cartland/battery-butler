@@ -287,7 +287,6 @@ fun AddDeviceManualSection(
     }
 }
 
-@Preview(showBackground = true)
 @Composable
 fun AddDeviceAiSectionPreview() {
     BatteryButlerTheme {
@@ -306,7 +305,6 @@ fun AddDeviceAiSectionPreview() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(showBackground = true)
 @Composable
 fun AddDeviceManualSectionPreview() {
     BatteryButlerTheme {

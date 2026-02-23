@@ -27,20 +27,27 @@ class AiChatViewModel(
 
     private var currentJob: Job? = null
 
-    fun sendMessage(text: String) {
+    fun sendMessage(
+        text: String,
+        hints: Map<String, String> = emptyMap(),
+    ) {
         if (text.isBlank() || _isProcessing.value) return
 
         val userMessage = AiMessage(
             id = "user_${Clock.System.now().toEpochMilliseconds()}",
             role = AiRole.USER,
             text = text,
+            hints = hints,
         )
         _messages.update { it + userMessage }
         _isProcessing.value = true
 
+        val hintLines = hints.entries.joinToString("\n") { "[${it.key}: ${it.value}]" }
+        val augmentedText = if (hintLines.isNotEmpty()) "$hintLines\n\n$text" else text
+
         currentJob = viewModelScope.launch {
             try {
-                sendChatMessageUseCase(text).collect { aiMessage ->
+                sendChatMessageUseCase(augmentedText).collect { aiMessage ->
                     // Replace partial messages with the final one
                     _messages.update { current ->
                         val withoutPartial = current.filter { !it.isPartial }

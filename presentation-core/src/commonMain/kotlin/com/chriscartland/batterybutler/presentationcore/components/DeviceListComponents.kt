@@ -201,7 +201,6 @@ fun DeviceListItemPreview() {
 }
 
 @OptIn(kotlin.time.ExperimentalTime::class)
-@Preview(showBackground = true)
 @Composable
 fun DeviceListItemRecentPreview() {
     BatteryButlerTheme {

@@ -24,9 +24,6 @@ sealed interface Screen {
     data object AiChat : Screen
 
     @Serializable
-    data object AiTab : Screen
-
-    @Serializable
     data object AddDevice : Screen
 
     @Serializable

@@ -4,16 +4,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.chriscartland.batterybutler.domain.model.ai.AiRole
 import com.chriscartland.batterybutler.presentationcore.util.LocalFileSaver
 import com.chriscartland.batterybutler.presentationcore.util.generateFileTimestamp
 import com.chriscartland.batterybutler.presentationfeature.aichat.ChatUiMessage
-import com.chriscartland.batterybutler.presentationfeature.main.AiScreen
 import com.chriscartland.batterybutler.presentationfeature.main.DevicesScreen
 import com.chriscartland.batterybutler.presentationfeature.main.HistoryScreen
 import com.chriscartland.batterybutler.presentationfeature.main.MainTab
 import com.chriscartland.batterybutler.presentationfeature.main.TypesScreen
-import com.chriscartland.batterybutler.viewmodel.aichat.AiChatViewModel
 import com.chriscartland.batterybutler.viewmodel.devicetypes.DeviceTypeListViewModel
 import com.chriscartland.batterybutler.viewmodel.history.HistoryListViewModel
 import com.chriscartland.batterybutler.viewmodel.home.HomeViewModel
@@ -28,6 +25,12 @@ fun DevicesScreenRoot(
     onSettingsClick: () -> Unit,
     onAddDeviceClick: () -> Unit,
     onDeviceClick: (String) -> Unit,
+    aiMessages: List<ChatUiMessage>,
+    isAiProcessing: Boolean,
+    isAiExpanded: Boolean,
+    onAiExpandedChange: (Boolean) -> Unit,
+    onSendAiMessage: (String) -> Unit,
+    onClearAiChat: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val coreUiState = state
@@ -54,6 +57,12 @@ fun DevicesScreenRoot(
         onGroupOptionSelected = { viewModel.onGroupOptionSelected(it) },
         onSortOptionToggle = { viewModel.toggleSortDirection() },
         onSortOptionSelected = { viewModel.onSortOptionSelected(it) },
+        aiMessages = aiMessages,
+        isAiProcessing = isAiProcessing,
+        isAiExpanded = isAiExpanded,
+        onAiExpandedChange = onAiExpandedChange,
+        onSendAiMessage = onSendAiMessage,
+        onClearAiChat = onClearAiChat,
     )
 }
 
@@ -64,6 +73,12 @@ fun TypesScreenRoot(
     onSettingsClick: () -> Unit,
     onAddTypeClick: () -> Unit,
     onEditType: (String) -> Unit,
+    aiMessages: List<ChatUiMessage>,
+    isAiProcessing: Boolean,
+    isAiExpanded: Boolean,
+    onAiExpandedChange: (Boolean) -> Unit,
+    onSendAiMessage: (String) -> Unit,
+    onClearAiChat: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -78,6 +93,12 @@ fun TypesScreenRoot(
         onGroupOptionSelected = { viewModel.onGroupOptionSelected(it) },
         onSortDirectionToggle = { viewModel.toggleSortDirection() },
         onGroupDirectionToggle = { viewModel.toggleGroupDirection() },
+        aiMessages = aiMessages,
+        isAiProcessing = isAiProcessing,
+        isAiExpanded = isAiExpanded,
+        onAiExpandedChange = onAiExpandedChange,
+        onSendAiMessage = onSendAiMessage,
+        onClearAiChat = onClearAiChat,
     )
 }
 
@@ -88,6 +109,12 @@ fun HistoryScreenRoot(
     onSettingsClick: () -> Unit,
     onAddEventClick: () -> Unit,
     onEventClick: (String, String) -> Unit,
+    aiMessages: List<ChatUiMessage>,
+    isAiProcessing: Boolean,
+    isAiExpanded: Boolean,
+    onAiExpandedChange: (Boolean) -> Unit,
+    onSendAiMessage: (String) -> Unit,
+    onClearAiChat: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -97,30 +124,11 @@ fun HistoryScreenRoot(
         onSettingsClick = onSettingsClick,
         onAddEventClick = onAddEventClick,
         onEventClick = onEventClick,
-    )
-}
-
-@Composable
-fun AiScreenRoot(
-    viewModel: AiChatViewModel,
-    onTabSelected: (MainTab) -> Unit,
-    onSettingsClick: () -> Unit,
-) {
-    val messages by viewModel.messages.collectAsStateWithLifecycle()
-    val isProcessing by viewModel.isProcessing.collectAsStateWithLifecycle()
-    val uiMessages = messages.map { msg ->
-        ChatUiMessage(
-            id = msg.id,
-            text = msg.text,
-            isUser = msg.role == AiRole.USER,
-        )
-    }
-    AiScreen(
-        messages = uiMessages,
-        isProcessing = isProcessing,
-        onSendMessage = viewModel::sendMessage,
-        onClearChat = viewModel::clearChat,
-        onTabSelected = onTabSelected,
-        onSettingsClick = onSettingsClick,
+        aiMessages = aiMessages,
+        isAiProcessing = isAiProcessing,
+        isAiExpanded = isAiExpanded,
+        onAiExpandedChange = onAiExpandedChange,
+        onSendAiMessage = onSendAiMessage,
+        onClearAiChat = onClearAiChat,
     )
 }
