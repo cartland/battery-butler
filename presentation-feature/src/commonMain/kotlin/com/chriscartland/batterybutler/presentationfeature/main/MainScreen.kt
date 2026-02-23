@@ -220,10 +220,13 @@ fun MainScreenShell(
                     Surface(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(top = innerPadding.calculateTopPadding()),
+                            .padding(
+                                top = innerPadding.calculateTopPadding(),
+                                bottom = innerPadding.calculateBottomPadding(),
+                            ),
                         color = MaterialTheme.colorScheme.surface,
                     ) {
-                        Column {
+                        Column(modifier = Modifier.fillMaxSize()) {
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -258,6 +261,7 @@ fun MainScreenShell(
                                 isProcessing = isAiProcessing,
                                 onSendMessage = onSendAiMessage,
                                 onClearChat = onClearAiChat,
+                                modifier = Modifier.weight(1f),
                             )
                         }
                     }
@@ -400,31 +404,33 @@ fun HistoryScreen(
 @Composable
 fun DevicesScreenPreview() {
     BatteryButlerTheme {
-        val now = Instant.parse("2026-01-18T17:00:00Z")
-        val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
-        val device = Device("dev1", "Kitchen Smoke", "type1", now, now, "Kitchen")
-        val state = HomeUiState(
-            groupedDevices = mapOf("All" to listOf(device)),
-            deviceTypes = mapOf("type1" to type),
-        )
-        DevicesScreen(
-            state = state,
-            onTabSelected = {},
-            onSettingsClick = {},
-            onAddDeviceClick = {},
-            onDeviceClick = {},
-            onGroupOptionToggle = {},
-            onGroupOptionSelected = {},
-            onSortOptionToggle = {},
-            onSortOptionSelected = {},
-            aiMessages = emptyList(),
-            isAiProcessing = false,
-            isAiExpanded = false,
-            onAiExpandedChange = {},
-            onSendAiMessage = {},
-            onClearAiChat = {},
-            nowInstant = now,
-        )
+        CompositionLocalProvider(LocalAiAvailable provides true) {
+            val now = Instant.parse("2026-01-18T17:00:00Z")
+            val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
+            val device = Device("dev1", "Kitchen Smoke", "type1", now, now, "Kitchen")
+            val state = HomeUiState(
+                groupedDevices = mapOf("All" to listOf(device)),
+                deviceTypes = mapOf("type1" to type),
+            )
+            DevicesScreen(
+                state = state,
+                onTabSelected = {},
+                onSettingsClick = {},
+                onAddDeviceClick = {},
+                onDeviceClick = {},
+                onGroupOptionToggle = {},
+                onGroupOptionSelected = {},
+                onSortOptionToggle = {},
+                onSortOptionSelected = {},
+                aiMessages = emptyList(),
+                isAiProcessing = false,
+                isAiExpanded = false,
+                onAiExpandedChange = {},
+                onSendAiMessage = {},
+                onClearAiChat = {},
+                nowInstant = now,
+            )
+        }
     }
 }
 
@@ -432,28 +438,30 @@ fun DevicesScreenPreview() {
 @Composable
 fun TypesScreenPreview() {
     BatteryButlerTheme {
-        val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
-        val state = DeviceTypeListUiState.Success(
-            groupedTypes = mapOf("All" to listOf(type)),
-        )
-        TypesScreen(
-            state = state,
-            onTabSelected = {},
-            onSettingsClick = {},
-            onAddTypeClick = {},
-            onEditType = {},
-            onPreloadTypes = {},
-            onSortOptionSelected = {},
-            onGroupOptionSelected = {},
-            onSortDirectionToggle = {},
-            onGroupDirectionToggle = {},
-            aiMessages = emptyList(),
-            isAiProcessing = false,
-            isAiExpanded = false,
-            onAiExpandedChange = {},
-            onSendAiMessage = {},
-            onClearAiChat = {},
-        )
+        CompositionLocalProvider(LocalAiAvailable provides true) {
+            val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
+            val state = DeviceTypeListUiState.Success(
+                groupedTypes = mapOf("All" to listOf(type)),
+            )
+            TypesScreen(
+                state = state,
+                onTabSelected = {},
+                onSettingsClick = {},
+                onAddTypeClick = {},
+                onEditType = {},
+                onPreloadTypes = {},
+                onSortOptionSelected = {},
+                onGroupOptionSelected = {},
+                onSortDirectionToggle = {},
+                onGroupDirectionToggle = {},
+                aiMessages = emptyList(),
+                isAiProcessing = false,
+                isAiExpanded = false,
+                onAiExpandedChange = {},
+                onSendAiMessage = {},
+                onClearAiChat = {},
+            )
+        }
     }
 }
 
@@ -462,27 +470,29 @@ fun TypesScreenPreview() {
 @Composable
 fun HistoryScreenPreview() {
     BatteryButlerTheme {
-        val nowInstant = Instant.parse("2026-01-18T17:00:00Z")
-        val eventInstant = Instant.parse("2026-01-11T17:00:00Z") // 7 days ago
-        val event = BatteryEvent("evt1", "dev1", eventInstant)
-        val item = HistoryItemUiModel(event, "Kitchen Smoke", "Smoke Alarm", "Kitchen")
-        val state = HistoryListUiState.Success(
-            items = listOf(item),
-        )
-        HistoryScreen(
-            state = state,
-            onTabSelected = {},
-            onSettingsClick = {},
-            onAddEventClick = {},
-            onEventClick = { _, _ -> },
-            aiMessages = emptyList(),
-            isAiProcessing = false,
-            isAiExpanded = false,
-            onAiExpandedChange = {},
-            onSendAiMessage = {},
-            onClearAiChat = {},
-            nowInstant = nowInstant,
-        )
+        CompositionLocalProvider(LocalAiAvailable provides true) {
+            val nowInstant = Instant.parse("2026-01-18T17:00:00Z")
+            val eventInstant = Instant.parse("2026-01-11T17:00:00Z") // 7 days ago
+            val event = BatteryEvent("evt1", "dev1", eventInstant)
+            val item = HistoryItemUiModel(event, "Kitchen Smoke", "Smoke Alarm", "Kitchen")
+            val state = HistoryListUiState.Success(
+                items = listOf(item),
+            )
+            HistoryScreen(
+                state = state,
+                onTabSelected = {},
+                onSettingsClick = {},
+                onAddEventClick = {},
+                onEventClick = { _, _ -> },
+                aiMessages = emptyList(),
+                isAiProcessing = false,
+                isAiExpanded = false,
+                onAiExpandedChange = {},
+                onSendAiMessage = {},
+                onClearAiChat = {},
+                nowInstant = nowInstant,
+            )
+        }
     }
 }
 
