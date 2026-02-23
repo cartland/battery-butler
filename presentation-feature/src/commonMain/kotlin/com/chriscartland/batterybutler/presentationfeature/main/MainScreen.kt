@@ -3,7 +3,6 @@ package com.chriscartland.batterybutler.presentationfeature.main
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
@@ -125,25 +124,17 @@ fun MainScreenShell(
     Scaffold(
         modifier = modifier,
         topBar = {
-            Box(
-                modifier = if (isAiExpanded) {
-                    Modifier.clickable { onAiExpandedChange(false) }
-                } else {
-                    Modifier
+            ButlerCenteredTopAppBar(
+                title = composeStringResource(currentTab.labelRes()),
+                actions = {
+                    IconButton(onClick = onSettingsClick) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = "Settings",
+                        )
+                    }
                 },
-            ) {
-                ButlerCenteredTopAppBar(
-                    title = composeStringResource(currentTab.labelRes()),
-                    actions = {
-                        IconButton(onClick = onSettingsClick) {
-                            Icon(
-                                imageVector = Icons.Default.Settings,
-                                contentDescription = "Settings",
-                            )
-                        }
-                    },
-                )
-            }
+            )
         },
         bottomBar = {
             Column {

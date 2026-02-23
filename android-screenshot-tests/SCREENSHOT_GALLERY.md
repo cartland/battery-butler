@@ -1,6 +1,6 @@
 # Screenshot Gallery
 
-Generated on Sun Feb 22 23:01:41 PST 2026
+Generated on Mon Feb 23 01:36:13 PST 2026
 
 ## Table of Contents
 - [AddDeviceScreenshotTestKt](#adddevicescreenshottestkt)
@@ -77,11 +77,23 @@ Generated on Sun Feb 22 23:01:41 PST 2026
 ### CompositeControlPreviewTest_Light_fc5b723e_0
 <img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ComponentsScreenshotTestKt/CompositeControlPreviewTest_Light_fc5b723e_0.png" width="300" />
 
+### DeviceListItemOldPreviewTest_Dark_77106447_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ComponentsScreenshotTestKt/DeviceListItemOldPreviewTest_Dark_77106447_0.png" width="300" />
+
+### DeviceListItemOldPreviewTest_Light_fc5b723e_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ComponentsScreenshotTestKt/DeviceListItemOldPreviewTest_Light_fc5b723e_0.png" width="300" />
+
 ### DeviceListItemPreviewTest_Dark_77106447_0
 <img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ComponentsScreenshotTestKt/DeviceListItemPreviewTest_Dark_77106447_0.png" width="300" />
 
 ### DeviceListItemPreviewTest_Light_fc5b723e_0
 <img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ComponentsScreenshotTestKt/DeviceListItemPreviewTest_Light_fc5b723e_0.png" width="300" />
+
+### DeviceListItemVeryOldPreviewTest_Dark_77106447_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ComponentsScreenshotTestKt/DeviceListItemVeryOldPreviewTest_Dark_77106447_0.png" width="300" />
+
+### DeviceListItemVeryOldPreviewTest_Light_fc5b723e_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ComponentsScreenshotTestKt/DeviceListItemVeryOldPreviewTest_Light_fc5b723e_0.png" width="300" />
 
 ### DeviceTypeIconItemPreviewTest_Dark_77106447_0
 <img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ComponentsScreenshotTestKt/DeviceTypeIconItemPreviewTest_Dark_77106447_0.png" width="300" />

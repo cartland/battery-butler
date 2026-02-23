@@ -251,7 +251,6 @@ fun DeviceTypeListContentPreview() {
     }
 }
 
-@Preview(showBackground = true)
 @Composable
 fun DeviceTypeFilterRowPreview() {
     BatteryButlerTheme {
