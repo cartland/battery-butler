@@ -1,7 +1,11 @@
 package com.chriscartland.batterybutler.presentationfeature.main
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.platform.LocalLayoutDirection
+import com.chriscartland.batterybutler.presentationcore.theme.Padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.AutoAwesome
@@ -11,8 +15,10 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -110,13 +116,26 @@ fun MainScreenShell(
                         onClick = { onTabSelected(tab) },
                         icon = { Icon(tab.icon(), contentDescription = composeStringResource(tab.labelRes())) },
                         label = { Text(composeStringResource(tab.labelRes())) },
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = MaterialTheme.colorScheme.primary,
+                            selectedTextColor = MaterialTheme.colorScheme.primary,
+                            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        ),
                         modifier = Modifier.testTag("BottomNav_${tab.name}"),
                     )
                 }
             }
         },
         content = { innerPadding ->
-            content(innerPadding)
+            val layoutDirection = LocalLayoutDirection.current
+            val contentPadding = PaddingValues(
+                top = innerPadding.calculateTopPadding() + Padding.standard,
+                bottom = innerPadding.calculateBottomPadding(),
+                start = innerPadding.calculateStartPadding(layoutDirection),
+                end = innerPadding.calculateEndPadding(layoutDirection),
+            )
+            content(contentPadding)
         },
     )
 }
