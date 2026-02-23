@@ -212,6 +212,8 @@ fun MainScreenShell(
             val bottomContentPadding = PaddingValues(
                 top = Padding.standard,
                 bottom = innerPadding.calculateBottomPadding() + Padding.standard,
+                start = Padding.standard,
+                end = Padding.standard,
             )
 
             Box(modifier = Modifier.fillMaxSize()) {

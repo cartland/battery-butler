@@ -151,8 +151,7 @@ fun DeviceTypeFilterRow(
         // Filter Row
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = Padding.standard),
+                .fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(Padding.small),
         ) {
             var sortExpanded by remember { mutableStateOf(false) }
