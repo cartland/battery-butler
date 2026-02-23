@@ -39,7 +39,7 @@ class AiChatViewModelWrapper: ObservableObject {
     }
     
     func sendMessage(text: String) {
-        viewModel.sendMessage(text: text)
+        viewModel.sendMessage(text: text, hints: [:])
     }
     
     func clearChat() {
