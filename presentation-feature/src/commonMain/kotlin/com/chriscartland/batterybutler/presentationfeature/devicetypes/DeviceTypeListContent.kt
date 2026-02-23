@@ -93,6 +93,7 @@ fun DeviceTypeListContent(
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = contentPadding,
+                        verticalArrangement = Arrangement.spacedBy(Padding.medium),
                     ) {
                         item {
                             DeviceTypeFilterRow(
@@ -151,7 +152,7 @@ fun DeviceTypeFilterRow(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = Padding.standard, vertical = Padding.small),
+                .padding(horizontal = Padding.standard),
             horizontalArrangement = Arrangement.spacedBy(Padding.small),
         ) {
             var sortExpanded by remember { mutableStateOf(false) }

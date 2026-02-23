@@ -1,5 +1,6 @@
 package com.chriscartland.batterybutler.presentationfeature.history
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,6 +24,7 @@ import com.chriscartland.batterybutler.presentationcore.components.AddItemCard
 import com.chriscartland.batterybutler.presentationcore.components.EmptyStateContent
 import com.chriscartland.batterybutler.presentationcore.components.HistoryListItem
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import com.chriscartland.batterybutler.presentationcore.theme.Padding
 import com.chriscartland.batterybutler.presentationmodel.history.HistoryItemUiModel
 import com.chriscartland.batterybutler.presentationmodel.history.HistoryListUiState
 import kotlin.time.Clock
@@ -56,6 +58,7 @@ fun HistoryListContent(
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = contentPadding,
+                        verticalArrangement = Arrangement.spacedBy(Padding.medium),
                     ) {
                         item {
                             AddItemCard("Add a battery event", onAddEventClick)

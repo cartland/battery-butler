@@ -48,7 +48,7 @@ fun ButlerListItemCard(
         colors = colors,
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = Padding.standard, vertical = 6.dp)
+            .padding(horizontal = Padding.standard)
             .border(1.dp, borderColor, shape)
             .clickable { onClick() },
         shape = shape,

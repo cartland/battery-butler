@@ -266,6 +266,7 @@ fun HomeScreenList(
         LazyColumn(
             modifier = modifier.fillMaxSize(),
             contentPadding = contentPadding,
+            verticalArrangement = Arrangement.spacedBy(Padding.medium),
         ) {
             item {
                 AddItemCard("Add a device", onAddDeviceClick)
