@@ -465,7 +465,7 @@ fun HistoryScreenPreview() {
 
 @Preview(showBackground = true)
 @Composable
-fun AiBarCollapsedPreview() {
+fun AiBarCollapsedDevicesPreview() {
     BatteryButlerTheme {
         CompositionLocalProvider(LocalAiAvailable provides true) {
             val now = Instant.parse("2026-01-18T17:00:00Z")
@@ -492,6 +492,68 @@ fun AiBarCollapsedPreview() {
                 onSendAiMessage = {},
                 onClearAiChat = {},
                 nowInstant = now,
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun AiBarCollapsedTypesPreview() {
+    BatteryButlerTheme {
+        CompositionLocalProvider(LocalAiAvailable provides true) {
+            val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
+            val state = DeviceTypeListUiState.Success(
+                groupedTypes = mapOf("All" to listOf(type)),
+            )
+            TypesScreen(
+                state = state,
+                onTabSelected = {},
+                onSettingsClick = {},
+                onAddTypeClick = {},
+                onEditType = {},
+                onPreloadTypes = {},
+                onSortOptionSelected = {},
+                onGroupOptionSelected = {},
+                onSortDirectionToggle = {},
+                onGroupDirectionToggle = {},
+                aiMessages = emptyList(),
+                isAiProcessing = false,
+                isAiExpanded = false,
+                onAiExpandedChange = {},
+                onSendAiMessage = {},
+                onClearAiChat = {},
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalTime::class)
+@Preview(showBackground = true)
+@Composable
+fun AiBarCollapsedHistoryPreview() {
+    BatteryButlerTheme {
+        CompositionLocalProvider(LocalAiAvailable provides true) {
+            val nowInstant = Instant.parse("2026-01-18T17:00:00Z")
+            val eventInstant = Instant.parse("2026-01-11T17:00:00Z")
+            val event = BatteryEvent("evt1", "dev1", eventInstant)
+            val item = HistoryItemUiModel(event, "Kitchen Smoke", "Smoke Alarm", "Kitchen")
+            val state = HistoryListUiState.Success(
+                items = listOf(item),
+            )
+            HistoryScreen(
+                state = state,
+                onTabSelected = {},
+                onSettingsClick = {},
+                onAddEventClick = {},
+                onEventClick = { _, _ -> },
+                aiMessages = emptyList(),
+                isAiProcessing = false,
+                isAiExpanded = false,
+                onAiExpandedChange = {},
+                onSendAiMessage = {},
+                onClearAiChat = {},
+                nowInstant = nowInstant,
             )
         }
     }

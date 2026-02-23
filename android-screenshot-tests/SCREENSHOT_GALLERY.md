@@ -1,6 +1,6 @@
 # Screenshot Gallery
 
-Generated on Sun Feb 22 18:30:49 PST 2026
+Generated on Sun Feb 22 18:39:55 PST 2026
 
 ## Table of Contents
 - [AddDeviceScreenshotTestKt](#adddevicescreenshottestkt)
@@ -30,11 +30,23 @@ Generated on Sun Feb 22 18:30:49 PST 2026
 
 ## AiOverlayScreenshotTestKt
 
-### AiBarCollapsedPreviewTest_Dark_2c2e8f1f_0
-<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/AiOverlayScreenshotTestKt/AiBarCollapsedPreviewTest_Dark_2c2e8f1f_0.png" width="300" />
+### AiBarCollapsedDevicesPreviewTest_Dark_2c2e8f1f_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/AiOverlayScreenshotTestKt/AiBarCollapsedDevicesPreviewTest_Dark_2c2e8f1f_0.png" width="300" />
 
-### AiBarCollapsedPreviewTest_Light_67c33cac_0
-<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/AiOverlayScreenshotTestKt/AiBarCollapsedPreviewTest_Light_67c33cac_0.png" width="300" />
+### AiBarCollapsedDevicesPreviewTest_Light_67c33cac_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/AiOverlayScreenshotTestKt/AiBarCollapsedDevicesPreviewTest_Light_67c33cac_0.png" width="300" />
+
+### AiBarCollapsedHistoryPreviewTest_Dark_2c2e8f1f_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/AiOverlayScreenshotTestKt/AiBarCollapsedHistoryPreviewTest_Dark_2c2e8f1f_0.png" width="300" />
+
+### AiBarCollapsedHistoryPreviewTest_Light_67c33cac_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/AiOverlayScreenshotTestKt/AiBarCollapsedHistoryPreviewTest_Light_67c33cac_0.png" width="300" />
+
+### AiBarCollapsedTypesPreviewTest_Dark_2c2e8f1f_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/AiOverlayScreenshotTestKt/AiBarCollapsedTypesPreviewTest_Dark_2c2e8f1f_0.png" width="300" />
+
+### AiBarCollapsedTypesPreviewTest_Light_67c33cac_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/AiOverlayScreenshotTestKt/AiBarCollapsedTypesPreviewTest_Light_67c33cac_0.png" width="300" />
 
 ### AiOverlayExpandedPreviewTest_Dark_2c2e8f1f_0
 <img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/AiOverlayScreenshotTestKt/AiOverlayExpandedPreviewTest_Dark_2c2e8f1f_0.png" width="300" />
