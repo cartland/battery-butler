@@ -88,7 +88,7 @@ fun MainScreenShell(
     onTabSelected: (MainTab) -> Unit,
     onSettingsClick: () -> Unit,
     modifier: Modifier = Modifier,
-    content: @Composable (PaddingValues) -> Unit,
+    content: @Composable (Modifier, PaddingValues) -> Unit,
 ) {
     val isAiAvailable = LocalAiAvailable.current
     val visibleTabs = if (isAiAvailable) MainTab.entries else MainTab.entries.filter { it != MainTab.AI }
@@ -129,13 +129,15 @@ fun MainScreenShell(
         },
         content = { innerPadding ->
             val layoutDirection = LocalLayoutDirection.current
-            val contentPadding = PaddingValues(
+            val contentModifier = Modifier.padding(
                 top = innerPadding.calculateTopPadding() + Padding.standard,
-                bottom = innerPadding.calculateBottomPadding(),
                 start = innerPadding.calculateStartPadding(layoutDirection),
                 end = innerPadding.calculateEndPadding(layoutDirection),
             )
-            content(contentPadding)
+            val bottomContentPadding = PaddingValues(
+                bottom = innerPadding.calculateBottomPadding() + Padding.standard,
+            )
+            content(contentModifier, bottomContentPadding)
         },
     )
 }
@@ -158,7 +160,7 @@ fun DevicesScreen(
         currentTab = MainTab.Devices,
         onTabSelected = onTabSelected,
         onSettingsClick = onSettingsClick,
-    ) { innerPadding ->
+    ) { contentModifier, bottomContentPadding ->
         HomeScreenContent(
             state = state,
             onGroupOptionToggle = onGroupOptionToggle,
@@ -167,7 +169,8 @@ fun DevicesScreen(
             onSortOptionSelected = onSortOptionSelected,
             onDeviceClick = { onDeviceClick(it.id) },
             onAddDeviceClick = onAddDeviceClick,
-            modifier = Modifier.padding(innerPadding),
+            modifier = contentModifier,
+            contentPadding = bottomContentPadding,
             nowInstant = nowInstant,
         )
     }
@@ -190,7 +193,7 @@ fun TypesScreen(
         currentTab = MainTab.Types,
         onTabSelected = onTabSelected,
         onSettingsClick = onSettingsClick,
-    ) { innerPadding ->
+    ) { contentModifier, bottomContentPadding ->
         DeviceTypeListContent(
             state = state,
             onEditType = onEditType,
@@ -200,7 +203,8 @@ fun TypesScreen(
             onGroupOptionSelected = onGroupOptionSelected,
             onSortDirectionToggle = onSortDirectionToggle,
             onGroupDirectionToggle = onGroupDirectionToggle,
-            modifier = Modifier.padding(innerPadding),
+            modifier = contentModifier,
+            contentPadding = bottomContentPadding,
         )
     }
 }
@@ -219,12 +223,13 @@ fun HistoryScreen(
         currentTab = MainTab.History,
         onTabSelected = onTabSelected,
         onSettingsClick = onSettingsClick,
-    ) { innerPadding ->
+    ) { contentModifier, bottomContentPadding ->
         HistoryListContent(
             state = state,
             onEventClick = onEventClick,
             onAddEventClick = onAddEventClick,
-            modifier = Modifier.padding(innerPadding),
+            modifier = contentModifier,
+            contentPadding = bottomContentPadding,
             nowInstant = nowInstant,
         )
     }
@@ -243,13 +248,13 @@ fun AiScreen(
         currentTab = MainTab.AI,
         onTabSelected = onTabSelected,
         onSettingsClick = onSettingsClick,
-    ) { innerPadding ->
+    ) { contentModifier, bottomContentPadding ->
         AiTabContent(
             messages = messages,
             isProcessing = isProcessing,
             onSendMessage = onSendMessage,
             onClearChat = onClearChat,
-            modifier = Modifier.padding(innerPadding),
+            modifier = contentModifier.padding(bottomContentPadding),
         )
     }
 }
