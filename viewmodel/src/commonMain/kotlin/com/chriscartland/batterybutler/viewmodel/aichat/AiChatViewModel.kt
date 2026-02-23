@@ -29,7 +29,7 @@ class AiChatViewModel(
 
     fun sendMessage(
         text: String,
-        activeTab: String? = null,
+        hints: Map<String, String> = emptyMap(),
     ) {
         if (text.isBlank() || _isProcessing.value) return
 
@@ -37,15 +37,13 @@ class AiChatViewModel(
             id = "user_${Clock.System.now().toEpochMilliseconds()}",
             role = AiRole.USER,
             text = text,
+            hints = hints,
         )
         _messages.update { it + userMessage }
         _isProcessing.value = true
 
-        val augmentedText = if (activeTab != null) {
-            "[Active tab: $activeTab]\n\n$text"
-        } else {
-            text
-        }
+        val hintLines = hints.entries.joinToString("\n") { "[${it.key}: ${it.value}]" }
+        val augmentedText = if (hintLines.isNotEmpty()) "$hintLines\n\n$text" else text
 
         currentJob = viewModelScope.launch {
             try {

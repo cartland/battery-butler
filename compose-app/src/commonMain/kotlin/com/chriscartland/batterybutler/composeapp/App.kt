@@ -107,7 +107,10 @@ fun App(
             }
 
             val onSendAiMessage: (String) -> Unit = { text ->
-                aiViewModel.sendMessage(text, activeTab = currentTabName)
+                val hints = buildMap {
+                    currentTabName?.let { put("Message sent from", "$it tab") }
+                }
+                aiViewModel.sendMessage(text, hints = hints)
             }
 
             CompositionLocalProvider(

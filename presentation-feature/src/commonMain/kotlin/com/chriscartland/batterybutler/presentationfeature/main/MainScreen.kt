@@ -20,10 +20,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.AutoAwesome
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -263,8 +263,8 @@ fun MainScreenShell(
                                     onClick = { onAiExpandedChange(false) },
                                 ) {
                                     Icon(
-                                        imageVector = Icons.Default.Close,
-                                        contentDescription = "Close AI chat",
+                                        imageVector = Icons.Default.KeyboardArrowDown,
+                                        contentDescription = "Collapse AI chat",
                                     )
                                 }
                             }
