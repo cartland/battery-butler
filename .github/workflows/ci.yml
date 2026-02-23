@@ -196,6 +196,17 @@ jobs:
       - name: Run Architecture Analysis
         run: ./scripts/analyze-architecture.sh
 
+  validation_theme_layer:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup-java-gradle
+      - name: Check Theme Layer Enforcement
+        run: ./gradlew checkThemeLayer
+
   build_android:
     needs: changes
     if: needs.changes.outputs.code == 'true'
@@ -408,6 +419,7 @@ jobs:
       - validation_instrumented
       - validation_ios_ui
       - validation_architecture
+      - validation_theme_layer
       - build_android
       - build_ios_compose
       - build_ios_native
@@ -428,6 +440,7 @@ jobs:
             "${{ needs.validation_instrumented.result }}" \
             "${{ needs.validation_ios_ui.result }}" \
             "${{ needs.validation_architecture.result }}" \
+            "${{ needs.validation_theme_layer.result }}" \
             "${{ needs.build_android.result }}" \
             "${{ needs.build_ios_compose.result }}" \
             "${{ needs.build_ios_native.result }}" \

@@ -30,5 +30,9 @@ gradlePlugin {
             id = "preview.coverage.check"
             implementationClass = "screenshotcoverage.PreviewCoveragePlugin"
         }
+        create("themeLayerCheck") {
+            id = "theme.layer.check"
+            implementationClass = "themelayer.ThemeLayerPlugin"
+        }
     }
 }
