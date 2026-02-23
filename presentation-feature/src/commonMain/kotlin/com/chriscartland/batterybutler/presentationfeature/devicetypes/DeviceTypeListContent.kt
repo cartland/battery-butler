@@ -227,7 +227,6 @@ fun DeviceTypeListContentEmptyPreview() {
     }
 }
 
-@Preview(showBackground = true)
 @Composable
 fun DeviceTypeListContentPreview() {
     BatteryButlerTheme {
