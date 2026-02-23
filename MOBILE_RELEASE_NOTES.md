@@ -6,6 +6,32 @@ Each section covers one release tag range. "What's New" is user-facing language 
 
 ---
 
+## [android/12] — 2026-02-23
+
+From tag `android/11` to tag `android/12` (1 mobile-relevant commit out of 8 total)
+
+### What's New
+
+**AI chat as a persistent overlay**
+- The AI assistant is now available from every screen — no longer buried in its own tab
+- A compact "Ask AI..." bar appears above the bottom navigation on all three main tabs
+- Tap it to slide up a full chat overlay; dismiss with the collapse button (chevron) at the top
+- Chat history persists as you switch between tabs during a session
+- The AI receives context about which tab is active for more relevant answers
+- Clear the conversation with the trash icon in the overlay header
+
+**Layout polish**
+- The Device Types filter row now scrolls with the list instead of staying fixed at the top
+- Tighter vertical spacing throughout for a more compact, consistent feel
+
+### Detailed Changes
+
+| PR | Description |
+|----|-------------|
+| [#602](https://github.com/cartland/battery-butler/pull/602) | Move AI chat to modal overlay; layout and screenshot cleanup |
+
+---
+
 ## [android/11] — 2026-02-22
 
 From tag `android/10` to tag `android/11` (15 mobile-relevant commits out of 29 total)
