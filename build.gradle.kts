@@ -47,6 +47,7 @@ plugins {
     alias(libs.plugins.detekt) apply false
     id("architecture.check")
     id("preview.coverage.check")
+    id("theme.layer.check")
 }
 
 allprojects {
