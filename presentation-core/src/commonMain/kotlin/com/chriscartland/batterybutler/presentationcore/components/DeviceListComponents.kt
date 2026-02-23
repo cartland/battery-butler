@@ -83,12 +83,9 @@ fun DeviceListItem(
         onClick = onClick,
         modifier = modifier,
         leading = {
-            val accent = DeviceIconMapper.getResolvedIconAccent(deviceType?.defaultIcon)
             ButlerIconBox(
                 icon = DeviceIconMapper.getIcon(deviceType?.defaultIcon),
                 contentDescription = deviceType?.name ?: "Device Icon",
-                containerColor = accent.container,
-                contentColor = accent.content,
             )
         },
         trailing = {

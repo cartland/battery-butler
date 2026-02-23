@@ -1,8 +1,10 @@
 package com.chriscartland.batterybutler.presentationcore.components
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -20,26 +22,31 @@ fun DeviceTypeListItem(
         onClick = onClick,
         modifier = modifier,
         leading = {
-            val accent = DeviceIconMapper.getResolvedIconAccent(deviceType.defaultIcon)
             ButlerIconBox(
                 icon = DeviceIconMapper.getIcon(deviceType.defaultIcon),
                 contentDescription = "Device type icon",
-                containerColor = accent.container,
-                contentColor = accent.content,
             )
+        },
+        trailing = {
+            Column(horizontalAlignment = Alignment.End) {
+                Text(
+                    text = "${deviceType.batteryQuantity}",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+                Text(
+                    text = deviceType.batteryType,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
         },
     ) {
         Text(
             text = deviceType.name,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
-        Text(
-            text = "${deviceType.batteryQuantity} x ${deviceType.batteryType}",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
