@@ -22,7 +22,6 @@ import androidx.compose.material.icons.outlined.Devices
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
@@ -64,7 +63,7 @@ import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class, ExperimentalTime::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalTime::class)
 @Composable
 fun HomeScreenContent(
     state: HomeUiState,
@@ -94,15 +93,6 @@ fun HomeScreenContent(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        topBar = {
-            HomeScreenFilterRow(
-                state = state,
-                onGroupOptionToggle = onGroupOptionToggle,
-                onGroupOptionSelected = onGroupOptionSelected,
-                onSortOptionToggle = onSortOptionToggle,
-                onSortOptionSelected = onSortOptionSelected,
-            )
-        },
         snackbarHost = {
             SnackbarHost(snackbarHostState) { data ->
                 Snackbar(
@@ -123,6 +113,10 @@ fun HomeScreenContent(
         Box(modifier = Modifier.fillMaxSize()) {
             HomeScreenList(
                 state = state,
+                onGroupOptionToggle = onGroupOptionToggle,
+                onGroupOptionSelected = onGroupOptionSelected,
+                onSortOptionToggle = onSortOptionToggle,
+                onSortOptionSelected = onSortOptionSelected,
                 onDeviceClick = onDeviceClick,
                 onAddDeviceClick = onAddDeviceClick,
                 contentPadding = mergedPadding,
@@ -179,7 +173,7 @@ fun HomeScreenFilterRow(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = Padding.standard, vertical = Padding.small),
+                .padding(horizontal = Padding.standard),
             horizontalArrangement = Arrangement.spacedBy(Padding.small),
         ) {
             var sortExpanded by remember { mutableStateOf(false) }
@@ -242,6 +236,10 @@ fun HomeScreenFilterRow(
 @Composable
 fun HomeScreenList(
     state: HomeUiState,
+    onGroupOptionToggle: () -> Unit,
+    onGroupOptionSelected: (GroupOption) -> Unit,
+    onSortOptionToggle: () -> Unit,
+    onSortOptionSelected: (SortOption) -> Unit,
     onDeviceClick: (Device) -> Unit,
     onAddDeviceClick: () -> Unit,
     contentPadding: androidx.compose.foundation.layout.PaddingValues,
@@ -268,6 +266,15 @@ fun HomeScreenList(
             contentPadding = contentPadding,
             verticalArrangement = Arrangement.spacedBy(Padding.medium),
         ) {
+            item {
+                HomeScreenFilterRow(
+                    state = state,
+                    onGroupOptionToggle = onGroupOptionToggle,
+                    onGroupOptionSelected = onGroupOptionSelected,
+                    onSortOptionToggle = onSortOptionToggle,
+                    onSortOptionSelected = onSortOptionSelected,
+                )
+            }
             item {
                 AddItemCard("Add a device", onAddDeviceClick)
             }
@@ -409,6 +416,10 @@ fun HomeScreenListPreview() {
                 groupedDevices = mapOf("All" to listOf(device)),
                 deviceTypes = mapOf("type1" to type),
             ),
+            onGroupOptionToggle = {},
+            onGroupOptionSelected = {},
+            onSortOptionToggle = {},
+            onSortOptionSelected = {},
             onDeviceClick = {},
             onAddDeviceClick = {},
             contentPadding = androidx.compose.foundation.layout
