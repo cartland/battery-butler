@@ -28,7 +28,7 @@ Regardless of the role, the agent remains a tool, and the user retains ultimate 
 1.  **NEVER Push Directly to `main`**:
     *   **Always** create a feature branch (`agent/your-branch-name`).
     *   **Always** open a Pull Request for changes.
-    *   **Exception**: Only project maintainers may push to `main` for critical reverts or documentation updates if explicitly authorized.
+    *   **No exceptions.** Even maintainer-requested changes (reverts, docs, beads updates) must go through a PR.
 
 2.  **NEVER Create Tags or Deploy Without Explicit Permission**:
     *   **NEVER** create git tags (e.g., `android/N`, release tags) without explicit user approval.
