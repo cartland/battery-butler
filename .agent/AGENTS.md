@@ -48,6 +48,12 @@ Regardless of the role, the agent remains a tool, and the user retains ultimate 
     *   Creating tags, deploying, force-pushing, deleting branches on remote, or any action that affects production requires explicit confirmation.
     *   When uncertain about scope, ask clarifying questions before proceeding.
 
+5.  **ALWAYS Clean Up Branches After PR Merge**:
+    *   Delete the local branch and verify the remote branch is deleted immediately after every PR merge.
+    *   Use `gh pr merge --squash --delete-branch` to auto-delete remote branches.
+    *   Run `git fetch --prune origin` to clean up stale remote refs.
+    *   See **After Your PR is Merged** section for the full checklist.
+
 ## Build & Test Health
 
 Keeping the build and tests healthy is a top priority. When you identify or fix build/test issues:
@@ -169,7 +175,7 @@ Keeping the build and tests healthy is a top priority. When you identify or fix 
 
 ## After Your PR is Merged
 
-Once your pull request has been approved and merged into `main`, it is important to clean up your branches to keep the repository tidy.
+**MANDATORY: Always clean up branches immediately after a PR is merged.** Stale branches accumulate quickly and clutter the repository.
 
 1.  **Switch to the `main` Branch**:
     ```bash
@@ -186,10 +192,17 @@ Once your pull request has been approved and merged into `main`, it is important
     git branch -d agent/your-branch-name
     ```
 
-4.  **Delete the Remote Branch**:
+4.  **Delete the Remote Branch** (if `--delete-branch` was not used during merge):
     ```bash
     git push origin --delete agent/your-branch-name
     ```
+
+5.  **Prune stale remote refs**:
+    ```bash
+    git fetch --prune origin
+    ```
+
+> **Tip:** Use `gh pr merge --squash --delete-branch` to auto-delete the remote branch on merge. You still must delete the local branch manually.
 
 **Example for `AGENT_NAME.md`:**
 ```markdown
