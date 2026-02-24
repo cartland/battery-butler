@@ -19,7 +19,7 @@ struct LoginScreen: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 100, height: 100)
-                .foregroundColor(.blue)
+                .foregroundStyle(.blue)
                 .padding(.top, 40)
             
             Text("Battery Butler")
@@ -28,7 +28,7 @@ struct LoginScreen: View {
             
             Text("Manage your devices and battery replacements securely across all platforms.")
                 .multilineTextAlignment(.center)
-                .foregroundColor(.secondary)
+                .foregroundStyle(.secondary)
                 .padding(.horizontal)
             
             Spacer()
@@ -47,7 +47,7 @@ struct LoginScreen: View {
                         .frame(maxWidth: .infinity)
                         .padding()
                         .background(Color.blue)
-                        .foregroundColor(.white)
+                        .foregroundStyle(.white)
                         .cornerRadius(12)
                     }
                 }
@@ -58,7 +58,7 @@ struct LoginScreen: View {
                     Text("Skip for now")
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .foregroundColor(.blue)
+                        .foregroundStyle(.blue)
                 }
             }
             
