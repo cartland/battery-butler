@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package com.chriscartland.batterybutler.proto;
 
+option java_package = "com.chriscartland.batterybutler.proto";
 option java_multiple_files = true;
 
 // Authentication service for verifying Google ID tokens and issuing session tokens.
