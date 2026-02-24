@@ -57,12 +57,12 @@ actual class GoogleSignInBridge {
         this.clientId = clientId
         this.dispatcherProvider = dispatcherProvider
         if (clientId.isNullOrBlank()) {
-            Logger.w { "Google Sign-In (iOS): Not configured - set GOOGLE_IOS_CLIENT_ID" }
+            Logger.w(TAG) { "Google Sign-In (iOS): Not configured - set GOOGLE_IOS_CLIENT_ID" }
         } else {
             // Google's iOS redirect URI uses the reversed client ID as a custom URL scheme
             val reversedClientId = clientId.split(".").reversed().joinToString(".")
             this.redirectUri = "$reversedClientId:/oauthredirect"
-            Logger.i { "Google Sign-In (iOS): Configured with client ID ...${clientId.takeLast(15)}" }
+            Logger.i(TAG) { "Google Sign-In (iOS): Configured with client ID ...${clientId.takeLast(15)}" }
         }
     }
 
@@ -299,6 +299,10 @@ actual class GoogleSignInBridge {
             }
         }
         return digest.toByteArray()
+    }
+
+    companion object {
+        private const val TAG = "GoogleSignInBridge"
     }
 }
 

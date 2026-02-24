@@ -44,10 +44,9 @@ actual class GoogleSignInBridge {
         this.clientId = clientId
         this.dispatcherProvider = dispatcherProvider
         if (clientId.isNullOrBlank()) {
-            Logger.w { "Google Sign-In (Desktop): Not configured" }
-            Logger.w { "  Set GOOGLE_WEB_CLIENT_ID environment variable" }
+            Logger.w(TAG) { "Google Sign-In (Desktop): Not configured - Set GOOGLE_WEB_CLIENT_ID environment variable" }
         } else {
-            Logger.i { "Google Sign-In (Desktop): Configured with client ID ...${clientId.takeLast(15)}" }
+            Logger.i(TAG) { "Google Sign-In (Desktop): Configured with client ID ...${clientId.takeLast(15)}" }
         }
     }
 
@@ -239,6 +238,7 @@ actual class GoogleSignInBridge {
     private fun encode(value: String): String = URLEncoder.encode(value, "UTF-8")
 
     companion object {
+        private const val TAG = "GoogleSignInBridge"
         private val SUCCESS_HTML =
             """
             <html><body style="font-family: sans-serif; text-align: center; padding: 40px;">
