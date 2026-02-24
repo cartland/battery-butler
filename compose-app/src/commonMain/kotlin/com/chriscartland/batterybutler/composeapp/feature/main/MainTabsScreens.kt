@@ -1,16 +1,16 @@
 package com.chriscartland.batterybutler.composeapp.feature.main
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chriscartland.batterybutler.presentationcore.util.LocalFileSaver
 import com.chriscartland.batterybutler.presentationcore.util.generateFileTimestamp
-import com.chriscartland.batterybutler.presentationfeature.aichat.ChatUiMessage
-import com.chriscartland.batterybutler.presentationfeature.main.DevicesScreen
-import com.chriscartland.batterybutler.presentationfeature.main.HistoryScreen
-import com.chriscartland.batterybutler.presentationfeature.main.MainTab
-import com.chriscartland.batterybutler.presentationfeature.main.TypesScreen
+import com.chriscartland.batterybutler.presentationfeature.devicetypes.DeviceTypeListContent
+import com.chriscartland.batterybutler.presentationfeature.history.HistoryListContent
+import com.chriscartland.batterybutler.presentationfeature.home.HomeScreenContent
 import com.chriscartland.batterybutler.viewmodel.devicetypes.DeviceTypeListViewModel
 import com.chriscartland.batterybutler.viewmodel.history.HistoryListViewModel
 import com.chriscartland.batterybutler.viewmodel.home.HomeViewModel
@@ -21,24 +21,17 @@ import kotlin.time.Clock
 @Composable
 fun DevicesScreenRoot(
     viewModel: HomeViewModel,
-    onTabSelected: (MainTab) -> Unit,
-    onSettingsClick: () -> Unit,
     onAddDeviceClick: () -> Unit,
     onDeviceClick: (String) -> Unit,
-    aiMessages: List<ChatUiMessage>,
-    isAiProcessing: Boolean,
-    isAiExpanded: Boolean,
-    onAiExpandedChange: (Boolean) -> Unit,
-    onSendAiMessage: (String) -> Unit,
-    onClearAiChat: () -> Unit,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val coreUiState = state
     val fileSaver = LocalFileSaver.current
 
-    // Handle Export Data (Moved from HomeScreen.kt)
-    LaunchedEffect(coreUiState.exportData) {
-        coreUiState.exportData?.let { data ->
+    // Handle Export Data
+    LaunchedEffect(state.exportData) {
+        state.exportData?.let { data ->
             val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
             val timestamp = generateFileTimestamp(now)
             val filename = "Battery_Butler_Backup_$timestamp.json"
@@ -47,88 +40,58 @@ fun DevicesScreenRoot(
         }
     }
 
-    DevicesScreen(
+    HomeScreenContent(
         state = state,
-        onTabSelected = onTabSelected,
-        onSettingsClick = onSettingsClick,
-        onAddDeviceClick = onAddDeviceClick,
-        onDeviceClick = onDeviceClick,
         onGroupOptionToggle = { viewModel.toggleGroupDirection() },
         onGroupOptionSelected = { viewModel.onGroupOptionSelected(it) },
         onSortOptionToggle = { viewModel.toggleSortDirection() },
         onSortOptionSelected = { viewModel.onSortOptionSelected(it) },
-        aiMessages = aiMessages,
-        isAiProcessing = isAiProcessing,
-        isAiExpanded = isAiExpanded,
-        onAiExpandedChange = onAiExpandedChange,
-        onSendAiMessage = onSendAiMessage,
-        onClearAiChat = onClearAiChat,
+        onDeviceClick = { onDeviceClick(it.id) },
+        onAddDeviceClick = onAddDeviceClick,
+        modifier = modifier,
+        contentPadding = contentPadding,
     )
 }
 
 @Composable
 fun TypesScreenRoot(
     viewModel: DeviceTypeListViewModel,
-    onTabSelected: (MainTab) -> Unit,
-    onSettingsClick: () -> Unit,
     onAddTypeClick: () -> Unit,
     onEditType: (String) -> Unit,
-    aiMessages: List<ChatUiMessage>,
-    isAiProcessing: Boolean,
-    isAiExpanded: Boolean,
-    onAiExpandedChange: (Boolean) -> Unit,
-    onSendAiMessage: (String) -> Unit,
-    onClearAiChat: () -> Unit,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
-    TypesScreen(
+    DeviceTypeListContent(
         state = state,
-        onTabSelected = onTabSelected,
-        onSettingsClick = onSettingsClick,
-        onAddTypeClick = onAddTypeClick,
         onEditType = onEditType,
+        onAddTypeClick = onAddTypeClick,
         onPreloadTypes = { viewModel.preloadCommonTypes() },
         onSortOptionSelected = { viewModel.onSortOptionSelected(it) },
         onGroupOptionSelected = { viewModel.onGroupOptionSelected(it) },
         onSortDirectionToggle = { viewModel.toggleSortDirection() },
         onGroupDirectionToggle = { viewModel.toggleGroupDirection() },
-        aiMessages = aiMessages,
-        isAiProcessing = isAiProcessing,
-        isAiExpanded = isAiExpanded,
-        onAiExpandedChange = onAiExpandedChange,
-        onSendAiMessage = onSendAiMessage,
-        onClearAiChat = onClearAiChat,
+        modifier = modifier,
+        contentPadding = contentPadding,
     )
 }
 
 @Composable
 fun HistoryScreenRoot(
     viewModel: HistoryListViewModel,
-    onTabSelected: (MainTab) -> Unit,
-    onSettingsClick: () -> Unit,
     onAddEventClick: () -> Unit,
     onEventClick: (String, String) -> Unit,
-    aiMessages: List<ChatUiMessage>,
-    isAiProcessing: Boolean,
-    isAiExpanded: Boolean,
-    onAiExpandedChange: (Boolean) -> Unit,
-    onSendAiMessage: (String) -> Unit,
-    onClearAiChat: () -> Unit,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
-    HistoryScreen(
+    HistoryListContent(
         state = state,
-        onTabSelected = onTabSelected,
-        onSettingsClick = onSettingsClick,
-        onAddEventClick = onAddEventClick,
         onEventClick = onEventClick,
-        aiMessages = aiMessages,
-        isAiProcessing = isAiProcessing,
-        isAiExpanded = isAiExpanded,
-        onAiExpandedChange = onAiExpandedChange,
-        onSendAiMessage = onSendAiMessage,
-        onClearAiChat = onClearAiChat,
+        onAddEventClick = onAddEventClick,
+        modifier = modifier,
+        contentPadding = contentPadding,
     )
 }
