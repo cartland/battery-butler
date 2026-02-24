@@ -41,15 +41,21 @@ import kotlin.random.Random
 actual class GoogleSignInBridge {
     private var clientId: String? = null
     private var redirectUri: String? = null
+    private var dispatcherProvider: com.chriscartland.batterybutler.domain.model.DispatcherProvider? = null
 
     /**
      * Initializes the bridge with the client ID.
      *
      * @param clientId The OAuth 2.0 iOS Client ID from Google Cloud Console.
      *   The redirect URI is derived from the reversed client ID.
+     * @param dispatcherProvider Injected dispatchers.
      */
-    fun initialize(clientId: String?) {
+    fun initialize(
+        clientId: String?,
+        dispatcherProvider: com.chriscartland.batterybutler.domain.model.DispatcherProvider?,
+    ) {
         this.clientId = clientId
+        this.dispatcherProvider = dispatcherProvider
         if (clientId.isNullOrBlank()) {
             Logger.w { "Google Sign-In (iOS): Not configured - set GOOGLE_IOS_CLIENT_ID" }
         } else {

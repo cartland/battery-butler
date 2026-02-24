@@ -10,8 +10,11 @@ import java.util.concurrent.TimeUnit
 actual class NetworkComponent(
     private val context: Context,
 ) {
-    actual fun createGrpcClient(url: String): GrpcClient =
-        GrpcClient
+    actual fun createGrpcClient(
+        url: String,
+        dispatcherProvider: com.chriscartland.batterybutler.domain.model.DispatcherProvider,
+    ): GrpcClient {
+        return GrpcClient
             .Builder()
             .client(
                 OkHttpClient

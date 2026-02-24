@@ -1,5 +1,6 @@
 package com.chriscartland.batterybutler.datanetwork.grpc
 
+import com.chriscartland.batterybutler.domain.model.DispatcherProvider
 import com.squareup.wire.GrpcCall
 import com.squareup.wire.GrpcClient
 import com.squareup.wire.GrpcMethod
@@ -30,11 +31,15 @@ import okio.IOException
 import kotlin.coroutines.cancellation.CancellationException
 
 actual class NetworkComponent {
-    actual fun createGrpcClient(url: String): GrpcClient = IosGrpcClient(url)
+    actual fun createGrpcClient(
+        url: String,
+        dispatcherProvider: DispatcherProvider,
+    ): GrpcClient = IosGrpcClient(url, dispatcherProvider)
 }
 
 private class IosGrpcClient(
     private val url: String,
+    private val dispatcherProvider: DispatcherProvider,
 ) : GrpcClient() {
     private val client = HttpClient(Darwin) {
         install(HttpTimeout) {
@@ -43,9 +48,9 @@ private class IosGrpcClient(
         }
     }
 
-    override fun <S : Any, R : Any> newCall(method: GrpcMethod<S, R>): GrpcCall<S, R> = IosGrpcCall(client, url, method)
+    override fun <S : Any, R : Any> newCall(method: GrpcMethod<S, R>): GrpcCall<S, R> = IosGrpcCall(client, url, method, dispatcherProvider)
 
-    override fun <S : Any, R : Any> newStreamingCall(method: GrpcMethod<S, R>): GrpcStreamingCall<S, R> = IosGrpcStreamingCall(client, url, method)
+    override fun <S : Any, R : Any> newStreamingCall(method: GrpcMethod<S, R>): GrpcStreamingCall<S, R> = IosGrpcStreamingCall(client, url, method, dispatcherProvider)
 }
 
 private fun frameGrpcMessage(payload: ByteArray): ByteArray {
@@ -60,6 +65,7 @@ class IosGrpcCall<S : Any, R : Any>(
     private val client: HttpClient,
     private val baseUrl: String,
     override val method: GrpcMethod<S, R>,
+    private val dispatcherProvider: DispatcherProvider,
 ) : GrpcCall<S, R> {
     override var requestMetadata: Map<String, String> = emptyMap()
     override val responseMetadata: Map<String, String>? = null
@@ -104,7 +110,7 @@ class IosGrpcCall<S : Any, R : Any>(
     ) {
         executed = true
         // Use SupervisorJob to prevent child failures from cancelling the scope
-        val scope = CoroutineScope(SupervisorJob() + kotlinx.coroutines.Dispatchers.Default)
+        val scope = CoroutineScope(SupervisorJob() + dispatcherProvider.default)
         job = scope.launch {
             try {
                 val result = execute(request)
@@ -138,6 +144,7 @@ class IosGrpcStreamingCall<S : Any, R : Any>(
     private val client: HttpClient,
     private val baseUrl: String,
     override val method: GrpcMethod<S, R>,
+    private val dispatcherProvider: DispatcherProvider,
 ) : GrpcStreamingCall<S, R> {
     override var requestMetadata: Map<String, String> = emptyMap()
     override val responseMetadata: Map<String, String>? = null
@@ -153,7 +160,7 @@ class IosGrpcStreamingCall<S : Any, R : Any>(
      */
     override fun execute(): Pair<SendChannel<S>, ReceiveChannel<R>> {
         // Use SupervisorJob to manage the internal scope lifecycle
-        val scope = CoroutineScope(SupervisorJob() + kotlinx.coroutines.Dispatchers.Default)
+        val scope = CoroutineScope(SupervisorJob() + dispatcherProvider.default)
         return executeIn(scope)
     }
 

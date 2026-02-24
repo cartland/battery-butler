@@ -6,7 +6,10 @@ import okhttp3.Protocol
 import java.util.concurrent.TimeUnit
 
 actual class NetworkComponent {
-    actual fun createGrpcClient(url: String): GrpcClient =
+    actual fun createGrpcClient(
+        url: String,
+        dispatcherProvider: com.chriscartland.batterybutler.domain.model.DispatcherProvider,
+    ): GrpcClient =
         GrpcClient
             .Builder()
             .client(

@@ -8,6 +8,7 @@ import com.chriscartland.batterybutler.composeapp.BuildConfig
 import com.chriscartland.batterybutler.composeapp.di.AppComponent
 import com.chriscartland.batterybutler.composeapp.di.create
 import com.chriscartland.batterybutler.config.BuildConfigAiConfig
+import com.chriscartland.batterybutler.data.provider.DefaultDispatcherProvider
 import com.chriscartland.batterybutler.data.repository.AiPreferencesRepositoryImpl
 import com.chriscartland.batterybutler.datalocal.preferences.DataStoreFactory
 import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
@@ -44,7 +45,10 @@ class BatteryButlerApplication : Application() {
             versionCode = BuildConfig.VERSION_CODE,
         )
         val googleSignInBridge = GoogleSignInBridge()
-        googleSignInBridge.initialize(BuildConfig.GOOGLE_WEB_CLIENT_ID)
+        googleSignInBridge.initialize(
+            webClientId = BuildConfig.GOOGLE_WEB_CLIENT_ID,
+            dispatcherProvider = DefaultDispatcherProvider(),
+        )
         appComponent = AppComponent::class.create(
             databaseFactory,
             dataStoreFactory,
