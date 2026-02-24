@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -39,17 +40,24 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.composeresources.composeStringResource
 import com.chriscartland.batterybutler.composeresources.generated.resources.Res
@@ -125,6 +133,14 @@ fun MainScreenShell(
     val isAiAvailable = LocalAiAvailable.current
     val visibleTabs = MainTab.entries.filter { it != MainTab.AI }
     var inputText by rememberSaveable { mutableStateOf("") }
+    val focusManager = LocalFocusManager.current
+    val density = LocalDensity.current
+    var bottomBarHeightPx by remember { mutableIntStateOf(0) }
+
+    // Clear focus whenever the overlay collapses so the next tap re-triggers onFocusChanged.
+    LaunchedEffect(isAiExpanded) {
+        if (!isAiExpanded) focusManager.clearFocus()
+    }
 
     Scaffold(
         modifier = modifier.imePadding(),
@@ -142,7 +158,7 @@ fun MainScreenShell(
             )
         },
         bottomBar = {
-            Surface {
+            Surface(modifier = Modifier.onSizeChanged { bottomBarHeightPx = it.height }) {
                 Column {
                     if (isAiAvailable) {
                         Row(
@@ -164,25 +180,34 @@ fun MainScreenShell(
                                 maxLines = 4,
                                 shape = RoundedCornerShape(24.dp),
                             )
-                            IconButton(
-                                onClick = {
-                                    if (inputText.isNotBlank()) {
-                                        onSendAiMessage(inputText)
-                                        onAiExpandedChange(true)
-                                        inputText = ""
-                                    }
-                                },
-                                enabled = inputText.isNotBlank(),
-                            ) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.Send,
-                                    contentDescription = "Send message",
-                                    tint = if (inputText.isNotBlank()) {
-                                        MaterialTheme.colorScheme.primary
-                                    } else {
-                                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                            if (isAiExpanded) {
+                                IconButton(
+                                    onClick = {
+                                        if (inputText.isNotBlank()) {
+                                            onSendAiMessage(inputText)
+                                            inputText = ""
+                                        }
                                     },
-                                )
+                                    enabled = inputText.isNotBlank(),
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Filled.Send,
+                                        contentDescription = "Send message",
+                                        tint = if (inputText.isNotBlank()) {
+                                            MaterialTheme.colorScheme.primary
+                                        } else {
+                                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                                        },
+                                    )
+                                }
+                            } else {
+                                IconButton(onClick = { onAiExpandedChange(true) }) {
+                                    Icon(
+                                        imageVector = Icons.Default.KeyboardArrowUp,
+                                        contentDescription = "Expand AI chat",
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    )
+                                }
                             }
                         }
                     }
@@ -233,16 +258,26 @@ fun MainScreenShell(
                     enter = slideInVertically(initialOffsetY = { it }),
                     exit = slideOutVertically(targetOffsetY = { it }),
                 ) {
+                    val bottomBarHeight: Dp = with(density) { bottomBarHeightPx.toDp() }
                     Surface(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(
                                 top = innerPadding.calculateTopPadding(),
-                                bottom = innerPadding.calculateBottomPadding(),
+                                // Use measured bar height so the overlay always ends
+                                // exactly above the bottom bar, regardless of how
+                                // innerPadding is computed relative to IME state.
+                                bottom = bottomBarHeight,
                             ),
                         color = MaterialTheme.colorScheme.surface,
                     ) {
-                        Column(modifier = Modifier.fillMaxSize()) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                // Safety net: if keyboard appears while overlay is
+                                // open, shrink the column so messages stay visible.
+                                .imePadding(),
+                        ) {
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
