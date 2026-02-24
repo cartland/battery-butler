@@ -21,6 +21,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import com.chriscartland.batterybutler.presentationcore.theme.Padding
 
 /**
  * Displays an empty state with an icon, title, and message.
@@ -45,7 +46,7 @@ fun EmptyStateContent(
             modifier = Modifier.size(64.dp),
             tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
         )
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(Padding.standard))
         Text(
             text = title,
             style = MaterialTheme.typography.titleMedium,
@@ -54,7 +55,7 @@ fun EmptyStateContent(
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(Padding.small))
         Text(
             text = message,
             style = MaterialTheme.typography.bodyMedium,
@@ -64,7 +65,7 @@ fun EmptyStateContent(
             overflow = TextOverflow.Ellipsis,
         )
         if (action != null) {
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(Padding.large))
             action()
         }
     }
