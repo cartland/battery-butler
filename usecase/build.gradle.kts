@@ -38,6 +38,9 @@ kotlin {
             implementation(libs.kotlinx.coroutines.test)
             implementation(project(":test-common"))
         }
+        jvmTest.dependencies {
+            implementation(kotlin("reflect"))
+        }
     }
     sourceSets.all {
         languageSettings.optIn("kotlin.time.ExperimentalTime")

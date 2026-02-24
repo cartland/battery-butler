@@ -14,7 +14,7 @@ import me.tatarka.inject.annotations.Inject
 class BuildAiContextUseCase(
     private val deviceRepository: DeviceRepository,
 ) {
-    suspend fun buildContext(): String {
+    suspend operator fun invoke(): String {
         val devices = deviceRepository.getAllDevices().first()
         val types = deviceRepository.getAllDeviceTypes().first()
         val events = deviceRepository.getAllEvents().first()
