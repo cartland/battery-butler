@@ -21,11 +21,15 @@ class FindOrCreateDeviceTypeUseCase(
             return "default_type"
         }
         val existingTypes = deviceRepository.getAllDeviceTypes().first()
-        return existingTypes.find { it.name == typeName }?.id
-            ?: uuid4().toString().also { newTypeId ->
-                deviceRepository.addDeviceType(
-                    DeviceType(id = newTypeId, name = typeName, defaultIcon = "default"),
-                )
-            }
+        val existingType = existingTypes.find { it.name == typeName }
+        if (existingType != null) {
+            return existingType.id
+        }
+
+        val newTypeId = uuid4().toString()
+        deviceRepository.addDeviceType(
+            DeviceType(id = newTypeId, name = typeName, defaultIcon = "default"),
+        )
+        return newTypeId
     }
 }
