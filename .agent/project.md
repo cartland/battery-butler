@@ -103,7 +103,9 @@ Icon sizes live in `presentation-core/.../theme/IconSize.kt`.
 
 Custom app colors beyond Material3 live in `ButlerColors` (data class) provided via `LocalButlerColors` composition local. Access with `LocalButlerColors.current.batteryWarning`. New custom colors should be added to `ButlerColors`, provided in `BatteryButlerTheme`, and defined in `Color.kt`.
 
-Icon accent colors (`IconAccent` data class + per-category vals) live in `presentation-core/.../theme/IconAccent.kt`.
+Icon colors use the **`IconColorRole` enum** (`presentation-core/.../theme/IconColorRole.kt`) — maps semantic icon categories (Primary/Secondary/Tertiary/Error/Surface) to `MaterialTheme.colorScheme` container colors. `DeviceIconMapper.getIconColorRole(iconName)` returns a role; `DeviceIconMapper.getResolvedIconAccent(iconName)` returns the resolved `(containerColor, contentColor)` pair. `IconAccent.kt` has been deleted — do not recreate it.
+
+**Standard dropdown component**: Use `ButlerDropdownMenu` (`presentation-core/.../components/ButlerDropdownMenu.kt`) instead of `DropdownMenu` directly. Note: CMP 1.10.0 `DropdownMenu` does NOT support `enter`/`exit` animation params (Jetpack Compose only).
 
 ### UI Architecture Mapping
 
@@ -165,6 +167,10 @@ ruby ios-app-swift-ui/sync_pbxproj.rb         # Sync Swift files to Xcode
 | PR with docs only | No | No | No | No |
 | `./scripts/validate.sh` (local) | Yes | Yes | Yes | No |
 | Manual | — | — | — | Yes |
+
+### Convention Tests
+- **`UseCaseConventionTest`** (`usecase/src/jvmTest/`): JVM-only test that uses Kotlin reflection to scan all `*UseCase` classes in the `com.chriscartland.batterybutler.usecase` package and asserts each has `operator fun invoke` (suspend or non-suspend). Runs as part of `./gradlew :usecase:jvmTest`. Requires `kotlin("reflect")` in jvmTest dependencies.
+- The test uses `kotlin.test.assertTrue(value, message)` (NOT the trailing-lambda form, which doesn't exist in `kotlin.test`).
 
 ### Unit Tests (`./gradlew test`)
 - Pure Kotlin tests across all modules (domain, data, viewmodel, usecase, server, etc.)
