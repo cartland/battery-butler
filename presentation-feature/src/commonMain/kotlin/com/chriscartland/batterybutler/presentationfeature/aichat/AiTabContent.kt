@@ -51,6 +51,7 @@ fun AiTabContent(
     isProcessing: Boolean,
     onSendMessage: (String) -> Unit,
     modifier: Modifier = Modifier,
+    showInput: Boolean = true,
 ) {
     var inputText by rememberSaveable { mutableStateOf("") }
     val listState = rememberLazyListState()
@@ -105,44 +106,46 @@ fun AiTabContent(
         }
 
         // Input bar
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .windowInsetsPadding(
-                    WindowInsets.safeDrawing
-                        .only(WindowInsetsSides.Horizontal)
-                        .union(WindowInsets.ime),
-                ).padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            OutlinedTextField(
-                value = inputText,
-                onValueChange = { inputText = it },
-                modifier = Modifier.weight(1f),
-                placeholder = { Text("Type a message...") },
-                maxLines = 4,
-                enabled = !isProcessing,
-                shape = RoundedCornerShape(24.dp),
-            )
-            IconButton(
-                onClick = {
-                    if (inputText.isNotBlank()) {
-                        onSendMessage(inputText)
-                        inputText = ""
-                    }
-                },
-                enabled = inputText.isNotBlank() && !isProcessing,
+        if (showInput) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .windowInsetsPadding(
+                        WindowInsets.safeDrawing
+                            .only(WindowInsetsSides.Horizontal)
+                            .union(WindowInsets.ime),
+                    ).padding(horizontal = 16.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.Send,
-                    contentDescription = "Send message",
-                    tint = if (inputText.isNotBlank() && !isProcessing) {
-                        MaterialTheme.colorScheme.primary
-                    } else {
-                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
-                    },
+                OutlinedTextField(
+                    value = inputText,
+                    onValueChange = { inputText = it },
+                    modifier = Modifier.weight(1f),
+                    placeholder = { Text("Type a message...") },
+                    maxLines = 4,
+                    enabled = !isProcessing,
+                    shape = RoundedCornerShape(24.dp),
                 )
+                IconButton(
+                    onClick = {
+                        if (inputText.isNotBlank()) {
+                            onSendMessage(inputText)
+                            inputText = ""
+                        }
+                    },
+                    enabled = inputText.isNotBlank() && !isProcessing,
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.Send,
+                        contentDescription = "Send message",
+                        tint = if (inputText.isNotBlank() && !isProcessing) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                        },
+                    )
+                }
             }
         }
     }

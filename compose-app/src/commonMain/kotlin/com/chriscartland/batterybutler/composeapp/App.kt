@@ -22,6 +22,7 @@ import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDe
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import com.chriscartland.batterybutler.composeapp.components.BackHandler
 import com.chriscartland.batterybutler.composeapp.di.AppComponent
 import com.chriscartland.batterybutler.composeapp.feature.addbatteryevent.AddBatteryEventScreen
 import com.chriscartland.batterybutler.composeapp.feature.adddevice.AddDeviceScreen
@@ -89,6 +90,7 @@ fun App(
             val aiMessages by aiViewModel.messages.collectAsStateWithLifecycle()
             val isAiProcessing by aiViewModel.isProcessing.collectAsStateWithLifecycle()
             var isAiExpanded by rememberSaveable { mutableStateOf(false) }
+            var tabTransitionForward by rememberSaveable { mutableStateOf(true) }
 
             val aiUiMessages = aiMessages.map { msg ->
                 ChatUiMessage(
@@ -120,6 +122,9 @@ fun App(
                 Surface(
                     color = MaterialTheme.colorScheme.background,
                 ) {
+                    BackHandler(enabled = isAiExpanded) {
+                        isAiExpanded = false
+                    }
                     NavDisplay(
                         backStack = backStack,
                         onBack = { backStack.removeLastOrNull() },
@@ -130,19 +135,23 @@ fun App(
                         entryProvider = entryProvider {
                             // Shared navigation actions
                             val navigateToDevices = {
+                                tabTransitionForward = false // always going to index 0 (leftward)
                                 // Clear stack to root [Screen.Devices]
-                                if (backStack.last() != Screen.Devices) {
+                                if (backStack.lastOrNull() != Screen.Devices) {
                                     backStack.clear()
                                     backStack.add(Screen.Devices)
                                 }
                             }
                             val navigateToTypes = {
+                                // Going forward unless currently on History (index 2 > 1)
+                                tabTransitionForward = backStack.lastOrNull() !is Screen.History
                                 // Stack: [Devices, Types]
                                 backStack.clear()
                                 backStack.add(Screen.Devices)
                                 backStack.add(Screen.Types)
                             }
                             val navigateToHistory = {
+                                tabTransitionForward = true // always going to index 2 (rightward)
                                 // Stack: [Devices, History]
                                 backStack.clear()
                                 backStack.add(Screen.Devices)
@@ -150,6 +159,8 @@ fun App(
                             }
 
                             val onTabSelected: (MainTab) -> Unit = { selectedTab ->
+                                // Dismiss AI chat overlay whenever switching tabs
+                                isAiExpanded = false
                                 when (selectedTab) {
                                     MainTab.Devices -> navigateToDevices()
                                     MainTab.Types -> navigateToTypes()
@@ -320,7 +331,13 @@ fun App(
                             }
                         },
                         transitionSpec = {
-                            fadeIn(tween(150)) togetherWith fadeOut(tween(150))
+                            if (tabTransitionForward) {
+                                slideInHorizontally(tween(300)) { it } + fadeIn(tween(300)) togetherWith
+                                    slideOutHorizontally(tween(300)) { -it / 3 } + fadeOut(tween(300))
+                            } else {
+                                slideInHorizontally(tween(300)) { -it / 3 } + fadeIn(tween(300)) togetherWith
+                                    slideOutHorizontally(tween(300)) { it } + fadeOut(tween(300))
+                            }
                         },
                         popTransitionSpec = {
                             slideInHorizontally(tween(300)) { -it / 3 } + fadeIn(tween(300)) togetherWith
