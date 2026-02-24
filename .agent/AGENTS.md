@@ -123,7 +123,7 @@ Keeping the build and tests healthy is a top priority. When you identify or fix 
 - **Validation**:
   - **Always** run `./scripts/validate.sh` before pushing to main. This script is maintained to match `ci.yml` strictly.
   - **Always** run `./scripts/spotless-apply.sh` and fix errors before pushing to main.
-  - **Never substitute abbreviated checks** (e.g. `compileDebugSources + spotless + test`) for `validate.sh` — even when a plan specifies those steps. `validate.sh` is the source of truth. Partial checks will miss gates like `detekt`.
+  - **Every plan must include `./scripts/validate.sh` as a verification step.** If a plan lists abbreviated checks (e.g. `compileDebugSources + spotless + test`), replace or append `./scripts/validate.sh` — it covers all of those and more (detekt, lint, architecture). Never let a plan leave out the full validation step.
   - **Avoid** `clean` steps in scripts and CI if possible, relying on Gradle's incremental build and caching for speed.
 
 - **Compose-Specific Detekt Rules** (enforced by `detekt-compose` plugin, checked in `validate.sh`):
