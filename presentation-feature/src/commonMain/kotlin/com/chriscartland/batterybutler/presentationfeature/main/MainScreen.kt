@@ -3,8 +3,7 @@ package com.chriscartland.batterybutler.presentationfeature.main
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,8 +15,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.History
@@ -37,16 +38,17 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.composeresources.composeStringResource
 import com.chriscartland.batterybutler.composeresources.generated.resources.Res
 import com.chriscartland.batterybutler.composeresources.generated.resources.tab_ai
@@ -120,6 +122,7 @@ fun MainScreenShell(
 ) {
     val isAiAvailable = LocalAiAvailable.current
     val visibleTabs = MainTab.entries.filter { it != MainTab.AI }
+    var inputText by rememberSaveable { mutableStateOf("") }
 
     Scaffold(
         modifier = modifier,
@@ -137,58 +140,70 @@ fun MainScreenShell(
             )
         },
         bottomBar = {
-            Column {
-                if (!isAiExpanded && isAiAvailable) {
-                    val currentOnAiExpandedChange by rememberUpdatedState(onAiExpandedChange)
-                    val interactionSource = remember { MutableInteractionSource() }
-                    val isPressed = interactionSource.collectIsPressedAsState()
-                    LaunchedEffect(isPressed.value) {
-                        if (isPressed.value) currentOnAiExpandedChange(true)
-                    }
-                    OutlinedTextField(
-                        value = "",
-                        onValueChange = {},
-                        readOnly = true,
-                        placeholder = { Text("Ask AI...") },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.AutoAwesome,
-                                contentDescription = null,
+            Surface {
+                Column {
+                    if (isAiAvailable) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = Padding.standard, vertical = Padding.small),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(Padding.small),
+                        ) {
+                            OutlinedTextField(
+                                value = inputText,
+                                onValueChange = { inputText = it },
+                                modifier = Modifier.weight(1f),
+                                placeholder = { Text("Ask AI...") },
+                                maxLines = 4,
+                                shape = RoundedCornerShape(24.dp),
                             )
-                        },
-                        singleLine = true,
-                        interactionSource = interactionSource,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(
-                                horizontal = Padding.standard,
-                                vertical = Padding.small,
-                            ),
-                    )
-                }
-                NavigationBar {
-                    visibleTabs.forEach { tab ->
-                        NavigationBarItem(
-                            selected = currentTab == tab,
-                            onClick = {
-                                if (isAiExpanded) onAiExpandedChange(false)
-                                onTabSelected(tab)
-                            },
-                            icon = {
+                            IconButton(
+                                onClick = {
+                                    if (inputText.isNotBlank()) {
+                                        onSendAiMessage(inputText)
+                                        onAiExpandedChange(true)
+                                        inputText = ""
+                                    }
+                                },
+                                enabled = inputText.isNotBlank(),
+                            ) {
                                 Icon(
-                                    tab.icon(),
-                                    contentDescription = composeStringResource(tab.labelRes()),
+                                    imageVector = Icons.AutoMirrored.Filled.Send,
+                                    contentDescription = "Send message",
+                                    tint = if (inputText.isNotBlank()) {
+                                        MaterialTheme.colorScheme.primary
+                                    } else {
+                                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                                    },
                                 )
-                            },
-                            label = { Text(composeStringResource(tab.labelRes())) },
-                            colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = MaterialTheme.colorScheme.primary,
-                                selectedTextColor = MaterialTheme.colorScheme.primary,
-                                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            ),
-                            modifier = Modifier.testTag("BottomNav_${tab.name}"),
-                        )
+                            }
+                        }
+                    }
+                    NavigationBar {
+                        visibleTabs.forEach { tab ->
+                            NavigationBarItem(
+                                selected = currentTab == tab,
+                                onClick = {
+                                    if (isAiExpanded) onAiExpandedChange(false)
+                                    onTabSelected(tab)
+                                },
+                                icon = {
+                                    Icon(
+                                        tab.icon(),
+                                        contentDescription = composeStringResource(tab.labelRes()),
+                                    )
+                                },
+                                label = { Text(composeStringResource(tab.labelRes())) },
+                                colors = NavigationBarItemDefaults.colors(
+                                    selectedIconColor = MaterialTheme.colorScheme.primary,
+                                    selectedTextColor = MaterialTheme.colorScheme.primary,
+                                    unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                ),
+                                modifier = Modifier.testTag("BottomNav_${tab.name}"),
+                            )
+                        }
                     }
                 }
             }
@@ -218,10 +233,7 @@ fun MainScreenShell(
                     Surface(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(
-                                top = innerPadding.calculateTopPadding(),
-                                bottom = innerPadding.calculateBottomPadding(),
-                            ),
+                            .padding(top = innerPadding.calculateTopPadding()),
                         color = MaterialTheme.colorScheme.surface,
                     ) {
                         Column(modifier = Modifier.fillMaxSize()) {
@@ -267,6 +279,7 @@ fun MainScreenShell(
                                 isProcessing = isAiProcessing,
                                 onSendMessage = onSendAiMessage,
                                 modifier = Modifier.weight(1f),
+                                showInput = false,
                             )
                         }
                     }
