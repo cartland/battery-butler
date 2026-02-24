@@ -111,6 +111,15 @@ Icon colors use the **`IconColorRole` enum** (`presentation-core/.../theme/IconC
 
 For a detailed breakdown of how the shared Compose Multiplatform UI maps to the native SwiftUI implementation (and why they intuitively differ structurally), see `docs/UI_SCREENS_MAPPING.md`.
 
+### AI Chat Overlay (MainScreenShell)
+
+The AI overlay lives in `MainScreenShell` (`presentation-feature/.../main/MainScreen.kt`). Key patterns:
+- **Back press priority**: `NavDisplay(tabBackStack, onBack = { if (isAiExpanded) dismiss else popTab })` — the NavDisplay's handler fires before top-level `BackHandler` when tab stack has >1 entry. AI overlay must be checked INSIDE NavDisplay's onBack to ensure it dismisses first.
+- **Repeatable expand/collapse**: `LaunchedEffect(isAiExpanded) { if (!isAiExpanded) focusManager.clearFocus() }` — clearing focus on collapse allows next tap to re-trigger `onFocusChanged`.
+- **Collapsed state**: expand caret (↑) replaces send button; both caret click and TextField focus expand the overlay.
+- **Inset strategy**: bottom bar height measured via `onSizeChanged` (more reliable than `innerPadding.calculateBottomPadding()`); `imePadding()` on overlay Column handles keyboard while overlay is open.
+- **`imePadding()` consumption**: `Scaffold(modifier = modifier.imePadding())` CONSUMES IME insets — children inside Scaffold see 0 IME insets. The `imePadding()` on the overlay Column acts as a safety net for cases where IME is not fully consumed.
+
 ### AI Architecture
 
 AI messages are augmented in `SendChatMessageUseCase` before reaching the AI engine:

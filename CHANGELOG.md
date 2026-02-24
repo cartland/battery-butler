@@ -31,6 +31,22 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ---
 
+## 2026-02-24
+
+### Features
+
+- **UseCase convention test** ([#630](https://github.com/cartland/battery-butler/pull/630)): JVM reflection-based test scans all `*UseCase` classes and asserts each has `operator fun invoke`. Fixed real violation in `BuildAiContextUseCase` (renamed `buildContext()` to `operator fun invoke()`).
+
+### Fixes
+
+- **AI chat repeatable expand/collapse** ([#644](https://github.com/cartland/battery-butler/pull/644)): `LaunchedEffect(isAiExpanded)` clears `TextField` focus on collapse so the next tap re-triggers `onFocusChanged` and re-opens the overlay. Collapsed state shows expand caret (↑) instead of the send button.
+
+- **AI chat robust inset handling** ([#644](https://github.com/cartland/battery-butler/pull/644)): Bottom bar height measured via `onSizeChanged` instead of `innerPadding.calculateBottomPadding()`; `imePadding()` added to overlay Column as safety net for keyboard appearing while overlay is open; LazyColumn bottom `contentPadding` increased to 16dp.
+
+- **AI overlay back press priority** ([#648](https://github.com/cartland/battery-butler/pull/648)): Back button now dismisses the AI overlay before navigating tabs. NavDisplay's internal `BackHandler` fires before top-level handlers when the tab stack has >1 entry; fixed by checking `isAiExpanded` inside NavDisplay's `onBack`.
+
+---
+
 ## 2026-02-23
 
 ### Features
