@@ -33,7 +33,7 @@ class NavigationSaversTest {
         assertTrue("device_123" in jsonString)
 
         // Restore
-        val restoredList = ScreenListSaver.restore(saved)!!
+        val restoredList = requireNotNull(ScreenListSaver.restore(saved))
 
         // Verify restoration
         assertEquals(3, restoredList.size)
@@ -48,7 +48,7 @@ class NavigationSaversTest {
         val corruptedSave = listOf("invalid_json_string")
 
         // Restore should default to [Screen.Devices]
-        val restoredList = ScreenListSaver.restore(corruptedSave as List<Any>)!!
+        val restoredList = requireNotNull(ScreenListSaver.restore(corruptedSave as List<Any>))
 
         assertEquals(1, restoredList.size)
         assertEquals(Screen.Devices, restoredList[0])
