@@ -110,6 +110,10 @@ actual class GoogleSignInBridge {
 
     actual fun isConfigured(): Boolean = !clientId.isNullOrBlank()
 
+    actual fun unbindActivity() {
+        // No activity binding on Desktop
+    }
+
     /**
      * Starts a local HTTP server, opens the browser for Google consent,
      * and waits for the authorization code redirect.
