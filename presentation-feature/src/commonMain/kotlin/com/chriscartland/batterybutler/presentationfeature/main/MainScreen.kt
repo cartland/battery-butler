@@ -236,7 +236,10 @@ fun MainScreenShell(
                     Surface(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(top = innerPadding.calculateTopPadding()),
+                            .padding(
+                                top = innerPadding.calculateTopPadding(),
+                                bottom = innerPadding.calculateBottomPadding(),
+                            ),
                         color = MaterialTheme.colorScheme.surface,
                     ) {
                         Column(modifier = Modifier.fillMaxSize()) {

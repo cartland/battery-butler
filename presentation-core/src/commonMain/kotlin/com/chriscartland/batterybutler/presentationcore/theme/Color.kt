@@ -40,6 +40,19 @@ val Error = ErrorLight // Backward compatibility if needed, but prefer specific
 val OnError = OnErrorLight
 
 // Container colors
+// Primary (Sage Green) containers — used for nature/climate/time icons
+val PrimaryContainerLight = Color(0xFFCCE8D7) // Pastel sage green
+val OnPrimaryContainerLight = Color(0xFF0D3322) // Deep forest for contrast
+val PrimaryContainerDark = Color(0xFF3A5C4A) // Dark sage
+val OnPrimaryContainerDark = Color(0xFFCCE8D7) // Pastel sage for contrast
+
+// Secondary (Warm Walnut) containers — used for sensors/controls/gaming icons
+val SecondaryContainerLight = Color(0xFFEBDFC8) // Warm cream/linen
+val OnSecondaryContainerLight = Color(0xFF2B1E0D) // Deep espresso for contrast
+val SecondaryContainerDark = Color(0xFF5B4933) // Dark walnut
+val OnSecondaryContainerDark = Color(0xFFEBDFC8) // Warm cream for contrast
+
+// Tertiary (Steel Blue) containers — used for electronics/smart home icons
 val TertiaryContainerLight = Color(0xFFD5E3EC) // Light blue-grey container
 val OnTertiaryContainerLight = Color(0xFF19333F) // Dark text on container
 val TertiaryContainerDark = Color(0xFF3A5163) // Darker steel blue container

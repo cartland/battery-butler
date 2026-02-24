@@ -17,7 +17,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -40,6 +39,7 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.empt
 import com.chriscartland.batterybutler.composeresources.generated.resources.empty_types_title
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationcore.components.AddItemCard
+import com.chriscartland.batterybutler.presentationcore.components.ButlerDropdownMenu
 import com.chriscartland.batterybutler.presentationcore.components.CompositeControl
 import com.chriscartland.batterybutler.presentationcore.components.DeviceTypeListItem
 import com.chriscartland.batterybutler.presentationcore.components.EmptyStateContent
@@ -166,7 +166,7 @@ fun DeviceTypeFilterRow(
                     onClicked = { sortExpanded = true },
                     onDirectionToggle = { onSortDirectionToggle() },
                 )
-                DropdownMenu(
+                ButlerDropdownMenu(
                     expanded = sortExpanded,
                     onDismissRequest = { sortExpanded = false },
                 ) {
@@ -191,7 +191,7 @@ fun DeviceTypeFilterRow(
                     onClicked = { groupExpanded = true },
                     onDirectionToggle = { onGroupDirectionToggle() },
                 )
-                DropdownMenu(
+                ButlerDropdownMenu(
                     expanded = groupExpanded,
                     onDismissRequest = { groupExpanded = false },
                 ) {
