@@ -16,9 +16,9 @@ struct LoginScreen: View {
     var body: some View {
         VStack(spacing: 24) {
             Image(systemName: "bolt.batteryblock.fill")
-                .accessibilityHidden(true)
                 .resizable()
                 .scaledToFit()
+                .accessibilityHidden(true)
                 .frame(width: 100, height: 100)
                 .foregroundStyle(.blue)
                 .padding(.top, 40)
