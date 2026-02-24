@@ -123,13 +123,16 @@ The AI system instruction (in `AndroidAiEngine`) is immutable after model creati
 ### AI Overlay UI Architecture
 
 The AI chat is an overlay on top of the main tab UI, not a separate tab/screen. Key design:
-
-- **`App.kt`** owns `isAiExpanded` and `tabTransitionForward` state (both `rememberSaveable`). It sets `isAiExpanded = false` in `onTabSelected` — this is the single authoritative dismissal point.
+- **`AiChatViewModel`** is hoisted to App scope so state survives tab navigation.
+- **`isAiExpanded`** and **`tabTransitionForward`** state live in `App.kt` (both `rememberSaveable`). `App.kt` sets `isAiExpanded = false` in `onTabSelected` — this is the single authoritative dismissal point.
 - **`BackHandler(enabled = isAiExpanded)`** in `App.kt` intercepts back presses before `NavDisplay`, collapsing the overlay instead of popping the nav stack.
-- **`MainScreenShell` bottom bar** (`presentation-feature/.../main/MainScreen.kt`) owns the always-visible AI input (`OutlinedTextField` + send `IconButton`) wrapped in `Surface` with `imePadding()` on the `Scaffold`. This input is always present when AI is available — tapping send expands the overlay and routes through `onSendAiMessage`.
-- **`AiTabContent`** (`presentation-feature/.../aichat/AiTabContent.kt`) has a `showInput: Boolean = true` param. The overlay passes `showInput = false` so only the chat history slides up — the input stays fixed in the bottom bar.
-- **Tab transitions** are directional: `tabTransitionForward` is set before each backstack mutation based on tab index (Devices=0, Types=1, History=2). `NavDisplay.transitionSpec` reads it to slide left or right.
-- **`MainTab.AI`** enum value remains in the codebase but is dead code — the AI is now an overlay, not a nav tab. The `when` branch for it is a no-op.
+- **Main tab navigation** flows through each tab's `ScreenRoot` composable down to `MainScreenShell`.
+- **`MainScreenShell`** bottom bar (`presentation-feature/main/MainScreen.kt`) owns the always-visible AI input (`OutlinedTextField` + send `IconButton`) wrapped in `Surface` with `imePadding()` on the `Scaffold`. Tapping send expands the overlay and routes through `onSendAiMessage`.
+- **`AiTabContent`** (`presentation-feature/aichat/AiTabContent.kt`) has a `showInput: Boolean = true` param. The overlay passes `showInput = false` so only the chat history slides up.
+- **AI messages** include an `[Active tab: <name>]` context prefix so the AI knows which screen the user is viewing.
+- **Tab transitions** are directional: `tabTransitionForward` is set before each backstack mutation based on tab index. `NavDisplay.transitionSpec` reads it to slide left or right.
+- **`MainTab.AI`** enum value remains in the codebase but is dead code — the AI is now an overlay, not a nav tab.
+
 
 ## Common Commands
 
