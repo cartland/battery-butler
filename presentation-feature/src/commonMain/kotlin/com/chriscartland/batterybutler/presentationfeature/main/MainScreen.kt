@@ -45,6 +45,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
@@ -154,7 +155,11 @@ fun MainScreenShell(
                             OutlinedTextField(
                                 value = inputText,
                                 onValueChange = { inputText = it },
-                                modifier = Modifier.weight(1f),
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .onFocusChanged { focusState ->
+                                        if (focusState.isFocused) onAiExpandedChange(true)
+                                    },
                                 placeholder = { Text("Ask AI...") },
                                 maxLines = 4,
                                 shape = RoundedCornerShape(24.dp),
