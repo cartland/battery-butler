@@ -1,0 +1,2051 @@
+Initialized native services in: /Users/cartland/.gradle/native
+Initialized jansi services in: /Users/cartland/.gradle/native
+Found daemon DaemonInfo{pid=89274, address=[35ec39c7-23e3-4b4c-9216-d3a5ecefce18 port:64192, addresses:[/127.0.0.1]], state=Idle, lastBusy=1771919090288, context=DefaultDaemonContext[uid=f4f10f43-fe0c-4d45-91b7-4b139ada2e14,javaHome=/Users/cartland/.antigravity/extensions/redhat.java-1.52.0-darwin-arm64/jre/21.0.9-macosx-aarch64,javaVersion=21,javaVendor=Eclipse Adoptium,daemonRegistryDir=/Users/cartland/.gradle/daemon,pid=89274,idleTimeout=10800000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=-Xmx2048m,-Dfile.encoding=UTF-8,-Duser.country=US,-Duser.language=en,-Duser.variant]} however its context does not match the desired criteria.
+JVM is incompatible.
+Wanted: DaemonRequestContext{jvmCriteria=/Library/Java/JavaVirtualMachines/microsoft-21.jdk/Contents/Home (no JDK specified, using current Java home), daemonOpts=[-Xmx2048m, -Dfile.encoding=UTF-8, -Duser.country=US, -Duser.language=en, -Duser.variant], applyInstrumentationAgent=true, nativeServicesMode=ENABLED, priority=NORMAL}
+Actual: DefaultDaemonContext[uid=f4f10f43-fe0c-4d45-91b7-4b139ada2e14,javaHome=/Users/cartland/.antigravity/extensions/redhat.java-1.52.0-darwin-arm64/jre/21.0.9-macosx-aarch64,javaVersion=21,javaVendor=Eclipse Adoptium,daemonRegistryDir=/Users/cartland/.gradle/daemon,pid=89274,idleTimeout=10800000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=-Xmx2048m,-Dfile.encoding=UTF-8,-Duser.country=US,-Duser.language=en,-Duser.variant]
+
+  Looking for a different daemon...
+The client will now receive all logging from the daemon (pid: 29440). The daemon log file: /Users/cartland/.gradle/daemon/8.12/daemon-29440.out.log
+Starting 47th build in daemon [uptime: 18 mins 41.422 secs, performance: 99%, GC rate: 0.00/s, heap usage: 1% of 2 GiB]
+Using 16 worker leases.
+Now considering [/Users/cartland/bb-merge, /Users/cartland/bb-merge/buildSrc, /Users/cartland/bb/buildSrc, /Users/cartland/bb, /Users/cartland/github/cartland/battery-butler/buildSrc, /Users/cartland/github/cartland/battery-butler] as hierarchies to watch
+Now considering [/Users/cartland/bb-merge/buildSrc, /Users/cartland/bb-merge, /Users/cartland/bb/buildSrc, /Users/cartland/bb, /Users/cartland/github/cartland/battery-butler/buildSrc, /Users/cartland/github/cartland/battery-butler] as hierarchies to watch
+Watching the file system is configured to be enabled if available
+File system watching is active
+Starting Build
+Resolved plugin [id: 'org.gradle.toolchains.foojay-resolver-convention', version: '1.0.0']
+Settings evaluated using settings file '/Users/cartland/bb-merge/settings.gradle.kts'.
+Using local directory build cache for the root build (location = /Users/cartland/.gradle/caches/build-cache-1, remove unused entries = after 7 days).
+Type-safe project accessors is an incubating feature.
+Projects loaded. Root project using build file '/Users/cartland/bb-merge/build.gradle.kts'.
+Included projects: [root project 'BatteryButler', project ':ai', project ':android-screenshot-tests', project ':compose-app', project ':compose-resources', project ':data', project ':data-local', project ':data-network', project ':domain', project ':e2e-tests', project ':fixtures', project ':ios-swift-di', project ':presentation-core', project ':presentation-feature', project ':presentation-model', project ':server', project ':test-common', project ':usecase', project ':viewmodel', project ':server:app', project ':server:data', project ':server:domain']
+
+> Configure project :buildSrc
+Evaluating project ':buildSrc' using build file '/Users/cartland/bb-merge/buildSrc/build.gradle.kts'.
+Resolved plugin [id: 'org.gradle.kotlin.kotlin-dsl', version: '5.1.2']
+Using Kotlin Gradle Plugin gradle85 variant
+kotlin scripting plugin: created the scripting discovery configuration: kotlinScriptDef
+kotlin scripting plugin: created the scripting discovery configuration: testKotlinScriptDef
+file or directory '/Users/cartland/bb-merge/buildSrc/src/main/java', not found
+Starting process 'command '/usr/libexec/java_home''. Working directory: /Users/cartland/.gradle/daemon/8.12 Command: /usr/libexec/java_home -V
+Successfully started process 'command '/usr/libexec/java_home''
+Resolve mutations for :buildSrc:checkKotlinGradlePluginConfigurationErrors (Thread[#9675,Execution worker,5,main]) started.
+:buildSrc:checkKotlinGradlePluginConfigurationErrors (Thread[#9675,Execution worker,5,main]) started.
+
+> Task :buildSrc:checkKotlinGradlePluginConfigurationErrors SKIPPED
+Skipping task ':buildSrc:checkKotlinGradlePluginConfigurationErrors' as task onlyIf 'errorDiagnostics are present' is false.
+Resolve mutations for :buildSrc:generateExternalPluginSpecBuilders (Thread[#9675,Execution worker,5,main]) started.
+:buildSrc:generateExternalPluginSpecBuilders (Thread[#9675,Execution worker,5,main]) started.
+
+> Task :buildSrc:generateExternalPluginSpecBuilders UP-TO-DATE
+Build cache key for task ':buildSrc:generateExternalPluginSpecBuilders' is ba48fed2ab2c818382b6430de874086c
+Skipping task ':buildSrc:generateExternalPluginSpecBuilders' as it is up-to-date.
+Resolve mutations for :buildSrc:extractPrecompiledScriptPluginPlugins (Thread[#9675,Execution worker,5,main]) started.
+:buildSrc:extractPrecompiledScriptPluginPlugins (Thread[#9675,Execution worker,5,main]) started.
+
+> Task :buildSrc:extractPrecompiledScriptPluginPlugins UP-TO-DATE
+Build cache key for task ':buildSrc:extractPrecompiledScriptPluginPlugins' is a67de169c4d6f3154f30e5b7d9b1066e
+Skipping task ':buildSrc:extractPrecompiledScriptPluginPlugins' as it is up-to-date.
+Resolve mutations for :buildSrc:compilePluginsBlocks (Thread[#9675,Execution worker,5,main]) started.
+:buildSrc:compilePluginsBlocks (Thread[#9675,Execution worker,5,main]) started.
+
+> Task :buildSrc:compilePluginsBlocks UP-TO-DATE
+Build cache key for task ':buildSrc:compilePluginsBlocks' is e04a8adc70ae20cc3fe3f74d9b0e0177
+Skipping task ':buildSrc:compilePluginsBlocks' as it is up-to-date.
+Resolve mutations for :buildSrc:generatePrecompiledScriptPluginAccessors (Thread[#9675,Execution worker,5,main]) started.
+:buildSrc:generatePrecompiledScriptPluginAccessors (Thread[#9675,Execution worker,5,main]) started.
+
+> Task :buildSrc:generatePrecompiledScriptPluginAccessors UP-TO-DATE
+Build cache key for task ':buildSrc:generatePrecompiledScriptPluginAccessors' is e67ac040daeb2a366b8bd49490e9884c
+Skipping task ':buildSrc:generatePrecompiledScriptPluginAccessors' as it is up-to-date.
+Resolve mutations for :buildSrc:generateScriptPluginAdapters (Thread[#9675,Execution worker,5,main]) started.
+:buildSrc:generateScriptPluginAdapters (Thread[#9675,Execution worker,5,main]) started.
+
+> Task :buildSrc:generateScriptPluginAdapters UP-TO-DATE
+Build cache key for task ':buildSrc:generateScriptPluginAdapters' is 3ccad92f4fa81b0795dbb812866fd3b9
+Skipping task ':buildSrc:generateScriptPluginAdapters' as it is up-to-date.
+Resolve mutations for :buildSrc:compileKotlin (Thread[#9675,Execution worker,5,main]) started.
+:buildSrc:compileKotlin (Thread[#9675,Execution worker,5,main]) started.
+
+> Task :buildSrc:compileKotlin UP-TO-DATE
+Custom actions are attached to task ':buildSrc:compileKotlin'.
+Build cache key for task ':buildSrc:compileKotlin' is e590ab7cde9a7ffd0f947597b1572d8b
+Skipping task ':buildSrc:compileKotlin' as it is up-to-date.
+Resolve mutations for :buildSrc:compileJava (Thread[#9675,Execution worker,5,main]) started.
+:buildSrc:compileJava (Thread[#9675,Execution worker,5,main]) started.
+
+> Task :buildSrc:compileJava NO-SOURCE
+Skipping task ':buildSrc:compileJava' as it has no source files and no previous output files.
+Resolve mutations for :buildSrc:compileGroovy (Thread[#9675,Execution worker,5,main]) started.
+:buildSrc:compileGroovy (Thread[#9675,Execution worker,5,main]) started.
+
+> Task :buildSrc:compileGroovy NO-SOURCE
+Skipping task ':buildSrc:compileGroovy' as it has no source files and no previous output files.
+Resolve mutations for :buildSrc:pluginDescriptors (Thread[#9675,Execution worker,5,main]) started.
+:buildSrc:pluginDescriptors (Thread[#9675,Execution worker,5,main]) started.
+
+> Task :buildSrc:pluginDescriptors UP-TO-DATE
+Caching disabled for task ':buildSrc:pluginDescriptors' because:
+  Not worth caching
+Skipping task ':buildSrc:pluginDescriptors' as it is up-to-date.
+Resolve mutations for :buildSrc:processResources (Thread[#9675,Execution worker,5,main]) started.
+:buildSrc:processResources (Thread[#9675,Execution worker,5,main]) started.
+
+> Task :buildSrc:processResources UP-TO-DATE
+Caching disabled for task ':buildSrc:processResources' because:
+  Not worth caching
+Skipping task ':buildSrc:processResources' as it is up-to-date.
+Resolve mutations for :buildSrc:classes (Thread[#9675,Execution worker,5,main]) started.
+:buildSrc:classes (Thread[#9675,Execution worker,5,main]) started.
+
+> Task :buildSrc:classes UP-TO-DATE
+Skipping task ':buildSrc:classes' as it has no actions.
+Resolve mutations for :buildSrc:jar (Thread[#9675,Execution worker,5,main]) started.
+:buildSrc:jar (Thread[#9675,Execution worker,5,main]) started.
+
+> Task :buildSrc:jar UP-TO-DATE
+Caching disabled for task ':buildSrc:jar' because:
+  Not worth caching
+Skipping task ':buildSrc:jar' as it is up-to-date.
+
+> Configure project :
+Evaluating root project 'BatteryButler' using build file '/Users/cartland/bb-merge/build.gradle.kts'.
+Resolved plugin [id: 'org.jetbrains.compose.hot-reload', version: '1.1.0-alpha05', apply: false]
+Resolved plugin [id: 'org.jetbrains.compose', version: '1.10.0', apply: false]
+Resolved plugin [id: 'org.jetbrains.kotlin.plugin.compose', version: '2.3.0', apply: false]
+Resolved plugin [id: 'com.diffplug.spotless', version: '7.0.4', apply: false]
+Resolved plugin [id: 'io.gitlab.arturbosch.detekt', version: '1.23.8', apply: false]
+Resolved plugin [id: 'architecture.check']
+Resolved plugin [id: 'preview.coverage.check']
+Resolved plugin [id: 'theme.layer.check']
+
+> Configure project :ai
+Evaluating project ':ai' using build file '/Users/cartland/bb-merge/ai/build.gradle.kts'.
+Resolved plugin [id: 'org.jetbrains.kotlin.multiplatform']
+Resolved plugin [id: 'com.android.kotlin.multiplatform.library']
+Resolved plugin [id: 'com.google.devtools.ksp', version: '2.2.20-2.0.4']
+Build fdac6803-ba05-49f3-8160-9d68fc91e6e8 is started
+Using Kotlin Gradle Plugin gradle811 variant
+Created jvm target
+kotlin scripting plugin: created the scripting discovery configuration: kotlinScriptDef
+Created compile task: compileAndroidMain
+Using default execution profile
+kotlin scripting plugin: created the scripting discovery configuration: kotlinScriptDef
+kotlin scripting plugin: created the scripting discovery configuration: testKotlinScriptDef
+[:ai] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+[:ai] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+[:ai] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+[:ai] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+Starting process 'command '/usr/libexec/java_home''. Working directory: /Users/cartland/.gradle/daemon/8.12 Command: /usr/libexec/java_home -V
+Successfully started process 'command '/usr/libexec/java_home''
+
+> Configure project :android-screenshot-tests
+Evaluating project ':android-screenshot-tests' using build file '/Users/cartland/bb-merge/android-screenshot-tests/build.gradle.kts'.
+Resolved plugin [id: 'com.android.library']
+Resolved plugin [id: 'org.jetbrains.kotlin.android']
+Resolved plugin [id: 'org.jetbrains.compose', version: '1.10.0']
+Resolved plugin [id: 'org.jetbrains.kotlin.plugin.compose', version: '2.3.0']
+Resolved plugin [id: 'com.android.compose.screenshot', version: '0.0.1-alpha12']
+WARNING: The option setting 'android.experimental.enableScreenshotTest=true' is experimental.
+The current default is 'false'.
+Using default execution profile
+Using Kotlin Gradle Plugin gradle811 variant
+Detected Android Gradle Plugin compose compiler configuration
+Detected Android Gradle Plugin compose compiler configuration
+Adding -Xuse-inline-scopes-numbers Kotlin compiler flag for task :android-screenshot-tests:compileDebugAndroidTestKotlin
+Detected Android Gradle Plugin compose compiler configuration
+Detected Android Gradle Plugin compose compiler configuration
+Detected Android Gradle Plugin compose compiler configuration
+Detected Android Gradle Plugin compose compiler configuration
+Detected Android Gradle Plugin compose compiler configuration
+Check that new 'org.jetbrains.kotlin.plugin.compose' was applied
+
+> Configure project :compose-app
+Evaluating project ':compose-app' using build file '/Users/cartland/bb-merge/compose-app/build.gradle.kts'.
+Resolved plugin [id: 'org.jetbrains.kotlin.multiplatform']
+Resolved plugin [id: 'com.android.application']
+Resolved plugin [id: 'org.jetbrains.compose', version: '1.10.0']
+Resolved plugin [id: 'org.jetbrains.kotlin.plugin.compose', version: '2.3.0']
+Resolved plugin [id: 'org.jetbrains.compose.hot-reload', version: '1.1.0-alpha05']
+Resolved plugin [id: 'com.google.devtools.ksp', version: '2.2.20-2.0.4']
+Resolved plugin [id: 'org.jetbrains.kotlin.plugin.serialization']
+Using Kotlin Gradle Plugin gradle811 variant
+Using default execution profile
+Configure multi-module compose resources
+Configure compose resources generation
+Configure Res object generation for commonMain
+Configure resource accessors generation for commonMain
+Configure resource accessors generation for commonTest
+Configure expect resource collectors generation for commonMain
+Configure compose resources with AndroidComponentsExtension
+Configure resource accessors generation for androidInstrumentedTest
+Configure resource accessors generation for androidMain
+Configure resource accessors generation for androidUnitTest
+Configure actual resource collectors generation for androidMain
+Configure resource accessors generation for iosX64Main
+Configure resource accessors generation for iosX64Test
+Configure actual resource collectors generation for iosX64Main
+Configure main resources for 'iosX64' target
+Configure KMP component publication for 'iosX64'
+Collect resolved main resources for 'iosX64'
+Configure test resources for 'iosX64' target
+Configure resource accessors generation for iosArm64Main
+Configure resource accessors generation for iosArm64Test
+Configure actual resource collectors generation for iosArm64Main
+Configure main resources for 'iosArm64' target
+Configure KMP component publication for 'iosArm64'
+Collect resolved main resources for 'iosArm64'
+Configure test resources for 'iosArm64' target
+Configure resource accessors generation for iosSimulatorArm64Main
+Configure resource accessors generation for iosSimulatorArm64Test
+Configure actual resource collectors generation for iosSimulatorArm64Main
+Configure main resources for 'iosSimulatorArm64' target
+Configure KMP component publication for 'iosSimulatorArm64'
+Collect resolved main resources for 'iosSimulatorArm64'
+Configure test resources for 'iosSimulatorArm64' target
+Configure resource accessors generation for desktopMain
+kotlin scripting plugin: created the scripting discovery configuration: kotlinScriptDef
+Configure resource accessors generation for desktopTest
+kotlin scripting plugin: created the scripting discovery configuration: testKotlinScriptDef
+Configure actual resource collectors generation for desktopMain
+Configure main resources for 'desktop' target
+Configure test resources for 'desktop' target
+Configure resource accessors generation for desktopDev
+kotlin scripting plugin: created the scripting discovery configuration: devKotlinScriptDef
+Configure dev resources for 'desktop' target
+┌─────────────────────────────────────────────────────────────
+│ Google Sign-In: NOT CONFIGURED
+├─────────────────────────────────────────────────────────────
+│ To enable Google Sign-In:
+│   1. Create OAuth credentials at https://console.cloud.google.com
+│   2. Add to local.properties:
+│      GOOGLE_WEB_CLIENT_ID=your-id.apps.googleusercontent.com
+│   OR pass via Gradle: -PGOOGLE_WEB_CLIENT_ID=...
+└─────────────────────────────────────────────────────────────
+Signing: No keystore.properties found at /Users/cartland/bb-merge/keystore.properties
+Signing: Release keystore not found at path: /Users/cartland/bb-merge/release.keystore. Release builds may invoke installation prompts or fail signing.
+Signing: Release signing config has no storeFile. Skipping assignment (will use debug or unsigned).
+Configure debug resources for 'android' target
+Configure debugAndroidTest resources for 'android' target
+Configure release resources for 'android' target
+Configure resource accessors generation for androidInstrumentedTestDebug
+Configure resource accessors generation for androidUnitTestDebug
+Configure resource accessors generation for androidDebug
+Configure resource accessors generation for androidUnitTestRelease
+Configure resource accessors generation for androidRelease
+Detected Android Gradle Plugin compose compiler configuration
+Detected Android Gradle Plugin compose compiler configuration
+Detected Android Gradle Plugin compose compiler configuration
+Detected Android Gradle Plugin compose compiler configuration
+Detected Android Gradle Plugin compose compiler configuration
+Detected Android Gradle Plugin compose compiler configuration
+Detected Android Gradle Plugin compose compiler configuration
+Detected Android Gradle Plugin compose compiler configuration
+Detected Android Gradle Plugin compose compiler configuration
+Detected Android Gradle Plugin compose compiler configuration
+[:compose-app] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+Check that new 'org.jetbrains.kotlin.plugin.compose' was applied
+Detected Android Gradle Plugin compose compiler configuration
+Detected Android Gradle Plugin compose compiler configuration
+Detected Android Gradle Plugin compose compiler configuration
+Detected Android Gradle Plugin compose compiler configuration
+Detected Android Gradle Plugin compose compiler configuration
+Configure resource accessors generation for nativeMain
+Configure resource accessors generation for appleMain
+Configure resource accessors generation for iosMain
+Configure resource accessors generation for nativeTest
+Configure resource accessors generation for appleTest
+Configure resource accessors generation for iosTest
+Detected Android Gradle Plugin compose compiler configuration
+[:compose-app] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+Detected Android Gradle Plugin compose compiler configuration
+Detected Android Gradle Plugin compose compiler configuration
+[:compose-app] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+Detected Android Gradle Plugin compose compiler configuration
+[:compose-app] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+w: [33m[1m⚠️ The 'org.jetbrains.kotlin.multiplatform' plugin deprecated compatibility with Android Gradle plugin: 'com.android.application'[0m[0m
+The 'org.jetbrains.kotlin.multiplatform' plugin will not be compatible with 'com.android.application' starting with Android Gradle Plugin 9.0.0.
+
+Please change the structure of the your project and move the usage of 'com.android.application' into a separate subproject. The new subproject should add a dependency on this KMP subproject.
+
+Read more: https://kotl.in/kmp-project-structure-migration
+[32m[1mSolution:[0m[0m
+[32m[3mPlease change the structure of your project and move the usage of 'com.android.application' into a separate subproject.[0m[0m
+[36mSee [0m[34mhttps://kotl.in/gradle/agp-new-kmp[0m[36m for more details.[0m
+
+
+> Configure project :compose-resources
+Evaluating project ':compose-resources' using build file '/Users/cartland/bb-merge/compose-resources/build.gradle.kts'.
+Resolved plugin [id: 'org.jetbrains.kotlin.multiplatform']
+Resolved plugin [id: 'com.android.library']
+Resolved plugin [id: 'org.jetbrains.compose', version: '1.10.0']
+Resolved plugin [id: 'org.jetbrains.kotlin.plugin.compose', version: '2.3.0']
+Using Kotlin Gradle Plugin gradle811 variant
+Using default execution profile
+Configure multi-module compose resources
+Configure compose resources generation
+Configure Res object generation for commonMain
+Configure resource accessors generation for commonMain
+Configure resource accessors generation for commonTest
+Configure expect resource collectors generation for commonMain
+Configure compose resources with AndroidComponentsExtension
+Configure resource accessors generation for androidInstrumentedTest
+Configure resource accessors generation for androidMain
+Configure resource accessors generation for androidUnitTest
+Configure actual resource collectors generation for androidMain
+Configure resource accessors generation for jvmMain
+kotlin scripting plugin: created the scripting discovery configuration: kotlinScriptDef
+Configure resource accessors generation for jvmTest
+kotlin scripting plugin: created the scripting discovery configuration: testKotlinScriptDef
+Configure actual resource collectors generation for jvmMain
+Configure main resources for 'jvm' target
+Configure test resources for 'jvm' target
+Configure resource accessors generation for iosX64Main
+Configure resource accessors generation for iosX64Test
+Configure actual resource collectors generation for iosX64Main
+Configure main resources for 'iosX64' target
+Configure KMP component publication for 'iosX64'
+Collect resolved main resources for 'iosX64'
+Configure test resources for 'iosX64' target
+Configure resource accessors generation for iosArm64Main
+Configure resource accessors generation for iosArm64Test
+Configure actual resource collectors generation for iosArm64Main
+Configure main resources for 'iosArm64' target
+Configure KMP component publication for 'iosArm64'
+Collect resolved main resources for 'iosArm64'
+Configure test resources for 'iosArm64' target
+Configure resource accessors generation for iosSimulatorArm64Main
+Configure resource accessors generation for iosSimulatorArm64Test
+Configure actual resource collectors generation for iosSimulatorArm64Main
+Configure main resources for 'iosSimulatorArm64' target
+Configure KMP component publication for 'iosSimulatorArm64'
+Collect resolved main resources for 'iosSimulatorArm64'
+Configure test resources for 'iosSimulatorArm64' target
+Configure debug resources for 'android' target
+Configure debugAndroidTest resources for 'android' target
+Configure release resources for 'android' target
+Configure resource accessors generation for androidInstrumentedTestDebug
+Configure resource accessors generation for androidUnitTestDebug
+Configure resource accessors generation for androidDebug
+Configure resource accessors generation for androidUnitTestRelease
+Configure resource accessors generation for androidRelease
+Detected Android Gradle Plugin compose compiler configuration
+Detected Android Gradle Plugin compose compiler configuration
+Detected Android Gradle Plugin compose compiler configuration
+Detected Android Gradle Plugin compose compiler configuration
+Detected Android Gradle Plugin compose compiler configuration
+Detected Android Gradle Plugin compose compiler configuration
+Detected Android Gradle Plugin compose compiler configuration
+Detected Android Gradle Plugin compose compiler configuration
+Detected Android Gradle Plugin compose compiler configuration
+[:compose-resources] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+Check that new 'org.jetbrains.kotlin.plugin.compose' was applied
+Configure resource accessors generation for jvmDev
+kotlin scripting plugin: created the scripting discovery configuration: devKotlinScriptDef
+Configure dev resources for 'jvm' target
+Detected Android Gradle Plugin compose compiler configuration
+Detected Android Gradle Plugin compose compiler configuration
+Detected Android Gradle Plugin compose compiler configuration
+Detected Android Gradle Plugin compose compiler configuration
+Detected Android Gradle Plugin compose compiler configuration
+Detected Android Gradle Plugin compose compiler configuration
+Configure resource accessors generation for nativeMain
+Configure resource accessors generation for appleMain
+Configure resource accessors generation for iosMain
+Configure resource accessors generation for nativeTest
+Configure resource accessors generation for appleTest
+Configure resource accessors generation for iosTest
+Detected Android Gradle Plugin compose compiler configuration
+[:compose-resources] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+Detected Android Gradle Plugin compose compiler configuration
+Detected Android Gradle Plugin compose compiler configuration
+[:compose-resources] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+Detected Android Gradle Plugin compose compiler configuration
+[:compose-resources] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+w: [33m[1m⚠️ The 'org.jetbrains.kotlin.multiplatform' plugin deprecated compatibility with Android Gradle plugin: 'com.android.library'[0m[0m
+The 'org.jetbrains.kotlin.multiplatform' plugin will not be compatible with 'com.android.library' starting with Android Gradle Plugin 9.0.0.
+[32m[1mSolution:[0m[0m
+[32m[3mPlease use the 'com.android.kotlin.multiplatform.library' plugin instead of 'com.android.library'.[0m[0m
+[36mSee [0m[34mhttps://kotl.in/gradle/agp-new-kmp[0m[36m for more details.[0m
+
+
+> Configure project :data
+Evaluating project ':data' using build file '/Users/cartland/bb-merge/data/build.gradle.kts'.
+Resolved plugin [id: 'convention.android-library']
+Resolved plugin [id: 'com.google.devtools.ksp', version: '2.2.20-2.0.4']
+Using default execution profile
+Using Kotlin Gradle Plugin gradle811 variant
+Created jvm target
+kotlin scripting plugin: created the scripting discovery configuration: kotlinScriptDef
+Created compile task: compileAndroidMain
+kotlin scripting plugin: created the scripting discovery configuration: deviceTestKotlinScriptDef
+Created compile task: compileAndroidDeviceTest
+kotlin scripting plugin: created the scripting discovery configuration: kotlinScriptDef
+kotlin scripting plugin: created the scripting discovery configuration: testKotlinScriptDef
+[:data] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+[:data] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+[:data] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+[:data] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+w: [33m[1m⚠️ Deprecated Gradle Property 'kotlin.mpp.import.enableKgpDependencyResolution' Used[0m[0m
+The `kotlin.mpp.import.enableKgpDependencyResolution` deprecated property is used in your build.
+[32m[1mSolutions:[0m[0m
+[32m • [3mIt is unsupported, please stop using it.[0m[0m
+[32m • [3mLegacy mode of KMP IDE import has been removed: https://kotl.in/KT-61127[0m[0m
+
+
+> Configure project :data-local
+Evaluating project ':data-local' using build file '/Users/cartland/bb-merge/data-local/build.gradle.kts'.
+Resolved plugin [id: 'org.jetbrains.kotlin.multiplatform']
+Resolved plugin [id: 'com.android.kotlin.multiplatform.library']
+Resolved plugin [id: 'androidx.room', version: '2.7.0-alpha12']
+Resolved plugin [id: 'com.google.devtools.ksp', version: '2.2.20-2.0.4']
+Using Kotlin Gradle Plugin gradle811 variant
+Created jvm target
+kotlin scripting plugin: created the scripting discovery configuration: kotlinScriptDef
+Created compile task: compileAndroidMain
+Using default execution profile
+kotlin scripting plugin: created the scripting discovery configuration: deviceTestKotlinScriptDef
+Created compile task: compileAndroidDeviceTest
+kotlin scripting plugin: created the scripting discovery configuration: kotlinScriptDef
+kotlin scripting plugin: created the scripting discovery configuration: testKotlinScriptDef
+[:data-local] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+[:data-local] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+[:data-local] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+[:data-local] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+
+> Configure project :data-network
+Evaluating project ':data-network' using build file '/Users/cartland/bb-merge/data-network/build.gradle.kts'.
+Resolved plugin [id: 'com.android.kotlin.multiplatform.library']
+Resolved plugin [id: 'org.jetbrains.kotlin.multiplatform']
+Resolved plugin [id: 'com.squareup.wire', version: '5.0.0']
+Using default execution profile
+Using Kotlin Gradle Plugin gradle811 variant
+Created jvm target
+kotlin scripting plugin: created the scripting discovery configuration: kotlinScriptDef
+Created compile task: compileAndroidMain
+kotlin scripting plugin: created the scripting discovery configuration: kotlinScriptDef
+kotlin scripting plugin: created the scripting discovery configuration: testKotlinScriptDef
+[:data-network] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+[:data-network] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+[:data-network] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+[:data-network] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+
+> Configure project :domain
+Evaluating project ':domain' using build file '/Users/cartland/bb-merge/domain/build.gradle.kts'.
+Resolved plugin [id: 'org.jetbrains.kotlin.multiplatform']
+Resolved plugin [id: 'com.google.devtools.ksp', version: '2.2.20-2.0.4']
+Using Kotlin Gradle Plugin gradle811 variant
+kotlin scripting plugin: created the scripting discovery configuration: kotlinScriptDef
+kotlin scripting plugin: created the scripting discovery configuration: testKotlinScriptDef
+[:domain] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+[:domain] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+[:domain] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+[:domain] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+
+> Configure project :e2e-tests
+Evaluating project ':e2e-tests' using build file '/Users/cartland/bb-merge/e2e-tests/build.gradle.kts'.
+Resolved plugin [id: 'org.jetbrains.kotlin.jvm']
+Resolved plugin [id: 'com.squareup.wire', version: '5.0.0']
+Using Kotlin Gradle Plugin gradle811 variant
+kotlin scripting plugin: created the scripting discovery configuration: kotlinScriptDef
+kotlin scripting plugin: created the scripting discovery configuration: testKotlinScriptDef
+
+> Configure project :fixtures
+Evaluating project ':fixtures' using build file '/Users/cartland/bb-merge/fixtures/build.gradle.kts'.
+Resolved plugin [id: 'org.jetbrains.kotlin.multiplatform']
+Resolved plugin [id: 'com.android.kotlin.multiplatform.library']
+Using Kotlin Gradle Plugin gradle811 variant
+Created jvm target
+kotlin scripting plugin: created the scripting discovery configuration: kotlinScriptDef
+Created compile task: compileAndroidMain
+Using default execution profile
+kotlin scripting plugin: created the scripting discovery configuration: kotlinScriptDef
+kotlin scripting plugin: created the scripting discovery configuration: testKotlinScriptDef
+[:fixtures] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+[:fixtures] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+[:fixtures] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+[:fixtures] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+
+> Configure project :ios-swift-di
+Evaluating project ':ios-swift-di' using build file '/Users/cartland/bb-merge/ios-swift-di/build.gradle.kts'.
+Resolved plugin [id: 'org.jetbrains.kotlin.multiplatform']
+Resolved plugin [id: 'com.google.devtools.ksp', version: '2.2.20-2.0.4']
+Resolved plugin [id: 'co.touchlab.skie', version: '0.10.9']
+Using Kotlin Gradle Plugin gradle811 variant
+Resolving SKIE gradle plugin for Kotlin plugin version 2.3.0 and Gradle version 8.12
+[:ios-swift-di] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+[:ios-swift-di] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+[:ios-swift-di] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+[:ios-swift-di] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+[:ios-swift-di] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+
+> Configure project :presentation-core
+Evaluating project ':presentation-core' using build file '/Users/cartland/bb-merge/presentation-core/build.gradle.kts'.
+Resolved plugin [id: 'convention.android-library']
+Resolved plugin [id: 'org.jetbrains.compose', version: '1.10.0']
+Resolved plugin [id: 'org.jetbrains.kotlin.plugin.compose', version: '2.3.0']
+Using default execution profile
+Using Kotlin Gradle Plugin gradle811 variant
+Created jvm target
+kotlin scripting plugin: created the scripting discovery configuration: kotlinScriptDef
+Created compile task: compileAndroidMain
+Configure multi-module compose resources
+Configure compose resources generation
+Configure resource accessors generation for androidMain
+Configure Res object generation for commonMain
+Configure resource accessors generation for commonMain
+Configure resource accessors generation for commonTest
+Configure expect resource collectors generation for commonMain
+Configure actual resource collectors generation for androidMain
+Configure compose resources with outdated KotlinMultiplatformAndroidComponentsExtension < 8.10
+Configure resource accessors generation for jvmMain
+kotlin scripting plugin: created the scripting discovery configuration: kotlinScriptDef
+Configure resource accessors generation for jvmTest
+kotlin scripting plugin: created the scripting discovery configuration: testKotlinScriptDef
+Configure actual resource collectors generation for jvmMain
+Configure main resources for 'jvm' target
+Configure test resources for 'jvm' target
+Configure resource accessors generation for iosX64Main
+Configure resource accessors generation for iosX64Test
+Configure actual resource collectors generation for iosX64Main
+Configure main resources for 'iosX64' target
+Configure KMP component publication for 'iosX64'
+Collect resolved main resources for 'iosX64'
+Configure test resources for 'iosX64' target
+Configure resource accessors generation for iosArm64Main
+Configure resource accessors generation for iosArm64Test
+Configure actual resource collectors generation for iosArm64Main
+Configure main resources for 'iosArm64' target
+Configure KMP component publication for 'iosArm64'
+Collect resolved main resources for 'iosArm64'
+Configure test resources for 'iosArm64' target
+Configure resource accessors generation for iosSimulatorArm64Main
+Configure resource accessors generation for iosSimulatorArm64Test
+Configure actual resource collectors generation for iosSimulatorArm64Main
+Configure main resources for 'iosSimulatorArm64' target
+Configure KMP component publication for 'iosSimulatorArm64'
+Collect resolved main resources for 'iosSimulatorArm64'
+Configure test resources for 'iosSimulatorArm64' target
+Configure androidMain resources for 'android' target
+[:presentation-core] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+Check that new 'org.jetbrains.kotlin.plugin.compose' was applied
+Configure resource accessors generation for jvmDev
+kotlin scripting plugin: created the scripting discovery configuration: devKotlinScriptDef
+Configure dev resources for 'jvm' target
+Configure resource accessors generation for nativeMain
+Configure resource accessors generation for appleMain
+Configure resource accessors generation for iosMain
+Configure resource accessors generation for nativeTest
+Configure resource accessors generation for appleTest
+Configure resource accessors generation for iosTest
+[:presentation-core] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+[:presentation-core] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+[:presentation-core] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+
+> Configure project :presentation-feature
+Evaluating project ':presentation-feature' using build file '/Users/cartland/bb-merge/presentation-feature/build.gradle.kts'.
+Resolved plugin [id: 'convention.android-library']
+Resolved plugin [id: 'org.jetbrains.compose', version: '1.10.0']
+Resolved plugin [id: 'org.jetbrains.kotlin.plugin.compose', version: '2.3.0']
+Using default execution profile
+Using Kotlin Gradle Plugin gradle811 variant
+Created jvm target
+kotlin scripting plugin: created the scripting discovery configuration: kotlinScriptDef
+Created compile task: compileAndroidMain
+Configure multi-module compose resources
+Configure compose resources generation
+Configure resource accessors generation for androidMain
+Configure Res object generation for commonMain
+Configure resource accessors generation for commonMain
+Configure resource accessors generation for commonTest
+Configure expect resource collectors generation for commonMain
+Configure actual resource collectors generation for androidMain
+Configure compose resources with outdated KotlinMultiplatformAndroidComponentsExtension < 8.10
+Configure resource accessors generation for jvmMain
+kotlin scripting plugin: created the scripting discovery configuration: kotlinScriptDef
+Configure resource accessors generation for jvmTest
+kotlin scripting plugin: created the scripting discovery configuration: testKotlinScriptDef
+Configure actual resource collectors generation for jvmMain
+Configure main resources for 'jvm' target
+Configure test resources for 'jvm' target
+Configure resource accessors generation for iosX64Main
+Configure resource accessors generation for iosX64Test
+Configure actual resource collectors generation for iosX64Main
+Configure main resources for 'iosX64' target
+Configure KMP component publication for 'iosX64'
+Collect resolved main resources for 'iosX64'
+Configure test resources for 'iosX64' target
+Configure resource accessors generation for iosArm64Main
+Configure resource accessors generation for iosArm64Test
+Configure actual resource collectors generation for iosArm64Main
+Configure main resources for 'iosArm64' target
+Configure KMP component publication for 'iosArm64'
+Collect resolved main resources for 'iosArm64'
+Configure test resources for 'iosArm64' target
+Configure resource accessors generation for iosSimulatorArm64Main
+Configure resource accessors generation for iosSimulatorArm64Test
+Configure actual resource collectors generation for iosSimulatorArm64Main
+Configure main resources for 'iosSimulatorArm64' target
+Configure KMP component publication for 'iosSimulatorArm64'
+Collect resolved main resources for 'iosSimulatorArm64'
+Configure test resources for 'iosSimulatorArm64' target
+Configure androidMain resources for 'android' target
+[:presentation-feature] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+Check that new 'org.jetbrains.kotlin.plugin.compose' was applied
+Configure resource accessors generation for jvmDev
+kotlin scripting plugin: created the scripting discovery configuration: devKotlinScriptDef
+Configure dev resources for 'jvm' target
+Configure resource accessors generation for nativeMain
+Configure resource accessors generation for appleMain
+Configure resource accessors generation for iosMain
+Configure resource accessors generation for nativeTest
+Configure resource accessors generation for appleTest
+Configure resource accessors generation for iosTest
+[:presentation-feature] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+[:presentation-feature] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+[:presentation-feature] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+
+> Configure project :presentation-model
+Evaluating project ':presentation-model' using build file '/Users/cartland/bb-merge/presentation-model/build.gradle.kts'.
+Resolved plugin [id: 'org.jetbrains.kotlin.multiplatform']
+Resolved plugin [id: 'com.android.kotlin.multiplatform.library']
+Resolved plugin [id: 'org.jetbrains.kotlin.plugin.serialization']
+Using Kotlin Gradle Plugin gradle811 variant
+Created jvm target
+kotlin scripting plugin: created the scripting discovery configuration: kotlinScriptDef
+Created compile task: compileAndroidMain
+Using default execution profile
+kotlin scripting plugin: created the scripting discovery configuration: kotlinScriptDef
+kotlin scripting plugin: created the scripting discovery configuration: testKotlinScriptDef
+[:presentation-model] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+[:presentation-model] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+[:presentation-model] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+[:presentation-model] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+
+> Configure project :server
+Evaluating project ':server' using build file '/Users/cartland/bb-merge/server/build.gradle'.
+
+> Configure project :test-common
+Evaluating project ':test-common' using build file '/Users/cartland/bb-merge/test-common/build.gradle.kts'.
+Resolved plugin [id: 'org.jetbrains.kotlin.multiplatform']
+Resolved plugin [id: 'com.android.kotlin.multiplatform.library']
+Using Kotlin Gradle Plugin gradle811 variant
+Created jvm target
+kotlin scripting plugin: created the scripting discovery configuration: kotlinScriptDef
+Created compile task: compileAndroidMain
+Using default execution profile
+kotlin scripting plugin: created the scripting discovery configuration: kotlinScriptDef
+kotlin scripting plugin: created the scripting discovery configuration: testKotlinScriptDef
+[:test-common] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+[:test-common] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+[:test-common] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+[:test-common] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+
+> Configure project :usecase
+Evaluating project ':usecase' using build file '/Users/cartland/bb-merge/usecase/build.gradle.kts'.
+Resolved plugin [id: 'org.jetbrains.kotlin.multiplatform']
+Resolved plugin [id: 'com.android.kotlin.multiplatform.library']
+Resolved plugin [id: 'com.google.devtools.ksp', version: '2.2.20-2.0.4']
+Resolved plugin [id: 'org.jetbrains.kotlin.plugin.serialization']
+Using Kotlin Gradle Plugin gradle811 variant
+Created jvm target
+kotlin scripting plugin: created the scripting discovery configuration: kotlinScriptDef
+Created compile task: compileAndroidMain
+Using default execution profile
+kotlin scripting plugin: created the scripting discovery configuration: kotlinScriptDef
+kotlin scripting plugin: created the scripting discovery configuration: testKotlinScriptDef
+[:usecase] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+[:usecase] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+[:usecase] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+[:usecase] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+
+> Configure project :viewmodel
+Evaluating project ':viewmodel' using build file '/Users/cartland/bb-merge/viewmodel/build.gradle.kts'.
+Resolved plugin [id: 'org.jetbrains.kotlin.multiplatform']
+Resolved plugin [id: 'com.android.kotlin.multiplatform.library']
+Resolved plugin [id: 'com.google.devtools.ksp', version: '2.2.20-2.0.4']
+Using Kotlin Gradle Plugin gradle811 variant
+Created jvm target
+kotlin scripting plugin: created the scripting discovery configuration: kotlinScriptDef
+Created compile task: compileAndroidMain
+Using default execution profile
+kotlin scripting plugin: created the scripting discovery configuration: kotlinScriptDef
+kotlin scripting plugin: created the scripting discovery configuration: testKotlinScriptDef
+[:viewmodel] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+[:viewmodel] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+[:viewmodel] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+[:viewmodel] commonizeCInterop task registration disabled. cInteropCommonizationEnabled == false
+
+> Configure project :server:app
+Evaluating project ':server:app' using build file '/Users/cartland/bb-merge/server/app/build.gradle.kts'.
+Resolved plugin [id: 'org.jetbrains.kotlin.jvm']
+Resolved plugin [id: 'io.ktor.plugin', version: '3.2.0']
+Resolved plugin [id: 'com.google.protobuf', version: '0.9.4']
+Resolved plugin [id: 'org.jetbrains.kotlin.plugin.serialization']
+Resolved plugin [id: 'org.gradle.application']
+Using Kotlin Gradle Plugin gradle811 variant
+kotlin scripting plugin: created the scripting discovery configuration: kotlinScriptDef
+kotlin scripting plugin: created the scripting discovery configuration: testKotlinScriptDef
+------------------------------------------------------------------------
+Detecting the operating system and CPU architecture
+------------------------------------------------------------------------
+os.detected.name=osx
+os.detected.arch=aarch_64
+os.detected.bitness=64
+os.detected.version=15.7
+os.detected.version.major=15
+os.detected.version.minor=7
+os.detected.classifier=osx-aarch_64
+
+> Configure project :server:data
+Evaluating project ':server:data' using build file '/Users/cartland/bb-merge/server/data/build.gradle.kts'.
+Resolved plugin [id: 'org.jetbrains.kotlin.jvm']
+Using Kotlin Gradle Plugin gradle811 variant
+kotlin scripting plugin: created the scripting discovery configuration: kotlinScriptDef
+kotlin scripting plugin: created the scripting discovery configuration: testKotlinScriptDef
+
+> Configure project :server:domain
+Evaluating project ':server:domain' using build file '/Users/cartland/bb-merge/server/domain/build.gradle.kts'.
+Resolved plugin [id: 'org.jetbrains.kotlin.jvm']
+Using Kotlin Gradle Plugin gradle811 variant
+kotlin scripting plugin: created the scripting discovery configuration: kotlinScriptDef
+kotlin scripting plugin: created the scripting discovery configuration: testKotlinScriptDef
+All projects evaluated.
+Task path ':compose-app:kspDebugKotlinAndroid' matched project ':compose-app'
+Task name matched 'kspDebugKotlinAndroid'
+Selected primary task 'kspDebugKotlinAndroid' from project :compose-app
+Adding -Xuse-inline-scopes-numbers Kotlin compiler flag for task :compose-app:compileDebugKotlinAndroid
+Tasks to be executed: [task ':domain:kmpPartiallyResolvedDependenciesChecker', task ':domain:checkKotlinGradlePluginConfigurationErrors', task ':domain:kspKotlinJvm', task ':domain:compileKotlinJvm', task ':domain:compileJvmMainJava', task ':domain:jvmProcessResources', task ':domain:processJvmMainResources', task ':domain:jvmMainClasses', task ':domain:jvmJar', task ':ai:kmpPartiallyResolvedDependenciesChecker', task ':ai:checkKotlinGradlePluginConfigurationErrors', task ':presentation-model:kmpPartiallyResolvedDependenciesChecker', task ':presentation-model:checkKotlinGradlePluginConfigurationErrors', task ':presentation-model:compileAndroidMain', task ':presentation-model:androidPreBuild', task ':presentation-model:preAndroidMainBuild', task ':presentation-model:bundleAndroidMainClassesToCompileJar', task ':ai:kspAndroidMain', task ':ai:compileAndroidMain', task ':ai:androidPreBuild', task ':ai:preAndroidMainBuild', task ':ai:bundleAndroidMainClassesToCompileJar', task ':compose-app:convertXmlValueResourcesForAndroidMain', task ':compose-app:copyNonXmlValueResourcesForAndroidMain', task ':compose-app:prepareComposeResourcesTaskForAndroidMain', task ':compose-app:generateResourceAccessorsForAndroidMain', task ':compose-app:convertXmlValueResourcesForCommonMain', task ':compose-app:copyNonXmlValueResourcesForCommonMain', task ':compose-app:prepareComposeResourcesTaskForCommonMain', task ':compose-app:generateResourceAccessorsForCommonMain', task ':compose-app:generateActualResourceCollectorsForAndroidMain', task ':compose-app:generateComposeResClass', task ':compose-app:preBuild', task ':compose-app:preDebugBuild', task ':compose-app:generateDebugBuildConfig', task ':compose-app:generateExpectResourceCollectorsForCommonMain', task ':compose-app:convertXmlValueResourcesForAndroidDebug', task ':compose-app:copyNonXmlValueResourcesForAndroidDebug', task ':compose-app:prepareComposeResourcesTaskForAndroidDebug', task ':compose-app:generateResourceAccessorsForAndroidDebug', task ':ai:writeAndroidMainAarMetadata', task ':compose-resources:preBuild', task ':compose-resources:preDebugBuild', task ':compose-resources:writeDebugAarMetadata', task ':data:androidPreBuild', task ':data:preAndroidMainBuild', task ':data:writeAndroidMainAarMetadata', task ':data-local:androidPreBuild', task ':data-local:preAndroidMainBuild', task ':data-local:writeAndroidMainAarMetadata', task ':data-network:androidPreBuild', task ':data-network:preAndroidMainBuild', task ':data-network:writeAndroidMainAarMetadata', task ':fixtures:androidPreBuild', task ':fixtures:preAndroidMainBuild', task ':fixtures:writeAndroidMainAarMetadata', task ':presentation-core:androidPreBuild', task ':presentation-core:preAndroidMainBuild', task ':presentation-core:writeAndroidMainAarMetadata', task ':presentation-feature:androidPreBuild', task ':presentation-feature:preAndroidMainBuild', task ':presentation-feature:writeAndroidMainAarMetadata', task ':presentation-model:writeAndroidMainAarMetadata', task ':usecase:androidPreBuild', task ':usecase:preAndroidMainBuild', task ':usecase:writeAndroidMainAarMetadata', task ':viewmodel:androidPreBuild', task ':viewmodel:preAndroidMainBuild', task ':viewmodel:writeAndroidMainAarMetadata', task ':compose-app:checkDebugAarMetadata', task ':ai:generateAndroidMainEmptyResourceFiles', task ':compose-app:generateDebugResValues', task ':compose-resources:convertXmlValueResourcesForAndroidDebug', task ':compose-resources:copyNonXmlValueResourcesForAndroidDebug', task ':compose-resources:prepareComposeResourcesTaskForAndroidDebug', task ':compose-resources:convertXmlValueResourcesForAndroidMain', task ':compose-resources:copyNonXmlValueResourcesForAndroidMain', task ':compose-resources:prepareComposeResourcesTaskForAndroidMain', task ':compose-resources:convertXmlValueResourcesForCommonMain', task ':compose-resources:copyNonXmlValueResourcesForCommonMain', task ':compose-resources:prepareComposeResourcesTaskForCommonMain', task ':compose-resources:copyDebugComposeResourcesToAndroidAssets', task ':compose-resources:generateDebugResValues', task ':compose-resources:generateDebugResources', task ':compose-resources:packageDebugResources', task ':data:generateAndroidMainEmptyResourceFiles', task ':data-local:generateAndroidMainEmptyResourceFiles', task ':data-network:generateAndroidMainEmptyResourceFiles', task ':fixtures:generateAndroidMainEmptyResourceFiles', task ':presentation-core:generateAndroidMainEmptyResourceFiles', task ':presentation-feature:generateAndroidMainEmptyResourceFiles', task ':presentation-model:generateAndroidMainEmptyResourceFiles', task ':usecase:generateAndroidMainEmptyResourceFiles', task ':viewmodel:generateAndroidMainEmptyResourceFiles', task ':compose-app:mapDebugSourceSetPaths', task ':compose-app:generateDebugResources', task ':compose-app:mergeDebugResources', task ':compose-app:copyDebugComposeResourcesToAndroidAssets', task ':compose-app:packageDebugResources', task ':compose-app:parseDebugLocalResources', task ':compose-app:createDebugCompatibleScreenManifests', task ':ai:processAndroidMainManifest', task ':compose-app:extractDeepLinksDebug', task ':compose-resources:extractDeepLinksDebug', task ':compose-resources:processDebugManifest', task ':data:processAndroidMainManifest', task ':data-local:processAndroidMainManifest', task ':data-network:processAndroidMainManifest', task ':fixtures:processAndroidMainManifest', task ':presentation-core:processAndroidMainManifest', task ':presentation-feature:processAndroidMainManifest', task ':presentation-model:processAndroidMainManifest', task ':usecase:processAndroidMainManifest', task ':viewmodel:processAndroidMainManifest', task ':compose-app:processDebugMainManifest', task ':compose-app:processDebugManifest', task ':compose-app:processDebugManifestForPackage', task ':compose-resources:compileDebugLibraryResources', task ':compose-resources:parseDebugLocalResources', task ':compose-resources:generateDebugRFile', task ':compose-app:processDebugResources', task ':compose-resources:kmpPartiallyResolvedDependenciesChecker', task ':compose-resources:checkKotlinGradlePluginConfigurationErrors', task ':compose-resources:generateResourceAccessorsForAndroidMain', task ':compose-resources:generateResourceAccessorsForCommonMain', task ':compose-resources:generateActualResourceCollectorsForAndroidMain', task ':compose-resources:generateComposeResClass', task ':compose-resources:generateExpectResourceCollectorsForCommonMain', task ':compose-resources:generateResourceAccessorsForAndroidDebug', task ':compose-resources:compileDebugKotlinAndroid', task ':compose-resources:javaPreCompileDebug', task ':compose-resources:compileDebugJavaWithJavac', task ':compose-resources:bundleLibCompileToJarDebug', task ':data:kmpPartiallyResolvedDependenciesChecker', task ':data:checkKotlinGradlePluginConfigurationErrors', task ':data-local:kmpPartiallyResolvedDependenciesChecker', task ':data-local:checkKotlinGradlePluginConfigurationErrors', task ':data-local:kspAndroidMain', task ':data-local:compileAndroidMain', task ':data-local:bundleAndroidMainClassesToCompileJar', task ':data-network:kmpPartiallyResolvedDependenciesChecker', task ':data-network:checkKotlinGradlePluginConfigurationErrors', task ':data-network:generateBuildConfig', task ':data-network:generateCommonMainProtos', task ':fixtures:kmpPartiallyResolvedDependenciesChecker', task ':fixtures:checkKotlinGradlePluginConfigurationErrors', task ':fixtures:compileAndroidMain', task ':fixtures:bundleAndroidMainClassesToCompileJar', task ':data-network:compileAndroidMain', task ':data-network:bundleAndroidMainClassesToCompileJar', task ':data:kspAndroidMain', task ':data:compileAndroidMain', task ':data:bundleAndroidMainClassesToCompileJar', task ':presentation-core:kmpPartiallyResolvedDependenciesChecker', task ':presentation-core:checkKotlinGradlePluginConfigurationErrors', task ':presentation-core:convertXmlValueResourcesForAndroidMain', task ':presentation-core:copyNonXmlValueResourcesForAndroidMain', task ':presentation-core:prepareComposeResourcesTaskForAndroidMain', task ':presentation-core:generateResourceAccessorsForAndroidMain', task ':presentation-core:convertXmlValueResourcesForCommonMain', task ':presentation-core:copyNonXmlValueResourcesForCommonMain', task ':presentation-core:prepareComposeResourcesTaskForCommonMain', task ':presentation-core:generateResourceAccessorsForCommonMain', task ':presentation-core:generateActualResourceCollectorsForAndroidMain', task ':presentation-core:generateComposeResClass', task ':presentation-core:generateExpectResourceCollectorsForCommonMain', task ':presentation-core:compileAndroidMain', task ':presentation-core:bundleAndroidMainClassesToCompileJar', task ':presentation-feature:kmpPartiallyResolvedDependenciesChecker', task ':presentation-feature:checkKotlinGradlePluginConfigurationErrors', task ':presentation-feature:convertXmlValueResourcesForAndroidMain', task ':presentation-feature:copyNonXmlValueResourcesForAndroidMain', task ':presentation-feature:prepareComposeResourcesTaskForAndroidMain', task ':presentation-feature:generateResourceAccessorsForAndroidMain', task ':presentation-feature:convertXmlValueResourcesForCommonMain', task ':presentation-feature:copyNonXmlValueResourcesForCommonMain', task ':presentation-feature:prepareComposeResourcesTaskForCommonMain', task ':presentation-feature:generateResourceAccessorsForCommonMain', task ':presentation-feature:generateActualResourceCollectorsForAndroidMain', task ':presentation-feature:generateComposeResClass', task ':presentation-feature:generateExpectResourceCollectorsForCommonMain', task ':presentation-feature:compileAndroidMain', task ':presentation-feature:bundleAndroidMainClassesToCompileJar', task ':usecase:kmpPartiallyResolvedDependenciesChecker', task ':usecase:checkKotlinGradlePluginConfigurationErrors', task ':usecase:kspAndroidMain', task ':usecase:compileAndroidMain', task ':usecase:bundleAndroidMainClassesToCompileJar', task ':viewmodel:kmpPartiallyResolvedDependenciesChecker', task ':viewmodel:checkKotlinGradlePluginConfigurationErrors', task ':viewmodel:kspAndroidMain', task ':viewmodel:compileAndroidMain', task ':viewmodel:bundleAndroidMainClassesToCompileJar', task ':compose-app:kspDebugKotlinAndroid']
+Tasks that were excluded: []
+work action Parameters of IdentityTransform (Thread[#9674,included builds,5,main]) started.
+work action Parameters of IdentityTransform (Thread[#9683,Execution worker Thread 9,5,main]) started.
+work action Parameters of IdentityTransform (Thread[#9675,Execution worker,5,main]) started.
+work action Parameters of IdentityTransform (Thread[#9678,Execution worker Thread 4,5,main]) started.
+work action Parameters of IdentityTransform (Thread[#9682,Execution worker Thread 8,5,main]) started.
+work action Parameters of IdentityTransform (Thread[#9687,Execution worker Thread 12,5,main]) started.
+work action Parameters of IdentityTransform (Thread[#9680,Execution worker Thread 6,5,main]) started.
+work action Parameters of IdentityTransform (Thread[#9676,Execution worker Thread 2,5,main]) started.
+work action Parameters of IdentityTransform (Thread[#9679,Execution worker Thread 5,5,main]) started.
+work action Parameters of IdentityTransform (Thread[#9681,Execution worker Thread 7,5,main]) started.
+Resolve mutations for :compose-resources:preBuild (Thread[#9683,Execution worker Thread 9,5,main]) started.
+work action Parameters of IdentityTransform (Thread[#9689,Execution worker Thread 14,5,main]) started.
+Resolve mutations for :data:androidPreBuild (Thread[#9688,Execution worker Thread 13,5,main]) started.
+Resolve mutations for :domain:kmpPartiallyResolvedDependenciesChecker (Thread[#9677,Execution worker Thread 3,5,main]) started.
+Resolve mutations for :data-local:androidPreBuild (Thread[#9689,Execution worker Thread 14,5,main]) started.
+:data:androidPreBuild (Thread[#9688,Execution worker Thread 13,5,main]) started.
+:domain:kmpPartiallyResolvedDependenciesChecker (Thread[#9677,Execution worker Thread 3,5,main]) started.
+:data-local:androidPreBuild (Thread[#9689,Execution worker Thread 14,5,main]) started.
+Resolve mutations for :data-network:androidPreBuild (Thread[#9681,Execution worker Thread 7,5,main]) started.
+Resolve mutations for :presentation-feature:androidPreBuild (Thread[#9679,Execution worker Thread 5,5,main]) started.
+Resolve mutations for :viewmodel:androidPreBuild (Thread[#9676,Execution worker Thread 2,5,main]) started.
+Resolve mutations for :presentation-core:androidPreBuild (Thread[#9682,Execution worker Thread 8,5,main]) started.
+:data-network:androidPreBuild (Thread[#9681,Execution worker Thread 7,5,main]) started.
+Resolve mutations for :usecase:androidPreBuild (Thread[#9687,Execution worker Thread 12,5,main]) started.
+Resolve mutations for :ai:kmpPartiallyResolvedDependenciesChecker (Thread[#9674,included builds,5,main]) started.
+:compose-resources:preBuild (Thread[#9683,Execution worker Thread 9,5,main]) started.
+Resolve mutations for :presentation-model:kmpPartiallyResolvedDependenciesChecker (Thread[#9678,Execution worker Thread 4,5,main]) started.
+:viewmodel:androidPreBuild (Thread[#9676,Execution worker Thread 2,5,main]) started.
+:usecase:androidPreBuild (Thread[#9687,Execution worker Thread 12,5,main]) started.
+:ai:kmpPartiallyResolvedDependenciesChecker (Thread[#9674,included builds,5,main]) started.
+Resolve mutations for :fixtures:androidPreBuild (Thread[#9675,Execution worker,5,main]) started.
+:presentation-core:androidPreBuild (Thread[#9682,Execution worker Thread 8,5,main]) started.
+:fixtures:androidPreBuild (Thread[#9675,Execution worker,5,main]) started.
+Resolve mutations for :compose-app:convertXmlValueResourcesForAndroidMain (Thread[#9680,Execution worker Thread 6,5,main]) started.
+:presentation-feature:androidPreBuild (Thread[#9679,Execution worker Thread 5,5,main]) started.
+:presentation-model:kmpPartiallyResolvedDependenciesChecker (Thread[#9678,Execution worker Thread 4,5,main]) started.
+:compose-app:convertXmlValueResourcesForAndroidMain (Thread[#9680,Execution worker Thread 6,5,main]) started.
+
+> Task :fixtures:androidPreBuild UP-TO-DATE
+Skipping task ':fixtures:androidPreBuild' as it has no actions.
+Resolve mutations for :fixtures:preAndroidMainBuild (Thread[#9675,Execution worker,5,main]) started.
+:fixtures:preAndroidMainBuild (Thread[#9675,Execution worker,5,main]) started.
+
+> Task :presentation-core:androidPreBuild UP-TO-DATE
+Skipping task ':presentation-core:androidPreBuild' as it has no actions.
+
+> Task :presentation-feature:androidPreBuild UP-TO-DATE
+Skipping task ':presentation-feature:androidPreBuild' as it has no actions.
+Resolve mutations for :presentation-core:preAndroidMainBuild (Thread[#9682,Execution worker Thread 8,5,main]) started.
+Resolve mutations for :presentation-feature:preAndroidMainBuild (Thread[#9679,Execution worker Thread 5,5,main]) started.
+:presentation-core:preAndroidMainBuild (Thread[#9682,Execution worker Thread 8,5,main]) started.
+
+> Task :data:androidPreBuild UP-TO-DATE
+Skipping task ':data:androidPreBuild' as it has no actions.
+
+> Task :presentation-core:preAndroidMainBuild UP-TO-DATE
+Skipping task ':presentation-core:preAndroidMainBuild' as it has no actions.
+Resolve mutations for :data:preAndroidMainBuild (Thread[#9688,Execution worker Thread 13,5,main]) started.
+:data:preAndroidMainBuild (Thread[#9688,Execution worker Thread 13,5,main]) started.
+
+> Task :compose-app:convertXmlValueResourcesForAndroidMain NO-SOURCE
+file or directory '/Users/cartland/bb-merge/compose-app/build/generated/compose/resourceGenerator/preparedResources/androidMain/composeResources', not found
+Skipping task ':compose-app:convertXmlValueResourcesForAndroidMain' as it has no source files and no previous output files.
+
+> Task :data:preAndroidMainBuild UP-TO-DATE
+Skipping task ':data:preAndroidMainBuild' as it has no actions.
+Resolve mutations for :compose-app:copyNonXmlValueResourcesForAndroidMain (Thread[#9680,Execution worker Thread 6,5,main]) started.
+Resolve mutations for :data:writeAndroidMainAarMetadata (Thread[#9688,Execution worker Thread 13,5,main]) started.
+
+> Task :fixtures:preAndroidMainBuild UP-TO-DATE
+Skipping task ':fixtures:preAndroidMainBuild' as it has no actions.
+:data:writeAndroidMainAarMetadata (Thread[#9688,Execution worker Thread 13,5,main]) started.
+:compose-app:copyNonXmlValueResourcesForAndroidMain (Thread[#9680,Execution worker Thread 6,5,main]) started.
+
+> Task :data-network:androidPreBuild UP-TO-DATE
+Skipping task ':data-network:androidPreBuild' as it has no actions.
+
+> Task :viewmodel:androidPreBuild UP-TO-DATE
+Skipping task ':viewmodel:androidPreBuild' as it has no actions.
+Resolve mutations for :fixtures:writeAndroidMainAarMetadata (Thread[#9675,Execution worker,5,main]) started.
+
+> Task :data-local:androidPreBuild UP-TO-DATE
+Skipping task ':data-local:androidPreBuild' as it has no actions.
+
+> Task :compose-resources:preBuild UP-TO-DATE
+Skipping task ':compose-resources:preBuild' as it has no actions.
+Resolve mutations for :presentation-core:writeAndroidMainAarMetadata (Thread[#9682,Execution worker Thread 8,5,main]) started.
+:presentation-feature:preAndroidMainBuild (Thread[#9685,Execution worker Thread 10,5,main]) started.
+
+> Task :usecase:androidPreBuild UP-TO-DATE
+Skipping task ':usecase:androidPreBuild' as it has no actions.
+Resolve mutations for :data-local:preAndroidMainBuild (Thread[#9689,Execution worker Thread 14,5,main]) started.
+Resolve mutations for :compose-resources:preDebugBuild (Thread[#9683,Execution worker Thread 9,5,main]) started.
+
+> Task :data:writeAndroidMainAarMetadata UP-TO-DATE
+Caching disabled for task ':data:writeAndroidMainAarMetadata' because:
+  Caching has been disabled for the task
+Skipping task ':data:writeAndroidMainAarMetadata' as it is up-to-date.
+:compose-resources:preDebugBuild (Thread[#9683,Execution worker Thread 9,5,main]) started.
+
+> Task :compose-app:copyNonXmlValueResourcesForAndroidMain NO-SOURCE
+file or directory '/Users/cartland/bb-merge/compose-app/build/generated/compose/resourceGenerator/preparedResources/androidMain/composeResources', not found
+Skipping task ':compose-app:copyNonXmlValueResourcesForAndroidMain' as it has no source files and no previous output files.
+:fixtures:writeAndroidMainAarMetadata (Thread[#9675,Execution worker,5,main]) started.
+Resolve mutations for :compose-app:prepareComposeResourcesTaskForAndroidMain (Thread[#9680,Execution worker Thread 6,5,main]) started.
+Resolve mutations for :viewmodel:preAndroidMainBuild (Thread[#9681,Execution worker Thread 7,5,main]) started.
+Resolve mutations for :data-network:preAndroidMainBuild (Thread[#9676,Execution worker Thread 2,5,main]) started.
+:viewmodel:preAndroidMainBuild (Thread[#9681,Execution worker Thread 7,5,main]) started.
+:compose-app:prepareComposeResourcesTaskForAndroidMain (Thread[#9680,Execution worker Thread 6,5,main]) started.
+work action resolve aar-metadata.properties (project :data) (Thread[#9688,Execution worker Thread 13,5,main]) started.
+
+> Task :presentation-feature:preAndroidMainBuild UP-TO-DATE
+Skipping task ':presentation-feature:preAndroidMainBuild' as it has no actions.
+:data-local:preAndroidMainBuild (Thread[#9689,Execution worker Thread 14,5,main]) started.
+Resolve mutations for :usecase:preAndroidMainBuild (Thread[#9687,Execution worker Thread 12,5,main]) started.
+:usecase:preAndroidMainBuild (Thread[#9687,Execution worker Thread 12,5,main]) started.
+:presentation-core:writeAndroidMainAarMetadata (Thread[#9682,Execution worker Thread 8,5,main]) started.
+
+> Task :usecase:preAndroidMainBuild UP-TO-DATE
+Skipping task ':usecase:preAndroidMainBuild' as it has no actions.
+
+> Task :domain:kmpPartiallyResolvedDependenciesChecker
+Caching disabled for task ':domain:kmpPartiallyResolvedDependenciesChecker' because:
+  This task is not intended for execution
+Task ':domain:kmpPartiallyResolvedDependenciesChecker' is not up-to-date because:
+  Task has not declared any outputs despite executing actions.
+Execution stopped by some action with message: null
+
+> Task :data-local:preAndroidMainBuild UP-TO-DATE
+Skipping task ':data-local:preAndroidMainBuild' as it has no actions.
+Resolve mutations for :domain:checkKotlinGradlePluginConfigurationErrors (Thread[#9687,Execution worker Thread 12,5,main]) started.
+Resolve mutations for :usecase:writeAndroidMainAarMetadata (Thread[#9677,Execution worker Thread 3,5,main]) started.
+Resolve mutations for :presentation-feature:writeAndroidMainAarMetadata (Thread[#9685,Execution worker Thread 10,5,main]) started.
+Resolve mutations for :data:generateAndroidMainEmptyResourceFiles (Thread[#9688,Execution worker Thread 13,5,main]) started.
+
+> Task :fixtures:writeAndroidMainAarMetadata UP-TO-DATE
+Caching disabled for task ':fixtures:writeAndroidMainAarMetadata' because:
+  Caching has been disabled for the task
+Skipping task ':fixtures:writeAndroidMainAarMetadata' as it is up-to-date.
+:usecase:writeAndroidMainAarMetadata (Thread[#9677,Execution worker Thread 3,5,main]) started.
+work action resolve aar-metadata.properties (project :fixtures) (Thread[#9688,Execution worker Thread 13,5,main]) started.
+
+> Task :compose-resources:preDebugBuild UP-TO-DATE
+Skipping task ':compose-resources:preDebugBuild' as it has no actions.
+:data-network:preAndroidMainBuild (Thread[#9676,Execution worker Thread 2,5,main]) started.
+Resolve mutations for :compose-resources:writeDebugAarMetadata (Thread[#9683,Execution worker Thread 9,5,main]) started.
+Resolve mutations for :fixtures:generateAndroidMainEmptyResourceFiles (Thread[#9688,Execution worker Thread 13,5,main]) started.
+:data:generateAndroidMainEmptyResourceFiles (Thread[#9675,Execution worker,5,main]) started.
+:fixtures:generateAndroidMainEmptyResourceFiles (Thread[#9688,Execution worker Thread 13,5,main]) started.
+
+> Task :presentation-core:writeAndroidMainAarMetadata UP-TO-DATE
+Caching disabled for task ':presentation-core:writeAndroidMainAarMetadata' because:
+  Caching has been disabled for the task
+Skipping task ':presentation-core:writeAndroidMainAarMetadata' as it is up-to-date.
+:presentation-feature:writeAndroidMainAarMetadata (Thread[#9685,Execution worker Thread 10,5,main]) started.
+:domain:checkKotlinGradlePluginConfigurationErrors (Thread[#9687,Execution worker Thread 12,5,main]) started.
+Resolve mutations for :data-local:writeAndroidMainAarMetadata (Thread[#9689,Execution worker Thread 14,5,main]) started.
+work action resolve aar-metadata.properties (project :presentation-core) (Thread[#9682,Execution worker Thread 8,5,main]) started.
+:data-local:writeAndroidMainAarMetadata (Thread[#9689,Execution worker Thread 14,5,main]) started.
+Resolve mutations for :presentation-core:generateAndroidMainEmptyResourceFiles (Thread[#9682,Execution worker Thread 8,5,main]) started.
+:presentation-core:generateAndroidMainEmptyResourceFiles (Thread[#9682,Execution worker Thread 8,5,main]) started.
+
+> Task :usecase:writeAndroidMainAarMetadata UP-TO-DATE
+Caching disabled for task ':usecase:writeAndroidMainAarMetadata' because:
+  Caching has been disabled for the task
+Skipping task ':usecase:writeAndroidMainAarMetadata' as it is up-to-date.
+
+> Task :compose-app:prepareComposeResourcesTaskForAndroidMain NO-SOURCE
+Skipping task ':compose-app:prepareComposeResourcesTaskForAndroidMain' as it has no source files and no previous output files.
+
+> Task :viewmodel:preAndroidMainBuild UP-TO-DATE
+Skipping task ':viewmodel:preAndroidMainBuild' as it has no actions.
+work action resolve aar-metadata.properties (project :usecase) (Thread[#9677,Execution worker Thread 3,5,main]) started.
+Resolve mutations for :compose-app:generateResourceAccessorsForAndroidMain (Thread[#9680,Execution worker Thread 6,5,main]) started.
+Resolve mutations for :usecase:generateAndroidMainEmptyResourceFiles (Thread[#9677,Execution worker Thread 3,5,main]) started.
+:compose-resources:writeDebugAarMetadata (Thread[#9683,Execution worker Thread 9,5,main]) started.
+Resolve mutations for :viewmodel:writeAndroidMainAarMetadata (Thread[#9681,Execution worker Thread 7,5,main]) started.
+
+> Task :data-network:preAndroidMainBuild UP-TO-DATE
+Skipping task ':data-network:preAndroidMainBuild' as it has no actions.
+:compose-app:generateResourceAccessorsForAndroidMain (Thread[#9680,Execution worker Thread 6,5,main]) started.
+:viewmodel:writeAndroidMainAarMetadata (Thread[#9681,Execution worker Thread 7,5,main]) started.
+
+> Task :fixtures:generateAndroidMainEmptyResourceFiles UP-TO-DATE
+Caching disabled for task ':fixtures:generateAndroidMainEmptyResourceFiles' because:
+  Caching has been disabled for the task
+Skipping task ':fixtures:generateAndroidMainEmptyResourceFiles' as it is up-to-date.
+
+> Task :domain:checkKotlinGradlePluginConfigurationErrors SKIPPED
+Skipping task ':domain:checkKotlinGradlePluginConfigurationErrors' as task onlyIf 'errorDiagnostics are present' is false.
+Resolve mutations for :domain:kspKotlinJvm (Thread[#9687,Execution worker Thread 12,5,main]) started.
+work action resolve res (project :fixtures) (Thread[#9688,Execution worker Thread 13,5,main]) started.
+
+> Task :compose-app:generateResourceAccessorsForAndroidMain NO-SOURCE
+Skipping task ':compose-app:generateResourceAccessorsForAndroidMain' as it has no source files and no previous output files.
+Resolve mutations for :fixtures:processAndroidMainManifest (Thread[#9688,Execution worker Thread 13,5,main]) started.
+:domain:kspKotlinJvm (Thread[#9687,Execution worker Thread 12,5,main]) started.
+
+> Task :compose-resources:writeDebugAarMetadata UP-TO-DATE
+Caching disabled for task ':compose-resources:writeDebugAarMetadata' because:
+  Caching has been disabled for the task
+Skipping task ':compose-resources:writeDebugAarMetadata' as it is up-to-date.
+:usecase:generateAndroidMainEmptyResourceFiles (Thread[#9677,Execution worker Thread 3,5,main]) started.
+:fixtures:processAndroidMainManifest (Thread[#9688,Execution worker Thread 13,5,main]) started.
+Resolve mutations for :data-network:writeAndroidMainAarMetadata (Thread[#9676,Execution worker Thread 2,5,main]) started.
+work action resolve aar-metadata.properties (project :compose-resources) (Thread[#9683,Execution worker Thread 9,5,main]) started.
+Resolve mutations for :compose-resources:convertXmlValueResourcesForAndroidDebug (Thread[#9683,Execution worker Thread 9,5,main]) started.
+Resolve mutations for :compose-app:convertXmlValueResourcesForCommonMain (Thread[#9680,Execution worker Thread 6,5,main]) started.
+:data-network:writeAndroidMainAarMetadata (Thread[#9676,Execution worker Thread 2,5,main]) started.
+
+> Task :presentation-feature:writeAndroidMainAarMetadata UP-TO-DATE
+Caching disabled for task ':presentation-feature:writeAndroidMainAarMetadata' because:
+  Caching has been disabled for the task
+Skipping task ':presentation-feature:writeAndroidMainAarMetadata' as it is up-to-date.
+:compose-resources:convertXmlValueResourcesForAndroidDebug (Thread[#9683,Execution worker Thread 9,5,main]) started.
+work action resolve aar-metadata.properties (project :presentation-feature) (Thread[#9685,Execution worker Thread 10,5,main]) started.
+
+> Task :data-local:writeAndroidMainAarMetadata UP-TO-DATE
+Caching disabled for task ':data-local:writeAndroidMainAarMetadata' because:
+  Caching has been disabled for the task
+Skipping task ':data-local:writeAndroidMainAarMetadata' as it is up-to-date.
+
+> Task :viewmodel:writeAndroidMainAarMetadata UP-TO-DATE
+Caching disabled for task ':viewmodel:writeAndroidMainAarMetadata' because:
+  Caching has been disabled for the task
+Skipping task ':viewmodel:writeAndroidMainAarMetadata' as it is up-to-date.
+:compose-app:convertXmlValueResourcesForCommonMain (Thread[#9680,Execution worker Thread 6,5,main]) started.
+
+> Task :data:generateAndroidMainEmptyResourceFiles UP-TO-DATE
+Caching disabled for task ':data:generateAndroidMainEmptyResourceFiles' because:
+  Caching has been disabled for the task
+Skipping task ':data:generateAndroidMainEmptyResourceFiles' as it is up-to-date.
+
+> Task :compose-resources:convertXmlValueResourcesForAndroidDebug NO-SOURCE
+file or directory '/Users/cartland/bb-merge/compose-resources/build/generated/compose/resourceGenerator/preparedResources/androidDebug/composeResources', not found
+Skipping task ':compose-resources:convertXmlValueResourcesForAndroidDebug' as it has no source files and no previous output files.
+
+> Task :domain:kspKotlinJvm SKIPPED
+Skipping task ':domain:kspKotlinJvm' as task onlyIf 'Task satisfies onlyIf spec' is false.
+Resolve mutations for :compose-resources:copyNonXmlValueResourcesForAndroidDebug (Thread[#9683,Execution worker Thread 9,5,main]) started.
+work action resolve aar-metadata.properties (project :data-local) (Thread[#9689,Execution worker Thread 14,5,main]) started.
+
+> Task :usecase:generateAndroidMainEmptyResourceFiles UP-TO-DATE
+Caching disabled for task ':usecase:generateAndroidMainEmptyResourceFiles' because:
+  Caching has been disabled for the task
+Skipping task ':usecase:generateAndroidMainEmptyResourceFiles' as it is up-to-date.
+work action resolve aar-metadata.properties (project :viewmodel) (Thread[#9681,Execution worker Thread 7,5,main]) started.
+Resolve mutations for :presentation-feature:generateAndroidMainEmptyResourceFiles (Thread[#9685,Execution worker Thread 10,5,main]) started.
+:compose-resources:copyNonXmlValueResourcesForAndroidDebug (Thread[#9677,Execution worker Thread 3,5,main]) started.
+:presentation-feature:generateAndroidMainEmptyResourceFiles (Thread[#9685,Execution worker Thread 10,5,main]) started.
+
+> Task :fixtures:processAndroidMainManifest UP-TO-DATE
+Build cache key for task ':fixtures:processAndroidMainManifest' is f91bb24f7b3ab6d6dcf54e42e458405d
+Skipping task ':fixtures:processAndroidMainManifest' as it is up-to-date.
+
+> Task :presentation-core:generateAndroidMainEmptyResourceFiles UP-TO-DATE
+Caching disabled for task ':presentation-core:generateAndroidMainEmptyResourceFiles' because:
+  Caching has been disabled for the task
+Skipping task ':presentation-core:generateAndroidMainEmptyResourceFiles' as it is up-to-date.
+work action resolve res (project :usecase) (Thread[#9683,Execution worker Thread 9,5,main]) started.
+Resolve mutations for :viewmodel:generateAndroidMainEmptyResourceFiles (Thread[#9681,Execution worker Thread 7,5,main]) started.
+Resolve mutations for :data-local:generateAndroidMainEmptyResourceFiles (Thread[#9689,Execution worker Thread 14,5,main]) started.
+Resolve mutations for :domain:compileKotlinJvm (Thread[#9687,Execution worker Thread 12,5,main]) started.
+work action resolve res (project :data) (Thread[#9675,Execution worker,5,main]) started.
+:data-local:generateAndroidMainEmptyResourceFiles (Thread[#9689,Execution worker Thread 14,5,main]) started.
+
+> Task :data-network:writeAndroidMainAarMetadata UP-TO-DATE
+Caching disabled for task ':data-network:writeAndroidMainAarMetadata' because:
+  Caching has been disabled for the task
+Skipping task ':data-network:writeAndroidMainAarMetadata' as it is up-to-date.
+:viewmodel:generateAndroidMainEmptyResourceFiles (Thread[#9681,Execution worker Thread 7,5,main]) started.
+Resolve mutations for :usecase:processAndroidMainManifest (Thread[#9683,Execution worker Thread 9,5,main]) started.
+work action resolve AndroidManifest.xml (project :fixtures) (Thread[#9688,Execution worker Thread 13,5,main]) started.
+work action resolve res (project :presentation-core) (Thread[#9682,Execution worker Thread 8,5,main]) started.
+Resolve mutations for :presentation-core:processAndroidMainManifest (Thread[#9682,Execution worker Thread 8,5,main]) started.
+
+> Task :compose-resources:copyNonXmlValueResourcesForAndroidDebug NO-SOURCE
+file or directory '/Users/cartland/bb-merge/compose-resources/build/generated/compose/resourceGenerator/preparedResources/androidDebug/composeResources', not found
+Skipping task ':compose-resources:copyNonXmlValueResourcesForAndroidDebug' as it has no source files and no previous output files.
+:domain:compileKotlinJvm (Thread[#9690,Execution worker Thread 15,5,main]) started.
+:usecase:processAndroidMainManifest (Thread[#9683,Execution worker Thread 9,5,main]) started.
+
+> Task :viewmodel:generateAndroidMainEmptyResourceFiles UP-TO-DATE
+Caching disabled for task ':viewmodel:generateAndroidMainEmptyResourceFiles' because:
+  Caching has been disabled for the task
+Skipping task ':viewmodel:generateAndroidMainEmptyResourceFiles' as it is up-to-date.
+work action resolve res (project :viewmodel) (Thread[#9681,Execution worker Thread 7,5,main]) started.
+
+> Task :presentation-feature:generateAndroidMainEmptyResourceFiles UP-TO-DATE
+Caching disabled for task ':presentation-feature:generateAndroidMainEmptyResourceFiles' because:
+  Caching has been disabled for the task
+Skipping task ':presentation-feature:generateAndroidMainEmptyResourceFiles' as it is up-to-date.
+work action resolve aar-metadata.properties (project :data-network) (Thread[#9676,Execution worker Thread 2,5,main]) started.
+Resolve mutations for :data:processAndroidMainManifest (Thread[#9675,Execution worker,5,main]) started.
+Resolve mutations for :data-network:generateAndroidMainEmptyResourceFiles (Thread[#9676,Execution worker Thread 2,5,main]) started.
+:data:processAndroidMainManifest (Thread[#9675,Execution worker,5,main]) started.
+work action resolve res (project :presentation-feature) (Thread[#9685,Execution worker Thread 10,5,main]) started.
+Resolve mutations for :viewmodel:processAndroidMainManifest (Thread[#9681,Execution worker Thread 7,5,main]) started.
+:presentation-core:processAndroidMainManifest (Thread[#9682,Execution worker Thread 8,5,main]) started.
+Resolve mutations for :compose-resources:prepareComposeResourcesTaskForAndroidDebug (Thread[#9677,Execution worker Thread 3,5,main]) started.
+Resolve mutations for :fixtures:kmpPartiallyResolvedDependenciesChecker (Thread[#9688,Execution worker Thread 13,5,main]) started.
+:fixtures:kmpPartiallyResolvedDependenciesChecker (Thread[#9688,Execution worker Thread 13,5,main]) started.
+:viewmodel:processAndroidMainManifest (Thread[#9681,Execution worker Thread 7,5,main]) started.
+
+> Task :data-local:generateAndroidMainEmptyResourceFiles UP-TO-DATE
+Caching disabled for task ':data-local:generateAndroidMainEmptyResourceFiles' because:
+  Caching has been disabled for the task
+Skipping task ':data-local:generateAndroidMainEmptyResourceFiles' as it is up-to-date.
+work action resolve res (project :data-local) (Thread[#9689,Execution worker Thread 14,5,main]) started.
+Resolve mutations for :presentation-feature:processAndroidMainManifest (Thread[#9685,Execution worker Thread 10,5,main]) started.
+
+> Task :usecase:processAndroidMainManifest UP-TO-DATE
+Build cache key for task ':usecase:processAndroidMainManifest' is 56a14d895daa7fa39cd03514ca30de01
+Skipping task ':usecase:processAndroidMainManifest' as it is up-to-date.
+
+> Task :compose-app:convertXmlValueResourcesForCommonMain UP-TO-DATE
+Caching disabled for task ':compose-app:convertXmlValueResourcesForCommonMain' because:
+  Caching has not been enabled for the task
+Skipping task ':compose-app:convertXmlValueResourcesForCommonMain' as it is up-to-date.
+:data-network:generateAndroidMainEmptyResourceFiles (Thread[#9676,Execution worker Thread 2,5,main]) started.
+Resolve mutations for :compose-app:copyNonXmlValueResourcesForCommonMain (Thread[#9680,Execution worker Thread 6,5,main]) started.
+:compose-app:copyNonXmlValueResourcesForCommonMain (Thread[#9680,Execution worker Thread 6,5,main]) started.
+work action resolve AndroidManifest.xml (project :usecase) (Thread[#9683,Execution worker Thread 9,5,main]) started.
+Resolve mutations for :data-local:processAndroidMainManifest (Thread[#9689,Execution worker Thread 14,5,main]) started.
+:compose-resources:prepareComposeResourcesTaskForAndroidDebug (Thread[#9677,Execution worker Thread 3,5,main]) started.
+Resolve mutations for :usecase:kmpPartiallyResolvedDependenciesChecker (Thread[#9683,Execution worker Thread 9,5,main]) started.
+
+> Task :data:processAndroidMainManifest UP-TO-DATE
+Build cache key for task ':data:processAndroidMainManifest' is 5714be535e2d7e9dee09a0522b0e8913
+Skipping task ':data:processAndroidMainManifest' as it is up-to-date.
+
+> Task :compose-resources:prepareComposeResourcesTaskForAndroidDebug NO-SOURCE
+Skipping task ':compose-resources:prepareComposeResourcesTaskForAndroidDebug' as it has no source files and no previous output files.
+
+> Task :viewmodel:processAndroidMainManifest UP-TO-DATE
+Build cache key for task ':viewmodel:processAndroidMainManifest' is 91fa8e04fb7ff02abba4179f54a162e1
+Skipping task ':viewmodel:processAndroidMainManifest' as it is up-to-date.
+work action resolve AndroidManifest.xml (project :data) (Thread[#9675,Execution worker,5,main]) started.
+Resolve mutations for :data:kmpPartiallyResolvedDependenciesChecker (Thread[#9675,Execution worker,5,main]) started.
+Resolve mutations for :compose-resources:convertXmlValueResourcesForAndroidMain (Thread[#9677,Execution worker Thread 3,5,main]) started.
+:presentation-feature:processAndroidMainManifest (Thread[#9685,Execution worker Thread 10,5,main]) started.
+work action resolve AndroidManifest.xml (project :viewmodel) (Thread[#9681,Execution worker Thread 7,5,main]) started.
+:compose-resources:convertXmlValueResourcesForAndroidMain (Thread[#9687,Execution worker Thread 12,5,main]) started.
+Resolve mutations for :viewmodel:kmpPartiallyResolvedDependenciesChecker (Thread[#9677,Execution worker Thread 3,5,main]) started.
+:viewmodel:kmpPartiallyResolvedDependenciesChecker (Thread[#9677,Execution worker Thread 3,5,main]) started.
+:data:kmpPartiallyResolvedDependenciesChecker (Thread[#9675,Execution worker,5,main]) started.
+
+> Task :presentation-core:processAndroidMainManifest UP-TO-DATE
+Build cache key for task ':presentation-core:processAndroidMainManifest' is b697217acbba17f2fb5d591c837146fa
+Skipping task ':presentation-core:processAndroidMainManifest' as it is up-to-date.
+:usecase:kmpPartiallyResolvedDependenciesChecker (Thread[#9683,Execution worker Thread 9,5,main]) started.
+:data-local:processAndroidMainManifest (Thread[#9689,Execution worker Thread 14,5,main]) started.
+
+> Task :presentation-feature:processAndroidMainManifest UP-TO-DATE
+Build cache key for task ':presentation-feature:processAndroidMainManifest' is 8415898e70b56128e2d57e1b1e63d17a
+Skipping task ':presentation-feature:processAndroidMainManifest' as it is up-to-date.
+work action resolve AndroidManifest.xml (project :presentation-core) (Thread[#9682,Execution worker Thread 8,5,main]) started.
+
+> Task :compose-app:copyNonXmlValueResourcesForCommonMain UP-TO-DATE
+Caching disabled for task ':compose-app:copyNonXmlValueResourcesForCommonMain' because:
+  Caching has not been enabled for the task
+Skipping task ':compose-app:copyNonXmlValueResourcesForCommonMain' as it is up-to-date.
+
+> Task :compose-resources:convertXmlValueResourcesForAndroidMain NO-SOURCE
+file or directory '/Users/cartland/bb-merge/compose-resources/build/generated/compose/resourceGenerator/preparedResources/androidMain/composeResources', not found
+Skipping task ':compose-resources:convertXmlValueResourcesForAndroidMain' as it has no source files and no previous output files.
+
+> Task :data-network:generateAndroidMainEmptyResourceFiles UP-TO-DATE
+Caching disabled for task ':data-network:generateAndroidMainEmptyResourceFiles' because:
+  Caching has been disabled for the task
+Skipping task ':data-network:generateAndroidMainEmptyResourceFiles' as it is up-to-date.
+work action resolve res (project :data-network) (Thread[#9676,Execution worker Thread 2,5,main]) started.
+Resolve mutations for :compose-app:prepareComposeResourcesTaskForCommonMain (Thread[#9676,Execution worker Thread 2,5,main]) started.
+Resolve mutations for :data-network:processAndroidMainManifest (Thread[#9681,Execution worker Thread 7,5,main]) started.
+:compose-app:prepareComposeResourcesTaskForCommonMain (Thread[#9676,Execution worker Thread 2,5,main]) started.
+:data-network:processAndroidMainManifest (Thread[#9681,Execution worker Thread 7,5,main]) started.
+Resolve mutations for :compose-resources:copyNonXmlValueResourcesForAndroidMain (Thread[#9687,Execution worker Thread 12,5,main]) started.
+Resolve mutations for :presentation-core:kmpPartiallyResolvedDependenciesChecker (Thread[#9682,Execution worker Thread 8,5,main]) started.
+:compose-resources:copyNonXmlValueResourcesForAndroidMain (Thread[#9687,Execution worker Thread 12,5,main]) started.
+:presentation-core:kmpPartiallyResolvedDependenciesChecker (Thread[#9682,Execution worker Thread 8,5,main]) started.
+work action resolve AndroidManifest.xml (project :presentation-feature) (Thread[#9685,Execution worker Thread 10,5,main]) started.
+Resolve mutations for :presentation-feature:kmpPartiallyResolvedDependenciesChecker (Thread[#9685,Execution worker Thread 10,5,main]) started.
+
+> Task :data-local:processAndroidMainManifest UP-TO-DATE
+Build cache key for task ':data-local:processAndroidMainManifest' is 79d1afa3054b1f86f491c1574492b979
+Skipping task ':data-local:processAndroidMainManifest' as it is up-to-date.
+work action resolve AndroidManifest.xml (project :data-local) (Thread[#9689,Execution worker Thread 14,5,main]) started.
+Resolve mutations for :data-local:kmpPartiallyResolvedDependenciesChecker (Thread[#9689,Execution worker Thread 14,5,main]) started.
+:data-local:kmpPartiallyResolvedDependenciesChecker (Thread[#9689,Execution worker Thread 14,5,main]) started.
+
+> Task :compose-resources:copyNonXmlValueResourcesForAndroidMain NO-SOURCE
+file or directory '/Users/cartland/bb-merge/compose-resources/build/generated/compose/resourceGenerator/preparedResources/androidMain/composeResources', not found
+Skipping task ':compose-resources:copyNonXmlValueResourcesForAndroidMain' as it has no source files and no previous output files.
+:presentation-feature:kmpPartiallyResolvedDependenciesChecker (Thread[#9685,Execution worker Thread 10,5,main]) started.
+Resolve mutations for :compose-resources:prepareComposeResourcesTaskForAndroidMain (Thread[#9687,Execution worker Thread 12,5,main]) started.
+:compose-resources:prepareComposeResourcesTaskForAndroidMain (Thread[#9687,Execution worker Thread 12,5,main]) started.
+
+> Task :compose-app:prepareComposeResourcesTaskForCommonMain UP-TO-DATE
+Caching disabled for task ':compose-app:prepareComposeResourcesTaskForCommonMain' because:
+  Caching has not been enabled for the task
+Skipping task ':compose-app:prepareComposeResourcesTaskForCommonMain' as it is up-to-date.
+
+> Task :data-network:processAndroidMainManifest UP-TO-DATE
+Build cache key for task ':data-network:processAndroidMainManifest' is e8a6e7e3d12ef4d2c3df34e5325956be
+Skipping task ':data-network:processAndroidMainManifest' as it is up-to-date.
+Resolve mutations for :compose-app:generateResourceAccessorsForCommonMain (Thread[#9676,Execution worker Thread 2,5,main]) started.
+
+> Task :compose-resources:prepareComposeResourcesTaskForAndroidMain NO-SOURCE
+Skipping task ':compose-resources:prepareComposeResourcesTaskForAndroidMain' as it has no source files and no previous output files.
+work action resolve AndroidManifest.xml (project :data-network) (Thread[#9681,Execution worker Thread 7,5,main]) started.
+:compose-app:generateResourceAccessorsForCommonMain (Thread[#9676,Execution worker Thread 2,5,main]) started.
+Resolve mutations for :compose-resources:convertXmlValueResourcesForCommonMain (Thread[#9687,Execution worker Thread 12,5,main]) started.
+Resolve mutations for :data-network:kmpPartiallyResolvedDependenciesChecker (Thread[#9686,Execution worker Thread 11,5,main]) started.
+:compose-resources:convertXmlValueResourcesForCommonMain (Thread[#9687,Execution worker Thread 12,5,main]) started.
+:data-network:kmpPartiallyResolvedDependenciesChecker (Thread[#9686,Execution worker Thread 11,5,main]) started.
+
+> Task :compose-app:generateResourceAccessorsForCommonMain UP-TO-DATE
+Caching disabled for task ':compose-app:generateResourceAccessorsForCommonMain' because:
+  Caching has not been enabled for the task
+Skipping task ':compose-app:generateResourceAccessorsForCommonMain' as it is up-to-date.
+Resolve mutations for :compose-app:generateActualResourceCollectorsForAndroidMain (Thread[#9676,Execution worker Thread 2,5,main]) started.
+:compose-app:generateActualResourceCollectorsForAndroidMain (Thread[#9676,Execution worker Thread 2,5,main]) started.
+
+> Task :compose-resources:convertXmlValueResourcesForCommonMain UP-TO-DATE
+Caching disabled for task ':compose-resources:convertXmlValueResourcesForCommonMain' because:
+  Caching has not been enabled for the task
+Skipping task ':compose-resources:convertXmlValueResourcesForCommonMain' as it is up-to-date.
+Resolve mutations for :compose-resources:copyNonXmlValueResourcesForCommonMain (Thread[#9687,Execution worker Thread 12,5,main]) started.
+:compose-resources:copyNonXmlValueResourcesForCommonMain (Thread[#9687,Execution worker Thread 12,5,main]) started.
+
+> Task :compose-resources:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+Skipping task ':compose-resources:copyNonXmlValueResourcesForCommonMain' as it has no source files and no previous output files.
+Resolve mutations for :compose-resources:prepareComposeResourcesTaskForCommonMain (Thread[#9687,Execution worker Thread 12,5,main]) started.
+:compose-resources:prepareComposeResourcesTaskForCommonMain (Thread[#9687,Execution worker Thread 12,5,main]) started.
+
+> Task :compose-resources:prepareComposeResourcesTaskForCommonMain UP-TO-DATE
+Caching disabled for task ':compose-resources:prepareComposeResourcesTaskForCommonMain' because:
+  Caching has not been enabled for the task
+Skipping task ':compose-resources:prepareComposeResourcesTaskForCommonMain' as it is up-to-date.
+Resolve mutations for :compose-resources:copyDebugComposeResourcesToAndroidAssets (Thread[#9687,Execution worker Thread 12,5,main]) started.
+:compose-resources:copyDebugComposeResourcesToAndroidAssets (Thread[#9687,Execution worker Thread 12,5,main]) started.
+
+> Task :compose-app:generateActualResourceCollectorsForAndroidMain UP-TO-DATE
+Caching disabled for task ':compose-app:generateActualResourceCollectorsForAndroidMain' because:
+  Caching has not been enabled for the task
+Skipping task ':compose-app:generateActualResourceCollectorsForAndroidMain' as it is up-to-date.
+Resolve mutations for :compose-app:generateComposeResClass (Thread[#9676,Execution worker Thread 2,5,main]) started.
+:compose-app:generateComposeResClass (Thread[#9676,Execution worker Thread 2,5,main]) started.
+
+> Task :compose-resources:copyDebugComposeResourcesToAndroidAssets UP-TO-DATE
+Caching disabled for task ':compose-resources:copyDebugComposeResourcesToAndroidAssets' because:
+  Caching has not been enabled for the task
+Skipping task ':compose-resources:copyDebugComposeResourcesToAndroidAssets' as it is up-to-date.
+
+> Task :compose-app:generateComposeResClass UP-TO-DATE
+Caching disabled for task ':compose-app:generateComposeResClass' because:
+  Caching has not been enabled for the task
+Skipping task ':compose-app:generateComposeResClass' as it is up-to-date.
+Resolve mutations for :compose-app:preBuild (Thread[#9676,Execution worker Thread 2,5,main]) started.
+Resolve mutations for :compose-resources:generateDebugResValues (Thread[#9687,Execution worker Thread 12,5,main]) started.
+:compose-app:preBuild (Thread[#9676,Execution worker Thread 2,5,main]) started.
+:compose-resources:generateDebugResValues (Thread[#9687,Execution worker Thread 12,5,main]) started.
+
+> Task :compose-app:preBuild UP-TO-DATE
+Skipping task ':compose-app:preBuild' as it has no actions.
+Resolve mutations for :compose-app:preDebugBuild (Thread[#9676,Execution worker Thread 2,5,main]) started.
+:compose-app:preDebugBuild (Thread[#9676,Execution worker Thread 2,5,main]) started.
+
+> Task :compose-app:preDebugBuild UP-TO-DATE
+Skipping task ':compose-app:preDebugBuild' as it has no actions.
+Resolve mutations for :compose-app:generateDebugBuildConfig (Thread[#9676,Execution worker Thread 2,5,main]) started.
+
+> Task :compose-resources:generateDebugResValues UP-TO-DATE
+Build cache key for task ':compose-resources:generateDebugResValues' is 490999d6b303257c3ef356fb6b12870f
+Skipping task ':compose-resources:generateDebugResValues' as it is up-to-date.
+Resolve mutations for :compose-resources:generateDebugResources (Thread[#9687,Execution worker Thread 12,5,main]) started.
+:compose-app:generateDebugBuildConfig (Thread[#9676,Execution worker Thread 2,5,main]) started.
+:compose-resources:generateDebugResources (Thread[#9687,Execution worker Thread 12,5,main]) started.
+
+> Task :compose-app:generateDebugBuildConfig UP-TO-DATE
+Build cache key for task ':compose-app:generateDebugBuildConfig' is b85f045af7442492c319e8d0de647d82
+Skipping task ':compose-app:generateDebugBuildConfig' as it is up-to-date.
+
+> Task :compose-resources:generateDebugResources UP-TO-DATE
+Build cache key for task ':compose-resources:generateDebugResources' is 72abb5466b9bfbb690b8d858b922686a
+Skipping task ':compose-resources:generateDebugResources' as it is up-to-date.
+Resolve mutations for :compose-app:generateExpectResourceCollectorsForCommonMain (Thread[#9687,Execution worker Thread 12,5,main]) started.
+Resolve mutations for :compose-resources:packageDebugResources (Thread[#9676,Execution worker Thread 2,5,main]) started.
+:compose-app:generateExpectResourceCollectorsForCommonMain (Thread[#9687,Execution worker Thread 12,5,main]) started.
+:compose-resources:packageDebugResources (Thread[#9679,Execution worker Thread 5,5,main]) started.
+
+> Task :compose-app:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+Caching disabled for task ':compose-app:generateExpectResourceCollectorsForCommonMain' because:
+  Caching has not been enabled for the task
+Skipping task ':compose-app:generateExpectResourceCollectorsForCommonMain' as it is up-to-date.
+Resolve mutations for :compose-app:convertXmlValueResourcesForAndroidDebug (Thread[#9687,Execution worker Thread 12,5,main]) started.
+:compose-app:convertXmlValueResourcesForAndroidDebug (Thread[#9687,Execution worker Thread 12,5,main]) started.
+
+> Task :compose-app:convertXmlValueResourcesForAndroidDebug NO-SOURCE
+file or directory '/Users/cartland/bb-merge/compose-app/build/generated/compose/resourceGenerator/preparedResources/androidDebug/composeResources', not found
+Skipping task ':compose-app:convertXmlValueResourcesForAndroidDebug' as it has no source files and no previous output files.
+Resolve mutations for :compose-app:copyNonXmlValueResourcesForAndroidDebug (Thread[#9687,Execution worker Thread 12,5,main]) started.
+:compose-app:copyNonXmlValueResourcesForAndroidDebug (Thread[#9687,Execution worker Thread 12,5,main]) started.
+
+> Task :compose-resources:packageDebugResources UP-TO-DATE
+Build cache key for task ':compose-resources:packageDebugResources' is b87af34c40e527c20ad8d750fcdcea18
+Skipping task ':compose-resources:packageDebugResources' as it is up-to-date.
+work action resolve packageDebugResources (project :compose-resources) (Thread[#9679,Execution worker Thread 5,5,main]) started.
+
+> Task :compose-app:copyNonXmlValueResourcesForAndroidDebug NO-SOURCE
+file or directory '/Users/cartland/bb-merge/compose-app/build/generated/compose/resourceGenerator/preparedResources/androidDebug/composeResources', not found
+Skipping task ':compose-app:copyNonXmlValueResourcesForAndroidDebug' as it has no source files and no previous output files.
+Resolve mutations for :compose-resources:extractDeepLinksDebug (Thread[#9679,Execution worker Thread 5,5,main]) started.
+Resolve mutations for :compose-app:prepareComposeResourcesTaskForAndroidDebug (Thread[#9687,Execution worker Thread 12,5,main]) started.
+:compose-resources:extractDeepLinksDebug (Thread[#9679,Execution worker Thread 5,5,main]) started.
+:compose-app:prepareComposeResourcesTaskForAndroidDebug (Thread[#9687,Execution worker Thread 12,5,main]) started.
+
+> Task :compose-app:prepareComposeResourcesTaskForAndroidDebug NO-SOURCE
+Skipping task ':compose-app:prepareComposeResourcesTaskForAndroidDebug' as it has no source files and no previous output files.
+Resolve mutations for :compose-app:generateResourceAccessorsForAndroidDebug (Thread[#9687,Execution worker Thread 12,5,main]) started.
+:compose-app:generateResourceAccessorsForAndroidDebug (Thread[#9687,Execution worker Thread 12,5,main]) started.
+
+> Task :compose-resources:extractDeepLinksDebug UP-TO-DATE
+Build cache key for task ':compose-resources:extractDeepLinksDebug' is 1191845744840b5b0899226db9c1c70e
+Skipping task ':compose-resources:extractDeepLinksDebug' as it is up-to-date.
+work action resolve navigation.json (project :compose-resources) (Thread[#9679,Execution worker Thread 5,5,main]) started.
+
+> Task :compose-app:generateResourceAccessorsForAndroidDebug NO-SOURCE
+Skipping task ':compose-app:generateResourceAccessorsForAndroidDebug' as it has no source files and no previous output files.
+Resolve mutations for :compose-resources:processDebugManifest (Thread[#9679,Execution worker Thread 5,5,main]) started.
+Resolve mutations for :compose-app:generateDebugResValues (Thread[#9687,Execution worker Thread 12,5,main]) started.
+:compose-resources:processDebugManifest (Thread[#9679,Execution worker Thread 5,5,main]) started.
+:compose-app:generateDebugResValues (Thread[#9687,Execution worker Thread 12,5,main]) started.
+
+> Task :compose-app:generateDebugResValues UP-TO-DATE
+Build cache key for task ':compose-app:generateDebugResValues' is 490999d6b303257c3ef356fb6b12870f
+Skipping task ':compose-app:generateDebugResValues' as it is up-to-date.
+Resolve mutations for :compose-app:generateDebugResources (Thread[#9687,Execution worker Thread 12,5,main]) started.
+:compose-app:generateDebugResources (Thread[#9687,Execution worker Thread 12,5,main]) started.
+
+> Task :compose-resources:processDebugManifest UP-TO-DATE
+Build cache key for task ':compose-resources:processDebugManifest' is 268bfe98ed8e9fa514bf359e19259eb9
+Skipping task ':compose-resources:processDebugManifest' as it is up-to-date.
+work action resolve AndroidManifest.xml (project :compose-resources) (Thread[#9679,Execution worker Thread 5,5,main]) started.
+
+> Task :compose-app:generateDebugResources UP-TO-DATE
+Build cache key for task ':compose-app:generateDebugResources' is 0429beccac58c7f66cfa9630b211d726
+Skipping task ':compose-app:generateDebugResources' as it is up-to-date.
+Resolve mutations for :compose-resources:compileDebugLibraryResources (Thread[#9679,Execution worker Thread 5,5,main]) started.
+Resolve mutations for :compose-app:copyDebugComposeResourcesToAndroidAssets (Thread[#9687,Execution worker Thread 12,5,main]) started.
+:compose-resources:compileDebugLibraryResources (Thread[#9679,Execution worker Thread 5,5,main]) started.
+:compose-app:copyDebugComposeResourcesToAndroidAssets (Thread[#9687,Execution worker Thread 12,5,main]) started.
+
+> Task :compose-resources:compileDebugLibraryResources UP-TO-DATE
+Build cache key for task ':compose-resources:compileDebugLibraryResources' is c930f8c6b8901f3dc75f772afa52d3b8
+Skipping task ':compose-resources:compileDebugLibraryResources' as it is up-to-date.
+work action resolve out (project :compose-resources) (Thread[#9679,Execution worker Thread 5,5,main]) started.
+Resolve mutations for :compose-resources:parseDebugLocalResources (Thread[#9679,Execution worker Thread 5,5,main]) started.
+:compose-resources:parseDebugLocalResources (Thread[#9679,Execution worker Thread 5,5,main]) started.
+
+> Task :compose-app:copyDebugComposeResourcesToAndroidAssets UP-TO-DATE
+Caching disabled for task ':compose-app:copyDebugComposeResourcesToAndroidAssets' because:
+  Caching has not been enabled for the task
+Skipping task ':compose-app:copyDebugComposeResourcesToAndroidAssets' as it is up-to-date.
+Resolve mutations for :compose-app:packageDebugResources (Thread[#9687,Execution worker Thread 12,5,main]) started.
+:compose-app:packageDebugResources (Thread[#9687,Execution worker Thread 12,5,main]) started.
+
+> Task :compose-app:packageDebugResources UP-TO-DATE
+Build cache key for task ':compose-app:packageDebugResources' is e959d7bccf31771e2d3fad4cee8bf63a
+Skipping task ':compose-app:packageDebugResources' as it is up-to-date.
+Resolve mutations for :compose-app:parseDebugLocalResources (Thread[#9687,Execution worker Thread 12,5,main]) started.
+:compose-app:parseDebugLocalResources (Thread[#9687,Execution worker Thread 12,5,main]) started.
+
+> Task :compose-resources:parseDebugLocalResources UP-TO-DATE
+Build cache key for task ':compose-resources:parseDebugLocalResources' is 30c28dec87eb2515956f412a2683c46e
+Skipping task ':compose-resources:parseDebugLocalResources' as it is up-to-date.
+Resolve mutations for :compose-resources:generateDebugRFile (Thread[#9679,Execution worker Thread 5,5,main]) started.
+
+> Task :compose-app:parseDebugLocalResources UP-TO-DATE
+Build cache key for task ':compose-app:parseDebugLocalResources' is 0f90786480d3181ee1c7dbb5a1e92d41
+Skipping task ':compose-app:parseDebugLocalResources' as it is up-to-date.
+:compose-resources:generateDebugRFile (Thread[#9679,Execution worker Thread 5,5,main]) started.
+Resolve mutations for :compose-app:createDebugCompatibleScreenManifests (Thread[#9687,Execution worker Thread 12,5,main]) started.
+:compose-app:createDebugCompatibleScreenManifests (Thread[#9687,Execution worker Thread 12,5,main]) started.
+
+> Task :compose-resources:generateDebugRFile UP-TO-DATE
+Build cache key for task ':compose-resources:generateDebugRFile' is 0fa643baaa39deac437ed280e4741f38
+Skipping task ':compose-resources:generateDebugRFile' as it is up-to-date.
+
+> Task :compose-app:createDebugCompatibleScreenManifests UP-TO-DATE
+Caching disabled for task ':compose-app:createDebugCompatibleScreenManifests' because:
+  Caching has been disabled for the task
+Skipping task ':compose-app:createDebugCompatibleScreenManifests' as it is up-to-date.
+work action resolve package-aware-r.txt (project :compose-resources) (Thread[#9679,Execution worker Thread 5,5,main]) started.
+Resolve mutations for :compose-resources:kmpPartiallyResolvedDependenciesChecker (Thread[#9679,Execution worker Thread 5,5,main]) started.
+Resolve mutations for :compose-app:extractDeepLinksDebug (Thread[#9687,Execution worker Thread 12,5,main]) started.
+:compose-resources:kmpPartiallyResolvedDependenciesChecker (Thread[#9679,Execution worker Thread 5,5,main]) started.
+:compose-app:extractDeepLinksDebug (Thread[#9687,Execution worker Thread 12,5,main]) started.
+
+> Task :compose-app:extractDeepLinksDebug UP-TO-DATE
+Build cache key for task ':compose-app:extractDeepLinksDebug' is 1191845744840b5b0899226db9c1c70e
+Skipping task ':compose-app:extractDeepLinksDebug' as it is up-to-date.
+
+> Task :fixtures:kmpPartiallyResolvedDependenciesChecker
+Custom actions are attached to task ':fixtures:kmpPartiallyResolvedDependenciesChecker'.
+Caching disabled for task ':fixtures:kmpPartiallyResolvedDependenciesChecker' because:
+  This task is not intended for execution
+Task ':fixtures:kmpPartiallyResolvedDependenciesChecker' is not up-to-date because:
+  Task has not declared any outputs despite executing actions.
+Execution stopped by some action with message: null
+Resolve mutations for :fixtures:checkKotlinGradlePluginConfigurationErrors (Thread[#9688,Execution worker Thread 13,5,main]) started.
+:fixtures:checkKotlinGradlePluginConfigurationErrors (Thread[#9688,Execution worker Thread 13,5,main]) started.
+
+> Task :fixtures:checkKotlinGradlePluginConfigurationErrors SKIPPED
+Skipping task ':fixtures:checkKotlinGradlePluginConfigurationErrors' as task onlyIf 'errorDiagnostics are present' is false.
+
+> Task :presentation-model:kmpPartiallyResolvedDependenciesChecker
+Custom actions are attached to task ':presentation-model:kmpPartiallyResolvedDependenciesChecker'.
+Caching disabled for task ':presentation-model:kmpPartiallyResolvedDependenciesChecker' because:
+  This task is not intended for execution
+Task ':presentation-model:kmpPartiallyResolvedDependenciesChecker' is not up-to-date because:
+  Task has not declared any outputs despite executing actions.
+Execution stopped by some action with message: null
+Resolve mutations for :presentation-model:checkKotlinGradlePluginConfigurationErrors (Thread[#9678,Execution worker Thread 4,5,main]) started.
+:presentation-model:checkKotlinGradlePluginConfigurationErrors (Thread[#9678,Execution worker Thread 4,5,main]) started.
+
+> Task :presentation-model:checkKotlinGradlePluginConfigurationErrors SKIPPED
+Skipping task ':presentation-model:checkKotlinGradlePluginConfigurationErrors' as task onlyIf 'errorDiagnostics are present' is false.
+Resolve mutations for :presentation-model:androidPreBuild (Thread[#9678,Execution worker Thread 4,5,main]) started.
+:presentation-model:androidPreBuild (Thread[#9681,Execution worker Thread 7,5,main]) started.
+
+> Task :presentation-model:androidPreBuild UP-TO-DATE
+Skipping task ':presentation-model:androidPreBuild' as it has no actions.
+Resolve mutations for :presentation-model:preAndroidMainBuild (Thread[#9681,Execution worker Thread 7,5,main]) started.
+:presentation-model:preAndroidMainBuild (Thread[#9681,Execution worker Thread 7,5,main]) started.
+
+> Task :presentation-model:preAndroidMainBuild UP-TO-DATE
+Skipping task ':presentation-model:preAndroidMainBuild' as it has no actions.
+Resolve mutations for :presentation-model:writeAndroidMainAarMetadata (Thread[#9681,Execution worker Thread 7,5,main]) started.
+:presentation-model:writeAndroidMainAarMetadata (Thread[#9681,Execution worker Thread 7,5,main]) started.
+
+> Task :presentation-model:writeAndroidMainAarMetadata UP-TO-DATE
+Caching disabled for task ':presentation-model:writeAndroidMainAarMetadata' because:
+  Caching has been disabled for the task
+Skipping task ':presentation-model:writeAndroidMainAarMetadata' as it is up-to-date.
+work action resolve aar-metadata.properties (project :presentation-model) (Thread[#9681,Execution worker Thread 7,5,main]) started.
+Resolve mutations for :presentation-model:generateAndroidMainEmptyResourceFiles (Thread[#9681,Execution worker Thread 7,5,main]) started.
+:presentation-model:generateAndroidMainEmptyResourceFiles (Thread[#9681,Execution worker Thread 7,5,main]) started.
+
+> Task :presentation-model:generateAndroidMainEmptyResourceFiles UP-TO-DATE
+Caching disabled for task ':presentation-model:generateAndroidMainEmptyResourceFiles' because:
+  Caching has been disabled for the task
+Skipping task ':presentation-model:generateAndroidMainEmptyResourceFiles' as it is up-to-date.
+work action resolve res (project :presentation-model) (Thread[#9681,Execution worker Thread 7,5,main]) started.
+Resolve mutations for :presentation-model:processAndroidMainManifest (Thread[#9681,Execution worker Thread 7,5,main]) started.
+:presentation-model:processAndroidMainManifest (Thread[#9681,Execution worker Thread 7,5,main]) started.
+
+> Task :presentation-model:processAndroidMainManifest UP-TO-DATE
+Build cache key for task ':presentation-model:processAndroidMainManifest' is 5f3247f2ffa940d4ce129fabd48e8588
+Skipping task ':presentation-model:processAndroidMainManifest' as it is up-to-date.
+work action resolve AndroidManifest.xml (project :presentation-model) (Thread[#9681,Execution worker Thread 7,5,main]) started.
+
+> Task :usecase:kmpPartiallyResolvedDependenciesChecker
+Custom actions are attached to task ':usecase:kmpPartiallyResolvedDependenciesChecker'.
+Caching disabled for task ':usecase:kmpPartiallyResolvedDependenciesChecker' because:
+  This task is not intended for execution
+Task ':usecase:kmpPartiallyResolvedDependenciesChecker' is not up-to-date because:
+  Task has not declared any outputs despite executing actions.
+Execution stopped by some action with message: null
+Resolve mutations for :usecase:checkKotlinGradlePluginConfigurationErrors (Thread[#9683,Execution worker Thread 9,5,main]) started.
+:usecase:checkKotlinGradlePluginConfigurationErrors (Thread[#9683,Execution worker Thread 9,5,main]) started.
+
+> Task :usecase:checkKotlinGradlePluginConfigurationErrors SKIPPED
+Skipping task ':usecase:checkKotlinGradlePluginConfigurationErrors' as task onlyIf 'errorDiagnostics are present' is false.
+
+> Task :domain:compileKotlinJvm UP-TO-DATE
+Build cache key for task ':domain:compileKotlinJvm' is 5c1e906fface1715a0458f4ca4ab37f5
+Skipping task ':domain:compileKotlinJvm' as it is up-to-date.
+Resolve mutations for :domain:compileJvmMainJava (Thread[#9690,Execution worker Thread 15,5,main]) started.
+:domain:compileJvmMainJava (Thread[#9690,Execution worker Thread 15,5,main]) started.
+
+> Task :domain:compileJvmMainJava NO-SOURCE
+Skipping task ':domain:compileJvmMainJava' as it has no source files and no previous output files.
+Resolve mutations for :domain:jvmProcessResources (Thread[#9690,Execution worker Thread 15,5,main]) started.
+:domain:jvmProcessResources (Thread[#9690,Execution worker Thread 15,5,main]) started.
+
+> Task :domain:jvmProcessResources NO-SOURCE
+Skipping task ':domain:jvmProcessResources' as it has no source files and no previous output files.
+Resolve mutations for :domain:processJvmMainResources (Thread[#9690,Execution worker Thread 15,5,main]) started.
+:domain:processJvmMainResources (Thread[#9690,Execution worker Thread 15,5,main]) started.
+
+> Task :domain:processJvmMainResources SKIPPED
+Skipping task ':domain:processJvmMainResources' as task onlyIf 'Task is enabled' is false.
+Resolve mutations for :domain:jvmMainClasses (Thread[#9690,Execution worker Thread 15,5,main]) started.
+:domain:jvmMainClasses (Thread[#9690,Execution worker Thread 15,5,main]) started.
+
+> Task :domain:jvmMainClasses UP-TO-DATE
+Skipping task ':domain:jvmMainClasses' as it has no actions.
+Resolve mutations for :domain:jvmJar (Thread[#9690,Execution worker Thread 15,5,main]) started.
+:domain:jvmJar (Thread[#9690,Execution worker Thread 15,5,main]) started.
+
+> Task :domain:jvmJar UP-TO-DATE
+Caching disabled for task ':domain:jvmJar' because:
+  Not worth caching
+Skipping task ':domain:jvmJar' as it is up-to-date.
+work action resolve domain-jvm.jar (project :domain) (Thread[#9690,Execution worker Thread 15,5,main]) started.
+IdentityTransform (Thread[#9690,Execution worker Thread 15,5,main]) started.
+IdentityTransform (Thread[#9678,Execution worker Thread 4,5,main]) started.
+IdentityTransform (Thread[#9676,Execution worker Thread 2,5,main]) started.
+IdentityTransform (Thread[#9680,Execution worker Thread 6,5,main]) started.
+IdentityTransform (Thread[#9688,Execution worker Thread 13,5,main]) started.
+IdentityTransform (Thread[#9683,Execution worker Thread 9,5,main]) started.
+IdentityTransform (Thread[#9687,Execution worker Thread 12,5,main]) started.
+IdentityTransform (Thread[#9681,Execution worker Thread 7,5,main]) started.
+IdentityTransform (Thread[#9690,Execution worker Thread 15,5,main]) started.
+IdentityTransform (Thread[#9687,Execution worker Thread 12,5,main]) started.
+IdentityTransform (Thread[#9688,Execution worker Thread 13,5,main]) started.
+Resolve mutations for :presentation-model:compileAndroidMain (Thread[#9676,Execution worker Thread 2,5,main]) started.
+Resolve mutations for :fixtures:compileAndroidMain (Thread[#9683,Execution worker Thread 9,5,main]) started.
+:presentation-model:compileAndroidMain (Thread[#9676,Execution worker Thread 2,5,main]) started.
+:fixtures:compileAndroidMain (Thread[#9683,Execution worker Thread 9,5,main]) started.
+
+> Task :fixtures:compileAndroidMain UP-TO-DATE
+Build cache key for task ':fixtures:compileAndroidMain' is ac6dd8cf37e7c1b0fc4d8b44eeab88e1
+Skipping task ':fixtures:compileAndroidMain' as it is up-to-date.
+Resolve mutations for :fixtures:bundleAndroidMainClassesToCompileJar (Thread[#9683,Execution worker Thread 9,5,main]) started.
+:fixtures:bundleAndroidMainClassesToCompileJar (Thread[#9683,Execution worker Thread 9,5,main]) started.
+
+> Task :fixtures:bundleAndroidMainClassesToCompileJar UP-TO-DATE
+Caching disabled for task ':fixtures:bundleAndroidMainClassesToCompileJar' because:
+  Simple merging task
+Skipping task ':fixtures:bundleAndroidMainClassesToCompileJar' as it is up-to-date.
+work action resolve classes.jar (project :fixtures) (Thread[#9683,Execution worker Thread 9,5,main]) started.
+
+> Task :viewmodel:kmpPartiallyResolvedDependenciesChecker
+Custom actions are attached to task ':viewmodel:kmpPartiallyResolvedDependenciesChecker'.
+Caching disabled for task ':viewmodel:kmpPartiallyResolvedDependenciesChecker' because:
+  This task is not intended for execution
+Task ':viewmodel:kmpPartiallyResolvedDependenciesChecker' is not up-to-date because:
+  Task has not declared any outputs despite executing actions.
+Execution stopped by some action with message: null
+Resolve mutations for :viewmodel:checkKotlinGradlePluginConfigurationErrors (Thread[#9677,Execution worker Thread 3,5,main]) started.
+:viewmodel:checkKotlinGradlePluginConfigurationErrors (Thread[#9677,Execution worker Thread 3,5,main]) started.
+
+> Task :viewmodel:checkKotlinGradlePluginConfigurationErrors SKIPPED
+Skipping task ':viewmodel:checkKotlinGradlePluginConfigurationErrors' as task onlyIf 'errorDiagnostics are present' is false.
+
+> Task :presentation-model:compileAndroidMain UP-TO-DATE
+Build cache key for task ':presentation-model:compileAndroidMain' is 583907d6ec07c5761fa1b79b3e0c2387
+Skipping task ':presentation-model:compileAndroidMain' as it is up-to-date.
+Resolve mutations for :presentation-model:bundleAndroidMainClassesToCompileJar (Thread[#9676,Execution worker Thread 2,5,main]) started.
+:presentation-model:bundleAndroidMainClassesToCompileJar (Thread[#9676,Execution worker Thread 2,5,main]) started.
+
+> Task :presentation-model:bundleAndroidMainClassesToCompileJar UP-TO-DATE
+Caching disabled for task ':presentation-model:bundleAndroidMainClassesToCompileJar' because:
+  Simple merging task
+Skipping task ':presentation-model:bundleAndroidMainClassesToCompileJar' as it is up-to-date.
+work action resolve classes.jar (project :presentation-model) (Thread[#9676,Execution worker Thread 2,5,main]) started.
+Resolve mutations for :usecase:kspAndroidMain (Thread[#9676,Execution worker Thread 2,5,main]) started.
+:usecase:kspAndroidMain (Thread[#9676,Execution worker Thread 2,5,main]) started.
+
+> Task :data-local:kmpPartiallyResolvedDependenciesChecker
+Custom actions are attached to task ':data-local:kmpPartiallyResolvedDependenciesChecker'.
+Caching disabled for task ':data-local:kmpPartiallyResolvedDependenciesChecker' because:
+  This task is not intended for execution
+Task ':data-local:kmpPartiallyResolvedDependenciesChecker' is not up-to-date because:
+  Task has not declared any outputs despite executing actions.
+Execution stopped by some action with message: null
+Resolve mutations for :data-local:checkKotlinGradlePluginConfigurationErrors (Thread[#9689,Execution worker Thread 14,5,main]) started.
+:data-local:checkKotlinGradlePluginConfigurationErrors (Thread[#9689,Execution worker Thread 14,5,main]) started.
+
+> Task :data-local:checkKotlinGradlePluginConfigurationErrors SKIPPED
+Skipping task ':data-local:checkKotlinGradlePluginConfigurationErrors' as task onlyIf 'errorDiagnostics are present' is false.
+Resolve mutations for :data-local:kspAndroidMain (Thread[#9689,Execution worker Thread 14,5,main]) started.
+:data-local:kspAndroidMain (Thread[#9689,Execution worker Thread 14,5,main]) started.
+
+> Task :usecase:kspAndroidMain UP-TO-DATE
+Build cache key for task ':usecase:kspAndroidMain' is 38f56288ca4f101178ad8583620fca9e
+Skipping task ':usecase:kspAndroidMain' as it is up-to-date.
+Resolve mutations for :usecase:compileAndroidMain (Thread[#9676,Execution worker Thread 2,5,main]) started.
+:usecase:compileAndroidMain (Thread[#9676,Execution worker Thread 2,5,main]) started.
+
+> Task :ai:kmpPartiallyResolvedDependenciesChecker
+Custom actions are attached to task ':ai:kmpPartiallyResolvedDependenciesChecker'.
+Caching disabled for task ':ai:kmpPartiallyResolvedDependenciesChecker' because:
+  This task is not intended for execution
+Task ':ai:kmpPartiallyResolvedDependenciesChecker' is not up-to-date because:
+  Task has not declared any outputs despite executing actions.
+Execution stopped by some action with message: null
+Resolve mutations for :ai:checkKotlinGradlePluginConfigurationErrors (Thread[#9674,included builds,5,main]) started.
+
+> Task :usecase:compileAndroidMain UP-TO-DATE
+Build cache key for task ':usecase:compileAndroidMain' is 7ba9a9127bf98a803f692a15485bf06c
+Skipping task ':usecase:compileAndroidMain' as it is up-to-date.
+:ai:checkKotlinGradlePluginConfigurationErrors (Thread[#9674,included builds,5,main]) started.
+
+> Task :ai:checkKotlinGradlePluginConfigurationErrors SKIPPED
+Skipping task ':ai:checkKotlinGradlePluginConfigurationErrors' as task onlyIf 'errorDiagnostics are present' is false.
+Resolve mutations for :usecase:bundleAndroidMainClassesToCompileJar (Thread[#9676,Execution worker Thread 2,5,main]) started.
+Resolve mutations for :ai:kspAndroidMain (Thread[#9690,Execution worker Thread 15,5,main]) started.
+:usecase:bundleAndroidMainClassesToCompileJar (Thread[#9676,Execution worker Thread 2,5,main]) started.
+:ai:kspAndroidMain (Thread[#9690,Execution worker Thread 15,5,main]) started.
+
+> Task :usecase:bundleAndroidMainClassesToCompileJar UP-TO-DATE
+Caching disabled for task ':usecase:bundleAndroidMainClassesToCompileJar' because:
+  Simple merging task
+Skipping task ':usecase:bundleAndroidMainClassesToCompileJar' as it is up-to-date.
+work action resolve classes.jar (project :usecase) (Thread[#9676,Execution worker Thread 2,5,main]) started.
+Resolve mutations for :viewmodel:kspAndroidMain (Thread[#9676,Execution worker Thread 2,5,main]) started.
+:viewmodel:kspAndroidMain (Thread[#9676,Execution worker Thread 2,5,main]) started.
+
+> Task :viewmodel:kspAndroidMain UP-TO-DATE
+Build cache key for task ':viewmodel:kspAndroidMain' is 9cbb00169cbd6e1f264d31f5d6f596a7
+Skipping task ':viewmodel:kspAndroidMain' as it is up-to-date.
+Resolve mutations for :viewmodel:compileAndroidMain (Thread[#9676,Execution worker Thread 2,5,main]) started.
+:viewmodel:compileAndroidMain (Thread[#9676,Execution worker Thread 2,5,main]) started.
+
+> Task :viewmodel:compileAndroidMain UP-TO-DATE
+Build cache key for task ':viewmodel:compileAndroidMain' is 5ee24c7cc9d05ec7929ca0ddcb414aff
+Skipping task ':viewmodel:compileAndroidMain' as it is up-to-date.
+Resolve mutations for :viewmodel:bundleAndroidMainClassesToCompileJar (Thread[#9676,Execution worker Thread 2,5,main]) started.
+:viewmodel:bundleAndroidMainClassesToCompileJar (Thread[#9676,Execution worker Thread 2,5,main]) started.
+
+> Task :viewmodel:bundleAndroidMainClassesToCompileJar UP-TO-DATE
+Caching disabled for task ':viewmodel:bundleAndroidMainClassesToCompileJar' because:
+  Simple merging task
+Skipping task ':viewmodel:bundleAndroidMainClassesToCompileJar' as it is up-to-date.
+work action resolve classes.jar (project :viewmodel) (Thread[#9676,Execution worker Thread 2,5,main]) started.
+
+> Task :ai:kspAndroidMain UP-TO-DATE
+Build cache key for task ':ai:kspAndroidMain' is bda248bfc32a1691e656d84ebba84081
+Skipping task ':ai:kspAndroidMain' as it is up-to-date.
+Resolve mutations for :ai:compileAndroidMain (Thread[#9690,Execution worker Thread 15,5,main]) started.
+:ai:compileAndroidMain (Thread[#9690,Execution worker Thread 15,5,main]) started.
+
+> Task :data-local:kspAndroidMain UP-TO-DATE
+Build cache key for task ':data-local:kspAndroidMain' is 3ec38b7d89e144fe762f327200cb1b95
+Skipping task ':data-local:kspAndroidMain' as it is up-to-date.
+Resolve mutations for :data-local:compileAndroidMain (Thread[#9689,Execution worker Thread 14,5,main]) started.
+:data-local:compileAndroidMain (Thread[#9689,Execution worker Thread 14,5,main]) started.
+
+> Task :ai:compileAndroidMain UP-TO-DATE
+Build cache key for task ':ai:compileAndroidMain' is 1949ffb4b902d9ce6242b20492606774
+Skipping task ':ai:compileAndroidMain' as it is up-to-date.
+Resolve mutations for :ai:androidPreBuild (Thread[#9690,Execution worker Thread 15,5,main]) started.
+:ai:androidPreBuild (Thread[#9690,Execution worker Thread 15,5,main]) started.
+
+> Task :ai:androidPreBuild UP-TO-DATE
+Skipping task ':ai:androidPreBuild' as it has no actions.
+Resolve mutations for :ai:preAndroidMainBuild (Thread[#9690,Execution worker Thread 15,5,main]) started.
+:ai:preAndroidMainBuild (Thread[#9690,Execution worker Thread 15,5,main]) started.
+
+> Task :ai:preAndroidMainBuild UP-TO-DATE
+Skipping task ':ai:preAndroidMainBuild' as it has no actions.
+Resolve mutations for :ai:bundleAndroidMainClassesToCompileJar (Thread[#9690,Execution worker Thread 15,5,main]) started.
+:ai:bundleAndroidMainClassesToCompileJar (Thread[#9690,Execution worker Thread 15,5,main]) started.
+
+> Task :ai:bundleAndroidMainClassesToCompileJar UP-TO-DATE
+Caching disabled for task ':ai:bundleAndroidMainClassesToCompileJar' because:
+  Simple merging task
+Skipping task ':ai:bundleAndroidMainClassesToCompileJar' as it is up-to-date.
+work action resolve classes.jar (project :ai) (Thread[#9690,Execution worker Thread 15,5,main]) started.
+Resolve mutations for :ai:writeAndroidMainAarMetadata (Thread[#9680,Execution worker Thread 6,5,main]) started.
+:ai:writeAndroidMainAarMetadata (Thread[#9680,Execution worker Thread 6,5,main]) started.
+
+> Task :ai:writeAndroidMainAarMetadata UP-TO-DATE
+Caching disabled for task ':ai:writeAndroidMainAarMetadata' because:
+  Caching has been disabled for the task
+Skipping task ':ai:writeAndroidMainAarMetadata' as it is up-to-date.
+
+> Task :data-local:compileAndroidMain UP-TO-DATE
+Build cache key for task ':data-local:compileAndroidMain' is 1cb1f8122d3725aee664ca2612bf3943
+Skipping task ':data-local:compileAndroidMain' as it is up-to-date.
+work action resolve aar-metadata.properties (project :ai) (Thread[#9680,Execution worker Thread 6,5,main]) started.
+Resolve mutations for :compose-app:checkDebugAarMetadata (Thread[#9680,Execution worker Thread 6,5,main]) started.
+Resolve mutations for :ai:generateAndroidMainEmptyResourceFiles (Thread[#9690,Execution worker Thread 15,5,main]) started.
+Resolve mutations for :data-local:bundleAndroidMainClassesToCompileJar (Thread[#9689,Execution worker Thread 14,5,main]) started.
+:ai:generateAndroidMainEmptyResourceFiles (Thread[#9690,Execution worker Thread 15,5,main]) started.
+:compose-app:checkDebugAarMetadata (Thread[#9680,Execution worker Thread 6,5,main]) started.
+:data-local:bundleAndroidMainClassesToCompileJar (Thread[#9689,Execution worker Thread 14,5,main]) started.
+
+> Task :data-network:kmpPartiallyResolvedDependenciesChecker
+Custom actions are attached to task ':data-network:kmpPartiallyResolvedDependenciesChecker'.
+Caching disabled for task ':data-network:kmpPartiallyResolvedDependenciesChecker' because:
+  This task is not intended for execution
+Task ':data-network:kmpPartiallyResolvedDependenciesChecker' is not up-to-date because:
+  Task has not declared any outputs despite executing actions.
+Execution stopped by some action with message: null
+Resolve mutations for :data-network:checkKotlinGradlePluginConfigurationErrors (Thread[#9686,Execution worker Thread 11,5,main]) started.
+:data-network:checkKotlinGradlePluginConfigurationErrors (Thread[#9686,Execution worker Thread 11,5,main]) started.
+
+> Task :ai:generateAndroidMainEmptyResourceFiles UP-TO-DATE
+Caching disabled for task ':ai:generateAndroidMainEmptyResourceFiles' because:
+  Caching has been disabled for the task
+Skipping task ':ai:generateAndroidMainEmptyResourceFiles' as it is up-to-date.
+
+> Task :data-network:checkKotlinGradlePluginConfigurationErrors SKIPPED
+Skipping task ':data-network:checkKotlinGradlePluginConfigurationErrors' as task onlyIf 'errorDiagnostics are present' is false.
+
+> Task :data-local:bundleAndroidMainClassesToCompileJar UP-TO-DATE
+Caching disabled for task ':data-local:bundleAndroidMainClassesToCompileJar' because:
+  Simple merging task
+Skipping task ':data-local:bundleAndroidMainClassesToCompileJar' as it is up-to-date.
+work action resolve res (project :ai) (Thread[#9690,Execution worker Thread 15,5,main]) started.
+work action resolve classes.jar (project :data-local) (Thread[#9689,Execution worker Thread 14,5,main]) started.
+Resolve mutations for :data-network:generateBuildConfig (Thread[#9686,Execution worker Thread 11,5,main]) started.
+Resolve mutations for :ai:processAndroidMainManifest (Thread[#9690,Execution worker Thread 15,5,main]) started.
+:data-network:generateBuildConfig (Thread[#9686,Execution worker Thread 11,5,main]) started.
+:ai:processAndroidMainManifest (Thread[#9677,Execution worker Thread 3,5,main]) started.
+
+> Task :data-network:generateBuildConfig UP-TO-DATE
+Custom actions are attached to task ':data-network:generateBuildConfig'.
+Caching disabled for task ':data-network:generateBuildConfig' because:
+  Gradle would require more information to cache this task
+Skipping task ':data-network:generateBuildConfig' as it is up-to-date.
+Resolve mutations for :data-network:generateCommonMainProtos (Thread[#9686,Execution worker Thread 11,5,main]) started.
+
+> Task :ai:processAndroidMainManifest UP-TO-DATE
+Build cache key for task ':ai:processAndroidMainManifest' is c2c8b09cc4c754bb6c3b5a91a21048e6
+Skipping task ':ai:processAndroidMainManifest' as it is up-to-date.
+:data-network:generateCommonMainProtos (Thread[#9686,Execution worker Thread 11,5,main]) started.
+work action resolve AndroidManifest.xml (project :ai) (Thread[#9677,Execution worker Thread 3,5,main]) started.
+
+> Task :data-network:generateCommonMainProtos UP-TO-DATE
+Build cache key for task ':data-network:generateCommonMainProtos' is 00167dcdab01c67ae3c3b6aa637fb847
+Skipping task ':data-network:generateCommonMainProtos' as it is up-to-date.
+Resolve mutations for :data-network:compileAndroidMain (Thread[#9686,Execution worker Thread 11,5,main]) started.
+:data-network:compileAndroidMain (Thread[#9686,Execution worker Thread 11,5,main]) started.
+
+> Task :data-network:compileAndroidMain UP-TO-DATE
+Build cache key for task ':data-network:compileAndroidMain' is a57e90125785561e27a0067971af7094
+Skipping task ':data-network:compileAndroidMain' as it is up-to-date.
+Resolve mutations for :data-network:bundleAndroidMainClassesToCompileJar (Thread[#9686,Execution worker Thread 11,5,main]) started.
+:data-network:bundleAndroidMainClassesToCompileJar (Thread[#9686,Execution worker Thread 11,5,main]) started.
+
+> Task :data-network:bundleAndroidMainClassesToCompileJar UP-TO-DATE
+Caching disabled for task ':data-network:bundleAndroidMainClassesToCompileJar' because:
+  Simple merging task
+Skipping task ':data-network:bundleAndroidMainClassesToCompileJar' as it is up-to-date.
+work action resolve classes.jar (project :data-network) (Thread[#9686,Execution worker Thread 11,5,main]) started.
+
+> Task :data:kmpPartiallyResolvedDependenciesChecker
+Custom actions are attached to task ':data:kmpPartiallyResolvedDependenciesChecker'.
+Caching disabled for task ':data:kmpPartiallyResolvedDependenciesChecker' because:
+  This task is not intended for execution
+Task ':data:kmpPartiallyResolvedDependenciesChecker' is not up-to-date because:
+  Task has not declared any outputs despite executing actions.
+Execution stopped by some action with message: null
+Resolve mutations for :data:checkKotlinGradlePluginConfigurationErrors (Thread[#9675,Execution worker,5,main]) started.
+:data:checkKotlinGradlePluginConfigurationErrors (Thread[#9675,Execution worker,5,main]) started.
+
+> Task :data:checkKotlinGradlePluginConfigurationErrors SKIPPED
+Skipping task ':data:checkKotlinGradlePluginConfigurationErrors' as task onlyIf 'errorDiagnostics are present' is false.
+Resolve mutations for :data:kspAndroidMain (Thread[#9675,Execution worker,5,main]) started.
+:data:kspAndroidMain (Thread[#9675,Execution worker,5,main]) started.
+
+> Task :data:kspAndroidMain UP-TO-DATE
+Build cache key for task ':data:kspAndroidMain' is f93b8d5ea62788f36feac085890779c2
+Skipping task ':data:kspAndroidMain' as it is up-to-date.
+Resolve mutations for :data:compileAndroidMain (Thread[#9675,Execution worker,5,main]) started.
+:data:compileAndroidMain (Thread[#9675,Execution worker,5,main]) started.
+
+> Task :data:compileAndroidMain UP-TO-DATE
+Build cache key for task ':data:compileAndroidMain' is 9817445156fefc3a1b792e8c045c9e3b
+Skipping task ':data:compileAndroidMain' as it is up-to-date.
+Resolve mutations for :data:bundleAndroidMainClassesToCompileJar (Thread[#9675,Execution worker,5,main]) started.
+:data:bundleAndroidMainClassesToCompileJar (Thread[#9675,Execution worker,5,main]) started.
+
+> Task :data:bundleAndroidMainClassesToCompileJar UP-TO-DATE
+Caching disabled for task ':data:bundleAndroidMainClassesToCompileJar' because:
+  Simple merging task
+Skipping task ':data:bundleAndroidMainClassesToCompileJar' as it is up-to-date.
+work action resolve classes.jar (project :data) (Thread[#9675,Execution worker,5,main]) started.
+
+> Task :compose-resources:kmpPartiallyResolvedDependenciesChecker
+Custom actions are attached to task ':compose-resources:kmpPartiallyResolvedDependenciesChecker'.
+Caching disabled for task ':compose-resources:kmpPartiallyResolvedDependenciesChecker' because:
+  This task is not intended for execution
+Task ':compose-resources:kmpPartiallyResolvedDependenciesChecker' is not up-to-date because:
+  Task has not declared any outputs despite executing actions.
+Execution stopped by some action with message: null
+Resolve mutations for :compose-resources:checkKotlinGradlePluginConfigurationErrors (Thread[#9679,Execution worker Thread 5,5,main]) started.
+:compose-resources:checkKotlinGradlePluginConfigurationErrors (Thread[#9679,Execution worker Thread 5,5,main]) started.
+
+> Task :compose-resources:checkKotlinGradlePluginConfigurationErrors SKIPPED
+Skipping task ':compose-resources:checkKotlinGradlePluginConfigurationErrors' as task onlyIf 'errorDiagnostics are present' is false.
+Resolve mutations for :compose-resources:generateResourceAccessorsForAndroidMain (Thread[#9679,Execution worker Thread 5,5,main]) started.
+:compose-resources:generateResourceAccessorsForAndroidMain (Thread[#9679,Execution worker Thread 5,5,main]) started.
+
+> Task :compose-resources:generateResourceAccessorsForAndroidMain NO-SOURCE
+Skipping task ':compose-resources:generateResourceAccessorsForAndroidMain' as it has no source files and no previous output files.
+Resolve mutations for :compose-resources:generateResourceAccessorsForCommonMain (Thread[#9679,Execution worker Thread 5,5,main]) started.
+:compose-resources:generateResourceAccessorsForCommonMain (Thread[#9679,Execution worker Thread 5,5,main]) started.
+
+> Task :compose-resources:generateResourceAccessorsForCommonMain UP-TO-DATE
+Caching disabled for task ':compose-resources:generateResourceAccessorsForCommonMain' because:
+  Caching has not been enabled for the task
+Skipping task ':compose-resources:generateResourceAccessorsForCommonMain' as it is up-to-date.
+Resolve mutations for :compose-resources:generateActualResourceCollectorsForAndroidMain (Thread[#9679,Execution worker Thread 5,5,main]) started.
+:compose-resources:generateActualResourceCollectorsForAndroidMain (Thread[#9679,Execution worker Thread 5,5,main]) started.
+
+> Task :compose-resources:generateActualResourceCollectorsForAndroidMain UP-TO-DATE
+Caching disabled for task ':compose-resources:generateActualResourceCollectorsForAndroidMain' because:
+  Caching has not been enabled for the task
+Skipping task ':compose-resources:generateActualResourceCollectorsForAndroidMain' as it is up-to-date.
+Resolve mutations for :compose-resources:generateComposeResClass (Thread[#9679,Execution worker Thread 5,5,main]) started.
+:compose-resources:generateComposeResClass (Thread[#9679,Execution worker Thread 5,5,main]) started.
+
+> Task :compose-resources:generateComposeResClass UP-TO-DATE
+Caching disabled for task ':compose-resources:generateComposeResClass' because:
+  Caching has not been enabled for the task
+Skipping task ':compose-resources:generateComposeResClass' as it is up-to-date.
+Resolve mutations for :compose-resources:generateExpectResourceCollectorsForCommonMain (Thread[#9679,Execution worker Thread 5,5,main]) started.
+:compose-resources:generateExpectResourceCollectorsForCommonMain (Thread[#9679,Execution worker Thread 5,5,main]) started.
+
+> Task :compose-resources:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+Caching disabled for task ':compose-resources:generateExpectResourceCollectorsForCommonMain' because:
+  Caching has not been enabled for the task
+Skipping task ':compose-resources:generateExpectResourceCollectorsForCommonMain' as it is up-to-date.
+Resolve mutations for :compose-resources:generateResourceAccessorsForAndroidDebug (Thread[#9679,Execution worker Thread 5,5,main]) started.
+:compose-resources:generateResourceAccessorsForAndroidDebug (Thread[#9679,Execution worker Thread 5,5,main]) started.
+
+> Task :compose-resources:generateResourceAccessorsForAndroidDebug NO-SOURCE
+Skipping task ':compose-resources:generateResourceAccessorsForAndroidDebug' as it has no source files and no previous output files.
+Resolve mutations for :compose-resources:compileDebugKotlinAndroid (Thread[#9679,Execution worker Thread 5,5,main]) started.
+:compose-resources:compileDebugKotlinAndroid (Thread[#9679,Execution worker Thread 5,5,main]) started.
+
+> Task :compose-app:checkDebugAarMetadata UP-TO-DATE
+Caching disabled for task ':compose-app:checkDebugAarMetadata' because:
+  Caching has been disabled for the task
+Skipping task ':compose-app:checkDebugAarMetadata' as it is up-to-date.
+Resolve mutations for :compose-app:mapDebugSourceSetPaths (Thread[#9680,Execution worker Thread 6,5,main]) started.
+:compose-app:mapDebugSourceSetPaths (Thread[#9680,Execution worker Thread 6,5,main]) started.
+
+> Task :compose-app:mapDebugSourceSetPaths UP-TO-DATE
+Caching disabled for task ':compose-app:mapDebugSourceSetPaths' because:
+  Caching has been disabled for the task
+Skipping task ':compose-app:mapDebugSourceSetPaths' as it is up-to-date.
+Resolve mutations for :compose-app:mergeDebugResources (Thread[#9680,Execution worker Thread 6,5,main]) started.
+:compose-app:mergeDebugResources (Thread[#9680,Execution worker Thread 6,5,main]) started.
+
+> Task :compose-app:mergeDebugResources UP-TO-DATE
+Build cache key for task ':compose-app:mergeDebugResources' is d00c3c18bbdaccaa89aec42ee9ebaa60
+Skipping task ':compose-app:mergeDebugResources' as it is up-to-date.
+Resolve mutations for :compose-app:processDebugMainManifest (Thread[#9680,Execution worker Thread 6,5,main]) started.
+:compose-app:processDebugMainManifest (Thread[#9680,Execution worker Thread 6,5,main]) started.
+
+> Task :compose-resources:compileDebugKotlinAndroid UP-TO-DATE
+Build cache key for task ':compose-resources:compileDebugKotlinAndroid' is 38bf500ae84a2e3dad578dfb560a369b
+Skipping task ':compose-resources:compileDebugKotlinAndroid' as it is up-to-date.
+Resolve mutations for :compose-resources:javaPreCompileDebug (Thread[#9679,Execution worker Thread 5,5,main]) started.
+:compose-resources:javaPreCompileDebug (Thread[#9679,Execution worker Thread 5,5,main]) started.
+
+> Task :compose-resources:javaPreCompileDebug UP-TO-DATE
+Build cache key for task ':compose-resources:javaPreCompileDebug' is 74bfb8ac029f1b808c4d65e9e407c36f
+Skipping task ':compose-resources:javaPreCompileDebug' as it is up-to-date.
+Resolve mutations for :compose-resources:compileDebugJavaWithJavac (Thread[#9679,Execution worker Thread 5,5,main]) started.
+:compose-resources:compileDebugJavaWithJavac (Thread[#9679,Execution worker Thread 5,5,main]) started.
+
+> Task :compose-resources:compileDebugJavaWithJavac NO-SOURCE
+Skipping task ':compose-resources:compileDebugJavaWithJavac' as it has no source files and no previous output files.
+Resolve mutations for :compose-resources:bundleLibCompileToJarDebug (Thread[#9679,Execution worker Thread 5,5,main]) started.
+:compose-resources:bundleLibCompileToJarDebug (Thread[#9679,Execution worker Thread 5,5,main]) started.
+
+> Task :compose-resources:bundleLibCompileToJarDebug UP-TO-DATE
+Caching disabled for task ':compose-resources:bundleLibCompileToJarDebug' because:
+  Simple merging task
+Skipping task ':compose-resources:bundleLibCompileToJarDebug' as it is up-to-date.
+work action resolve classes.jar (project :compose-resources) (Thread[#9679,Execution worker Thread 5,5,main]) started.
+
+> Task :compose-app:processDebugMainManifest UP-TO-DATE
+Build cache key for task ':compose-app:processDebugMainManifest' is 8f6adc2605724e068930c453533e2369
+Skipping task ':compose-app:processDebugMainManifest' as it is up-to-date.
+Resolve mutations for :compose-app:processDebugManifest (Thread[#9680,Execution worker Thread 6,5,main]) started.
+:compose-app:processDebugManifest (Thread[#9680,Execution worker Thread 6,5,main]) started.
+
+> Task :compose-app:processDebugManifest UP-TO-DATE
+Build cache key for task ':compose-app:processDebugManifest' is 0c276f100e67e2a819db125f35f69706
+Skipping task ':compose-app:processDebugManifest' as it is up-to-date.
+Resolve mutations for :compose-app:processDebugManifestForPackage (Thread[#9680,Execution worker Thread 6,5,main]) started.
+:compose-app:processDebugManifestForPackage (Thread[#9680,Execution worker Thread 6,5,main]) started.
+
+> Task :compose-app:processDebugManifestForPackage UP-TO-DATE
+Custom actions are attached to task ':compose-app:processDebugManifestForPackage'.
+Build cache key for task ':compose-app:processDebugManifestForPackage' is 3326d006582224930aed787754335f0f
+Skipping task ':compose-app:processDebugManifestForPackage' as it is up-to-date.
+Resolve mutations for :compose-app:processDebugResources (Thread[#9680,Execution worker Thread 6,5,main]) started.
+:compose-app:processDebugResources (Thread[#9680,Execution worker Thread 6,5,main]) started.
+
+> Task :presentation-core:kmpPartiallyResolvedDependenciesChecker
+Custom actions are attached to task ':presentation-core:kmpPartiallyResolvedDependenciesChecker'.
+Caching disabled for task ':presentation-core:kmpPartiallyResolvedDependenciesChecker' because:
+  This task is not intended for execution
+Task ':presentation-core:kmpPartiallyResolvedDependenciesChecker' is not up-to-date because:
+  Task has not declared any outputs despite executing actions.
+Execution stopped by some action with message: null
+Resolve mutations for :presentation-core:checkKotlinGradlePluginConfigurationErrors (Thread[#9682,Execution worker Thread 8,5,main]) started.
+:presentation-core:checkKotlinGradlePluginConfigurationErrors (Thread[#9682,Execution worker Thread 8,5,main]) started.
+
+> Task :presentation-core:checkKotlinGradlePluginConfigurationErrors SKIPPED
+Skipping task ':presentation-core:checkKotlinGradlePluginConfigurationErrors' as task onlyIf 'errorDiagnostics are present' is false.
+Resolve mutations for :presentation-core:convertXmlValueResourcesForAndroidMain (Thread[#9682,Execution worker Thread 8,5,main]) started.
+:presentation-core:convertXmlValueResourcesForAndroidMain (Thread[#9682,Execution worker Thread 8,5,main]) started.
+
+> Task :presentation-core:convertXmlValueResourcesForAndroidMain NO-SOURCE
+file or directory '/Users/cartland/bb-merge/presentation-core/build/generated/compose/resourceGenerator/preparedResources/androidMain/composeResources', not found
+Skipping task ':presentation-core:convertXmlValueResourcesForAndroidMain' as it has no source files and no previous output files.
+Resolve mutations for :presentation-core:copyNonXmlValueResourcesForAndroidMain (Thread[#9682,Execution worker Thread 8,5,main]) started.
+:presentation-core:copyNonXmlValueResourcesForAndroidMain (Thread[#9682,Execution worker Thread 8,5,main]) started.
+
+> Task :presentation-core:copyNonXmlValueResourcesForAndroidMain NO-SOURCE
+file or directory '/Users/cartland/bb-merge/presentation-core/build/generated/compose/resourceGenerator/preparedResources/androidMain/composeResources', not found
+Skipping task ':presentation-core:copyNonXmlValueResourcesForAndroidMain' as it has no source files and no previous output files.
+Resolve mutations for :presentation-core:prepareComposeResourcesTaskForAndroidMain (Thread[#9682,Execution worker Thread 8,5,main]) started.
+:presentation-core:prepareComposeResourcesTaskForAndroidMain (Thread[#9682,Execution worker Thread 8,5,main]) started.
+
+> Task :presentation-core:prepareComposeResourcesTaskForAndroidMain NO-SOURCE
+Skipping task ':presentation-core:prepareComposeResourcesTaskForAndroidMain' as it has no source files and no previous output files.
+Resolve mutations for :presentation-core:generateResourceAccessorsForAndroidMain (Thread[#9682,Execution worker Thread 8,5,main]) started.
+:presentation-core:generateResourceAccessorsForAndroidMain (Thread[#9682,Execution worker Thread 8,5,main]) started.
+
+> Task :presentation-core:generateResourceAccessorsForAndroidMain NO-SOURCE
+Skipping task ':presentation-core:generateResourceAccessorsForAndroidMain' as it has no source files and no previous output files.
+Resolve mutations for :presentation-core:convertXmlValueResourcesForCommonMain (Thread[#9682,Execution worker Thread 8,5,main]) started.
+:presentation-core:convertXmlValueResourcesForCommonMain (Thread[#9682,Execution worker Thread 8,5,main]) started.
+
+> Task :presentation-core:convertXmlValueResourcesForCommonMain NO-SOURCE
+file or directory '/Users/cartland/bb-merge/presentation-core/build/generated/compose/resourceGenerator/preparedResources/commonMain/composeResources', not found
+Skipping task ':presentation-core:convertXmlValueResourcesForCommonMain' as it has no source files and no previous output files.
+Resolve mutations for :presentation-core:copyNonXmlValueResourcesForCommonMain (Thread[#9682,Execution worker Thread 8,5,main]) started.
+:presentation-core:copyNonXmlValueResourcesForCommonMain (Thread[#9682,Execution worker Thread 8,5,main]) started.
+
+> Task :presentation-core:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+file or directory '/Users/cartland/bb-merge/presentation-core/build/generated/compose/resourceGenerator/preparedResources/commonMain/composeResources', not found
+Skipping task ':presentation-core:copyNonXmlValueResourcesForCommonMain' as it has no source files and no previous output files.
+Resolve mutations for :presentation-core:prepareComposeResourcesTaskForCommonMain (Thread[#9682,Execution worker Thread 8,5,main]) started.
+:presentation-core:prepareComposeResourcesTaskForCommonMain (Thread[#9682,Execution worker Thread 8,5,main]) started.
+
+> Task :presentation-core:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+Skipping task ':presentation-core:prepareComposeResourcesTaskForCommonMain' as it has no source files and no previous output files.
+Resolve mutations for :presentation-core:generateResourceAccessorsForCommonMain (Thread[#9682,Execution worker Thread 8,5,main]) started.
+:presentation-core:generateResourceAccessorsForCommonMain (Thread[#9682,Execution worker Thread 8,5,main]) started.
+
+> Task :presentation-core:generateResourceAccessorsForCommonMain NO-SOURCE
+Skipping task ':presentation-core:generateResourceAccessorsForCommonMain' as it has no source files and no previous output files.
+Resolve mutations for :presentation-core:generateActualResourceCollectorsForAndroidMain (Thread[#9682,Execution worker Thread 8,5,main]) started.
+:presentation-core:generateActualResourceCollectorsForAndroidMain (Thread[#9682,Execution worker Thread 8,5,main]) started.
+
+> Task :presentation-core:generateActualResourceCollectorsForAndroidMain UP-TO-DATE
+Caching disabled for task ':presentation-core:generateActualResourceCollectorsForAndroidMain' because:
+  Caching has not been enabled for the task
+Skipping task ':presentation-core:generateActualResourceCollectorsForAndroidMain' as it is up-to-date.
+Resolve mutations for :presentation-core:generateComposeResClass (Thread[#9682,Execution worker Thread 8,5,main]) started.
+:presentation-core:generateComposeResClass (Thread[#9682,Execution worker Thread 8,5,main]) started.
+
+> Task :presentation-core:generateComposeResClass UP-TO-DATE
+Caching disabled for task ':presentation-core:generateComposeResClass' because:
+  Caching has not been enabled for the task
+Skipping task ':presentation-core:generateComposeResClass' as it is up-to-date.
+Resolve mutations for :presentation-core:generateExpectResourceCollectorsForCommonMain (Thread[#9682,Execution worker Thread 8,5,main]) started.
+:presentation-core:generateExpectResourceCollectorsForCommonMain (Thread[#9682,Execution worker Thread 8,5,main]) started.
+
+> Task :presentation-core:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+Caching disabled for task ':presentation-core:generateExpectResourceCollectorsForCommonMain' because:
+  Caching has not been enabled for the task
+Skipping task ':presentation-core:generateExpectResourceCollectorsForCommonMain' as it is up-to-date.
+Resolve mutations for :presentation-core:compileAndroidMain (Thread[#9682,Execution worker Thread 8,5,main]) started.
+:presentation-core:compileAndroidMain (Thread[#9682,Execution worker Thread 8,5,main]) started.
+
+> Task :compose-app:processDebugResources UP-TO-DATE
+Build cache key for task ':compose-app:processDebugResources' is c4d1d1819c2b7f1ec52bf2239ab8f84d
+Skipping task ':compose-app:processDebugResources' as it is up-to-date.
+
+> Task :presentation-core:compileAndroidMain UP-TO-DATE
+Build cache key for task ':presentation-core:compileAndroidMain' is 6c05bf280193b6da26f78fddbee199db
+Skipping task ':presentation-core:compileAndroidMain' as it is up-to-date.
+Resolve mutations for :presentation-core:bundleAndroidMainClassesToCompileJar (Thread[#9682,Execution worker Thread 8,5,main]) started.
+:presentation-core:bundleAndroidMainClassesToCompileJar (Thread[#9682,Execution worker Thread 8,5,main]) started.
+
+> Task :presentation-core:bundleAndroidMainClassesToCompileJar UP-TO-DATE
+Caching disabled for task ':presentation-core:bundleAndroidMainClassesToCompileJar' because:
+  Simple merging task
+Skipping task ':presentation-core:bundleAndroidMainClassesToCompileJar' as it is up-to-date.
+work action resolve classes.jar (project :presentation-core) (Thread[#9682,Execution worker Thread 8,5,main]) started.
+
+> Task :presentation-feature:kmpPartiallyResolvedDependenciesChecker
+Custom actions are attached to task ':presentation-feature:kmpPartiallyResolvedDependenciesChecker'.
+Caching disabled for task ':presentation-feature:kmpPartiallyResolvedDependenciesChecker' because:
+  This task is not intended for execution
+Task ':presentation-feature:kmpPartiallyResolvedDependenciesChecker' is not up-to-date because:
+  Task has not declared any outputs despite executing actions.
+Execution stopped by some action with message: null
+Resolve mutations for :presentation-feature:checkKotlinGradlePluginConfigurationErrors (Thread[#9685,Execution worker Thread 10,5,main]) started.
+:presentation-feature:checkKotlinGradlePluginConfigurationErrors (Thread[#9685,Execution worker Thread 10,5,main]) started.
+
+> Task :presentation-feature:checkKotlinGradlePluginConfigurationErrors SKIPPED
+Skipping task ':presentation-feature:checkKotlinGradlePluginConfigurationErrors' as task onlyIf 'errorDiagnostics are present' is false.
+Resolve mutations for :presentation-feature:convertXmlValueResourcesForAndroidMain (Thread[#9685,Execution worker Thread 10,5,main]) started.
+:presentation-feature:convertXmlValueResourcesForAndroidMain (Thread[#9685,Execution worker Thread 10,5,main]) started.
+
+> Task :presentation-feature:convertXmlValueResourcesForAndroidMain NO-SOURCE
+file or directory '/Users/cartland/bb-merge/presentation-feature/build/generated/compose/resourceGenerator/preparedResources/androidMain/composeResources', not found
+Skipping task ':presentation-feature:convertXmlValueResourcesForAndroidMain' as it has no source files and no previous output files.
+Resolve mutations for :presentation-feature:copyNonXmlValueResourcesForAndroidMain (Thread[#9685,Execution worker Thread 10,5,main]) started.
+:presentation-feature:copyNonXmlValueResourcesForAndroidMain (Thread[#9685,Execution worker Thread 10,5,main]) started.
+
+> Task :presentation-feature:copyNonXmlValueResourcesForAndroidMain NO-SOURCE
+file or directory '/Users/cartland/bb-merge/presentation-feature/build/generated/compose/resourceGenerator/preparedResources/androidMain/composeResources', not found
+Skipping task ':presentation-feature:copyNonXmlValueResourcesForAndroidMain' as it has no source files and no previous output files.
+Resolve mutations for :presentation-feature:prepareComposeResourcesTaskForAndroidMain (Thread[#9685,Execution worker Thread 10,5,main]) started.
+:presentation-feature:prepareComposeResourcesTaskForAndroidMain (Thread[#9685,Execution worker Thread 10,5,main]) started.
+
+> Task :presentation-feature:prepareComposeResourcesTaskForAndroidMain NO-SOURCE
+Skipping task ':presentation-feature:prepareComposeResourcesTaskForAndroidMain' as it has no source files and no previous output files.
+Resolve mutations for :presentation-feature:generateResourceAccessorsForAndroidMain (Thread[#9685,Execution worker Thread 10,5,main]) started.
+:presentation-feature:generateResourceAccessorsForAndroidMain (Thread[#9685,Execution worker Thread 10,5,main]) started.
+
+> Task :presentation-feature:generateResourceAccessorsForAndroidMain NO-SOURCE
+Skipping task ':presentation-feature:generateResourceAccessorsForAndroidMain' as it has no source files and no previous output files.
+Resolve mutations for :presentation-feature:convertXmlValueResourcesForCommonMain (Thread[#9685,Execution worker Thread 10,5,main]) started.
+:presentation-feature:convertXmlValueResourcesForCommonMain (Thread[#9685,Execution worker Thread 10,5,main]) started.
+
+> Task :presentation-feature:convertXmlValueResourcesForCommonMain NO-SOURCE
+file or directory '/Users/cartland/bb-merge/presentation-feature/build/generated/compose/resourceGenerator/preparedResources/commonMain/composeResources', not found
+Skipping task ':presentation-feature:convertXmlValueResourcesForCommonMain' as it has no source files and no previous output files.
+Resolve mutations for :presentation-feature:copyNonXmlValueResourcesForCommonMain (Thread[#9685,Execution worker Thread 10,5,main]) started.
+:presentation-feature:copyNonXmlValueResourcesForCommonMain (Thread[#9685,Execution worker Thread 10,5,main]) started.
+
+> Task :presentation-feature:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+file or directory '/Users/cartland/bb-merge/presentation-feature/build/generated/compose/resourceGenerator/preparedResources/commonMain/composeResources', not found
+Skipping task ':presentation-feature:copyNonXmlValueResourcesForCommonMain' as it has no source files and no previous output files.
+Resolve mutations for :presentation-feature:prepareComposeResourcesTaskForCommonMain (Thread[#9685,Execution worker Thread 10,5,main]) started.
+:presentation-feature:prepareComposeResourcesTaskForCommonMain (Thread[#9685,Execution worker Thread 10,5,main]) started.
+
+> Task :presentation-feature:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+Skipping task ':presentation-feature:prepareComposeResourcesTaskForCommonMain' as it has no source files and no previous output files.
+Resolve mutations for :presentation-feature:generateResourceAccessorsForCommonMain (Thread[#9685,Execution worker Thread 10,5,main]) started.
+:presentation-feature:generateResourceAccessorsForCommonMain (Thread[#9685,Execution worker Thread 10,5,main]) started.
+
+> Task :presentation-feature:generateResourceAccessorsForCommonMain NO-SOURCE
+Skipping task ':presentation-feature:generateResourceAccessorsForCommonMain' as it has no source files and no previous output files.
+Resolve mutations for :presentation-feature:generateActualResourceCollectorsForAndroidMain (Thread[#9685,Execution worker Thread 10,5,main]) started.
+:presentation-feature:generateActualResourceCollectorsForAndroidMain (Thread[#9685,Execution worker Thread 10,5,main]) started.
+
+> Task :presentation-feature:generateActualResourceCollectorsForAndroidMain UP-TO-DATE
+Caching disabled for task ':presentation-feature:generateActualResourceCollectorsForAndroidMain' because:
+  Caching has not been enabled for the task
+Skipping task ':presentation-feature:generateActualResourceCollectorsForAndroidMain' as it is up-to-date.
+Resolve mutations for :presentation-feature:generateComposeResClass (Thread[#9685,Execution worker Thread 10,5,main]) started.
+:presentation-feature:generateComposeResClass (Thread[#9685,Execution worker Thread 10,5,main]) started.
+
+> Task :presentation-feature:generateComposeResClass UP-TO-DATE
+Caching disabled for task ':presentation-feature:generateComposeResClass' because:
+  Caching has not been enabled for the task
+Skipping task ':presentation-feature:generateComposeResClass' as it is up-to-date.
+Resolve mutations for :presentation-feature:generateExpectResourceCollectorsForCommonMain (Thread[#9685,Execution worker Thread 10,5,main]) started.
+:presentation-feature:generateExpectResourceCollectorsForCommonMain (Thread[#9685,Execution worker Thread 10,5,main]) started.
+
+> Task :presentation-feature:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+Caching disabled for task ':presentation-feature:generateExpectResourceCollectorsForCommonMain' because:
+  Caching has not been enabled for the task
+Skipping task ':presentation-feature:generateExpectResourceCollectorsForCommonMain' as it is up-to-date.
+Resolve mutations for :presentation-feature:compileAndroidMain (Thread[#9685,Execution worker Thread 10,5,main]) started.
+:presentation-feature:compileAndroidMain (Thread[#9685,Execution worker Thread 10,5,main]) started.
+
+> Task :presentation-feature:compileAndroidMain UP-TO-DATE
+Build cache key for task ':presentation-feature:compileAndroidMain' is b4a61d36f89faa7d239847f978aa3a82
+Skipping task ':presentation-feature:compileAndroidMain' as it is up-to-date.
+Resolve mutations for :presentation-feature:bundleAndroidMainClassesToCompileJar (Thread[#9685,Execution worker Thread 10,5,main]) started.
+:presentation-feature:bundleAndroidMainClassesToCompileJar (Thread[#9685,Execution worker Thread 10,5,main]) started.
+
+> Task :presentation-feature:bundleAndroidMainClassesToCompileJar UP-TO-DATE
+Caching disabled for task ':presentation-feature:bundleAndroidMainClassesToCompileJar' because:
+  Simple merging task
+Skipping task ':presentation-feature:bundleAndroidMainClassesToCompileJar' as it is up-to-date.
+work action resolve classes.jar (project :presentation-feature) (Thread[#9685,Execution worker Thread 10,5,main]) started.
+Resolve mutations for :compose-app:kspDebugKotlinAndroid (Thread[#9685,Execution worker Thread 10,5,main]) started.
+:compose-app:kspDebugKotlinAndroid (Thread[#9685,Execution worker Thread 10,5,main]) started.
+
+> Task :compose-app:kspDebugKotlinAndroid FAILED
+Build cache key for task ':compose-app:kspDebugKotlinAndroid' is 5c0f71843a326227d65d25ab59a440bf
+Task ':compose-app:kspDebugKotlinAndroid' is not up-to-date because:
+  Task has failed previously.
+The input changes require a full rebuild for incremental task ':compose-app:kspDebugKotlinAndroid'.
+file or directory '/Users/cartland/bb-merge/compose-app/src/androidDebug/kotlin', not found
+file or directory '/Users/cartland/bb-merge/compose-app/build/generated/compose/resourceGenerator/kotlin/androidDebugResourceAccessors', not found
+file or directory '/Users/cartland/bb-merge/compose-app/src/debug/java', not found
+file or directory '/Users/cartland/bb-merge/compose-app/src/debug/kotlin', not found
+file or directory '/Users/cartland/bb-merge/compose-app/build/generated/compose/resourceGenerator/kotlin/androidMainResourceAccessors', not found
+file or directory '/Users/cartland/bb-merge/compose-app/src/main/java', not found
+file or directory '/Users/cartland/bb-merge/compose-app/src/main/kotlin', not found
+file or directory '/Users/cartland/bb-merge/compose-app/src/main/java', not found
+file or directory '/Users/cartland/bb-merge/compose-app/src/debug/java', not found
+file or directory '/Users/cartland/bb-merge/compose-app/src/androidDebug/kotlin', not found
+file or directory '/Users/cartland/bb-merge/compose-app/build/generated/compose/resourceGenerator/kotlin/androidDebugResourceAccessors', not found
+file or directory '/Users/cartland/bb-merge/compose-app/src/debug/java', not found
+file or directory '/Users/cartland/bb-merge/compose-app/src/debug/kotlin', not found
+file or directory '/Users/cartland/bb-merge/compose-app/build/generated/compose/resourceGenerator/kotlin/androidMainResourceAccessors', not found
+file or directory '/Users/cartland/bb-merge/compose-app/src/main/java', not found
+file or directory '/Users/cartland/bb-merge/compose-app/src/main/kotlin', not found
+i: [ksp] loaded provider(s): [me.tatarka.inject.compiler.ksp.InjectProcessorProvider]
+e: [ksp] Unresolved reference: <ERROR TYPE: DispatcherProvider>
+/Users/cartland/bb-merge/compose-app/src/commonMain/kotlin/com/chriscartland/batterybutler/composeapp/di/AppComponent.kt:104: provideAppScope(dispatcherProvider: <ERROR TYPE: DispatcherProvider>): kotlinx.coroutines.CoroutineScope
+com.chriscartland.batterybutler.datalocal.room.DynamicDatabaseProvider(factory: com.chriscartland.batterybutler.datalocal.room.DatabaseFactory, networkModeRepository: com.chriscartland.batterybutler.domain.repository.NetworkModeRepository, scope: kotlinx.coroutines.CoroutineScope)
+com.chriscartland.batterybutler.datalocal.RoomLocalDataSource(databaseProvider: com.chriscartland.batterybutler.datalocal.room.DynamicDatabaseProvider)
+provideLocalDataSource(dataSource: com.chriscartland.batterybutler.datalocal.RoomLocalDataSource): com.chriscartland.batterybutler.datalocal.LocalDataSource
+com.chriscartland.batterybutler.`data`.repository.DefaultDeviceRepository(localDataSource: com.chriscartland.batterybutler.datalocal.LocalDataSource, syncManager: com.chriscartland.batterybutler.`data`.repository.SyncManager)
+/Users/cartland/bb-merge/compose-app/src/commonMain/kotlin/com/chriscartland/batterybutler/composeapp/di/AppDataModule.kt:50: provideDeviceRepository(repo: com.chriscartland.batterybutler.`data`.repository.DefaultDeviceRepository): com.chriscartland.batterybutler.domain.repository.DeviceRepository
+com.chriscartland.batterybutler.usecase.GetDevicesUseCase(deviceRepository: com.chriscartland.batterybutler.domain.repository.DeviceRepository)
+com.chriscartland.batterybutler.viewmodel.home.HomeViewModel(getDevicesUseCase: com.chriscartland.batterybutler.usecase.GetDevicesUseCase, getDeviceTypesUseCase: com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase, exportDataUseCase: com.chriscartland.batterybutler.usecase.ExportDataUseCase, getSyncStatusUseCase: com.chriscartland.batterybutler.usecase.GetSyncStatusUseCase, dismissSyncStatusUseCase: com.chriscartland.batterybutler.usecase.DismissSyncStatusUseCase)
+/Users/cartland/bb-merge/compose-app/src/commonMain/kotlin/com/chriscartland/batterybutler/composeapp/di/AppComponent.kt:58: homeViewModel: com.chriscartland.batterybutler.viewmodel.home.HomeViewModel
+Build fdac6803-ba05-49f3-8160-9d68fc91e6e8 is closed
+
+[Incubating] Problems report is available at: file:///Users/cartland/bb-merge/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':compose-app:kspDebugKotlinAndroid'.
+> A failure occurred while executing com.google.devtools.ksp.gradle.KspAAWorkerAction
+   > KSP failed with exit code: PROCESSING_ERROR
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 1s
+128 actionable tasks: 13 executed, 115 up-to-date
+Watched directory hierarchies: [/Users/cartland/bb-merge, /Users/cartland/bb, /Users/cartland/github/cartland/battery-butler]

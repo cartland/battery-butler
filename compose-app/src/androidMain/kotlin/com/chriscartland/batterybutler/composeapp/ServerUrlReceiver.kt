@@ -60,7 +60,6 @@ class ServerUrlReceiver : BroadcastReceiver() {
         // We can use `goAsync()` and a scope.
 
         val pendingResult = goAsync()
-        val scope = application.appComponent.provideAppScope() // We need a scope. AppComponent provides one?
         // We added provideAppScope() in AppComponent, but it returns CoroutineScope.
         // We can't access it easily if it's not a property.
         // Let's use GlobalScope or construct one, or access the one from Application if available.

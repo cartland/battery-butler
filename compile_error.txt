@@ -1,0 +1,284 @@
+Type-safe project accessors is an incubating feature.
+> Task :buildSrc:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :buildSrc:generateExternalPluginSpecBuilders UP-TO-DATE
+> Task :buildSrc:extractPrecompiledScriptPluginPlugins UP-TO-DATE
+> Task :buildSrc:compilePluginsBlocks UP-TO-DATE
+> Task :buildSrc:generatePrecompiledScriptPluginAccessors UP-TO-DATE
+> Task :buildSrc:generateScriptPluginAdapters UP-TO-DATE
+> Task :buildSrc:compileKotlin UP-TO-DATE
+> Task :buildSrc:compileJava NO-SOURCE
+> Task :buildSrc:compileGroovy NO-SOURCE
+> Task :buildSrc:pluginDescriptors UP-TO-DATE
+> Task :buildSrc:processResources UP-TO-DATE
+> Task :buildSrc:classes UP-TO-DATE
+> Task :buildSrc:jar UP-TO-DATE
+
+> Configure project :android-screenshot-tests
+WARNING: The option setting 'android.experimental.enableScreenshotTest=true' is experimental.
+The current default is 'false'.
+
+> Configure project :compose-app
+┌─────────────────────────────────────────────────────────────
+│ Google Sign-In: NOT CONFIGURED
+├─────────────────────────────────────────────────────────────
+│ To enable Google Sign-In:
+│   1. Create OAuth credentials at https://console.cloud.google.com
+│   2. Add to local.properties:
+│      GOOGLE_WEB_CLIENT_ID=your-id.apps.googleusercontent.com
+│   OR pass via Gradle: -PGOOGLE_WEB_CLIENT_ID=...
+└─────────────────────────────────────────────────────────────
+Signing: No keystore.properties found at /Users/cartland/bb-merge/keystore.properties
+Signing: Release keystore not found at path: /Users/cartland/bb-merge/release.keystore. Release builds may invoke installation prompts or fail signing.
+Signing: Release signing config has no storeFile. Skipping assignment (will use debug or unsigned).
+w: [33m[1m⚠️ The 'org.jetbrains.kotlin.multiplatform' plugin deprecated compatibility with Android Gradle plugin: 'com.android.application'[0m[0m
+The 'org.jetbrains.kotlin.multiplatform' plugin will not be compatible with 'com.android.application' starting with Android Gradle Plugin 9.0.0.
+
+Please change the structure of the your project and move the usage of 'com.android.application' into a separate subproject. The new subproject should add a dependency on this KMP subproject.
+
+Read more: https://kotl.in/kmp-project-structure-migration
+[32m[1mSolution:[0m[0m
+[32m[3mPlease change the structure of your project and move the usage of 'com.android.application' into a separate subproject.[0m[0m
+[36mSee [0m[34mhttps://kotl.in/gradle/agp-new-kmp[0m[36m for more details.[0m
+
+
+> Configure project :compose-resources
+w: [33m[1m⚠️ The 'org.jetbrains.kotlin.multiplatform' plugin deprecated compatibility with Android Gradle plugin: 'com.android.library'[0m[0m
+The 'org.jetbrains.kotlin.multiplatform' plugin will not be compatible with 'com.android.library' starting with Android Gradle Plugin 9.0.0.
+[32m[1mSolution:[0m[0m
+[32m[3mPlease use the 'com.android.kotlin.multiplatform.library' plugin instead of 'com.android.library'.[0m[0m
+[36mSee [0m[34mhttps://kotl.in/gradle/agp-new-kmp[0m[36m for more details.[0m
+
+
+> Configure project :data
+w: [33m[1m⚠️ Deprecated Gradle Property 'kotlin.mpp.import.enableKgpDependencyResolution' Used[0m[0m
+The `kotlin.mpp.import.enableKgpDependencyResolution` deprecated property is used in your build.
+[32m[1mSolutions:[0m[0m
+[32m • [3mIt is unsupported, please stop using it.[0m[0m
+[32m • [3mLegacy mode of KMP IDE import has been removed: https://kotl.in/KT-61127[0m[0m
+
+
+> Task :viewmodel:androidPreBuild UP-TO-DATE
+> Task :data:androidPreBuild UP-TO-DATE
+> Task :usecase:androidPreBuild UP-TO-DATE
+> Task :data-local:androidPreBuild UP-TO-DATE
+> Task :presentation-core:androidPreBuild UP-TO-DATE
+> Task :fixtures:androidPreBuild UP-TO-DATE
+> Task :presentation-feature:androidPreBuild UP-TO-DATE
+> Task :data-network:androidPreBuild UP-TO-DATE
+> Task :data-local:preAndroidMainBuild UP-TO-DATE
+> Task :viewmodel:preAndroidMainBuild UP-TO-DATE
+> Task :compose-resources:preBuild UP-TO-DATE
+> Task :data-network:preAndroidMainBuild UP-TO-DATE
+> Task :fixtures:preAndroidMainBuild UP-TO-DATE
+> Task :presentation-core:preAndroidMainBuild UP-TO-DATE
+> Task :presentation-feature:preAndroidMainBuild UP-TO-DATE
+> Task :data:preAndroidMainBuild UP-TO-DATE
+> Task :domain:kmpPartiallyResolvedDependenciesChecker
+> Task :data-local:writeAndroidMainAarMetadata UP-TO-DATE
+> Task :usecase:preAndroidMainBuild UP-TO-DATE
+> Task :fixtures:writeAndroidMainAarMetadata UP-TO-DATE
+> Task :domain:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :data:writeAndroidMainAarMetadata UP-TO-DATE
+> Task :presentation-feature:writeAndroidMainAarMetadata UP-TO-DATE
+> Task :compose-resources:preDebugBuild UP-TO-DATE
+> Task :viewmodel:writeAndroidMainAarMetadata UP-TO-DATE
+> Task :domain:kspKotlinJvm SKIPPED
+> Task :usecase:writeAndroidMainAarMetadata UP-TO-DATE
+> Task :viewmodel:generateAndroidMainEmptyResourceFiles UP-TO-DATE
+> Task :usecase:generateAndroidMainEmptyResourceFiles UP-TO-DATE
+> Task :data-local:generateAndroidMainEmptyResourceFiles UP-TO-DATE
+> Task :data-network:writeAndroidMainAarMetadata UP-TO-DATE
+> Task :data:generateAndroidMainEmptyResourceFiles UP-TO-DATE
+> Task :compose-resources:writeDebugAarMetadata UP-TO-DATE
+> Task :presentation-core:writeAndroidMainAarMetadata UP-TO-DATE
+> Task :fixtures:generateAndroidMainEmptyResourceFiles UP-TO-DATE
+> Task :presentation-core:generateAndroidMainEmptyResourceFiles UP-TO-DATE
+> Task :presentation-feature:generateAndroidMainEmptyResourceFiles UP-TO-DATE
+> Task :data:processAndroidMainManifest UP-TO-DATE
+> Task :data-local:processAndroidMainManifest UP-TO-DATE
+> Task :usecase:processAndroidMainManifest UP-TO-DATE
+> Task :compose-resources:convertXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :data-network:generateAndroidMainEmptyResourceFiles UP-TO-DATE
+> Task :compose-resources:copyNonXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :viewmodel:processAndroidMainManifest UP-TO-DATE
+> Task :fixtures:processAndroidMainManifest UP-TO-DATE
+> Task :presentation-core:processAndroidMainManifest UP-TO-DATE
+> Task :presentation-feature:processAndroidMainManifest UP-TO-DATE
+> Task :compose-resources:prepareComposeResourcesTaskForAndroidDebug NO-SOURCE
+> Task :data-network:processAndroidMainManifest UP-TO-DATE
+> Task :compose-resources:convertXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :compose-resources:copyNonXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :compose-resources:prepareComposeResourcesTaskForAndroidMain NO-SOURCE
+> Task :compose-resources:convertXmlValueResourcesForCommonMain UP-TO-DATE
+> Task :compose-resources:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :compose-resources:prepareComposeResourcesTaskForCommonMain UP-TO-DATE
+> Task :compose-resources:copyDebugComposeResourcesToAndroidAssets UP-TO-DATE
+> Task :compose-resources:generateDebugResValues UP-TO-DATE
+> Task :compose-resources:generateDebugResources UP-TO-DATE
+> Task :compose-resources:packageDebugResources UP-TO-DATE
+> Task :compose-resources:extractDeepLinksDebug UP-TO-DATE
+> Task :compose-resources:processDebugManifest UP-TO-DATE
+> Task :compose-resources:compileDebugLibraryResources UP-TO-DATE
+> Task :compose-resources:parseDebugLocalResources UP-TO-DATE
+> Task :compose-resources:generateDebugRFile UP-TO-DATE
+> Task :fixtures:kmpPartiallyResolvedDependenciesChecker
+> Task :fixtures:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :presentation-model:kmpPartiallyResolvedDependenciesChecker
+> Task :presentation-model:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :presentation-model:androidPreBuild UP-TO-DATE
+> Task :presentation-model:preAndroidMainBuild UP-TO-DATE
+> Task :presentation-model:writeAndroidMainAarMetadata UP-TO-DATE
+> Task :presentation-model:generateAndroidMainEmptyResourceFiles UP-TO-DATE
+> Task :presentation-model:processAndroidMainManifest UP-TO-DATE
+> Task :domain:compileKotlinJvm UP-TO-DATE
+> Task :domain:compileJvmMainJava NO-SOURCE
+> Task :domain:jvmProcessResources NO-SOURCE
+> Task :domain:processJvmMainResources SKIPPED
+> Task :domain:jvmMainClasses UP-TO-DATE
+> Task :domain:jvmJar UP-TO-DATE
+> Task :usecase:kmpPartiallyResolvedDependenciesChecker
+> Task :usecase:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :fixtures:compileAndroidMain UP-TO-DATE
+> Task :fixtures:bundleAndroidMainClassesToCompileJar UP-TO-DATE
+> Task :viewmodel:kmpPartiallyResolvedDependenciesChecker
+> Task :viewmodel:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :presentation-model:compileAndroidMain UP-TO-DATE
+> Task :presentation-model:bundleAndroidMainClassesToCompileJar UP-TO-DATE
+> Task :data-local:kmpPartiallyResolvedDependenciesChecker
+> Task :data-local:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :usecase:kspAndroidMain FROM-CACHE
+> Task :ai:kmpPartiallyResolvedDependenciesChecker
+> Task :ai:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :usecase:compileAndroidMain UP-TO-DATE
+> Task :usecase:bundleAndroidMainClassesToCompileJar UP-TO-DATE
+> Task :viewmodel:kspAndroidMain FROM-CACHE
+> Task :viewmodel:compileAndroidMain UP-TO-DATE
+> Task :viewmodel:bundleAndroidMainClassesToCompileJar UP-TO-DATE
+> Task :ai:kspAndroidMain FROM-CACHE
+> Task :data-network:kmpPartiallyResolvedDependenciesChecker
+> Task :data-network:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :data-network:generateBuildConfig UP-TO-DATE
+> Task :data-network:generateCommonMainProtos UP-TO-DATE
+> Task :data-local:kspAndroidMain FROM-CACHE
+> Task :ai:compileAndroidMain UP-TO-DATE
+> Task :ai:androidPreBuild UP-TO-DATE
+> Task :ai:preAndroidMainBuild UP-TO-DATE
+> Task :ai:bundleAndroidMainClassesToCompileJar UP-TO-DATE
+> Task :ai:writeAndroidMainAarMetadata UP-TO-DATE
+> Task :ai:generateAndroidMainEmptyResourceFiles UP-TO-DATE
+> Task :ai:processAndroidMainManifest UP-TO-DATE
+> Task :data-local:compileAndroidMain UP-TO-DATE
+> Task :data-local:bundleAndroidMainClassesToCompileJar UP-TO-DATE
+> Task :data-network:compileAndroidMain UP-TO-DATE
+> Task :data-network:bundleAndroidMainClassesToCompileJar UP-TO-DATE
+> Task :data:kmpPartiallyResolvedDependenciesChecker
+> Task :data:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :data:kspAndroidMain FROM-CACHE
+> Task :data:compileAndroidMain UP-TO-DATE
+> Task :data:bundleAndroidMainClassesToCompileJar UP-TO-DATE
+> Task :compose-resources:kmpPartiallyResolvedDependenciesChecker
+> Task :compose-resources:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :compose-resources:generateResourceAccessorsForAndroidMain NO-SOURCE
+> Task :compose-resources:generateResourceAccessorsForCommonMain UP-TO-DATE
+> Task :compose-resources:generateActualResourceCollectorsForAndroidMain UP-TO-DATE
+> Task :compose-resources:generateComposeResClass UP-TO-DATE
+> Task :compose-resources:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :compose-resources:generateResourceAccessorsForAndroidDebug NO-SOURCE
+> Task :compose-resources:compileDebugKotlinAndroid UP-TO-DATE
+> Task :compose-resources:javaPreCompileDebug UP-TO-DATE
+> Task :compose-resources:compileDebugJavaWithJavac NO-SOURCE
+> Task :compose-resources:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :presentation-core:kmpPartiallyResolvedDependenciesChecker
+> Task :presentation-core:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :presentation-core:convertXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :presentation-core:copyNonXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :presentation-core:prepareComposeResourcesTaskForAndroidMain NO-SOURCE
+> Task :presentation-core:generateResourceAccessorsForAndroidMain NO-SOURCE
+> Task :presentation-core:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :presentation-core:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :presentation-core:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :presentation-core:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :presentation-core:generateActualResourceCollectorsForAndroidMain UP-TO-DATE
+> Task :presentation-core:generateComposeResClass UP-TO-DATE
+> Task :presentation-core:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :presentation-feature:kmpPartiallyResolvedDependenciesChecker
+> Task :presentation-feature:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :presentation-feature:convertXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :presentation-feature:copyNonXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :presentation-feature:prepareComposeResourcesTaskForAndroidMain NO-SOURCE
+> Task :presentation-feature:generateResourceAccessorsForAndroidMain NO-SOURCE
+> Task :presentation-feature:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :presentation-feature:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :presentation-feature:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :presentation-feature:generateResourceAccessorsForCommonMain NO-SOURCE
+> Task :presentation-core:compileAndroidMain UP-TO-DATE
+> Task :presentation-feature:generateActualResourceCollectorsForAndroidMain UP-TO-DATE
+> Task :presentation-core:bundleAndroidMainClassesToCompileJar UP-TO-DATE
+> Task :presentation-feature:generateComposeResClass UP-TO-DATE
+> Task :presentation-feature:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :presentation-feature:compileAndroidMain UP-TO-DATE
+> Task :presentation-feature:bundleAndroidMainClassesToCompileJar UP-TO-DATE
+> Task :compose-app:kmpPartiallyResolvedDependenciesChecker
+> Task :compose-app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :compose-app:convertXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :compose-app:copyNonXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :compose-app:prepareComposeResourcesTaskForAndroidMain NO-SOURCE
+> Task :compose-app:generateResourceAccessorsForAndroidMain NO-SOURCE
+> Task :compose-app:convertXmlValueResourcesForCommonMain UP-TO-DATE
+> Task :compose-app:copyNonXmlValueResourcesForCommonMain UP-TO-DATE
+> Task :compose-app:prepareComposeResourcesTaskForCommonMain UP-TO-DATE
+> Task :compose-app:generateResourceAccessorsForCommonMain UP-TO-DATE
+> Task :compose-app:generateActualResourceCollectorsForAndroidMain UP-TO-DATE
+> Task :compose-app:generateComposeResClass UP-TO-DATE
+> Task :compose-app:preBuild UP-TO-DATE
+> Task :compose-app:preDebugBuild UP-TO-DATE
+> Task :compose-app:generateDebugBuildConfig UP-TO-DATE
+> Task :compose-app:generateExpectResourceCollectorsForCommonMain UP-TO-DATE
+> Task :compose-app:convertXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :compose-app:copyNonXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :compose-app:prepareComposeResourcesTaskForAndroidDebug NO-SOURCE
+> Task :compose-app:generateResourceAccessorsForAndroidDebug NO-SOURCE
+> Task :compose-app:checkDebugAarMetadata UP-TO-DATE
+> Task :compose-app:generateDebugResValues UP-TO-DATE
+> Task :compose-app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :compose-app:generateDebugResources UP-TO-DATE
+> Task :compose-app:mergeDebugResources UP-TO-DATE
+> Task :compose-app:copyDebugComposeResourcesToAndroidAssets UP-TO-DATE
+> Task :compose-app:packageDebugResources UP-TO-DATE
+> Task :compose-app:parseDebugLocalResources UP-TO-DATE
+> Task :compose-app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :compose-app:extractDeepLinksDebug UP-TO-DATE
+> Task :compose-app:processDebugMainManifest UP-TO-DATE
+> Task :compose-app:processDebugManifest UP-TO-DATE
+> Task :compose-app:processDebugManifestForPackage UP-TO-DATE
+> Task :compose-app:processDebugResources UP-TO-DATE
+> Task :compose-app:kspDebugKotlinAndroid FROM-CACHE
+
+> Task :compose-app:compileDebugKotlinAndroid FAILED
+e: file:///Users/cartland/bb-merge/compose-app/src/androidMain/kotlin/com/chriscartland/batterybutler/BatteryButlerApplication.kt:49:13 No parameter with name 'webClientId' found.
+e: file:///Users/cartland/bb-merge/compose-app/src/androidMain/kotlin/com/chriscartland/batterybutler/BatteryButlerApplication.kt:50:13 No value passed for parameter 'clientId'.
+e: file:///Users/cartland/bb-merge/compose-app/src/androidMain/kotlin/com/chriscartland/batterybutler/composeapp/ServerUrlReceiver.kt:63:61 No value passed for parameter 'dispatcherProvider'.
+e: file:///Users/cartland/bb-merge/compose-app/src/commonMain/kotlin/com/chriscartland/batterybutler/composeapp/App.kt:182:40 Unresolved reference 'scope'.
+e: file:///Users/cartland/bb-merge/compose-app/src/commonMain/kotlin/com/chriscartland/batterybutler/composeapp/App.kt:182:66 Suspend function 'suspend fun animateScrollToPage(page: Int, pageOffsetFraction: Float = ..., animationSpec: AnimationSpec<Float> = ...): Unit' can only be called from a coroutine or another suspend function.
+e: file:///Users/cartland/bb-merge/compose-app/src/commonMain/kotlin/com/chriscartland/batterybutler/composeapp/App.kt:183:38 Unresolved reference 'scope'.
+e: file:///Users/cartland/bb-merge/compose-app/src/commonMain/kotlin/com/chriscartland/batterybutler/composeapp/App.kt:183:64 Suspend function 'suspend fun animateScrollToPage(page: Int, pageOffsetFraction: Float = ..., animationSpec: AnimationSpec<Float> = ...): Unit' can only be called from a coroutine or another suspend function.
+e: file:///Users/cartland/bb-merge/compose-app/src/commonMain/kotlin/com/chriscartland/batterybutler/composeapp/App.kt:184:40 Unresolved reference 'scope'.
+e: file:///Users/cartland/bb-merge/compose-app/src/commonMain/kotlin/com/chriscartland/batterybutler/composeapp/App.kt:184:66 Suspend function 'suspend fun animateScrollToPage(page: Int, pageOffsetFraction: Float = ..., animationSpec: AnimationSpec<Float> = ...): Unit' can only be called from a coroutine or another suspend function.
+
+[Incubating] Problems report is available at: file:///Users/cartland/bb-merge/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':compose-app:compileDebugKotlinAndroid'.
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more details
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 1s
+130 actionable tasks: 14 executed, 6 from cache, 110 up-to-date

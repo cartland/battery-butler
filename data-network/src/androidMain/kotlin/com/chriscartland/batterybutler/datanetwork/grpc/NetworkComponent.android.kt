@@ -7,9 +7,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import java.util.concurrent.TimeUnit
 
-actual class NetworkComponent(
-    private val context: Context,
-) {
+actual class NetworkComponent {
     actual fun createGrpcClient(
         url: String,
         dispatcherProvider: com.chriscartland.batterybutler.domain.model.DispatcherProvider,
@@ -27,6 +25,7 @@ actual class NetworkComponent(
                     .build(),
             ).baseUrl(url)
             .build()
+    }
 
     companion object {
         private const val CONNECT_TIMEOUT_SECONDS = 10L

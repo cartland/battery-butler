@@ -25,7 +25,7 @@ class BatteryButlerApplication : Application() {
         super.onCreate()
         val databaseFactory = DatabaseFactory(this)
         val dataStoreFactory = DataStoreFactory(this)
-        val networkComponent = NetworkComponent(this)
+        val networkComponent = NetworkComponent()
         val aiConfig = BuildConfigAiConfig()
 
         // AI Setup
@@ -46,7 +46,7 @@ class BatteryButlerApplication : Application() {
         )
         val googleSignInBridge = GoogleSignInBridge()
         googleSignInBridge.initialize(
-            webClientId = BuildConfig.GOOGLE_WEB_CLIENT_ID,
+            clientId = BuildConfig.GOOGLE_WEB_CLIENT_ID,
             dispatcherProvider = DefaultDispatcherProvider(),
         )
         appComponent = AppComponent::class.create(

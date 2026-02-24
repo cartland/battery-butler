@@ -38,11 +38,11 @@ actual class GoogleSignInBridge {
      * @param webClientId The OAuth 2.0 Web Client ID from Google Cloud Console.
      * @param dispatcherProvider Injected dispatchers.
      */
-    fun initialize(
-        webClientId: String?,
+    actual fun initialize(
+        clientId: String?,
         dispatcherProvider: com.chriscartland.batterybutler.domain.model.DispatcherProvider?,
     ) {
-        this.webClientId = webClientId
+        this.webClientId = clientId
         this.dispatcherProvider = dispatcherProvider
         logConfiguration()
     }
