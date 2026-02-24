@@ -101,6 +101,7 @@ struct EventDetailScreen: View {
                     Image(systemName: "trash")
                         .foregroundColor(.red)
                 }
+                .accessibilityLabel("Delete event")
             }
         }
         .alert("Delete Event?", isPresented: $showingDeleteConfirmation) {

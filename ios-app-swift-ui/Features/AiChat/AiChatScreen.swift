@@ -43,6 +43,7 @@ struct AiChatScreen: View {
                     Image(systemName: "paperplane.fill")
                         .foregroundColor(inputText.isEmpty || wrapper.isProcessing ? .gray : .blue)
                 }
+                .accessibilityLabel("Send message")
                 .disabled(inputText.isEmpty || wrapper.isProcessing)
             }
             .padding()
@@ -56,6 +57,7 @@ struct AiChatScreen: View {
                 }) {
                     Image(systemName: "trash")
                 }
+                .accessibilityLabel("Clear chat")
             }
         }
     }
