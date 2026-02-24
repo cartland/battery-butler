@@ -62,6 +62,12 @@ actual class GoogleSignInBridge {
         }
     }
 
+    actual fun unbindActivity() {
+        this.activityProvider = null
+        this.credentialManager = null
+        Log.i(TAG, "CredentialManager and Activity unbound")
+    }
+
     private fun logConfiguration() {
         if (webClientId.isNullOrBlank()) {
             Log.w(TAG, "┌─────────────────────────────────────────────────────────────")

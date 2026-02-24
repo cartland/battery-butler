@@ -5,14 +5,18 @@ import android.content.Intent
 import androidx.core.content.FileProvider
 import java.io.File
 import java.io.FileOutputStream
+import java.lang.ref.WeakReference
 
 class AndroidFileSaver(
-    private val activity: Activity,
+    activity: Activity,
 ) : FileSaver {
+    private val activityRef = WeakReference(activity)
+
     override fun saveFile(
         fileName: String,
         content: ByteArray,
     ) {
+        val activity = activityRef.get() ?: return
         val cacheDir = activity.cacheDir
         val file = File(cacheDir, fileName)
         FileOutputStream(file).use { it.write(content) }

@@ -132,6 +132,10 @@ actual class GoogleSignInBridge {
 
     actual fun isConfigured(): Boolean = !clientId.isNullOrBlank()
 
+    actual fun unbindActivity() {
+        // No activity binding on iOS
+    }
+
     @OptIn(ExperimentalEncodingApi::class)
     private fun generateCodeVerifier(): String {
         val bytes = Random.nextBytes(32)

@@ -55,4 +55,9 @@ expect class GoogleSignInBridge {
      * Returns true if Google Sign-In is configured for this build.
      */
     fun isConfigured(): Boolean
+
+    /**
+     * Unbinds the activity context. Call from Activity.onDestroy().
+     */
+    fun unbindActivity()
 }

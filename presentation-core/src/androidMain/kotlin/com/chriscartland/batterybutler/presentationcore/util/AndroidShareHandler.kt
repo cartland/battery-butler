@@ -4,8 +4,10 @@ import android.content.Context
 import android.content.Intent
 
 class AndroidShareHandler(
-    private val context: Context,
+    context: Context,
 ) : ShareHandler {
+    private val appContext = context.applicationContext
+
     override fun shareText(text: String) {
         val sendIntent: Intent = Intent().apply {
             action = Intent.ACTION_SEND
@@ -14,6 +16,6 @@ class AndroidShareHandler(
         }
         val shareIntent = Intent.createChooser(sendIntent, null)
         shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        context.startActivity(shareIntent)
+        appContext.startActivity(shareIntent)
     }
 }
