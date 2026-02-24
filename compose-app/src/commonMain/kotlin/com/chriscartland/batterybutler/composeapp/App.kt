@@ -195,7 +195,16 @@ fun App(
                             // Tab content NavDisplay — only content area animates on tab switch
                             NavDisplay(
                                 backStack = tabBackStack,
-                                onBack = { tabBackStack.removeLastOrNull() },
+                                onBack = {
+                                    // AI overlay takes priority over tab back-navigation.
+                                    // NavDisplay's handler fires before the top-level
+                                    // BackHandler when the tab stack has >1 entry.
+                                    if (isAiExpanded) {
+                                        isAiExpanded = false
+                                    } else {
+                                        tabBackStack.removeLastOrNull()
+                                    }
+                                },
                                 entryDecorators = listOf(
                                     rememberSaveableStateHolderNavEntryDecorator<Screen>(),
                                     rememberViewModelStoreNavEntryDecorator<Screen>(),
