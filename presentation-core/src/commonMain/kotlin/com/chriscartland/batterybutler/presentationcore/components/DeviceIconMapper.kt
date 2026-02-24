@@ -1,6 +1,5 @@
 package com.chriscartland.batterybutler.presentationcore.components
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -62,51 +61,64 @@ import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.domain.model.DeviceIcons
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
-import com.chriscartland.batterybutler.presentationcore.theme.IconAccent
-import com.chriscartland.batterybutler.presentationcore.theme.IconAccentBlue
-import com.chriscartland.batterybutler.presentationcore.theme.IconAccentGreen
-import com.chriscartland.batterybutler.presentationcore.theme.IconAccentOrange
-import com.chriscartland.batterybutler.presentationcore.theme.IconAccentPink
-import com.chriscartland.batterybutler.presentationcore.theme.IconAccentPurple
-import com.chriscartland.batterybutler.presentationcore.theme.IconAccentRed
-import com.chriscartland.batterybutler.presentationcore.theme.IconAccentSlate
-import com.chriscartland.batterybutler.presentationcore.theme.IconAccentTeal
+import com.chriscartland.batterybutler.presentationcore.theme.IconColorRole
 import com.chriscartland.batterybutler.presentationcore.theme.ResolvedIconAccent
-import com.chriscartland.batterybutler.presentationcore.theme.resolve
 
 data object DeviceIconMapper {
     val AvailableIcons = DeviceIcons.AvailableIcons
 
-    fun getIconAccent(iconName: String?): IconAccent =
+    /**
+     * Maps an icon name to its semantic [IconColorRole].
+     *
+     * The role determines which Material theme container/content color pair is used,
+     * ensuring icons always harmonize with the active theme.
+     */
+    fun getIconColorRole(iconName: String?): IconColorRole =
         when (iconName) {
-            // Smart home / security → Blue
-            "lock", "garage_home", "router", "power" -> IconAccentBlue
-            // Sensors / motion → Orange
-            "sensors" -> IconAccentOrange
-            // Controls / remotes / gaming → Purple
-            "smart_button", "settings_remote", "videogame_asset",
-            "game_controller", "mouse", "keyboard",
-            -> IconAccentPurple
-            // Safety / detectors → Red
-            "detector_smoke" -> IconAccentRed
-            // Climate → Teal
-            "thermostat", "water_drop" -> IconAccentTeal
-            // Time → Green
-            "schedule" -> IconAccentGreen
-            // Toys / fun → Pink
-            "toys" -> IconAccentPink
-            // Electronics → Blue
+            // Smart home / security / electronics → Tertiary (Steel Blue)
+            "lock", "garage_home", "router", "power",
             "smartphone", "tablet", "laptop", "tv",
             "headphones", "speaker", "camera", "watch",
-            -> IconAccentBlue
-            // Tools / utility / everything else → Slate
-            else -> IconAccentSlate
+            -> IconColorRole.Tertiary
+            // Sensors / controls / remotes / gaming → Secondary (Warm Walnut)
+            "sensors", "smart_button", "settings_remote",
+            "videogame_asset", "game_controller", "mouse", "keyboard",
+            -> IconColorRole.Secondary
+            // Safety / detectors → Error (Red)
+            "detector_smoke" -> IconColorRole.Error
+            // Climate / time / nature → Primary (Sage Green)
+            "thermostat", "water_drop", "schedule",
+            "lightbulb", "toys",
+            -> IconColorRole.Primary
+            // Tools / utility / everything else → Surface (Neutral)
+            else -> IconColorRole.Surface
         }
 
     @Composable
     fun getResolvedIconAccent(iconName: String?): ResolvedIconAccent {
-        val isDark = isSystemInDarkTheme()
-        return getIconAccent(iconName).resolve(isDark)
+        val scheme = MaterialTheme.colorScheme
+        return when (getIconColorRole(iconName)) {
+            IconColorRole.Primary -> ResolvedIconAccent(
+                container = scheme.primaryContainer,
+                content = scheme.onPrimaryContainer,
+            )
+            IconColorRole.Secondary -> ResolvedIconAccent(
+                container = scheme.secondaryContainer,
+                content = scheme.onSecondaryContainer,
+            )
+            IconColorRole.Tertiary -> ResolvedIconAccent(
+                container = scheme.tertiaryContainer,
+                content = scheme.onTertiaryContainer,
+            )
+            IconColorRole.Error -> ResolvedIconAccent(
+                container = scheme.errorContainer,
+                content = scheme.onErrorContainer,
+            )
+            IconColorRole.Surface -> ResolvedIconAccent(
+                container = scheme.surfaceVariant,
+                content = scheme.onSurfaceVariant,
+            )
+        }
     }
 
     fun getIcon(iconName: String?): ImageVector =

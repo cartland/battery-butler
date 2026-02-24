@@ -21,7 +21,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Devices
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -51,6 +50,7 @@ import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.SyncStatus
 import com.chriscartland.batterybutler.presentationcore.components.AddItemCard
+import com.chriscartland.batterybutler.presentationcore.components.ButlerDropdownMenu
 import com.chriscartland.batterybutler.presentationcore.components.CompositeControl
 import com.chriscartland.batterybutler.presentationcore.components.DeviceListItem
 import com.chriscartland.batterybutler.presentationcore.components.EmptyStateContent
@@ -192,7 +192,7 @@ fun HomeScreenFilterRow(
                     onClicked = { sortExpanded = true },
                     onDirectionToggle = onSortOptionToggle,
                 )
-                DropdownMenu(
+                ButlerDropdownMenu(
                     expanded = sortExpanded,
                     onDismissRequest = { sortExpanded = false },
                 ) {
@@ -217,7 +217,7 @@ fun HomeScreenFilterRow(
                     onClicked = { groupExpanded = true },
                     onDirectionToggle = onGroupOptionToggle,
                 )
-                DropdownMenu(
+                ButlerDropdownMenu(
                     expanded = groupExpanded,
                     onDismissRequest = { groupExpanded = false },
                 ) {
