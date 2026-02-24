@@ -37,9 +37,23 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 - **AI overlay redesign** ([#613](https://github.com/cartland/battery-butler/pull/613)): Replaces the collapsed read-only AI field with an always-visible interactive `OutlinedTextField` + send `IconButton` in the bottom bar. The `AnimatedVisibility` overlay now only slides up/down the chat history (input stays fixed). Back button dismisses the overlay. Tab transitions now slide left/right based on tab index instead of cross-fading. `BackHandler(enabled = isAiExpanded)` intercepts back presses before the nav stack.
 
+- **Static shell during tab transitions** ([#616](https://github.com/cartland/battery-butler/pull/616)): Hoisted `MainScreenShell` above the `NavDisplay` so the top bar, AI input bar, and nav tabs stay fixed while only the content area slides during tab transitions. Previously the entire screen (including shell) animated on tab switches and predictive back.
+
+- **AI chat tap-to-open** ([#616](https://github.com/cartland/battery-butler/pull/616)): Added `onFocusChanged` to the AI `OutlinedTextField` so tapping the field opens the chat overlay immediately (not just on send).
+
+- **Standard dropdown component** ([#618](https://github.com/cartland/battery-butler/pull/618)): Added `ButlerDropdownMenu` wrapper in `presentation-core/components/` as the single place to customize dropdown behavior across the app.
+
+- **Theme-aware icon colors** ([#618](https://github.com/cartland/battery-butler/pull/618)): Replaced hardcoded `IconAccent` light/dark color pairs with `IconColorRole` enum mapping semantic icon categories to `MaterialTheme.colorScheme` container colors. Icons now adapt automatically to theme changes. `IconAccent.kt` deleted.
+
+- **UseCase convention test** ([#630](https://github.com/cartland/battery-butler/pull/630)): Added `UseCaseConventionTest` — a JVM reflection-based test that scans all `*UseCase` classes and asserts each has `operator fun invoke`. Caught and fixed a real violation: `BuildAiContextUseCase` was using a non-invoke `buildContext()` method.
+
 ### Fixes
 
 - **Null safety in navigation** ([#613](https://github.com/cartland/battery-butler/pull/613)): `navigateToDevices` now uses `backStack.lastOrNull()` instead of `backStack.last()` to prevent `NoSuchElementException` if the backstack is empty.
+
+- **Chat history overflow** ([#618](https://github.com/cartland/battery-butler/pull/618)): AI overlay `Surface` now applies bottom padding from `innerPadding`, preventing chat messages from rendering behind the navigation bar.
+
+- **Devices screen spacing** ([#616](https://github.com/cartland/battery-butler/pull/616)): Set `contentWindowInsets = WindowInsets(0,0,0,0)` on the inner Scaffold to prevent double-applying insets when nested inside a `NavDisplay` entry.
 
 ---
 
