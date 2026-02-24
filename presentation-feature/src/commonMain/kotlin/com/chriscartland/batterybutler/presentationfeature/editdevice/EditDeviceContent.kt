@@ -43,6 +43,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.chriscartland.batterybutler.composeresources.composeStringResource
+import com.chriscartland.batterybutler.composeresources.generated.resources.Res
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_add_new_device_type
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_cancel
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_delete
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_delete_device
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_save
+import com.chriscartland.batterybutler.composeresources.generated.resources.dialog_delete_device_text
+import com.chriscartland.batterybutler.composeresources.generated.resources.dialog_delete_device_title
+import com.chriscartland.batterybutler.composeresources.generated.resources.edit_device_title
+import com.chriscartland.batterybutler.composeresources.generated.resources.error_device_not_found
+import com.chriscartland.batterybutler.composeresources.generated.resources.label_device_name
+import com.chriscartland.batterybutler.composeresources.generated.resources.label_device_type
+import com.chriscartland.batterybutler.composeresources.generated.resources.label_location
+import com.chriscartland.batterybutler.composeresources.generated.resources.label_select_type
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceInput
 import com.chriscartland.batterybutler.domain.model.DeviceType
@@ -75,11 +90,11 @@ fun EditDeviceContent(
         modifier = modifier,
         topBar = {
             ButlerCenteredTopAppBar(
-                title = "Edit Device",
+                title = composeStringResource(Res.string.edit_device_title),
                 onBack = onBack,
                 navigationIcon = {
                     TextButton(onClick = onBack) {
-                        Text("Cancel")
+                        Text(composeStringResource(Res.string.action_cancel))
                     }
                 },
                 actions = {
@@ -95,7 +110,7 @@ fun EditDeviceContent(
                         },
                         enabled = name.isNotBlank() && selectedTypeId.isNotBlank(),
                     ) {
-                        Text("Save", fontWeight = FontWeight.Bold)
+                        Text(composeStringResource(Res.string.action_save), fontWeight = FontWeight.Bold)
                     }
                 },
             )
@@ -107,7 +122,7 @@ fun EditDeviceContent(
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
                 EditDeviceUiState.NotFound -> {
-                    Text("Device not found", modifier = Modifier.align(Alignment.Center))
+                    Text(composeStringResource(Res.string.error_device_not_found), modifier = Modifier.align(Alignment.Center))
                 }
                 is EditDeviceUiState.Success -> {
                     // Initialize fields once
@@ -130,7 +145,7 @@ fun EditDeviceContent(
                         OutlinedTextField(
                             value = name,
                             onValueChange = { name = it },
-                            label = { Text("Device Name") },
+                            label = { Text(composeStringResource(Res.string.label_device_name)) },
                             modifier = Modifier.fillMaxWidth(),
                             singleLine = true,
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
@@ -144,7 +159,7 @@ fun EditDeviceContent(
                         OutlinedTextField(
                             value = location,
                             onValueChange = { location = it },
-                            label = { Text("Location") },
+                            label = { Text(composeStringResource(Res.string.label_location)) },
                             modifier = Modifier.fillMaxWidth(),
                             singleLine = true,
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
@@ -170,9 +185,9 @@ fun EditDeviceContent(
                                         enabled = true,
                                     ).fillMaxWidth(),
                                 readOnly = true,
-                                value = selectedType?.name ?: "Select Type",
+                                value = selectedType?.name ?: composeStringResource(Res.string.label_select_type),
                                 onValueChange = {},
-                                label = { Text("Device Type") },
+                                label = { Text(composeStringResource(Res.string.label_device_type)) },
                                 leadingIcon = if (selectedType != null) {
                                     {
                                         Icon(
@@ -212,7 +227,7 @@ fun EditDeviceContent(
                                 }
                                 HorizontalDivider()
                                 DropdownMenuItem(
-                                    text = { Text("Add New Device Type...", fontWeight = FontWeight.Bold) },
+                                    text = { Text(composeStringResource(Res.string.action_add_new_device_type), fontWeight = FontWeight.Bold) },
                                     onClick = {
                                         onAddDeviceTypeClick()
                                         expanded = false
@@ -235,7 +250,7 @@ fun EditDeviceContent(
                             modifier = Modifier.fillMaxWidth().height(56.dp),
                             shape = RoundedCornerShape(12.dp),
                         ) {
-                            Text("Delete Device", fontWeight = FontWeight.SemiBold)
+                            Text(composeStringResource(Res.string.action_delete_device), fontWeight = FontWeight.SemiBold)
                         }
                     }
                 }
@@ -245,8 +260,8 @@ fun EditDeviceContent(
         if (showDeleteDialog) {
             AlertDialog(
                 onDismissRequest = { showDeleteDialog = false },
-                title = { Text("Delete Device") },
-                text = { Text("Are you sure you want to delete this device? This action cannot be undone.") },
+                title = { Text(composeStringResource(Res.string.dialog_delete_device_title)) },
+                text = { Text(composeStringResource(Res.string.dialog_delete_device_text)) },
                 confirmButton = {
                     TextButton(
                         onClick = {
@@ -255,12 +270,12 @@ fun EditDeviceContent(
                         },
                         colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
                     ) {
-                        Text("Delete")
+                        Text(composeStringResource(Res.string.action_delete))
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = { showDeleteDialog = false }) {
-                        Text("Cancel")
+                        Text(composeStringResource(Res.string.action_cancel))
                     }
                 },
             )

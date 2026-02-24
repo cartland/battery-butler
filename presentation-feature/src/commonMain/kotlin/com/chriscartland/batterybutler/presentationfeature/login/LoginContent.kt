@@ -27,6 +27,31 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.chriscartland.batterybutler.composeresources.composeStringResource
+import com.chriscartland.batterybutler.composeresources.generated.resources.Res
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_continue_guest
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_continue_no_sign_in
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_ok
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_try_again
+import com.chriscartland.batterybutler.composeresources.generated.resources.app_name
+import com.chriscartland.batterybutler.composeresources.generated.resources.auth_error_message_cancelled
+import com.chriscartland.batterybutler.composeresources.generated.resources.auth_error_message_cant_connect
+import com.chriscartland.batterybutler.composeresources.generated.resources.auth_error_message_coming_soon
+import com.chriscartland.batterybutler.composeresources.generated.resources.auth_error_message_connection
+import com.chriscartland.batterybutler.composeresources.generated.resources.auth_error_message_expired
+import com.chriscartland.batterybutler.composeresources.generated.resources.auth_error_message_safe_data
+import com.chriscartland.batterybutler.composeresources.generated.resources.auth_error_message_sign_in_again
+import com.chriscartland.batterybutler.composeresources.generated.resources.auth_error_title_cancelled
+import com.chriscartland.batterybutler.composeresources.generated.resources.auth_error_title_cant_connect
+import com.chriscartland.batterybutler.composeresources.generated.resources.auth_error_title_coming_soon
+import com.chriscartland.batterybutler.composeresources.generated.resources.auth_error_title_connection
+import com.chriscartland.batterybutler.composeresources.generated.resources.auth_error_title_expired
+import com.chriscartland.batterybutler.composeresources.generated.resources.auth_error_title_failed
+import com.chriscartland.batterybutler.composeresources.generated.resources.auth_error_title_session
+import com.chriscartland.batterybutler.composeresources.generated.resources.auth_error_title_unknown
+import com.chriscartland.batterybutler.composeresources.generated.resources.login_error_sign_in_unavailable
+import com.chriscartland.batterybutler.composeresources.generated.resources.login_info_local_only
+import com.chriscartland.batterybutler.composeresources.generated.resources.login_tagline
 import com.chriscartland.batterybutler.domain.model.AuthError
 import com.chriscartland.batterybutler.domain.model.AuthState
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
@@ -135,7 +160,7 @@ private fun LoginForm(
 
         // App title
         Text(
-            text = "Battery Butler",
+            text = composeStringResource(Res.string.app_name),
             style = MaterialTheme.typography.headlineLarge,
             color = MaterialTheme.colorScheme.onBackground,
         )
@@ -144,7 +169,7 @@ private fun LoginForm(
 
         // Tagline
         Text(
-            text = "Track your battery replacements",
+            text = composeStringResource(Res.string.login_tagline),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -177,13 +202,13 @@ private fun LoginForm(
                     enabled = true,
                     shape = RoundedCornerShape(12.dp),
                 ) {
-                    Text("Continue as Guest")
+                    Text(composeStringResource(Res.string.action_continue_guest))
                 }
             }
         } else {
             // Sign-in not configured - show "Coming Soon" message
             Text(
-                text = "Sign-in will be available in a future update",
+                text = composeStringResource(Res.string.login_error_sign_in_unavailable),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
@@ -200,14 +225,14 @@ private fun LoginForm(
             enabled = !isLoading,
             shape = RoundedCornerShape(12.dp),
         ) {
-            Text("Continue without signing in")
+            Text(composeStringResource(Res.string.action_continue_no_sign_in))
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
         // Info text about local-only usage
         Text(
-            text = "Your data stays on this device. Sign in to sync across devices.",
+            text = composeStringResource(Res.string.login_info_local_only),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -233,13 +258,13 @@ private fun ErrorDialog(
                     onDismiss()
                     onRetry()
                 }) {
-                    Text("Try Again")
+                    Text(composeStringResource(Res.string.action_try_again))
                 }
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("OK")
+                Text(composeStringResource(Res.string.action_ok))
             }
         },
     )
@@ -251,36 +276,36 @@ private fun ErrorDialog(
 private fun getErrorText(error: AuthError): Pair<String, String> =
     when (error) {
         is AuthError.Configuration.NotConfigured -> Pair(
-            "Coming Soon",
-            "Sign-in will be available in a future update. Continue using the app locally.",
+            composeStringResource(Res.string.auth_error_title_coming_soon),
+            composeStringResource(Res.string.auth_error_message_coming_soon),
         )
         is AuthError.Configuration.ServerUnavailable -> Pair(
-            "Can't Connect",
-            "Unable to reach the server. Your data is safe on this device.",
+            composeStringResource(Res.string.auth_error_title_cant_connect),
+            composeStringResource(Res.string.auth_error_message_cant_connect),
         )
         is AuthError.SignIn.Cancelled -> Pair(
-            "Sign In Cancelled",
-            "No problem! You can sign in anytime from Settings.",
+            composeStringResource(Res.string.auth_error_title_cancelled),
+            composeStringResource(Res.string.auth_error_message_cancelled),
         )
         is AuthError.SignIn.NetworkError -> Pair(
-            "Connection Problem",
-            "Check your internet connection and try again.",
+            composeStringResource(Res.string.auth_error_title_connection),
+            composeStringResource(Res.string.auth_error_message_connection),
         )
         is AuthError.SignIn.Failed -> Pair(
-            "Sign In Failed",
-            error.cause ?: "Please try again. Your local data is safe.",
+            composeStringResource(Res.string.auth_error_title_failed),
+            error.cause ?: composeStringResource(Res.string.auth_error_message_safe_data),
         )
         is AuthError.Token.Invalid -> Pair(
-            "Session Error",
-            "Please sign in again to continue.",
+            composeStringResource(Res.string.auth_error_title_session),
+            composeStringResource(Res.string.auth_error_message_sign_in_again),
         )
         is AuthError.Token.Expired -> Pair(
-            "Session Expired",
-            "Please sign in again to sync your data.",
+            composeStringResource(Res.string.auth_error_title_expired),
+            composeStringResource(Res.string.auth_error_message_expired),
         )
         is AuthError.Unknown -> Pair(
-            "Something Went Wrong",
-            "Please try again. Your local data is safe.",
+            composeStringResource(Res.string.auth_error_title_unknown),
+            composeStringResource(Res.string.auth_error_message_safe_data),
         )
     }
 
