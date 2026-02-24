@@ -218,14 +218,14 @@ fun App(
                                         val homeViewModel = viewModel { component.homeViewModel }
                                         DevicesScreenRoot(
                                             viewModel = homeViewModel,
-                                            contentModifier = contentModifier,
-                                            contentPadding = bottomContentPadding,
                                             onAddDeviceClick = {
                                                 detailBackStack.navigateTo(Screen.AddDevice)
                                             },
                                             onDeviceClick = { deviceId ->
                                                 detailBackStack.navigateTo(Screen.DeviceDetail(deviceId))
                                             },
+                                            modifier = contentModifier,
+                                            contentPadding = bottomContentPadding,
                                         )
                                     }
 
@@ -234,14 +234,14 @@ fun App(
                                             viewModel { component.deviceTypeListViewModel }
                                         TypesScreenRoot(
                                             viewModel = deviceTypeListViewModel,
-                                            contentModifier = contentModifier,
-                                            contentPadding = bottomContentPadding,
                                             onAddTypeClick = {
                                                 detailBackStack.navigateTo(Screen.AddDeviceType)
                                             },
                                             onEditType = { typeId ->
                                                 detailBackStack.navigateTo(Screen.EditDeviceType(typeId))
                                             },
+                                            modifier = contentModifier,
+                                            contentPadding = bottomContentPadding,
                                         )
                                     }
 
@@ -250,14 +250,14 @@ fun App(
                                             viewModel { component.historyListViewModel }
                                         HistoryScreenRoot(
                                             viewModel = historyListViewModel,
-                                            contentModifier = contentModifier,
-                                            contentPadding = bottomContentPadding,
                                             onAddEventClick = {
                                                 detailBackStack.navigateTo(Screen.AddBatteryEvent)
                                             },
                                             onEventClick = { eventId, _ ->
                                                 detailBackStack.navigateTo(Screen.EventDetail(eventId))
                                             },
+                                            modifier = contentModifier,
+                                            contentPadding = bottomContentPadding,
                                         )
                                     }
                                 },

@@ -21,10 +21,10 @@ import kotlin.time.Clock
 @Composable
 fun DevicesScreenRoot(
     viewModel: HomeViewModel,
-    contentModifier: Modifier = Modifier,
-    contentPadding: PaddingValues = PaddingValues(),
     onAddDeviceClick: () -> Unit,
     onDeviceClick: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val fileSaver = LocalFileSaver.current
@@ -48,7 +48,7 @@ fun DevicesScreenRoot(
         onSortOptionSelected = { viewModel.onSortOptionSelected(it) },
         onDeviceClick = { onDeviceClick(it.id) },
         onAddDeviceClick = onAddDeviceClick,
-        modifier = contentModifier,
+        modifier = modifier,
         contentPadding = contentPadding,
     )
 }
@@ -56,10 +56,10 @@ fun DevicesScreenRoot(
 @Composable
 fun TypesScreenRoot(
     viewModel: DeviceTypeListViewModel,
-    contentModifier: Modifier = Modifier,
-    contentPadding: PaddingValues = PaddingValues(),
     onAddTypeClick: () -> Unit,
     onEditType: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -72,7 +72,7 @@ fun TypesScreenRoot(
         onGroupOptionSelected = { viewModel.onGroupOptionSelected(it) },
         onSortDirectionToggle = { viewModel.toggleSortDirection() },
         onGroupDirectionToggle = { viewModel.toggleGroupDirection() },
-        modifier = contentModifier,
+        modifier = modifier,
         contentPadding = contentPadding,
     )
 }
@@ -80,10 +80,10 @@ fun TypesScreenRoot(
 @Composable
 fun HistoryScreenRoot(
     viewModel: HistoryListViewModel,
-    contentModifier: Modifier = Modifier,
-    contentPadding: PaddingValues = PaddingValues(),
     onAddEventClick: () -> Unit,
     onEventClick: (String, String) -> Unit,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -91,7 +91,7 @@ fun HistoryScreenRoot(
         state = state,
         onEventClick = onEventClick,
         onAddEventClick = onAddEventClick,
-        modifier = contentModifier,
+        modifier = modifier,
         contentPadding = contentPadding,
     )
 }
