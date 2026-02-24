@@ -1,6 +1,5 @@
 package com.chriscartland.batterybutler.presentationfeature.settings
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -49,6 +48,7 @@ import com.chriscartland.batterybutler.presentationcore.components.ExpandableSel
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationcore.theme.Padding
 
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsContent(
     networkMode: NetworkMode,
@@ -181,13 +181,13 @@ fun SettingsContent(
 
             // Export Data Card
             Card(
+                onClick = onExportData,
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surfaceVariant,
                 ),
                 shape = MaterialTheme.shapes.medium,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onExportData() },
+                    .fillMaxWidth(),
             ) {
                 Row(
                     modifier = Modifier
@@ -219,17 +219,17 @@ fun SettingsContent(
 
             // Check for Updates Card
             Card(
+                onClick = {
+                    uriHandler.openUri(
+                        "https://play.google.com/store/apps/details?id=com.chriscartland.batterybutler",
+                    )
+                },
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surfaceVariant,
                 ),
                 shape = MaterialTheme.shapes.medium,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        uriHandler.openUri(
-                            "https://play.google.com/store/apps/details?id=com.chriscartland.batterybutler",
-                        )
-                    },
+                    .fillMaxWidth(),
             ) {
                 Row(
                     modifier = Modifier
