@@ -1,5 +1,6 @@
 package com.chriscartland.batterybutler.datanetwork.auth
 
+import co.touchlab.kermit.Logger
 import com.chriscartland.batterybutler.domain.model.AuthError
 import com.chriscartland.batterybutler.domain.model.Result
 import com.sun.net.httpserver.HttpServer
@@ -37,10 +38,9 @@ actual class GoogleSignInBridge {
     fun initialize(clientId: String?) {
         this.clientId = clientId
         if (clientId.isNullOrBlank()) {
-            println("Google Sign-In (Desktop): Not configured")
-            println("  Set GOOGLE_WEB_CLIENT_ID environment variable")
+            Logger.w(TAG) { "Google Sign-In (Desktop): Not configured - Set GOOGLE_WEB_CLIENT_ID environment variable" }
         } else {
-            println("Google Sign-In (Desktop): Configured with client ID ...${clientId.takeLast(15)}")
+            Logger.i(TAG) { "Google Sign-In (Desktop): Configured with client ID ...${clientId.takeLast(15)}" }
         }
     }
 
@@ -232,6 +232,7 @@ actual class GoogleSignInBridge {
     private fun encode(value: String): String = URLEncoder.encode(value, "UTF-8")
 
     companion object {
+        private const val TAG = "GoogleSignInBridge"
         private val SUCCESS_HTML =
             """
             <html><body style="font-family: sans-serif; text-align: center; padding: 40px;">

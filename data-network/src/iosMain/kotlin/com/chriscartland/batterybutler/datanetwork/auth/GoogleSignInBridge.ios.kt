@@ -1,5 +1,6 @@
 package com.chriscartland.batterybutler.datanetwork.auth
 
+import co.touchlab.kermit.Logger
 import com.chriscartland.batterybutler.domain.model.AuthError
 import com.chriscartland.batterybutler.domain.model.Result
 import io.ktor.client.HttpClient
@@ -50,12 +51,12 @@ actual class GoogleSignInBridge {
     fun initialize(clientId: String?) {
         this.clientId = clientId
         if (clientId.isNullOrBlank()) {
-            println("Google Sign-In (iOS): Not configured - set GOOGLE_IOS_CLIENT_ID")
+            Logger.w(TAG) { "Google Sign-In (iOS): Not configured - set GOOGLE_IOS_CLIENT_ID" }
         } else {
             // Google's iOS redirect URI uses the reversed client ID as a custom URL scheme
             val reversedClientId = clientId.split(".").reversed().joinToString(".")
             this.redirectUri = "$reversedClientId:/oauthredirect"
-            println("Google Sign-In (iOS): Configured with client ID ...${clientId.takeLast(15)}")
+            Logger.i(TAG) { "Google Sign-In (iOS): Configured with client ID ...${clientId.takeLast(15)}" }
         }
     }
 
@@ -292,6 +293,10 @@ actual class GoogleSignInBridge {
             }
         }
         return digest.toByteArray()
+    }
+
+    companion object {
+        private const val TAG = "GoogleSignInBridge"
     }
 }
 
