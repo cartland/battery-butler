@@ -4,6 +4,7 @@ syntax = "proto3";
 
 package com.chriscartland.batterybutler.proto;
 
+option java_package = "com.chriscartland.batterybutler.proto";
 option java_multiple_files = true;
 
 // Represents a category of devices (e.g., "Smoke Alarm", "Remote Control").
