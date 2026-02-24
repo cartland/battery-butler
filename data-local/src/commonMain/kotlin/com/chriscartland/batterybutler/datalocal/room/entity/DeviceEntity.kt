@@ -1,11 +1,15 @@
 package com.chriscartland.batterybutler.datalocal.room.entity
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.chriscartland.batterybutler.domain.model.Device
 import kotlin.time.Instant
 
-@Entity(tableName = "devices")
+@Entity(
+    tableName = "devices",
+    indices = [Index(value = ["typeId"])],
+)
 data class DeviceEntity(
     @PrimaryKey val id: String,
     val name: String,
