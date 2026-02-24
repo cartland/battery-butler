@@ -24,7 +24,7 @@ class SendChatMessageUseCase(
     @OptIn(ExperimentalTime::class)
     suspend operator fun invoke(message: String): Flow<AiMessage> {
         val timeContext = buildTimeContext()
-        val userContext = buildAiContextUseCase.buildContext()
+        val userContext = buildAiContextUseCase()
         val augmentedMessage = "$timeContext\n\n$userContext\n\n$message"
         return aiEngine.generateResponse(augmentedMessage, toolHandler)
     }
