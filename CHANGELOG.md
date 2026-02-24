@@ -31,6 +31,18 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ---
 
+## 2026-02-23
+
+### Features
+
+- **AI overlay redesign** ([#613](https://github.com/cartland/battery-butler/pull/613)): Replaces the collapsed read-only AI field with an always-visible interactive `OutlinedTextField` + send `IconButton` in the bottom bar. The `AnimatedVisibility` overlay now only slides up/down the chat history (input stays fixed). Back button dismisses the overlay. Tab transitions now slide left/right based on tab index instead of cross-fading. `BackHandler(enabled = isAiExpanded)` intercepts back presses before the nav stack.
+
+### Fixes
+
+- **Null safety in navigation** ([#613](https://github.com/cartland/battery-butler/pull/613)): `navigateToDevices` now uses `backStack.lastOrNull()` instead of `backStack.last()` to prevent `NoSuchElementException` if the backstack is empty.
+
+---
+
 ## 2026-02-22
 
 ### Refactoring

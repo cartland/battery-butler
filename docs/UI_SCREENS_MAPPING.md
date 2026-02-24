@@ -18,7 +18,7 @@ The goal is to achieve feature parity between these two UI implementations by co
 | **Home (Tab)** | `DevicesScreenRoot` -> `HomeScreenContent.kt` | `HomeScreen.swift` | `HomeViewModel` |
 | **History (Tab)** | `HistoryScreenRoot` -> `HistoryListContent.kt` | `HistoryListScreen.swift` | `HistoryListViewModel` |
 | **Device Types (Tab)** | `TypesScreenRoot` -> `DeviceTypeListContent.kt` | `DeviceTypeListScreen.swift` | `DeviceTypeListViewModel` |
-| **AI Chat (Tab/Standalone)** | `AiScreenRoot` & `AiChatScreen.kt` | `AiChatScreen.swift` | `AiChatViewModel` |
+| **AI Chat (Overlay + Standalone)** | `MainScreenShell` bottom bar + `AiTabContent` overlay; `AiChatScreen.kt` for standalone | `AiChatScreen.swift` | `AiChatViewModel` |
 | **Add Device** | `AddDeviceScreen.kt` | `AddDeviceScreen.swift` | `AddDeviceViewModel` |
 | **Device Detail** | `DeviceDetailScreen.kt` | `DeviceDetailScreen.swift` | `DeviceDetailViewModel` (via Factory) |
 | **Edit Device** | `EditDeviceScreen.kt` | `EditDeviceScreen.swift` | `EditDeviceViewModel` (via Factory) |
@@ -52,7 +52,7 @@ The goal is to achieve feature parity between these two UI implementations by co
 - **SwiftUI:** Handles `LoginScreen` conditionally at the root (`WindowGroup`) in `iOSApp.swift` before the main application topology (`TabView`/`MainScreen`) is initialized. Both layers listen to the same `AuthState` from `LoginViewModel`.
 
 ### 6. AI Chat & Capabilities
-- **Compose:** Custom chat bubbles using basic Composables and Modifiers. Handles text and state changes smoothly utilizing Kotlin `StateFlow`.
+- **Compose:** The AI input is always visible in `MainScreenShell`'s bottom bar (`OutlinedTextField` + send button). Sending a message expands an `AnimatedVisibility` overlay (`AiTabContent` with `showInput = false`) that slides up the chat history while the input stays fixed. `BackHandler(enabled = isAiExpanded)` in `App.kt` collapses the overlay on back press. Tab switches dismiss the overlay via `onTabSelected`. `AiChatScreen.kt` also exists as a standalone full-screen chat (accessed via nav). Custom chat bubbles using basic Composables and Modifiers; handles state changes via Kotlin `StateFlow`.
 - **SwiftUI:** Uses nested `ScrollView`/`LazyVStack` and custom `Shape` paths for native iMessage-like bubbles via `ChatBubbleShape`. Collects state changes asynchronously using SKIE wrappers mapping `StateFlow` to `@Published` variables.
 
 ## SKIE & ViewModel Wrapper Pattern

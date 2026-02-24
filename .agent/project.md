@@ -118,6 +118,17 @@ AI messages are augmented in `SendChatMessageUseCase` before reaching the AI eng
 
 The AI system instruction (in `AndroidAiEngine`) is immutable after model creation (Gemini API constraint), so dynamic context is prepended to user messages rather than modifying the system instruction.
 
+### AI Overlay UI Architecture
+
+The AI chat is an overlay on top of the main tab UI, not a separate tab/screen. Key design:
+
+- **`App.kt`** owns `isAiExpanded` and `tabTransitionForward` state (both `rememberSaveable`). It sets `isAiExpanded = false` in `onTabSelected` — this is the single authoritative dismissal point.
+- **`BackHandler(enabled = isAiExpanded)`** in `App.kt` intercepts back presses before `NavDisplay`, collapsing the overlay instead of popping the nav stack.
+- **`MainScreenShell` bottom bar** (`presentation-feature/.../main/MainScreen.kt`) owns the always-visible AI input (`OutlinedTextField` + send `IconButton`) wrapped in `Surface` with `imePadding()` on the `Scaffold`. This input is always present when AI is available — tapping send expands the overlay and routes through `onSendAiMessage`.
+- **`AiTabContent`** (`presentation-feature/.../aichat/AiTabContent.kt`) has a `showInput: Boolean = true` param. The overlay passes `showInput = false` so only the chat history slides up — the input stays fixed in the bottom bar.
+- **Tab transitions** are directional: `tabTransitionForward` is set before each backstack mutation based on tab index (Devices=0, Types=1, History=2). `NavDisplay.transitionSpec` reads it to slide left or right.
+- **`MainTab.AI`** enum value remains in the codebase but is dead code — the AI is now an overlay, not a nav tab. The `when` branch for it is a no-op.
+
 ## Common Commands
 
 ```bash
@@ -176,6 +187,7 @@ ruby ios-app-swift-ui/sync_pbxproj.rb         # Sync Swift files to Xcode
 - `updateDebugScreenshotTest` and `validateDebugScreenshotTest` can't run in the same Gradle invocation (the update task's clean step deletes references mid-build)
 - **Never use `--tests` filter with `updateDebugScreenshotTest`** — the gallery generator deletes reference images for non-included test classes. Always use `scripts/generate-screenshots-sequentially.sh` to regenerate all baselines safely (runs one test file at a time to avoid OOM)
 - **OOM guard**: `updateDebugScreenshotTest` and `validateDebugScreenshotTest` are blocked by default — a `doFirst` guard in `build.gradle.kts` prevents all-at-once runs that OOM. The sequential script bypasses via `-PretainedReferenceScreenshots`. To force a direct run, pass `-PforceAllScreenshots`.
+- **Validating specific classes after regen**: `-PforceAllScreenshots` still OOMs on large previews (e.g. `PlayStoreAddDeviceTest_Light`). After regenerating baselines, validate only the affected test classes: `./gradlew :android-screenshot-tests:validateDebugScreenshotTest --tests "com.chriscartland.batterybutler.androidscreenshottests.<TestClass>Kt" -PforceAllScreenshots`. Full all-at-once local validation is unreliable; CI handles the full suite. See `bb-cpe4` for the sequential validation script task.
 - When refactoring shared components (e.g. list items), ALL screen-level baselines that embed those components will change — regenerate everything, not just the component tests
 - **Preview coverage enforcement**: `./gradlew checkPreviewCoverage` scans `presentation-core` and `presentation-feature` for `@Preview` composables and verifies each has a corresponding screenshot test import. Fails the build on gaps. Also generates `docs/Preview_Coverage_Report.md` (gitignored). When adding a new `@Preview`, also add a screenshot test or the coverage check will fail.
 - **Two-tier structure**: Screenshot tests have exactly two tiers — (1) **full-screen** (with Scaffold, tabs, app bar) and (2) **individual components** (reusable design-system pieces). Intermediate layouts (e.g. just the filter row, just the list section, just a sub-section) must not have standalone screenshot tests. When removing an intermediate-layout screenshot test, also remove the `@Preview` annotation from the source composable (keep the composable function itself; just drop the `@Preview`).
