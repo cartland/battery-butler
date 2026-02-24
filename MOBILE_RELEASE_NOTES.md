@@ -6,6 +6,34 @@ Each section covers one release tag range. "What's New" is user-facing language 
 
 ---
 
+## [android/13] — 2026-02-24
+
+From tag `android/12` to tag `android/13` (1 mobile-relevant commit out of 3 total)
+
+### What's New
+
+**AI input is now always ready to use**
+- The "Ask AI..." bar at the bottom is now fully interactive — type and send directly without opening the chat overlay first
+- Sending a message slides up the conversation history; the input stays pinned at the bottom where you can keep typing
+- The AI bar is now visible regardless of whether the chat overlay is open or closed
+
+**Navigation feels more natural**
+- Pressing the back button now closes the AI chat overlay instead of navigating back in the app
+- Switching tabs automatically dismisses the AI overlay
+- Tapping between tabs now animates with a left/right slide that matches the direction you're moving (Devices → Types slides left; History → Types slides right)
+
+**Keyboard and layout fixes**
+- The bottom bar (AI input + tab navigation) now floats above the keyboard when it appears, so it's always reachable
+- The bottom bar has a solid background, preventing content from showing through when scrolling
+
+### Detailed Changes
+
+| PR | Description |
+|----|-------------|
+| [#613](https://github.com/cartland/battery-butler/pull/613) | AI overlay redesign: interactive bottom-bar input, history-only overlay, back-button dismiss, directional tab transitions, IME insets fix |
+
+---
+
 ## [android/12] — 2026-02-23
 
 From tag `android/11` to tag `android/12` (1 mobile-relevant commit out of 8 total)
