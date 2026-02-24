@@ -42,6 +42,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.chriscartland.batterybutler.composeresources.composeStringResource
+import com.chriscartland.batterybutler.composeresources.generated.resources.Res
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_clear_chat
+import com.chriscartland.batterybutler.composeresources.generated.resources.ai_assistant_title
+import com.chriscartland.batterybutler.composeresources.generated.resources.ai_chat_empty_message
+import com.chriscartland.batterybutler.composeresources.generated.resources.content_desc_send_message
+import com.chriscartland.batterybutler.composeresources.generated.resources.placeholder_type_message
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 
@@ -70,14 +77,14 @@ fun AiChatContent(
         contentWindowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top),
         topBar = {
             ButlerCenteredTopAppBar(
-                title = "AI Assistant",
+                title = composeStringResource(Res.string.ai_assistant_title),
                 onBack = onBack,
                 actions = {
                     if (messages.isNotEmpty()) {
                         IconButton(onClick = onClearChat) {
                             Icon(
                                 imageVector = Icons.Default.Delete,
-                                contentDescription = "Clear chat",
+                                contentDescription = composeStringResource(Res.string.action_clear_chat),
                             )
                         }
                     }
@@ -113,7 +120,7 @@ fun AiChatContent(
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    text = "Ask me to add devices, record battery replacements, or manage your inventory.",
+                    text = composeStringResource(Res.string.ai_chat_empty_message),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(32.dp),
@@ -209,7 +216,7 @@ private fun ChatInputBar(
             value = inputText,
             onValueChange = onInputChange,
             modifier = Modifier.weight(1f),
-            placeholder = { Text("Type a message...") },
+            placeholder = { Text(composeStringResource(Res.string.placeholder_type_message)) },
             maxLines = 4,
             enabled = !isProcessing,
             shape = RoundedCornerShape(24.dp),
@@ -220,7 +227,7 @@ private fun ChatInputBar(
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.Send,
-                contentDescription = "Send message",
+                contentDescription = composeStringResource(Res.string.content_desc_send_message),
                 tint = if (inputText.isNotBlank() && !isProcessing) {
                     MaterialTheme.colorScheme.primary
                 } else {
