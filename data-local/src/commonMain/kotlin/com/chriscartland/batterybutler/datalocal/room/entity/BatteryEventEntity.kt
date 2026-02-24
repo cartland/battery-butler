@@ -1,11 +1,15 @@
 package com.chriscartland.batterybutler.datalocal.room.entity
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import kotlin.time.Instant
 
-@Entity(tableName = "battery_events")
+@Entity(
+    tableName = "battery_events",
+    indices = [Index(value = ["deviceId"])],
+)
 data class BatteryEventEntity(
     @PrimaryKey val id: String,
     val deviceId: String,
