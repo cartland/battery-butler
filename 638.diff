@@ -1,0 +1,441 @@
+diff --git a/compose-resources/src/commonMain/composeResources/values/strings.xml b/compose-resources/src/commonMain/composeResources/values/strings.xml
+index 6cde0aa2..86a08ea9 100644
+--- a/compose-resources/src/commonMain/composeResources/values/strings.xml
++++ b/compose-resources/src/commonMain/composeResources/values/strings.xml
+@@ -86,4 +86,43 @@
+     <string name="empty_types_title">No device types yet</string>
+     <string name="empty_types_message">Add types to categorize your devices</string>
+     <string name="action_load_common_types">Load Common Types</string>
++    <!-- Login and Auth -->
++    <string name="app_name">Battery Butler</string>
++    <string name="login_tagline">Track your battery replacements</string>
++    <string name="action_continue_guest">Continue as Guest</string>
++    <string name="action_continue_no_sign_in">Continue without signing in</string>
++    <string name="login_info_local_only">Your data stays on this device. Sign in to sync across devices.</string>
++    <string name="login_error_sign_in_unavailable">Sign-in will be available in a future update</string>
++    <string name="auth_error_title_coming_soon">Coming Soon</string>
++    <string name="auth_error_message_coming_soon">Sign-in will be available in a future update. Continue using the app locally.</string>
++    <string name="auth_error_title_cant_connect">Can\'t Connect</string>
++    <string name="auth_error_message_cant_connect">Unable to reach the server. Your data is safe on this device.</string>
++    <string name="auth_error_title_cancelled">Sign In Cancelled</string>
++    <string name="auth_error_message_cancelled">No problem! You can sign in anytime from Settings.</string>
++    <string name="auth_error_title_connection">Connection Problem</string>
++    <string name="auth_error_message_connection">Check your internet connection and try again.</string>
++    <string name="auth_error_title_failed">Sign In Failed</string>
++    <string name="auth_error_message_safe_data">Please try again. Your local data is safe.</string>
++    <string name="auth_error_title_session">Session Error</string>
++    <string name="auth_error_message_sign_in_again">Please sign in again to continue.</string>
++    <string name="auth_error_title_expired">Session Expired</string>
++    <string name="auth_error_message_expired">Please sign in again to sync your data.</string>
++    <string name="auth_error_title_unknown">Something Went Wrong</string>
++    <string name="action_try_again">Try Again</string>
++    <string name="action_ok">OK</string>
++
++    <!-- AI Chat -->
++    <string name="ai_assistant_title">AI Assistant</string>
++    <string name="action_clear_chat">Clear chat</string>
++    <string name="ai_chat_empty_message">Ask me to add devices, record battery replacements, or manage your inventory.</string>
++    <string name="content_desc_send_message">Send message</string>
++    <string name="placeholder_type_message">Type a message...</string>
++    <!-- Edit Device -->
++    <string name="edit_device_title">Edit Device</string>
++    <string name="dialog_delete_device_title">Delete Device</string>
++    <string name="dialog_delete_device_text">Are you sure you want to delete this device? This action cannot be undone.</string>
++    <string name="action_delete">Delete</string>
++    <string name="action_delete_device">Delete Device</string>
++    <string name="label_select_type">Select Type</string>
++    <string name="action_add_new_device_type">Add New Device Type...</string>
+ </resources>
+diff --git a/presentation-feature/src/commonMain/kotlin/com/chriscartland/batterybutler/presentationfeature/aichat/AiChatContent.kt b/presentation-feature/src/commonMain/kotlin/com/chriscartland/batterybutler/presentationfeature/aichat/AiChatContent.kt
+index d3ffe46a..ebf172fe 100644
+--- a/presentation-feature/src/commonMain/kotlin/com/chriscartland/batterybutler/presentationfeature/aichat/AiChatContent.kt
++++ b/presentation-feature/src/commonMain/kotlin/com/chriscartland/batterybutler/presentationfeature/aichat/AiChatContent.kt
+@@ -42,6 +42,13 @@ import androidx.compose.ui.Alignment
+ import androidx.compose.ui.Modifier
+ import androidx.compose.ui.tooling.preview.Preview
+ import androidx.compose.ui.unit.dp
++import com.chriscartland.batterybutler.composeresources.composeStringResource
++import com.chriscartland.batterybutler.composeresources.generated.resources.Res
++import com.chriscartland.batterybutler.composeresources.generated.resources.action_clear_chat
++import com.chriscartland.batterybutler.composeresources.generated.resources.ai_assistant_title
++import com.chriscartland.batterybutler.composeresources.generated.resources.ai_chat_empty_message
++import com.chriscartland.batterybutler.composeresources.generated.resources.content_desc_send_message
++import com.chriscartland.batterybutler.composeresources.generated.resources.placeholder_type_message
+ import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
+ import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+ 
+@@ -70,14 +77,14 @@ fun AiChatContent(
+         contentWindowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top),
+         topBar = {
+             ButlerCenteredTopAppBar(
+-                title = "AI Assistant",
++                title = composeStringResource(Res.string.ai_assistant_title),
+                 onBack = onBack,
+                 actions = {
+                     if (messages.isNotEmpty()) {
+                         IconButton(onClick = onClearChat) {
+                             Icon(
+                                 imageVector = Icons.Default.Delete,
+-                                contentDescription = "Clear chat",
++                                contentDescription = composeStringResource(Res.string.action_clear_chat),
+                             )
+                         }
+                     }
+@@ -113,7 +120,7 @@ fun AiChatContent(
+                 contentAlignment = Alignment.Center,
+             ) {
+                 Text(
+-                    text = "Ask me to add devices, record battery replacements, or manage your inventory.",
++                    text = composeStringResource(Res.string.ai_chat_empty_message),
+                     style = MaterialTheme.typography.bodyLarge,
+                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+                     modifier = Modifier.padding(32.dp),
+@@ -209,7 +216,7 @@ private fun ChatInputBar(
+             value = inputText,
+             onValueChange = onInputChange,
+             modifier = Modifier.weight(1f),
+-            placeholder = { Text("Type a message...") },
++            placeholder = { Text(composeStringResource(Res.string.placeholder_type_message)) },
+             maxLines = 4,
+             enabled = !isProcessing,
+             shape = RoundedCornerShape(24.dp),
+@@ -220,7 +227,7 @@ private fun ChatInputBar(
+         ) {
+             Icon(
+                 imageVector = Icons.AutoMirrored.Filled.Send,
+-                contentDescription = "Send message",
++                contentDescription = composeStringResource(Res.string.content_desc_send_message),
+                 tint = if (inputText.isNotBlank() && !isProcessing) {
+                     MaterialTheme.colorScheme.primary
+                 } else {
+diff --git a/presentation-feature/src/commonMain/kotlin/com/chriscartland/batterybutler/presentationfeature/aichat/AiTabContent.kt b/presentation-feature/src/commonMain/kotlin/com/chriscartland/batterybutler/presentationfeature/aichat/AiTabContent.kt
+index 61dc9f40..bc73ef45 100644
+--- a/presentation-feature/src/commonMain/kotlin/com/chriscartland/batterybutler/presentationfeature/aichat/AiTabContent.kt
++++ b/presentation-feature/src/commonMain/kotlin/com/chriscartland/batterybutler/presentationfeature/aichat/AiTabContent.kt
+@@ -39,6 +39,11 @@ import androidx.compose.runtime.setValue
+ import androidx.compose.ui.Alignment
+ import androidx.compose.ui.Modifier
+ import androidx.compose.ui.unit.dp
++import com.chriscartland.batterybutler.composeresources.composeStringResource
++import com.chriscartland.batterybutler.composeresources.generated.resources.Res
++import com.chriscartland.batterybutler.composeresources.generated.resources.ai_chat_empty_message
++import com.chriscartland.batterybutler.composeresources.generated.resources.content_desc_send_message
++import com.chriscartland.batterybutler.composeresources.generated.resources.placeholder_type_message
+ import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+ 
+ /**
+@@ -71,7 +76,7 @@ fun AiTabContent(
+                     contentAlignment = Alignment.Center,
+                 ) {
+                     Text(
+-                        text = "Ask me to add devices, record battery replacements, or manage your inventory.",
++                        text = composeStringResource(Res.string.ai_chat_empty_message),
+                         style = MaterialTheme.typography.bodyLarge,
+                         color = MaterialTheme.colorScheme.onSurfaceVariant,
+                         modifier = Modifier.padding(32.dp),
+@@ -122,7 +127,7 @@ fun AiTabContent(
+                     value = inputText,
+                     onValueChange = { inputText = it },
+                     modifier = Modifier.weight(1f),
+-                    placeholder = { Text("Type a message...") },
++                    placeholder = { Text(composeStringResource(Res.string.placeholder_type_message)) },
+                     maxLines = 4,
+                     enabled = !isProcessing,
+                     shape = RoundedCornerShape(24.dp),
+@@ -138,7 +143,7 @@ fun AiTabContent(
+                 ) {
+                     Icon(
+                         imageVector = Icons.AutoMirrored.Filled.Send,
+-                        contentDescription = "Send message",
++                        contentDescription = composeStringResource(Res.string.content_desc_send_message),
+                         tint = if (inputText.isNotBlank() && !isProcessing) {
+                             MaterialTheme.colorScheme.primary
+                         } else {
+diff --git a/presentation-feature/src/commonMain/kotlin/com/chriscartland/batterybutler/presentationfeature/editdevice/EditDeviceContent.kt b/presentation-feature/src/commonMain/kotlin/com/chriscartland/batterybutler/presentationfeature/editdevice/EditDeviceContent.kt
+index 6a3eeded..a08fbd01 100644
+--- a/presentation-feature/src/commonMain/kotlin/com/chriscartland/batterybutler/presentationfeature/editdevice/EditDeviceContent.kt
++++ b/presentation-feature/src/commonMain/kotlin/com/chriscartland/batterybutler/presentationfeature/editdevice/EditDeviceContent.kt
+@@ -43,6 +43,21 @@ import androidx.compose.ui.text.font.FontWeight
+ import androidx.compose.ui.text.input.ImeAction
+ import androidx.compose.ui.tooling.preview.Preview
+ import androidx.compose.ui.unit.dp
++import com.chriscartland.batterybutler.composeresources.composeStringResource
++import com.chriscartland.batterybutler.composeresources.generated.resources.Res
++import com.chriscartland.batterybutler.composeresources.generated.resources.action_add_new_device_type
++import com.chriscartland.batterybutler.composeresources.generated.resources.action_cancel
++import com.chriscartland.batterybutler.composeresources.generated.resources.action_delete
++import com.chriscartland.batterybutler.composeresources.generated.resources.action_delete_device
++import com.chriscartland.batterybutler.composeresources.generated.resources.action_save
++import com.chriscartland.batterybutler.composeresources.generated.resources.dialog_delete_device_text
++import com.chriscartland.batterybutler.composeresources.generated.resources.dialog_delete_device_title
++import com.chriscartland.batterybutler.composeresources.generated.resources.edit_device_title
++import com.chriscartland.batterybutler.composeresources.generated.resources.error_device_not_found
++import com.chriscartland.batterybutler.composeresources.generated.resources.label_device_name
++import com.chriscartland.batterybutler.composeresources.generated.resources.label_device_type
++import com.chriscartland.batterybutler.composeresources.generated.resources.label_location
++import com.chriscartland.batterybutler.composeresources.generated.resources.label_select_type
+ import com.chriscartland.batterybutler.domain.model.Device
+ import com.chriscartland.batterybutler.domain.model.DeviceInput
+ import com.chriscartland.batterybutler.domain.model.DeviceType
+@@ -75,11 +90,11 @@ fun EditDeviceContent(
+         modifier = modifier,
+         topBar = {
+             ButlerCenteredTopAppBar(
+-                title = "Edit Device",
++                title = composeStringResource(Res.string.edit_device_title),
+                 onBack = onBack,
+                 navigationIcon = {
+                     TextButton(onClick = onBack) {
+-                        Text("Cancel")
++                        Text(composeStringResource(Res.string.action_cancel))
+                     }
+                 },
+                 actions = {
+@@ -95,7 +110,7 @@ fun EditDeviceContent(
+                         },
+                         enabled = name.isNotBlank() && selectedTypeId.isNotBlank(),
+                     ) {
+-                        Text("Save", fontWeight = FontWeight.Bold)
++                        Text(composeStringResource(Res.string.action_save), fontWeight = FontWeight.Bold)
+                     }
+                 },
+             )
+@@ -107,7 +122,7 @@ fun EditDeviceContent(
+                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                 }
+                 EditDeviceUiState.NotFound -> {
+-                    Text("Device not found", modifier = Modifier.align(Alignment.Center))
++                    Text(composeStringResource(Res.string.error_device_not_found), modifier = Modifier.align(Alignment.Center))
+                 }
+                 is EditDeviceUiState.Success -> {
+                     // Initialize fields once
+@@ -130,7 +145,7 @@ fun EditDeviceContent(
+                         OutlinedTextField(
+                             value = name,
+                             onValueChange = { name = it },
+-                            label = { Text("Device Name") },
++                            label = { Text(composeStringResource(Res.string.label_device_name)) },
+                             modifier = Modifier.fillMaxWidth(),
+                             singleLine = true,
+                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+@@ -144,7 +159,7 @@ fun EditDeviceContent(
+                         OutlinedTextField(
+                             value = location,
+                             onValueChange = { location = it },
+-                            label = { Text("Location") },
++                            label = { Text(composeStringResource(Res.string.label_location)) },
+                             modifier = Modifier.fillMaxWidth(),
+                             singleLine = true,
+                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+@@ -170,9 +185,9 @@ fun EditDeviceContent(
+                                         enabled = true,
+                                     ).fillMaxWidth(),
+                                 readOnly = true,
+-                                value = selectedType?.name ?: "Select Type",
++                                value = selectedType?.name ?: composeStringResource(Res.string.label_select_type),
+                                 onValueChange = {},
+-                                label = { Text("Device Type") },
++                                label = { Text(composeStringResource(Res.string.label_device_type)) },
+                                 leadingIcon = if (selectedType != null) {
+                                     {
+                                         Icon(
+@@ -212,7 +227,7 @@ fun EditDeviceContent(
+                                 }
+                                 HorizontalDivider()
+                                 DropdownMenuItem(
+-                                    text = { Text("Add New Device Type...", fontWeight = FontWeight.Bold) },
++                                    text = { Text(composeStringResource(Res.string.action_add_new_device_type), fontWeight = FontWeight.Bold) },
+                                     onClick = {
+                                         onAddDeviceTypeClick()
+                                         expanded = false
+@@ -235,7 +250,7 @@ fun EditDeviceContent(
+                             modifier = Modifier.fillMaxWidth().height(56.dp),
+                             shape = RoundedCornerShape(12.dp),
+                         ) {
+-                            Text("Delete Device", fontWeight = FontWeight.SemiBold)
++                            Text(composeStringResource(Res.string.action_delete_device), fontWeight = FontWeight.SemiBold)
+                         }
+                     }
+                 }
+@@ -245,8 +260,8 @@ fun EditDeviceContent(
+         if (showDeleteDialog) {
+             AlertDialog(
+                 onDismissRequest = { showDeleteDialog = false },
+-                title = { Text("Delete Device") },
+-                text = { Text("Are you sure you want to delete this device? This action cannot be undone.") },
++                title = { Text(composeStringResource(Res.string.dialog_delete_device_title)) },
++                text = { Text(composeStringResource(Res.string.dialog_delete_device_text)) },
+                 confirmButton = {
+                     TextButton(
+                         onClick = {
+@@ -255,12 +270,12 @@ fun EditDeviceContent(
+                         },
+                         colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
+                     ) {
+-                        Text("Delete")
++                        Text(composeStringResource(Res.string.action_delete))
+                     }
+                 },
+                 dismissButton = {
+                     TextButton(onClick = { showDeleteDialog = false }) {
+-                        Text("Cancel")
++                        Text(composeStringResource(Res.string.action_cancel))
+                     }
+                 },
+             )
+diff --git a/presentation-feature/src/commonMain/kotlin/com/chriscartland/batterybutler/presentationfeature/login/LoginContent.kt b/presentation-feature/src/commonMain/kotlin/com/chriscartland/batterybutler/presentationfeature/login/LoginContent.kt
+index 94acd871..f8f46a6b 100644
+--- a/presentation-feature/src/commonMain/kotlin/com/chriscartland/batterybutler/presentationfeature/login/LoginContent.kt
++++ b/presentation-feature/src/commonMain/kotlin/com/chriscartland/batterybutler/presentationfeature/login/LoginContent.kt
+@@ -27,6 +27,31 @@ import androidx.compose.ui.Modifier
+ import androidx.compose.ui.text.style.TextAlign
+ import androidx.compose.ui.tooling.preview.Preview
+ import androidx.compose.ui.unit.dp
++import com.chriscartland.batterybutler.composeresources.composeStringResource
++import com.chriscartland.batterybutler.composeresources.generated.resources.Res
++import com.chriscartland.batterybutler.composeresources.generated.resources.action_continue_guest
++import com.chriscartland.batterybutler.composeresources.generated.resources.action_continue_no_sign_in
++import com.chriscartland.batterybutler.composeresources.generated.resources.action_ok
++import com.chriscartland.batterybutler.composeresources.generated.resources.action_try_again
++import com.chriscartland.batterybutler.composeresources.generated.resources.app_name
++import com.chriscartland.batterybutler.composeresources.generated.resources.auth_error_message_cancelled
++import com.chriscartland.batterybutler.composeresources.generated.resources.auth_error_message_cant_connect
++import com.chriscartland.batterybutler.composeresources.generated.resources.auth_error_message_coming_soon
++import com.chriscartland.batterybutler.composeresources.generated.resources.auth_error_message_connection
++import com.chriscartland.batterybutler.composeresources.generated.resources.auth_error_message_expired
++import com.chriscartland.batterybutler.composeresources.generated.resources.auth_error_message_safe_data
++import com.chriscartland.batterybutler.composeresources.generated.resources.auth_error_message_sign_in_again
++import com.chriscartland.batterybutler.composeresources.generated.resources.auth_error_title_cancelled
++import com.chriscartland.batterybutler.composeresources.generated.resources.auth_error_title_cant_connect
++import com.chriscartland.batterybutler.composeresources.generated.resources.auth_error_title_coming_soon
++import com.chriscartland.batterybutler.composeresources.generated.resources.auth_error_title_connection
++import com.chriscartland.batterybutler.composeresources.generated.resources.auth_error_title_expired
++import com.chriscartland.batterybutler.composeresources.generated.resources.auth_error_title_failed
++import com.chriscartland.batterybutler.composeresources.generated.resources.auth_error_title_session
++import com.chriscartland.batterybutler.composeresources.generated.resources.auth_error_title_unknown
++import com.chriscartland.batterybutler.composeresources.generated.resources.login_error_sign_in_unavailable
++import com.chriscartland.batterybutler.composeresources.generated.resources.login_info_local_only
++import com.chriscartland.batterybutler.composeresources.generated.resources.login_tagline
+ import com.chriscartland.batterybutler.domain.model.AuthError
+ import com.chriscartland.batterybutler.domain.model.AuthState
+ import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+@@ -135,7 +160,7 @@ private fun LoginForm(
+ 
+         // App title
+         Text(
+-            text = "Battery Butler",
++            text = composeStringResource(Res.string.app_name),
+             style = MaterialTheme.typography.headlineLarge,
+             color = MaterialTheme.colorScheme.onBackground,
+         )
+@@ -144,7 +169,7 @@ private fun LoginForm(
+ 
+         // Tagline
+         Text(
+-            text = "Track your battery replacements",
++            text = composeStringResource(Res.string.login_tagline),
+             style = MaterialTheme.typography.bodyLarge,
+             color = MaterialTheme.colorScheme.onSurfaceVariant,
+             textAlign = TextAlign.Center,
+@@ -177,13 +202,13 @@ private fun LoginForm(
+                     enabled = true,
+                     shape = RoundedCornerShape(12.dp),
+                 ) {
+-                    Text("Continue as Guest")
++                    Text(composeStringResource(Res.string.action_continue_guest))
+                 }
+             }
+         } else {
+             // Sign-in not configured - show "Coming Soon" message
+             Text(
+-                text = "Sign-in will be available in a future update",
++                text = composeStringResource(Res.string.login_error_sign_in_unavailable),
+                 style = MaterialTheme.typography.bodyMedium,
+                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+                 textAlign = TextAlign.Center,
+@@ -200,14 +225,14 @@ private fun LoginForm(
+             enabled = !isLoading,
+             shape = RoundedCornerShape(12.dp),
+         ) {
+-            Text("Continue without signing in")
++            Text(composeStringResource(Res.string.action_continue_no_sign_in))
+         }
+ 
+         Spacer(modifier = Modifier.height(24.dp))
+ 
+         // Info text about local-only usage
+         Text(
+-            text = "Your data stays on this device. Sign in to sync across devices.",
++            text = composeStringResource(Res.string.login_info_local_only),
+             style = MaterialTheme.typography.bodySmall,
+             color = MaterialTheme.colorScheme.onSurfaceVariant,
+             textAlign = TextAlign.Center,
+@@ -233,13 +258,13 @@ private fun ErrorDialog(
+                     onDismiss()
+                     onRetry()
+                 }) {
+-                    Text("Try Again")
++                    Text(composeStringResource(Res.string.action_try_again))
+                 }
+             }
+         },
+         dismissButton = {
+             TextButton(onClick = onDismiss) {
+-                Text("OK")
++                Text(composeStringResource(Res.string.action_ok))
+             }
+         },
+     )
+@@ -251,36 +276,36 @@ private fun ErrorDialog(
+ private fun getErrorText(error: AuthError): Pair<String, String> =
+     when (error) {
+         is AuthError.Configuration.NotConfigured -> Pair(
+-            "Coming Soon",
+-            "Sign-in will be available in a future update. Continue using the app locally.",
++            composeStringResource(Res.string.auth_error_title_coming_soon),
++            composeStringResource(Res.string.auth_error_message_coming_soon),
+         )
+         is AuthError.Configuration.ServerUnavailable -> Pair(
+-            "Can't Connect",
+-            "Unable to reach the server. Your data is safe on this device.",
++            composeStringResource(Res.string.auth_error_title_cant_connect),
++            composeStringResource(Res.string.auth_error_message_cant_connect),
+         )
+         is AuthError.SignIn.Cancelled -> Pair(
+-            "Sign In Cancelled",
+-            "No problem! You can sign in anytime from Settings.",
++            composeStringResource(Res.string.auth_error_title_cancelled),
++            composeStringResource(Res.string.auth_error_message_cancelled),
+         )
+         is AuthError.SignIn.NetworkError -> Pair(
+-            "Connection Problem",
+-            "Check your internet connection and try again.",
++            composeStringResource(Res.string.auth_error_title_connection),
++            composeStringResource(Res.string.auth_error_message_connection),
+         )
+         is AuthError.SignIn.Failed -> Pair(
+-            "Sign In Failed",
+-            error.cause ?: "Please try again. Your local data is safe.",
++            composeStringResource(Res.string.auth_error_title_failed),
++            error.cause ?: composeStringResource(Res.string.auth_error_message_safe_data),
+         )
+         is AuthError.Token.Invalid -> Pair(
+-            "Session Error",
+-            "Please sign in again to continue.",
++            composeStringResource(Res.string.auth_error_title_session),
++            composeStringResource(Res.string.auth_error_message_sign_in_again),
+         )
+         is AuthError.Token.Expired -> Pair(
+-            "Session Expired",
+-            "Please sign in again to sync your data.",
++            composeStringResource(Res.string.auth_error_title_expired),
++            composeStringResource(Res.string.auth_error_message_expired),
+         )
+         is AuthError.Unknown -> Pair(
+-            "Something Went Wrong",
+-            "Please try again. Your local data is safe.",
++            composeStringResource(Res.string.auth_error_title_unknown),
++            composeStringResource(Res.string.auth_error_message_safe_data),
+         )
+     }
+ 
