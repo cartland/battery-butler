@@ -1,10 +1,12 @@
 package com.chriscartland.batterybutler.composeapp
 
+import androidx.compose.runtime.remember
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import com.chriscartland.batterybutler.ai.NoOpAiEngine
 import com.chriscartland.batterybutler.composeapp.di.AppComponent
 import com.chriscartland.batterybutler.composeapp.di.create
+import com.chriscartland.batterybutler.data.provider.DefaultDispatcherProvider
 import com.chriscartland.batterybutler.data.repository.InMemoryAiPreferencesRepository
 import com.chriscartland.batterybutler.datalocal.preferences.DataStoreFactory
 import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
@@ -20,18 +22,22 @@ fun main() =
             onCloseRequest = ::exitApplication,
             title = "Battery Butler",
         ) {
-            val databaseFactory = DatabaseFactory()
-            val dataStoreFactory = DataStoreFactory()
-            val networkComponent = NetworkComponent()
-            val appVersion = AppVersion.Desktop(
-                versionName = "1.0.0",
-            )
-            val googleClientId = System.getenv("GOOGLE_WEB_CLIENT_ID")
-                ?: System.getProperty("google.web.client.id")
-                ?: ""
-            val googleSignInBridge = GoogleSignInBridge()
-            googleSignInBridge.initialize(googleClientId.ifBlank { null })
-            val component =
+            val component = remember {
+                val databaseFactory = DatabaseFactory()
+                val dataStoreFactory = DataStoreFactory()
+                val networkComponent = NetworkComponent()
+                val appVersion = AppVersion.Desktop(
+                    versionName = "1.0.0",
+                )
+                val googleClientId = System.getenv("GOOGLE_WEB_CLIENT_ID")
+                    ?: System.getProperty("google.web.client.id")
+                    ?: ""
+                val dispatcherProvider = DefaultDispatcherProvider()
+                val googleSignInBridge = GoogleSignInBridge()
+                googleSignInBridge.initialize(
+                    clientId = googleClientId.ifBlank { null },
+                    dispatcherProvider = dispatcherProvider,
+                )
                 AppComponent::class.create(
                     databaseFactory,
                     dataStoreFactory,
@@ -41,6 +47,7 @@ fun main() =
                     InMemoryAiPreferencesRepository(),
                     googleSignInBridge,
                 )
+            }
             val shareHandler = DesktopShareHandler()
             val fileSaver = DesktopFileSaver()
 

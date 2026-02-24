@@ -8,6 +8,7 @@ import com.chriscartland.batterybutler.composeapp.BuildConfig
 import com.chriscartland.batterybutler.composeapp.di.AppComponent
 import com.chriscartland.batterybutler.composeapp.di.create
 import com.chriscartland.batterybutler.config.BuildConfigAiConfig
+import com.chriscartland.batterybutler.data.provider.DefaultDispatcherProvider
 import com.chriscartland.batterybutler.data.repository.AiPreferencesRepositoryImpl
 import com.chriscartland.batterybutler.datalocal.preferences.DataStoreFactory
 import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
@@ -17,11 +18,7 @@ import com.chriscartland.batterybutler.domain.model.AppVersion
 import com.russhwolf.settings.SharedPreferencesSettings
 
 class BatteryButlerApplication : Application() {
-    lateinit var appComponent: AppComponent
-        private set
-
-    override fun onCreate() {
-        super.onCreate()
+    val appComponent: AppComponent by lazy {
         val databaseFactory = DatabaseFactory(this)
         val dataStoreFactory = DataStoreFactory(this)
         val networkComponent = NetworkComponent(this)
@@ -44,8 +41,11 @@ class BatteryButlerApplication : Application() {
             versionCode = BuildConfig.VERSION_CODE,
         )
         val googleSignInBridge = GoogleSignInBridge()
-        googleSignInBridge.initialize(BuildConfig.GOOGLE_WEB_CLIENT_ID)
-        appComponent = AppComponent::class.create(
+        googleSignInBridge.initialize(
+            webClientId = BuildConfig.GOOGLE_WEB_CLIENT_ID,
+            dispatcherProvider = DefaultDispatcherProvider(),
+        )
+        AppComponent::class.create(
             databaseFactory,
             dataStoreFactory,
             aiEngine,
@@ -54,5 +54,9 @@ class BatteryButlerApplication : Application() {
             aiPreferencesRepository,
             googleSignInBridge,
         )
+    }
+
+    override fun onCreate() {
+        super.onCreate()
     }
 }
