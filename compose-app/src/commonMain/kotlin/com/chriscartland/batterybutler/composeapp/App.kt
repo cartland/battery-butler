@@ -159,6 +159,8 @@ fun App(
                             }
 
                             val onTabSelected: (MainTab) -> Unit = { selectedTab ->
+                                // Dismiss AI chat overlay whenever switching tabs
+                                isAiExpanded = false
                                 when (selectedTab) {
                                     MainTab.Devices -> navigateToDevices()
                                     MainTab.Types -> navigateToTypes()
