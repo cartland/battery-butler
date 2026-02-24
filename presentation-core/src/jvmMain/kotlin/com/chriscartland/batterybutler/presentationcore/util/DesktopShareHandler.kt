@@ -1,5 +1,6 @@
 package com.chriscartland.batterybutler.presentationcore.util
 
+import co.touchlab.kermit.Logger
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 
@@ -9,10 +10,10 @@ class DesktopShareHandler : ShareHandler {
             val selection = StringSelection(text)
             val clipboard = Toolkit.getDefaultToolkit().systemClipboard
             clipboard.setContents(selection, selection)
-            println("Exported data copied to clipboard: $text")
+            Logger.i { "Exported data copied to clipboard: $text" }
         } catch (e: Exception) {
-            println("Failed to copy to clipboard: ${e.message}")
-            println("Exported data: $text")
+            Logger.e(e) { "Failed to copy to clipboard: ${e.message}" }
+            Logger.i { "Exported data: $text" }
         }
     }
 }
