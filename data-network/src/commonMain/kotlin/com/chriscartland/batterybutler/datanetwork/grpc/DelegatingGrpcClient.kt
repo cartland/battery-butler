@@ -1,6 +1,7 @@
 package com.chriscartland.batterybutler.datanetwork.grpc
 
 import co.touchlab.kermit.Logger
+import com.chriscartland.batterybutler.domain.model.DispatcherProvider
 import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
 import com.squareup.wire.GrpcCall
@@ -25,9 +26,10 @@ sealed interface GrpcClientState {
 }
 
 class DelegatingGrpcClient(
-    private val factory: (String) -> GrpcClient,
+    private val factory: (String, DispatcherProvider) -> GrpcClient,
     private val networkModeRepository: NetworkModeRepository,
     private val scope: CoroutineScope,
+    private val dispatcherProvider: DispatcherProvider,
     private val tokenProvider: (() -> String?)? = null,
 ) : GrpcClient() {
     private val currentDelegate = MutableStateFlow<GrpcClientState>(GrpcClientState.Uninitialized)
@@ -43,7 +45,7 @@ class DelegatingGrpcClient(
                             GrpcClientState.InvalidConfiguration
                         } else {
                             try {
-                                GrpcClientState.Ready(factory(url))
+                                GrpcClientState.Ready(factory(url, dispatcherProvider))
                             } catch (e: Exception) {
                                 if (e is CancellationException) throw e
                                 Logger.e("DelegatingGrpcClient", e) { "Failed to create gRPC client" }
@@ -61,7 +63,7 @@ class DelegatingGrpcClient(
                             GrpcClientState.InvalidConfiguration
                         } else {
                             try {
-                                GrpcClientState.Ready(factory(url))
+                                GrpcClientState.Ready(factory(url, dispatcherProvider))
                             } catch (e: Exception) {
                                 if (e is CancellationException) throw e
                                 Logger.e("DelegatingGrpcClient", e) { "Failed to create gRPC client" }

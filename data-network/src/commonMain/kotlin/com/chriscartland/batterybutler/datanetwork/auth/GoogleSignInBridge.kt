@@ -41,6 +41,17 @@ expect class GoogleSignInBridge {
     suspend fun signOut()
 
     /**
+     * Initializes the bridge with platform-specific parameters.
+     *
+     * @param clientId The OAuth web or platform client ID.
+     * @param dispatcherProvider Injected dispatchers for coroutine execution.
+     */
+    fun initialize(
+        clientId: String?,
+        dispatcherProvider: com.chriscartland.batterybutler.domain.model.DispatcherProvider?,
+    )
+
+    /**
      * Returns true if Google Sign-In is configured for this build.
      */
     fun isConfigured(): Boolean

@@ -30,14 +30,20 @@ actual class GoogleSignInBridge {
     private var webClientId: String? = null
     private var activityProvider: (() -> Activity)? = null
     private var credentialManager: CredentialManager? = null
+    private var dispatcherProvider: com.chriscartland.batterybutler.domain.model.DispatcherProvider? = null
 
     /**
      * Initialize with OAuth client ID. Call from Application.onCreate().
      *
      * @param webClientId The OAuth 2.0 Web Client ID from Google Cloud Console.
+     * @param dispatcherProvider Injected dispatchers.
      */
-    fun initialize(webClientId: String?) {
+    fun initialize(
+        webClientId: String?,
+        dispatcherProvider: com.chriscartland.batterybutler.domain.model.DispatcherProvider?,
+    ) {
         this.webClientId = webClientId
+        this.dispatcherProvider = dispatcherProvider
         logConfiguration()
     }
 

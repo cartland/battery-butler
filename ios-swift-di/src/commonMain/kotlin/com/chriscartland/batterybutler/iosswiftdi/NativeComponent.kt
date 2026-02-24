@@ -44,7 +44,6 @@ import com.chriscartland.batterybutler.viewmodel.home.HomeViewModel
 import com.chriscartland.batterybutler.viewmodel.login.LoginViewModel
 import com.chriscartland.batterybutler.viewmodel.settings.SettingsViewModel
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
@@ -111,7 +110,7 @@ abstract class NativeComponent(
 
     @Provides
     @SharedSingleton
-    fun provideAppScope(): CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    fun provideAppScope(dispatcherProvider: DispatcherProvider): CoroutineScope = CoroutineScope(SupervisorJob() + dispatcherProvider.default)
 
     @Provides
     @SharedSingleton

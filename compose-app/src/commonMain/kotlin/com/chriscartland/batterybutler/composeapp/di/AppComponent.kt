@@ -36,7 +36,6 @@ import com.chriscartland.batterybutler.viewmodel.login.LoginViewModel
 import com.chriscartland.batterybutler.viewmodel.settings.SettingsViewModel
 import com.squareup.wire.GrpcClient
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -102,7 +101,7 @@ abstract class AppComponent(
 
     @Provides
     @Singleton
-    fun provideAppScope(): CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    fun provideAppScope(dispatcherProvider: DispatcherProvider): CoroutineScope = CoroutineScope(SupervisorJob() + dispatcherProvider.default)
 
     @Provides
     fun provideDatabaseFactory(): DatabaseFactory = databaseFactory
@@ -115,6 +114,7 @@ abstract class AppComponent(
     fun provideDelegatingGrpcClient(
         networkModeRepository: NetworkModeRepository,
         scope: CoroutineScope,
+        dispatcherProvider: DispatcherProvider,
         authTokenStorage: AuthTokenStorage,
     ): DelegatingGrpcClient {
         val cachedToken = MutableStateFlow<String?>(null)
@@ -127,6 +127,7 @@ abstract class AppComponent(
             factory = networkComponent::createGrpcClient,
             networkModeRepository = networkModeRepository,
             scope = scope,
+            dispatcherProvider = dispatcherProvider,
             tokenProvider = { cachedToken.value },
         )
     }
