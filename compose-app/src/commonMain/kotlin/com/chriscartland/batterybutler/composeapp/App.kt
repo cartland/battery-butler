@@ -137,7 +137,7 @@ fun App(
                             val navigateToDevices = {
                                 tabTransitionForward = false // always going to index 0 (leftward)
                                 // Clear stack to root [Screen.Devices]
-                                if (backStack.last() != Screen.Devices) {
+                                if (backStack.lastOrNull() != Screen.Devices) {
                                     backStack.clear()
                                     backStack.add(Screen.Devices)
                                 }
