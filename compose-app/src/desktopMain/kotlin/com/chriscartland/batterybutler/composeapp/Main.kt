@@ -1,5 +1,6 @@
 package com.chriscartland.batterybutler.composeapp
 
+import androidx.compose.runtime.remember
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import com.chriscartland.batterybutler.ai.NoOpAiEngine
@@ -21,22 +22,22 @@ fun main() =
             onCloseRequest = ::exitApplication,
             title = "Battery Butler",
         ) {
-            val databaseFactory = DatabaseFactory()
-            val dataStoreFactory = DataStoreFactory()
-            val networkComponent = NetworkComponent()
-            val appVersion = AppVersion.Desktop(
-                versionName = "1.0.0",
-            )
-            val googleClientId = System.getenv("GOOGLE_WEB_CLIENT_ID")
-                ?: System.getProperty("google.web.client.id")
-                ?: ""
-            val dispatcherProvider = DefaultDispatcherProvider()
-            val googleSignInBridge = GoogleSignInBridge()
-            googleSignInBridge.initialize(
-                clientId = googleClientId.ifBlank { null },
-                dispatcherProvider = dispatcherProvider,
-            )
-            val component =
+            val component = remember {
+                val databaseFactory = DatabaseFactory()
+                val dataStoreFactory = DataStoreFactory()
+                val networkComponent = NetworkComponent()
+                val appVersion = AppVersion.Desktop(
+                    versionName = "1.0.0",
+                )
+                val googleClientId = System.getenv("GOOGLE_WEB_CLIENT_ID")
+                    ?: System.getProperty("google.web.client.id")
+                    ?: ""
+                val dispatcherProvider = DefaultDispatcherProvider()
+                val googleSignInBridge = GoogleSignInBridge()
+                googleSignInBridge.initialize(
+                    clientId = googleClientId.ifBlank { null },
+                    dispatcherProvider = dispatcherProvider,
+                )
                 AppComponent::class.create(
                     databaseFactory,
                     dataStoreFactory,
@@ -46,6 +47,7 @@ fun main() =
                     InMemoryAiPreferencesRepository(),
                     googleSignInBridge,
                 )
+            }
             val shareHandler = DesktopShareHandler()
             val fileSaver = DesktopFileSaver()
 
