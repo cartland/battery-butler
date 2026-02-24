@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
@@ -93,6 +94,10 @@ fun HomeScreenContent(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
+        // NavDisplay entries don't propagate LocalConsumedWindowInsets from the outer Scaffold.
+        // The outer MainScreenShell Scaffold + contentModifier already position this composable
+        // below the top bar, so this inner Scaffold must not re-apply window insets.
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         snackbarHost = {
             SnackbarHost(snackbarHostState) { data ->
                 Snackbar(
