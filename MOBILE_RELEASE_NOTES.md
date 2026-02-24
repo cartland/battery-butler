@@ -6,6 +6,25 @@ Each section covers one release tag range. "What's New" is user-facing language 
 
 ---
 
+## [android/14] — 2026-02-24
+
+From tag `android/13` to tag `android/14` (1 mobile-relevant commit out of 4 total)
+
+### What's New
+
+**AI chat polished and reliable**
+- Tapping the AI input bar now opens the chat overlay immediately — no need to type first
+- Tab switches and back gestures no longer animate the entire screen; only the content area moves while the top bar, AI bar, and navigation tabs stay put
+- Fixed extra spacing at the top of the Devices screen
+
+### Detailed Changes
+
+| PR | Description |
+|----|-------------|
+| [#616](https://github.com/cartland/battery-butler/pull/616) | AI chat opens on tap; top bar and nav bar stay static during tab transitions and predictive back |
+
+---
+
 ## [android/13] — 2026-02-24
 
 From tag `android/12` to tag `android/13` (1 mobile-relevant commit out of 3 total)
