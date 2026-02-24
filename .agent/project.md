@@ -118,6 +118,17 @@ AI messages are augmented in `SendChatMessageUseCase` before reaching the AI eng
 
 The AI system instruction (in `AndroidAiEngine`) is immutable after model creation (Gemini API constraint), so dynamic context is prepended to user messages rather than modifying the system instruction.
 
+### AI Overlay UI Architecture
+
+The AI chat is an overlay on top of the main tab UI, not a separate tab/screen. Key design:
+
+- **`App.kt`** owns `isAiExpanded` and `tabTransitionForward` state (both `rememberSaveable`). It sets `isAiExpanded = false` in `onTabSelected` — this is the single authoritative dismissal point.
+- **`BackHandler(enabled = isAiExpanded)`** in `App.kt` intercepts back presses before `NavDisplay`, collapsing the overlay instead of popping the nav stack.
+- **`MainScreenShell` bottom bar** (`presentation-feature/.../main/MainScreen.kt`) owns the always-visible AI input (`OutlinedTextField` + send `IconButton`) wrapped in `Surface` with `imePadding()` on the `Scaffold`. This input is always present when AI is available — tapping send expands the overlay and routes through `onSendAiMessage`.
+- **`AiTabContent`** (`presentation-feature/.../aichat/AiTabContent.kt`) has a `showInput: Boolean = true` param. The overlay passes `showInput = false` so only the chat history slides up — the input stays fixed in the bottom bar.
+- **Tab transitions** are directional: `tabTransitionForward` is set before each backstack mutation based on tab index (Devices=0, Types=1, History=2). `NavDisplay.transitionSpec` reads it to slide left or right.
+- **`MainTab.AI`** enum value remains in the codebase but is dead code — the AI is now an overlay, not a nav tab. The `when` branch for it is a no-op.
+
 ## Common Commands
 
 ```bash
