@@ -85,3 +85,4 @@ else
 fi
 
 echo "--- Validation Complete! ---"
+git rev-parse HEAD > .claude/.validation-passed
