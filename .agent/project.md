@@ -430,6 +430,25 @@ Dependabot is configured (`.github/dependabot.yml`) for weekly updates.
 - Breaking changes -> close PR (large version jumps, CI compilation errors, critical infrastructure changes)
 - PRs that modify `.github/workflows/` files cannot be merged via CLI (GitHub security restriction) -> manual merge via web UI
 
+## Claude Code Hooks
+
+Pre-tool-use hooks in `.claude/hooks/` enforce guardrails on agent Bash commands:
+
+- **`block-admin-bypass.sh`** — Blocks `gh --admin` to prevent bypassing branch protection.
+- **`git-guardrails.sh`** — 8 guardrails:
+  1. Block `git push` without prior `./scripts/validate.sh` (checks `.claude/.validation-passed` marker)
+  2. Block push to main/master
+  3. Block force push (`--force`, `-f`, `--force-with-lease`)
+  4. Enforce `--squash` on `gh pr merge`
+  5. Block tag creation/modification (only `git tag -l`/`--list` allowed)
+  6. Block destructive commands (`reset --hard`, `clean -f`, `checkout .`, `restore .`)
+  7. Block `git -C` (run git from repo root instead)
+  8. Block shell control flow keywords (`for`, `while`, `if`, etc.) — `&&`/`||`/`;`/`|` are allowed
+
+Hooks strip heredoc bodies and quoted strings before matching to avoid false positives on prose in commit messages or PR bodies.
+
+Registered in `.claude/settings.json` under `hooks.PreToolUse`.
+
 ## Efficiency Rules
 
 - **NEVER use `sleep` commands** - Don't wait for CI. Find productive work instead.
