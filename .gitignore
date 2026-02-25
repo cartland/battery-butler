@@ -79,5 +79,8 @@ keystore.properties
 keystore_base64.txt
 .reports/
 
+# Claude Code
+.claude/.validation-passed
+
 # Generated reports
 docs/Preview_Coverage_Report.md

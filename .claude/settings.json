@@ -11,6 +11,10 @@
           {
             "type": "command",
             "command": ".claude/hooks/block-admin-bypass.sh"
+          },
+          {
+            "type": "command",
+            "command": ".claude/hooks/git-guardrails.sh"
           }
         ]
       }
