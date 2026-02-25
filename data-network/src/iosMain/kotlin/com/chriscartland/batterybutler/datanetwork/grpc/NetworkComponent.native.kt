@@ -132,7 +132,7 @@ class IosGrpcCall<S : Any, R : Any>(
 
     override fun isExecuted(): Boolean = executed
 
-    override fun clone(): GrpcCall<S, R> = IosGrpcCall(client, baseUrl, method)
+    override fun clone(): GrpcCall<S, R> = IosGrpcCall(client, baseUrl, method, dispatcherProvider)
 
     override fun cancel() {
         cancelled = true
@@ -245,7 +245,7 @@ class IosGrpcStreamingCall<S : Any, R : Any>(
 
     override fun isExecuted(): Boolean = executed
 
-    override fun clone(): GrpcStreamingCall<S, R> = IosGrpcStreamingCall(client, baseUrl, method)
+    override fun clone(): GrpcStreamingCall<S, R> = IosGrpcStreamingCall(client, baseUrl, method, dispatcherProvider)
 
     override fun cancel() {
         cancelled = true

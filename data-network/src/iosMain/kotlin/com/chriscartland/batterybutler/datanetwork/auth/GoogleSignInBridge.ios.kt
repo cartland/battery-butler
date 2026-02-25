@@ -50,7 +50,7 @@ actual class GoogleSignInBridge {
      *   The redirect URI is derived from the reversed client ID.
      * @param dispatcherProvider Injected dispatchers.
      */
-    fun initialize(
+    actual fun initialize(
         clientId: String?,
         dispatcherProvider: com.chriscartland.batterybutler.domain.model.DispatcherProvider?,
     ) {

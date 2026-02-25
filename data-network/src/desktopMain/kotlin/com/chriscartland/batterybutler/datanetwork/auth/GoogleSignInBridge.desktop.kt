@@ -37,7 +37,7 @@ actual class GoogleSignInBridge {
     private var dispatcherProvider: DispatcherProvider? = null
     private val json = Json { ignoreUnknownKeys = true }
 
-    fun initialize(
+    actual fun initialize(
         clientId: String?,
         dispatcherProvider: DispatcherProvider?,
     ) {

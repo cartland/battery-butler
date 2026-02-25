@@ -46,7 +46,7 @@ class BatteryButlerApplication : Application() {
         )
         val googleSignInBridge = GoogleSignInBridge()
         googleSignInBridge.initialize(
-            webClientId = BuildConfig.GOOGLE_WEB_CLIENT_ID,
+            clientId = BuildConfig.GOOGLE_WEB_CLIENT_ID,
             dispatcherProvider = DefaultDispatcherProvider(),
         )
         appComponent = AppComponent::class.create(

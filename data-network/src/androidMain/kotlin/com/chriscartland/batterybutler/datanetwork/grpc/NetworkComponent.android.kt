@@ -13,8 +13,8 @@ actual class NetworkComponent(
     actual fun createGrpcClient(
         url: String,
         dispatcherProvider: com.chriscartland.batterybutler.domain.model.DispatcherProvider,
-    ): GrpcClient {
-        return GrpcClient
+    ): GrpcClient =
+        GrpcClient
             .Builder()
             .client(
                 OkHttpClient
