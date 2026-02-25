@@ -95,10 +95,10 @@ Keeping the build and tests healthy is a top priority. When you identify or fix 
   - For team sessions, use Claude's TaskCreate/TaskList for coordination — not `bd`.
 
 - **Bash Commands**:
-  - **Always** run bash commands as separate tool calls instead of combining them with `&&`, `||`, or `for` loops.
-  - **Never** write shell scripts with control flow (loops, conditionals) in a single bash command.
-  - **Example**: Instead of `gh pr merge 1 && gh pr merge 2`, make two separate bash tool calls.
-  - This makes command execution more transparent and easier to debug.
+  - **Never** use shell control flow keywords (`for`, `while`, `until`, `if`/`then`/`else`/`fi`, `do`/`done`) in a single bash command. Run each command as a separate Bash tool call instead.
+  - `&&`, `||`, `;`, and `|` (pipes) are allowed for simple chaining.
+  - **Example**: Instead of `for f in *.kt; do echo $f; done`, make separate bash tool calls.
+  - This is enforced by the `.claude/hooks/git-guardrails.sh` hook.
 
 - **Git**:
   - **Always** use non-interactive flags for commands that might open an editor (e.g., `git cherry-pick --continue --no-edit`). This prevents the shell from getting stuck waiting for user input.
