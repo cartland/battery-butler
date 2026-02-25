@@ -86,7 +86,7 @@ jobs:
     - uses: ./.github/actions/setup-java-gradle
 
     - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v3
+      uses: hashicorp/setup-terraform@v4
 
     # AWS Authentication
     - name: Configure AWS Credentials (OIDC)
