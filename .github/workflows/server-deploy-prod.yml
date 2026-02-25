@@ -117,7 +117,7 @@ jobs:
         fetch-depth: 0
 
     - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v3
+      uses: hashicorp/setup-terraform@v4
 
     - name: Configure AWS Credentials (OIDC)
       if: env.USE_OIDC == 'true'
