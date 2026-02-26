@@ -153,7 +153,7 @@ fun DeviceTypeIconItem(
             modifier = Modifier
                 .size(64.dp)
                 .clip(androidx.compose.foundation.shape.CircleShape)
-                .background(if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant)
+                .background(if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primaryContainer)
                 .then(
                     if (isSelected) {
                         Modifier.border(
@@ -174,7 +174,7 @@ fun DeviceTypeIconItem(
                 } else {
                     iconName.replace("_", " ")
                 },
-                tint = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
+                tint = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onPrimaryContainer,
                 modifier = Modifier.size(IconSize.Large),
             )
         }
