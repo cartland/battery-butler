@@ -10,10 +10,13 @@ class DesktopShareHandler : ShareHandler {
             val selection = StringSelection(text)
             val clipboard = Toolkit.getDefaultToolkit().systemClipboard
             clipboard.setContents(selection, selection)
-            Logger.i { "Exported data copied to clipboard: $text" }
+            Logger.i(TAG) { "Exported data copied to clipboard (length: ${text.length})" }
         } catch (e: Exception) {
-            Logger.e(e) { "Failed to copy to clipboard: ${e.message}" }
-            Logger.i { "Exported data: $text" }
+            Logger.e(TAG, e) { "Failed to copy to clipboard" }
         }
+    }
+
+    companion object {
+        private const val TAG = "DesktopShareHandler"
     }
 }
