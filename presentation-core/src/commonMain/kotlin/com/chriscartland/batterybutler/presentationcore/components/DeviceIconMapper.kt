@@ -73,26 +73,7 @@ data object DeviceIconMapper {
      * The role determines which Material theme container/content color pair is used,
      * ensuring icons always harmonize with the active theme.
      */
-    fun getIconColorRole(iconName: String?): IconColorRole =
-        when (iconName) {
-            // Smart home / security / electronics → Tertiary (Steel Blue)
-            "lock", "garage_home", "router", "power",
-            "smartphone", "tablet", "laptop", "tv",
-            "headphones", "speaker", "camera", "watch",
-            -> IconColorRole.Tertiary
-            // Sensors / controls / remotes / gaming → Secondary (Warm Walnut)
-            "sensors", "smart_button", "settings_remote",
-            "videogame_asset", "game_controller", "mouse", "keyboard",
-            -> IconColorRole.Secondary
-            // Safety / detectors → Error (Red)
-            "detector_smoke" -> IconColorRole.Error
-            // Climate / time / nature → Primary (Sage Green)
-            "thermostat", "water_drop", "schedule",
-            "lightbulb", "toys",
-            -> IconColorRole.Primary
-            // Tools / utility / everything else → Surface (Neutral)
-            else -> IconColorRole.Surface
-        }
+    fun getIconColorRole(iconName: String?): IconColorRole = IconColorRole.Primary
 
     @Composable
     fun getResolvedIconAccent(iconName: String?): ResolvedIconAccent {
