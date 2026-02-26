@@ -45,6 +45,10 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onDestroy() {
+        // Reuse application-level component
+        val app = application as BatteryButlerApplication
+        app.appComponent.googleSignInBridge.unbindActivity()
+
         debugNetworkReceiver?.let { unregisterReceiver(it) }
         debugNetworkReceiver = null
         super.onDestroy()
