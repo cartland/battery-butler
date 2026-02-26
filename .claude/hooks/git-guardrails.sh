@@ -53,16 +53,27 @@ if echo "$STRIPPED" | grep -qE '\bgit\s+push\b'; then
     deny "BLOCKED: Force push is destructive. Use normal push."
   fi
 
-  # 1. Block push without validation
+  # 1. Block push without validation (skip for docs/beads-only changes)
   if [ -n "$REPO_ROOT" ]; then
     MARKER="$REPO_ROOT/.claude/.validation-passed"
-    if [ ! -f "$MARKER" ]; then
-      deny "BLOCKED: Run ./scripts/validate.sh before pushing. No validation record found."
-    fi
     VALIDATED_HASH=$(cat "$MARKER" 2>/dev/null)
     CURRENT_HEAD=$(git rev-parse HEAD 2>/dev/null)
     if [ "$VALIDATED_HASH" != "$CURRENT_HEAD" ]; then
-      deny "BLOCKED: Code changed since last validation. Re-run ./scripts/validate.sh."
+      # Check if all changed files (vs origin/main) are docs/beads-only
+      CHANGED_FILES=$(git diff --name-only origin/main...HEAD 2>/dev/null)
+      DOCS_ONLY=true
+      for f in $CHANGED_FILES; do
+        case "$f" in
+          .beads/*|.agent/*|CLAUDE.md|GEMINI.md|ANTIGRAVITY.md|AGENTS.md|*.md|.claude/*) ;;
+          *) DOCS_ONLY=false; break ;;
+        esac
+      done
+      if [ "$DOCS_ONLY" = "false" ]; then
+        if [ ! -f "$MARKER" ]; then
+          deny "BLOCKED: Run ./scripts/validate.sh before pushing. No validation record found."
+        fi
+        deny "BLOCKED: Code changed since last validation. Re-run ./scripts/validate.sh."
+      fi
     fi
   fi
 fi
