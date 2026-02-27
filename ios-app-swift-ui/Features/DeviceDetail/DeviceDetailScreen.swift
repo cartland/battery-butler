@@ -15,8 +15,37 @@ struct DeviceDetailScreen: View {
     }
     
     var body: some View {
+        DeviceDetailContentView(
+            state: wrapper.state,
+            onRecordReplacement: {
+                wrapper.recordReplacement()
+            },
+            eventDestination: { eventId in
+                EventDetailScreen(eventId: eventId, component: component)
+            }
+        )
+        .navigationTitle("Device Details")
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button("Edit") {
+                    showingEditDevice = true
+                }
+            }
+        }
+        .sheet(isPresented: $showingEditDevice) {
+            EditDeviceScreen(deviceId: deviceId, component: component)
+        }
+    }
+}
+
+struct DeviceDetailContentView<Destination: View>: View {
+    let state: DeviceDetailUiState
+    let onRecordReplacement: () -> Void
+    let eventDestination: (String) -> Destination
+    
+    var body: some View {
         Group {
-            if let success = wrapper.state as? DeviceDetailUiStateSuccess {
+            if let success = state as? DeviceDetailUiStateSuccess {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
                         // Header
@@ -42,9 +71,7 @@ struct DeviceDetailScreen: View {
                         .shadow(radius: 2)
                         
                         // Actions
-                        Button(action: {
-                            wrapper.recordReplacement()
-                        }) {
+                        Button(action: onRecordReplacement) {
                             Text("Replaced Battery")
                                 .frame(maxWidth: .infinity)
                                 .padding()
@@ -67,7 +94,7 @@ struct DeviceDetailScreen: View {
                                 .foregroundColor(.secondary)
                         } else {
                             ForEach(success.events, id: \.self) { event in
-                                NavigationLink(destination: EventDetailScreen(eventId: event.id, component: component)) {
+                                NavigationLink(destination: eventDestination(event.id)) {
                                     HStack {
                                         let dateString = Date(timeIntervalSince1970: TimeInterval(event.date.toEpochMilliseconds()) / 1000.0).formatted(date: .abbreviated, time: .shortened)
                                         Text(dateString)
@@ -83,22 +110,11 @@ struct DeviceDetailScreen: View {
                     }
                     .padding()
                 }
-                .sheet(isPresented: $showingEditDevice) {
-                    EditDeviceScreen(deviceId: deviceId, component: component)
-                }
-            } else if wrapper.state is DeviceDetailUiStateNotFound {
+            } else if state is DeviceDetailUiStateNotFound {
                 Text("Device not found")
             } else {
                 ProgressView()
                     .accessibilityLabel("Loading device details")
-            }
-        }
-        .navigationTitle("Device Details")
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button("Edit") {
-                    showingEditDevice = true
-                }
             }
         }
     }

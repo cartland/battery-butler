@@ -15,9 +15,47 @@ struct EditDeviceScreen: View {
     }
 
     var body: some View {
+        EditDeviceContentView(
+            state: wrapper.state,
+            name: $name,
+            location: $location,
+            selectedTypeId: $selectedTypeId,
+            hasInitializedFields: $hasInitializedFields,
+            onSave: {
+                wrapper.updateDevice(
+                    name: name,
+                    location: location.isEmpty ? nil : location,
+                    typeId: selectedTypeId,
+                    imagePath: nil
+                )
+                dismiss()
+            },
+            onDelete: {
+                wrapper.deleteDevice()
+                dismiss()
+            },
+            onCancel: {
+                dismiss()
+            }
+        )
+    }
+}
+
+struct EditDeviceContentView: View {
+    let state: EditDeviceUiState
+    @Binding var name: String
+    @Binding var location: String
+    @Binding var selectedTypeId: String
+    @Binding var hasInitializedFields: Bool
+    
+    let onSave: () -> Void
+    let onDelete: () -> Void
+    let onCancel: () -> Void
+    
+    var body: some View {
         NavigationStack {
             Group {
-                if let successState = wrapper.state as? EditDeviceUiStateSuccess {
+                if let successState = state as? EditDeviceUiStateSuccess {
                     Form {
                         Section(header: Text("Device Details")) {
                             TextField("Device Name", text: $name)
@@ -32,23 +70,12 @@ struct EditDeviceScreen: View {
                         }
 
                         Section {
-                            Button("Save Changes") {
-                                wrapper.updateDevice(
-                                    name: name,
-                                    location: location.isEmpty ? nil : location,
-                                    typeId: selectedTypeId,
-                                    imagePath: nil
-                                )
-                                dismiss()
-                            }
+                            Button("Save Changes", action: onSave)
                             .disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || selectedTypeId.isEmpty)
                         }
                         
                         Section {
-                            Button("Delete Device", role: .destructive) {
-                                wrapper.deleteDevice()
-                                dismiss() // Dismisses the edit modal, returning to detail which will then pop (or act on not found)
-                            }
+                            Button("Delete Device", role: .destructive, action: onDelete)
                         }
                     }
                     .onAppear {
@@ -60,16 +87,7 @@ struct EditDeviceScreen: View {
                             hasInitializedFields = true
                         }
                     }
-                    .onAppear {
-                        if !hasInitializedFields {
-                            let device = successState.device
-                            name = device.name
-                            location = device.location ?? ""
-                            selectedTypeId = device.typeId
-                            hasInitializedFields = true
-                        }
-                    }
-                } else if wrapper.state is EditDeviceUiStateLoading {
+                } else if state is EditDeviceUiStateLoading {
                     ProgressView("Loading device...")
                 } else {
                     Text("Device not found")
@@ -80,9 +98,7 @@ struct EditDeviceScreen: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
+                    Button("Cancel", action: onCancel)
                 }
             }
         }

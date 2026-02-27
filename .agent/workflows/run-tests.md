@@ -33,7 +33,7 @@ Or for connected devices:
 ./gradlew connectedAndroidTest
 ```
 
-## Screenshot Tests
+## Android Screenshot Tests
 
 Update reference screenshots:
 ```bash
@@ -43,6 +43,13 @@ Update reference screenshots:
 Verify screenshots:
 ```bash
 ./gradlew :android-screenshot-tests:validateDebugScreenshotTest
+```
+
+## iOS Snapshot Tests
+
+Run the iOS SwiftUI Snapshot tests in the simulator (this will also record new baselines automatically if they are missing):
+```bash
+cd ios-app-swift-ui && xcodebuild test -project iosAppSwiftUI.xcodeproj -scheme iosAppSwiftUITests -destination "platform=iOS Simulator,name=iPhone 16 Pro,OS=18.5"
 ```
 
 ## E2E Tests
