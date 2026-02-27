@@ -21,7 +21,7 @@ The goal is to provide maximum consistency across applications, identifying any 
 | **AI Chat Overlay**   | ✅ Yes | ✅ Yes | ✅ Yes | SwiftUI implements native `ChatBubbleShape` for an iMessage feel. |
 | **Add Device**        | ✅ Yes | ✅ Yes | ✅ Yes | SwiftUI presents as modal (`.sheet`). |
 | **Device Detail**     | ✅ Yes | ✅ Yes | ✅ Yes | |
-| **Edit Device**       | ✅ Yes | ✅ Yes | ❌ Missing | **Actionable Gap:** SwiftUI missing `EditDeviceScreen.swift`. |
+| **Edit Device**       | ✅ Yes | ✅ Yes | ✅ Yes | SwiftUI presents as modal (`.sheet`). |
 | **Add Battery Event** | ✅ Yes | ✅ Yes | ✅ Yes | SwiftUI presents as modal (`.sheet`). |
 | **Event Detail**      | ✅ Yes | ✅ Yes | ✅ Yes | Supports Edit Date and Delete in all platforms. |
 | **Add Device Type**   | ✅ Yes | ✅ Yes | ✅ Yes | |
@@ -29,5 +29,4 @@ The goal is to provide maximum consistency across applications, identifying any 
 | **Login / Auth**      | ✅ Yes | ✅ Yes | ✅ Yes | AuthState coordinates root view layer across all. |
 
 ## Next Steps
-- Implement `EditDeviceScreen.swift` and its wrapper `EditDeviceViewModelWrapper.swift`.
-- Add an "Edit" button to `DeviceDetailScreen.swift`'s navigation bar to invoke the new Edit Device modal.
+- Parity is complete for all documented screens. Continue to maintain feature parity as new screens are added to the Compose Multiplatform implementation.
