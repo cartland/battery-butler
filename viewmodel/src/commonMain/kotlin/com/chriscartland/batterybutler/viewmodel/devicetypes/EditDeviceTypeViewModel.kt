@@ -8,9 +8,9 @@ import com.chriscartland.batterybutler.usecase.DeleteDeviceTypeUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.UpdateDeviceTypeUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
+import com.chriscartland.batterybutler.viewmodel.safeStateIn
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 
@@ -44,7 +44,7 @@ class EditDeviceTypeViewModel(
                 val usedIcons = types.mapNotNull { it.defaultIcon }.distinct()
                 EditDeviceTypeUiState.Success(type, usedIcons)
             }
-        }.stateIn(
+        }.safeStateIn(
             scope = viewModelScope,
             started = defaultWhileSubscribed(),
             initialValue = EditDeviceTypeUiState.Loading,

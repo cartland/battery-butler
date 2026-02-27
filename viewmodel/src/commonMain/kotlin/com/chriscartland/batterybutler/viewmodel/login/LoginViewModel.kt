@@ -5,8 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.chriscartland.batterybutler.domain.model.AuthState
 import com.chriscartland.batterybutler.domain.repository.AuthRepository
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
+import com.chriscartland.batterybutler.viewmodel.safeStateIn
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 
@@ -29,7 +29,7 @@ class LoginViewModel(
      * - [AuthState.Failed]: Error message with retry option
      */
     val authState: StateFlow<AuthState> = authRepository.authState
-        .stateIn(
+        .safeStateIn(
             scope = viewModelScope,
             started = defaultWhileSubscribed(),
             initialValue = AuthState.Unknown,

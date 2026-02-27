@@ -9,10 +9,10 @@ import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.GetEventDetailUseCase
 import com.chriscartland.batterybutler.usecase.UpdateBatteryEventUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
+import com.chriscartland.batterybutler.viewmodel.safeStateIn
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 import kotlin.time.Instant
@@ -62,7 +62,7 @@ class EventDetailViewModel(
                     )
                 }
             }
-        }.stateIn(
+        }.safeStateIn(
             scope = viewModelScope,
             started = defaultWhileSubscribed(),
             initialValue = EventDetailUiState.Loading,

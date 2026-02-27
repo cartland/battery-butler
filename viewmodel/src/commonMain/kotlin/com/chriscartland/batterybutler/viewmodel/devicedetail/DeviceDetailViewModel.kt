@@ -11,9 +11,9 @@ import com.chriscartland.batterybutler.usecase.GetDeviceDetailUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.UpdateDeviceUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
+import com.chriscartland.batterybutler.viewmodel.safeStateIn
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 import kotlin.time.Clock
@@ -60,7 +60,7 @@ class DeviceDetailViewModel(
                 events = events,
             )
         }
-    }.stateIn(
+    }.safeStateIn(
         scope = viewModelScope,
         started = defaultWhileSubscribed(),
         initialValue = DeviceDetailUiState.Loading,

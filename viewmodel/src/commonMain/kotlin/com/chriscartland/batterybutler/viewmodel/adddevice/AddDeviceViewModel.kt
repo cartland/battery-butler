@@ -12,9 +12,9 @@ import com.chriscartland.batterybutler.usecase.AddDeviceUseCase
 import com.chriscartland.batterybutler.usecase.BatchAddDevicesUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
+import com.chriscartland.batterybutler.viewmodel.safeStateIn
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
@@ -33,14 +33,14 @@ class AddDeviceViewModel(
     val isAiBatchImportEnabled: StateFlow<Boolean> =
         featureFlagProvider
             .observeEnabled(FeatureFlag.AI_BATCH_IMPORT)
-            .stateIn(
+            .safeStateIn(
                 scope = viewModelScope,
                 started = defaultWhileSubscribed(),
                 initialValue = featureFlagProvider.isEnabled(FeatureFlag.AI_BATCH_IMPORT),
             )
 
     val deviceTypes: StateFlow<List<DeviceType>> = getDeviceTypesUseCase()
-        .stateIn(
+        .safeStateIn(
             scope = viewModelScope,
             started = defaultWhileSubscribed(),
             initialValue = emptyList(),

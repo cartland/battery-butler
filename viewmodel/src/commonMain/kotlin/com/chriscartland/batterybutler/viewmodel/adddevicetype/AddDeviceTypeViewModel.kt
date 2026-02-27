@@ -12,11 +12,11 @@ import com.chriscartland.batterybutler.usecase.AddDeviceTypeUseCase
 import com.chriscartland.batterybutler.usecase.BatchAddDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.SuggestDeviceIconUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
+import com.chriscartland.batterybutler.viewmodel.safeStateIn
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -57,7 +57,7 @@ class AddDeviceTypeViewModel(
             usedIcons = usedIcons,
             isSuggestingIcon = isSuggestingIcon,
         )
-    }.stateIn(
+    }.safeStateIn(
         scope = viewModelScope,
         started = defaultWhileSubscribed(),
         initialValue = AddDeviceTypeUiState(),

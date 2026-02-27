@@ -13,10 +13,10 @@ import com.chriscartland.batterybutler.usecase.GetDeviceDetailUseCase
 import com.chriscartland.batterybutler.usecase.GetDevicesUseCase
 import com.chriscartland.batterybutler.usecase.UpdateDeviceUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
+import com.chriscartland.batterybutler.viewmodel.safeStateIn
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
@@ -34,7 +34,7 @@ class AddBatteryEventViewModel(
     val isAiBatchImportEnabled: StateFlow<Boolean> =
         featureFlagProvider
             .observeEnabled(FeatureFlag.AI_BATCH_IMPORT)
-            .stateIn(
+            .safeStateIn(
                 scope = viewModelScope,
                 started = defaultWhileSubscribed(),
                 initialValue = featureFlagProvider.isEnabled(FeatureFlag.AI_BATCH_IMPORT),
@@ -43,7 +43,7 @@ class AddBatteryEventViewModel(
     private val _aiMessages = MutableStateFlow<List<BatchOperationResult>>(emptyList())
     val aiMessages: StateFlow<List<BatchOperationResult>> = _aiMessages
 
-    val devices = getDevicesUseCase().stateIn(
+    val devices = getDevicesUseCase().safeStateIn(
         scope = viewModelScope,
         started = defaultWhileSubscribed(),
         initialValue = emptyList(),
