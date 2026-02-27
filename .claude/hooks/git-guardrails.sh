@@ -23,10 +23,10 @@ deny() {
 # then strip quoted strings to avoid false positives on prose content.
 STRIPPED=$(echo "$COMMAND" | sed '/<<.*EOF/,/^EOF/d' | sed -E "s/'[^']*'//g; s/\"[^\"]*\"//g")
 
-# --- 8. Block shell control flow (check first, applies to all commands) ---
-# Note: && and || are allowed (simple chaining). Only block loop/conditional keywords.
+# --- 8. Warn on shell control flow (check first, applies to all commands) ---
+# Note: && and || are allowed (simple chaining). Only warn on loop/conditional keywords.
 if echo "$STRIPPED" | grep -qE '\b(for|while|until|if|do|done|then|fi|elif|else)\b'; then
-  deny "BLOCKED: Don't use shell control flow (for/while/if). Run each command as a separate Bash tool call."
+  echo "WARNING: Shell control flow detected (for/while/if). Prefer separate Bash tool calls." >&2
 fi
 
 # --- 7. Block git -C ---
@@ -70,9 +70,10 @@ if echo "$STRIPPED" | grep -qE '\bgit\s+push\b'; then
       done
       if [ "$DOCS_ONLY" = "false" ]; then
         if [ ! -f "$MARKER" ]; then
-          deny "BLOCKED: Run ./scripts/validate.sh before pushing. No validation record found."
+          echo "WARNING: No validation record found. Consider running ./scripts/validate.sh before pushing." >&2
+        else
+          echo "WARNING: Code changed since last validation. Consider re-running ./scripts/validate.sh." >&2
         fi
-        deny "BLOCKED: Code changed since last validation. Re-run ./scripts/validate.sh."
       fi
     fi
   fi

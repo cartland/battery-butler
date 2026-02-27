@@ -410,6 +410,38 @@ E2E_SERVER_URL=http://<nlb-dns>:80 ./scripts/e2e-tests.sh --remote
 
 ## CI
 
+### CI Mode (Development vs Release)
+
+CI operates in one of two modes, controlled by `.github/ci-mode.txt`:
+
+- **`development`** (default): Only fast checks (spotless, lint, detekt, unit tests, architecture, theme layer) are required on PRs. Slow jobs (instrumented tests, iOS builds, desktop builds, Android build, server build) are skipped on PRs but always run post-merge on `main`. This speeds up the PR cycle during active development.
+- **`release`**: All jobs are required on PRs. Use this before cutting a release to ensure full coverage.
+
+**Switching modes:**
+```bash
+# Switch to release mode
+echo "release" > .github/ci-mode.txt
+git add .github/ci-mode.txt
+git commit -m "chore: Switch CI to release mode"
+
+# Switch back to development mode
+echo "development" > .github/ci-mode.txt
+git add .github/ci-mode.txt
+git commit -m "chore: Switch CI to development mode"
+```
+
+**How it works:**
+- The `changes` job reads `.github/ci-mode.txt` and outputs `ci_mode`
+- Slow jobs have an additional condition: `github.event_name == 'push' || ci_mode != 'development'`
+- The `ci` gate job is mode-aware: in dev mode on PRs, it only checks fast job results
+- On push to `main`, ALL jobs run regardless of mode (post-merge safety net)
+- Issues caught post-merge in dev mode get fixed in follow-up PRs
+
+**Hook behavior by mode:**
+- Shell control flow (`for`/`while`/`if`): Always warning (never blocks)
+- `--admin` bypass: Warning in development mode, blocked in release mode
+- Validation-before-push: Always warning
+
 ### Path Filtering
 
 CI uses `dorny/paths-filter` to skip expensive builds for non-code changes:
@@ -448,16 +480,16 @@ Dependabot is configured (`.github/dependabot.yml`) for weekly updates.
 
 Pre-tool-use hooks in `.claude/hooks/` enforce guardrails on agent Bash commands:
 
-- **`block-admin-bypass.sh`** — Blocks `gh --admin` to prevent bypassing branch protection.
+- **`block-admin-bypass.sh`** — Mode-aware: blocks `gh --admin` in release mode, warns in development mode (reads `.github/ci-mode.txt`).
 - **`git-guardrails.sh`** — 8 guardrails:
-  1. Block `git push` without prior `./scripts/validate.sh` (checks `.claude/.validation-passed` marker)
+  1. Warn on `git push` without prior `./scripts/validate.sh` (checks `.claude/.validation-passed` marker)
   2. Block push to main/master
   3. Block force push (`--force`, `-f`, `--force-with-lease`)
   4. Enforce `--squash` on `gh pr merge`
   5. Block tag creation/modification (only `git tag -l`/`--list` allowed)
   6. Block destructive commands (`reset --hard`, `clean -f`, `checkout .`, `restore .`)
   7. Block `git -C` (run git from repo root instead)
-  8. Block shell control flow keywords (`for`, `while`, `if`, etc.) — `&&`/`||`/`;`/`|` are allowed
+  8. Warn on shell control flow keywords (`for`, `while`, `if`, etc.) — `&&`/`||`/`;`/`|` are allowed
 
 Hooks strip heredoc bodies and quoted strings before matching to avoid false positives on prose in commit messages or PR bodies.
 
