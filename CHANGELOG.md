@@ -31,6 +31,18 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ---
 
+## 2026-02-26
+
+### Features
+
+- **iOS SwiftUI Edit Device** ([#772](https://github.com/cartland/battery-butler/pull/772)): Added native SwiftUI `EditDeviceScreen` and `EditDeviceViewModelWrapper` to achieve complete feature parity with the Compose Multiplatform version. The app now supports modifying device names, locations, and types directly from the native iOS UI.
+
+### Documentation
+
+- **Feature Parity Mapping** ([#772](https://github.com/cartland/battery-butler/pull/772)): Created `docs/FEATURE_PARITY_MAPPING.md` to track and document the screen equivalence between Android CMP, iOS CMP, and the native iOS SwiftUI implementations.
+
+---
+
 ## 2026-02-23
 
 ### Features
