@@ -43,3 +43,30 @@ end
 
 project.save
 puts "Synced Features folder with Xcode project."
+
+# Also sync the tests directory
+test_target = project.targets.find { |t| t.name == 'iosAppSwiftUITests' }
+if test_target
+  tests_group = project.main_group.find_subpath('iosAppSwiftUITests', false) || project.main_group.new_group('iosAppSwiftUITests', 'iosAppSwiftUITests')
+  
+  Dir.mkdir('iosAppSwiftUITests') unless Dir.exist?('iosAppSwiftUITests')
+  
+  test_disk_files = Dir.glob("iosAppSwiftUITests/*.swift").map { |f| File.basename(f) }.to_set
+  test_group_files = tests_group.files.map { |f| f.path }.to_set
+  
+  (test_disk_files - test_group_files).each do |filename|
+    file_ref = tests_group.new_file(filename)
+    test_target.add_file_references([file_ref]) unless test_target.source_build_phase.files_references.include?(file_ref)
+    puts "Added iosAppSwiftUITests/#{filename}"
+  end
+  
+  tests_group.files.each do |f|
+    if f.path.end_with?('.swift') && !test_disk_files.include?(f.path)
+      puts "Removing missing test file reference #{f.path}"
+      f.remove_from_project
+    end
+  end
+  
+  project.save
+  puts "Synced tests folder with Xcode project."
+end
