@@ -10,6 +10,7 @@
 		0B8A00C05740714CA09EA3DF /* AiChatViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9127CC9BB55BC761853552F0 /* AiChatViewModelWrapper.swift */; };
 		1211B65CDB19EBD3475155ED /* AddBatteryEventViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348ECD40844BC056AA8019FF /* AddBatteryEventViewModelWrapper.swift */; };
 		14C9539A085FC4157ED6ECCB /* EventDetailViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 484371A677F858AB3865E844 /* EventDetailViewModelWrapper.swift */; };
+		17583375029A96F5152F5B92 /* AddDeviceScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7FFABCF0C5C31A595C3F1CF /* AddDeviceScreenTests.swift */; };
 		246295A22F14EEF40047C600 /* AddDeviceScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2462958F2F14EEF40047C600 /* AddDeviceScreen.swift */; };
 		246295A32F14EEF40047C600 /* MainTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2462959C2F14EEF40047C600 /* MainTab.swift */; };
 		246295A42F14EEF40047C600 /* MainScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2462959B2F14EEF40047C600 /* MainScreen.swift */; };
@@ -31,17 +32,32 @@
 		24ABD57D2F1CEC230036E1DD /* AddDeviceTypeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24ABD5702F1CEC230036E1DD /* AddDeviceTypeScreen.swift */; };
 		24ABD57E2F1CEC230036E1DD /* DeviceTypeRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24ABD5742F1CEC230036E1DD /* DeviceTypeRow.swift */; };
 		2855F56B7B730259E73A04CD /* EditDeviceViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28903408708ECF67A8991592 /* EditDeviceViewModelWrapper.swift */; };
+		2FA78B928A0A3E325BA1D464 /* EditDeviceScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C424550B976EA19E32F00C2 /* EditDeviceScreenTests.swift */; };
+		3817672E5800D02B74BBCAE6 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 171E07C13F4D360A2E8F8F1B /* Foundation.framework */; };
+		512CC7D51E6C42B5C0FF3F5F /* DeviceDetailScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417E5F5994DD57326CBFBB02 /* DeviceDetailScreenTests.swift */; };
 		77177175D5AE0F2363AB6DDA /* AiChatScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18BC9C9B9E6E29A48DCAC5C2 /* AiChatScreen.swift */; };
 		7B995C9514A7E13CDD597E53 /* EventDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB2BC212BA886F9EA0057B5 /* EventDetailScreen.swift */; };
 		998E133AD56CF4D0A133506A /* EditDeviceScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4217F0EB61A27BAB5D26D37A /* EditDeviceScreen.swift */; };
 		9E310559114A9C3509F5106D /* LoginScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05276AAFBE18E0BD342E186F /* LoginScreen.swift */; };
 		9EC6A2E16CEA57929E345F5C /* LoginViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D976428F6B0003DDB354405 /* LoginViewModelWrapper.swift */; };
 		AG1000000000000000000002 /* Generated in Sources */ = {isa = PBXBuildFile; fileRef = AG1000000000000000000001 /* Generated */; };
+		E9FB7497FF4ADBFB164B431C /* SimpleSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F821268475E1398BE0B048 /* SimpleSnapshotTests.swift */; };
 		F6F9C4B2E592FAFBFA1FD460 /* AddBatteryEventScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6161923E993256241FF44A49 /* AddBatteryEventScreen.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		BD8556C4F89483AF0CEC13D8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B9DA97A92DC1472C00A4DA20 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B9DA97B02DC1472C00A4DA20;
+			remoteInfo = iosAppSwiftUI;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		05276AAFBE18E0BD342E186F /* LoginScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LoginScreen.swift; sourceTree = "<group>"; };
+		171E07C13F4D360A2E8F8F1B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		18BC9C9B9E6E29A48DCAC5C2 /* AiChatScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AiChatScreen.swift; sourceTree = "<group>"; };
 		2462958D2F14EEF40047C600 /* ViewModelWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModelWrapper.swift; sourceTree = "<group>"; };
 		2462958F2F14EEF40047C600 /* AddDeviceScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDeviceScreen.swift; sourceTree = "<group>"; };
@@ -65,13 +81,18 @@
 		24ABD5762F1CEC230036E1DD /* EditDeviceTypeViewModelWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDeviceTypeViewModelWrapper.swift; sourceTree = "<group>"; };
 		28903408708ECF67A8991592 /* EditDeviceViewModelWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EditDeviceViewModelWrapper.swift; sourceTree = "<group>"; };
 		348ECD40844BC056AA8019FF /* AddBatteryEventViewModelWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddBatteryEventViewModelWrapper.swift; sourceTree = "<group>"; };
+		417E5F5994DD57326CBFBB02 /* DeviceDetailScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DeviceDetailScreenTests.swift; sourceTree = "<group>"; };
 		4217F0EB61A27BAB5D26D37A /* EditDeviceScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EditDeviceScreen.swift; sourceTree = "<group>"; };
 		484371A677F858AB3865E844 /* EventDetailViewModelWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EventDetailViewModelWrapper.swift; sourceTree = "<group>"; };
 		4D976428F6B0003DDB354405 /* LoginViewModelWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LoginViewModelWrapper.swift; sourceTree = "<group>"; };
 		6161923E993256241FF44A49 /* AddBatteryEventScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddBatteryEventScreen.swift; sourceTree = "<group>"; };
+		6C424550B976EA19E32F00C2 /* EditDeviceScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EditDeviceScreenTests.swift; sourceTree = "<group>"; };
 		9127CC9BB55BC761853552F0 /* AiChatViewModelWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AiChatViewModelWrapper.swift; sourceTree = "<group>"; };
 		AG1000000000000000000001 /* Generated */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Generated; sourceTree = "<group>"; };
 		B9DA97B12DC1472C00A4DA20 /* BatteryButler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BatteryButler.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C7FFABCF0C5C31A595C3F1CF /* AddDeviceScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddDeviceScreenTests.swift; sourceTree = "<group>"; };
+		CE7C8996ACEF6EABE0989D13 /* iosAppSwiftUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iosAppSwiftUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D8F821268475E1398BE0B048 /* SimpleSnapshotTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SimpleSnapshotTests.swift; sourceTree = "<group>"; };
 		EBB2BC212BA886F9EA0057B5 /* EventDetailScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EventDetailScreen.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -104,6 +125,14 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		04B8CD7BAC0A44A71E1BDEDE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3817672E5800D02B74BBCAE6 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B9DA97AE2DC1472C00A4DA20 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -209,6 +238,18 @@
 			path = DeviceTypes;
 			sourceTree = "<group>";
 		};
+		4D72D7B65E8E59E6FDA14167 /* iosAppSwiftUITests */ = {
+			isa = PBXGroup;
+			children = (
+				C7FFABCF0C5C31A595C3F1CF /* AddDeviceScreenTests.swift */,
+				417E5F5994DD57326CBFBB02 /* DeviceDetailScreenTests.swift */,
+				6C424550B976EA19E32F00C2 /* EditDeviceScreenTests.swift */,
+				D8F821268475E1398BE0B048 /* SimpleSnapshotTests.swift */,
+			);
+			name = iosAppSwiftUITests;
+			path = iosAppSwiftUITests;
+			sourceTree = "<group>";
+		};
 		50C246773AFFE95187A0E784 /* EditDevice */ = {
 			isa = PBXGroup;
 			children = (
@@ -239,6 +280,14 @@
 			path = AiChat;
 			sourceTree = "<group>";
 		};
+		A00B023A177BE37C44746F6E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E3C3949E72B011457EA41E24 /* iOS */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		A382FF30859CC658F115A300 /* EventDetail */ = {
 			isa = PBXGroup;
 			children = (
@@ -258,6 +307,8 @@
 				B9DA97B32DC1472C00A4DA20 /* iosApp */,
 				AG1000000000000000000001 /* Generated */,
 				B9DA97B22DC1472C00A4DA20 /* Products */,
+				A00B023A177BE37C44746F6E /* Frameworks */,
+				4D72D7B65E8E59E6FDA14167 /* iosAppSwiftUITests */,
 			);
 			sourceTree = "<group>";
 		};
@@ -265,6 +316,7 @@
 			isa = PBXGroup;
 			children = (
 				B9DA97B12DC1472C00A4DA20 /* BatteryButler.app */,
+				CE7C8996ACEF6EABE0989D13 /* iosAppSwiftUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -279,9 +331,38 @@
 			path = Login;
 			sourceTree = "<group>";
 		};
+		E3C3949E72B011457EA41E24 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				171E07C13F4D360A2E8F8F1B /* Foundation.framework */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		96EFC3C32DF3E2A595A92816 /* iosAppSwiftUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 77A5E0B5A1460C46A52C8AD0 /* Build configuration list for PBXNativeTarget "iosAppSwiftUITests" */;
+			buildPhases = (
+				3CE98A9577DC0F418BEACF75 /* Sources */,
+				04B8CD7BAC0A44A71E1BDEDE /* Frameworks */,
+				4F310188C429A0486861BAB0 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				05606A2E63863FFD27EC9D59 /* PBXTargetDependency */,
+			);
+			name = iosAppSwiftUITests;
+			packageProductDependencies = (
+				81B28293D8BF0DA70E23B3EB /* SnapshotTesting */,
+			);
+			productName = iosAppSwiftUITests;
+			productReference = CE7C8996ACEF6EABE0989D13 /* iosAppSwiftUITests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		B9DA97B02DC1472C00A4DA20 /* iosAppSwiftUI */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = B9DA97BF2DC1472D00A4DA20 /* Build configuration list for PBXNativeTarget "iosAppSwiftUI" */;
@@ -328,17 +409,28 @@
 			);
 			mainGroup = B9DA97A82DC1472C00A4DA20;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				9FC905494E2733CEC62F9D48 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = B9DA97B22DC1472C00A4DA20 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				B9DA97B02DC1472C00A4DA20 /* iosAppSwiftUI */,
+				96EFC3C32DF3E2A595A92816 /* iosAppSwiftUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		4F310188C429A0486861BAB0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B9DA97AF2DC1472C00A4DA20 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -390,6 +482,17 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		3CE98A9577DC0F418BEACF75 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				17583375029A96F5152F5B92 /* AddDeviceScreenTests.swift in Sources */,
+				512CC7D51E6C42B5C0FF3F5F /* DeviceDetailScreenTests.swift in Sources */,
+				2FA78B928A0A3E325BA1D464 /* EditDeviceScreenTests.swift in Sources */,
+				E9FB7497FF4ADBFB164B431C /* SimpleSnapshotTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B9DA97AD2DC1472C00A4DA20 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -430,7 +533,45 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		05606A2E63863FFD27EC9D59 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = iosAppSwiftUI;
+			target = B9DA97B02DC1472C00A4DA20 /* iosAppSwiftUI */;
+			targetProxy = BD8556C4F89483AF0CEC13D8 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		1ACA59DAEC3691E6D9723A62 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				INFOPLIST_FILE = iosAppSwiftUITests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.chriscartland.batterybutler.iosAppSwiftUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BatteryButler.app/BatteryButler";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		A5392239DAF043921B2D2A46 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				INFOPLIST_FILE = iosAppSwiftUITests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.chriscartland.batterybutler.iosAppSwiftUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BatteryButler.app/BatteryButler";
+			};
+			name = Debug;
+		};
 		B9DA97BD2DC1472D00A4DA20 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -621,6 +762,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		77A5E0B5A1460C46A52C8AD0 /* Build configuration list for PBXNativeTarget "iosAppSwiftUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1ACA59DAEC3691E6D9723A62 /* Release */,
+				A5392239DAF043921B2D2A46 /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		B9DA97AC2DC1472C00A4DA20 /* Build configuration list for PBXProject "iosAppSwiftUI" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -640,6 +790,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		9FC905494E2733CEC62F9D48 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/swift-snapshot-testing.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.17.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		81B28293D8BF0DA70E23B3EB /* SnapshotTesting */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9FC905494E2733CEC62F9D48 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */;
+			productName = SnapshotTesting;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = B9DA97A92DC1472C00A4DA20 /* Project object */;
 }
