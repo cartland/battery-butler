@@ -111,6 +111,14 @@ Icon colors use the **`IconColorRole` enum** (`presentation-core/.../theme/IconC
 
 For a detailed breakdown of how the shared Compose Multiplatform UI maps to the native SwiftUI implementation (and why they intuitively differ structurally), see `docs/UI_SCREENS_MAPPING.md`.
 
+#### SwiftUI ViewModel Integration Pattern
+When implementing SwiftUI screens that observe KMP ViewModels, use the following bridging pattern:
+1. Create a `<Feature>ViewModelWrapper` class observing `ObservableObject`
+2. Define a SwiftUI-friendly `State` struct to hold all UI properties
+3. Expose a single `@Published var state` property
+4. Map Kotlin `uiState` (a `StateFlow`) to Swift properties using SKIE's `AsyncSequence` inside a `Task { @MainActor in }` block in the wrapper's `init`
+5. Map specific state subclasses (e.g. `UiStateSuccess`, `UiStateLoading`) by typecasting the generic KMP state interface
+
 ### AI Architecture
 
 AI messages are augmented in `SendChatMessageUseCase` before reaching the AI engine:
