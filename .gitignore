@@ -61,6 +61,10 @@ __pycache__/
 .env
 .env.local
 build_log.txt
+pr_list.txt
+prs_generated.md
+run_100_personas.py
+*_output.txt
 
 # Generated Protos
 networking/src/generated/
