@@ -5,7 +5,8 @@ struct DeviceDetailScreen: View {
     @StateObject private var wrapper: DeviceDetailViewModelWrapper
     private let component: NativeComponent
     private let deviceId: String
-    
+    @State private var showingEditDevice = false
+
     init(component: NativeComponent, deviceId: String) {
         self.deviceId = deviceId
         self.component = component
@@ -82,6 +83,9 @@ struct DeviceDetailScreen: View {
                     }
                     .padding()
                 }
+                .sheet(isPresented: $showingEditDevice) {
+                    EditDeviceScreen(deviceId: deviceId, component: component)
+                }
             } else if wrapper.state is DeviceDetailUiStateNotFound {
                 Text("Device not found")
             } else {
@@ -90,5 +94,12 @@ struct DeviceDetailScreen: View {
             }
         }
         .navigationTitle("Device Details")
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button("Edit") {
+                    showingEditDevice = true
+                }
+            }
+        }
     }
 }
