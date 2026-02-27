@@ -15,12 +15,12 @@ import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
 import com.chriscartland.batterybutler.usecase.ExportDataUseCase
 import com.chriscartland.batterybutler.usecase.GetAppVersionUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
+import com.chriscartland.batterybutler.viewmodel.safeStateIn
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 
@@ -35,7 +35,7 @@ class SettingsViewModel(
     devServerUrl: DevServerUrl,
 ) : ViewModel() {
     val networkMode: StateFlow<NetworkMode> = networkModeRepository.networkMode
-        .stateIn(
+        .safeStateIn(
             viewModelScope,
             defaultWhileSubscribed(),
             NetworkMode.None,
@@ -50,7 +50,7 @@ class SettingsViewModel(
     )
 
     val aiEngineType = aiPreferencesRepository.aiEngineType
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), AiEngineType.Cloud)
+        .safeStateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), AiEngineType.Cloud)
 
     val availableAiEngines = AiEngineType.entries
 
@@ -79,11 +79,11 @@ class SettingsViewModel(
                 is AuthState.Authenticated -> state.user
                 else -> null
             }
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+        }.safeStateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     val isSignedIn: StateFlow<Boolean> = authRepository.authState
         .map { it is AuthState.Authenticated }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+        .safeStateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
     fun signOut() {
         viewModelScope.launch {

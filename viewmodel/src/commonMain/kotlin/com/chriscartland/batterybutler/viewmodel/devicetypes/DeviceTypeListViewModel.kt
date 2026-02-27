@@ -9,11 +9,11 @@ import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeS
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.PreloadCommonTypesUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
+import com.chriscartland.batterybutler.viewmodel.safeStateIn
 import com.chriscartland.batterybutler.viewmodel.sortAndGroup
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 
@@ -65,7 +65,7 @@ class DeviceTypeListViewModel(
                 isSortAscending = config.isSortAscending,
                 isGroupAscending = config.isGroupAscending,
             )
-        }.stateIn(
+        }.safeStateIn(
             scope = viewModelScope,
             started = defaultWhileSubscribed(),
             initialValue = DeviceTypeListUiState.Success(emptyMap()),

@@ -13,13 +13,13 @@ import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.GetDevicesUseCase
 import com.chriscartland.batterybutler.usecase.GetSyncStatusUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
+import com.chriscartland.batterybutler.viewmodel.safeStateIn
 import com.chriscartland.batterybutler.viewmodel.sortAndGroup
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 
@@ -105,7 +105,7 @@ class HomeViewModel(
             exportData = config.exportData,
             syncStatus = syncStatus,
         )
-    }.stateIn(
+    }.safeStateIn(
         scope = viewModelScope,
         started = defaultWhileSubscribed(),
         initialValue = HomeUiState(),
