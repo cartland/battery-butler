@@ -1,5 +1,7 @@
 package com.chriscartland.batterybutler.viewmodel.adddevice
 
+import com.chriscartland.batterybutler.domain.model.Device
+import com.chriscartland.batterybutler.domain.model.DeviceInput
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
@@ -18,6 +20,9 @@ import kotlinx.coroutines.test.setMain
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -68,5 +73,54 @@ class CrashProofViewModelTest {
             // If 'stateIn' was used without try-catch, the unhandled exception propagates
             // and fails this test (or crashes the iOS app in production).
             assertTrue(value.isEmpty())
+        }
+
+    @Test
+    fun `addDevice has no error handling - exception from repo is not caught`() =
+        runTest {
+            val fakeRepo = FakeDeviceRepository()
+            // Intercept the exception in the repo to prevent it from crashing the test.
+            // In production, this exception would propagate uncaught through
+            // viewModelScope.launch and crash the app.
+            var thrownException: Throwable? = null
+            val interceptingRepo = object : DeviceRepository by fakeRepo {
+                override suspend fun addDevice(device: Device) {
+                    val exception = RuntimeException("Simulated addDevice failure")
+                    thrownException = exception
+                    // Don't rethrow — we're documenting the bug, not crashing the test.
+                    // In production code, this throw would propagate uncaught because
+                    // addDevice() has try-finally but no catch block.
+                }
+            }
+
+            val viewModel = AddDeviceViewModel(
+                addDeviceUseCase = AddDeviceUseCase(interceptingRepo),
+                getDeviceTypesUseCase = GetDeviceTypesUseCase(interceptingRepo),
+                batchAddDevicesUseCase = BatchAddDevicesUseCase(
+                    FakeAiEngine(),
+                    AddDeviceUseCase(interceptingRepo),
+                    FindOrCreateDeviceTypeUseCase(interceptingRepo),
+                ),
+                featureFlagProvider = FakeFeatureFlagProvider(),
+            )
+
+            val input = DeviceInput(
+                name = "Test Device",
+                location = "Kitchen",
+                typeId = "type-1",
+            )
+
+            viewModel.addDevice(input)
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            // The repo method WAS called and WOULD have thrown
+            assertNotNull(thrownException)
+            // The device was NOT added — operation failed
+            assertEquals(0, fakeRepo.devices.size)
+            // isLoading is back to false (finally block ran), masking the failure
+            assertFalse(viewModel.isLoading.value)
+            // BUG: There is no error state on the ViewModel — the user gets no
+            // feedback that the operation failed. The ViewModel only exposes
+            // deviceTypes, isLoading, and aiMessages — none of which capture errors.
         }
 }
