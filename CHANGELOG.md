@@ -31,6 +31,14 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ---
 
+## 2026-02-27
+
+### Testing
+
+- **Navigate-all-screens smoke test** ([#774](https://github.com/cartland/battery-butler/pull/774)): Added `testNavigateAllScreens()` instrumented test that visits 12 of 13 app screens (skipping feature-flagged AiChat) to catch rendering crashes during navigation. Uses UI buttons (Cancel/Done/Back arrow) instead of `Espresso.pressBack()` to avoid BackHandler priority conflicts between the tab and detail NavDisplay stacks.
+
+---
+
 ## 2026-02-26
 
 ### Features
