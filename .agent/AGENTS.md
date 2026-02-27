@@ -74,7 +74,7 @@ Keeping the build and tests healthy is a top priority. When you identify or fix 
 4. **Test Categories**:
    - **Unit tests**: Must pass (`./gradlew test`)
    - **Instrumented tests**: Must run (all tests are offline-capable, no server needed)
-   - **Screenshot tests**: Must run (baseline mismatches indicate UI changes, not broken infrastructure)
+   - **Screenshot tests**: Must run (baseline mismatches indicate UI changes, not broken infrastructure). Use the `/update-screenshots` and `/update-ios-screenshots` workflows to regenerate missing or changed baselines locally before pushing.
 
 ## Project Technical Rules
 
@@ -177,7 +177,7 @@ Keeping the build and tests healthy is a top priority. When you identify or fix 
     > [!IMPORTANT]
     > **Spotless Verification**: After running `git commit`, check the output. If the post-commit hook reports `spotlessCheck FAILED`, you MUST run `./gradlew spotlessApply`, amend your commit (or create a fix commit), and verify again. Do not ignore this failure.
 
-6.  **Create a Pull Request**: Open a pull request against the `main` branch. Direct pushes to `main` are prohibited.
+6.  **Create a Pull Request**: Open a pull request against the `main` branch. Direct pushes to `main` are prohibited. Use the `/create-pr` workflow for standardized title and body formatting.
 
 ## After Your PR is Merged
 
