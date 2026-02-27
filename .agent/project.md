@@ -162,6 +162,9 @@ ruby ios-app-swift-ui/sync_pbxproj.rb         # Sync Swift files to Xcode
 | Screenshot | `./gradlew :android-screenshot-tests:validateDebugScreenshotTest` | No | No | `validation_screenshots` |
 | E2E | `./scripts/e2e-tests.sh` | Yes | No | Manual only |
 
+### Audits
+- **100 Personas Audit**: We occasionally run an AI-driven audit embodying 100 distinct professional perspectives (e.g., Security Engineer, Accessibility Specialist) to identify testing improvements and meta-testing insights. See `docs/100_personas_audit_plan.md` and `docs/100_personas_audit_progress.md` for methodology and generated PRs.
+
 ### When Tests Run
 
 | Trigger | Unit | Instrumented | Screenshot | E2E |
