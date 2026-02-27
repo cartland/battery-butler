@@ -189,6 +189,9 @@ ruby ios-app-swift-ui/sync_pbxproj.rb         # Sync Swift files to Xcode
 - All tests are offline-capable — no server needed (app defaults to `NetworkMode.None`)
 - `compose-app/src/androidInstrumentedTest/`: `ComposeUITest` (UI navigation), `ExampleInstrumentedTest` (app context)
 - `data/src/androidInstrumentedTest/`: `DatabaseSanityTest` (Room schema), `MigrationTest` (Room migrations 3→4→5)
+- **BackHandler priority**: The app uses two NavDisplay stacks (tab + detail). When both have entries, the tab NavDisplay's BackHandler (deeper in composition tree) takes priority over the App-level detail stack BackHandler. In tests, use actual UI back buttons (Cancel/Done/Back arrow) instead of `Espresso.pressBack()` to avoid this conflict.
+- **Managed device test filtering**: `--tests` flag doesn't work with managed device tasks. Use `-Pandroid.testInstrumentationRunnerArguments.class=com.example.TestClass#testMethod` instead.
+- **Test isolation**: Tests within a single managed device run share database state. Avoid tests that depend on empty-state UI when other tests create persistent data.
 
 ### Screenshot Tests
 - Pixel-perfect UI regression tests against reference images
