@@ -176,7 +176,9 @@ ruby ios-app-swift-ui/sync_pbxproj.rb         # Sync Swift files to Xcode
 
 ### Convention Tests
 - **`UseCaseConventionTest`** (`usecase/src/jvmTest/`): JVM-only test that uses Kotlin reflection to scan all `*UseCase` classes in the `com.chriscartland.batterybutler.usecase` package and asserts each has `operator fun invoke` (suspend or non-suspend). Runs as part of `./gradlew :usecase:jvmTest`. Requires `kotlin("reflect")` in jvmTest dependencies.
-- The test uses `kotlin.test.assertTrue(value, message)` (NOT the trailing-lambda form, which doesn't exist in `kotlin.test`).
+- **`ViewModelTestConventionTest`** (`viewmodel/src/desktopTest/`): Desktop-only test (JVM reflection) that scans all `*ViewModel` classes and verifies each has a corresponding `*ViewModelTest` class. Excludes `*Factory` and `KmpViewModelStore`. Runs as part of `./gradlew :viewmodel:desktopTest`. Requires `kotlin("reflect")` in desktopTest dependencies. Note: the viewmodel module uses `jvm("desktop")` not `jvm()`, so the source set is `desktopTest/` not `jvmTest/`.
+- The tests use `kotlin.test.assertTrue(value, message)` (NOT the trailing-lambda form, which doesn't exist in `kotlin.test`).
+- **`desktopTest`** is in the detekt FunctionNaming excludes list (alongside `jvmTest`, `commonTest`, etc.) to allow backtick test names.
 
 ### Unit Tests (`./gradlew test`)
 - Pure Kotlin tests across all modules (domain, data, viewmodel, usecase, server, etc.)
