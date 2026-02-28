@@ -38,6 +38,7 @@ env:
 
 jobs:
   rollback:
+    if: false # AWS hibernated — re-enable when AWS infrastructure is restored
     name: Rollback ${{ inputs.environment }}
     runs-on: ubuntu-latest
     timeout-minutes: 10

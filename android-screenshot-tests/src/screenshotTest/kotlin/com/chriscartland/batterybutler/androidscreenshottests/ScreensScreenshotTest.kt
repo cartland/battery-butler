@@ -15,6 +15,7 @@ import com.chriscartland.batterybutler.presentationfeature.eventdetail.EventDeta
 import com.chriscartland.batterybutler.presentationfeature.eventdetail.EventDetailContentPreview
 import com.chriscartland.batterybutler.presentationfeature.history.HistoryListContentEmptyPreview
 import com.chriscartland.batterybutler.presentationfeature.home.HomeScreenEmptyPreview
+import com.chriscartland.batterybutler.presentationfeature.settings.SettingsContentAllNetworkModesPreview
 import com.chriscartland.batterybutler.presentationfeature.settings.SettingsContentPreview
 import kotlin.time.ExperimentalTime
 
@@ -117,6 +118,16 @@ fun EventDetailDeletedDeviceScreenPreviewTest() {
 fun SettingsScreenPreviewTest() {
     ScreenshotTestTheme {
         SettingsContentPreview()
+    }
+}
+
+@PreviewTest
+@Preview(showBackground = true, name = "Light")
+@Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun SettingsAllNetworkModesPreviewTest() {
+    ScreenshotTestTheme {
+        SettingsContentAllNetworkModesPreview()
     }
 }
 

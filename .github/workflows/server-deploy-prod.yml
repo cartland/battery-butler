@@ -39,6 +39,7 @@ jobs:
   # Pre-flight checks before approval
   # ===========================================================================
   preflight:
+    if: false # AWS hibernated — re-enable when AWS infrastructure is restored
     name: Pre-flight Checks
     runs-on: ubuntu-latest
     permissions:
@@ -99,6 +100,7 @@ jobs:
   # Deploy to Production (requires approval)
   # ===========================================================================
   deploy-prod:
+    if: false # AWS hibernated — re-enable when AWS infrastructure is restored
     name: Deploy to Production
     needs: preflight
     runs-on: ubuntu-latest

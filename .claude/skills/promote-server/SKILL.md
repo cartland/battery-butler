@@ -14,6 +14,10 @@ Promote the server Docker image from dev to production.
 > **This is the only path to production.** All deploys go to dev first.
 > Prod is always a promotion of a dev-validated image — never a direct deploy.
 
+> **HIBERNATED (Feb 2026):** AWS infrastructure is not running. All deploy
+> workflows are disabled (`if: false`). The server runs locally only.
+> To re-enable, see the checklist in `server/README.md`.
+
 ## Steps
 
 1. Check current deployment state:

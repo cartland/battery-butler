@@ -1,5 +1,9 @@
 # Battery Butler Server (AWS Deployment)
 
+> **STATUS: HIBERNATED (Feb 2026)**
+> AWS infrastructure is not running. The server runs locally only.
+> All infrastructure code is preserved. See "Re-enabling AWS" below.
+
 This directory contains the gRPC Server application and the Infrastructure-as-Code (Terraform) to deploy it to AWS.
 
 ## Architecture
@@ -152,3 +156,16 @@ This project uses [Jib](https://github.com/GoogleContainerTools/jib) to build op
 - **IAM (Identity and Access Management)**: Manages permissions.
 - **AZ (Availability Zone)**: Distinct data centers within an AWS Region.
 - **S3 (Simple Storage Service)**: Object storage for Terraform state.
+
+## Re-enabling AWS
+
+When ready to restore AWS infrastructure:
+
+1. Rotate AWS IAM credentials, update GitHub secrets
+2. Remove `if: false` from all 6 server workflow files
+3. Run `server-build.yml` to rebuild and deploy to dev
+4. Update `gradle.properties` comment (remove hibernation note)
+5. Update `strings.xml` — remove "(disabled)" from server labels
+6. Reorder `SettingsViewModel.availableNetworkModes` — AWS options first
+7. Update this README — remove hibernation notice
+8. Promote to prod via `/promote-server`

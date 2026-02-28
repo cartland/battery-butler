@@ -247,6 +247,9 @@ ruby ios-app-swift-ui/sync_pbxproj.rb         # Sync Swift files to Xcode
 
 ## Server URL Management
 
+> **Note:** AWS is hibernated. The URLs in gradle.properties and GitHub secrets
+> point to decommissioned endpoints. Only GrpcLocal mode works.
+
 Server URLs (prod and dev) flow through the system as follows:
 
 **Source of truth:** GitHub secrets `PRODUCTION_SERVER_URL` and `DEV_SERVER_URL`, auto-synced from terraform output after each deploy.
@@ -359,6 +362,9 @@ git commit -m "chore(beads): Update task tracking"
 **What stays local (gitignored):** `*.db*`, `daemon.*`, `bd.sock`
 
 ## Server Deployment
+
+> **HIBERNATED (Feb 2026):** AWS infrastructure is not running. Server workflows
+> are disabled (`if: false`). Server runs locally only. See server/README.md.
 
 Multi-environment deployment pipeline: dev -> staging -> prod. Same Docker image SHA promoted through environments.
 
