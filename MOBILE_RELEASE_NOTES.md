@@ -6,6 +6,88 @@ Each section covers one release tag range. "What's New" is user-facing language 
 
 ---
 
+## [android/20] — 2026-02-28
+
+From tag `android/14` to tag `android/20` (29 mobile-relevant commits out of 68 total)
+
+### What's New
+
+**Cloud server options marked as disabled**
+- The "Prod Server" and "Dev Server" network options now show "(disabled)" since AWS infrastructure is hibernated
+- Local server is the default network mode; cloud options are preserved but moved to the bottom of the list
+
+**iOS keeps pace with Compose**
+- New Edit Device screen on iOS with full editing and delete capabilities
+- Fixed a critical crash on iOS during ViewModel initialization
+- Added snapshot testing for iOS SwiftUI screens
+
+**Unified visual design**
+- All device icons now use a single consistent sage green color
+- Theme-based icon colors integrate with Material3 color scheme
+- New standard dropdown menu component used throughout the app
+
+**Accessibility improvements**
+- Added VoiceOver labels to all interactive buttons
+- Decorative images are now hidden from screen readers
+- Interactive rows have proper button semantics for assistive technology
+
+**Performance and stability**
+- Faster app startup through deferred dependency injection
+- Fixed Activity lifecycle memory leaks
+- Database queries run faster with new indices on frequently-searched columns
+- AI chat overlay supports repeatable expand/collapse without glitches
+- Back press correctly closes AI overlay before navigating back
+
+**Security hardened**
+- Disabled Android app data backup to prevent credential leakage
+- Removed PII from logs with automated Detekt enforcement
+
+### Detailed Changes
+
+| PR | Description |
+|----|-------------|
+| [#794](https://github.com/cartland/battery-butler/pull/794) | Mark cloud server options as "(disabled)", reorder network modes, add screenshot test |
+| [#780](https://github.com/cartland/battery-butler/pull/780) | Fix fatal iOS coroutine crash on ViewModel initialization |
+| [#777](https://github.com/cartland/battery-butler/pull/777) | Add snapshot testing for iOS SwiftUI screens |
+| [#774](https://github.com/cartland/battery-butler/pull/774) | Add navigate-all-screens instrumented smoke test |
+| [#772](https://github.com/cartland/battery-butler/pull/772) | Implement Edit Device screen for iOS SwiftUI |
+| [#769](https://github.com/cartland/battery-butler/pull/769) | Unify device icon colors to sage green |
+| [#768](https://github.com/cartland/battery-butler/pull/768) | Fix device icon color implementation for consistency |
+| [#765](https://github.com/cartland/battery-butler/pull/765) | PiiProtector — fix PII leaks in logs, enable Detekt ForbiddenMethodCall |
+| [#664](https://github.com/cartland/battery-butler/pull/664) | StartupSpeeder — defer AppComponent initialization for faster startup |
+| [#663](https://github.com/cartland/battery-butler/pull/663) | MemoryLeakHunter — fix Activity leaks, audit platform utilities |
+| [#660](https://github.com/cartland/battery-butler/pull/660) | Fix AI chat overlay expand/collapse and keyboard inset handling |
+| [#659](https://github.com/cartland/battery-butler/pull/659) | Reimplement string localization, add database indices |
+| [#658](https://github.com/cartland/battery-butler/pull/658) | Fix back press priority — AI overlay closes before tab navigation |
+| [#640](https://github.com/cartland/battery-butler/pull/640) | CoroutineConductor — standardize Dispatcher injection across ViewModels |
+| [#636](https://github.com/cartland/battery-butler/pull/636) | Migrate raw prints to structured Kermit logging |
+| [#635](https://github.com/cartland/battery-butler/pull/635) | Add VoiceOver labels to buttons, hide decorative images |
+| [#634](https://github.com/cartland/battery-butler/pull/634) | Add button semantics to interactive composable rows |
+| [#629](https://github.com/cartland/battery-butler/pull/629) | Disable allowBackup in AndroidManifest |
+| [#628](https://github.com/cartland/battery-butler/pull/628) | Refactor FindOrCreateDeviceTypeUseCase to imperative pattern |
+| [#627](https://github.com/cartland/battery-butler/pull/627) | Add database indices on device.typeId and battery_events.deviceId |
+| [#626](https://github.com/cartland/battery-butler/pull/626) | Add explicit java_package in proto files |
+| [#624](https://github.com/cartland/battery-butler/pull/624) | Replace deprecated foregroundColor with foregroundStyle |
+| [#623](https://github.com/cartland/battery-butler/pull/623) | Replace hardcoded spacer values with Padding constants |
+| [#621](https://github.com/cartland/battery-butler/pull/621) | Add unit tests for FeatureFlag |
+| [#618](https://github.com/cartland/battery-butler/pull/618) | Theme-based icon colors, ButlerDropdownMenu, fix chat overflow |
+| [#617](https://github.com/cartland/battery-butler/pull/617) | Clean up raw operators in tests |
+| [#787](https://github.com/cartland/battery-butler/pull/787) | Close the loop — 18 new tests, user journeys, coverage matrix |
+| [#786](https://github.com/cartland/battery-butler/pull/786) | ~40 tests across UseCase, AI, and ViewModel layers |
+| [#782](https://github.com/cartland/battery-butler/pull/782) | Crash-proof test coverage for error handling gaps |
+
+### Dependencies (non-mobile but included in release)
+
+| PR | Description |
+|----|-------------|
+| [#796](https://github.com/cartland/battery-butler/pull/796) | Fix server workflow disabling (gh workflow disable instead of if:false) |
+| [#795](https://github.com/cartland/battery-butler/pull/795) | Regenerate architecture diagrams |
+| [#793](https://github.com/cartland/battery-butler/pull/793) | Make server connectivity check a warning in release workflow |
+| [#792](https://github.com/cartland/battery-butler/pull/792) | Replace --confirm-release with --confirm-tag safety check |
+| [#785](https://github.com/cartland/battery-butler/pull/785) | Add development/release CI mode |
+
+---
+
 ## [android/14] — 2026-02-24
 
 From tag `android/13` to tag `android/14` (1 mobile-relevant commit out of 4 total)
