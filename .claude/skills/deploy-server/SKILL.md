@@ -15,7 +15,7 @@ Deploy the gRPC server to the **dev** environment.
 > To promote to prod, use `/promote-server` after validating on dev.
 
 > **HIBERNATED (Feb 2026):** AWS infrastructure is not running. All deploy
-> workflows are disabled (`if: false`). The server runs locally only.
+> workflows are disabled via GitHub (`gh workflow disable`). The server runs locally only.
 > To re-enable, see the checklist in `server/README.md`.
 
 ## Prerequisites

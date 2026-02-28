@@ -39,7 +39,6 @@ jobs:
   # Pre-check: Verify AWS credentials are configured
   # ===========================================================================
   check-credentials:
-    if: false # AWS hibernated — re-enable when AWS infrastructure is restored
     name: Check AWS Credentials
     runs-on: ubuntu-latest
     outputs:
@@ -59,7 +58,6 @@ jobs:
   # Build & Push Container
   # ===========================================================================
   build:
-    if: false # AWS hibernated — re-enable when AWS infrastructure is restored
     name: Build Container
     needs: check-credentials
     if: needs.check-credentials.outputs.has-credentials == 'true'
@@ -149,7 +147,6 @@ jobs:
   # Deploy to Dev
   # ===========================================================================
   deploy-dev:
-    if: false # AWS hibernated — re-enable when AWS infrastructure is restored
     name: Deploy to Dev
     needs: build
     runs-on: ubuntu-latest

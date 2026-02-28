@@ -364,7 +364,7 @@ git commit -m "chore(beads): Update task tracking"
 ## Server Deployment
 
 > **HIBERNATED (Feb 2026):** AWS infrastructure is not running. Server workflows
-> are disabled (`if: false`). Server runs locally only. See server/README.md.
+> are disabled via GitHub (`gh workflow disable`). Server runs locally only. See server/README.md.
 
 Multi-environment deployment pipeline: dev -> staging -> prod. Same Docker image SHA promoted through environments.
 

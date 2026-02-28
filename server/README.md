@@ -162,7 +162,7 @@ This project uses [Jib](https://github.com/GoogleContainerTools/jib) to build op
 When ready to restore AWS infrastructure:
 
 1. Rotate AWS IAM credentials, update GitHub secrets
-2. Remove `if: false` from all 6 server workflow files
+2. Re-enable all 6 server workflows: `gh workflow enable <name>` for server-build, server-deploy-staging, server-deploy-prod, server-destroy, server-rollback, release-server
 3. Run `server-build.yml` to rebuild and deploy to dev
 4. Update `gradle.properties` comment (remove hibernation note)
 5. Update `strings.xml` — remove "(disabled)" from server labels
