@@ -58,11 +58,17 @@ class GetDevicesUseCase(private val repo: DeviceRepository) {
 
 | Module | Strategy | Coverage |
 |--------|----------|----------|
-| usecase | Unit tests for complex logic | 8/24 files (covers complex cases) |
-| viewmodel | Unit tests | 3 ViewModels tested |
+| usecase | Unit tests for complex logic | 19/28 UseCases tested (~87 tests) |
+| viewmodel | Unit tests | 13/13 ViewModels tested (~107 tests) |
 | presentation-feature | Screenshot tests | Covered by android-screenshot-tests |
 | data | Integration tests | Repository tests exist |
 | domain | Unit tests | Model tests exist |
+
+**Convention enforcement:**
+- `UseCaseConventionTest` — verifies every UseCase has `operator invoke()`
+- `ViewModelTestConventionTest` — verifies every ViewModel has a corresponding test class
+
+Untested UseCases are thin wrappers (single-line delegation to repository) — see "What Does NOT Need Tests" above.
 
 ## Consequences
 

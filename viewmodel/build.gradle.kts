@@ -48,6 +48,11 @@ kotlin {
             implementation(libs.kotlinx.coroutines.test)
             implementation(project(":test-common"))
         }
+        val desktopTest by getting {
+            dependencies {
+                implementation(kotlin("reflect"))
+            }
+        }
     }
 
     sourceSets.all {
