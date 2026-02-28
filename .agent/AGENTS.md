@@ -44,6 +44,9 @@ Regardless of the role, the agent remains a tool, and the user retains ultimate 
     *   **NEVER** run `gh workflow run server-deploy-prod.yml` directly — always use the promote script.
     *   Validate on dev (E2E tests, manual checks) before promoting to prod.
 
+    > **HIBERNATED (Feb 2026):** Server deploy workflows are disabled. The server
+    > runs locally only. Skip `./scripts/deploy-status.sh` at session start.
+
 4.  **ALWAYS Ask Before Destructive or Irreversible Actions**:
     *   Creating tags, deploying, force-pushing, deleting branches on remote, or any action that affects production requires explicit confirmation.
     *   When uncertain about scope, ask clarifying questions before proceeding.

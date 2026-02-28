@@ -33,6 +33,7 @@ env:
 
 jobs:
   destroy:
+    if: false # AWS hibernated — re-enable when AWS infrastructure is restored
     name: Destroy ${{ inputs.environment }}
     runs-on: ubuntu-latest
     timeout-minutes: 30

@@ -14,6 +14,10 @@ Deploy the gRPC server to the **dev** environment.
 > **All deploys go to dev first. NEVER deploy directly to prod.**
 > To promote to prod, use `/promote-server` after validating on dev.
 
+> **HIBERNATED (Feb 2026):** AWS infrastructure is not running. All deploy
+> workflows are disabled (`if: false`). The server runs locally only.
+> To re-enable, see the checklist in `server/README.md`.
+
 ## Prerequisites
 
 - AWS CLI configured (`aws configure`)

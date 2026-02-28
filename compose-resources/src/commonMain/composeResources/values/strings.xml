@@ -24,8 +24,8 @@
     <string name="network_mode_none">None (Offline)</string>
     <string name="network_mode_mock">Mock</string>
     <string name="network_mode_grpc_local">gRPC Local</string>
-    <string name="network_mode_grpc_aws">Prod Server</string>
-    <string name="network_mode_grpc_dev">Dev Server</string>
+    <string name="network_mode_grpc_aws">Prod Server (disabled)</string>
+    <string name="network_mode_grpc_dev">Dev Server (disabled)</string>
 
     <!-- AI Engine -->
     <string name="ai_engine_title">AI Engine</string>

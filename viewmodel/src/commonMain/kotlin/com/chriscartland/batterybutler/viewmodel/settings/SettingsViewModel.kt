@@ -41,12 +41,15 @@ class SettingsViewModel(
             NetworkMode.None,
         )
 
+    // AWS infrastructure is hibernated — cloud servers are not running.
+    // GrpcLocal is the primary server option. See server/README.md for details.
     val availableNetworkModes = listOf(
-        NetworkMode.GrpcAws(productionServerUrl.url),
-        NetworkMode.GrpcDev(devServerUrl.url),
-        NetworkMode.GrpcLocal("http://10.0.2.2:50051"), // Hardcoded default for UI list.
+        NetworkMode.GrpcLocal("http://10.0.2.2:50051"),
         NetworkMode.Mock,
         NetworkMode.None,
+        // AWS servers (hibernated — not currently running, kept for future re-enablement)
+        NetworkMode.GrpcAws(productionServerUrl.url),
+        NetworkMode.GrpcDev(devServerUrl.url),
     )
 
     val aiEngineType = aiPreferencesRepository.aiEngineType

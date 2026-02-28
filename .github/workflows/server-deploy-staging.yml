@@ -30,6 +30,7 @@ env:
 
 jobs:
   deploy-staging:
+    if: false # AWS hibernated — re-enable when AWS infrastructure is restored
     name: Deploy to Staging
     runs-on: ubuntu-latest
     timeout-minutes: 15

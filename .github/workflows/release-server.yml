@@ -15,6 +15,7 @@ permissions:
 
 jobs:
   validate:
+    if: false # AWS hibernated — re-enable when AWS infrastructure is restored
     name: Validate Tag
     runs-on: ubuntu-latest
     outputs:
@@ -48,6 +49,7 @@ jobs:
           echo "Validated: tag=$TAG, version=$VERSION"
 
   check-credentials:
+    if: false # AWS hibernated — re-enable when AWS infrastructure is restored
     name: Check AWS Credentials
     needs: validate
     runs-on: ubuntu-latest
@@ -69,6 +71,7 @@ jobs:
           fi
 
   deploy:
+    if: false # AWS hibernated — re-enable when AWS infrastructure is restored
     name: Build and Deploy v${{ needs.validate.outputs.version }}
     needs: [validate, check-credentials]
     runs-on: ubuntu-latest
