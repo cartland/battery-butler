@@ -161,3 +161,104 @@ fun `use case does not throw`() = runTest {
 }
 ```
 If there's no assertion, there's no test.
+
+---
+
+## What Passing Tests Prove
+
+When CI passes, here's what each layer of the test pyramid proves — and what it does NOT prove.
+
+### What CI Proves
+
+| Layer | What It Proves | Test Count |
+|-------|----------------|------------|
+| **UseCase unit tests** | Business logic is correct: batch parsing, deduplication, date handling, device-event relationships, data export formatting, AI context building | ~87 tests |
+| **ViewModel unit tests** | State management works: loading → success/error transitions, user action processing, sort/group/filter logic, form validation | ~107 tests |
+| **Convention tests** | Every UseCase has `operator invoke()`, every ViewModel has a corresponding test file | 2 tests |
+| **Screenshot tests** | UI renders pixel-perfectly against reference images — catches unintended visual regressions | ~50 tests |
+| **Instrumented tests** | App navigates correctly on a real Android device, Room database schema is valid, migrations work | ~10 tests |
+| **Architecture checks** | Module dependency rules are enforced (domain depends on nothing, viewmodel doesn't import data, etc.) | Gradle task |
+| **Detekt + Spotless** | Code style and Compose rules (modifier naming, parameter order) are enforced | Gradle tasks |
+
+### What CI Does NOT Prove
+
+| Gap | Why | Mitigation |
+|-----|-----|------------|
+| E2E server round-trip | E2E tests are manual-only (require live server) | `e2e-tests.sh` run before releases |
+| AI response quality | FakeAiEngine returns deterministic responses, not real AI | Manual testing with Gemini |
+| Real network sync | Tests use `FakeDeviceRepository`, not real gRPC | E2E tests cover this path |
+| iOS SwiftUI snapshots | Swift snapshot tests exist but run separately | `xcodebuild test` in CI |
+| Performance / ANR | No performance benchmarks in CI | Manual profiling |
+| Multi-device sync conflicts | Single-client tests only | Server-side conflict resolution is last-write-wins |
+
+### Confidence Summary
+
+If CI is green, we are **confident** that:
+- All business rules implemented in UseCases are correct
+- All ViewModel state machines transition correctly
+- The UI looks exactly as designed (screenshot baselines)
+- The app navigates without crashes on Android
+- The database schema and migrations are valid
+- No architecture violations exist
+- Code style is consistent
+
+We are **not confident** that:
+- The app works end-to-end with a real server (requires E2E tests)
+- AI produces useful responses (requires manual testing)
+- The app performs well under load (no benchmarks)
+
+---
+
+## Coverage Matrix — By Screen
+
+Every screen in `Screen.kt` mapped to its ViewModel test, screenshot tests, and instrumented tests.
+
+| Screen | ViewModel | ViewModel Tests | Screenshot Tests | Instrumented | Confidence |
+|--------|-----------|----------------|-----------------|-------------|------------|
+| Login | LoginViewModel | LoginViewModelTest (13) | LoginScreenshotTest | ComposeUITest | **HIGH** |
+| Devices | HomeViewModel | HomeViewModelTest (9) | MainTabsScreenshotTest | ComposeUITest | **HIGH** |
+| History | HistoryListViewModel | HistoryListViewModelTest (9) | MainTabsScreenshotTest | ComposeUITest | **HIGH** |
+| Types | DeviceTypeListViewModel | DeviceTypeListViewModelTest (6) | MainTabsScreenshotTest | ComposeUITest | **HIGH** |
+| Settings | SettingsViewModel | SettingsViewModelTest (13) | ScreensScreenshotTest | ComposeUITest | **HIGH** |
+| AddDevice | AddDeviceViewModel | AddDeviceViewModelTest (7) | AddDeviceScreenshotTest | ComposeUITest | **HIGH** |
+| AddBatteryEvent | AddBatteryEventViewModel | AddBatteryEventViewModelTest (5) | ScreensScreenshotTest | ComposeUITest | **HIGH** |
+| AddDeviceType | AddDeviceTypeViewModel | AddDeviceTypeViewModelTest (4) | ScreensScreenshotTest | ComposeUITest | **HIGH** |
+| DeviceDetail | DeviceDetailViewModel | DeviceDetailViewModelTest (8) | DeviceDetailScreenshotTest | ComposeUITest | **HIGH** |
+| EditDevice | EditDeviceViewModel | EditDeviceViewModelTest (5) | — | ComposeUITest | **MEDIUM** |
+| EventDetail | EventDetailViewModel | EventDetailViewModelTest (6) | — | ComposeUITest | **MEDIUM** |
+| EditDeviceType | EditDeviceTypeViewModel | EditDeviceTypeViewModelTest (5) | — | ComposeUITest | **MEDIUM** |
+| AI Chat (overlay) | AiChatViewModel | AiChatViewModelTest (7) | AiOverlayScreenshotTest | — | **MEDIUM** |
+
+**Legend:**
+- **HIGH** = ViewModel tests + screenshot tests + instrumented tests
+- **MEDIUM** = ViewModel tests + (screenshot OR instrumented), but not both
+- **LOW** = Missing ViewModel tests
+
+---
+
+## Coverage Matrix — By Business Rule
+
+Key business rules mapped to the tests that protect them.
+
+| Rule | Test | Confidence |
+|------|------|------------|
+| Adding event updates device lastReplaced | UpdateDeviceLastReplacedUseCaseTest (10) | **HIGH** |
+| Batch import parses natural language (devices) | BatchAddDevicesUseCaseTest (1) | **HIGH** |
+| Batch import parses natural language (types) | BatchAddDeviceTypesUseCaseTest (3) | **HIGH** |
+| Batch import parses natural language (events) | BatchAddBatteryEventsUseCaseTest (3) | **HIGH** |
+| Batch import deduplicates existing types | BatchAddDeviceTypesUseCaseTest | **HIGH** |
+| Data syncs bidirectionally | DefaultDeviceRepositoryTest (34) | **HIGH** |
+| AI chat augments messages with context | SendChatMessageUseCaseTest (4), BuildAiContextUseCaseTest (5) | **HIGH** |
+| AI tool handler routes to correct operations | DeviceToolHandlerTest (17) | **HIGH** |
+| Export includes all data types | ExportDataUseCaseTest (8) | **HIGH** |
+| Find-or-create avoids duplicate devices | FindOrCreateDeviceUseCaseTest (4) | **HIGH** |
+| Find-or-create avoids duplicate types | FindOrCreateDeviceTypeUseCaseTest (4) | **HIGH** |
+| Preloaded types seeded on first launch | PreloadCommonTypesUseCaseTest (3) | **HIGH** |
+| Icon suggestion returns valid icon name | SuggestDeviceIconUseCaseTest (4) | **HIGH** |
+| Every UseCase has operator invoke | UseCaseConventionTest | **HIGH** |
+| Every ViewModel has a test class | ViewModelTestConventionTest | **HIGH** |
+| Device sort/group/filter works correctly | HomeViewModelTest (9) | **HIGH** |
+| Type sort/group works correctly | DeviceTypeListViewModelTest (6) | **HIGH** |
+| History sort/filter works correctly | HistoryListViewModelTest (9) | **HIGH** |
+| Room migrations preserve data | MigrationTest | **HIGH** |
+| Module dependencies enforce architecture | ArchitectureCheckTask (Gradle) | **HIGH** |

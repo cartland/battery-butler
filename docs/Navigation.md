@@ -124,6 +124,27 @@ Business logic is separated from the final navigation action:
 - **Keys**: All screens are defined as `@Serializable` keys in `App.kt`.
 - **Shell**: `MainScreenShell` provides the `Scaffold`, `TopAppBar`, and `NavigationBar` for the Base Tab Layer screens.
 
+## User Journey Cross-Reference
+
+Each navigation path corresponds to a user journey documented in [USER_JOURNEYS.md](USER_JOURNEYS.md).
+
+| Navigation Path | Stack Example | Journey |
+|----------------|---------------|---------|
+| Home (Devices tab) | `[Devices]` | J2: Browse Devices |
+| Types tab | `[Devices, Types]` | J7: Browse Device Types |
+| History tab | `[Devices, History]` | J10: Browse History |
+| Add Device | `[Devices, AddDevice]` | J3: Add Device |
+| Add Type from Types | `[Devices, Types, AddDeviceType]` | J8: Add Device Type |
+| Add Event from History | `[Devices, History, AddBatteryEvent]` | J6: Record Battery Replacement |
+| Device Detail | `[Devices, DeviceDetail(id)]` | J4: View Device Detail |
+| Edit Device | `[Devices, DeviceDetail(id), EditDevice(id)]` | J5: Edit Device |
+| Edit Device Type | `[Devices, Types, EditDeviceType(id)]` | J9: Edit Device Type |
+| Event Detail | `[Devices, History, EventDetail(id)]` | J11: View/Edit Event |
+| Settings | `[..., Settings]` | J12: Configure Settings |
+| AI Chat | Overlay on any tab (not in stack) | J13: AI Chat |
+
+**Note:** The AI Chat overlay is not part of the navigation stack. It is managed by `AiChatViewModel` at App scope and toggled by `isAiExpanded` state. See [USER_JOURNEYS.md](USER_JOURNEYS.md) J13 for details.
+
 ## Deferred Topics
 
 - Per-entry `metadata`.

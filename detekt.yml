@@ -123,7 +123,7 @@ naming:
     active: false
   FunctionNaming:
     active: true
-    excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/androidUnitTest/**', '**/androidInstrumentedTest/**', '**/screenshotTest/**', '**/iosMain/**']
+    excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/desktopTest/**', '**/androidUnitTest/**', '**/androidInstrumentedTest/**', '**/screenshotTest/**', '**/iosMain/**']
     functionPattern: '[a-z][a-zA-Z0-9]*'
     excludeClassPattern: '$^'
     ignoreAnnotated:
