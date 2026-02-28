@@ -32,6 +32,10 @@ kotlin {
             implementation(libs.kotlin.inject.runtime)
             implementation(libs.kotlinx.coroutines.core)
         }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+            implementation(libs.kotlinx.coroutines.test)
+        }
         androidMain.dependencies {
             implementation(libs.generativeai)
             implementation(libs.mlkit.genai.prompt)
