@@ -31,6 +31,30 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ---
 
+## 2026-02-28
+
+### Testing
+
+- **Close the loop — test gap coverage** ([#787](https://github.com/cartland/battery-butler/pull/787)): Added 18 new tests filling critical coverage gaps: `AiChatViewModelTest` (7 tests — send, blank/processing guards, clearChat, hint augmentation), `EditDeviceTypeViewModelTest` (5 tests — load/notfound/update/delete), `BatchAddDeviceTypesUseCaseTest` (3 tests — tool handler, deduplication, missing name), `BatchAddBatteryEventsUseCaseTest` (3 tests — device+event creation, missing fields). All 13 ViewModels now have dedicated test classes.
+
+- **ViewModel convention enforcement** ([#787](https://github.com/cartland/battery-butler/pull/787)): Added `ViewModelTestConventionTest` (in `viewmodel/src/desktopTest/`) — reflection-based scan that ensures every `*ViewModel` class has a corresponding `*ViewModelTest`. Prevents future ViewModels from being added without tests. Required adding `**/desktopTest/**` to detekt FunctionNaming excludes.
+
+### Documentation
+
+- **User Journeys** ([#787](https://github.com/cartland/battery-butler/pull/787)): Created `docs/USER_JOURNEYS.md` documenting 16 user-reachable paths through the app with Screen.kt references, prerequisites, and edge cases. Cross-referenced from FEATURES.md and Navigation.md.
+
+- **Coverage matrices** ([#787](https://github.com/cartland/battery-butler/pull/787)): Added three sections to `docs/TESTING.md`: "What Passing Tests Prove" (confidence narrative), screen coverage matrix (13 screens mapped to ViewModel/screenshot/instrumented tests), and business rule coverage matrix (20 rules mapped to tests).
+
+- **Feature-test-journey linking** ([#787](https://github.com/cartland/battery-butler/pull/787)): Updated `docs/FEATURES.md` with Journey and Tests columns linking every feature to its user journey and test class. Updated ADR-002 with accurate coverage numbers (13/13 ViewModels, 19/28 UseCases).
+
+- **PR template** ([#787](https://github.com/cartland/battery-butler/pull/787)): Added `.github/PULL_REQUEST_TEMPLATE.md` with checklist for updating docs/tests when features change.
+
+### Testing (prior session, same day)
+
+- **UseCase test coverage phase 1** ([#786](https://github.com/cartland/battery-butler/pull/786)): Added ~40 tests across 13 new test files covering UseCase, AI, and ViewModel utility layers. Created shared `FakeAiEngine` in test-common. Added `docs/TESTING.md` with project testing principles (test real code, test behavior not implementation, one concept per test).
+
+---
+
 ## 2026-02-27
 
 ### Testing
