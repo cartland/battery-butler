@@ -1,5 +1,8 @@
 # Battery Butler
 
+[![CI](https://github.com/cartland/battery-butler/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/cartland/battery-butler/actions/workflows/ci.yml?query=branch%3Amain)
+[![Release](https://github.com/cartland/battery-butler/actions/workflows/release-android.yml/badge.svg)](https://github.com/cartland/battery-butler/actions/workflows/release-android.yml)
+
 **Battery Butler** is a Kotlin Multiplatform (KMP) application designed to help users track battery usage and replacements for their household devices. It leverages modern Android and KMP technologies including Compose Multiplatform, Room, and on-device AI integration.
 
 ## 🚀 Features
