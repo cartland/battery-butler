@@ -63,6 +63,7 @@ fun SettingsContent(
     currentUser: User?,
     onSignOut: () -> Unit,
     modifier: Modifier = Modifier,
+    initiallyExpandedNetworkModes: Boolean = false,
 ) {
     val uriHandler = LocalUriHandler.current
 
@@ -147,6 +148,7 @@ fun SettingsContent(
                 currentSelection = networkMode,
                 options = availableNetworkModes,
                 onOptionSelected = onNetworkModeSelected,
+                initiallyExpanded = initiallyExpandedNetworkModes,
                 optionLabel = { mode ->
                     when (mode) {
                         is NetworkMode.None -> composeStringResource(Res.string.network_mode_none)
@@ -316,6 +318,33 @@ fun SettingsContentPreview() {
                 photoUrl = null,
             ),
             onSignOut = {},
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SettingsContentAllNetworkModesPreview() {
+    BatteryButlerTheme {
+        SettingsContent(
+            networkMode = NetworkMode.GrpcLocal("http://10.0.2.2:50051"),
+            availableNetworkModes = listOf(
+                NetworkMode.GrpcLocal("http://10.0.2.2:50051"),
+                NetworkMode.Mock,
+                NetworkMode.None,
+                NetworkMode.GrpcAws("http://example.com:80"),
+                NetworkMode.GrpcDev("http://example.com:80"),
+            ),
+            onNetworkModeSelected = {},
+            aiEngineType = AiEngineType.Cloud,
+            availableAiEngines = AiEngineType.entries,
+            onAiEngineSelected = {},
+            onExportData = {},
+            onBack = {},
+            appVersion = AppVersion.Android("1.0.0", 123),
+            currentUser = null,
+            onSignOut = {},
+            initiallyExpandedNetworkModes = true,
         )
     }
 }

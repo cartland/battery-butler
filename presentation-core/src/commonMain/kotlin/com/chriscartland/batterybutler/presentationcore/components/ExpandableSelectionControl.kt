@@ -39,8 +39,9 @@ fun <T> ExpandableSelectionControl(
     optionLabel: @Composable (T) -> String,
     modifier: Modifier = Modifier,
     containerColor: Color = MaterialTheme.colorScheme.surfaceVariant,
+    initiallyExpanded: Boolean = false,
 ) {
-    var expanded by remember { mutableStateOf(false) }
+    var expanded by remember { mutableStateOf(initiallyExpanded) }
     val rotationState by animateFloatAsState(if (expanded) 180f else 0f)
 
     Card(
