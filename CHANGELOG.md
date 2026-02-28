@@ -33,6 +33,18 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ## 2026-02-28
 
+### Infrastructure
+
+- **Hibernate AWS infrastructure** ([#794](https://github.com/cartland/battery-butler/pull/794)): Stopped all AWS spending. Added "(disabled)" labels to cloud server options in the mobile app, reordered network modes (GrpcLocal first), added hibernation comments to `gradle.properties`, updated all docs with hibernation notices and re-enabling checklist. Added screenshot test for all network modes expanded.
+
+- **Fix server workflow disabling** ([#796](https://github.com/cartland/battery-butler/pull/796)): Switched from `if: false` on workflow jobs (which caused GitHub to report failures) to `gh workflow disable` (prevents workflows from triggering at all). All 6 server workflows disabled at the GitHub level.
+
+### CI/CD
+
+- **Make server connectivity check non-blocking** ([#793](https://github.com/cartland/battery-butler/pull/793)): Changed "Validate Server Connectivity" step in `release-android.yml` from a blocker to a warning, since AWS endpoints are down during hibernation.
+
+- **Regenerate architecture diagrams** ([#795](https://github.com/cartland/battery-butler/pull/795)): Auto-generated architecture diagram and analysis update following hibernation changes.
+
 ### Testing
 
 - **Close the loop — test gap coverage** ([#787](https://github.com/cartland/battery-butler/pull/787)): Added 18 new tests filling critical coverage gaps: `AiChatViewModelTest` (7 tests — send, blank/processing guards, clearChat, hint augmentation), `EditDeviceTypeViewModelTest` (5 tests — load/notfound/update/delete), `BatchAddDeviceTypesUseCaseTest` (3 tests — tool handler, deduplication, missing name), `BatchAddBatteryEventsUseCaseTest` (3 tests — device+event creation, missing fields). All 13 ViewModels now have dedicated test classes.
