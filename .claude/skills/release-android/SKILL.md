@@ -31,16 +31,20 @@ Release the Android app to Play Store internal testing by creating a release tag
 
 2. Run the release script:
    ```bash
-   # On main:
-   ./scripts/release-android.sh --confirm-release
+   # On main (replace <tag> with the next computed tag, e.g., android/19):
+   ./scripts/release-android.sh --confirm-tag <tag>
 
    # On a non-main branch (only after user confirms):
-   ./scripts/release-android.sh --confirm-release --confirm-hash $(git rev-parse HEAD)
+   ./scripts/release-android.sh --confirm-tag <tag> --confirm-hash $(git rev-parse HEAD)
    ```
+
+   The `--confirm-tag` argument is a **safety confirmation only** — it cannot change which
+   tag is created. The script always computes the next tag as the highest existing + 1.
+   If the argument doesn't match, the script errors out.
 
    The script will:
    - Find the highest existing `android/N` tag
-   - Create `android/N+1` on the current commit
+   - Create `android/N+1` on the current commit (must match `--confirm-tag`)
    - Push the tag to trigger the `release-android.yml` workflow
 
    > **Note:** Do NOT use `--allow-duplicate-tag` for normal releases. That flag is only for rollback scenarios where you intentionally re-tag an older commit. Without the flag, the script will warn and prompt if the commit already has a tag — which is the desired safety check.

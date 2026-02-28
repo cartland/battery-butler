@@ -21,7 +21,7 @@ NC='\033[0m' # No Color
 
 # Parse flags
 ALLOW_DUPLICATE_TAG=false
-CONFIRM_RELEASE=false
+CONFIRM_TAG=""
 CONFIRM_HASH=""
 DRY_RUN=false
 
@@ -30,14 +30,17 @@ show_help() {
     echo ""
     echo "Options:"
     echo "  --allow-duplicate-tag      Skip prompt when commit already has an android/* tag"
-    echo "  --confirm-release          Skip final release confirmation prompt"
+    echo "  --confirm-tag <tag>        Skip final release confirmation prompt."
+    echo "                             The value must exactly match the next computed tag"
+    echo "                             (e.g., android/18). This is a safety check — the"
+    echo "                             argument cannot change which tag is created."
     echo "  --confirm-hash <sha>       Required when releasing from a non-main branch."
     echo "                             Must match HEAD's full SHA as a safety confirmation."
     echo "  --dry-run                  Show what would happen without creating or pushing tags"
     echo "  -h, --help                 Show this help message"
     echo ""
     echo "For fully non-interactive mode, use both flags:"
-    echo "  ./scripts/release-android.sh --allow-duplicate-tag --confirm-release"
+    echo "  ./scripts/release-android.sh --allow-duplicate-tag --confirm-tag android/18"
     echo ""
     echo "Releasing from a non-main branch:"
     echo "  ./scripts/release-android.sh --confirm-hash \$(git rev-parse HEAD)"
@@ -49,9 +52,9 @@ while [[ $# -gt 0 ]]; do
             ALLOW_DUPLICATE_TAG=true
             shift
             ;;
-        --confirm-release)
-            CONFIRM_RELEASE=true
-            shift
+        --confirm-tag)
+            CONFIRM_TAG="$2"
+            shift 2
             ;;
         --confirm-hash)
             CONFIRM_HASH="$2"
@@ -167,8 +170,19 @@ fi
 echo -e "${YELLOW}This will create tag '$NEW_TAG' and push it to origin.${NC}"
 echo "This triggers the Play Store internal release workflow."
 echo ""
-if [ "$CONFIRM_RELEASE" = true ]; then
-    echo "--confirm-release specified, proceeding..."
+if [ -n "$CONFIRM_TAG" ]; then
+    # --confirm-tag is a safety check only — it cannot change which tag is created.
+    # The script always computes the next tag independently. The argument must match.
+    if [ "$CONFIRM_TAG" != "$NEW_TAG" ]; then
+        echo -e "${RED}Error: --confirm-tag does not match the next computed tag.${NC}"
+        echo "  Provided: $CONFIRM_TAG"
+        echo "  Expected: $NEW_TAG"
+        echo ""
+        echo "The --confirm-tag argument is a safety confirmation, not an override."
+        echo "The next tag is always computed as the highest existing tag + 1."
+        exit 1
+    fi
+    echo "--confirm-tag $CONFIRM_TAG matches computed tag, proceeding..."
 else
     read -p "Proceed with release? (y/N) " -n 1 -r
     echo ""
