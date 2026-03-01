@@ -312,3 +312,16 @@ fun EditBatteryEventContentPreview() {
         )
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun EditBatteryEventNotFoundPreview() {
+    BatteryButlerTheme {
+        EditBatteryEventContent(
+            uiState = EditBatteryEventUiState.NotFound,
+            onSave = { _, _, _ -> },
+            onDelete = {},
+            onBack = {},
+        )
+    }
+}

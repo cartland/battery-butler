@@ -93,7 +93,7 @@ class AddBatteryEventUseCaseTest {
 ### Low Value (Skip Unless There's a Specific Risk)
 - **Pure delegation**: A use case that only calls `repository.doThing()` with no additional logic
 - **Data classes and enums**: The compiler already tests these
-- **Framework integration**: Testing that Compose renders a button — use screenshot tests instead
+- **Framework integration**: Testing that Compose renders a button — use screenshot references for visual tracking instead
 
 ## Test Infrastructure
 
@@ -175,7 +175,7 @@ When CI passes, here's what each layer of the test pyramid proves — and what i
 | **UseCase unit tests** | Business logic is correct: batch parsing, deduplication, date handling, device-event relationships, data export formatting, AI context building | ~87 tests |
 | **ViewModel unit tests** | State management works: loading → success/error transitions, user action processing, sort/group/filter logic, form validation | ~107 tests |
 | **Convention tests** | Every UseCase has `operator invoke()`, every ViewModel has a corresponding test file | 2 tests |
-| **Screenshot tests** | UI renders pixel-perfectly against reference images — catches unintended visual regressions | ~50 tests |
+| **Screenshot tests** | UI previews are captured as a visual record — regenerated on changes, reviewed manually for unintended regressions | ~50 tests |
 | **Instrumented tests** | App navigates correctly on a real Android device, Room database schema is valid, migrations work | ~10 tests |
 | **Architecture checks** | Module dependency rules are enforced (domain depends on nothing, viewmodel doesn't import data, etc.) | Gradle task |
 | **Detekt + Spotless** | Code style and Compose rules (modifier naming, parameter order) are enforced | Gradle tasks |
@@ -196,7 +196,7 @@ When CI passes, here's what each layer of the test pyramid proves — and what i
 If CI is green, we are **confident** that:
 - All business rules implemented in UseCases are correct
 - All ViewModel state machines transition correctly
-- The UI looks exactly as designed (screenshot baselines)
+- The UI renders correctly (screenshot visual records are available for manual review)
 - The app navigates without crashes on Android
 - The database schema and migrations are valid
 - No architecture violations exist
@@ -224,9 +224,11 @@ Every screen in `Screen.kt` mapped to its ViewModel test, screenshot tests, and 
 | AddBatteryEvent | AddBatteryEventViewModel | AddBatteryEventViewModelTest (5) | ScreensScreenshotTest | ComposeUITest | **HIGH** |
 | AddDeviceType | AddDeviceTypeViewModel | AddDeviceTypeViewModelTest (4) | ScreensScreenshotTest | ComposeUITest | **HIGH** |
 | DeviceDetail | DeviceDetailViewModel | DeviceDetailViewModelTest (8) | DeviceDetailScreenshotTest | ComposeUITest | **HIGH** |
-| EditDevice | EditDeviceViewModel | EditDeviceViewModelTest (5) | — | ComposeUITest | **MEDIUM** |
-| EventDetail | EventDetailViewModel | EventDetailViewModelTest (6) | — | ComposeUITest | **MEDIUM** |
-| EditDeviceType | EditDeviceTypeViewModel | EditDeviceTypeViewModelTest (5) | — | ComposeUITest | **MEDIUM** |
+| DeviceTypeDetail | DeviceTypeDetailViewModel | DeviceTypeDetailViewModelTest (5) | ScreensScreenshotTest | ComposeUITest | **HIGH** |
+| EditDevice | EditDeviceViewModel | EditDeviceViewModelTest (5) | ScreensScreenshotTest | ComposeUITest | **HIGH** |
+| EventDetail | EventDetailViewModel | EventDetailViewModelTest (6) | ScreensScreenshotTest | ComposeUITest | **HIGH** |
+| EditBatteryEvent | EditBatteryEventViewModel | EditBatteryEventViewModelTest (5) | ScreensScreenshotTest | ComposeUITest | **HIGH** |
+| EditDeviceType | EditDeviceTypeViewModel | EditDeviceTypeViewModelTest (5) | ScreensScreenshotTest | ComposeUITest | **HIGH** |
 | AI Chat (overlay) | AiChatViewModel | AiChatViewModelTest (7) | AiOverlayScreenshotTest | — | **MEDIUM** |
 
 **Legend:**
