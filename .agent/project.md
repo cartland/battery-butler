@@ -134,6 +134,15 @@ AI messages are augmented in `SendChatMessageUseCase` before reaching the AI eng
 
 The AI system instruction (in `AndroidAiEngine`) is immutable after model creation (Gemini API constraint), so dynamic context is prepended to user messages rather than modifying the system instruction.
 
+**AI Tools (DeviceToolHandler):**
+- 9 tools total: `addDevice`, `addDeviceType`, `recordBatteryReplacement`, `updateDevice`, `deleteDevice`, `updateDeviceType`, `deleteDeviceType`, `updateBatteryEvent`, `deleteBatteryEvent`
+- Tool names and params are constants in `domain/.../ai/AiTools.kt` (`AiToolNames`, `AiToolParams`)
+- `BuildAiContextUseCase` includes entity IDs as `[id:...]` prefixes so the AI can target specific items
+- Delete tools execute immediately; confirmation is enforced via system prompt instruction (not code guard)
+- `deleteDeviceType` has referential integrity: blocks if devices still reference the type
+- Event update/delete recalculates device `batteryLastReplaced` via `UpdateDeviceLastReplacedUseCase`
+- Gemini may send numeric params as String or Number — `parseIntParam()` handles both
+
 ### AI Overlay UI Architecture
 
 The AI chat is an overlay on top of the main tab UI, not a separate tab/screen. Key design:

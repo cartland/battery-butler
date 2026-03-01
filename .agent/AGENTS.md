@@ -284,7 +284,7 @@ This file provides the initial instructions for AGENT_NAME.
 | Priority | Condition | Action |
 |----------|-----------|--------|
 | **P0** | `main` is broken (CI failing) | Stop everything. Fix immediately. |
-| **P0.5** | Instruction/Beads PRs (see below) | Merge immediately. Shared context for all agents. |
+| **P0.5** | Instruction/Beads PRs (see below) | Auto-merge (`--auto --squash`). Shared context for all agents. |
 | **P1** | PRs approved and CI green | Merge sequentially, monitor after each. |
 | **P2** | PRs pending CI or review | Wait. Work on other tasks. |
 | **P3** | New feature work | Only if P0-P2 queue is empty. |
@@ -304,8 +304,8 @@ PRs that **only** modify the following files are **highest priority after broken
 
 **Fast-path rules:**
 1. These PRs pass CI immediately (path filtering skips expensive builds)
-2. Merge as soon as CI is green (no batching needed, each is self-contained)
-3. Pull latest main after merging to get updated instructions
+2. Use `gh pr merge <N> --auto --squash --delete-branch` right after pushing — no need to poll CI
+3. Pull latest main after merge completes to get updated instructions
 4. All agents benefit from latest decisions and tasks immediately
 
 **Quick merge:**
@@ -313,8 +313,8 @@ PRs that **only** modify the following files are **highest priority after broken
 # Check if PR only modifies instruction/beads files
 gh pr view <number> --json files | jq '.files[].path'
 
-# If only .agent/, CLAUDE.md, or .beads/ → merge immediately when green
-gh pr merge <number> --squash --delete-branch
+# If only .agent/, CLAUDE.md, or .beads/ → auto-merge when CI passes
+gh pr merge <number> --auto --squash --delete-branch
 ```
 
 ### The Golden Rule
@@ -505,8 +505,8 @@ Waiting for full CI (15-20 min) after each PR merge creates a bottleneck. With 1
 
 | Risk Level | PR Type | Strategy |
 |------------|---------|----------|
-| **P0.5 (Immediate)** | `.agent/`, `CLAUDE.md`, `.beads/*` | Merge immediately when green (priority) |
-| **Low** | Docs-only, README, comments | Batch merge up to 5 at once |
+| **P0.5 (Immediate)** | `.agent/`, `CLAUDE.md`, `.beads/*` | Auto-merge (`--auto --squash --delete-branch`) |
+| **Low** | Docs-only, README, comments | Auto-merge, batch up to 5 at once |
 | **Medium** | Single-file code changes, test fixes | Merge 2-3, wait for CI |
 | **High** | Multi-file refactors, CI changes, shared code | Serial merge, wait for CI |
 
@@ -530,29 +530,28 @@ Before merging any code PR, run local validation:
 **For P0.5 PRs (instruction/beads - highest priority):**
 
 ```bash
-# These establish shared context - merge immediately when CI passes
+# These establish shared context - auto-merge when CI passes
 # Do NOT batch these - each provides immediate value to all agents
 
 # 1. Identify instruction/beads PRs
 gh pr list --json number,title,files | jq '.[] | select(.files | all(.path | test("^(\\.agent/|CLAUDE\\.md|\\.beads/)"))'
 
-# 2. Merge each immediately when green (CI passes fast due to path filtering)
-gh pr merge <number> --squash --delete-branch
+# 2. Set auto-merge (merges automatically when CI passes)
+gh pr merge <number> --auto --squash --delete-branch
 
-# 3. Pull to get latest instructions before continuing other work
+# 3. Pull to get latest instructions after merge completes
 git pull origin main
 ```
 
 **For low-risk PRs (docs-only, excluding instructions):**
 
 ```bash
-# 1. Merge up to 5 docs-only PRs in quick succession
-gh pr merge 199 --squash
-gh pr merge 209 --squash
-gh pr merge 214 --squash
-gh pr merge 215 --squash
+# 1. Set auto-merge on docs-only PRs (no need to wait/poll)
+gh pr merge 199 --auto --squash --delete-branch
+gh pr merge 209 --auto --squash --delete-branch
+gh pr merge 214 --auto --squash --delete-branch
 
-# 2. Check main CI for the batch (don't use --watch)
+# 2. After merges complete, check main CI for the batch
 gh run list --branch main --limit 1
 
 # 3. If any failure, identify and revert the culprit
