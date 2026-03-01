@@ -39,7 +39,7 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ### Testing
 
-- **Full-height AI overlay screenshot test** ([#821](https://github.com/cartland/battery-butler/pull/821)): Added screenshot test for the AI overlay in IME-open (full-height) state. Uses parameter hoisting on `MainScreenShell` (`imeVisible: Boolean`) to allow previews to simulate keyboard-open without modifying production code paths.
+- **Full-height AI overlay screenshot test** ([#821](https://github.com/cartland/battery-butler/pull/821)): Added screenshot test for the full-height AI overlay variant. Uses parameter hoisting on `MainScreenShell` (`imeVisible: Boolean`) to allow previews to render both half-height and full-height states without modifying production code paths.
 
 ---
 
