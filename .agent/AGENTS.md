@@ -106,7 +106,7 @@ Keeping the build and tests healthy is a top priority. When you identify or fix 
 - **Git**:
   - **Always** use non-interactive flags for commands that might open an editor (e.g., `git cherry-pick --continue --no-edit`). This prevents the shell from getting stuck waiting for user input.
   - **Always** escape special characters in command arguments (e.g., `$` and `` ` ``) to prevent unintended shell expansion. Use single quotes or backslashes (`\`) for escaping.
-  - **Prefer** using `--body-file` with a temporary file for `gh pr create` when the description contains complex Markdown (backticks, quotes) to avoid shell parsing errors.
+  - **NEVER** use heredoc subshells or multi-line quoted strings in `gh` or `git commit` commands. These cause Claude Code to require manual approval even when the command prefix is in the allow list. Instead, write the content to `.tmp/` (gitignored local temp directory), then reference it with `--body-file` (for `gh pr create`) or `-F` (for `git commit`). Example: `echo "message" > .tmp/commit-msg.txt && git commit -F .tmp/commit-msg.txt`
 
 - **Pull Requests**:
   - **Always** ensure the Pull Request title and description accurately reflect the final changes. If the scope of a branch evolves, update the PR description before merging.
