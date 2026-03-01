@@ -2,6 +2,10 @@
 
 [![CI](https://github.com/cartland/battery-butler/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/cartland/battery-butler/actions/workflows/ci.yml?query=branch%3Amain)
 [![Release](https://github.com/cartland/battery-butler/actions/workflows/release-android.yml/badge.svg)](https://github.com/cartland/battery-butler/actions/workflows/release-android.yml)
+<!-- Server badge (uncomment when AWS infra is re-enabled):
+[![Server Deploy](https://github.com/cartland/battery-butler/actions/workflows/server-build.yml/badge.svg?branch=main)](https://github.com/cartland/battery-butler/actions/workflows/server-build.yml?query=branch%3Amain)
+-->
+> **Server**: AWS infrastructure is hibernated. Server workflows are disabled. See [`server/README.md`](server/README.md) for the re-enable checklist.
 
 **Battery Butler** is a Kotlin Multiplatform (KMP) application designed to help users track battery usage and replacements for their household devices. It leverages modern Android and KMP technologies including Compose Multiplatform, Room, and on-device AI integration.
 
