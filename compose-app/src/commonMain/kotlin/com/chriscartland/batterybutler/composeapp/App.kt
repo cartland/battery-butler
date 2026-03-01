@@ -176,7 +176,11 @@ fun App(
                     BackHandler(enabled = isAiExpanded) {
                         isAiExpanded = false
                     }
-                    BackHandler(enabled = detailBackStack.isNotEmpty() && !isAiExpanded) {
+                    val isOnLoginOnly = detailBackStack.size == 1 &&
+                        detailBackStack.lastOrNull() is Screen.Login
+                    BackHandler(
+                        enabled = detailBackStack.isNotEmpty() && !isAiExpanded && !isOnLoginOnly,
+                    ) {
                         detailBackStack.removeLastOrNull()
                     }
 

@@ -209,6 +209,36 @@ We are **not confident** that:
 
 ---
 
+## Back Gesture Contract
+
+Every screen has a defined back action. New screens must follow this contract.
+
+| Screen | Back Stack Layer | Back Action | UI Trigger |
+|--------|-----------------|-------------|------------|
+| **Login** | detail=[Login] | Exit app (system back) | None |
+| **Devices** (root tab) | tab=[Devices], detail=[] | Exit app (system back) | None |
+| **Types** | tab=[Devices, Types] | Pop tab stack | NavDisplay onBack |
+| **History** | tab=[Devices, History] | Pop tab stack | NavDisplay onBack |
+| **DeviceDetail** | detail=[..., DeviceDetail] | Pop detail stack | Back arrow |
+| **EventDetail** | detail=[..., EventDetail] | Pop detail stack | Back arrow |
+| **DeviceTypeDetail** | detail=[..., DeviceTypeDetail] | Pop detail stack | Back arrow |
+| **EditDevice** | detail=[..., EditDevice] | Pop detail stack (cancel) | Cancel button |
+| **EditBatteryEvent** | detail=[..., EditBatteryEvent] | Pop detail stack (cancel) | Cancel button |
+| **EditDeviceType** | detail=[..., EditDeviceType] | Pop detail stack (cancel) | Cancel button |
+| **AddDevice** | detail=[..., AddDevice] | Pop detail stack (cancel) | Cancel button |
+| **AddBatteryEvent** | detail=[..., AddBatteryEvent] | Pop detail stack (cancel) | Cancel button |
+| **AddDeviceType** | detail=[..., AddDeviceType] | Pop detail stack (cancel) | Cancel button |
+| **Settings** | detail=[..., Settings] | Pop detail stack | Back arrow |
+| **AiChat** | detail=[..., AiChat] | Pop detail stack | Back arrow |
+| **AI Overlay** (any tab) | isAiExpanded=true | Collapse overlay | BackHandler (priority) |
+
+**Rules:**
+- The detail stack `BackHandler` is disabled when Login is the only entry, so system back exits the app.
+- AI overlay collapse takes priority over detail stack pop.
+- Android 13+ predictive back is enabled via `android:enableOnBackInvokedCallback="true"` in the manifest.
+
+---
+
 ## Coverage Matrix — By Screen
 
 Every screen in `Screen.kt` mapped to its ViewModel test, screenshot tests, and instrumented tests.
