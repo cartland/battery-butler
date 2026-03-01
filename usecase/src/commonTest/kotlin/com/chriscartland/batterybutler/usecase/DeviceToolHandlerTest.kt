@@ -16,7 +16,8 @@ class DeviceToolHandlerTest {
     ): Pair<DeviceToolHandler, FakeDeviceRepository> {
         val findOrCreateType = FindOrCreateDeviceTypeUseCase(repo)
         val findOrCreateDevice = FindOrCreateDeviceUseCase(repo, findOrCreateType)
-        val handler = DeviceToolHandler(repo, findOrCreateType, findOrCreateDevice)
+        val updateLastReplaced = UpdateDeviceLastReplacedUseCase(repo)
+        val handler = DeviceToolHandler(repo, findOrCreateType, findOrCreateDevice, updateLastReplaced)
         return handler to repo
     }
 
@@ -45,9 +46,7 @@ class DeviceToolHandlerTest {
             val repo = FakeDeviceRepository()
             val existingType = TestDevices.createDeviceType(id = "type-123", name = "Thermostat")
             repo.setDeviceTypes(listOf(existingType))
-            val findOrCreateType = FindOrCreateDeviceTypeUseCase(repo)
-            val findOrCreateDevice = FindOrCreateDeviceUseCase(repo, findOrCreateType)
-            val handler = DeviceToolHandler(repo, findOrCreateType, findOrCreateDevice)
+            val (handler, _) = createHandler(repo)
 
             val result = handler.execute(
                 AiToolNames.ADD_DEVICE,
@@ -173,9 +172,7 @@ class DeviceToolHandlerTest {
                 batteryLastReplaced = Instant.fromEpochMilliseconds(0),
             )
             repo.setDevices(listOf(device))
-            val findOrCreateType = FindOrCreateDeviceTypeUseCase(repo)
-            val findOrCreateDevice = FindOrCreateDeviceUseCase(repo, findOrCreateType)
-            val handler = DeviceToolHandler(repo, findOrCreateType, findOrCreateDevice)
+            val (handler, _) = createHandler(repo)
 
             val result = handler.execute(
                 AiToolNames.RECORD_BATTERY_REPLACEMENT,
@@ -218,9 +215,7 @@ class DeviceToolHandlerTest {
                 batteryLastReplaced = Instant.fromEpochMilliseconds(0),
             )
             repo.setDevices(listOf(device))
-            val findOrCreateType = FindOrCreateDeviceTypeUseCase(repo)
-            val findOrCreateDevice = FindOrCreateDeviceUseCase(repo, findOrCreateType)
-            val handler = DeviceToolHandler(repo, findOrCreateType, findOrCreateDevice)
+            val (handler, _) = createHandler(repo)
 
             handler.execute(
                 AiToolNames.RECORD_BATTERY_REPLACEMENT,
@@ -242,9 +237,7 @@ class DeviceToolHandlerTest {
                 batteryLastReplaced = recentInstant,
             )
             repo.setDevices(listOf(device))
-            val findOrCreateType = FindOrCreateDeviceTypeUseCase(repo)
-            val findOrCreateDevice = FindOrCreateDeviceUseCase(repo, findOrCreateType)
-            val handler = DeviceToolHandler(repo, findOrCreateType, findOrCreateDevice)
+            val (handler, _) = createHandler(repo)
 
             handler.execute(
                 AiToolNames.RECORD_BATTERY_REPLACEMENT,
@@ -317,6 +310,459 @@ class DeviceToolHandlerTest {
             assertEquals("Smoke Alarm", repo.deviceTypes[0].name)
             assertEquals(repo.deviceTypes[0].id, repo.devices[0].typeId)
             assertEquals(1, repo.events.size)
+        }
+
+    // endregion
+
+    // region updateDevice
+
+    @Test
+    fun `updateDevice updates name and location`() =
+        runTest {
+            val repo = FakeDeviceRepository()
+            val device = TestDevices.createDevice(id = "dev-1", name = "Old Name", location = "Kitchen")
+            repo.setDevices(listOf(device))
+            val (handler, _) = createHandler(repo)
+
+            val result = handler.execute(
+                AiToolNames.UPDATE_DEVICE,
+                mapOf(
+                    AiToolParams.ID to "dev-1",
+                    AiToolParams.NEW_NAME to "New Name",
+                    AiToolParams.NEW_LOCATION to "Living Room",
+                ),
+            )
+
+            assertTrue(result.startsWith("Success:"))
+            assertTrue(result.contains("New Name"))
+            assertEquals("New Name", repo.devices[0].name)
+            assertEquals("Living Room", repo.devices[0].location)
+        }
+
+    @Test
+    fun `updateDevice with new type creates type and updates device`() =
+        runTest {
+            val repo = FakeDeviceRepository()
+            val device = TestDevices.createDevice(id = "dev-1", name = "Detector")
+            repo.setDevices(listOf(device))
+            val (handler, _) = createHandler(repo)
+
+            val result = handler.execute(
+                AiToolNames.UPDATE_DEVICE,
+                mapOf(AiToolParams.ID to "dev-1", AiToolParams.NEW_TYPE to "Smoke Alarm"),
+            )
+
+            assertTrue(result.startsWith("Success:"))
+            assertEquals(1, repo.deviceTypes.size)
+            assertEquals("Smoke Alarm", repo.deviceTypes[0].name)
+            assertEquals(repo.deviceTypes[0].id, repo.devices[0].typeId)
+        }
+
+    @Test
+    fun `updateDevice missing id returns error`() =
+        runTest {
+            val (handler, _) = createHandler()
+
+            val result = handler.execute(AiToolNames.UPDATE_DEVICE, emptyMap())
+
+            assertEquals("Error: Missing id", result)
+        }
+
+    @Test
+    fun `updateDevice nonexistent id returns error`() =
+        runTest {
+            val (handler, _) = createHandler()
+
+            val result = handler.execute(
+                AiToolNames.UPDATE_DEVICE,
+                mapOf(AiToolParams.ID to "nonexistent"),
+            )
+
+            assertEquals("Error: Device not found with id 'nonexistent'", result)
+        }
+
+    @Test
+    fun `updateDevice preserves unchanged fields`() =
+        runTest {
+            val repo = FakeDeviceRepository()
+            val device = TestDevices.createDevice(
+                id = "dev-1",
+                name = "Original",
+                location = "Kitchen",
+                typeId = "type-1",
+            )
+            repo.setDevices(listOf(device))
+            val (handler, _) = createHandler(repo)
+
+            handler.execute(
+                AiToolNames.UPDATE_DEVICE,
+                mapOf(AiToolParams.ID to "dev-1", AiToolParams.NEW_NAME to "Renamed"),
+            )
+
+            assertEquals("Renamed", repo.devices[0].name)
+            assertEquals("Kitchen", repo.devices[0].location)
+            assertEquals("type-1", repo.devices[0].typeId)
+        }
+
+    // endregion
+
+    // region deleteDevice
+
+    @Test
+    fun `deleteDevice removes device and its events`() =
+        runTest {
+            val repo = FakeDeviceRepository()
+            val device = TestDevices.createDevice(id = "dev-1", name = "Alarm")
+            val event1 = TestDevices.createBatteryEvent(id = "evt-1", deviceId = "dev-1")
+            val event2 = TestDevices.createBatteryEvent(id = "evt-2", deviceId = "dev-1")
+            repo.setDevices(listOf(device))
+            repo.setEvents(listOf(event1, event2))
+            val (handler, _) = createHandler(repo)
+
+            val result = handler.execute(
+                AiToolNames.DELETE_DEVICE,
+                mapOf(AiToolParams.ID to "dev-1"),
+            )
+
+            assertTrue(result.startsWith("Success:"))
+            assertTrue(result.contains("Alarm"))
+            assertTrue(result.contains("2 associated event(s)"))
+            assertTrue(repo.devices.isEmpty())
+            assertTrue(repo.events.isEmpty())
+        }
+
+    @Test
+    fun `deleteDevice missing id returns error`() =
+        runTest {
+            val (handler, _) = createHandler()
+
+            val result = handler.execute(AiToolNames.DELETE_DEVICE, emptyMap())
+
+            assertEquals("Error: Missing id", result)
+        }
+
+    @Test
+    fun `deleteDevice nonexistent id returns error`() =
+        runTest {
+            val (handler, _) = createHandler()
+
+            val result = handler.execute(
+                AiToolNames.DELETE_DEVICE,
+                mapOf(AiToolParams.ID to "nonexistent"),
+            )
+
+            assertEquals("Error: Device not found with id 'nonexistent'", result)
+        }
+
+    // endregion
+
+    // region updateDeviceType
+
+    @Test
+    fun `updateDeviceType updates name and battery info`() =
+        runTest {
+            val repo = FakeDeviceRepository()
+            val type = TestDevices.createDeviceType(
+                id = "type-1",
+                name = "Old Type",
+                batteryType = "AA",
+                batteryQuantity = 2,
+            )
+            repo.setDeviceTypes(listOf(type))
+            val (handler, _) = createHandler(repo)
+
+            val result = handler.execute(
+                AiToolNames.UPDATE_DEVICE_TYPE,
+                mapOf(
+                    AiToolParams.ID to "type-1",
+                    AiToolParams.NEW_NAME to "New Type",
+                    AiToolParams.NEW_BATTERY_TYPE to "AAA",
+                    AiToolParams.NEW_BATTERY_QUANTITY to 4,
+                ),
+            )
+
+            assertTrue(result.startsWith("Success:"))
+            assertEquals("New Type", repo.deviceTypes[0].name)
+            assertEquals("AAA", repo.deviceTypes[0].batteryType)
+            assertEquals(4, repo.deviceTypes[0].batteryQuantity)
+        }
+
+    @Test
+    fun `updateDeviceType parses string battery quantity`() =
+        runTest {
+            val repo = FakeDeviceRepository()
+            val type = TestDevices.createDeviceType(id = "type-1", name = "Test", batteryQuantity = 1)
+            repo.setDeviceTypes(listOf(type))
+            val (handler, _) = createHandler(repo)
+
+            handler.execute(
+                AiToolNames.UPDATE_DEVICE_TYPE,
+                mapOf(AiToolParams.ID to "type-1", AiToolParams.NEW_BATTERY_QUANTITY to "3"),
+            )
+
+            assertEquals(3, repo.deviceTypes[0].batteryQuantity)
+        }
+
+    @Test
+    fun `updateDeviceType missing id returns error`() =
+        runTest {
+            val (handler, _) = createHandler()
+
+            val result = handler.execute(AiToolNames.UPDATE_DEVICE_TYPE, emptyMap())
+
+            assertEquals("Error: Missing id", result)
+        }
+
+    @Test
+    fun `updateDeviceType nonexistent id returns error`() =
+        runTest {
+            val (handler, _) = createHandler()
+
+            val result = handler.execute(
+                AiToolNames.UPDATE_DEVICE_TYPE,
+                mapOf(AiToolParams.ID to "nonexistent"),
+            )
+
+            assertEquals("Error: Device type not found with id 'nonexistent'", result)
+        }
+
+    // endregion
+
+    // region deleteDeviceType
+
+    @Test
+    fun `deleteDeviceType succeeds when no devices use it`() =
+        runTest {
+            val repo = FakeDeviceRepository()
+            val type = TestDevices.createDeviceType(id = "type-1", name = "Unused Type")
+            repo.setDeviceTypes(listOf(type))
+            val (handler, _) = createHandler(repo)
+
+            val result = handler.execute(
+                AiToolNames.DELETE_DEVICE_TYPE,
+                mapOf(AiToolParams.ID to "type-1"),
+            )
+
+            assertTrue(result.startsWith("Success:"))
+            assertTrue(result.contains("Unused Type"))
+            assertTrue(repo.deviceTypes.isEmpty())
+        }
+
+    @Test
+    fun `deleteDeviceType fails when devices still use it`() =
+        runTest {
+            val repo = FakeDeviceRepository()
+            val type = TestDevices.createDeviceType(id = "type-1", name = "Used Type")
+            val device = TestDevices.createDevice(id = "dev-1", name = "Alarm", typeId = "type-1")
+            repo.setDeviceTypes(listOf(type))
+            repo.setDevices(listOf(device))
+            val (handler, _) = createHandler(repo)
+
+            val result = handler.execute(
+                AiToolNames.DELETE_DEVICE_TYPE,
+                mapOf(AiToolParams.ID to "type-1"),
+            )
+
+            assertTrue(result.startsWith("Error:"))
+            assertTrue(result.contains("1 device(s) still use it"))
+            // Type should not be deleted
+            assertEquals(1, repo.deviceTypes.size)
+        }
+
+    @Test
+    fun `deleteDeviceType missing id returns error`() =
+        runTest {
+            val (handler, _) = createHandler()
+
+            val result = handler.execute(AiToolNames.DELETE_DEVICE_TYPE, emptyMap())
+
+            assertEquals("Error: Missing id", result)
+        }
+
+    @Test
+    fun `deleteDeviceType nonexistent id returns error`() =
+        runTest {
+            val (handler, _) = createHandler()
+
+            val result = handler.execute(
+                AiToolNames.DELETE_DEVICE_TYPE,
+                mapOf(AiToolParams.ID to "nonexistent"),
+            )
+
+            assertEquals("Error: Device type not found with id 'nonexistent'", result)
+        }
+
+    // endregion
+
+    // region updateBatteryEvent
+
+    @Test
+    fun `updateBatteryEvent updates date and notes`() =
+        runTest {
+            val repo = FakeDeviceRepository()
+            val device = TestDevices.createDevice(id = "dev-1", name = "Alarm")
+            val event = TestDevices.createBatteryEvent(
+                id = "evt-1",
+                deviceId = "dev-1",
+                date = Instant.parse("2024-01-01T00:00:00Z"),
+            )
+            repo.setDevices(listOf(device))
+            repo.setEvents(listOf(event))
+            val (handler, _) = createHandler(repo)
+
+            val result = handler.execute(
+                AiToolNames.UPDATE_BATTERY_EVENT,
+                mapOf(
+                    AiToolParams.ID to "evt-1",
+                    AiToolParams.NEW_DATE to "2024-06-15",
+                    AiToolParams.NOTES to "Replaced with Duracell",
+                ),
+            )
+
+            assertTrue(result.startsWith("Success:"))
+            assertTrue(result.contains("2024-06-15"))
+            assertTrue(result.contains("Replaced with Duracell"))
+            assertEquals("Replaced with Duracell", repo.events[0].notes)
+        }
+
+    @Test
+    fun `updateBatteryEvent recalculates device lastReplaced on date change`() =
+        runTest {
+            val repo = FakeDeviceRepository()
+            val device = TestDevices.createDevice(
+                id = "dev-1",
+                name = "Alarm",
+                batteryLastReplaced = Instant.parse("2024-01-01T00:00:00Z"),
+            )
+            val event = TestDevices.createBatteryEvent(
+                id = "evt-1",
+                deviceId = "dev-1",
+                date = Instant.parse("2024-01-01T00:00:00Z"),
+            )
+            repo.setDevices(listOf(device))
+            repo.setEvents(listOf(event))
+            val (handler, _) = createHandler(repo)
+
+            handler.execute(
+                AiToolNames.UPDATE_BATTERY_EVENT,
+                mapOf(AiToolParams.ID to "evt-1", AiToolParams.NEW_DATE to "2024-06-15"),
+            )
+
+            // Device lastReplaced should be recalculated to the new event date
+            assertTrue(repo.devices[0].batteryLastReplaced > Instant.parse("2024-01-01T00:00:00Z"))
+        }
+
+    @Test
+    fun `updateBatteryEvent missing id returns error`() =
+        runTest {
+            val (handler, _) = createHandler()
+
+            val result = handler.execute(AiToolNames.UPDATE_BATTERY_EVENT, emptyMap())
+
+            assertEquals("Error: Missing id", result)
+        }
+
+    @Test
+    fun `updateBatteryEvent nonexistent id returns error`() =
+        runTest {
+            val (handler, _) = createHandler()
+
+            val result = handler.execute(
+                AiToolNames.UPDATE_BATTERY_EVENT,
+                mapOf(AiToolParams.ID to "nonexistent"),
+            )
+
+            assertEquals("Error: Battery event not found with id 'nonexistent'", result)
+        }
+
+    // endregion
+
+    // region deleteBatteryEvent
+
+    @Test
+    fun `deleteBatteryEvent removes event and recalculates lastReplaced`() =
+        runTest {
+            val repo = FakeDeviceRepository()
+            val device = TestDevices.createDevice(
+                id = "dev-1",
+                name = "Alarm",
+                batteryLastReplaced = Instant.parse("2024-06-15T00:00:00Z"),
+            )
+            val event1 = TestDevices.createBatteryEvent(
+                id = "evt-1",
+                deviceId = "dev-1",
+                date = Instant.parse("2024-01-01T00:00:00Z"),
+            )
+            val event2 = TestDevices.createBatteryEvent(
+                id = "evt-2",
+                deviceId = "dev-1",
+                date = Instant.parse("2024-06-15T00:00:00Z"),
+            )
+            repo.setDevices(listOf(device))
+            repo.setEvents(listOf(event1, event2))
+            val (handler, _) = createHandler(repo)
+
+            val result = handler.execute(
+                AiToolNames.DELETE_BATTERY_EVENT,
+                mapOf(AiToolParams.ID to "evt-2"),
+            )
+
+            assertTrue(result.startsWith("Success:"))
+            assertTrue(result.contains("Alarm"))
+            assertEquals(1, repo.events.size)
+            assertEquals("evt-1", repo.events[0].id)
+            // lastReplaced should be recalculated to the remaining event's date
+            assertEquals(Instant.parse("2024-01-01T00:00:00Z"), repo.devices[0].batteryLastReplaced)
+        }
+
+    @Test
+    fun `deleteBatteryEvent resets lastReplaced when no events remain`() =
+        runTest {
+            val repo = FakeDeviceRepository()
+            val device = TestDevices.createDevice(
+                id = "dev-1",
+                name = "Alarm",
+                batteryLastReplaced = Instant.parse("2024-06-15T00:00:00Z"),
+            )
+            val event = TestDevices.createBatteryEvent(
+                id = "evt-1",
+                deviceId = "dev-1",
+                date = Instant.parse("2024-06-15T00:00:00Z"),
+            )
+            repo.setDevices(listOf(device))
+            repo.setEvents(listOf(event))
+            val (handler, _) = createHandler(repo)
+
+            handler.execute(
+                AiToolNames.DELETE_BATTERY_EVENT,
+                mapOf(AiToolParams.ID to "evt-1"),
+            )
+
+            assertTrue(repo.events.isEmpty())
+            assertEquals(Instant.fromEpochMilliseconds(0), repo.devices[0].batteryLastReplaced)
+        }
+
+    @Test
+    fun `deleteBatteryEvent missing id returns error`() =
+        runTest {
+            val (handler, _) = createHandler()
+
+            val result = handler.execute(AiToolNames.DELETE_BATTERY_EVENT, emptyMap())
+
+            assertEquals("Error: Missing id", result)
+        }
+
+    @Test
+    fun `deleteBatteryEvent nonexistent id returns error`() =
+        runTest {
+            val (handler, _) = createHandler()
+
+            val result = handler.execute(
+                AiToolNames.DELETE_BATTERY_EVENT,
+                mapOf(AiToolParams.ID to "nonexistent"),
+            )
+
+            assertEquals("Error: Battery event not found with id 'nonexistent'", result)
         }
 
     // endregion

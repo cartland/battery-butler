@@ -45,9 +45,17 @@ class OnDeviceAiEngine(
                     Available tools:
                     - addDevice(name: String, type: String, location: String)
                     - addDeviceType(name: String, icon: String, batteryType: String)
+                    - recordBatteryReplacement(deviceName: String, date: String, deviceType: String, batteryType: String, location: String)
+                    - updateDevice(id: String, newName: String, newLocation: String, newType: String)
+                    - deleteDevice(id: String)
+                    - updateDeviceType(id: String, newName: String, newBatteryType: String, newBatteryQuantity: String, newIcon: String)
+                    - deleteDeviceType(id: String)
+                    - updateBatteryEvent(id: String, newDate: String, notes: String)
+                    - deleteBatteryEvent(id: String)
 
                     To call a tool, ONLY output JSON: { "tool": "toolName", "args": { ... } }
                     If no tool is needed, respond normally.
+                    BEFORE deleting anything, tell the user what you will delete and ask for confirmation.
                     """.trimIndent()
                 val fullPrompt = "$systemPrompt\n\nUser: $prompt"
 

@@ -78,13 +78,98 @@ class AndroidAiEngine(
         ),
     )
 
+    private val updateDeviceTool = defineFunction(
+        name = AiToolNames.UPDATE_DEVICE,
+        description = "Update an existing device's properties",
+        parameters = listOf(
+            Schema.str(AiToolParams.ID, "Device ID from the inventory context"),
+            Schema.str(AiToolParams.NEW_NAME, "New name for the device (optional)"),
+            Schema.str(AiToolParams.NEW_LOCATION, "New location (optional)"),
+            Schema.str(AiToolParams.NEW_TYPE, "New device type name (optional)"),
+        ),
+    )
+
+    private val deleteDeviceTool = defineFunction(
+        name = AiToolNames.DELETE_DEVICE,
+        description = "Delete a device and all its battery events",
+        parameters = listOf(
+            Schema.str(AiToolParams.ID, "Device ID from the inventory context"),
+        ),
+    )
+
+    private val updateDeviceTypeTool = defineFunction(
+        name = AiToolNames.UPDATE_DEVICE_TYPE,
+        description = "Update an existing device type's properties",
+        parameters = listOf(
+            Schema.str(AiToolParams.ID, "Device type ID from the inventory context"),
+            Schema.str(AiToolParams.NEW_NAME, "New name for the device type (optional)"),
+            Schema.str(AiToolParams.NEW_BATTERY_TYPE, "New battery type (optional)"),
+            Schema.int(AiToolParams.NEW_BATTERY_QUANTITY, "New battery quantity (optional)"),
+            Schema.str(AiToolParams.NEW_ICON, "New icon (optional)"),
+        ),
+    )
+
+    private val deleteDeviceTypeTool = defineFunction(
+        name = AiToolNames.DELETE_DEVICE_TYPE,
+        description = "Delete a device type. Fails if devices still use it.",
+        parameters = listOf(
+            Schema.str(AiToolParams.ID, "Device type ID from the inventory context"),
+        ),
+    )
+
+    private val updateBatteryEventTool = defineFunction(
+        name = AiToolNames.UPDATE_BATTERY_EVENT,
+        description = "Update a battery replacement event",
+        parameters = listOf(
+            Schema.str(AiToolParams.ID, "Battery event ID from the inventory context"),
+            Schema.str(AiToolParams.NEW_DATE, "New date (YYYY-MM-DD) (optional)"),
+            Schema.str(AiToolParams.NOTES, "Notes for the event (optional)"),
+        ),
+    )
+
+    private val deleteBatteryEventTool = defineFunction(
+        name = AiToolNames.DELETE_BATTERY_EVENT,
+        description = "Delete a battery replacement event",
+        parameters = listOf(
+            Schema.str(AiToolParams.ID, "Battery event ID from the inventory context"),
+        ),
+    )
+
     private val generativeModel = GenerativeModel(
         modelName = AiConstants.GEMINI_MODEL_NAME,
         apiKey = apiKey,
-        tools = listOf(Tool(listOf(addDeviceTool, addDeviceTypeTool, recordBatteryReplacementTool))),
+        tools = listOf(
+            Tool(
+                listOf(
+                    addDeviceTool,
+                    addDeviceTypeTool,
+                    recordBatteryReplacementTool,
+                    updateDeviceTool,
+                    deleteDeviceTool,
+                    updateDeviceTypeTool,
+                    deleteDeviceTypeTool,
+                    updateBatteryEventTool,
+                    deleteBatteryEventTool,
+                ),
+            ),
+        ),
         systemInstruction = content {
             text(
-                "You are Battery Butler, a helpful home inventory assistant. You have access to the user's device inventory and battery history provided in the context of each message. You can add devices and device types. If the user provides a date for a device, use recordBatteryReplacement to log it. When processing bulk data (like tables or CSVs), ignore header rows and only process lines containing valid data.",
+                """
+                You are Battery Butler, a helpful home inventory assistant. You have access to the user's device inventory and battery history provided in the context of each message.
+
+                Capabilities:
+                - ADD devices, device types, and battery replacement events.
+                - UPDATE existing devices, device types, and battery events by their ID from the inventory context.
+                - DELETE devices, device types, and battery events by their ID.
+
+                Rules:
+                - Users refer to items by name or description. Match their description to the correct item ID from the inventory context, then use that ID in tool calls.
+                - BEFORE deleting anything, tell the user exactly what you will delete and ask for their explicit confirmation. Only call the delete tool after the user says yes.
+                - When updating, only change the fields the user asked to change. Preserve all other fields.
+                - If the user provides a date for a device, use recordBatteryReplacement to log it.
+                - When processing bulk data (like tables or CSVs), ignore header rows and only process lines containing valid data.
+                """.trimIndent(),
             )
         },
     )
