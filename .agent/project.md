@@ -146,6 +146,7 @@ The AI chat is an overlay on top of the main tab UI, not a separate tab/screen. 
 - **AI messages** include an `[Active tab: <name>]` context prefix so the AI knows which screen the user is viewing.
 - **Tab transitions** are directional: `tabTransitionForward` is set before each backstack mutation based on tab index. `NavDisplay.transitionSpec` reads it to slide left or right.
 - **`MainTab.AI`** enum value remains in the codebase but is dead code — the AI is now an overlay, not a nav tab.
+- **Predictive back (Android 13+)**: Opted in via `android:enableOnBackInvokedCallback="true"` in `AndroidManifest.xml`. The detail stack `BackHandler` is disabled when Login is the only entry (prevents revealing unauthenticated tabs). Full back gesture contract documented in `docs/TESTING.md`.
 
 
 ## Common Commands
