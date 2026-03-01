@@ -1,6 +1,6 @@
 # Screenshot Gallery
 
-Generated on Sun Mar  1 09:18:40 PST 2026
+Generated on Sun Mar  1 11:22:22 PST 2026
 
 ## Table of Contents
 - [AddDeviceScreenshotTestKt](#adddevicescreenshottestkt)
@@ -50,6 +50,12 @@ Generated on Sun Mar  1 09:18:40 PST 2026
 
 ### AiOverlayExpandedPreviewTest_Light_67c33cac_0
 <img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/AiOverlayScreenshotTestKt/AiOverlayExpandedPreviewTest_Light_67c33cac_0.png" width="300" />
+
+### AiOverlayFullHeightPreviewTest_Dark_2c2e8f1f_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/AiOverlayScreenshotTestKt/AiOverlayFullHeightPreviewTest_Dark_2c2e8f1f_0.png" width="300" />
+
+### AiOverlayFullHeightPreviewTest_Light_67c33cac_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/AiOverlayScreenshotTestKt/AiOverlayFullHeightPreviewTest_Light_67c33cac_0.png" width="300" />
 
 ## ComponentsScreenshotTestKt
 

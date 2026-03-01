@@ -8,6 +8,7 @@ import com.chriscartland.batterybutler.presentationfeature.main.AiBarCollapsedDe
 import com.chriscartland.batterybutler.presentationfeature.main.AiBarCollapsedHistoryPreview
 import com.chriscartland.batterybutler.presentationfeature.main.AiBarCollapsedTypesPreview
 import com.chriscartland.batterybutler.presentationfeature.main.AiOverlayExpandedPreview
+import com.chriscartland.batterybutler.presentationfeature.main.AiOverlayFullHeightPreview
 import kotlin.time.ExperimentalTime
 
 @PreviewTest
@@ -68,5 +69,20 @@ fun AiBarCollapsedHistoryPreviewTest() {
 fun AiOverlayExpandedPreviewTest() {
     ScreenshotTestTheme {
         AiOverlayExpandedPreview()
+    }
+}
+
+@PreviewTest
+@Preview(device = "id:pixel_5", showBackground = true, name = "Light")
+@Preview(
+    device = "id:pixel_5",
+    showBackground = true,
+    name = "Dark",
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES,
+)
+@Composable
+fun AiOverlayFullHeightPreviewTest() {
+    ScreenshotTestTheme {
+        AiOverlayFullHeightPreview()
     }
 }

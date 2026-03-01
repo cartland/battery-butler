@@ -133,6 +133,7 @@ fun MainScreenShell(
     onSendAiMessage: (String) -> Unit,
     onClearAiChat: () -> Unit,
     modifier: Modifier = Modifier,
+    imeVisible: Boolean = WindowInsets.ime.getBottom(LocalDensity.current) > 0,
     content: @Composable (Modifier, PaddingValues) -> Unit,
 ) {
     val isAiAvailable = LocalAiAvailable.current
@@ -261,7 +262,6 @@ fun MainScreenShell(
             Box(modifier = Modifier.fillMaxSize()) {
                 content(contentModifier, bottomContentPadding)
 
-                val imeVisible = WindowInsets.ime.getBottom(density) > 0
                 val heightFraction by animateFloatAsState(
                     if (imeVisible) 1f else 0.5f,
                 )
@@ -365,6 +365,7 @@ fun DevicesScreen(
     onSendAiMessage: (String) -> Unit,
     onClearAiChat: () -> Unit,
     nowInstant: Instant = Clock.System.now(),
+    imeVisible: Boolean = WindowInsets.ime.getBottom(LocalDensity.current) > 0,
 ) {
     MainScreenShell(
         currentTab = MainTab.Devices,
@@ -376,6 +377,7 @@ fun DevicesScreen(
         onAiExpandedChange = onAiExpandedChange,
         onSendAiMessage = onSendAiMessage,
         onClearAiChat = onClearAiChat,
+        imeVisible = imeVisible,
     ) { contentModifier, bottomContentPadding ->
         HomeScreenContent(
             state = state,
@@ -703,6 +705,48 @@ fun AiOverlayExpandedPreview() {
                 onSendAiMessage = {},
                 onClearAiChat = {},
                 nowInstant = now,
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun AiOverlayFullHeightPreview() {
+    BatteryButlerTheme {
+        CompositionLocalProvider(LocalAiAvailable provides true) {
+            val now = Instant.parse("2026-01-18T17:00:00Z")
+            val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
+            val device = Device("dev1", "Kitchen Smoke", "type1", now, now, "Kitchen")
+            val state = HomeUiState(
+                groupedDevices = mapOf("All" to listOf(device)),
+                deviceTypes = mapOf("type1" to type),
+            )
+            DevicesScreen(
+                state = state,
+                onTabSelected = {},
+                onSettingsClick = {},
+                onAddDeviceClick = {},
+                onDeviceClick = {},
+                onGroupOptionToggle = {},
+                onGroupOptionSelected = {},
+                onSortOptionToggle = {},
+                onSortOptionSelected = {},
+                aiMessages = listOf(
+                    ChatUiMessage("1", "Add a smoke detector in the kitchen", isUser = true),
+                    ChatUiMessage(
+                        "2",
+                        "I've added a smoke detector device in the kitchen for you.",
+                        isUser = false,
+                    ),
+                ),
+                isAiProcessing = false,
+                isAiExpanded = true,
+                onAiExpandedChange = {},
+                onSendAiMessage = {},
+                onClearAiChat = {},
+                nowInstant = now,
+                imeVisible = true,
             )
         }
     }
