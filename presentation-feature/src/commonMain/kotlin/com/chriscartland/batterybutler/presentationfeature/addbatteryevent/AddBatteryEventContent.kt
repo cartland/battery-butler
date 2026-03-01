@@ -27,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -57,7 +58,7 @@ fun AddBatteryEventContent(
     devices: List<Device>,
     aiMessages: List<BatchOperationResult>,
     isAiBatchImportEnabled: Boolean,
-    onAddEvent: (String, Instant) -> Unit, // deviceId, date
+    onAddEvent: (String, Instant, String?, String?) -> Unit, // deviceId, date, batteryType, notes
     onBatchAdd: (String) -> Unit,
     onAddDeviceClick: () -> Unit,
     onBack: () -> Unit,
@@ -70,6 +71,9 @@ fun AddBatteryEventContent(
 ) {
     var aiInput by remember { mutableStateOf("") }
     var deviceIdInput by remember { mutableStateOf("") }
+    var showMoreDetails by remember { mutableStateOf(false) }
+    var batteryTypeInput by remember { mutableStateOf("") }
+    var notesInput by remember { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
 
     Scaffold(
@@ -211,6 +215,37 @@ fun AddBatteryEventContent(
                 keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
             )
 
+            // Expandable "More Details" section
+            TextButton(
+                onClick = { showMoreDetails = !showMoreDetails },
+            ) {
+                Text(
+                    if (showMoreDetails) "Hide Details" else "More Details",
+                    style = MaterialTheme.typography.labelLarge,
+                )
+            }
+
+            if (showMoreDetails) {
+                OutlinedTextField(
+                    value = batteryTypeInput,
+                    onValueChange = { batteryTypeInput = it },
+                    label = { Text("Battery Type (optional)") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                )
+
+                OutlinedTextField(
+                    value = notesInput,
+                    onValueChange = { notesInput = it },
+                    label = { Text("Notes (optional)") },
+                    modifier = Modifier.fillMaxWidth(),
+                    minLines = 2,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
+                )
+            }
+
             Button(
                 onClick = {
                     if (deviceIdInput.isNotBlank()) {
@@ -223,7 +258,12 @@ fun AddBatteryEventContent(
                             Clock.System.now() // Fallback if date parsing fails
                         }
 
-                        onAddEvent(deviceIdInput, date)
+                        onAddEvent(
+                            deviceIdInput,
+                            date,
+                            batteryTypeInput.takeIf { it.isNotBlank() },
+                            notesInput.takeIf { it.isNotBlank() },
+                        )
                     }
                 },
                 enabled = deviceIdInput.isNotBlank(),
@@ -246,7 +286,7 @@ fun AddBatteryEventContentPreview() {
             devices = listOf(device),
             aiMessages = emptyList(),
             isAiBatchImportEnabled = true,
-            onAddEvent = { _, _ -> },
+            onAddEvent = { _, _, _, _ -> },
             onBatchAdd = {},
             onAddDeviceClick = {},
             onBack = {},

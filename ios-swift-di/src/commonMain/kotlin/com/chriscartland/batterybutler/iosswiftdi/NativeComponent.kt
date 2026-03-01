@@ -35,9 +35,11 @@ import com.chriscartland.batterybutler.viewmodel.adddevice.AddDeviceViewModel
 import com.chriscartland.batterybutler.viewmodel.adddevicetype.AddDeviceTypeViewModel
 import com.chriscartland.batterybutler.viewmodel.aichat.AiChatViewModel
 import com.chriscartland.batterybutler.viewmodel.devicedetail.DeviceDetailViewModelFactory
+import com.chriscartland.batterybutler.viewmodel.devicetypes.DeviceTypeDetailViewModelFactory
 import com.chriscartland.batterybutler.viewmodel.devicetypes.DeviceTypeListViewModel
 import com.chriscartland.batterybutler.viewmodel.devicetypes.EditDeviceTypeViewModelFactory
 import com.chriscartland.batterybutler.viewmodel.editdevice.EditDeviceViewModelFactory
+import com.chriscartland.batterybutler.viewmodel.eventdetail.EditBatteryEventViewModelFactory
 import com.chriscartland.batterybutler.viewmodel.eventdetail.EventDetailViewModelFactory
 import com.chriscartland.batterybutler.viewmodel.history.HistoryListViewModel
 import com.chriscartland.batterybutler.viewmodel.home.HomeViewModel
@@ -68,8 +70,10 @@ abstract class NativeComponent(
     abstract val deviceTypeListViewModel: DeviceTypeListViewModel
     abstract val deviceDetailViewModelFactory: DeviceDetailViewModelFactory
     abstract val addDeviceTypeViewModel: AddDeviceTypeViewModel
+    abstract val deviceTypeDetailViewModelFactory: DeviceTypeDetailViewModelFactory
     abstract val editDeviceTypeViewModelFactory: EditDeviceTypeViewModelFactory
     abstract val editDeviceViewModelFactory: EditDeviceViewModelFactory
+    abstract val editBatteryEventViewModelFactory: EditBatteryEventViewModelFactory
     abstract val aiChatViewModel: AiChatViewModel
     abstract val addBatteryEventViewModel: AddBatteryEventViewModel
     abstract val eventDetailViewModelFactory: EventDetailViewModelFactory

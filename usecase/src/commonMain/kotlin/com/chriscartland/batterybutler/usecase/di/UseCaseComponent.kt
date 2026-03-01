@@ -15,6 +15,7 @@ import com.chriscartland.batterybutler.usecase.ExportDataUseCase
 import com.chriscartland.batterybutler.usecase.GetAppVersionUseCase
 import com.chriscartland.batterybutler.usecase.GetBatteryEventsUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceDetailUseCase
+import com.chriscartland.batterybutler.usecase.GetDeviceTypeDetailUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.GetDevicesUseCase
 import com.chriscartland.batterybutler.usecase.GetEventDetailUseCase
@@ -46,6 +47,7 @@ abstract class UseCaseComponent {
     abstract val updateDeviceTypeUseCase: UpdateDeviceTypeUseCase
     abstract val deleteDeviceTypeUseCase: DeleteDeviceTypeUseCase
     abstract val getDeviceTypesUseCase: GetDeviceTypesUseCase
+    abstract val getDeviceTypeDetailUseCase: GetDeviceTypeDetailUseCase
 
     // Battery event operations
     abstract val addBatteryEventUseCase: AddBatteryEventUseCase

@@ -3,27 +3,22 @@ package com.chriscartland.batterybutler.viewmodel.eventdetail
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chriscartland.batterybutler.presentationmodel.eventdetail.EventDetailUiState
-import com.chriscartland.batterybutler.usecase.DeleteBatteryEventUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceDetailUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.GetEventDetailUseCase
-import com.chriscartland.batterybutler.usecase.UpdateBatteryEventUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
 import com.chriscartland.batterybutler.viewmodel.safeStateIn
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.flowOf
 import me.tatarka.inject.annotations.Inject
-import kotlin.time.Instant
 
 @Inject
 class EventDetailViewModelFactory(
     private val getEventDetailUseCase: GetEventDetailUseCase,
     private val getDeviceDetailUseCase: GetDeviceDetailUseCase,
     private val getDeviceTypesUseCase: GetDeviceTypesUseCase,
-    private val updateBatteryEventUseCase: UpdateBatteryEventUseCase,
-    private val deleteBatteryEventUseCase: DeleteBatteryEventUseCase,
 ) {
     fun create(eventId: String): EventDetailViewModel =
         EventDetailViewModel(
@@ -31,24 +26,20 @@ class EventDetailViewModelFactory(
             getEventDetailUseCase,
             getDeviceDetailUseCase,
             getDeviceTypesUseCase,
-            updateBatteryEventUseCase,
-            deleteBatteryEventUseCase,
         )
 }
 
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 class EventDetailViewModel(
-    private val eventId: String,
-    private val getEventDetailUseCase: GetEventDetailUseCase,
-    private val getDeviceDetailUseCase: GetDeviceDetailUseCase,
-    private val getDeviceTypesUseCase: GetDeviceTypesUseCase,
-    private val updateBatteryEventUseCase: UpdateBatteryEventUseCase,
-    private val deleteBatteryEventUseCase: DeleteBatteryEventUseCase,
+    eventId: String,
+    getEventDetailUseCase: GetEventDetailUseCase,
+    getDeviceDetailUseCase: GetDeviceDetailUseCase,
+    getDeviceTypesUseCase: GetDeviceTypesUseCase,
 ) : ViewModel() {
     val uiState: StateFlow<EventDetailUiState> = getEventDetailUseCase(eventId)
         .flatMapLatest { event ->
             if (event == null) {
-                kotlinx.coroutines.flow.flowOf(EventDetailUiState.NotFound)
+                flowOf(EventDetailUiState.NotFound)
             } else {
                 combine(
                     getDeviceDetailUseCase(event.deviceId),
@@ -67,19 +58,4 @@ class EventDetailViewModel(
             started = defaultWhileSubscribed(),
             initialValue = EventDetailUiState.Loading,
         )
-
-    fun updateDate(newDate: Instant) {
-        val currentState = uiState.value
-        if (currentState is EventDetailUiState.Success) {
-            viewModelScope.launch {
-                updateBatteryEventUseCase(currentState.event.copy(date = newDate))
-            }
-        }
-    }
-
-    fun deleteEvent() {
-        viewModelScope.launch {
-            deleteBatteryEventUseCase(eventId)
-        }
-    }
 }

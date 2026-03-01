@@ -117,10 +117,14 @@ class ComposeUITest {
         waitAndClick("Save")
         assertScreen("Types")
 
-        // ── Phase 4: EditDeviceType ──
+        // ── Phase 4: DeviceTypeDetail → EditDeviceType ──
         waitAndClick("Test Type")
+        assertScreen("Device Type")
+        waitAndClick("Edit")
         assertScreen("Edit Device Type")
         waitAndClick("Cancel")
+        assertScreen("Device Type")
+        clickBackArrow()
         assertScreen("Types")
 
         // ── Phase 5: Devices tab → AddDevice → create a device ──
@@ -162,10 +166,14 @@ class ComposeUITest {
         assertScreen("Add Battery Event")
         clickBackArrow()
 
-        // ── Phase 10: EventDetail ──
+        // ── Phase 10: EventDetail (read-only) → EditBatteryEvent ──
         waitAndClick("Test Device")
+        assertScreen("Event Detail")
+        waitAndClick("Edit")
         assertScreen("Edit Event")
-        waitAndClick("Done")
+        waitAndClick("Cancel")
+        assertScreen("Event Detail")
+        clickBackArrow()
         assertScreen("History")
     }
 }

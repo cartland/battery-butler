@@ -57,7 +57,7 @@ fun DevicesScreenRoot(
 fun TypesScreenRoot(
     viewModel: DeviceTypeListViewModel,
     onAddTypeClick: () -> Unit,
-    onEditType: (String) -> Unit,
+    onTypeClick: (String) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
 ) {
@@ -65,7 +65,7 @@ fun TypesScreenRoot(
 
     DeviceTypeListContent(
         state = state,
-        onEditType = onEditType,
+        onEditType = onTypeClick,
         onAddTypeClick = onAddTypeClick,
         onPreloadTypes = { viewModel.preloadCommonTypes() },
         onSortOptionSelected = { viewModel.onSortOptionSelected(it) },

@@ -26,12 +26,12 @@ fun AddBatteryEventScreen(
         devices = devices,
         aiMessages = aiMessages,
         isAiBatchImportEnabled = isAiBatchImportEnabled,
-        onAddEvent = { deviceId, date ->
+        onAddEvent = { deviceId, date, batteryType, notes ->
             viewModel.addEvent(
                 deviceId = deviceId,
                 date = date,
-                batteryType = null,
-                notes = null,
+                batteryType = batteryType,
+                notes = notes,
             )
             onEventAdded()
         },
