@@ -106,7 +106,7 @@ Keeping the build and tests healthy is a top priority. When you identify or fix 
 - **Git**:
   - **Always** use non-interactive flags for commands that might open an editor (e.g., `git cherry-pick --continue --no-edit`). This prevents the shell from getting stuck waiting for user input.
   - **Always** escape special characters in command arguments (e.g., `$` and `` ` ``) to prevent unintended shell expansion. Use single quotes or backslashes (`\`) for escaping.
-  - **Prefer** using `--body-file` with a temporary file for `gh pr create` when the description contains complex Markdown (backticks, quotes) to avoid shell parsing errors.
+  - **NEVER** use `$(cat <<'EOF'...)` heredoc subshells inside `gh pr create --body`. The complex shell expansion causes Claude Code to require manual approval even when `Bash(gh *)` is in the allow list. Instead, pass the body as a plain double-quoted string. For complex Markdown, use `--body-file` with a temporary file.
 
 - **Pull Requests**:
   - **Always** ensure the Pull Request title and description accurately reflect the final changes. If the scope of a branch evolves, update the PR description before merging.
