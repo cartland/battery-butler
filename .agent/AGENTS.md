@@ -147,6 +147,8 @@ Keeping the build and tests healthy is a top priority. When you identify or fix 
 
 ## Branch Management
 
+**Default: Every task should result in a PR.** When the user asks you to do any work, the default assumption is that you will create a branch and open a PR for it. Each PR should typically be based on `origin/main` (independent PRs). Stacked PRs (one branch based on another) are rarely needed and should only be used when changes genuinely depend on each other.
+
 **Before starting new work, decide if you need a new branch:**
 - Check if there's an existing PR for the current branch.
 - If new work is unrelated to the current branch/PR, create a new branch from `origin/main`.
