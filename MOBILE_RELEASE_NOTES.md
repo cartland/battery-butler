@@ -6,6 +6,26 @@ Each section covers one release tag range. "What's New" is user-facing language 
 
 ---
 
+## [android/21] — 2026-02-28
+
+From tag `android/20` to tag `android/21` (1 mobile-relevant commit out of 4 total)
+
+### What's New
+
+**Consistent navigation across all screens**
+- Device types now have a dedicated detail view showing battery info and linked devices before editing
+- Battery event history entries open a read-only detail view with all event information displayed clearly
+- Editing events and device types follows the same pattern: view details first, then tap Edit
+- Adding a battery event now supports optional battery type and notes via an expandable "More Details" section
+
+### Detailed Changes
+
+| PR | Description |
+|----|-------------|
+| [#799](https://github.com/cartland/battery-butler/pull/799) | Add Data View/Edit architecture parity for Device Types and History |
+
+---
+
 ## [android/20] — 2026-02-28
 
 From tag `android/14` to tag `android/20` (29 mobile-relevant commits out of 68 total)
