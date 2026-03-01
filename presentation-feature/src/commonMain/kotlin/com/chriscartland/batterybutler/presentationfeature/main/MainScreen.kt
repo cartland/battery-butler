@@ -1,6 +1,7 @@
 package com.chriscartland.batterybutler.presentationfeature.main
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Arrangement
@@ -9,10 +10,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -32,6 +36,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.OutlinedTextField
@@ -253,23 +258,31 @@ fun MainScreenShell(
             Box(modifier = Modifier.fillMaxSize()) {
                 content(contentModifier, bottomContentPadding)
 
+                val imeVisible = WindowInsets.ime.getBottom(density) > 0
+                val heightFraction by animateFloatAsState(
+                    if (imeVisible) 1f else 0.5f,
+                )
+
                 AnimatedVisibility(
                     visible = isAiExpanded,
+                    modifier = Modifier.align(Alignment.BottomCenter),
                     enter = slideInVertically(initialOffsetY = { it }),
                     exit = slideOutVertically(targetOffsetY = { it }),
                 ) {
                     val bottomBarHeight: Dp = with(density) { bottomBarHeightPx.toDp() }
                     Surface(
                         modifier = Modifier
-                            .fillMaxSize()
+                            .fillMaxWidth()
+                            .fillMaxHeight(heightFraction)
                             .padding(
-                                top = innerPadding.calculateTopPadding(),
+                                top = if (imeVisible) innerPadding.calculateTopPadding() else 0.dp,
                                 // Use measured bar height so the overlay always ends
                                 // exactly above the bottom bar, regardless of how
                                 // innerPadding is computed relative to IME state.
                                 bottom = bottomBarHeight,
                             ),
-                        color = MaterialTheme.colorScheme.surface,
+                        color = NavigationBarDefaults.containerColor,
+                        tonalElevation = 2.dp,
                     ) {
                         Column(
                             modifier = Modifier

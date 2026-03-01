@@ -10,9 +10,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -20,11 +23,18 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -47,6 +57,7 @@ import com.chriscartland.batterybutler.presentationcore.components.ButlerCentere
 import com.chriscartland.batterybutler.presentationcore.components.ExpandableSelectionControl
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationcore.theme.Padding
+import kotlinx.coroutines.launch
 
 @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
@@ -66,6 +77,9 @@ fun SettingsContent(
     initiallyExpandedNetworkModes: Boolean = false,
 ) {
     val uriHandler = LocalUriHandler.current
+    val clipboardManager = LocalClipboardManager.current
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -74,6 +88,11 @@ fun SettingsContent(
                 title = "Settings",
                 onBack = onBack,
             )
+        },
+        snackbarHost = {
+            SnackbarHost(snackbarHostState) { data ->
+                Snackbar(snackbarData = data)
+            }
         },
     ) { innerPadding ->
         Column(
@@ -148,6 +167,7 @@ fun SettingsContent(
                 currentSelection = networkMode,
                 options = availableNetworkModes,
                 onOptionSelected = onNetworkModeSelected,
+                leadingIcon = Icons.Default.Wifi,
                 initiallyExpanded = initiallyExpandedNetworkModes,
                 optionLabel = { mode ->
                     when (mode) {
@@ -172,6 +192,7 @@ fun SettingsContent(
                 currentSelection = aiEngineType,
                 options = availableAiEngines,
                 onOptionSelected = onAiEngineSelected,
+                leadingIcon = Icons.Default.AutoAwesome,
                 optionLabel = { mode ->
                     when (mode) {
                         AiEngineType.Cloud -> composeStringResource(Res.string.ai_engine_cloud)
@@ -262,35 +283,50 @@ fun SettingsContent(
             }
 
             // App Version Card
+            val versionText = when (appVersion) {
+                is AppVersion.Android -> "${appVersion.versionName}-${appVersion.versionCode}"
+                is AppVersion.Ios -> "${appVersion.versionName}-${appVersion.buildNumber}"
+                is AppVersion.Desktop -> appVersion.versionName
+                is AppVersion.Unavailable -> "Unavailable"
+            }
             Card(
+                onClick = {
+                    clipboardManager.setText(AnnotatedString(versionText))
+                    scope.launch {
+                        snackbarHostState.showSnackbar("Copied to clipboard")
+                    }
+                },
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surfaceVariant,
                 ),
                 shape = MaterialTheme.shapes.medium,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Column(
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(Padding.standard),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(Padding.standard),
                 ) {
-                    Text(
-                        text = "App version",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    Icon(
+                        imageVector = Icons.Default.Info,
+                        contentDescription = "App version",
+                        tint = MaterialTheme.colorScheme.primary,
                     )
-                    val versionText = when (appVersion) {
-                        is AppVersion.Android -> "${appVersion.versionName}-${appVersion.versionCode}"
-                        is AppVersion.Ios -> "${appVersion.versionName}-${appVersion.buildNumber}"
-                        is AppVersion.Desktop -> appVersion.versionName
-                        is AppVersion.Unavailable -> "Unavailable"
+                    Column {
+                        Text(
+                            text = "App version",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        Text(
+                            text = versionText,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                        )
                     }
-                    Text(
-                        text = versionText,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                    )
                 }
             }
         }
@@ -329,11 +365,11 @@ fun SettingsContentAllNetworkModesPreview() {
         SettingsContent(
             networkMode = NetworkMode.GrpcLocal("http://10.0.2.2:50051"),
             availableNetworkModes = listOf(
-                NetworkMode.GrpcLocal("http://10.0.2.2:50051"),
-                NetworkMode.Mock,
                 NetworkMode.None,
-                NetworkMode.GrpcAws("http://example.com:80"),
+                NetworkMode.Mock,
+                NetworkMode.GrpcLocal("http://10.0.2.2:50051"),
                 NetworkMode.GrpcDev("http://example.com:80"),
+                NetworkMode.GrpcAws("http://example.com:80"),
             ),
             onNetworkModeSelected = {},
             aiEngineType = AiEngineType.Cloud,

@@ -172,16 +172,9 @@ fun App(
                 Surface(
                     color = MaterialTheme.colorScheme.background,
                 ) {
-                    // BackHandler priority: AI overlay > detail stack > tab NavDisplay
+                    // BackHandler priority: AI overlay > NavDisplay (predictive back)
                     BackHandler(enabled = isAiExpanded) {
                         isAiExpanded = false
-                    }
-                    val isOnLoginOnly = detailBackStack.size == 1 &&
-                        detailBackStack.lastOrNull() is Screen.Login
-                    BackHandler(
-                        enabled = detailBackStack.isNotEmpty() && !isAiExpanded && !isOnLoginOnly,
-                    ) {
-                        detailBackStack.removeLastOrNull()
                     }
 
                     Box(modifier = Modifier.fillMaxSize()) {
@@ -283,7 +276,13 @@ fun App(
                         if (detailBackStack.isNotEmpty()) {
                             NavDisplay(
                                 backStack = detailBackStack,
-                                onBack = { detailBackStack.removeLastOrNull() },
+                                onBack = {
+                                    val isLoginOnly = detailBackStack.size == 1 &&
+                                        detailBackStack.lastOrNull() is Screen.Login
+                                    if (!isLoginOnly) {
+                                        detailBackStack.removeLastOrNull()
+                                    }
+                                },
                                 entryDecorators = listOf(
                                     rememberSaveableStateHolderNavEntryDecorator<Screen>(),
                                     rememberViewModelStoreNavEntryDecorator<Screen>(),
