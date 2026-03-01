@@ -1,7 +1,6 @@
 package com.chriscartland.batterybutler.presentationfeature.main
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Arrangement
@@ -262,9 +261,7 @@ fun MainScreenShell(
             Box(modifier = Modifier.fillMaxSize()) {
                 content(contentModifier, bottomContentPadding)
 
-                val heightFraction by animateFloatAsState(
-                    if (imeVisible) 1f else 0.5f,
-                )
+                val heightFraction = if (imeVisible) 1f else 0.5f
 
                 AnimatedVisibility(
                     visible = isAiExpanded,
