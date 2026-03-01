@@ -33,6 +33,10 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ## 2026-02-28
 
+### Features
+
+- **Predictive back support** ([#808](https://github.com/cartland/battery-butler/pull/808)): Enabled Android 13+ predictive back gesture via `enableOnBackInvokedCallback` manifest flag. Fixed a bug where back on the Login screen would pop the detail stack and reveal unauthenticated tab content — now exits the app. Documented the back gesture contract for all screens in `docs/TESTING.md`.
+
 ### Infrastructure
 
 - **Hibernate AWS infrastructure** ([#794](https://github.com/cartland/battery-butler/pull/794)): Stopped all AWS spending. Added "(disabled)" labels to cloud server options in the mobile app, reordered network modes (GrpcLocal first), added hibernation comments to `gradle.properties`, updated all docs with hibernation notices and re-enabling checklist. Added screenshot test for all network modes expanded.
