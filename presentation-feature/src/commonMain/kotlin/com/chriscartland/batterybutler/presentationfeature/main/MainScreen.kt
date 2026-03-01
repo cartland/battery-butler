@@ -76,7 +76,6 @@ import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationcore.theme.LocalAiAvailable
-import com.chriscartland.batterybutler.presentationcore.theme.LocalImeVisibleOverride
 import com.chriscartland.batterybutler.presentationcore.theme.Padding
 import com.chriscartland.batterybutler.presentationfeature.aichat.AiTabContent
 import com.chriscartland.batterybutler.presentationfeature.aichat.ChatUiMessage
@@ -134,6 +133,7 @@ fun MainScreenShell(
     onSendAiMessage: (String) -> Unit,
     onClearAiChat: () -> Unit,
     modifier: Modifier = Modifier,
+    imeVisible: Boolean = WindowInsets.ime.getBottom(LocalDensity.current) > 0,
     content: @Composable (Modifier, PaddingValues) -> Unit,
 ) {
     val isAiAvailable = LocalAiAvailable.current
@@ -262,8 +262,6 @@ fun MainScreenShell(
             Box(modifier = Modifier.fillMaxSize()) {
                 content(contentModifier, bottomContentPadding)
 
-                val imeVisibleOverride = LocalImeVisibleOverride.current
-                val imeVisible = imeVisibleOverride ?: (WindowInsets.ime.getBottom(density) > 0)
                 val heightFraction by animateFloatAsState(
                     if (imeVisible) 1f else 0.5f,
                 )
@@ -367,6 +365,7 @@ fun DevicesScreen(
     onSendAiMessage: (String) -> Unit,
     onClearAiChat: () -> Unit,
     nowInstant: Instant = Clock.System.now(),
+    imeVisible: Boolean = WindowInsets.ime.getBottom(LocalDensity.current) > 0,
 ) {
     MainScreenShell(
         currentTab = MainTab.Devices,
@@ -378,6 +377,7 @@ fun DevicesScreen(
         onAiExpandedChange = onAiExpandedChange,
         onSendAiMessage = onSendAiMessage,
         onClearAiChat = onClearAiChat,
+        imeVisible = imeVisible,
     ) { contentModifier, bottomContentPadding ->
         HomeScreenContent(
             state = state,
@@ -714,10 +714,7 @@ fun AiOverlayExpandedPreview() {
 @Composable
 fun AiOverlayFullHeightPreview() {
     BatteryButlerTheme {
-        CompositionLocalProvider(
-            LocalAiAvailable provides true,
-            LocalImeVisibleOverride provides true,
-        ) {
+        CompositionLocalProvider(LocalAiAvailable provides true) {
             val now = Instant.parse("2026-01-18T17:00:00Z")
             val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
             val device = Device("dev1", "Kitchen Smoke", "type1", now, now, "Kitchen")
@@ -749,6 +746,7 @@ fun AiOverlayFullHeightPreview() {
                 onSendAiMessage = {},
                 onClearAiChat = {},
                 nowInstant = now,
+                imeVisible = true,
             )
         }
     }
