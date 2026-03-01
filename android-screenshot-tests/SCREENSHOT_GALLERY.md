@@ -1,6 +1,6 @@
 # Screenshot Gallery
 
-Generated on Fri Feb 27 08:46:13 UTC 2026
+Generated on Sun Mar  1 06:05:49 UTC 2026
 
 ## Table of Contents
 - [AddDeviceScreenshotTestKt](#adddevicescreenshottestkt)
@@ -317,6 +317,12 @@ Generated on Fri Feb 27 08:46:13 UTC 2026
 
 ### HomeScreenEmptyPreviewTest_Light_fc5b723e_0
 <img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/HomeScreenEmptyPreviewTest_Light_fc5b723e_0.png" width="300" />
+
+### SettingsAllNetworkModesPreviewTest_Dark_77106447_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/SettingsAllNetworkModesPreviewTest_Dark_77106447_0.png" width="300" />
+
+### SettingsAllNetworkModesPreviewTest_Light_fc5b723e_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/SettingsAllNetworkModesPreviewTest_Light_fc5b723e_0.png" width="300" />
 
 ### SettingsScreenPreviewTest_Dark_77106447_0
 <img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/SettingsScreenPreviewTest_Dark_77106447_0.png" width="300" />
