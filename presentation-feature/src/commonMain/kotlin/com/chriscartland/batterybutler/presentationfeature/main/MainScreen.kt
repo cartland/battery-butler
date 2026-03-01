@@ -163,7 +163,10 @@ fun MainScreenShell(
             )
         },
         bottomBar = {
-            Surface(modifier = Modifier.onSizeChanged { bottomBarHeightPx = it.height }) {
+            Surface(
+                modifier = Modifier.onSizeChanged { bottomBarHeightPx = it.height },
+                color = NavigationBarDefaults.containerColor,
+            ) {
                 Column {
                     if (isAiAvailable) {
                         Row(
