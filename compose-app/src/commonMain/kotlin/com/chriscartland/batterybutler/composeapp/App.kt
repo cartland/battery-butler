@@ -25,7 +25,6 @@ import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDe
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import com.chriscartland.batterybutler.composeapp.components.BackHandler
 import com.chriscartland.batterybutler.composeapp.di.AppComponent
 import com.chriscartland.batterybutler.composeapp.feature.addbatteryevent.AddBatteryEventScreen
 import com.chriscartland.batterybutler.composeapp.feature.adddevice.AddDeviceScreen
@@ -172,11 +171,6 @@ fun App(
                 Surface(
                     color = MaterialTheme.colorScheme.background,
                 ) {
-                    // BackHandler priority: AI overlay > NavDisplay (predictive back)
-                    BackHandler(enabled = isAiExpanded) {
-                        isAiExpanded = false
-                    }
-
                     Box(modifier = Modifier.fillMaxSize()) {
                         // LAYER 0: Persistent shell — never animates during tab switches
                         MainScreenShell(
