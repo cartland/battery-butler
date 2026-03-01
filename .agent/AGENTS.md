@@ -130,6 +130,54 @@ Keeping the build and tests healthy is a top priority. When you identify or fix 
   - **Every plan must include `./scripts/validate.sh` as a verification step.** If a plan lists abbreviated checks (e.g. `compileDebugSources + spotless + test`), replace or append `./scripts/validate.sh` — it covers all of those and more (detekt, lint, architecture). Never let a plan leave out the full validation step.
   - **Avoid** `clean` steps in scripts and CI if possible, relying on Gradle's incremental build and caching for speed.
 
+- **Linter & Architecture Enforcement**:
+  - **Prefer automated enforcement over prose rules.** When you discover a rule that should always hold (naming convention, dependency direction, forbidden API usage), first check if an existing linter can enforce it. If not, propose adding a new check. A lint that fails the build is worth more than a paragraph in docs.
+  - **Existing enforcement mechanisms** (choose the right one for each rule):
+
+    | Mechanism | Location | Best For | Error Reporting |
+    |-----------|----------|----------|-----------------|
+    | **Detekt rules** (`detekt.yml`) | Config-only | Kotlin code patterns, naming, complexity, forbidden methods | Built-in detekt format |
+    | **Detekt Compose plugin** | `detekt.yml` Compose section | Compose-specific: modifier naming, parameter order, CompositionLocal allowlist | Built-in detekt format |
+    | **Custom Gradle tasks** (`buildSrc/`) | `buildSrc/src/main/kotlin/` | Cross-file rules, dependency graphs, theme layer boundaries, coverage gaps | Custom `GradleException` |
+    | **Convention tests** (test source sets) | `*Test.kt` in `jvmTest`/`desktopTest` | Runtime reflection checks: "every X has a Y", API shape enforcement | JUnit assertion messages |
+    | **Shell-based analysis** (`scripts/`) | `scripts/analyze-architecture.sh` | Multi-tool pipelines, graph analysis, report generation | Script exit codes + stdout |
+    | **Spotless / ktlint** | `build.gradle.kts` | Formatting, import ordering, whitespace | Built-in ktlint format |
+    | **Android Lint** | `lint.xml` / Gradle lint config | Android-specific: resource issues, API level compat, accessibility | Built-in Android Lint format |
+    | **Claude Code hooks** (`.claude/hooks/`) | `.claude/hooks/*.sh` | Agent-specific guardrails: git safety, workflow enforcement | Hook stdout (warn or block) |
+
+  - **Decision guide — which mechanism to use:**
+    1. Can an existing detekt rule cover it? → Enable/configure it in `detekt.yml`
+    2. Is it a file-scanning pattern match (regex on source)? → Custom Gradle task (follow `ThemeLayerCheckTask` pattern)
+    3. Is it a structural rule about module dependencies? → Extend `ArchitectureCheckTask` or `analyze-architecture.sh`
+    4. Does it require runtime reflection (class/method existence)? → Convention test (follow `UseCaseConventionTest` pattern)
+    5. Is it agent-specific (git safety, workflow)? → Claude Code hook in `.claude/hooks/`
+
+  - **Error message standards** (critical for AI tooling):
+    - Every violation message **must** include: file path, line number (when applicable), rule ID, what's wrong, and how to fix it.
+    - Format: `file:line [rule-id] Description of violation\n  Fix: Concrete action to take`
+    - Bad: `"Architecture violation"` — Good: `"Module ':viewmodel' depends on forbidden module ':data'. Allowed: [:usecase, :domain, :presentation-model]. Move data access into a UseCase."`
+    - Bad: `"Test missing"` — Good: `"ViewModel classes missing a corresponding '*ViewModelTest' class:\n  - com.example.FooViewModel\n\nCreate a test file for each ViewModel listed above."`
+
+  - **Adding a new Gradle check** (template):
+    1. Create `buildSrc/src/main/kotlin/<package>/<CheckName>CheckTask.kt` extending `DefaultTask`
+    2. Create `buildSrc/src/main/kotlin/<package>/<CheckName>Plugin.kt` registering the task in group `"verification"`
+    3. Register the plugin ID in `buildSrc/build.gradle.kts` under `gradlePlugin { plugins { ... } }`
+    4. Apply the plugin in root `build.gradle.kts`: `id("<plugin-id>")`
+    5. Add the task to `scripts/validate.sh` and the appropriate CI job in `.github/workflows/ci.yml`
+    6. Follow the `ThemeLayerCheckTask` pattern: define rules as data, scan files, collect violations, throw `GradleException` with actionable messages
+
+  - **Adding a new convention test** (template):
+    1. Create `<module>/src/<testSourceSet>/kotlin/.../ConventionTestName.kt`
+    2. Use classpath scanning to discover classes matching a pattern (see `UseCaseConventionTest`)
+    3. Assert the convention with a clear failure message listing every violator
+    4. The test runs automatically with `./gradlew test` — no extra CI config needed
+
+  - **When to propose a new check** (agents should proactively suggest these):
+    - A code review catches the same mistake twice → it should be a lint
+    - A rule exists only in docs/comments → it should be enforced automatically
+    - A PR introduces a new convention (e.g., "all screens must have X") → add a convention test
+    - An agent makes a mistake that a linter could have caught → propose adding that linter rule
+
 - **Compose-Specific Detekt Rules** (enforced by `detekt-compose` plugin, checked in `validate.sh`):
   - Modifier parameters in `@Composable` functions **must** be named `modifier` (not `contentModifier`, `shellModifier`, etc.).
   - Parameter order in `@Composable` functions: **non-default params first**, then `modifier: Modifier = Modifier`, then other params with defaults, then trailing lambdas.
