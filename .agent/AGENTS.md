@@ -107,7 +107,11 @@ Keeping the build and tests healthy is a top priority. When you identify or fix 
 - **Git**:
   - **Always** use non-interactive flags for commands that might open an editor (e.g., `git cherry-pick --continue --no-edit`). This prevents the shell from getting stuck waiting for user input.
   - **Always** escape special characters in command arguments (e.g., `$` and `` ` ``) to prevent unintended shell expansion. Use single quotes or backslashes (`\`) for escaping.
-  - **NEVER** use heredoc subshells or multi-line quoted strings in `gh` or `git commit` commands. These cause Claude Code to require manual approval even when the command prefix is in the allow list. Instead, write the content to `.tmp/` (gitignored local temp directory), then reference it with `--body-file` (for `gh pr create`) or `-F` (for `git commit`). Example: `echo "message" > .tmp/commit-msg.txt && git commit -F .tmp/commit-msg.txt`
+  - **NEVER** use heredoc subshells, multi-line quoted strings, or `&&`-chained write-then-use commands in `gh` or `git commit` commands. These cause Claude Code to require manual approval even when the command prefix is in the allow list, because permission patterns match only the **first command** in a chain.
+  - Instead: **use the Write tool** to create files in `.tmp/` (gitignored local temp directory), then issue a **standalone** Bash command referencing the file:
+    - Commit: `Write` to `.tmp/commit-msg.txt`, then `Bash(git commit -F .tmp/commit-msg.txt)`
+    - PR: `Write` to `.tmp/pr-body.txt`, then `Bash(gh pr create --title "..." --body-file .tmp/pr-body.txt)`
+  - This ensures each Bash call starts with an allowed prefix (`git commit`, `gh pr create`) with no chaining.
 
 - **Pull Requests**:
   - **Always** ensure the Pull Request title and description accurately reflect the final changes. If the scope of a branch evolves, update the PR description before merging.
