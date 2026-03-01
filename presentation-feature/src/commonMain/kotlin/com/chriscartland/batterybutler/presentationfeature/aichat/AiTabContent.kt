@@ -36,6 +36,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -45,6 +46,8 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.ai_c
 import com.chriscartland.batterybutler.composeresources.generated.resources.content_desc_send_message
 import com.chriscartland.batterybutler.composeresources.generated.resources.placeholder_type_message
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 
 /**
  * AI chat content designed to be embedded in a tab layout (within MainScreenShell).
@@ -65,6 +68,19 @@ fun AiTabContent(
         if (messages.isNotEmpty()) {
             listState.animateScrollToItem(messages.size - 1)
         }
+    }
+
+    // Keep chat anchored at bottom when viewport height changes
+    // (chat area appearing/resizing, IME toggling)
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.layoutInfo.viewportSize.height }
+            .distinctUntilChanged()
+            .drop(1) // Skip initial emission (handled by messages.size LaunchedEffect)
+            .collect {
+                if (messages.isNotEmpty()) {
+                    listState.animateScrollToItem(messages.size - 1)
+                }
+            }
     }
 
     Column(modifier = modifier.fillMaxSize()) {

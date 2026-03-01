@@ -5,6 +5,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -12,9 +13,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
@@ -251,90 +252,98 @@ fun MainScreenShell(
                 start = innerPadding.calculateStartPadding(layoutDirection),
                 end = innerPadding.calculateEndPadding(layoutDirection),
             )
-            val bottomContentPadding = PaddingValues(
-                top = Padding.standard,
-                bottom = innerPadding.calculateBottomPadding() + Padding.standard,
-                start = Padding.standard,
-                end = Padding.standard,
-            )
+            val bottomBarHeight: Dp = with(density) { bottomBarHeightPx.toDp() }
 
-            Box(modifier = Modifier.fillMaxSize()) {
-                content(contentModifier, bottomContentPadding)
+            BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+                val chatTargetHeight = if (imeVisible) maxHeight else (maxHeight / 2)
+                val adjustedBottomPadding = PaddingValues(
+                    top = Padding.standard,
+                    bottom = if (isAiExpanded) {
+                        Padding.standard
+                    } else {
+                        innerPadding.calculateBottomPadding() + Padding.standard
+                    },
+                    start = Padding.standard,
+                    end = Padding.standard,
+                )
 
-                val heightFraction = if (imeVisible) 1f else 0.5f
+                Column(modifier = Modifier.fillMaxSize()) {
+                    // Content: fills remaining space above chat
+                    Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                        content(contentModifier, adjustedBottomPadding)
+                    }
 
-                AnimatedVisibility(
-                    visible = isAiExpanded,
-                    modifier = Modifier.align(Alignment.BottomCenter),
-                    enter = slideInVertically(initialOffsetY = { it }),
-                    exit = slideOutVertically(targetOffsetY = { it }),
-                ) {
-                    val bottomBarHeight: Dp = with(density) { bottomBarHeightPx.toDp() }
-                    Surface(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight(heightFraction)
-                            .padding(
-                                top = if (imeVisible) innerPadding.calculateTopPadding() else 0.dp,
-                                // Use measured bar height so the overlay always ends
-                                // exactly above the bottom bar, regardless of how
-                                // innerPadding is computed relative to IME state.
-                                bottom = bottomBarHeight,
-                            ),
-                        color = NavigationBarDefaults.containerColor,
-                        tonalElevation = 2.dp,
+                    // Chat: slides in from bottom, shares space with content
+                    AnimatedVisibility(
+                        visible = isAiExpanded,
+                        enter = slideInVertically(initialOffsetY = { it }),
+                        exit = slideOutVertically(targetOffsetY = { it }),
                     ) {
-                        Column(
+                        Surface(
                             modifier = Modifier
-                                .fillMaxSize()
-                                // Safety net: if keyboard appears while overlay is
-                                // open, shrink the column so messages stay visible.
-                                .imePadding(),
+                                .fillMaxWidth()
+                                .height(chatTargetHeight)
+                                .padding(
+                                    top = if (imeVisible) {
+                                        innerPadding.calculateTopPadding()
+                                    } else {
+                                        0.dp
+                                    },
+                                    bottom = bottomBarHeight,
+                                ),
+                            color = NavigationBarDefaults.containerColor,
+                            tonalElevation = 2.dp,
                         ) {
-                            Row(
+                            Column(
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(
-                                        start = Padding.standard,
-                                        end = Padding.small,
-                                    ),
-                                verticalAlignment = Alignment.CenterVertically,
+                                    .fillMaxSize()
+                                    .imePadding(),
                             ) {
-                                Icon(
-                                    imageVector = Icons.Default.AutoAwesome,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary,
-                                )
-                                Spacer(modifier = Modifier.width(Padding.small))
-                                Text(
-                                    text = "AI Chat",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    modifier = Modifier.weight(1f),
-                                )
-                                if (aiMessages.isNotEmpty()) {
-                                    IconButton(onClick = onClearAiChat) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(
+                                            start = Padding.standard,
+                                            end = Padding.small,
+                                        ),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.AutoAwesome,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary,
+                                    )
+                                    Spacer(modifier = Modifier.width(Padding.small))
+                                    Text(
+                                        text = "AI Chat",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        modifier = Modifier.weight(1f),
+                                    )
+                                    if (aiMessages.isNotEmpty()) {
+                                        IconButton(onClick = onClearAiChat) {
+                                            Icon(
+                                                imageVector = Icons.Default.Delete,
+                                                contentDescription = "Clear chat",
+                                            )
+                                        }
+                                    }
+                                    IconButton(
+                                        onClick = { onAiExpandedChange(false) },
+                                    ) {
                                         Icon(
-                                            imageVector = Icons.Default.Delete,
-                                            contentDescription = "Clear chat",
+                                            imageVector = Icons.Default.KeyboardArrowDown,
+                                            contentDescription = "Collapse AI chat",
                                         )
                                     }
                                 }
-                                IconButton(
-                                    onClick = { onAiExpandedChange(false) },
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.KeyboardArrowDown,
-                                        contentDescription = "Collapse AI chat",
-                                    )
-                                }
+                                AiTabContent(
+                                    messages = aiMessages,
+                                    isProcessing = isAiProcessing,
+                                    onSendMessage = onSendAiMessage,
+                                    modifier = Modifier.weight(1f),
+                                    showInput = false,
+                                )
                             }
-                            AiTabContent(
-                                messages = aiMessages,
-                                isProcessing = isAiProcessing,
-                                onSendMessage = onSendAiMessage,
-                                modifier = Modifier.weight(1f),
-                                showInput = false,
-                            )
                         }
                     }
                 }
