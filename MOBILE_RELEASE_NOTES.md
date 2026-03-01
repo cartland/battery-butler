@@ -6,6 +6,41 @@ Each section covers one release tag range. "What's New" is user-facing language 
 
 ---
 
+## [android/23] — 2026-03-01
+
+From tag `android/21` to tag `android/23` (5 mobile-relevant commits out of 14 total)
+
+### What's New
+
+**Full AI inventory management**
+- Ask the AI assistant to rename, move, or update any device, device type, or battery event
+- Ask the AI to delete items — it will confirm with you before removing anything
+- The AI now sees your full inventory with precise item references for accurate edits
+
+**Smoother navigation**
+- Swipe-back gestures now show a preview of the previous screen (Android 13+)
+- Back button on the Login screen exits the app instead of revealing content behind it
+
+**Settings improvements**
+- Settings items now have descriptive icons for easier scanning
+- Dropdown options have larger, easier-to-tap touch targets
+- Tap the app version to copy it to your clipboard
+
+**Screenshot test coverage**
+- Added visual regression tests for Device Type Detail, Event Detail, Edit Battery Event, and Add Battery Event screens in both light and dark themes
+
+### Detailed Changes
+
+| PR | Description |
+|----|-------------|
+| [#815](https://github.com/cartland/battery-butler/pull/815) | Add update & delete AI tools for full CRUD (6 new tools, IDs in context, delete confirmation) |
+| [#814](https://github.com/cartland/battery-butler/pull/814) | Settings & AI chat UI polish (icons, touch targets, clipboard copy, network mode order) |
+| [#808](https://github.com/cartland/battery-butler/pull/808) | Add predictive back support and fix Login back behavior |
+| [#805](https://github.com/cartland/battery-butler/pull/805) | Add screenshot tests for missing screens (DeviceTypeDetail, EventDetail, EditBatteryEvent) |
+| [#803](https://github.com/cartland/battery-butler/pull/803) | Regenerate screenshot baselines |
+
+---
+
 ## [android/21] — 2026-02-28
 
 From tag `android/20` to tag `android/21` (1 mobile-relevant commit out of 4 total)
