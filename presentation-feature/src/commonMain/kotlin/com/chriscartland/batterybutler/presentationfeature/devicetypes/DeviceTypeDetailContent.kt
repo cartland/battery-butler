@@ -239,3 +239,16 @@ fun DeviceTypeDetailLoadingPreview() {
         )
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun DeviceTypeDetailNotFoundPreview() {
+    BatteryButlerTheme {
+        DeviceTypeDetailContent(
+            state = DeviceTypeDetailUiState.NotFound,
+            onBack = {},
+            onEdit = {},
+            onDeviceClick = {},
+        )
+    }
+}

@@ -259,3 +259,16 @@ fun EventDetailContentDeletedDevicePreview() {
         )
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun EventDetailContentNotFoundPreview() {
+    BatteryButlerTheme {
+        EventDetailContent(
+            uiState = EventDetailUiState.NotFound,
+            onBack = {},
+            onEdit = {},
+            onDeviceClick = {},
+        )
+    }
+}

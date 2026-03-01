@@ -1,6 +1,6 @@
 # Screenshot Gallery
 
-Generated on Sun Mar  1 06:05:49 UTC 2026
+Generated on Sat Feb 28 22:43:40 PST 2026
 
 ## Table of Contents
 - [AddDeviceScreenshotTestKt](#adddevicescreenshottestkt)
@@ -276,11 +276,41 @@ Generated on Sun Mar  1 06:05:49 UTC 2026
 ### AiChatContentPreviewTest_Light_fc5b723e_0
 <img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/AiChatContentPreviewTest_Light_fc5b723e_0.png" width="300" />
 
+### DeviceTypeDetailLoadingPreviewTest_Dark_77106447_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/DeviceTypeDetailLoadingPreviewTest_Dark_77106447_0.png" width="300" />
+
+### DeviceTypeDetailLoadingPreviewTest_Light_fc5b723e_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/DeviceTypeDetailLoadingPreviewTest_Light_fc5b723e_0.png" width="300" />
+
+### DeviceTypeDetailNotFoundPreviewTest_Dark_77106447_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/DeviceTypeDetailNotFoundPreviewTest_Dark_77106447_0.png" width="300" />
+
+### DeviceTypeDetailNotFoundPreviewTest_Light_fc5b723e_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/DeviceTypeDetailNotFoundPreviewTest_Light_fc5b723e_0.png" width="300" />
+
+### DeviceTypeDetailScreenPreviewTest_Dark_77106447_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/DeviceTypeDetailScreenPreviewTest_Dark_77106447_0.png" width="300" />
+
+### DeviceTypeDetailScreenPreviewTest_Light_fc5b723e_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/DeviceTypeDetailScreenPreviewTest_Light_fc5b723e_0.png" width="300" />
+
 ### DeviceTypeListEmptyScreenPreviewTest_Dark_77106447_0
 <img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/DeviceTypeListEmptyScreenPreviewTest_Dark_77106447_0.png" width="300" />
 
 ### DeviceTypeListEmptyScreenPreviewTest_Light_fc5b723e_0
 <img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/DeviceTypeListEmptyScreenPreviewTest_Light_fc5b723e_0.png" width="300" />
+
+### EditBatteryEventNotFoundPreviewTest_Dark_77106447_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/EditBatteryEventNotFoundPreviewTest_Dark_77106447_0.png" width="300" />
+
+### EditBatteryEventNotFoundPreviewTest_Light_fc5b723e_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/EditBatteryEventNotFoundPreviewTest_Light_fc5b723e_0.png" width="300" />
+
+### EditBatteryEventScreenPreviewTest_Dark_77106447_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/EditBatteryEventScreenPreviewTest_Dark_77106447_0.png" width="300" />
+
+### EditBatteryEventScreenPreviewTest_Light_fc5b723e_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/EditBatteryEventScreenPreviewTest_Light_fc5b723e_0.png" width="300" />
 
 ### EditDeviceScreenPreviewTest_Dark_77106447_0
 <img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/EditDeviceScreenPreviewTest_Dark_77106447_0.png" width="300" />
@@ -299,6 +329,12 @@ Generated on Sun Mar  1 06:05:49 UTC 2026
 
 ### EventDetailDeletedDeviceScreenPreviewTest_Light_fc5b723e_0
 <img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/EventDetailDeletedDeviceScreenPreviewTest_Light_fc5b723e_0.png" width="300" />
+
+### EventDetailNotFoundPreviewTest_Dark_77106447_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/EventDetailNotFoundPreviewTest_Dark_77106447_0.png" width="300" />
+
+### EventDetailNotFoundPreviewTest_Light_fc5b723e_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/EventDetailNotFoundPreviewTest_Light_fc5b723e_0.png" width="300" />
 
 ### EventDetailScreenPreviewTest_Dark_77106447_0
 <img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/EventDetailScreenPreviewTest_Dark_77106447_0.png" width="300" />
