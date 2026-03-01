@@ -37,9 +37,17 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 - **AI CRUD tools** ([#815](https://github.com/cartland/battery-butler/pull/815)): Added 6 new AI tools (updateDevice, deleteDevice, updateDeviceType, deleteDeviceType, updateBatteryEvent, deleteBatteryEvent) for full CRUD capability in the AI chat. Entity IDs are now exposed in the AI context so the model can precisely target items. System prompt enforces delete confirmation. deleteDeviceType has referential integrity (blocks if devices still use it). Event mutations recalculate device `batteryLastReplaced`.
 
+### Fixes
+
+- **Snap AI overlay height to remove IME desync** ([#822](https://github.com/cartland/battery-butler/pull/822)): Replaced `animateFloatAsState` with a plain value for the overlay height fraction. The spring animation (~500-700ms) was desyncing from the system keyboard animation (~300ms), causing the overlay panel to visually lag behind the input row. Snapping the fraction while `imePadding()` smoothly animates the available space produces a smooth result with zero lag.
+
 ### Testing
 
 - **Full-height AI overlay screenshot test** ([#821](https://github.com/cartland/battery-butler/pull/821)): Added screenshot test for the full-height AI overlay variant. Uses parameter hoisting on `MainScreenShell` (`imeVisible: Boolean`) to allow previews to render both half-height and full-height states without modifying production code paths.
+
+### Releases
+
+- **Android `android/25`**: Includes AI overlay IME desync fix (#822).
 
 ---
 
