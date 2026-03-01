@@ -85,6 +85,7 @@ keystore_base64.txt
 
 # Claude Code
 .claude/.validation-passed
+.tmp/
 
 # Generated reports
 docs/Preview_Coverage_Report.md

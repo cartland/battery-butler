@@ -107,6 +107,20 @@ Icon colors use the **`IconColorRole` enum** (`presentation-core/.../theme/IconC
 
 **Standard dropdown component**: Use `ButlerDropdownMenu` (`presentation-core/.../components/ButlerDropdownMenu.kt`) instead of `DropdownMenu` directly. Note: CMP 1.10.0 `DropdownMenu` does NOT support `enter`/`exit` animation params (Jetpack Compose only).
 
+### Data View/Edit Pattern
+
+All data types follow a consistent **List → Detail (read-only) → Edit** architecture:
+
+| Data Type | List Screen | Detail Screen | Edit Screen |
+|-----------|------------|---------------|-------------|
+| Devices | `Screen.Devices` | `Screen.DeviceDetail` | `Screen.EditDevice` |
+| Device Types | `Screen.Types` | `Screen.DeviceTypeDetail` | `Screen.EditDeviceType` |
+| History | `Screen.History` | `Screen.EventDetail` | `Screen.EditBatteryEvent` |
+
+**Pattern**: List click → read-only detail (with "Edit" button in top bar) → edit form (with "Cancel"/"Save" in top bar + "Delete" button at bottom). Delete pops two screens (edit + stale detail) back to the list.
+
+**File layers per data type**: UiState (`presentation-model`), ViewModel + Factory (`viewmodel`), Content composable (`presentation-feature`), Screen wrapper (`compose-app`).
+
 ### UI Architecture Mapping
 
 For a detailed breakdown of how the shared Compose Multiplatform UI maps to the native SwiftUI implementation (and why they intuitively differ structurally), see `docs/UI_SCREENS_MAPPING.md`.
