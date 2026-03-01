@@ -48,8 +48,18 @@ sealed interface Screen {
     ) : Screen
 
     @Serializable
+    data class DeviceTypeDetail(
+        val typeId: String,
+    ) : Screen
+
+    @Serializable
     data class EditDeviceType(
         val typeId: String,
+    ) : Screen
+
+    @Serializable
+    data class EditBatteryEvent(
+        val eventId: String,
     ) : Screen
 }
 

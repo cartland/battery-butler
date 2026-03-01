@@ -32,8 +32,10 @@ import com.chriscartland.batterybutler.composeapp.feature.adddevice.AddDeviceScr
 import com.chriscartland.batterybutler.composeapp.feature.adddevicetype.AddDeviceTypeScreen
 import com.chriscartland.batterybutler.composeapp.feature.aichat.AiChatScreen
 import com.chriscartland.batterybutler.composeapp.feature.devicedetail.DeviceDetailScreen
+import com.chriscartland.batterybutler.composeapp.feature.devicetypes.DeviceTypeDetailScreen
 import com.chriscartland.batterybutler.composeapp.feature.devicetypes.EditDeviceTypeScreen
 import com.chriscartland.batterybutler.composeapp.feature.editdevice.EditDeviceScreen
+import com.chriscartland.batterybutler.composeapp.feature.eventdetail.EditBatteryEventScreen
 import com.chriscartland.batterybutler.composeapp.feature.eventdetail.EventDetailScreen
 import com.chriscartland.batterybutler.composeapp.feature.login.LoginScreen
 import com.chriscartland.batterybutler.composeapp.feature.main.DevicesScreenRoot
@@ -246,8 +248,8 @@ fun App(
                                             onAddTypeClick = {
                                                 detailBackStack.navigateTo(Screen.AddDeviceType)
                                             },
-                                            onEditType = { typeId ->
-                                                detailBackStack.navigateTo(Screen.EditDeviceType(typeId))
+                                            onTypeClick = { typeId ->
+                                                detailBackStack.navigateTo(Screen.DeviceTypeDetail(typeId))
                                             },
                                             modifier = contentModifier,
                                             contentPadding = bottomContentPadding,
@@ -358,6 +360,32 @@ fun App(
                                         EventDetailScreen(
                                             viewModel = eventViewModel,
                                             onBack = { detailBackStack.removeLastOrNull() },
+                                            onEdit = {
+                                                detailBackStack.navigateTo(
+                                                    Screen.EditBatteryEvent(args.eventId),
+                                                )
+                                            },
+                                            onDeviceClick = { deviceId ->
+                                                detailBackStack.navigateTo(Screen.DeviceDetail(deviceId))
+                                            },
+                                        )
+                                    }
+
+                                    entry<Screen.EditBatteryEvent>(metadata = slideTransitionMetadata) {
+                                        val args = it
+                                        val editEventViewModel =
+                                            viewModel(key = "EditBatteryEvent-${args.eventId}") {
+                                                component.editBatteryEventViewModelFactory.create(args.eventId)
+                                            }
+                                        EditBatteryEventScreen(
+                                            viewModel = editEventViewModel,
+                                            onBack = { detailBackStack.removeLastOrNull() },
+                                            onDelete = {
+                                                detailBackStack.removeLastOrNull()
+                                                if (detailBackStack.lastOrNull() is Screen.EventDetail) {
+                                                    detailBackStack.removeLastOrNull()
+                                                }
+                                            },
                                         )
                                     }
 
@@ -382,6 +410,26 @@ fun App(
                                         )
                                     }
 
+                                    entry<Screen.DeviceTypeDetail>(metadata = slideTransitionMetadata) {
+                                        val args = it
+                                        val detailViewModel =
+                                            viewModel(key = "DeviceTypeDetail-${args.typeId}") {
+                                                component.deviceTypeDetailViewModelFactory.create(args.typeId)
+                                            }
+                                        DeviceTypeDetailScreen(
+                                            viewModel = detailViewModel,
+                                            onBack = { detailBackStack.removeLastOrNull() },
+                                            onEdit = {
+                                                detailBackStack.navigateTo(
+                                                    Screen.EditDeviceType(args.typeId),
+                                                )
+                                            },
+                                            onDeviceClick = { deviceId ->
+                                                detailBackStack.navigateTo(Screen.DeviceDetail(deviceId))
+                                            },
+                                        )
+                                    }
+
                                     entry<Screen.EditDeviceType>(metadata = slideTransitionMetadata) {
                                         val args = it
                                         val editTypeViewModel =
@@ -391,7 +439,12 @@ fun App(
                                         EditDeviceTypeScreen(
                                             viewModel = editTypeViewModel,
                                             onBack = { detailBackStack.removeLastOrNull() },
-                                            onDelete = { detailBackStack.removeLastOrNull() },
+                                            onDelete = {
+                                                detailBackStack.removeLastOrNull()
+                                                if (detailBackStack.lastOrNull() is Screen.DeviceTypeDetail) {
+                                                    detailBackStack.removeLastOrNull()
+                                                }
+                                            },
                                         )
                                     }
 

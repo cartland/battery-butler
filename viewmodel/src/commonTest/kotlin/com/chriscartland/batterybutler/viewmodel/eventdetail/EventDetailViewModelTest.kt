@@ -4,12 +4,9 @@ import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationmodel.eventdetail.EventDetailUiState
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
 import com.chriscartland.batterybutler.testcommon.TestDevices
-import com.chriscartland.batterybutler.usecase.DeleteBatteryEventUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceDetailUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.GetEventDetailUseCase
-import com.chriscartland.batterybutler.usecase.UpdateBatteryEventUseCase
-import com.chriscartland.batterybutler.usecase.UpdateDeviceLastReplacedUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -23,8 +20,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNull
-import kotlin.test.assertTrue
-import kotlin.time.Instant
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class EventDetailViewModelTest {
@@ -96,60 +91,14 @@ class EventDetailViewModelTest {
             assertNull(state.deviceType)
         }
 
-    @Test
-    fun `updateDate updates event date in repository`() =
-        runTest {
-            val repo = FakeDeviceRepository()
-            val device = TestDevices.createDevice(id = "device-1")
-            val event = TestDevices.createBatteryEvent(
-                id = "event-1",
-                deviceId = "device-1",
-                date = Instant.fromEpochMilliseconds(1000),
-            )
-            repo.setDevices(listOf(device))
-            repo.setEvents(listOf(event))
-
-            val viewModel = createViewModel(repo, "event-1")
-
-            // Wait for Success state
-            viewModel.uiState.first { it is EventDetailUiState.Success }
-
-            val newDate = Instant.fromEpochMilliseconds(2000)
-            viewModel.updateDate(newDate)
-            testDispatcher.scheduler.advanceUntilIdle()
-
-            assertEquals(newDate, repo.events[0].date)
-        }
-
-    @Test
-    fun `deleteEvent removes event from repository`() =
-        runTest {
-            val repo = FakeDeviceRepository()
-            val device = TestDevices.createDevice(id = "device-1")
-            val event = TestDevices.createBatteryEvent(id = "event-1", deviceId = "device-1")
-            repo.setDevices(listOf(device))
-            repo.setEvents(listOf(event))
-
-            val viewModel = createViewModel(repo, "event-1")
-
-            viewModel.deleteEvent()
-            testDispatcher.scheduler.advanceUntilIdle()
-
-            assertTrue(repo.events.isEmpty())
-        }
-
     private fun createViewModel(
         repo: FakeDeviceRepository,
         eventId: String,
-    ): EventDetailViewModel {
-        val updateDeviceLastReplaced = UpdateDeviceLastReplacedUseCase(repo)
-        return EventDetailViewModel(
+    ): EventDetailViewModel =
+        EventDetailViewModel(
             eventId = eventId,
             getEventDetailUseCase = GetEventDetailUseCase(repo),
             getDeviceDetailUseCase = GetDeviceDetailUseCase(repo),
             getDeviceTypesUseCase = GetDeviceTypesUseCase(repo),
-            updateBatteryEventUseCase = UpdateBatteryEventUseCase(repo, updateDeviceLastReplaced),
-            deleteBatteryEventUseCase = DeleteBatteryEventUseCase(repo, updateDeviceLastReplaced),
         )
-    }
 }
