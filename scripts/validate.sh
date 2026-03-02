@@ -26,6 +26,9 @@ echo "--- 3b. Detekt ---"
 echo "--- 3c. Architecture Check ---"
 ./gradlew checkArchitecture
 
+echo "--- 3d. Test Coverage Check ---"
+./gradlew checkTestCoverage
+
 echo "--- 4. Tests (Unit & Instrumented) ---"
 ./scripts/test.sh
 

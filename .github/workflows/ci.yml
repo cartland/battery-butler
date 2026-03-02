@@ -215,6 +215,17 @@ jobs:
       - name: Check Theme Layer Enforcement
         run: ./gradlew checkThemeLayer
 
+  validation_test_coverage:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup-java-gradle
+      - name: Check Test Coverage
+        run: ./gradlew checkTestCoverage
+
   build_android:
     needs: changes
     if: needs.changes.outputs.code == 'true' && (github.event_name == 'push' || needs.changes.outputs.ci_mode != 'development')
@@ -429,6 +440,7 @@ jobs:
       - validation_ios_ui
       - validation_architecture
       - validation_theme_layer
+      - validation_test_coverage
       - build_android
       - build_ios_compose
       - build_ios_native
@@ -459,7 +471,8 @@ jobs:
             "${{ needs.validation_detekt.result }}" \
             "${{ needs.validation_test.result }}" \
             "${{ needs.validation_architecture.result }}" \
-            "${{ needs.validation_theme_layer.result }}"; do
+            "${{ needs.validation_theme_layer.result }}" \
+            "${{ needs.validation_test_coverage.result }}"; do
             if [[ "$result" == "failure" || "$result" == "cancelled" ]]; then
               FAILED=true
             fi
