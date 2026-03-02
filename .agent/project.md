@@ -147,15 +147,15 @@ The AI system instruction (in `AndroidAiEngine`) is immutable after model creati
 
 The AI chat is an overlay on top of the main tab UI, not a separate tab/screen. Key design:
 - **`AiChatViewModel`** is hoisted to App scope so state survives tab navigation.
-- **`isAiExpanded`** and **`tabTransitionForward`** state live in `App.kt` (both `rememberSaveable`). `App.kt` sets `isAiExpanded = false` in `onTabSelected` — this is the single authoritative dismissal point.
-- **`BackHandler(enabled = isAiExpanded)`** in `App.kt` intercepts back presses before `NavDisplay`, collapsing the overlay instead of popping the nav stack.
+- **`isAiExpanded`** and **`tabTransitionForward`** state live in `App.kt` (both `rememberSaveable`). `App.kt` sets `isAiExpanded = false` in `onTabSelected`. `MainScreenShell` also collapses via predictive back gesture or collapse button.
 - **Main tab navigation** flows through each tab's `ScreenRoot` composable down to `MainScreenShell`.
 - **`MainScreenShell`** bottom bar (`presentation-feature/main/MainScreen.kt`) owns the always-visible AI input (`OutlinedTextField` + send `IconButton`) wrapped in `Surface` with `imePadding()` on the `Scaffold`. Tapping send expands the overlay and routes through `onSendAiMessage`.
+- **AI overlay height animation**: `MainScreenShell` uses `Animatable<Float>` (0f = hidden, 1f = full target height) to drive chat overlay height. `PredictiveBackHandler` (expect/actual in `presentation-core/.../components/PredictiveBackHandler.kt`) is composed after `content()` for higher priority than NavDisplay's handler. On Android, the back gesture smoothly tracks finger position; on desktop/iOS, the handler is a no-op.
 - **`AiTabContent`** (`presentation-feature/aichat/AiTabContent.kt`) has a `showInput: Boolean = true` param. The overlay passes `showInput = false` so only the chat history slides up.
 - **AI messages** include an `[Active tab: <name>]` context prefix so the AI knows which screen the user is viewing.
 - **Tab transitions** are directional: `tabTransitionForward` is set before each backstack mutation based on tab index. `NavDisplay.transitionSpec` reads it to slide left or right.
 - **`MainTab.AI`** enum value remains in the codebase but is dead code — the AI is now an overlay, not a nav tab.
-- **Predictive back (Android 13+)**: Opted in via `android:enableOnBackInvokedCallback="true"` in `AndroidManifest.xml`. The detail stack `BackHandler` is disabled when Login is the only entry (prevents revealing unauthenticated tabs). Full back gesture contract documented in `docs/TESTING.md`.
+- **Predictive back (Android 13+)**: Opted in via `android:enableOnBackInvokedCallback="true"` in `AndroidManifest.xml`. AI overlay collapse uses `PredictiveBackHandler` for gesture-tracked animation. The detail stack back handling disables the handler when Login is the only entry (prevents revealing unauthenticated tabs). Full back gesture contract documented in `docs/TESTING.md`.
 
 
 ## Common Commands

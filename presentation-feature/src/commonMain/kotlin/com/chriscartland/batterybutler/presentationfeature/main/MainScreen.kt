@@ -1,10 +1,9 @@
 package com.chriscartland.batterybutler.presentationfeature.main
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -12,9 +11,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
@@ -73,6 +72,7 @@ import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
+import com.chriscartland.batterybutler.presentationcore.components.PredictiveBackHandler
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationcore.theme.LocalAiAvailable
 import com.chriscartland.batterybutler.presentationcore.theme.Padding
@@ -91,6 +91,7 @@ import com.chriscartland.batterybutler.presentationmodel.home.HomeUiState
 import com.chriscartland.batterybutler.presentationmodel.home.SortOption
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.StringResource
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -258,27 +259,51 @@ fun MainScreenShell(
                 end = Padding.standard,
             )
 
-            Box(modifier = Modifier.fillMaxSize()) {
+            // Animatable drives chat height: 0f = hidden, 1f = full target height.
+            val chatHeightFraction = remember { Animatable(if (isAiExpanded) 1f else 0f) }
+
+            // Normal expand/collapse (button tap, tab switch, etc.)
+            LaunchedEffect(isAiExpanded) {
+                chatHeightFraction.animateTo(
+                    targetValue = if (isAiExpanded) 1f else 0f,
+                    animationSpec = tween(300),
+                )
+            }
+
+            BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+                val chatTargetHeight = if (imeVisible) maxHeight else (maxHeight / 2)
+
                 content(contentModifier, bottomContentPadding)
 
-                val heightFraction = if (imeVisible) 1f else 0.5f
+                // Predictive back: tracks gesture progress, collapses on commit,
+                // restores on cancel. Placed AFTER content() so it composes deeper
+                // than NavDisplay's handler → higher priority.
+                PredictiveBackHandler(enabled = isAiExpanded) { progress ->
+                    try {
+                        progress.collect { event ->
+                            chatHeightFraction.snapTo(1f - event.progress)
+                        }
+                        // Gesture committed — finish collapse.
+                        chatHeightFraction.animateTo(0f)
+                        onAiExpandedChange(false)
+                    } catch (_: CancellationException) {
+                        // Gesture cancelled — restore if chat is still supposed to be open.
+                        if (isAiExpanded) {
+                            chatHeightFraction.animateTo(1f)
+                        }
+                    }
+                }
 
-                AnimatedVisibility(
-                    visible = isAiExpanded,
-                    modifier = Modifier.align(Alignment.BottomCenter),
-                    enter = slideInVertically(initialOffsetY = { it }),
-                    exit = slideOutVertically(targetOffsetY = { it }),
-                ) {
+                if (chatHeightFraction.value > 0f) {
+                    val effectiveChatHeight = chatTargetHeight * chatHeightFraction.value
                     val bottomBarHeight: Dp = with(density) { bottomBarHeightPx.toDp() }
                     Surface(
                         modifier = Modifier
+                            .align(Alignment.BottomCenter)
                             .fillMaxWidth()
-                            .fillMaxHeight(heightFraction)
+                            .height(effectiveChatHeight)
                             .padding(
                                 top = if (imeVisible) innerPadding.calculateTopPadding() else 0.dp,
-                                // Use measured bar height so the overlay always ends
-                                // exactly above the bottom bar, regardless of how
-                                // innerPadding is computed relative to IME state.
                                 bottom = bottomBarHeight,
                             ),
                         color = NavigationBarDefaults.containerColor,
@@ -287,8 +312,6 @@ fun MainScreenShell(
                         Column(
                             modifier = Modifier
                                 .fillMaxSize()
-                                // Safety net: if keyboard appears while overlay is
-                                // open, shrink the column so messages stay visible.
                                 .imePadding(),
                         ) {
                             Row(
