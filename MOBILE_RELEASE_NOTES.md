@@ -6,6 +6,44 @@ Each section covers one release tag range. "What's New" is user-facing language 
 
 ---
 
+## [android/25] — 2026-03-01
+
+From tag `android/24` to tag `android/25` (1 mobile-relevant commit out of 2 total)
+
+### What's New
+
+**Smoother keyboard transitions**
+- The AI chat overlay now resizes instantly when the keyboard opens or closes, eliminating a brief animation lag that could cause the input row and overlay to move out of sync
+
+### Detailed Changes
+
+| PR | Description |
+|----|-------------|
+| [#822](https://github.com/cartland/battery-butler/pull/822) | Snap AI overlay height fraction to remove IME animation desync |
+
+---
+
+## [android/24] — 2026-03-01
+
+From tag `android/23` to tag `android/24` (2 mobile-relevant commits out of 5 total)
+
+### What's New
+
+**Visual polish**
+- The "Ask AI..." text field row now matches the navigation bar and chat overlay background color in both light and dark themes
+
+**Screenshot test coverage**
+- Added full-height AI overlay screenshot test covering the keyboard-open state in light and dark themes
+
+### Detailed Changes
+
+| PR | Description |
+|----|-------------|
+| [#821](https://github.com/cartland/battery-butler/pull/821) | Add screenshot test for full-height AI overlay with `imeVisible` state hoisting |
+| [#818](https://github.com/cartland/battery-butler/pull/818) | Match Ask AI text field background to navigation bar color |
+
+---
+
 ## [android/23] — 2026-03-01
 
 From tag `android/21` to tag `android/23` (5 mobile-relevant commits out of 14 total)
