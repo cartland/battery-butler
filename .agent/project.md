@@ -143,19 +143,31 @@ The AI system instruction (in `AndroidAiEngine`) is immutable after model creati
 - Event update/delete recalculates device `batteryLastReplaced` via `UpdateDeviceLastReplacedUseCase`
 - Gemini may send numeric params as String or Number — `parseIntParam()` handles both
 
+### Navigation Architecture (Unified Back Stack)
+
+The app uses a **single unified back stack** (`backStack` in `App.kt`) with one `NavDisplay`. All screens (tabs, login, detail, edit, settings) share the same stack. Shell chrome (top bar, bottom nav, AI overlay) is conditionally shown based on whether the top screen is a tab screen.
+
+Key design:
+- **Initial state**: `[Devices, Login]` — Login on top (full-screen, no chrome). After login, Login is removed, revealing Devices with shell.
+- **`Screen.isTabScreen`** extension property identifies Devices/Types/History as tab screens.
+- **`MainScreenShell.showChrome`** parameter: when `false`, hides top bar, bottom nav, AI input/overlay, and predictive back handler. Sets `contentWindowInsets = WindowInsets(0,0,0,0)` so detail screens handle their own insets.
+- **Tab switching** clears the entire stack and rebuilds with the tab hierarchy (e.g., Types = `[Devices, Types]`).
+- **`navigateTo`** does type-based dedup: same `::class` replaces top entry (e.g., `DeviceDetail("a")` → `DeviceDetail("b")`).
+- **`isTabTransition`** flag (set `true` by tab navigation, `false` by detail navigation) controls directional animations in `transitionSpec`.
+- **NavDisplay `transitionSpec` gotcha**: `initialState`/`targetState` in the lambda are wrapper types (not raw `Screen`), so extension properties like `isTabScreen` can't be called on them. Use external flags instead.
+
 ### AI Overlay UI Architecture
 
 The AI chat is an overlay on top of the main tab UI, not a separate tab/screen. Key design:
 - **`AiChatViewModel`** is hoisted to App scope so state survives tab navigation.
-- **`isAiExpanded`** and **`tabTransitionForward`** state live in `App.kt` (both `rememberSaveable`). `App.kt` sets `isAiExpanded = false` in `onTabSelected`. `MainScreenShell` also collapses via predictive back gesture or collapse button.
-- **Main tab navigation** flows through each tab's `ScreenRoot` composable down to `MainScreenShell`.
+- **`isAiExpanded`** and **`tabTransitionForward`** state live in `App.kt` (both `rememberSaveable`). All detail navigation sets `isAiExpanded = false` before pushing. `MainScreenShell` also collapses via predictive back gesture or collapse button.
 - **`MainScreenShell`** bottom bar (`presentation-feature/main/MainScreen.kt`) owns the always-visible AI input (`OutlinedTextField` + send `IconButton`) wrapped in `Surface` with `imePadding()` on the `Scaffold`. Tapping send expands the overlay and routes through `onSendAiMessage`.
 - **AI overlay height animation**: `MainScreenShell` uses `Animatable<Float>` (0f = hidden, 1f = full target height) to drive chat overlay height. `PredictiveBackHandler` (expect/actual in `presentation-core/.../components/PredictiveBackHandler.kt`) is composed after `content()` for higher priority than NavDisplay's handler. On Android, the back gesture smoothly tracks finger position; on desktop/iOS, the handler is a no-op.
 - **`AiTabContent`** (`presentation-feature/aichat/AiTabContent.kt`) has a `showInput: Boolean = true` param. The overlay passes `showInput = false` so only the chat history slides up.
 - **AI messages** include an `[Active tab: <name>]` context prefix so the AI knows which screen the user is viewing.
 - **Tab transitions** are directional: `tabTransitionForward` is set before each backstack mutation based on tab index. `NavDisplay.transitionSpec` reads it to slide left or right.
 - **`MainTab.AI`** enum value remains in the codebase but is dead code — the AI is now an overlay, not a nav tab.
-- **Predictive back (Android 13+)**: Opted in via `android:enableOnBackInvokedCallback="true"` in `AndroidManifest.xml`. AI overlay collapse uses `PredictiveBackHandler` for gesture-tracked animation. The detail stack back handling disables the handler when Login is the only entry (prevents revealing unauthenticated tabs). Full back gesture contract documented in `docs/TESTING.md`.
+- **Predictive back (Android 13+)**: Opted in via `android:enableOnBackInvokedCallback="true"` in `AndroidManifest.xml`. AI overlay collapse uses `PredictiveBackHandler` for gesture-tracked animation. Back on Login is a no-op (prevents revealing unauthenticated tabs). Full back gesture contract documented in `docs/TESTING.md`.
 
 
 ## Common Commands
@@ -218,7 +230,7 @@ ruby ios-app-swift-ui/sync_pbxproj.rb         # Sync Swift files to Xcode
 - All tests are offline-capable — no server needed (app defaults to `NetworkMode.None`)
 - `compose-app/src/androidInstrumentedTest/`: `ComposeUITest` (UI navigation), `ExampleInstrumentedTest` (app context)
 - `data/src/androidInstrumentedTest/`: `DatabaseSanityTest` (Room schema), `MigrationTest` (Room migrations 3→4→5)
-- **BackHandler priority**: The app uses two NavDisplay stacks (tab + detail). When both have entries, the tab NavDisplay's BackHandler (deeper in composition tree) takes priority over the App-level detail stack BackHandler. In tests, use actual UI back buttons (Cancel/Done/Back arrow) instead of `Espresso.pressBack()` to avoid this conflict.
+- **BackHandler priority**: The app uses a single unified NavDisplay back stack. The AI overlay's `PredictiveBackHandler` composes deeper than NavDisplay's handler, giving it higher priority when expanded. In tests, use actual UI back buttons (Cancel/Done/Back arrow) instead of `Espresso.pressBack()` to avoid BackHandler conflicts.
 - **Managed device test filtering**: `--tests` flag doesn't work with managed device tasks. Use `-Pandroid.testInstrumentationRunnerArguments.class=com.example.TestClass#testMethod` instead.
 - **Test isolation**: Tests within a single managed device run share database state. Avoid tests that depend on empty-state UI when other tests create persistent data.
 
