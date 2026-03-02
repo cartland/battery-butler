@@ -136,10 +136,11 @@ open class TestCoverageCheckTask : DefaultTask() {
                             val hasTest = rule.testSourceSets.any { testSourceSet ->
                                 val testDir =
                                     File(rootDir, "${rule.module}/src/$testSourceSet/kotlin")
-                                testDir.exists() && testDir.walk().any { testFile ->
-                                    testFile.isFile &&
-                                        testFile.nameWithoutExtension == "${className}Test"
-                                }
+                                testDir.exists() &&
+                                    testDir.walk().any { testFile ->
+                                        testFile.isFile &&
+                                            testFile.nameWithoutExtension == "${className}Test"
+                                    }
                             }
 
                             if (hasTest) {
@@ -188,8 +189,10 @@ open class TestCoverageCheckTask : DefaultTask() {
         for (i in (classLineIndex - 1) downTo maxOf(0, classLineIndex - 10)) {
             val trimmed = lines[i].trim()
             if (trimmed.startsWith("// @NoTestRequired:")) return true
-            if (trimmed.startsWith("@") || trimmed.startsWith("//") ||
-                trimmed.startsWith("/*") || trimmed.startsWith("*")
+            if (trimmed.startsWith("@") ||
+                trimmed.startsWith("//") ||
+                trimmed.startsWith("/*") ||
+                trimmed.startsWith("*")
             ) {
                 continue
             }
@@ -208,8 +211,10 @@ open class TestCoverageCheckTask : DefaultTask() {
             if (trimmed.startsWith("// @NoTestRequired:")) {
                 return trimmed.removePrefix("// @NoTestRequired:").trim()
             }
-            if (trimmed.startsWith("@") || trimmed.startsWith("//") ||
-                trimmed.startsWith("/*") || trimmed.startsWith("*")
+            if (trimmed.startsWith("@") ||
+                trimmed.startsWith("//") ||
+                trimmed.startsWith("/*") ||
+                trimmed.startsWith("*")
             ) {
                 continue
             }
