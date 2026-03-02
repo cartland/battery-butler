@@ -6,8 +6,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -18,7 +16,6 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -42,6 +39,7 @@ import com.chriscartland.batterybutler.composeapp.feature.main.HistoryScreenRoot
 import com.chriscartland.batterybutler.composeapp.feature.main.TypesScreenRoot
 import com.chriscartland.batterybutler.composeapp.feature.settings.SettingsScreen
 import com.chriscartland.batterybutler.composeapp.navigation.Screen
+import com.chriscartland.batterybutler.composeapp.navigation.isTabScreen
 import com.chriscartland.batterybutler.composeapp.navigation.navigateTo
 import com.chriscartland.batterybutler.composeapp.util.ScreenListSaver
 import com.chriscartland.batterybutler.composeresources.LocalAppStrings
@@ -90,13 +88,11 @@ fun App(
             LocalFileSaver provides fileSaver,
             LocalAppStrings provides ComposeAppStrings(),
         ) {
-            // Tab back stack: only Devices, Types, History
-            val tabBackStack = rememberSaveable(saver = ScreenListSaver) {
-                mutableStateListOf<Screen>(Screen.Devices)
-            }
-            // Detail back stack: Login and all full-screen detail screens
-            val detailBackStack = rememberSaveable(saver = ScreenListSaver) {
-                mutableStateListOf<Screen>(Screen.Login)
+            // Unified back stack: Login on top of Devices at launch.
+            // Login shows first (full-screen, no chrome). After login,
+            // Login is removed and Devices is revealed with shell.
+            val backStack = rememberSaveable(saver = ScreenListSaver) {
+                mutableStateListOf<Screen>(Screen.Devices, Screen.Login)
             }
 
             val isAiEnabled = component.featureFlagProvider.isEnabled(FeatureFlag.AI_BATCH_IMPORT)
@@ -107,6 +103,7 @@ fun App(
             val isAiProcessing by aiViewModel.isProcessing.collectAsStateWithLifecycle()
             var isAiExpanded by rememberSaveable { mutableStateOf(false) }
             var tabTransitionForward by rememberSaveable { mutableStateOf(true) }
+            var isTabTransition by rememberSaveable { mutableStateOf(false) }
 
             val aiUiMessages = aiMessages.map { msg ->
                 ChatUiMessage(
@@ -116,8 +113,13 @@ fun App(
                 )
             }
 
-            // Determine active tab name from current tab back stack
-            val currentTabName = when (tabBackStack.lastOrNull()) {
+            // Derive shell visibility and current tab from the unified stack
+            val topScreen = backStack.lastOrNull()
+            val showChrome = topScreen?.isTabScreen == true
+            val currentTab = backStack.lastOrNull { it.isTabScreen }.toMainTab()
+
+            // Determine active tab name for AI context hints
+            val currentTabName = when (backStack.lastOrNull { it.isTabScreen }) {
                 is Screen.Devices -> MainTab.Devices.name
                 is Screen.Types -> MainTab.Types.name
                 is Screen.History -> MainTab.History.name
@@ -131,31 +133,33 @@ fun App(
                 aiViewModel.sendMessage(text, hints = hints)
             }
 
-            // Tab navigation actions
+            // Tab navigation: clear non-tab entries, then replace tab stack
             val navigateToDevices = {
-                tabTransitionForward = false // always going to index 0 (leftward)
-                if (tabBackStack.lastOrNull() != Screen.Devices) {
-                    tabBackStack.clear()
-                    tabBackStack.add(Screen.Devices)
-                }
+                isAiExpanded = false
+                isTabTransition = true
+                tabTransitionForward = false
+                backStack.clear()
+                backStack.add(Screen.Devices)
             }
             val navigateToTypes = {
-                // Going forward unless currently on History (index 2 > 1)
-                tabTransitionForward = tabBackStack.lastOrNull() !is Screen.History
-                tabBackStack.clear()
-                tabBackStack.add(Screen.Devices)
-                tabBackStack.add(Screen.Types)
+                isAiExpanded = false
+                isTabTransition = true
+                tabTransitionForward =
+                    backStack.lastOrNull { it.isTabScreen } !is Screen.History
+                backStack.clear()
+                backStack.add(Screen.Devices)
+                backStack.add(Screen.Types)
             }
             val navigateToHistory = {
-                tabTransitionForward = true // always going to index 2 (rightward)
-                tabBackStack.clear()
-                tabBackStack.add(Screen.Devices)
-                tabBackStack.add(Screen.History)
+                isAiExpanded = false
+                isTabTransition = true
+                tabTransitionForward = true
+                backStack.clear()
+                backStack.add(Screen.Devices)
+                backStack.add(Screen.History)
             }
 
             val onTabSelected: (MainTab) -> Unit = { selectedTab ->
-                // Dismiss AI chat overlay whenever switching tabs
-                isAiExpanded = false
                 when (selectedTab) {
                     MainTab.Devices -> navigateToDevices()
                     MainTab.Types -> navigateToTypes()
@@ -171,296 +175,368 @@ fun App(
                 Surface(
                     color = MaterialTheme.colorScheme.background,
                 ) {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        // LAYER 0: Persistent shell — never animates during tab switches
-                        MainScreenShell(
-                            currentTab = tabBackStack.lastOrNull().toMainTab(),
-                            onTabSelected = onTabSelected,
-                            onSettingsClick = { detailBackStack.navigateTo(Screen.Settings) },
-                            aiMessages = aiUiMessages,
-                            isAiProcessing = isAiProcessing,
-                            isAiExpanded = isAiExpanded,
-                            onAiExpandedChange = { isAiExpanded = it },
-                            onSendAiMessage = onSendAiMessage,
-                            onClearAiChat = aiViewModel::clearChat,
-                        ) { contentModifier, bottomContentPadding ->
+                    MainScreenShell(
+                        currentTab = currentTab,
+                        showChrome = showChrome,
+                        onTabSelected = onTabSelected,
+                        onSettingsClick = {
+                            isAiExpanded = false
+                            isTabTransition = false
+                            backStack.navigateTo(Screen.Settings)
+                        },
+                        aiMessages = aiUiMessages,
+                        isAiProcessing = isAiProcessing,
+                        isAiExpanded = isAiExpanded,
+                        onAiExpandedChange = { isAiExpanded = it },
+                        onSendAiMessage = onSendAiMessage,
+                        onClearAiChat = aiViewModel::clearChat,
+                    ) { contentModifier, bottomContentPadding ->
 
-                            // Tab content NavDisplay — only content area animates on tab switch
-                            NavDisplay(
-                                backStack = tabBackStack,
-                                onBack = {
-                                    // AI overlay takes priority over tab back-navigation.
-                                    // NavDisplay's handler fires before the top-level
-                                    // BackHandler when the tab stack has >1 entry.
-                                    if (isAiExpanded) {
-                                        isAiExpanded = false
-                                    } else {
-                                        tabBackStack.removeLastOrNull()
-                                    }
-                                },
-                                entryDecorators = listOf(
-                                    rememberSaveableStateHolderNavEntryDecorator<Screen>(),
-                                    rememberViewModelStoreNavEntryDecorator<Screen>(),
-                                ),
-                                transitionSpec = {
+                        NavDisplay(
+                            backStack = backStack,
+                            onBack = {
+                                val isLoginOnly = backStack.size == 1 &&
+                                    backStack.lastOrNull() is Screen.Login
+                                when {
+                                    isLoginOnly -> { /* no-op */ }
+                                    else -> backStack.removeLastOrNull()
+                                }
+                            },
+                            entryDecorators = listOf(
+                                rememberSaveableStateHolderNavEntryDecorator<Screen>(),
+                                rememberViewModelStoreNavEntryDecorator<Screen>(),
+                            ),
+                            transitionSpec = {
+                                if (isTabTransition) {
+                                    // Tab-to-tab: use directional slide
                                     if (tabTransitionForward) {
-                                        slideInHorizontally(tween(300)) { it } + fadeIn(tween(300)) togetherWith
-                                            slideOutHorizontally(tween(300)) { -it / 3 } + fadeOut(tween(300))
+                                        slideInHorizontally(tween(300)) { it } +
+                                            fadeIn(tween(300)) togetherWith
+                                            slideOutHorizontally(tween(300)) { -it / 3 } +
+                                            fadeOut(tween(300))
                                     } else {
-                                        slideInHorizontally(tween(300)) { -it / 3 } + fadeIn(tween(300)) togetherWith
-                                            slideOutHorizontally(tween(300)) { it } + fadeOut(tween(300))
+                                        slideInHorizontally(tween(300)) { -it / 3 } +
+                                            fadeIn(tween(300)) togetherWith
+                                            slideOutHorizontally(tween(300)) { it } +
+                                            fadeOut(tween(300))
                                     }
-                                },
-                                popTransitionSpec = {
-                                    slideInHorizontally(tween(300)) { -it / 3 } + fadeIn(tween(300)) togetherWith
-                                        slideOutHorizontally(tween(300)) { it } + fadeOut(tween(300))
-                                },
-                                entryProvider = entryProvider {
-                                    entry<Screen.Devices> {
-                                        val homeViewModel = viewModel { component.homeViewModel }
-                                        DevicesScreenRoot(
-                                            viewModel = homeViewModel,
-                                            onAddDeviceClick = {
-                                                detailBackStack.navigateTo(Screen.AddDevice)
-                                            },
-                                            onDeviceClick = { deviceId ->
-                                                detailBackStack.navigateTo(Screen.DeviceDetail(deviceId))
-                                            },
-                                            modifier = contentModifier,
-                                            contentPadding = bottomContentPadding,
+                                } else {
+                                    // Detail push: standard right-in slide
+                                    slideInHorizontally(tween(300)) { it } +
+                                        fadeIn(tween(300)) togetherWith
+                                        slideOutHorizontally(tween(300)) { -it / 3 } +
+                                        fadeOut(tween(300))
+                                }
+                            },
+                            popTransitionSpec = {
+                                slideInHorizontally(tween(300)) { -it / 3 } +
+                                    fadeIn(tween(300)) togetherWith
+                                    slideOutHorizontally(tween(300)) { it } +
+                                    fadeOut(tween(300))
+                            },
+                            entryProvider = entryProvider {
+                                // Tab entries
+                                entry<Screen.Devices> {
+                                    val homeViewModel =
+                                        viewModel { component.homeViewModel }
+                                    DevicesScreenRoot(
+                                        viewModel = homeViewModel,
+                                        onAddDeviceClick = {
+                                            isAiExpanded = false
+                                            isTabTransition = false
+                                            backStack.navigateTo(Screen.AddDevice)
+                                        },
+                                        onDeviceClick = { deviceId ->
+                                            isAiExpanded = false
+                                            isTabTransition = false
+                                            backStack.navigateTo(
+                                                Screen.DeviceDetail(deviceId),
+                                            )
+                                        },
+                                        modifier = contentModifier,
+                                        contentPadding = bottomContentPadding,
+                                    )
+                                }
+
+                                entry<Screen.Types> {
+                                    val deviceTypeListViewModel =
+                                        viewModel { component.deviceTypeListViewModel }
+                                    TypesScreenRoot(
+                                        viewModel = deviceTypeListViewModel,
+                                        onAddTypeClick = {
+                                            isAiExpanded = false
+                                            isTabTransition = false
+                                            backStack.navigateTo(Screen.AddDeviceType)
+                                        },
+                                        onTypeClick = { typeId ->
+                                            isAiExpanded = false
+                                            isTabTransition = false
+                                            backStack.navigateTo(
+                                                Screen.DeviceTypeDetail(typeId),
+                                            )
+                                        },
+                                        modifier = contentModifier,
+                                        contentPadding = bottomContentPadding,
+                                    )
+                                }
+
+                                entry<Screen.History> {
+                                    val historyListViewModel =
+                                        viewModel { component.historyListViewModel }
+                                    HistoryScreenRoot(
+                                        viewModel = historyListViewModel,
+                                        onAddEventClick = {
+                                            isAiExpanded = false
+                                            isTabTransition = false
+                                            backStack.navigateTo(Screen.AddBatteryEvent)
+                                        },
+                                        onEventClick = { eventId, _ ->
+                                            isAiExpanded = false
+                                            isTabTransition = false
+                                            backStack.navigateTo(
+                                                Screen.EventDetail(eventId),
+                                            )
+                                        },
+                                        modifier = contentModifier,
+                                        contentPadding = bottomContentPadding,
+                                    )
+                                }
+
+                                // Full-screen entries (no chrome)
+                                entry<Screen.Login> {
+                                    LoginScreen(
+                                        viewModel = viewModel { component.loginViewModel },
+                                        onLoginSuccess = {
+                                            backStack.removeAll { it is Screen.Login }
+                                        },
+                                        onSkipLogin = {
+                                            backStack.removeAll { it is Screen.Login }
+                                        },
+                                    )
+                                }
+
+                                entry<Screen.AddDevice>(
+                                    metadata = slideTransitionMetadata,
+                                ) {
+                                    AddDeviceScreen(
+                                        viewModel = viewModel {
+                                            component.addDeviceViewModel
+                                        },
+                                        onDeviceAdded = {
+                                            backStack.removeLastOrNull()
+                                        },
+                                        onAddDeviceTypeClick = {
+                                            backStack.navigateTo(Screen.AddDeviceType)
+                                        },
+                                        onBack = { backStack.removeLastOrNull() },
+                                    )
+                                }
+
+                                entry<Screen.AddBatteryEvent>(
+                                    metadata = slideTransitionMetadata,
+                                ) {
+                                    AddBatteryEventScreen(
+                                        viewModel = viewModel {
+                                            component.addBatteryEventViewModel
+                                        },
+                                        onEventAdded = {
+                                            backStack.removeLastOrNull()
+                                        },
+                                        onAddDeviceClick = {
+                                            backStack.navigateTo(Screen.AddDevice)
+                                        },
+                                        onBack = { backStack.removeLastOrNull() },
+                                    )
+                                }
+
+                                entry<Screen.AddDeviceType>(
+                                    metadata = slideTransitionMetadata,
+                                ) {
+                                    AddDeviceTypeScreen(
+                                        viewModel = viewModel {
+                                            component.addDeviceTypeViewModel
+                                        },
+                                        onDeviceTypeAdded = {
+                                            backStack.removeLastOrNull()
+                                        },
+                                        onBack = { backStack.removeLastOrNull() },
+                                    )
+                                }
+
+                                entry<Screen.DeviceDetail>(
+                                    metadata = slideTransitionMetadata,
+                                ) {
+                                    val args = it
+                                    val detailViewModel = viewModel(
+                                        key = "DeviceDetail-${args.deviceId}",
+                                    ) {
+                                        component.deviceDetailViewModelFactory.create(
+                                            args.deviceId,
                                         )
                                     }
+                                    DeviceDetailScreen(
+                                        viewModel = detailViewModel,
+                                        onBack = { backStack.removeLastOrNull() },
+                                        onEdit = {
+                                            backStack.navigateTo(
+                                                Screen.EditDevice(args.deviceId),
+                                            )
+                                        },
+                                        onEventClick = { eventId ->
+                                            backStack.navigateTo(
+                                                Screen.EventDetail(eventId),
+                                            )
+                                        },
+                                    )
+                                }
 
-                                    entry<Screen.Types> {
-                                        val deviceTypeListViewModel =
-                                            viewModel { component.deviceTypeListViewModel }
-                                        TypesScreenRoot(
-                                            viewModel = deviceTypeListViewModel,
-                                            onAddTypeClick = {
-                                                detailBackStack.navigateTo(Screen.AddDeviceType)
-                                            },
-                                            onTypeClick = { typeId ->
-                                                detailBackStack.navigateTo(Screen.DeviceTypeDetail(typeId))
-                                            },
-                                            modifier = contentModifier,
-                                            contentPadding = bottomContentPadding,
+                                entry<Screen.EventDetail>(
+                                    metadata = slideTransitionMetadata,
+                                ) {
+                                    val args = it
+                                    val eventViewModel = viewModel(
+                                        key = "EventDetail-${args.eventId}",
+                                    ) {
+                                        component.eventDetailViewModelFactory.create(
+                                            args.eventId,
                                         )
                                     }
+                                    EventDetailScreen(
+                                        viewModel = eventViewModel,
+                                        onBack = { backStack.removeLastOrNull() },
+                                        onEdit = {
+                                            backStack.navigateTo(
+                                                Screen.EditBatteryEvent(args.eventId),
+                                            )
+                                        },
+                                        onDeviceClick = { deviceId ->
+                                            backStack.navigateTo(
+                                                Screen.DeviceDetail(deviceId),
+                                            )
+                                        },
+                                    )
+                                }
 
-                                    entry<Screen.History> {
-                                        val historyListViewModel =
-                                            viewModel { component.historyListViewModel }
-                                        HistoryScreenRoot(
-                                            viewModel = historyListViewModel,
-                                            onAddEventClick = {
-                                                detailBackStack.navigateTo(Screen.AddBatteryEvent)
-                                            },
-                                            onEventClick = { eventId, _ ->
-                                                detailBackStack.navigateTo(Screen.EventDetail(eventId))
-                                            },
-                                            modifier = contentModifier,
-                                            contentPadding = bottomContentPadding,
+                                entry<Screen.EditBatteryEvent>(
+                                    metadata = slideTransitionMetadata,
+                                ) {
+                                    val args = it
+                                    val editEventViewModel = viewModel(
+                                        key = "EditBatteryEvent-${args.eventId}",
+                                    ) {
+                                        component.editBatteryEventViewModelFactory.create(
+                                            args.eventId,
                                         )
                                     }
-                                },
-                            )
-                        }
-
-                        // LAYER 1: Detail / modal overlay — full screen, slides over shell
-                        if (detailBackStack.isNotEmpty()) {
-                            NavDisplay(
-                                backStack = detailBackStack,
-                                onBack = {
-                                    val isLoginOnly = detailBackStack.size == 1 &&
-                                        detailBackStack.lastOrNull() is Screen.Login
-                                    if (!isLoginOnly) {
-                                        detailBackStack.removeLastOrNull()
-                                    }
-                                },
-                                entryDecorators = listOf(
-                                    rememberSaveableStateHolderNavEntryDecorator<Screen>(),
-                                    rememberViewModelStoreNavEntryDecorator<Screen>(),
-                                ),
-                                transitionSpec = {
-                                    slideInHorizontally(tween(300)) { it } + fadeIn(tween(300)) togetherWith
-                                        slideOutHorizontally(tween(300)) { -it / 3 } + fadeOut(tween(300))
-                                },
-                                popTransitionSpec = {
-                                    slideInHorizontally(tween(300)) { -it / 3 } + fadeIn(tween(300)) togetherWith
-                                        slideOutHorizontally(tween(300)) { it } + fadeOut(tween(300))
-                                },
-                                entryProvider = entryProvider {
-                                    entry<Screen.Login> {
-                                        LoginScreen(
-                                            viewModel = viewModel { component.loginViewModel },
-                                            onLoginSuccess = { detailBackStack.clear() },
-                                            onSkipLogin = { detailBackStack.clear() },
-                                        )
-                                    }
-
-                                    entry<Screen.AddDevice>(metadata = slideTransitionMetadata) {
-                                        AddDeviceScreen(
-                                            viewModel = viewModel { component.addDeviceViewModel },
-                                            onDeviceAdded = { detailBackStack.removeLastOrNull() },
-                                            onAddDeviceTypeClick = {
-                                                detailBackStack.navigateTo(Screen.AddDeviceType)
-                                            },
-                                            onBack = { detailBackStack.removeLastOrNull() },
-                                        )
-                                    }
-
-                                    entry<Screen.AddBatteryEvent>(metadata = slideTransitionMetadata) {
-                                        AddBatteryEventScreen(
-                                            viewModel = viewModel { component.addBatteryEventViewModel },
-                                            onEventAdded = { detailBackStack.removeLastOrNull() },
-                                            onAddDeviceClick = {
-                                                detailBackStack.navigateTo(Screen.AddDevice)
-                                            },
-                                            onBack = { detailBackStack.removeLastOrNull() },
-                                        )
-                                    }
-
-                                    entry<Screen.AddDeviceType>(metadata = slideTransitionMetadata) {
-                                        AddDeviceTypeScreen(
-                                            viewModel = viewModel { component.addDeviceTypeViewModel },
-                                            onDeviceTypeAdded = { detailBackStack.removeLastOrNull() },
-                                            onBack = { detailBackStack.removeLastOrNull() },
-                                        )
-                                    }
-
-                                    entry<Screen.DeviceDetail>(metadata = slideTransitionMetadata) {
-                                        val args = it
-                                        val detailViewModel =
-                                            viewModel(key = "DeviceDetail-${args.deviceId}") {
-                                                component.deviceDetailViewModelFactory.create(args.deviceId)
+                                    EditBatteryEventScreen(
+                                        viewModel = editEventViewModel,
+                                        onBack = { backStack.removeLastOrNull() },
+                                        onDelete = {
+                                            backStack.removeLastOrNull()
+                                            if (backStack.lastOrNull() is Screen.EventDetail) {
+                                                backStack.removeLastOrNull()
                                             }
-                                        DeviceDetailScreen(
-                                            viewModel = detailViewModel,
-                                            onBack = { detailBackStack.removeLastOrNull() },
-                                            onEdit = {
-                                                detailBackStack.navigateTo(
-                                                    Screen.EditDevice(args.deviceId),
-                                                )
-                                            },
-                                            onEventClick = { eventId ->
-                                                detailBackStack.navigateTo(Screen.EventDetail(eventId))
-                                            },
+                                        },
+                                    )
+                                }
+
+                                entry<Screen.EditDevice>(
+                                    metadata = slideTransitionMetadata,
+                                ) {
+                                    val args = it
+                                    val editViewModel = viewModel(
+                                        key = "EditDevice-${args.deviceId}",
+                                    ) {
+                                        component.editDeviceViewModelFactory.create(
+                                            args.deviceId,
                                         )
                                     }
-
-                                    entry<Screen.EventDetail>(metadata = slideTransitionMetadata) {
-                                        val args = it
-                                        val eventViewModel =
-                                            viewModel(key = "EventDetail-${args.eventId}") {
-                                                component.eventDetailViewModelFactory.create(args.eventId)
+                                    EditDeviceScreen(
+                                        viewModel = editViewModel,
+                                        onBack = { backStack.removeLastOrNull() },
+                                        onDelete = {
+                                            backStack.removeLastOrNull()
+                                            if (backStack.lastOrNull() is Screen.DeviceDetail) {
+                                                backStack.removeLastOrNull()
                                             }
-                                        EventDetailScreen(
-                                            viewModel = eventViewModel,
-                                            onBack = { detailBackStack.removeLastOrNull() },
-                                            onEdit = {
-                                                detailBackStack.navigateTo(
-                                                    Screen.EditBatteryEvent(args.eventId),
-                                                )
-                                            },
-                                            onDeviceClick = { deviceId ->
-                                                detailBackStack.navigateTo(Screen.DeviceDetail(deviceId))
-                                            },
+                                        },
+                                        onAddDeviceTypeClick = {
+                                            backStack.navigateTo(Screen.AddDeviceType)
+                                        },
+                                    )
+                                }
+
+                                entry<Screen.DeviceTypeDetail>(
+                                    metadata = slideTransitionMetadata,
+                                ) {
+                                    val args = it
+                                    val detailViewModel = viewModel(
+                                        key = "DeviceTypeDetail-${args.typeId}",
+                                    ) {
+                                        component.deviceTypeDetailViewModelFactory.create(
+                                            args.typeId,
                                         )
                                     }
+                                    DeviceTypeDetailScreen(
+                                        viewModel = detailViewModel,
+                                        onBack = { backStack.removeLastOrNull() },
+                                        onEdit = {
+                                            backStack.navigateTo(
+                                                Screen.EditDeviceType(args.typeId),
+                                            )
+                                        },
+                                        onDeviceClick = { deviceId ->
+                                            backStack.navigateTo(
+                                                Screen.DeviceDetail(deviceId),
+                                            )
+                                        },
+                                    )
+                                }
 
-                                    entry<Screen.EditBatteryEvent>(metadata = slideTransitionMetadata) {
-                                        val args = it
-                                        val editEventViewModel =
-                                            viewModel(key = "EditBatteryEvent-${args.eventId}") {
-                                                component.editBatteryEventViewModelFactory.create(args.eventId)
+                                entry<Screen.EditDeviceType>(
+                                    metadata = slideTransitionMetadata,
+                                ) {
+                                    val args = it
+                                    val editTypeViewModel = viewModel(
+                                        key = "EditDeviceType-${args.typeId}",
+                                    ) {
+                                        component.editDeviceTypeViewModelFactory.create(
+                                            args.typeId,
+                                        )
+                                    }
+                                    EditDeviceTypeScreen(
+                                        viewModel = editTypeViewModel,
+                                        onBack = { backStack.removeLastOrNull() },
+                                        onDelete = {
+                                            backStack.removeLastOrNull()
+                                            if (backStack.lastOrNull() is Screen.DeviceTypeDetail) {
+                                                backStack.removeLastOrNull()
                                             }
-                                        EditBatteryEventScreen(
-                                            viewModel = editEventViewModel,
-                                            onBack = { detailBackStack.removeLastOrNull() },
-                                            onDelete = {
-                                                detailBackStack.removeLastOrNull()
-                                                if (detailBackStack.lastOrNull() is Screen.EventDetail) {
-                                                    detailBackStack.removeLastOrNull()
-                                                }
-                                            },
-                                        )
-                                    }
+                                        },
+                                    )
+                                }
 
-                                    entry<Screen.EditDevice>(metadata = slideTransitionMetadata) {
-                                        val args = it
-                                        val editViewModel =
-                                            viewModel(key = "EditDevice-${args.deviceId}") {
-                                                component.editDeviceViewModelFactory.create(args.deviceId)
-                                            }
-                                        EditDeviceScreen(
-                                            viewModel = editViewModel,
-                                            onBack = { detailBackStack.removeLastOrNull() },
-                                            onDelete = {
-                                                detailBackStack.removeLastOrNull()
-                                                if (detailBackStack.lastOrNull() is Screen.DeviceDetail) {
-                                                    detailBackStack.removeLastOrNull()
-                                                }
-                                            },
-                                            onAddDeviceTypeClick = {
-                                                detailBackStack.navigateTo(Screen.AddDeviceType)
-                                            },
-                                        )
-                                    }
+                                entry<Screen.Settings>(
+                                    metadata = slideTransitionMetadata,
+                                ) {
+                                    SettingsScreen(
+                                        viewModel = viewModel {
+                                            component.settingsViewModel
+                                        },
+                                        onBack = { backStack.removeLastOrNull() },
+                                    )
+                                }
 
-                                    entry<Screen.DeviceTypeDetail>(metadata = slideTransitionMetadata) {
-                                        val args = it
-                                        val detailViewModel =
-                                            viewModel(key = "DeviceTypeDetail-${args.typeId}") {
-                                                component.deviceTypeDetailViewModelFactory.create(args.typeId)
-                                            }
-                                        DeviceTypeDetailScreen(
-                                            viewModel = detailViewModel,
-                                            onBack = { detailBackStack.removeLastOrNull() },
-                                            onEdit = {
-                                                detailBackStack.navigateTo(
-                                                    Screen.EditDeviceType(args.typeId),
-                                                )
-                                            },
-                                            onDeviceClick = { deviceId ->
-                                                detailBackStack.navigateTo(Screen.DeviceDetail(deviceId))
-                                            },
-                                        )
-                                    }
-
-                                    entry<Screen.EditDeviceType>(metadata = slideTransitionMetadata) {
-                                        val args = it
-                                        val editTypeViewModel =
-                                            viewModel(key = "EditDeviceType-${args.typeId}") {
-                                                component.editDeviceTypeViewModelFactory.create(args.typeId)
-                                            }
-                                        EditDeviceTypeScreen(
-                                            viewModel = editTypeViewModel,
-                                            onBack = { detailBackStack.removeLastOrNull() },
-                                            onDelete = {
-                                                detailBackStack.removeLastOrNull()
-                                                if (detailBackStack.lastOrNull() is Screen.DeviceTypeDetail) {
-                                                    detailBackStack.removeLastOrNull()
-                                                }
-                                            },
-                                        )
-                                    }
-
-                                    entry<Screen.Settings>(metadata = slideTransitionMetadata) {
-                                        SettingsScreen(
-                                            viewModel = viewModel { component.settingsViewModel },
-                                            onBack = { detailBackStack.removeLastOrNull() },
-                                        )
-                                    }
-
-                                    entry<Screen.AiChat>(metadata = slideTransitionMetadata) {
-                                        AiChatScreen(
-                                            viewModel = aiViewModel,
-                                            onBack = { detailBackStack.removeLastOrNull() },
-                                        )
-                                    }
-                                },
-                            )
-                        }
+                                entry<Screen.AiChat>(
+                                    metadata = slideTransitionMetadata,
+                                ) {
+                                    AiChatScreen(
+                                        viewModel = aiViewModel,
+                                        onBack = { backStack.removeLastOrNull() },
+                                    )
+                                }
+                            },
+                        )
                     }
                 }
             } // CompositionLocalProvider

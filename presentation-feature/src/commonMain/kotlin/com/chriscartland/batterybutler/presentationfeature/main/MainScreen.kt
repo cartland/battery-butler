@@ -39,6 +39,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -133,6 +134,7 @@ fun MainScreenShell(
     onSendAiMessage: (String) -> Unit,
     onClearAiChat: () -> Unit,
     modifier: Modifier = Modifier,
+    showChrome: Boolean = true,
     imeVisible: Boolean = WindowInsets.ime.getBottom(LocalDensity.current) > 0,
     content: @Composable (Modifier, PaddingValues) -> Unit,
 ) {
@@ -150,96 +152,113 @@ fun MainScreenShell(
 
     Scaffold(
         modifier = modifier.imePadding(),
+        contentWindowInsets = if (showChrome) {
+            @Suppress("DEPRECATION")
+            ScaffoldDefaults.contentWindowInsets
+        } else {
+            WindowInsets(0, 0, 0, 0)
+        },
         topBar = {
-            ButlerCenteredTopAppBar(
-                title = composeStringResource(currentTab.labelRes()),
-                actions = {
-                    IconButton(onClick = onSettingsClick) {
-                        Icon(
-                            imageVector = Icons.Default.Settings,
-                            contentDescription = "Settings",
-                        )
-                    }
-                },
-            )
+            if (showChrome) {
+                ButlerCenteredTopAppBar(
+                    title = composeStringResource(currentTab.labelRes()),
+                    actions = {
+                        IconButton(onClick = onSettingsClick) {
+                            Icon(
+                                imageVector = Icons.Default.Settings,
+                                contentDescription = "Settings",
+                            )
+                        }
+                    },
+                )
+            }
         },
         bottomBar = {
-            Surface(
-                modifier = Modifier.onSizeChanged { bottomBarHeightPx = it.height },
-                color = NavigationBarDefaults.containerColor,
-            ) {
-                Column {
-                    if (isAiAvailable) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = Padding.standard, vertical = Padding.small),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(Padding.small),
-                        ) {
-                            OutlinedTextField(
-                                value = inputText,
-                                onValueChange = { inputText = it },
+            if (showChrome) {
+                Surface(
+                    modifier = Modifier.onSizeChanged { bottomBarHeightPx = it.height },
+                    color = NavigationBarDefaults.containerColor,
+                ) {
+                    Column {
+                        if (isAiAvailable) {
+                            Row(
                                 modifier = Modifier
-                                    .weight(1f)
-                                    .onFocusChanged { focusState ->
-                                        if (focusState.isFocused) onAiExpandedChange(true)
-                                    },
-                                placeholder = { Text("Ask AI...") },
-                                maxLines = 4,
-                                shape = RoundedCornerShape(24.dp),
-                            )
-                            if (isAiExpanded) {
-                                IconButton(
-                                    onClick = {
-                                        if (inputText.isNotBlank()) {
-                                            onSendAiMessage(inputText)
-                                            inputText = ""
-                                        }
-                                    },
-                                    enabled = inputText.isNotBlank(),
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.AutoMirrored.Filled.Send,
-                                        contentDescription = "Send message",
-                                        tint = if (inputText.isNotBlank()) {
-                                            MaterialTheme.colorScheme.primary
-                                        } else {
-                                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                                    .fillMaxWidth()
+                                    .padding(
+                                        horizontal = Padding.standard,
+                                        vertical = Padding.small,
+                                    ),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(Padding.small),
+                            ) {
+                                OutlinedTextField(
+                                    value = inputText,
+                                    onValueChange = { inputText = it },
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .onFocusChanged { focusState ->
+                                            if (focusState.isFocused) onAiExpandedChange(true)
                                         },
-                                    )
-                                }
-                            } else {
-                                IconButton(onClick = { onAiExpandedChange(true) }) {
-                                    Icon(
-                                        imageVector = Icons.Default.KeyboardArrowUp,
-                                        contentDescription = "Expand AI chat",
-                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    )
+                                    placeholder = { Text("Ask AI...") },
+                                    maxLines = 4,
+                                    shape = RoundedCornerShape(24.dp),
+                                )
+                                if (isAiExpanded) {
+                                    IconButton(
+                                        onClick = {
+                                            if (inputText.isNotBlank()) {
+                                                onSendAiMessage(inputText)
+                                                inputText = ""
+                                            }
+                                        },
+                                        enabled = inputText.isNotBlank(),
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.AutoMirrored.Filled.Send,
+                                            contentDescription = "Send message",
+                                            tint = if (inputText.isNotBlank()) {
+                                                MaterialTheme.colorScheme.primary
+                                            } else {
+                                                MaterialTheme.colorScheme.onSurface.copy(
+                                                    alpha = 0.38f,
+                                                )
+                                            },
+                                        )
+                                    }
+                                } else {
+                                    IconButton(onClick = { onAiExpandedChange(true) }) {
+                                        Icon(
+                                            imageVector = Icons.Default.KeyboardArrowUp,
+                                            contentDescription = "Expand AI chat",
+                                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        )
+                                    }
                                 }
                             }
                         }
-                    }
-                    NavigationBar {
-                        visibleTabs.forEach { tab ->
-                            NavigationBarItem(
-                                selected = currentTab == tab,
-                                onClick = { onTabSelected(tab) },
-                                icon = {
-                                    Icon(
-                                        tab.icon(),
-                                        contentDescription = composeStringResource(tab.labelRes()),
-                                    )
-                                },
-                                label = { Text(composeStringResource(tab.labelRes())) },
-                                colors = NavigationBarItemDefaults.colors(
-                                    selectedIconColor = MaterialTheme.colorScheme.primary,
-                                    selectedTextColor = MaterialTheme.colorScheme.primary,
-                                    unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                ),
-                                modifier = Modifier.testTag("BottomNav_${tab.name}"),
-                            )
+                        NavigationBar {
+                            visibleTabs.forEach { tab ->
+                                NavigationBarItem(
+                                    selected = currentTab == tab,
+                                    onClick = { onTabSelected(tab) },
+                                    icon = {
+                                        Icon(
+                                            tab.icon(),
+                                            contentDescription = composeStringResource(
+                                                tab.labelRes(),
+                                            ),
+                                        )
+                                    },
+                                    label = { Text(composeStringResource(tab.labelRes())) },
+                                    colors = NavigationBarItemDefaults.colors(
+                                        selectedIconColor = MaterialTheme.colorScheme.primary,
+                                        selectedTextColor = MaterialTheme.colorScheme.primary,
+                                        unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    ),
+                                    modifier = Modifier.testTag("BottomNav_${tab.name}"),
+                                )
+                            }
                         }
                     }
                 }
@@ -278,23 +297,25 @@ fun MainScreenShell(
                 // Predictive back: tracks gesture progress, collapses on commit,
                 // restores on cancel. Placed AFTER content() so it composes deeper
                 // than NavDisplay's handler → higher priority.
-                PredictiveBackHandler(enabled = isAiExpanded) { progress ->
-                    try {
-                        progress.collect { event ->
-                            chatHeightFraction.snapTo(1f - event.progress)
-                        }
-                        // Gesture committed — finish collapse.
-                        chatHeightFraction.animateTo(0f)
-                        onAiExpandedChange(false)
-                    } catch (_: CancellationException) {
-                        // Gesture cancelled — restore if chat is still supposed to be open.
-                        if (isAiExpanded) {
-                            chatHeightFraction.animateTo(1f)
+                if (showChrome) {
+                    PredictiveBackHandler(enabled = isAiExpanded) { progress ->
+                        try {
+                            progress.collect { event ->
+                                chatHeightFraction.snapTo(1f - event.progress)
+                            }
+                            // Gesture committed — finish collapse.
+                            chatHeightFraction.animateTo(0f)
+                            onAiExpandedChange(false)
+                        } catch (_: CancellationException) {
+                            // Gesture cancelled — restore if chat is still supposed to be open.
+                            if (isAiExpanded) {
+                                chatHeightFraction.animateTo(1f)
+                            }
                         }
                     }
                 }
 
-                if (chatHeightFraction.value > 0f) {
+                if (showChrome && chatHeightFraction.value > 0f) {
                     val effectiveChatHeight = chatTargetHeight * chatHeightFraction.value
                     val bottomBarHeight: Dp = with(density) { bottomBarHeightPx.toDp() }
                     Surface(

@@ -63,12 +63,20 @@ sealed interface Screen {
     ) : Screen
 }
 
+val Screen.isTabScreen: Boolean
+    get() = this is Screen.Devices || this is Screen.Types || this is Screen.History
+
 /**
  * Safely navigates to a screen, preventing duplicate navigation from rapid clicks.
- * If the last screen in the back stack matches the target screen, the navigation is skipped.
+ * If the last screen matches the target exactly, the navigation is skipped.
+ * If the last screen is the same type (e.g. DeviceDetail("a") → DeviceDetail("b")),
+ * it replaces the top entry instead of stacking.
  */
 fun SnapshotStateList<Screen>.navigateTo(screen: Screen) {
-    if (lastOrNull() != screen) {
-        add(screen)
+    val last = lastOrNull()
+    if (last == screen) return
+    if (last != null && last::class == screen::class) {
+        removeLastOrNull()
     }
+    add(screen)
 }
