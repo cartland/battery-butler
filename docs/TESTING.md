@@ -230,11 +230,11 @@ Every screen has a defined back action. New screens must follow this contract.
 | **AddDeviceType** | detail=[..., AddDeviceType] | Pop detail stack (cancel) | Cancel button |
 | **Settings** | detail=[..., Settings] | Pop detail stack | Back arrow |
 | **AiChat** | detail=[..., AiChat] | Pop detail stack | Back arrow |
-| **AI Overlay** (any tab) | isAiExpanded=true | Collapse overlay | BackHandler (priority) |
+| **AI Overlay** (any tab) | isAiExpanded=true | Collapse overlay (gesture-tracked) | PredictiveBackHandler in MainScreenShell |
 
 **Rules:**
 - The detail stack `BackHandler` is disabled when Login is the only entry, so system back exits the app.
-- AI overlay collapse takes priority over detail stack pop.
+- AI overlay collapse uses `PredictiveBackHandler` (composed after `content()` in `MainScreenShell` for higher priority than NavDisplay). The back gesture smoothly tracks finger position on Android; on desktop/iOS the handler is a no-op.
 - Android 13+ predictive back is enabled via `android:enableOnBackInvokedCallback="true"` in the manifest.
 
 ---
