@@ -3,6 +3,7 @@ package com.chriscartland.batterybutler.presentationfeature.main
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -271,12 +272,6 @@ fun MainScreenShell(
                 start = innerPadding.calculateStartPadding(layoutDirection),
                 end = innerPadding.calculateEndPadding(layoutDirection),
             )
-            val bottomContentPadding = PaddingValues(
-                top = Padding.standard,
-                bottom = innerPadding.calculateBottomPadding() + Padding.standard,
-                start = Padding.standard,
-                end = Padding.standard,
-            )
 
             // Animatable drives chat height: 0f = hidden, 1f = full target height.
             val chatHeightFraction = remember { Animatable(if (isAiExpanded) 1f else 0f) }
@@ -291,12 +286,99 @@ fun MainScreenShell(
 
             BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
                 val chatTargetHeight = if (imeVisible) maxHeight else (maxHeight / 2)
+                val bottomBarHeight: Dp = with(density) { bottomBarHeightPx.toDp() }
+                val adjustedBottomPadding = PaddingValues(
+                    top = Padding.standard,
+                    bottom = if (isAiExpanded) {
+                        Padding.standard
+                    } else {
+                        innerPadding.calculateBottomPadding() + Padding.standard
+                    },
+                    start = Padding.standard,
+                    end = Padding.standard,
+                )
 
-                content(contentModifier, bottomContentPadding)
+                Column(modifier = Modifier.fillMaxSize()) {
+                    // Content: fills remaining space above chat
+                    Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                        content(contentModifier, adjustedBottomPadding)
+                    }
+
+                    // Chat: split-screen, shares space with content
+                    if (showChrome && chatHeightFraction.value > 0f) {
+                        val effectiveChatHeight = chatTargetHeight * chatHeightFraction.value
+                        Surface(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(effectiveChatHeight)
+                                .padding(
+                                    top = if (imeVisible) {
+                                        innerPadding.calculateTopPadding()
+                                    } else {
+                                        0.dp
+                                    },
+                                    bottom = bottomBarHeight,
+                                ),
+                            color = NavigationBarDefaults.containerColor,
+                            tonalElevation = 2.dp,
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .imePadding(),
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(
+                                            start = Padding.standard,
+                                            end = Padding.small,
+                                        ),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.AutoAwesome,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary,
+                                    )
+                                    Spacer(modifier = Modifier.width(Padding.small))
+                                    Text(
+                                        text = "AI Chat",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        modifier = Modifier.weight(1f),
+                                    )
+                                    if (aiMessages.isNotEmpty()) {
+                                        IconButton(onClick = onClearAiChat) {
+                                            Icon(
+                                                imageVector = Icons.Default.Delete,
+                                                contentDescription = "Clear chat",
+                                            )
+                                        }
+                                    }
+                                    IconButton(
+                                        onClick = { onAiExpandedChange(false) },
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.KeyboardArrowDown,
+                                            contentDescription = "Collapse AI chat",
+                                        )
+                                    }
+                                }
+                                AiTabContent(
+                                    messages = aiMessages,
+                                    isProcessing = isAiProcessing,
+                                    onSendMessage = onSendAiMessage,
+                                    modifier = Modifier.weight(1f),
+                                    showInput = false,
+                                )
+                            }
+                        }
+                    }
+                }
 
                 // Predictive back: tracks gesture progress, collapses on commit,
-                // restores on cancel. Placed AFTER content() so it composes deeper
-                // than NavDisplay's handler → higher priority.
+                // restores on cancel. Placed AFTER content so it composes deeper
+                // than NavDisplay's handler -> higher priority.
                 if (showChrome) {
                     PredictiveBackHandler(enabled = isAiExpanded) { progress ->
                         try {
@@ -311,74 +393,6 @@ fun MainScreenShell(
                             if (isAiExpanded) {
                                 chatHeightFraction.animateTo(1f)
                             }
-                        }
-                    }
-                }
-
-                if (showChrome && chatHeightFraction.value > 0f) {
-                    val effectiveChatHeight = chatTargetHeight * chatHeightFraction.value
-                    val bottomBarHeight: Dp = with(density) { bottomBarHeightPx.toDp() }
-                    Surface(
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .fillMaxWidth()
-                            .height(effectiveChatHeight)
-                            .padding(
-                                top = if (imeVisible) innerPadding.calculateTopPadding() else 0.dp,
-                                bottom = bottomBarHeight,
-                            ),
-                        color = NavigationBarDefaults.containerColor,
-                        tonalElevation = 2.dp,
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .imePadding(),
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(
-                                        start = Padding.standard,
-                                        end = Padding.small,
-                                    ),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.AutoAwesome,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary,
-                                )
-                                Spacer(modifier = Modifier.width(Padding.small))
-                                Text(
-                                    text = "AI Chat",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    modifier = Modifier.weight(1f),
-                                )
-                                if (aiMessages.isNotEmpty()) {
-                                    IconButton(onClick = onClearAiChat) {
-                                        Icon(
-                                            imageVector = Icons.Default.Delete,
-                                            contentDescription = "Clear chat",
-                                        )
-                                    }
-                                }
-                                IconButton(
-                                    onClick = { onAiExpandedChange(false) },
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.KeyboardArrowDown,
-                                        contentDescription = "Collapse AI chat",
-                                    )
-                                }
-                            }
-                            AiTabContent(
-                                messages = aiMessages,
-                                isProcessing = isAiProcessing,
-                                onSendMessage = onSendAiMessage,
-                                modifier = Modifier.weight(1f),
-                                showInput = false,
-                            )
                         }
                     }
                 }
