@@ -48,6 +48,7 @@ plugins {
     id("architecture.check")
     id("preview.coverage.check")
     id("theme.layer.check")
+    id("test.coverage.check")
 }
 
 allprojects {

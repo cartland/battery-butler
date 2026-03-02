@@ -34,5 +34,9 @@ gradlePlugin {
             id = "theme.layer.check"
             implementationClass = "themelayer.ThemeLayerPlugin"
         }
+        create("testCoverageCheck") {
+            id = "test.coverage.check"
+            implementationClass = "testcoverage.TestCoveragePlugin"
+        }
     }
 }

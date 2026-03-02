@@ -1,0 +1,34 @@
+# Test Coverage Exemptions
+# Format: ClassName | Reason
+# Glob patterns supported: *Pattern | Reason
+#
+# Add classes here that intentionally skip unit tests.
+# Prefer inline '// @NoTestRequired: reason' comments for new code.
+
+# Thin wrapper UseCases (ADR-002: single-line delegation to repository)
+DismissSyncStatusUseCase | Thin wrapper: single-line delegation
+GetAppVersionUseCase | Thin wrapper: single-line delegation
+GetDeviceDetailUseCase | Thin wrapper: single-line delegation
+GetEventDetailUseCase | Thin wrapper: single-line delegation
+GetSyncStatusUseCase | Thin wrapper: single-line delegation
+SetNetworkModeUseCase | Thin wrapper: single-line delegation
+UpdateDeviceTypeUseCase | Thin wrapper: single-line delegation
+DeleteBatteryEventUseCase | Thin wrapper: single-line delegation
+UpdateBatteryEventUseCase | Thin wrapper: single-line delegation
+GetDeviceTypeDetailUseCase | Thin wrapper: single-line delegation
+
+# ViewModels with pending test coverage
+DeviceTypeDetailViewModel | New ViewModel, test coverage pending
+EditBatteryEventViewModel | New ViewModel, test coverage pending
+
+# Data layer implementations
+DefaultSyncManager | Complex integration, tested via instrumented tests
+DefaultAuthRepository | Platform-specific auth, tested via instrumented tests
+DefaultFeatureFlagProvider | Thin wrapper around BuildConfig flags
+DefaultDispatcherProvider | Infrastructure: returns standard dispatchers
+
+# AI module (Android-specific implementations)
+DynamicAiEngine | Android-specific: requires on-device ML runtime
+AndroidAiEngine | Android-specific: requires Gemini Nano runtime
+OnDeviceAiEngine | Android-specific: requires on-device ML runtime
+# AiConfig is an interface, not enforced
