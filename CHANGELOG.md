@@ -31,6 +31,28 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ---
 
+## 2026-03-02
+
+### Features
+
+- **Split-screen AI chat** ([#831](https://github.com/cartland/battery-butler/pull/831)): Replaced the z-stacked AI chat overlay with a Column-based split-screen layout. Chat and tab content now share the screen — content shrinks via `Modifier.weight(1f)` as chat expands from the bottom. Added viewport-resize scroll anchoring in `AiTabContent` to keep newest messages visible during layout changes.
+
+- **Predictive back gesture for AI chat** ([#826](https://github.com/cartland/battery-butler/pull/826)): Added `PredictiveBackHandler` (expect/actual in `presentation-core`) so the AI chat panel smoothly tracks the back gesture progress on Android 13+. The chat shrinks as the user swipes and fully collapses on commit, or restores on cancel. Removed the old `BackHandler` expect/actual from `compose-app` (now redundant).
+
+### Refactoring
+
+- **Unified navigation back stack** ([#828](https://github.com/cartland/battery-butler/pull/828)): Merged dual NavDisplay stacks (tabBackStack + detailBackStack with two layered NavDisplays) into a single unified `backStack` with one `NavDisplay`. Login sits on top of Devices at launch and is removed after auth. Added `showChrome` parameter to `MainScreenShell` to conditionally hide top bar, bottom nav, and AI panel for non-tab screens.
+
+### CI/CD
+
+- **Test coverage enforcement plugin** ([#837](https://github.com/cartland/battery-butler/pull/837)): New `checkTestCoverage` Gradle task that scans `usecase`, `viewmodel`, `data`, and `ai` modules for classes matching enforced patterns and fails the build when they lack corresponding test files. Supports inline `// @NoTestRequired: reason` suppression and central `test-coverage-exemptions.txt`. Added to `validate.sh` and CI as a fast job.
+
+### Releases
+
+- **Android `android/26`**: Includes split-screen AI chat (#831), unified back stack (#828), predictive back gesture (#826), test coverage plugin (#837), and dependency bumps (protobuf 4.34.0, ktor 3.4.0, awsSdk 2.42.4).
+
+---
+
 ## 2026-03-01
 
 ### Features
