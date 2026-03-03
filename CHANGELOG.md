@@ -31,6 +31,14 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ---
 
+## 2026-03-03
+
+### Documentation
+
+- **Feature parity gap audit**: Rewrote `docs/FEATURE_PARITY_MAPPING.md` with per-feature assessment across all 14 screens. Screen parity is 100% but feature parity is ~40% — most SwiftUI screens are minimal implementations missing sorting, grouping, error handling, icons, and interactive features. Updated `docs/UI_SCREENS_MAPPING.md` with gap annotations per section and added Settings (Section 7). Created 5 new tracking beads under epic `bb-rrs4`.
+
+---
+
 ## 2026-03-02
 
 ### Features
