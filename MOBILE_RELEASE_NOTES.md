@@ -6,6 +6,42 @@ Each section covers one release tag range. "What's New" is user-facing language 
 
 ---
 
+## [android/26] — 2026-03-02
+
+From tag `android/25` to tag `android/26` (3 mobile-relevant commits out of 12 total)
+
+### What's New
+
+**AI chat now shares the screen instead of covering it**
+- The AI chat panel slides up from the bottom and shares space with your content in a split-screen layout, so you can see your devices while chatting
+- Chat messages stay anchored at the bottom when the panel resizes or the keyboard opens
+
+**Smoother back gestures**
+- Swiping back on Android now smoothly shrinks the AI chat panel as you drag, and fully collapses it when you release (Android 13+)
+- If you cancel the swipe, the chat panel restores to its previous size
+
+**Simplified navigation**
+- Login and all screens now share a single navigation stack, eliminating occasional animation glitches when transitioning between login and the main app
+
+### Detailed Changes
+
+| PR | Description |
+|----|-------------|
+| [#831](https://github.com/cartland/battery-butler/pull/831) | Replace AI chat overlay with split-screen layout using Column-based sharing |
+| [#828](https://github.com/cartland/battery-butler/pull/828) | Merge dual NavDisplay stacks into unified back stack |
+| [#826](https://github.com/cartland/battery-butler/pull/826) | Add predictive back gesture for AI chat collapse with PredictiveBackHandler |
+
+### Dependencies (non-mobile but included in release)
+
+| PR | Description |
+|----|-------------|
+| [#837](https://github.com/cartland/battery-butler/pull/837) | Add test coverage enforcement plugin (checkTestCoverage) |
+| [#836](https://github.com/cartland/battery-butler/pull/836) | Bump protobufVersion from 4.33.5 to 4.34.0 |
+| [#835](https://github.com/cartland/battery-butler/pull/835) | Bump ktor from 3.2.0 to 3.4.0 |
+| [#834](https://github.com/cartland/battery-butler/pull/834) | Bump awsSdk from 2.41.24 to 2.42.4 |
+
+---
+
 ## [android/25] — 2026-03-01
 
 From tag `android/24` to tag `android/25` (1 mobile-relevant commit out of 2 total)
