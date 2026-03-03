@@ -125,6 +125,17 @@ All data types follow a consistent **List → Detail (read-only) → Edit** arch
 
 For a detailed breakdown of how the shared Compose Multiplatform UI maps to the native SwiftUI implementation (and why they intuitively differ structurally), see `docs/UI_SCREENS_MAPPING.md`.
 
+### iOS SwiftUI Feature Parity
+
+Screen parity is 100% (all 14 screens exist) but feature-level parity is ~40%. Most SwiftUI screens are minimal implementations missing sort/group controls, icons, error states, and interactive features. See `docs/FEATURE_PARITY_MAPPING.md` for per-screen gap tables. All gap tracking beads are parented to epic `bb-rrs4`.
+
+Key systemic gaps:
+- No split-screen AI overlay or persistent input bar (AI is a standalone tab)
+- No sort/group controls on Home or Device Types lists
+- No device icon mapping (hardcoded generic icons)
+- Settings shows only app version (missing sign-out, network mode, AI engine)
+- All SwiftUI strings are hardcoded English (no localization)
+
 ### AI Architecture
 
 AI messages are augmented in `SendChatMessageUseCase` before reaching the AI engine:
