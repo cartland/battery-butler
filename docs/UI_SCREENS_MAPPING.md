@@ -35,25 +35,59 @@ The goal is to achieve feature parity between these two UI implementations by co
 - **Compose:** The bottom tab navigation is structured using a `MainScreenShell` which wraps pure UI components (`...Content` functions) to provide standard Top and Bottom app bars. Because of this, the 4 top-level tabs don't have individual `...Screen.kt` files in the same way standalone screens do. Instead, `MainTabsScreens.kt` declares `DevicesScreenRoot`, `HistoryScreenRoot`, etc., which parse the ViewModels and pass state to `MainScreen.kt` wrappers (`DevicesScreen`, `HistoryScreen`), which finally host the pure `HomeScreenContent.kt`, `HistoryListContent.kt`, etc.
 - **SwiftUI:** Uses a native `TabView` inside `MainScreen.swift`. Since each tab in iOS conceptually acts as its own navigation hierarchy, the SwiftUI app instantiates `HomeScreen.swift`, `HistoryListScreen.swift`, etc. directly inside the `TabView`. Each of these Swift screens declares its own `NavigationStack`, eliminating the need for a shared shell mechanism or `...Content` separation.
 
-### 2. Home / Devices 
+> **Known Feature Gaps** (see [FEATURE_PARITY_MAPPING.md](FEATURE_PARITY_MAPPING.md) for details):
+> - No persistent AI input bar in SwiftUI (AI is a separate tab, not an always-visible overlay)
+> - No split-screen AI overlay mode — Compose expands chat inline while tabs remain visible
+
+### 2. Home / Devices
 - **Compose:** Handled by `HomeScreenContent.kt` representing the pure UI, while state collection happens in `DevicesScreenRoot`. Uses `LazyColumn` with dynamic grouped headers for locations.
 - **SwiftUI:** Handled by `HomeScreen.swift` wrapping its own state collection. Utilizes `List` and `Section` which automatically apply native iOS styling and grouping (similar to clustered tables in UIKit).
+
+> **Known Feature Gaps** (see [FEATURE_PARITY_MAPPING.md](FEATURE_PARITY_MAPPING.md) for details):
+> - No sort/group controls (Compose has name/type/age/location sort + group-by-location)
+> - No mapped device icons or battery age colors (gray/amber/red)
+> - No sync status indicator, error state, or empty state
 
 ### 3. Adding & Editing (Devices, Types, Events)
 - **Compose:** Often presents these via regular `NavHost` pushed screens or modals.
 - **SwiftUI:** Makes heavy use of the `.sheet()` modifier for presenting entry forms modally (e.g., `AddDeviceScreen`, `AddBatteryEventScreen`, `EditDeviceScreen`). Form items use the native `Form` component.
 
+> **Known Feature Gaps** (see [FEATURE_PARITY_MAPPING.md](FEATURE_PARITY_MAPPING.md) for details):
+> - Add Device: no location field, no loading indicator during save
+> - Add Device Type: no icon picker grid, battery quantity controls, AI features, or batch import
+> - Edit Device: no delete confirmation dialog (deletes immediately)
+> - Edit Device Type: no icon picker or battery quantity controls
+
 ### 4. Details (Device Detail & Event Detail)
 - **Both:** Display read-only parameters and related lists (e.g., Device showing Battery History).
 - **SwiftUI:** Integrates `ViewModelWrappers` using parameter-based factories derived from `NativeComponent` instead of generic `koinViewModel()`/`inject()` navigation parameters. Examples include `DeviceDetailViewModelFactory` and `EventDetailViewModelFactory`.
+
+> **Known Feature Gaps** (see [FEATURE_PARITY_MAPPING.md](FEATURE_PARITY_MAPPING.md) for details):
+> - Device Detail: no location display, no mapped icon (hardcoded "cpu"), no battery stat cards or age colors
+> - Event Detail: read-only only — no Edit button, no delete capability, no navigation to associated device
 
 ### 5. Authentication (Login)
 - **Compose:** Implements the `LoginScreen` through the shared Compose navigation graph to manage AuthState.
 - **SwiftUI:** Handles `LoginScreen` conditionally at the root (`WindowGroup`) in `iOSApp.swift` before the main application topology (`TabView`/`MainScreen`) is initialized. Both layers listen to the same `AuthState` from `LoginViewModel`.
 
+> **Known Feature Gaps** (see [FEATURE_PARITY_MAPPING.md](FEATURE_PARITY_MAPPING.md) for details):
+> - SwiftUI shows a generic "Failed to sign in" message; Compose maps 7+ `AuthError` subtypes to specific user-facing messages
+
 ### 6. AI Chat & Capabilities
 - **Compose:** The AI input is always visible in `MainScreenShell`'s bottom bar (`OutlinedTextField` + send button). Sending a message expands an `AnimatedVisibility` overlay (`AiTabContent` with `showInput = false`) that slides up the chat history while the input stays fixed. `BackHandler(enabled = isAiExpanded)` in `App.kt` collapses the overlay on back press. Tab switches dismiss the overlay via `onTabSelected`. `AiChatScreen.kt` also exists as a standalone full-screen chat (accessed via nav). Custom chat bubbles using basic Composables and Modifiers; handles state changes via Kotlin `StateFlow`.
 - **SwiftUI:** Uses nested `ScrollView`/`LazyVStack` and custom `Shape` paths for native iMessage-like bubbles via `ChatBubbleShape`. Collects state changes asynchronously using SKIE wrappers mapping `StateFlow` to `@Published` variables.
+
+> **Known Feature Gaps** (see [FEATURE_PARITY_MAPPING.md](FEATURE_PARITY_MAPPING.md) for details):
+> - No split-screen overlay mode — SwiftUI AI chat is a standalone screen only
+> - No cross-tab chat persistence or contextual hints
+
+### 7. Settings
+- **Compose:** `SettingsScreen.kt` provides a full settings experience: network mode selector (Prod/Dev/Local/Mock/None), AI engine selector, sign-out button, account info, export data, check for updates, and dynamic app version from `BuildConfig`.
+- **SwiftUI:** `SettingsScreen.swift` currently displays only the app version string.
+
+> **Known Feature Gaps** (see [FEATURE_PARITY_MAPPING.md](FEATURE_PARITY_MAPPING.md) for details):
+> - No sign-out, account info, network mode, AI engine, export data, or check-for-updates
+> - App version is hardcoded rather than dynamically read from build config
 
 ## SKIE & ViewModel Wrapper Pattern
 
