@@ -16,9 +16,9 @@ Most SwiftUI screens are minimal implementations that render basic data but lack
 |--------|-------|
 | Screen parity (screen exists in both) | **14 / 14 (100%)** |
 | Feature parity (per-feature match) | **~40%** |
-| Screens at FULL parity | 1 |
-| Screens at PARTIAL parity | 9 |
-| Screens at MINIMAL parity | 3 |
+| Screens at FULL parity | 0 |
+| Screens at PARTIAL parity | 10 |
+| Screens at MINIMAL parity | 4 |
 | Screens at NONE parity | 0 |
 
 ## Rating Key
@@ -33,6 +33,14 @@ Most SwiftUI screens are minimal implementations that render basic data but lack
 ## Tracking
 
 Beads tracking gap implementation are parented to epic `bb-rrs4` (iOS SwiftUI Feature Parity).
+
+## Cross-Cutting Gaps
+
+These issues affect all SwiftUI screens, not just individual ones:
+
+- **Localization**: All SwiftUI screens use hardcoded English strings. Compose uses full i18n string resources. This is a systemic gap that should be addressed holistically.
+- **"Add New..." picker options**: Several Compose type pickers include inline "Add New Device Type..." or "Add New Device..." options. SwiftUI pickers lack these shortcuts across Add Device, Edit Device, and Add Battery Event screens.
+- **Icon mapping**: SwiftUI uses generic system icons (e.g., "cpu", "bolt.fill") instead of the `DeviceIconMapper` that maps device types to specific icons. Affects Home, Device Detail, Device Types List, and type pickers.
 
 ---
 
@@ -79,8 +87,9 @@ Beads tracking gap implementation are parented to epic `bb-rrs4` (iOS SwiftUI Fe
 | Location display | ✅ | ❌ | — |
 | Days-ago relative date | ✅ | ❌ | Shows raw date |
 | Empty state | ✅ | ❌ | No empty state message |
-| Tap to event detail | ✅ | ✅ | — |
+| Tap to event detail | ✅ | ❌ | Items are not tappable — no navigation |
 | Add event card | ✅ | ❌ | No add-event shortcut |
+| Date badge visual (month/day) | ✅ | ❌ | No leading date badge |
 | Sync status | ✅ | ❌ | — |
 
 **Compose:** `HistoryListContent.kt` — enriched items with device context, relative dates, icons.
@@ -169,18 +178,20 @@ Beads tracking gap implementation are parented to epic `bb-rrs4` (iOS SwiftUI Fe
 **SwiftUI:** `EditDeviceScreen.swift` — edit form works, but delete has no confirmation.
 **Tracking:** `bb-rrs4.4`
 
-### 9. Add Battery Event — FULL
+### 9. Add Battery Event — PARTIAL
 
 | Feature | Compose | SwiftUI | Gap |
 |---------|---------|---------|-----|
 | Device picker | ✅ | ✅ | — |
 | Event type picker | ✅ | ✅ | — |
-| Date picker | ✅ | ✅ | Different style (iOS interactive wheel picker) |
+| Date picker | ✅ | ✅ | Different style (iOS interactive wheel picker, arguably better UX) |
 | Notes field | ✅ | ✅ | — |
 | Save with validation | ✅ | ✅ | — |
+| "More Details" expandable toggle | ✅ | ❌ | Compose hides battery type/notes behind expandable; SwiftUI shows all fields always |
+| "Add New Device" option in picker | ✅ | ❌ | Compose dropdown includes "Add New Device..." option |
 
-**Compose:** `AddBatteryEventScreen.kt`
-**SwiftUI:** `AddBatteryEventScreen.swift` — full parity. iOS date picker is arguably better UX.
+**Compose:** `AddBatteryEventScreen.kt` — has expandable "More Details" section and inline "Add New Device" picker option.
+**SwiftUI:** `AddBatteryEventScreen.swift` — core flow works but missing progressive disclosure and add-device shortcut.
 
 ### 10. Event Detail — PARTIAL
 
@@ -189,10 +200,10 @@ Beads tracking gap implementation are parented to epic `bb-rrs4` (iOS SwiftUI Fe
 | Event data display | ✅ | ✅ | — |
 | Device name display | ✅ | ✅ | — |
 | Edit button (toolbar) | ✅ | ❌ | No edit action |
-| Delete capability | ✅ | ❌ | No delete option |
+| Delete capability | ❌ | ❌ | Missing from both platforms |
 | Navigate to device | ✅ | ❌ | No device navigation link |
 
-**Compose:** `EventDetailScreen.kt` — edit and delete actions in toolbar, device navigation.
+**Compose:** `EventDetailScreen.kt` — edit action in toolbar, device navigation. Delete not yet implemented.
 **SwiftUI:** `EventDetailScreen.swift` — read-only display only.
 **Tracking:** `bb-rrs4.5`
 
@@ -227,15 +238,20 @@ Beads tracking gap implementation are parented to epic `bb-rrs4` (iOS SwiftUI Fe
 **SwiftUI:** `EditDeviceTypeScreen.swift` — name and battery type only.
 **Tracking:** `bb-57ln` (partial)
 
-### 13. Device Types List — PARTIAL
+### 13. Device Types List — MINIMAL
 
 | Feature | Compose | SwiftUI | Gap |
 |---------|---------|---------|-----|
 | Type list display | ✅ | ✅ | — |
 | Icon display per type | ✅ | ❌ | No icons shown |
 | Battery quantity display | ✅ | ❌ | No quantity shown |
-| Sort/group controls | ✅ | ❌ | No sort UI |
-| Add type card | ✅ | ✅ | — |
+| Sort dropdown | ✅ | ❌ | No sort UI |
+| Sort direction toggle | ✅ | ❌ | No direction control |
+| Group dropdown | ✅ | ❌ | No group UI |
+| Group direction toggle | ✅ | ❌ | No direction control |
+| Load common types button | ✅ | ❌ | No button in empty state |
+| Empty state (icon + buttons) | ✅ | ❌ | Single text line only |
+| Add type card | ✅ | ✅ | Different placement (toolbar vs inline) |
 | Tap to detail/edit | ✅ | ✅ | — |
 
 **Compose:** `DeviceTypeListContent.kt` — icons, quantity, sort/group dropdowns.
