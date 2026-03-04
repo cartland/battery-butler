@@ -6,6 +6,7 @@ struct AddDeviceScreen: View {
     @Environment(\.dismiss) private var dismiss
 
     @State private var name: String = ""
+    @State private var location: String = ""
     @State private var selectedTypeId: String = ""
 
     init(viewModel: AddDeviceViewModel) {
@@ -15,10 +16,11 @@ struct AddDeviceScreen: View {
     var body: some View {
         AddDeviceContentView(
             name: $name,
+            location: $location,
             selectedTypeId: $selectedTypeId,
             deviceTypes: wrapper.deviceTypes,
             onAdd: {
-                wrapper.addDevice(name: name, typeId: selectedTypeId)
+                wrapper.addDevice(name: name, location: location, typeId: selectedTypeId)
                 dismiss()
             },
             onCancel: {
@@ -30,6 +32,7 @@ struct AddDeviceScreen: View {
 
 struct AddDeviceContentView: View {
     @Binding var name: String
+    @Binding var location: String
     @Binding var selectedTypeId: String
     let deviceTypes: [DeviceType]
     let onAdd: () -> Void
@@ -41,6 +44,7 @@ struct AddDeviceContentView: View {
             Form {
                 Section(header: Text("Device Details")) {
                     TextField("Device Name", text: $name)
+                    TextField("Location (Optional)", text: $location)
 
                     Picker("Type", selection: $selectedTypeId) {
                         Text("Select Type").tag("")
