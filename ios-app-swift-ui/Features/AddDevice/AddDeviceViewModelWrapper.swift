@@ -38,10 +38,10 @@ class AddDeviceViewModelWrapper: ObservableObject {
         viewModelStore.clear()
     }
     
-    func addDevice(name: String, typeId: String) {
+    func addDevice(name: String, location: String, typeId: String) {
         let input = DeviceInput(
             name: name,
-            location: "", // Simplified for now
+            location: location.isEmpty ? nil : location,
             typeId: typeId,
             imagePath: nil
         )
