@@ -125,6 +125,32 @@ All data types follow a consistent **List → Detail (read-only) → Edit** arch
 
 For a detailed breakdown of how the shared Compose Multiplatform UI maps to the native SwiftUI implementation (and why they intuitively differ structurally), see `docs/UI_SCREENS_MAPPING.md`.
 
+### iOS SwiftUI Architecture
+
+The iOS SwiftUI app follows a **two-layer pattern**:
+- **Screen** (e.g., `AddDeviceScreen`): Owns `@State` vars, creates `@StateObject` wrapper, composes the content view
+- **ContentView** (e.g., `AddDeviceContentView`): Stateless view with `@Binding` params, renders the UI
+
+**ViewModelWrapper** bridges KMP ViewModels to SwiftUI:
+- `@StateObject` in the Screen, wraps the KMP ViewModel
+- Uses `KmpViewModelStore` for lifecycle management
+- Subscribes to KMP `StateFlow` via async `for await` loops in `Task`s
+- Publishes state via `@Published` properties
+
+**SKIE AuthError subtypes** in Swift:
+- `AuthErrorConfigurationNotConfigured`, `AuthErrorConfigurationServerUnavailable`
+- `AuthErrorSignInCancelled`, `AuthErrorSignInFailed` (has `.cause` property)
+- `AuthErrorSignInNetworkError`, `AuthErrorTokenInvalid`, `AuthErrorTokenExpired`, `AuthErrorUnknown`
+- These are class types — use `is` for type checks, `as let` for property access
+
+**iOS CI note**: `build_ios_native` is skipped on PRs in development CI mode. iOS compile errors are only caught post-merge on `main`. For iOS-only changes, consider local `xcodebuild` verification:
+```bash
+cd ios-app-swift-ui
+xcodebuild -project iosAppSwiftUI.xcodeproj -configuration Debug -scheme iosAppSwiftUI \
+  -destination 'generic/platform=iOS Simulator' build \
+  CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+```
+
 ### AI Architecture
 
 AI messages are augmented in `SendChatMessageUseCase` before reaching the AI engine:
