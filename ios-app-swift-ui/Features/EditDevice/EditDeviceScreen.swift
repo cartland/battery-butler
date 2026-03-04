@@ -51,7 +51,9 @@ struct EditDeviceContentView: View {
     let onSave: () -> Void
     let onDelete: () -> Void
     let onCancel: () -> Void
-    
+
+    @State private var showDeleteConfirmation = false
+
     var body: some View {
         NavigationStack {
             Group {
@@ -75,8 +77,16 @@ struct EditDeviceContentView: View {
                         }
                         
                         Section {
-                            Button("Delete Device", role: .destructive, action: onDelete)
+                            Button("Delete Device", role: .destructive) {
+                                showDeleteConfirmation = true
+                            }
                         }
+                    }
+                    .alert("Delete Device?", isPresented: $showDeleteConfirmation) {
+                        Button("Delete", role: .destructive, action: onDelete)
+                        Button("Cancel", role: .cancel) {}
+                    } message: {
+                        Text("This action cannot be undone.")
                     }
                     .onAppear {
                         if !hasInitializedFields {
