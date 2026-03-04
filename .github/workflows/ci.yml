@@ -237,7 +237,7 @@ jobs:
       - name: Build Android App
         run: ./gradlew :compose-app:assembleDebug
       - name: Upload Android APKs and AABs
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: battery-butler-android-builds
           path: |
@@ -289,7 +289,7 @@ jobs:
           xcodebuild -project ios-app-compose-ui/iosAppComposeUI.xcodeproj -configuration Debug -scheme iosAppComposeUI -destination 'generic/platform=iOS Simulator' build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO CONFIGURATION_BUILD_DIR=build/ios-compose/
 
       - name: Upload iOS App (Compose UI)
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: battery-butler-ios-compose-app
           path: ios-app-compose-ui/build/
@@ -351,7 +351,7 @@ jobs:
           xcodebuild -project iosAppSwiftUI.xcodeproj -configuration Debug -scheme iosAppSwiftUI -destination 'generic/platform=iOS Simulator' build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO CONFIGURATION_BUILD_DIR=build/
 
       - name: Upload iOS App (SwiftUI)
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: battery-butler-ios-swiftui-app
           path: ios-app-swift-ui/build/
@@ -371,7 +371,7 @@ jobs:
       - name: Build Desktop App
         run: ./gradlew :compose-app:packageDistributionForCurrentOS
       - name: Upload Desktop Binaries
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: battery-butler-desktop-dist-${{ matrix.os }}
           path: compose-app/build/compose/binaries
@@ -393,7 +393,7 @@ jobs:
         # This doesn't require Docker but validates the container build pipeline
         run: ./gradlew :server:app:jibBuildTar
       - name: Upload Server JAR
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: battery-butler-server-jar
           path: server/app/build/libs/
