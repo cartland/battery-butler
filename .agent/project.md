@@ -143,7 +143,7 @@ The iOS SwiftUI app follows a **two-layer pattern**:
 - `AuthErrorSignInNetworkError`, `AuthErrorTokenInvalid`, `AuthErrorTokenExpired`, `AuthErrorUnknown`
 - These are class types — use `is` for type checks, `as let` for property access
 
-**iOS CI note**: `build_ios_native` is skipped on PRs in development CI mode. iOS compile errors are only caught post-merge on `main`. For iOS-only changes, consider local `xcodebuild` verification:
+**iOS CI note**: `build_ios_native` is skipped on PRs in development CI mode. iOS compile errors are only caught post-merge on `main`. `validation_ios_ui` now runs `xcodebuild test` (PR #853) in addition to compiling, so iOS snapshot tests execute in CI. For iOS-only changes, consider local `xcodebuild` verification:
 ```bash
 cd ios-app-swift-ui
 xcodebuild -project iosAppSwiftUI.xcodeproj -configuration Debug -scheme iosAppSwiftUI \
@@ -161,6 +161,8 @@ Key systemic gaps:
 - No device icon mapping (hardcoded generic icons)
 - Settings shows only app version (missing sign-out, network mode, AI engine)
 - All SwiftUI strings are hardcoded English (no localization)
+
+**iOS snapshot test coverage** (PR #855): Only 3 of 13 screens follow the two-layer Screen/ContentView pattern needed for snapshot testing. The other 10 have their body coupled to ViewModelWrapper. Placeholder test files with recommended ContentView signatures are committed. See bead `bb-scsg` for the extraction task.
 
 ### AI Architecture
 
@@ -547,6 +549,18 @@ CI uses `dorny/paths-filter` to skip expensive builds for non-code changes:
 4. Creates follow-up PRs on `auto/update-generated-content` and `auto/update-screenshots`
 5. Uses `GITHUB_TOKEN` (not `BOT_PAT`) -- loop-proof by design
 6. `ci-trigger-auto-prs.yml` dispatches CI on auto PRs (runs on any workflow completion, not just success)
+
+### CI Concurrency on Main (PR #856)
+
+Push-to-main CI runs use SHA-based concurrency groups so rapid merges don't cancel each other. PR runs still cancel stale runs on the same branch. This ensures every main commit gets a complete CI result.
+
+### Release Build Verification (PR #857)
+
+`release-build-on-green.yml` builds a signed release AAB after every green CI on main. This proves the release pipeline (signing, bundling, Gradle config) works without deploying. Artifacts uploaded for 30 days. Skips docs-only changes.
+
+### Pre-Release CI Gate (PR #854)
+
+`release-android.yml` has a `verify-ci` job that checks CI passed on the tagged commit before building. `release-android.sh` also checks CI status locally before creating tags. Both verify that slow jobs (`validation_test`, `build_android`) actually ran (not just skipped in docs-only mode).
 
 ### Concurrency Group Gotcha
 
