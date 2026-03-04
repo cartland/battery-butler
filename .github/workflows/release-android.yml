@@ -21,7 +21,80 @@ permissions:
   contents: read
 
 jobs:
+  verify-ci:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Get tagged commit SHA
+        id: get-sha
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          SHA=$(gh api repos/${{ github.repository }}/git/ref/tags/${TAG} --jq '.object.sha' 2>/dev/null || echo "")
+          if [ -z "$SHA" ]; then
+            # Lightweight tag - SHA is in the ref itself
+            SHA=$(gh api repos/${{ github.repository }}/git/ref/tags/${TAG} --jq '.object.sha')
+          fi
+          echo "sha=$SHA" >> $GITHUB_OUTPUT
+          echo "Tagged commit: $SHA"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Verify CI passed on tagged commit
+        run: |
+          SHA="${{ steps.get-sha.outputs.sha }}"
+          echo "Checking CI status for commit $SHA..."
+
+          # Get the ci check suite status
+          CI_STATUS=$(gh api repos/${{ github.repository }}/commits/${SHA}/check-runs \
+            --jq '.check_runs[] | select(.name == "ci") | .conclusion' 2>/dev/null || echo "")
+
+          if [ -z "$CI_STATUS" ]; then
+            echo "::error::No 'ci' check found for commit $SHA"
+            echo "::error::CI must pass before releasing. Run CI first or wait for it to complete."
+            exit 1
+          fi
+
+          if [ "$CI_STATUS" != "success" ]; then
+            echo "::error::CI check conclusion is '$CI_STATUS' (expected 'success')"
+            echo "::error::Cannot release from a commit where CI did not pass."
+            exit 1
+          fi
+
+          echo "CI check passed on commit $SHA"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Verify slow jobs ran (not docs-only skip)
+        run: |
+          SHA="${{ steps.get-sha.outputs.sha }}"
+          echo "Verifying slow CI jobs actually ran..."
+
+          REQUIRED_JOBS="validation_test build_android"
+          MISSING=""
+
+          for JOB in $REQUIRED_JOBS; do
+            STATUS=$(gh api repos/${{ github.repository }}/commits/${SHA}/check-runs \
+              --jq ".check_runs[] | select(.name == \"$JOB\") | .conclusion" 2>/dev/null || echo "")
+            if [ -z "$STATUS" ] || [ "$STATUS" == "skipped" ]; then
+              MISSING="$MISSING $JOB"
+            elif [ "$STATUS" != "success" ]; then
+              echo "::error::Required job '$JOB' has conclusion '$STATUS' (expected 'success')"
+              exit 1
+            fi
+          done
+
+          if [ -n "$MISSING" ]; then
+            echo "::error::Required CI jobs were skipped or missing:$MISSING"
+            echo "::error::This usually means CI ran in docs-only mode. Code changes are required for a release."
+            exit 1
+          fi
+
+          echo "All required slow jobs ran and passed."
+        env:
+          GH_TOKEN: ${{ github.token }}
+
   release:
+    needs: verify-ci
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:

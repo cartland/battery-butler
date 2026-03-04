@@ -80,6 +80,36 @@ done
 echo "=== Android Release Script ==="
 echo ""
 
+# Check CI status on HEAD before proceeding
+echo "Checking CI status on HEAD..."
+REPO=$(gh repo view --json nameWithOwner --jq '.nameWithOwner' 2>/dev/null || echo "")
+if [ -n "$REPO" ]; then
+    CI_CONCLUSION=$(gh api "repos/${REPO}/commits/$(git rev-parse HEAD)/check-runs" \
+        --jq '.check_runs[] | select(.name == "ci") | .conclusion' 2>/dev/null || echo "")
+    if [ -z "$CI_CONCLUSION" ]; then
+        echo -e "${YELLOW}Warning: Could not find CI check status for HEAD.${NC}"
+        echo "CI may not have run yet on this commit."
+        if [ "$DRY_RUN" != true ]; then
+            read -p "Continue anyway? (y/N) " -n 1 -r
+            echo ""
+            if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+                echo "Aborted. Run CI first or wait for it to complete."
+                exit 1
+            fi
+        fi
+    elif [ "$CI_CONCLUSION" != "success" ]; then
+        echo -e "${RED}Error: CI check on HEAD has conclusion '$CI_CONCLUSION' (expected 'success').${NC}"
+        echo "Cannot release from a commit where CI did not pass."
+        echo "Wait for CI to pass or fix the failures first."
+        exit 1
+    else
+        echo -e "${GREEN}CI passed on HEAD.${NC}"
+    fi
+else
+    echo -e "${YELLOW}Warning: Could not determine repository. Skipping CI check.${NC}"
+fi
+echo ""
+
 # Ensure we're on a clean working tree
 if ! git diff-index --quiet HEAD --; then
     echo -e "${RED}Error: Working tree has uncommitted changes.${NC}"
