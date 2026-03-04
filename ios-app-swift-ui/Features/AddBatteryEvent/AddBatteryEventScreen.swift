@@ -9,6 +9,7 @@ struct AddBatteryEventScreen: View {
     @State private var eventDate = Date()
     @State private var batteryType: String = ""
     @State private var notes: String = ""
+    @State private var showMoreDetails = false
     
     @State private var batchInput: String = ""
     
@@ -31,10 +32,12 @@ struct AddBatteryEventScreen: View {
                     }
                     
                     DatePicker("Date & Time", selection: $eventDate)
-                    
-                    TextField("Battery Type (Optional)", text: $batteryType)
-                    
-                    TextField("Notes (Optional)", text: $notes)
+
+                    DisclosureGroup("More Details", isExpanded: $showMoreDetails) {
+                        TextField("Battery Type (Optional)", text: $batteryType)
+
+                        TextField("Notes (Optional)", text: $notes)
+                    }
                     
                     Button("Save Event") {
                         if let deviceId = selectedDeviceId {
