@@ -1,0 +1,101 @@
+name: Auto-Release on Green CI
+
+# This workflow is DISABLED by default.
+# Enable with: gh workflow enable release-on-green.yml
+# Disable with: gh workflow disable release-on-green.yml
+
+on:
+  workflow_run:
+    workflows: ["Battery Butler CI"]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  auto-release:
+    # Only proceed if CI passed
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Verify slow jobs actually ran
+        id: verify
+        run: |
+          SHA="${{ github.event.workflow_run.head_sha }}"
+          RUN_ID="${{ github.event.workflow_run.id }}"
+          echo "Checking CI run $RUN_ID for commit $SHA..."
+
+          # Check that key slow jobs ran (not a docs-only skip)
+          REQUIRED_JOBS="validation_test build_android"
+          SKIP_RELEASE=false
+
+          for JOB in $REQUIRED_JOBS; do
+            CONCLUSION=$(gh api "repos/${{ github.repository }}/actions/runs/${RUN_ID}/jobs" \
+              --jq ".jobs[] | select(.name == \"$JOB\") | .conclusion" 2>/dev/null || echo "")
+            echo "Job $JOB: $CONCLUSION"
+            if [ -z "$CONCLUSION" ] || [ "$CONCLUSION" == "skipped" ]; then
+              echo "Required job '$JOB' was skipped — this is likely a docs-only change"
+              SKIP_RELEASE=true
+            elif [ "$CONCLUSION" != "success" ]; then
+              echo "::error::Required job '$JOB' has conclusion '$CONCLUSION'"
+              exit 1
+            fi
+          done
+
+          echo "skip_release=$SKIP_RELEASE" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Check for existing release tag
+        id: check-tag
+        if: steps.verify.outputs.skip_release != 'true'
+        run: |
+          SHA="${{ github.event.workflow_run.head_sha }}"
+
+          # Check if this commit already has an android/* tag
+          EXISTING=$(git tag --points-at "$SHA" | grep -E '^android/[0-9]+$' || true)
+          if [ -n "$EXISTING" ]; then
+            echo "Commit $SHA already has release tag: $EXISTING"
+            echo "already_tagged=true" >> $GITHUB_OUTPUT
+          else
+            echo "No existing release tag on $SHA"
+            echo "already_tagged=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Calculate next version
+        id: version
+        if: steps.verify.outputs.skip_release != 'true' && steps.check-tag.outputs.already_tagged != 'true'
+        run: |
+          # Find highest existing android/N tag
+          HIGHEST=$(git tag -l 'android/[0-9]*' | sed 's|android/||' | grep -E '^[0-9]+$' | sort -n | tail -1)
+          if [ -z "$HIGHEST" ]; then
+            NEXT=1
+          else
+            NEXT=$((HIGHEST + 1))
+          fi
+          echo "next_version=$NEXT" >> $GITHUB_OUTPUT
+          echo "Next version: android/$NEXT"
+
+      - name: Create and push release tag
+        if: steps.verify.outputs.skip_release != 'true' && steps.check-tag.outputs.already_tagged != 'true'
+        run: |
+          VERSION="${{ steps.version.outputs.next_version }}"
+          TAG="android/$VERSION"
+          SHA="${{ github.event.workflow_run.head_sha }}"
+
+          echo "Creating tag $TAG on commit $SHA..."
+          git tag "$TAG" "$SHA"
+          git push origin "$TAG"
+
+          echo "Release tag $TAG created and pushed."
+          echo "This will trigger the release-android.yml workflow."
+        env:
+          GH_TOKEN: ${{ github.token }}
