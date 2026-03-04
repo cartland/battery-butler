@@ -161,3 +161,45 @@ jobs:
           base: main
           delete-branch: true
           labels: automated
+
+  # ===========================================================================
+  # Job 3: iOS Screenshot Gallery
+  # ===========================================================================
+  ios-screenshot-gallery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Generate iOS Screenshot Gallery
+        run: ./scripts/generate-ios-screenshot-gallery.sh
+
+      - name: Check for meaningful changes
+        id: check-changes
+        run: |
+          GALLERY_CHANGES=$(git diff --name-only -- 'ios-app-swift-ui/SCREENSHOT_GALLERY.md' | wc -l | tr -d ' ')
+          echo "gallery_changes=$GALLERY_CHANGES" >> $GITHUB_OUTPUT
+
+      - name: Create Pull Request
+        if: steps.check-changes.outputs.gallery_changes != '0'
+        uses: peter-evans/create-pull-request@v8
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "docs(generated): Regenerate iOS screenshot gallery"
+          title: "docs(generated): Regenerate iOS screenshot gallery"
+          body: |
+            iOS screenshot gallery regenerated to match current snapshots.
+
+            This PR was automatically created by the Auto-Generate Content workflow.
+
+            **Source commit:** ${{ github.sha }}
+          branch: auto/update-ios-screenshots
+          base: main
+          delete-branch: true
+          labels: automated
