@@ -3,16 +3,16 @@ import shared
 
 struct LoginScreen: View {
     @StateObject private var wrapper: LoginViewModelWrapper
-    
+
     let onLoginSuccess: () -> Void
     let onSkipLogin: () -> Void
-    
+
     init(viewModel: LoginViewModel, onLoginSuccess: @escaping () -> Void, onSkipLogin: @escaping () -> Void) {
         _wrapper = StateObject(wrappedValue: LoginViewModelWrapper(viewModel))
         self.onLoginSuccess = onLoginSuccess
         self.onSkipLogin = onSkipLogin
     }
-    
+
     var body: some View {
         VStack(spacing: 24) {
             Image(systemName: "bolt.batteryblock.fill")
@@ -22,18 +22,18 @@ struct LoginScreen: View {
                 .frame(width: 100, height: 100)
                 .foregroundStyle(.blue)
                 .padding(.top, 40)
-            
+
             Text("Battery Butler")
                 .font(.largeTitle)
                 .fontWeight(.bold)
-            
+
             Text("Manage your devices and battery replacements securely across all platforms.")
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.secondary)
                 .padding(.horizontal)
-            
+
             Spacer()
-            
+
             if wrapper.authState is AuthStateAuthenticating {
                 ProgressView("Signing in...")
             } else {
@@ -53,7 +53,7 @@ struct LoginScreen: View {
                         .cornerRadius(12)
                     }
                 }
-                
+
                 Button(action: {
                     onSkipLogin()
                 }) {
@@ -63,7 +63,7 @@ struct LoginScreen: View {
                         .foregroundStyle(.blue)
                 }
             }
-            
+
             Spacer()
         }
         .padding()
@@ -78,15 +78,21 @@ struct LoginScreen: View {
                 onLoginSuccess()
             }
         }
-        .alert("Sign In Error", isPresented: Binding(
+        .alert(wrapper.errorTitle, isPresented: Binding(
             get: { wrapper.authState is AuthStateFailed },
             set: { _ in wrapper.dismissError() }
         )) {
-            Button("OK") {
+            if wrapper.showRetryButton {
+                Button("Try Again") {
+                    wrapper.dismissError()
+                    wrapper.signInWithGoogle()
+                }
+            }
+            Button("OK", role: .cancel) {
                 wrapper.dismissError()
             }
         } message: {
-            Text("Failed to sign in. Please try again.")
+            Text(wrapper.errorMessage)
         }
     }
 }
