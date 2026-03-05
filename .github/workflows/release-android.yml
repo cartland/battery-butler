@@ -21,7 +21,43 @@ permissions:
   contents: read
 
 jobs:
+  verify-ci:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Get tagged commit SHA
+        id: get-sha
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          SHA=$(gh api repos/${{ github.repository }}/git/ref/tags/${TAG} --jq '.object.sha' 2>/dev/null || echo "")
+          if [ -z "$SHA" ]; then
+            # Lightweight tag - SHA is in the ref itself
+            SHA=$(gh api repos/${{ github.repository }}/git/ref/tags/${TAG} --jq '.object.sha')
+          fi
+          echo "sha=$SHA" >> $GITHUB_OUTPUT
+          echo "Tagged commit: $SHA"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Verify CI passed on tagged commit
+        run: |
+          TAG_SHA="${{ steps.get-sha.outputs.sha }}"
+          echo "Checking CI status for commit $TAG_SHA..."
+
+          # Use '| last' to handle multiple check-runs from re-runs
+          CI_CONCLUSION=$(gh api "repos/${{ github.repository }}/commits/$TAG_SHA/check-runs" \
+            --jq '[.check_runs[] | select(.name == "ci")] | last | .conclusion')
+          if [ "$CI_CONCLUSION" != "success" ]; then
+            echo "::error::CI check on $TAG_SHA concluded '$CI_CONCLUSION', expected 'success'"
+            exit 1
+          fi
+
+          echo "CI check passed on commit $TAG_SHA"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
   release:
+    needs: verify-ci
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
