@@ -75,10 +75,11 @@ jobs:
       - name: Build Release Bundle
         if: steps.verify.outputs.skip != 'true'
         run: |
-          # Use versionCode 0 — this is a verification build, not a real release.
+          # Use versionCode 1 — this is a verification build, not a real release.
           # The actual versionCode is assigned by release-android.yml when tagging.
+          # Must be >= 1 for Android Gradle Plugin to accept it.
           ./gradlew :compose-app:bundleRelease --stacktrace \
-            -PVERSION_CODE=0 \
+            -PVERSION_CODE=1 \
             -PKEYSTORE_PATH=${{ github.workspace }}/release.keystore \
             -PKEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }} \
             -PKEY_ALIAS=${{ secrets.KEY_ALIAS }} \
