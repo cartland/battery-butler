@@ -85,7 +85,7 @@ echo "Checking CI status on HEAD..."
 REPO=$(gh repo view --json nameWithOwner --jq '.nameWithOwner' 2>/dev/null || echo "")
 if [ -n "$REPO" ]; then
     CI_CONCLUSION=$(gh api "repos/${REPO}/commits/$(git rev-parse HEAD)/check-runs" \
-        --jq '.check_runs[] | select(.name == "ci") | .conclusion' 2>/dev/null || echo "")
+        --jq '[.check_runs[] | select(.name == "ci")] | last | .conclusion' 2>/dev/null || echo "")
     if [ -z "$CI_CONCLUSION" ]; then
         echo -e "${YELLOW}Warning: Could not find CI check status for HEAD.${NC}"
         echo "CI may not have run yet on this commit."

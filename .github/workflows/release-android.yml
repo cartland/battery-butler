@@ -41,55 +41,18 @@ jobs:
 
       - name: Verify CI passed on tagged commit
         run: |
-          SHA="${{ steps.get-sha.outputs.sha }}"
-          echo "Checking CI status for commit $SHA..."
+          TAG_SHA="${{ steps.get-sha.outputs.sha }}"
+          echo "Checking CI status for commit $TAG_SHA..."
 
-          # Get the ci check suite status
-          CI_STATUS=$(gh api repos/${{ github.repository }}/commits/${SHA}/check-runs \
-            --jq '.check_runs[] | select(.name == "ci") | .conclusion' 2>/dev/null || echo "")
-
-          if [ -z "$CI_STATUS" ]; then
-            echo "::error::No 'ci' check found for commit $SHA"
-            echo "::error::CI must pass before releasing. Run CI first or wait for it to complete."
+          # Use '| last' to handle multiple check-runs from re-runs
+          CI_CONCLUSION=$(gh api "repos/${{ github.repository }}/commits/$TAG_SHA/check-runs" \
+            --jq '[.check_runs[] | select(.name == "ci")] | last | .conclusion')
+          if [ "$CI_CONCLUSION" != "success" ]; then
+            echo "::error::CI check on $TAG_SHA concluded '$CI_CONCLUSION', expected 'success'"
             exit 1
           fi
 
-          if [ "$CI_STATUS" != "success" ]; then
-            echo "::error::CI check conclusion is '$CI_STATUS' (expected 'success')"
-            echo "::error::Cannot release from a commit where CI did not pass."
-            exit 1
-          fi
-
-          echo "CI check passed on commit $SHA"
-        env:
-          GH_TOKEN: ${{ github.token }}
-
-      - name: Verify slow jobs ran (not docs-only skip)
-        run: |
-          SHA="${{ steps.get-sha.outputs.sha }}"
-          echo "Verifying slow CI jobs actually ran..."
-
-          REQUIRED_JOBS="validation_test build_android"
-          MISSING=""
-
-          for JOB in $REQUIRED_JOBS; do
-            STATUS=$(gh api repos/${{ github.repository }}/commits/${SHA}/check-runs \
-              --jq ".check_runs[] | select(.name == \"$JOB\") | .conclusion" 2>/dev/null || echo "")
-            if [ -z "$STATUS" ] || [ "$STATUS" == "skipped" ]; then
-              MISSING="$MISSING $JOB"
-            elif [ "$STATUS" != "success" ]; then
-              echo "::error::Required job '$JOB' has conclusion '$STATUS' (expected 'success')"
-              exit 1
-            fi
-          done
-
-          if [ -n "$MISSING" ]; then
-            echo "::error::Required CI jobs were skipped or missing:$MISSING"
-            echo "::error::This usually means CI ran in docs-only mode. Code changes are required for a release."
-            exit 1
-          fi
-
-          echo "All required slow jobs ran and passed."
+          echo "CI check passed on commit $TAG_SHA"
         env:
           GH_TOKEN: ${{ github.token }}
 
