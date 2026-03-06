@@ -9,8 +9,16 @@ struct HistoryListScreen: View {
     }
     
     var body: some View {
+        HistoryListContentView(state: wrapper.state)
+    }
+}
+
+struct HistoryListContentView: View {
+    let state: HistoryListUiState
+
+    var body: some View {
         List {
-            if let success = wrapper.state as? HistoryListUiStateSuccess {
+            if let success = state as? HistoryListUiStateSuccess {
                 ForEach(success.items, id: \.self) { item in
                     VStack(alignment: .leading) {
                         Text(item.event.date.description)
@@ -21,7 +29,7 @@ struct HistoryListScreen: View {
                     .accessibilityElement(children: .combine)
                     .accessibilityLabel("Battery replaced on \(item.event.date.description)")
                 }
-            } else if wrapper.state is HistoryListUiStateLoading {
+            } else if state is HistoryListUiStateLoading {
                 ProgressView()
                     .accessibilityLabel("Loading history")
             }

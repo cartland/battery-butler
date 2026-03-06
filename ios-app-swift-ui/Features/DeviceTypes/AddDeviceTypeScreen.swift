@@ -10,20 +10,41 @@ struct AddDeviceTypeScreen: View {
     }
 
     var body: some View {
-        // NavigationStack used for proper toolbar support in sheets
+        AddDeviceTypeContentView(
+            state: viewModelWrapper.state,
+            onUpdateName: { viewModelWrapper.updateName(name: $0) },
+            onUpdateBatteryType: { viewModelWrapper.updateBatteryType(type: $0) },
+            onSave: { viewModelWrapper.save() },
+            onCancel: { dismiss() }
+        )
+        .onChange(of: viewModelWrapper.state.isSaved) { _, isSaved in
+            if isSaved {
+                viewModelWrapper.consumeSaveSuccess()
+                dismiss()
+            }
+        }
+    }
+}
+
+struct AddDeviceTypeContentView: View {
+    let state: AddDeviceTypeState
+    let onUpdateName: (String) -> Void
+    let onUpdateBatteryType: (String) -> Void
+    let onSave: () -> Void
+    let onCancel: () -> Void
+
+    var body: some View {
         NavigationStack {
             Form {
-                let state = viewModelWrapper.state
-
                 Section(header: Text("Device Type Details")) {
                     TextField("Name", text: Binding(
                         get: { state.name },
-                        set: { viewModelWrapper.updateName(name: $0) }
+                        set: { onUpdateName($0) }
                     ))
 
                     TextField("Battery Type", text: Binding(
                         get: { state.batteryType },
-                        set: { viewModelWrapper.updateBatteryType(type: $0) }
+                        set: { onUpdateBatteryType($0) }
                     ))
                 }
 
@@ -38,26 +59,20 @@ struct AddDeviceTypeScreen: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {
-                        dismiss()
+                        onCancel()
                     }
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
-                        viewModelWrapper.save()
+                        onSave()
                     }
-                    .disabled(viewModelWrapper.state.isSaving || viewModelWrapper.state.name.isEmpty)
+                    .disabled(state.isSaving || state.name.isEmpty)
                 }
             }
-            .disabled(viewModelWrapper.state.isSaving)
+            .disabled(state.isSaving)
             .overlay {
-                if viewModelWrapper.state.isSaving {
+                if state.isSaving {
                     ProgressView()
-                }
-            }
-            .onChange(of: viewModelWrapper.state.isSaved) { _, isSaved in
-                if isSaved {
-                    viewModelWrapper.consumeSaveSuccess()
-                    dismiss()
                 }
             }
         }

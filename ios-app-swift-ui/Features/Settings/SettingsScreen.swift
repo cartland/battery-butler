@@ -11,10 +11,31 @@ struct SettingsScreen: View {
     }
 
     var body: some View {
+        SettingsContentView(
+            exportData: wrapper.exportData,
+            isShareSheetPresented: $isShareSheetPresented,
+            onExportData: { wrapper.onExportData() },
+            onExportDataConsumed: { wrapper.onExportDataConsumed() }
+        )
+        .onChange(of: wrapper.exportData) { _, newData in
+            if newData != nil {
+                isShareSheetPresented = true
+            }
+        }
+    }
+}
+
+struct SettingsContentView: View {
+    let exportData: String?
+    @Binding var isShareSheetPresented: Bool
+    let onExportData: () -> Void
+    let onExportDataConsumed: () -> Void
+
+    var body: some View {
         Form {
             Section(header: Text("Data Management")) {
                 Button("Export Data") {
-                    wrapper.onExportData()
+                    onExportData()
                 }
             }
 
@@ -24,15 +45,10 @@ struct SettingsScreen: View {
             }
         }
         .navigationTitle("Settings")
-        .onChange(of: wrapper.exportData) { _, newData in
-            if newData != nil {
-                isShareSheetPresented = true
-            }
-        }
         .sheet(isPresented: $isShareSheetPresented, onDismiss: {
-            wrapper.onExportDataConsumed()
+            onExportDataConsumed()
         }) {
-            if let data = wrapper.exportData {
+            if let data = exportData {
                 if let fileUrl = saveToTempFile(content: data) {
                     ShareSheet(activityItems: [fileUrl])
                 } else {

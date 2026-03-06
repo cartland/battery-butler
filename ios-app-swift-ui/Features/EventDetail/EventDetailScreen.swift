@@ -10,8 +10,16 @@ struct EventDetailScreen: View {
     }
 
     var body: some View {
+        EventDetailContentView(state: wrapper.state)
+    }
+}
+
+struct EventDetailContentView: View {
+    let state: EventDetailUiState?
+
+    var body: some View {
         Group {
-            if let success = wrapper.state as? EventDetailUiStateSuccess {
+            if let success = state as? EventDetailUiStateSuccess {
                 let event = success.event
                 Form {
                     Section(header: Text("Event Details")) {
@@ -68,7 +76,7 @@ struct EventDetailScreen: View {
                         }
                     }
                 }
-            } else if wrapper.state is EventDetailUiStateNotFound {
+            } else if state is EventDetailUiStateNotFound {
                 VStack {
                     Text("Event Not Found")
                         .font(.headline)
