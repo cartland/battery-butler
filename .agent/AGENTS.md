@@ -119,10 +119,11 @@ Keeping the build and tests healthy is a top priority. When you identify or fix 
   - See **PR Merge Workflow** section below for merge sequencing and broken build handling.
 
 - **iOS Builds**:
-  - **Always** use `-derivedDataPath build/<target_name>` (e.g., `build/ios_compose`) when running multiple `xcodebuild` commands in a single script. This ensures **artifact isolation** between steps, mimicking CI parity, and prevents accidental cross-linking of frameworks.
-  - **Always** use `-derivedDataPath build/...` generally to keep artifacts out of system locations.
+  - **Always** run `xcodebuild` from the repo root using `-project ios-app-swift-ui/iosAppSwiftUI.xcodeproj`. Never `cd` into subdirectories — it changes the working directory for subsequent commands and causes confusion.
+  - **Always** use `-derivedDataPath ios-app-swift-ui/build/<target_name>` (e.g., `ios-app-swift-ui/build/ios-build`) when running `xcodebuild`. This ensures **artifact isolation** between steps, mimicking CI parity, and prevents accidental cross-linking of frameworks.
   - **Always** use `-target` instead of `-scheme` if the scheme file is not shared (checked into git).
   - **Always** disable code signing for local simulator builds or CI builds without certificates using `CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO`.
+  - **Always** specify the OS version for simulator destinations (e.g., `name=iPhone 16,OS=18.5`). Omitting `OS` causes "device not found" when multiple OS versions are installed.
 
 - **Bazel**:
   - **Bazel Outputs:** All Bazel outputs are consolidated in `.bazel/` (e.g. `.bazel/bin`) via `.bazelrc`. This directory is gitignored and excluded from Spotless.
