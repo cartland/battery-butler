@@ -28,7 +28,7 @@ struct TestData {
         id: "d3",
         name: "Garage Door Sensor",
         typeId: "t1",
-        batteryLastReplaced: nil,
+        batteryLastReplaced: KotlinInstant.Companion.shared.fromEpochMilliseconds(epochMilliseconds: 1706745600000),
         lastUpdated: KotlinInstant.Companion.shared.fromEpochMilliseconds(epochMilliseconds: 1706745600000),
         location: nil,
         imagePath: nil
