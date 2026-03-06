@@ -79,6 +79,15 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
             CONFIGURATION_BUILD_DIR=build/ios-swiftui/
+
+        echo "Running iOS SwiftUI Snapshot Tests..."
+        xcodebuild test -project ios-app-swift-ui/iosAppSwiftUI.xcodeproj \
+            -scheme iosAppSwiftUITests \
+            -destination 'platform=iOS Simulator,name=iPhone 16' \
+            -derivedDataPath build/ios-tests \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
     else
         echo "Warning: xcodebuild not found. Skipping iOS xcodebuild checks."
         echo "Note: Kotlin iOS modules were still compiled above."
