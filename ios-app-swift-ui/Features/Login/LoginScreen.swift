@@ -58,7 +58,7 @@ struct LoginContentView: View {
     let onDismissError: () -> Void
 
     var body: some View {
-        VStack(spacing: 24) {
+        VStack(spacing: Spacing.large) {
             Image(systemName: "bolt.batteryblock.fill")
                 .resizable()
                 .scaledToFit()
@@ -74,7 +74,7 @@ struct LoginContentView: View {
             Text("Manage your devices and battery replacements securely across all platforms.")
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.secondary)
-                .padding(.horizontal)
+                .padding(.horizontal, Spacing.standard)
 
             Spacer()
 
@@ -91,10 +91,10 @@ struct LoginContentView: View {
                             Text("Sign in with Google")
                         }
                         .frame(maxWidth: .infinity)
-                        .padding()
+                        .padding(Spacing.standard)
                         .background(Color.blue)
                         .foregroundStyle(.white)
-                        .cornerRadius(12)
+                        .cornerRadius(CornerRadius.medium)
                     }
                 }
 
@@ -103,14 +103,14 @@ struct LoginContentView: View {
                 }) {
                     Text("Skip for now")
                         .frame(maxWidth: .infinity)
-                        .padding()
+                        .padding(Spacing.standard)
                         .foregroundStyle(.blue)
                 }
             }
 
             Spacer()
         }
-        .padding()
+        .padding(Spacing.standard)
         .alert(errorTitle, isPresented: $showError) {
             if showRetryButton {
                 Button("Try Again") {

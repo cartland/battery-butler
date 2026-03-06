@@ -35,19 +35,19 @@ struct AiChatContentView: View {
     var body: some View {
         VStack(spacing: 0) {
             ScrollView {
-                LazyVStack(spacing: 12) {
+                LazyVStack(spacing: Spacing.medium) {
                     ForEach(messages, id: \.id) { message in
                         MessageRow(message: message)
                     }
                     if isProcessing {
                         HStack {
                             ProgressView()
-                                .padding()
+                                .padding(Spacing.standard)
                             Spacer()
                         }
                     }
                 }
-                .padding()
+                .padding(Spacing.standard)
             }
 
             Divider()
@@ -64,7 +64,7 @@ struct AiChatContentView: View {
                 .accessibilityLabel("Send message")
                 .disabled(inputText.isEmpty || isProcessing)
             }
-            .padding()
+            .padding(Spacing.standard)
         }
         .navigationTitle("AI Butler")
         .navigationBarTitleDisplayMode(.inline)
@@ -91,7 +91,7 @@ struct MessageRow: View {
             if isUser { Spacer() }
             
             Text(message.text)
-                .padding(12)
+                .padding(Spacing.medium)
                 .background(isUser ? Color.blue : Color(UIColor.systemGray5))
                 .foregroundColor(isUser ? .white : .primary)
                 .clipShape(ChatBubbleShape(isUser: isUser))
@@ -112,7 +112,7 @@ struct ChatBubbleShape: Shape {
                 .topRight,
                 isUser ? .bottomLeft : .bottomRight
             ],
-            cornerRadii: CGSize(width: 16, height: 16)
+            cornerRadii: CGSize(width: CornerRadius.large, height: CornerRadius.large)
         )
         return Path(path.cgPath)
     }

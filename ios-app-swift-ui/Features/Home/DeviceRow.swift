@@ -25,7 +25,7 @@ struct DeviceRow: View {
                 .foregroundColor(.green)
                 .accessibilityHidden(true)
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, Spacing.extraSmall)
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(device.name), \(device.typeId)")
     }

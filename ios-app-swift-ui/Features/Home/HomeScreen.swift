@@ -73,7 +73,7 @@ struct HomeContentView<DeviceDestination: View, SettingsDestination: View, AiDes
             }
 
             ToolbarItem(placement: .navigationBarTrailing) {
-                HStack(spacing: 16) {
+                HStack(spacing: Spacing.standard) {
                     NavigationLink(destination: aiDestination()) {
                         Image(systemName: "wand.and.stars")
                             .accessibilityLabel("AI Chat")

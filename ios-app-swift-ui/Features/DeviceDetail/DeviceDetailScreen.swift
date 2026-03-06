@@ -47,7 +47,7 @@ struct DeviceDetailContentView<Destination: View>: View {
         Group {
             if let success = state as? DeviceDetailUiStateSuccess {
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 16) {
+                    VStack(alignment: .leading, spacing: Spacing.standard) {
                         // Header
                         HStack {
                             Image(systemName: "cpu")
@@ -65,19 +65,19 @@ struct DeviceDetailContentView<Destination: View>: View {
                             }
                             Spacer()
                         }
-                        .padding()
+                        .padding(Spacing.standard)
                         .background(Color(.systemBackground))
-                        .cornerRadius(12)
+                        .cornerRadius(CornerRadius.medium)
                         .shadow(radius: 2)
                         
                         // Actions
                         Button(action: onRecordReplacement) {
                             Text("Replaced Battery")
                                 .frame(maxWidth: .infinity)
-                                .padding()
+                                .padding(Spacing.standard)
                                 .background(Color.accentColor)
                                 .foregroundColor(.white)
-                                .cornerRadius(10)
+                                .cornerRadius(CornerRadius.medium)
                         }
                         .accessibilityHint("Records a battery replacement for today")
                         
@@ -103,12 +103,12 @@ struct DeviceDetailContentView<Destination: View>: View {
                                         Text("Details")
                                             .foregroundColor(.accentColor)
                                     }
-                                    .padding(.vertical, 4)
+                                    .padding(.vertical, Spacing.extraSmall)
                                 }
                             }
                         }
                     }
-                    .padding()
+                    .padding(Spacing.standard)
                 }
             } else if state is DeviceDetailUiStateNotFound {
                 Text("Device not found")

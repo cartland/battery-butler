@@ -97,9 +97,9 @@ Classes should have one reason to change. See `docs/architecture/adr-004-single-
 
 ### UI Theme Constants
 
-Padding constants live in `presentation-core/.../theme/Padding.kt`. Use `Padding.standard` (16.dp), `Padding.small` (8.dp), `Padding.large` (24.dp), etc. instead of hardcoded dp values.
+**Android/KMP**: Padding constants live in `presentation-core/.../theme/Padding.kt`. Use `Padding.standard` (16.dp), `Padding.small` (8.dp), `Padding.large` (24.dp), etc. instead of hardcoded dp values. Icon sizes live in `presentation-core/.../theme/IconSize.kt`.
 
-Icon sizes live in `presentation-core/.../theme/IconSize.kt`.
+**iOS/SwiftUI**: Spacing constants live in `ios-app-swift-ui/Core/Theme/Spacing.swift` (`Spacing.standard` = 16pt, `Spacing.small` = 8pt, etc.) and corner radius in `CornerRadius` enum in the same file. Icon sizes live in `ios-app-swift-ui/Core/Theme/IconSize.swift`. A convention test (`SpacingConventionTest`) scans Features/ and Core/ for hardcoded numeric padding, spacing, and cornerRadius values to prevent drift.
 
 Custom app colors beyond Material3 live in `ButlerColors` (data class) provided via `LocalButlerColors` composition local. Access with `LocalButlerColors.current.batteryWarning`. New custom colors should be added to `ButlerColors`, provided in `BatteryButlerTheme`, and defined in `Color.kt`.
 

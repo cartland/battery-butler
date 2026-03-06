@@ -41,7 +41,7 @@ struct EventDetailContentView: View {
                         }
 
                         if let notes = event.notes {
-                            VStack(alignment: .leading, spacing: 4) {
+                            VStack(alignment: .leading, spacing: Spacing.extraSmall) {
                                 Text("Notes")
                                     .foregroundColor(.secondary)
                                 Text(notes)

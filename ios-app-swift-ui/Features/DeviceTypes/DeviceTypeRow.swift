@@ -14,7 +14,7 @@ struct DeviceTypeRow: View {
                     .foregroundColor(.secondary)
             }
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, Spacing.extraSmall)
         .accessibilityElement(children: .combine)
         .accessibilityLabel(deviceType.batteryType.isEmpty
             ? deviceType.name

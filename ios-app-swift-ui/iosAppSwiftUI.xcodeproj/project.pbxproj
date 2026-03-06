@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0B8A00C05740714CA09EA3DF /* AiChatViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9127CC9BB55BC761853552F0 /* AiChatViewModelWrapper.swift */; };
+		0F770A51CC7C2455EA25AB74 /* IconSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EEAE10F7465CF7348236AC4 /* IconSize.swift */; };
 		1211B65CDB19EBD3475155ED /* AddBatteryEventViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348ECD40844BC056AA8019FF /* AddBatteryEventViewModelWrapper.swift */; };
 		14C9539A085FC4157ED6ECCB /* EventDetailViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 484371A677F858AB3865E844 /* EventDetailViewModelWrapper.swift */; };
 		17583375029A96F5152F5B92 /* AddDeviceScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7FFABCF0C5C31A595C3F1CF /* AddDeviceScreenTests.swift */; };
@@ -35,6 +36,7 @@
 		2855F56B7B730259E73A04CD /* EditDeviceViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28903408708ECF67A8991592 /* EditDeviceViewModelWrapper.swift */; };
 		2FA78B928A0A3E325BA1D464 /* EditDeviceScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C424550B976EA19E32F00C2 /* EditDeviceScreenTests.swift */; };
 		3817672E5800D02B74BBCAE6 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 171E07C13F4D360A2E8F8F1B /* Foundation.framework */; };
+		3BC717D2852343E8A90DEE68 /* Spacing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5008D0BC0001BBEAE82400 /* Spacing.swift */; };
 		4965F8DE9488CA44D1213210 /* HomeScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D54F827E245B0DE9785703 /* HomeScreenTests.swift */; };
 		512CC7D51E6C42B5C0FF3F5F /* DeviceDetailScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417E5F5994DD57326CBFBB02 /* DeviceDetailScreenTests.swift */; };
 		77177175D5AE0F2363AB6DDA /* AiChatScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18BC9C9B9E6E29A48DCAC5C2 /* AiChatScreen.swift */; };
@@ -46,6 +48,7 @@
 		9E310559114A9C3509F5106D /* LoginScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05276AAFBE18E0BD342E186F /* LoginScreen.swift */; };
 		9EC6A2E16CEA57929E345F5C /* LoginViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D976428F6B0003DDB354405 /* LoginViewModelWrapper.swift */; };
 		A57202E629408A9C8F778165 /* EventDetailScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEFA05173F04BE4075FBABA5 /* EventDetailScreenTests.swift */; };
+		A9807C5E899F2BCD1E6228BB /* SpacingConventionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D424D472A91BBADBA167B00C /* SpacingConventionTest.swift */; };
 		AG1000000000000000000002 /* Generated in Sources */ = {isa = PBXBuildFile; fileRef = AG1000000000000000000001 /* Generated */; };
 		B2E94A4898D213A80796E832 /* SettingsScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F369A0F48183F2527CD88B41 /* SettingsScreenTests.swift */; };
 		B675B24ABC559905E825F17A /* DeviceRowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72E31482FD860FC114F618F9 /* DeviceRowTests.swift */; };
@@ -100,12 +103,14 @@
 		32F2E55509C388E5CC4D034F /* AddBatteryEventScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddBatteryEventScreenTests.swift; sourceTree = "<group>"; };
 		348ECD40844BC056AA8019FF /* AddBatteryEventViewModelWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddBatteryEventViewModelWrapper.swift; sourceTree = "<group>"; };
 		3C97AD8F27356E0133B28ADE /* AddDeviceTypeScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddDeviceTypeScreenTests.swift; sourceTree = "<group>"; };
+		3E5008D0BC0001BBEAE82400 /* Spacing.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Spacing.swift; sourceTree = "<group>"; };
 		3FDAA129CFA4B9C38F69243C /* DeviceTypeListScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DeviceTypeListScreenTests.swift; sourceTree = "<group>"; };
 		417E5F5994DD57326CBFBB02 /* DeviceDetailScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DeviceDetailScreenTests.swift; sourceTree = "<group>"; };
 		4217F0EB61A27BAB5D26D37A /* EditDeviceScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EditDeviceScreen.swift; sourceTree = "<group>"; };
 		484371A677F858AB3865E844 /* EventDetailViewModelWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EventDetailViewModelWrapper.swift; sourceTree = "<group>"; };
 		4D976428F6B0003DDB354405 /* LoginViewModelWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LoginViewModelWrapper.swift; sourceTree = "<group>"; };
 		5B969CDAC29B255B6A99F0A8 /* HistoryListScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HistoryListScreenTests.swift; sourceTree = "<group>"; };
+		5EEAE10F7465CF7348236AC4 /* IconSize.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IconSize.swift; sourceTree = "<group>"; };
 		6161923E993256241FF44A49 /* AddBatteryEventScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddBatteryEventScreen.swift; sourceTree = "<group>"; };
 		6C424550B976EA19E32F00C2 /* EditDeviceScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EditDeviceScreenTests.swift; sourceTree = "<group>"; };
 		72E31482FD860FC114F618F9 /* DeviceRowTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DeviceRowTests.swift; sourceTree = "<group>"; };
@@ -117,6 +122,7 @@
 		C64AF092C61D54E3E0BB972E /* MessageRowTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MessageRowTests.swift; sourceTree = "<group>"; };
 		C7FFABCF0C5C31A595C3F1CF /* AddDeviceScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddDeviceScreenTests.swift; sourceTree = "<group>"; };
 		CE7C8996ACEF6EABE0989D13 /* iosAppSwiftUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iosAppSwiftUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D424D472A91BBADBA167B00C /* SpacingConventionTest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SpacingConventionTest.swift; sourceTree = "<group>"; };
 		D8F821268475E1398BE0B048 /* SimpleSnapshotTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SimpleSnapshotTests.swift; sourceTree = "<group>"; };
 		EBB2BC212BA886F9EA0057B5 /* EventDetailScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EventDetailScreen.swift; sourceTree = "<group>"; };
 		EEFA05173F04BE4075FBABA5 /* EventDetailScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EventDetailScreenTests.swift; sourceTree = "<group>"; };
@@ -175,6 +181,7 @@
 			isa = PBXGroup;
 			children = (
 				2462958D2F14EEF40047C600 /* ViewModelWrapper.swift */,
+				ECD8DC9B77AC525A906EA1EC /* Theme */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -287,6 +294,7 @@
 				C64AF092C61D54E3E0BB972E /* MessageRowTests.swift */,
 				F369A0F48183F2527CD88B41 /* SettingsScreenTests.swift */,
 				8EBF127BDE68EF62BDAFA150 /* TestData.swift */,
+				D424D472A91BBADBA167B00C /* SpacingConventionTest.swift */,
 			);
 			name = iosAppSwiftUITests;
 			path = iosAppSwiftUITests;
@@ -379,6 +387,16 @@
 				171E07C13F4D360A2E8F8F1B /* Foundation.framework */,
 			);
 			name = iOS;
+			sourceTree = "<group>";
+		};
+		ECD8DC9B77AC525A906EA1EC /* Theme */ = {
+			isa = PBXGroup;
+			children = (
+				5EEAE10F7465CF7348236AC4 /* IconSize.swift */,
+				3E5008D0BC0001BBEAE82400 /* Spacing.swift */,
+			);
+			name = Theme;
+			path = Theme;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -546,6 +564,7 @@
 				7837EFBEECD11652F225A828 /* MessageRowTests.swift in Sources */,
 				B2E94A4898D213A80796E832 /* SettingsScreenTests.swift in Sources */,
 				B98DBAFBE2DC0C16669CB684 /* TestData.swift in Sources */,
+				A9807C5E899F2BCD1E6228BB /* SpacingConventionTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -584,6 +603,8 @@
 				0B8A00C05740714CA09EA3DF /* AiChatViewModelWrapper.swift in Sources */,
 				998E133AD56CF4D0A133506A /* EditDeviceScreen.swift in Sources */,
 				2855F56B7B730259E73A04CD /* EditDeviceViewModelWrapper.swift in Sources */,
+				0F770A51CC7C2455EA25AB74 /* IconSize.swift in Sources */,
+				3BC717D2852343E8A90DEE68 /* Spacing.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

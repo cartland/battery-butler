@@ -44,6 +44,36 @@ end
 project.save
 puts "Synced Features folder with Xcode project."
 
+# Sync subdirectories inside Core
+core_group = project.main_group.find_subpath('Core', false)
+if core_group
+  Dir.glob('Core/*').each do |dir|
+    next unless File.directory?(dir)
+    group_name = File.basename(dir)
+
+    group = core_group.find_subpath(group_name, false) || core_group.new_group(group_name, group_name)
+
+    disk_files = Dir.glob("#{dir}/*.swift").map { |f| File.basename(f) }.to_set
+    group_files = group.files.map { |f| f.path }.to_set
+
+    (disk_files - group_files).each do |filename|
+      file_ref = group.new_file(filename)
+      target.add_file_references([file_ref]) unless target.source_build_phase.files_references.include?(file_ref)
+      puts "Added Core/#{group_name}/#{filename}"
+    end
+
+    group.files.each do |f|
+      if !disk_files.include?(f.path)
+        puts "Removing missing file reference Core/#{group_name}/#{f.path}"
+        f.remove_from_project
+      end
+    end
+  end
+
+  project.save
+  puts "Synced Core folder with Xcode project."
+end
+
 # Also sync the tests directory
 test_target = project.targets.find { |t| t.name == 'iosAppSwiftUITests' }
 if test_target
