@@ -143,12 +143,18 @@ The iOS SwiftUI app follows a **two-layer pattern**:
 - `AuthErrorSignInNetworkError`, `AuthErrorTokenInvalid`, `AuthErrorTokenExpired`, `AuthErrorUnknown`
 - These are class types — use `is` for type checks, `as let` for property access
 
-**iOS CI note**: `build_ios_native` is skipped on PRs in development CI mode. iOS compile errors are only caught post-merge on `main`. `validation_ios_ui` now runs `xcodebuild test` (PR #853) in addition to compiling, so iOS snapshot tests execute in CI. For iOS-only changes, consider local `xcodebuild` verification:
+**iOS CI note**: `build_ios_native` is skipped on PRs in development CI mode. iOS compile errors are only caught post-merge on `main`. `validation_ios_ui` now runs `xcodebuild test` (PR #853) in addition to compiling, so iOS snapshot tests execute in CI. For iOS-only changes, consider local `xcodebuild` verification. **Always run from repo root** — never `cd` into `ios-app-swift-ui/`:
 ```bash
-cd ios-app-swift-ui
-xcodebuild -project iosAppSwiftUI.xcodeproj -configuration Debug -scheme iosAppSwiftUI \
+# Build
+xcodebuild -project ios-app-swift-ui/iosAppSwiftUI.xcodeproj -scheme iosAppSwiftUI \
   -destination 'generic/platform=iOS Simulator' build \
-  CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+  CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO \
+  -derivedDataPath ios-app-swift-ui/build/ios-build
+# Test (must specify OS version — no 'latest' match)
+xcodebuild test -project ios-app-swift-ui/iosAppSwiftUI.xcodeproj -scheme iosAppSwiftUITests \
+  -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.5' \
+  CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO \
+  -derivedDataPath ios-app-swift-ui/build/ios-tests
 ```
 
 ### iOS SwiftUI Feature Parity
@@ -162,7 +168,14 @@ Key systemic gaps:
 - Settings shows only app version (missing sign-out, network mode, AI engine)
 - All SwiftUI strings are hardcoded English (no localization)
 
-**iOS snapshot test coverage** (PR #855): Only 3 of 13 screens follow the two-layer Screen/ContentView pattern needed for snapshot testing. The other 10 have their body coupled to ViewModelWrapper. Placeholder test files with recommended ContentView signatures are committed. See bead `bb-scsg` for the extraction task.
+**iOS snapshot test coverage** (PR #862): All 13 screens follow the two-layer Screen/ContentView pattern. 27 snapshot tests cover all ContentViews across 10 test files (plus 3 pre-existing). Reference images recorded on iPhone 16 / iOS 18.5.
+
+**KMP Swift constructor gotchas**:
+- Kotlin `data class` with ALL default params → Swift exports only full-param init + no-arg init (no partial constructors)
+- Kotlin `data object` types export `init()` in Swift (not just `.shared`)
+- `AiRole` values: `.user`, `.model`, `.system`, `.tool` (NOT `.assistant`)
+- `AiMessage` param order: `id:role:text:isPartial:hints:` (all required in Swift)
+- `GroupOption.none`, `SortOption.name` for default enum values
 
 ### AI Architecture
 
@@ -295,7 +308,14 @@ ruby ios-app-swift-ui/sync_pbxproj.rb         # Sync Swift files to Xcode
   - **Platform API overrides for previews**: When a composable reads a platform API (e.g., `WindowInsets.ime`) that always returns a fixed value in previews, use **parameter hoisting** — add a parameter with the platform read as its default (e.g., `imeVisible: Boolean = WindowInsets.ime.getBottom(LocalDensity.current) > 0`). Previews pass the desired value directly. Do NOT use CompositionLocals for test-only overrides — that leaks test concerns into production code.
 - **iOS**: Uses `swift-snapshot-testing`. 
   - To test SwiftUI views connected to KMP, ensure the `Screen` structures are separated into stateless `ContentView` structures to bypass the `NativeComponent` DI graph during testing.
-  - Native iOS snapshot tests execute inside the simulator via `xcodebuild test -project iosAppSwiftUI.xcodeproj -scheme iosAppSwiftUITests -destination "platform=iOS Simulator,name=iPhone 16"` from the `ios-app-swift-ui` directory.
+  - Native iOS snapshot tests execute inside the simulator from the repo root:
+    ```bash
+    xcodebuild test -project ios-app-swift-ui/iosAppSwiftUI.xcodeproj \
+      -scheme iosAppSwiftUITests \
+      -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.5' \
+      CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO \
+      -derivedDataPath ios-app-swift-ui/build/ios-tests
+    ```
   - There is no native update flag; tests will automatically record missing snapshots, or you can delete `__Snapshots__` to force a recreation of all references.
 
 ### Detekt
