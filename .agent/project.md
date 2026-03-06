@@ -295,7 +295,7 @@ ruby ios-app-swift-ui/sync_pbxproj.rb         # Sync Swift files to Xcode
   - **Platform API overrides for previews**: When a composable reads a platform API (e.g., `WindowInsets.ime`) that always returns a fixed value in previews, use **parameter hoisting** — add a parameter with the platform read as its default (e.g., `imeVisible: Boolean = WindowInsets.ime.getBottom(LocalDensity.current) > 0`). Previews pass the desired value directly. Do NOT use CompositionLocals for test-only overrides — that leaks test concerns into production code.
 - **iOS**: Uses `swift-snapshot-testing`. 
   - To test SwiftUI views connected to KMP, ensure the `Screen` structures are separated into stateless `ContentView` structures to bypass the `NativeComponent` DI graph during testing.
-  - Native iOS snapshot tests execute inside the simulator via `xcodebuild test -project iosAppSwiftUI.xcodeproj -scheme iosAppSwiftUITests -destination "platform=iOS Simulator,name=iPhone 16 Pro,OS=18.5"` from the `ios-app-swift-ui` directory.
+  - Native iOS snapshot tests execute inside the simulator via `xcodebuild test -project iosAppSwiftUI.xcodeproj -scheme iosAppSwiftUITests -destination "platform=iOS Simulator,name=iPhone 16"` from the `ios-app-swift-ui` directory.
   - There is no native update flag; tests will automatically record missing snapshots, or you can delete `__Snapshots__` to force a recreation of all references.
 
 ### Detekt
@@ -556,11 +556,15 @@ Push-to-main CI runs use SHA-based concurrency groups so rapid merges don't canc
 
 ### Release Build Verification (PR #857)
 
-`release-build-on-green.yml` builds a signed release AAB after every green CI on main. This proves the release pipeline (signing, bundling, Gradle config) works without deploying. Artifacts uploaded for 30 days. Skips docs-only changes.
+`release-build-on-green.yml` builds a signed release AAB after every green CI on main. This proves the release pipeline (signing, bundling, Gradle config) works without deploying. Uses `VERSION_CODE=1` (must be >= 1 for Android Gradle Plugin). Artifacts uploaded for 30 days. Skips docs-only changes.
 
 ### Pre-Release CI Gate (PR #854)
 
-`release-android.yml` has a `verify-ci` job that checks CI passed on the tagged commit before building. `release-android.sh` also checks CI status locally before creating tags. Both verify that slow jobs (`validation_test`, `build_android`) actually ran (not just skipped in docs-only mode).
+`release-android.yml` has a `verify-ci` job that checks CI passed on the tagged commit before building. Uses `[.check_runs[] | select(.name == "ci")] | last | .conclusion` to handle multiple check-runs from CI re-runs. `release-android.sh` also checks CI status locally before creating tags.
+
+### GitHub CLI Workflow Scope
+
+Merging PRs that modify `.github/workflows/` files requires the `workflow` OAuth scope. If `gh pr merge` fails with "base branch policy prohibits the merge" and the PR touches workflow files, run `gh auth refresh -s workflow` to add the scope (requires browser-based device code flow).
 
 ### Concurrency Group Gotcha
 
