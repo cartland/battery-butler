@@ -127,23 +127,26 @@ jobs:
       - name: Generate Screenshots Sequentially
         run: ./scripts/generate-screenshots-sequentially.sh
 
+      - name: Generate Screenshot Gallery
+        run: ./scripts/generate-screenshot-gallery.sh
+
       - name: Validate Generated Files
         run: ./scripts/validate-generated.sh --screenshots
 
       - name: Check for meaningful changes
         id: check-changes
         run: |
-          # Check if any .png files actually changed (not just gallery markdown)
-          PNG_CHANGES=$(git diff --name-only -- '*.png' | wc -l | tr -d ' ')
-          echo "png_changes=$PNG_CHANGES" >> $GITHUB_OUTPUT
-          if [ "$PNG_CHANGES" -eq 0 ]; then
-            echo "No screenshot PNG changes detected — skipping PR creation"
+          # Check if any .png or gallery files changed
+          CHANGES=$(git diff --name-only -- '*.png' 'android-screenshot-tests/SCREENSHOT_GALLERY.md' | wc -l | tr -d ' ')
+          echo "changes=$CHANGES" >> $GITHUB_OUTPUT
+          if [ "$CHANGES" -eq 0 ]; then
+            echo "No screenshot changes detected — skipping PR creation"
           else
-            echo "$PNG_CHANGES screenshot PNG(s) changed"
+            echo "$CHANGES file(s) changed"
           fi
 
       - name: Create Pull Request
-        if: steps.check-changes.outputs.png_changes != '0'
+        if: steps.check-changes.outputs.changes != '0'
         uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -163,11 +166,11 @@ jobs:
           labels: automated
 
   # ===========================================================================
-  # Job 3: iOS Screenshot Gallery
+  # Job 3: iOS Snapshots + Gallery
   # ===========================================================================
-  ios-screenshot-gallery:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
+  ios-snapshots:
+    runs-on: macos-latest
+    timeout-minutes: 30
 
     permissions:
       contents: write
@@ -177,28 +180,42 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - uses: ./.github/actions/setup-java-gradle
+
+      - name: Record iOS Snapshots
+        run: ./scripts/record-ios-snapshots.sh
+
       - name: Generate iOS Screenshot Gallery
         run: ./scripts/generate-ios-screenshot-gallery.sh
 
       - name: Check for meaningful changes
         id: check-changes
         run: |
-          GALLERY_CHANGES=$(git diff --name-only -- 'ios-app-swift-ui/SCREENSHOT_GALLERY.md' | wc -l | tr -d ' ')
-          echo "gallery_changes=$GALLERY_CHANGES" >> $GITHUB_OUTPUT
+          CHANGES=$(git diff --name-only -- 'ios-app-swift-ui/iosAppSwiftUITests/__Snapshots__/*.png' 'ios-app-swift-ui/SCREENSHOT_GALLERY.md' | wc -l | tr -d ' ')
+          UNTRACKED=$(git ls-files --others --exclude-standard -- 'ios-app-swift-ui/iosAppSwiftUITests/__Snapshots__/*.png' | wc -l | tr -d ' ')
+          TOTAL=$((CHANGES + UNTRACKED))
+          echo "changes=$TOTAL" >> $GITHUB_OUTPUT
+          if [ "$TOTAL" -eq 0 ]; then
+            echo "No iOS snapshot changes detected — skipping PR creation"
+          else
+            echo "$TOTAL file(s) changed or added"
+          fi
 
       - name: Create Pull Request
-        if: steps.check-changes.outputs.gallery_changes != '0'
+        if: steps.check-changes.outputs.changes != '0'
         uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "docs(generated): Regenerate iOS screenshot gallery"
-          title: "docs(generated): Regenerate iOS screenshot gallery"
+          commit-message: "chore(generated): Regenerate iOS snapshots and gallery"
+          title: "chore(generated): Regenerate iOS snapshots and gallery"
           body: |
-            iOS screenshot gallery regenerated to match current snapshots.
+            iOS snapshots recorded and gallery regenerated to match current UI.
 
-            This PR was automatically created by the Auto-Generate Content workflow.
+            This PR was automatically created by the Auto-Generate Content workflow
+            after a UI code change was merged to main.
 
             **Source commit:** ${{ github.sha }}
+            **Triggered by:** ${{ github.event_name }}
           branch: auto/update-ios-screenshots
           base: main
           delete-branch: true
