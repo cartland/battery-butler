@@ -4,15 +4,60 @@ import SnapshotTesting
 import shared
 @testable import BatteryButler
 
-// SKIPPED: HomeScreen does not have a separate HomeContentView.
-// The UI body is in HomeScreen and depends on HomeViewModelWrapper and NativeComponent.
-// To enable snapshot tests, HomeScreen needs refactoring to extract a stateless
-// HomeContentView that accepts grouped devices and action callbacks.
-//
-// However, DeviceRow is a stateless subview used by HomeScreen and CAN be tested.
-// See DeviceRowTests.swift.
-
 final class HomeScreenTests: XCTestCase {
-    // No testable HomeContentView available yet.
-    // See comment above for the recommended extraction.
+    func testHomeContentView_WithDevices() {
+        let groupedDevices: [String: [Device]] = [
+            "Living Room": [TestData.device],
+            "Kitchen": [TestData.device2]
+        ]
+        let state = HomeUiState(
+            groups: [:],
+            devices: [:],
+            groupedDevices: groupedDevices,
+            deviceTypes: [:],
+            isSortAscending: true,
+            isGroupAscending: true,
+            sortOption: .name,
+            groupOption: .none,
+            exportData: nil,
+            syncStatus: SyncStatusIdle()
+        )
+
+        let view = HomeContentView(
+            state: state,
+            onAddDeviceTapped: {},
+            onAddEventTapped: {},
+            deviceDestination: { _ in Text("Detail") },
+            settingsDestination: { Text("Settings") },
+            aiDestination: { Text("AI Chat") }
+        )
+
+        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)))
+    }
+
+    func testHomeContentView_Empty() {
+        let state = HomeUiState(
+            groups: [:],
+            devices: [:],
+            groupedDevices: [:],
+            deviceTypes: [:],
+            isSortAscending: true,
+            isGroupAscending: true,
+            sortOption: .name,
+            groupOption: .none,
+            exportData: nil,
+            syncStatus: SyncStatusIdle()
+        )
+
+        let view = HomeContentView(
+            state: state,
+            onAddDeviceTapped: {},
+            onAddEventTapped: {},
+            deviceDestination: { _ in Text("Detail") },
+            settingsDestination: { Text("Settings") },
+            aiDestination: { Text("AI Chat") }
+        )
+
+        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)))
+    }
 }

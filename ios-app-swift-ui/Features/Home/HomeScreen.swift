@@ -13,9 +13,39 @@ struct HomeScreen: View {
     }
     
     var body: some View {
+        HomeContentView(
+            state: viewModelWrapper.state,
+            onAddDeviceTapped: { isAddDevicePresented = true },
+            onAddEventTapped: { isAddEventPresented = true },
+            deviceDestination: { deviceId in
+                DeviceDetailScreen(component: component, deviceId: deviceId)
+            },
+            settingsDestination: {
+                SettingsScreen(viewModel: component.settingsViewModel)
+            },
+            aiDestination: {
+                AiChatScreen(viewModel: component.aiChatViewModel)
+            }
+        )
+        .sheet(isPresented: $isAddDevicePresented) {
+            AddDeviceScreen(viewModel: component.addDeviceViewModel)
+        }
+        .sheet(isPresented: $isAddEventPresented) {
+            AddBatteryEventScreen(viewModel: component.addBatteryEventViewModel)
+        }
+    }
+}
+
+struct HomeContentView<DeviceDestination: View, SettingsDestination: View, AiDestination: View>: View {
+    let state: HomeUiState
+    let onAddDeviceTapped: () -> Void
+    let onAddEventTapped: () -> Void
+    let deviceDestination: (String) -> DeviceDestination
+    let settingsDestination: () -> SettingsDestination
+    let aiDestination: () -> AiDestination
+
+    var body: some View {
         List {
-            let state = viewModelWrapper.state
-            
             if state.groupedDevices.isEmpty {
                  Section(header: Text("Devices")) {
                      Text("No devices found")
@@ -25,10 +55,7 @@ struct HomeScreen: View {
                 ForEach(state.groupedDevices.keys.sorted(), id: \.self) { key in
                     Section(header: Text(key)) {
                         ForEach(state.groupedDevices[key] ?? [], id: \.id) { device in
-                            NavigationLink(destination: DeviceDetailScreen(
-                                component: component,
-                                deviceId: device.id
-                            )) {
+                            NavigationLink(destination: deviceDestination(device.id)) {
                                 DeviceRow(device: device)
                             }
                         }
@@ -39,7 +66,7 @@ struct HomeScreen: View {
         .navigationTitle("Battery Butler Native")
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
-                NavigationLink(destination: SettingsScreen(viewModel: component.settingsViewModel)) {
+                NavigationLink(destination: settingsDestination()) {
                     Image(systemName: "gear")
                         .accessibilityLabel("Settings")
                 }
@@ -47,30 +74,20 @@ struct HomeScreen: View {
 
             ToolbarItem(placement: .navigationBarTrailing) {
                 HStack(spacing: 16) {
-                    NavigationLink(destination: AiChatScreen(viewModel: component.aiChatViewModel)) {
+                    NavigationLink(destination: aiDestination()) {
                         Image(systemName: "wand.and.stars")
                             .accessibilityLabel("AI Chat")
                     }
-                    Button(action: {
-                        isAddEventPresented = true
-                    }) {
+                    Button(action: onAddEventTapped) {
                         Image(systemName: "bolt.badge.plus")
                             .accessibilityLabel("Add battery event")
                     }
-                    Button(action: {
-                        isAddDevicePresented = true
-                    }) {
+                    Button(action: onAddDeviceTapped) {
                         Image(systemName: "plus")
                             .accessibilityLabel("Add device")
                     }
                 }
             }
-        }
-        .sheet(isPresented: $isAddDevicePresented) {
-            AddDeviceScreen(viewModel: component.addDeviceViewModel)
-        }
-        .sheet(isPresented: $isAddEventPresented) {
-            AddBatteryEventScreen(viewModel: component.addBatteryEventViewModel)
         }
     }
 }

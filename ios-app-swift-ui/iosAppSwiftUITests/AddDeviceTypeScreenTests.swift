@@ -4,23 +4,51 @@ import SnapshotTesting
 import shared
 @testable import BatteryButler
 
-// SKIPPED: AddDeviceTypeScreen does not have a separate ContentView.
-// The UI body is in AddDeviceTypeScreen and reads directly from
-// viewModelWrapper.state (AddDeviceTypeViewModelWrapper).
-// The state fields (name, batteryType) are driven through wrapper methods
-// (updateName, updateBatteryType) rather than @Binding parameters.
-// To enable snapshot tests, extract a stateless AddDeviceTypeContentView:
-//
-//   struct AddDeviceTypeContentView: View {
-//       @Binding var name: String
-//       @Binding var batteryType: String
-//       let isSaving: Bool
-//       let saveError: String?
-//       let onSave: () -> Void
-//       let onCancel: () -> Void
-//   }
-
 final class AddDeviceTypeScreenTests: XCTestCase {
-    // No testable ContentView available yet.
-    // See comment above for the recommended extraction.
+    func testAddDeviceTypeContentView_Empty() {
+        let state = AddDeviceTypeState()
+
+        let view = AddDeviceTypeContentView(
+            state: state,
+            onUpdateName: { _ in },
+            onUpdateBatteryType: { _ in },
+            onSave: {},
+            onCancel: {}
+        )
+
+        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)))
+    }
+
+    func testAddDeviceTypeContentView_Filled() {
+        var state = AddDeviceTypeState()
+        state.name = "Smoke Alarm"
+        state.batteryType = "9V"
+
+        let view = AddDeviceTypeContentView(
+            state: state,
+            onUpdateName: { _ in },
+            onUpdateBatteryType: { _ in },
+            onSave: {},
+            onCancel: {}
+        )
+
+        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)))
+    }
+
+    func testAddDeviceTypeContentView_Error() {
+        var state = AddDeviceTypeState()
+        state.name = "Smoke Alarm"
+        state.batteryType = "9V"
+        state.saveError = "A device type with this name already exists."
+
+        let view = AddDeviceTypeContentView(
+            state: state,
+            onUpdateName: { _ in },
+            onUpdateBatteryType: { _ in },
+            onSave: {},
+            onCancel: {}
+        )
+
+        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)))
+    }
 }

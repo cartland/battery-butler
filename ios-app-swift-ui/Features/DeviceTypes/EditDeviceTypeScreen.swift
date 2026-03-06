@@ -11,9 +11,35 @@ struct EditDeviceTypeScreen: View {
     }
 
     var body: some View {
-        Form {
-            let state = viewModelWrapper.state
+        EditDeviceTypeContentView(
+            state: viewModelWrapper.state,
+            onUpdateName: { viewModelWrapper.updateName(name: $0) },
+            onUpdateBatteryType: { viewModelWrapper.updateBatteryType(type: $0) },
+            onSave: { viewModelWrapper.save() },
+            onDelete: {
+                viewModelWrapper.delete()
+                dismiss()
+            }
+        )
+        .onChange(of: viewModelWrapper.state.isSaved) { _, isSaved in
+            if isSaved {
+                viewModelWrapper.consumeSaveSuccess()
+                dismiss()
+            }
+        }
+    }
+}
 
+struct EditDeviceTypeContentView: View {
+    let state: EditDeviceTypeState
+    let onUpdateName: (String) -> Void
+    let onUpdateBatteryType: (String) -> Void
+    let onSave: () -> Void
+    let onDelete: () -> Void
+    @State private var showDeleteConfirmation = false
+
+    var body: some View {
+        Form {
             if state.isLoading {
                 ProgressView()
             } else if state.isNotFound {
@@ -22,12 +48,12 @@ struct EditDeviceTypeScreen: View {
                 Section(header: Text("Details")) {
                     TextField("Name", text: Binding(
                         get: { state.name },
-                        set: { viewModelWrapper.updateName(name: $0) }
+                        set: { onUpdateName($0) }
                     ))
 
                     TextField("Battery Type", text: Binding(
                         get: { state.batteryType },
-                        set: { viewModelWrapper.updateBatteryType(type: $0) }
+                        set: { onUpdateBatteryType($0) }
                     ))
                 }
 
@@ -50,26 +76,18 @@ struct EditDeviceTypeScreen: View {
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
                 Button("Save") {
-                    viewModelWrapper.save()
+                    onSave()
                 }
-                // Disable if loading or not found
-                .disabled(viewModelWrapper.state.isLoading || viewModelWrapper.state.isNotFound)
+                .disabled(state.isLoading || state.isNotFound)
             }
         }
         .alert("Delete Device Type?", isPresented: $showDeleteConfirmation) {
             Button("Delete", role: .destructive) {
-                viewModelWrapper.delete()
-                dismiss()
+                onDelete()
             }
             Button("Cancel", role: .cancel) { }
         } message: {
             Text("This action cannot be undone.")
-        }
-        .onChange(of: viewModelWrapper.state.isSaved) { _, isSaved in
-            if isSaved {
-                viewModelWrapper.consumeSaveSuccess()
-                dismiss()
-            }
         }
     }
 }

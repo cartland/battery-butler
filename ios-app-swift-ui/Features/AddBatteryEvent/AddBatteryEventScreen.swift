@@ -18,19 +18,64 @@ struct AddBatteryEventScreen: View {
     }
     
     var body: some View {
+        AddBatteryEventContentView(
+            devices: wrapper.devices,
+            selectedDeviceId: $selectedDeviceId,
+            eventDate: $eventDate,
+            batteryType: $batteryType,
+            notes: $notes,
+            showMoreDetails: $showMoreDetails,
+            isAiBatchImportEnabled: wrapper.isAiBatchImportEnabled,
+            aiMessages: wrapper.aiMessages,
+            batchInput: $batchInput,
+            onSaveEvent: {
+                if let deviceId = selectedDeviceId {
+                    wrapper.addEvent(
+                        deviceId: deviceId,
+                        date: eventDate,
+                        batteryType: batteryType.isEmpty ? nil : batteryType,
+                        notes: notes.isEmpty ? nil : notes
+                    )
+                    presentationMode.wrappedValue.dismiss()
+                }
+            },
+            onProcessBatch: {
+                wrapper.batchAddEvents(input: batchInput)
+                batchInput = ""
+            },
+            onClearAiMessages: { wrapper.clearAiMessages() }
+        )
+    }
+}
+
+struct AddBatteryEventContentView: View {
+    let devices: [Device]
+    @Binding var selectedDeviceId: String?
+    @Binding var eventDate: Date
+    @Binding var batteryType: String
+    @Binding var notes: String
+    @Binding var showMoreDetails: Bool
+    let isAiBatchImportEnabled: Bool
+    let aiMessages: [BatchOperationResult]
+    @Binding var batchInput: String
+    let onSaveEvent: () -> Void
+    let onProcessBatch: () -> Void
+    let onClearAiMessages: () -> Void
+
+    var body: some View {
         Form {
             Section(header: Text("Add Event Manually")) {
-                if wrapper.devices.isEmpty {
+                if devices.isEmpty {
                     Text("No devices available. Please add a device first.")
                         .foregroundColor(.secondary)
                 } else {
                     Picker("Device", selection: $selectedDeviceId) {
                         Text("Select a device").tag(String?.none)
-                        ForEach(wrapper.devices, id: \.id) { device in
+                        ForEach(devices, id: \.id) { device in
                             Text(device.name).tag(String?.some(device.id))
                         }
                     }
-                    
+
                     DatePicker("Date & Time", selection: $eventDate)
 
                     DisclosureGroup("More Details", isExpanded: $showMoreDetails) {
@@ -38,42 +83,33 @@ struct AddBatteryEventScreen: View {
 
                         TextField("Notes (Optional)", text: $notes)
                     }
-                    
+
                     Button("Save Event") {
-                        if let deviceId = selectedDeviceId {
-                            wrapper.addEvent(
-                                deviceId: deviceId,
-                                date: eventDate,
-                                batteryType: batteryType.isEmpty ? nil : batteryType,
-                                notes: notes.isEmpty ? nil : notes
-                            )
-                            presentationMode.wrappedValue.dismiss()
-                        }
+                        onSaveEvent()
                     }
                     .disabled(selectedDeviceId == nil)
                 }
             }
-            
-            if wrapper.isAiBatchImportEnabled {
+
+            if isAiBatchImportEnabled {
                 Section(header: Text("Batch Import with AI")) {
                     TextEditor(text: $batchInput)
                         .frame(minHeight: 100)
-                    
+
                     Button("Process Batch Data") {
-                        wrapper.batchAddEvents(input: batchInput)
-                        batchInput = ""
+                        onProcessBatch()
                     }
                     .disabled(batchInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-                    
-                    if !wrapper.aiMessages.isEmpty {
-                        ForEach(Array(wrapper.aiMessages.enumerated()), id: \.offset) { index, msg in
+
+                    if !aiMessages.isEmpty {
+                        ForEach(Array(aiMessages.enumerated()), id: \.offset) { index, msg in
                             Text(getMessageText(msg))
                                 .font(.caption)
                                 .foregroundColor(getColor(for: msg))
                         }
-                        
+
                         Button("Clear Messages") {
-                            wrapper.clearAiMessages()
+                            onClearAiMessages()
                         }
                         .foregroundColor(.red)
                     }
@@ -83,7 +119,7 @@ struct AddBatteryEventScreen: View {
         .navigationTitle("Add Battery Event")
         .navigationBarTitleDisplayMode(.inline)
     }
-    
+
     private func getMessageText(_ result: BatchOperationResult) -> String {
         if let progress = result as? BatchOperationResultProgress {
             return progress.message
@@ -94,7 +130,7 @@ struct AddBatteryEventScreen: View {
         }
         return "Unknown status"
     }
-    
+
     private func getColor(for result: BatchOperationResult) -> Color {
         if result is BatchOperationResultSuccess {
             return .green

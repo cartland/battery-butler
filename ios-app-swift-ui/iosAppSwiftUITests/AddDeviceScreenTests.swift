@@ -13,6 +13,7 @@ final class AddDeviceScreenTests: XCTestCase {
         
         let view = AddDeviceContentView(
             name: .constant(""),
+            location: .constant(""),
             selectedTypeId: .constant(""),
             deviceTypes: dummyTypes,
             onAdd: {},
@@ -30,6 +31,7 @@ final class AddDeviceScreenTests: XCTestCase {
         
         let view = AddDeviceContentView(
             name: .constant("Living Room Smoke Alarm"),
+            location: .constant("Living Room"),
             selectedTypeId: .constant("t1"),
             deviceTypes: dummyTypes,
             onAdd: {},

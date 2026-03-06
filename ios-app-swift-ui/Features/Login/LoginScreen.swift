@@ -14,6 +14,50 @@ struct LoginScreen: View {
     }
 
     var body: some View {
+        LoginContentView(
+            authState: wrapper.authState,
+            isSignInAvailable: wrapper.isSignInAvailable,
+            errorTitle: wrapper.errorTitle,
+            errorMessage: wrapper.errorMessage,
+            showRetryButton: wrapper.showRetryButton,
+            showError: Binding(
+                get: { wrapper.authState is AuthStateFailed },
+                set: { _ in wrapper.dismissError() }
+            ),
+            onSignIn: { wrapper.signInWithGoogle() },
+            onSkipLogin: onSkipLogin,
+            onRetry: {
+                wrapper.dismissError()
+                wrapper.signInWithGoogle()
+            },
+            onDismissError: { wrapper.dismissError() }
+        )
+        .onAppear {
+            if wrapper.authState is AuthStateAuthenticated {
+                onLoginSuccess()
+            }
+        }
+        .onReceive(wrapper.$authState) { newState in
+            if newState is AuthStateAuthenticated {
+                onLoginSuccess()
+            }
+        }
+    }
+}
+
+struct LoginContentView: View {
+    let authState: AuthState?
+    let isSignInAvailable: Bool
+    let errorTitle: String
+    let errorMessage: String
+    let showRetryButton: Bool
+    @Binding var showError: Bool
+    let onSignIn: () -> Void
+    let onSkipLogin: () -> Void
+    let onRetry: () -> Void
+    let onDismissError: () -> Void
+
+    var body: some View {
         VStack(spacing: 24) {
             Image(systemName: "bolt.batteryblock.fill")
                 .resizable()
@@ -34,12 +78,12 @@ struct LoginScreen: View {
 
             Spacer()
 
-            if wrapper.authState is AuthStateAuthenticating {
+            if authState is AuthStateAuthenticating {
                 ProgressView("Signing in...")
             } else {
-                if wrapper.isSignInAvailable {
+                if isSignInAvailable {
                     Button(action: {
-                        wrapper.signInWithGoogle()
+                        onSignIn()
                     }) {
                         HStack {
                             Image(systemName: "person.crop.circle.badge.plus")
@@ -67,32 +111,17 @@ struct LoginScreen: View {
             Spacer()
         }
         .padding()
-        // If the state initializes to Authenticated from cache/storage
-        .onAppear {
-            if wrapper.authState is AuthStateAuthenticated {
-                onLoginSuccess()
-            }
-        }
-        .onReceive(wrapper.$authState) { newState in
-            if newState is AuthStateAuthenticated {
-                onLoginSuccess()
-            }
-        }
-        .alert(wrapper.errorTitle, isPresented: Binding(
-            get: { wrapper.authState is AuthStateFailed },
-            set: { _ in wrapper.dismissError() }
-        )) {
-            if wrapper.showRetryButton {
+        .alert(errorTitle, isPresented: $showError) {
+            if showRetryButton {
                 Button("Try Again") {
-                    wrapper.dismissError()
-                    wrapper.signInWithGoogle()
+                    onRetry()
                 }
             }
             Button("OK", role: .cancel) {
-                wrapper.dismissError()
+                onDismissError()
             }
         } message: {
-            Text(wrapper.errorMessage)
+            Text(errorMessage)
         }
     }
 }

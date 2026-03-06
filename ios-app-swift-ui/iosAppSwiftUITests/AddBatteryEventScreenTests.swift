@@ -4,21 +4,42 @@ import SnapshotTesting
 import shared
 @testable import BatteryButler
 
-// SKIPPED: AddBatteryEventScreen does not have a separate ContentView.
-// The UI body is in AddBatteryEventScreen and reads directly from
-// wrapper (AddBatteryEventViewModelWrapper) for devices, aiMessages, etc.
-// To enable snapshot tests, extract a stateless AddBatteryEventContentView:
-//
-//   struct AddBatteryEventContentView: View {
-//       let devices: [Device]
-//       @Binding var selectedDeviceId: String?
-//       @Binding var eventDate: Date
-//       @Binding var batteryType: String
-//       @Binding var notes: String
-//       let onSave: () -> Void
-//   }
-
 final class AddBatteryEventScreenTests: XCTestCase {
-    // No testable ContentView available yet.
-    // See comment above for the recommended extraction.
+    func testAddBatteryEventContentView_WithDevices() {
+        let view = AddBatteryEventContentView(
+            devices: [TestData.device, TestData.device2],
+            selectedDeviceId: .constant(nil),
+            eventDate: .constant(Date(timeIntervalSince1970: 1704067200)),
+            batteryType: .constant(""),
+            notes: .constant(""),
+            showMoreDetails: .constant(false),
+            isAiBatchImportEnabled: false,
+            aiMessages: [],
+            batchInput: .constant(""),
+            onSaveEvent: {},
+            onProcessBatch: {},
+            onClearAiMessages: {}
+        )
+
+        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)))
+    }
+
+    func testAddBatteryEventContentView_Empty() {
+        let view = AddBatteryEventContentView(
+            devices: [],
+            selectedDeviceId: .constant(nil),
+            eventDate: .constant(Date(timeIntervalSince1970: 1704067200)),
+            batteryType: .constant(""),
+            notes: .constant(""),
+            showMoreDetails: .constant(false),
+            isAiBatchImportEnabled: false,
+            aiMessages: [],
+            batchInput: .constant(""),
+            onSaveEvent: {},
+            onProcessBatch: {},
+            onClearAiMessages: {}
+        )
+
+        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)))
+    }
 }

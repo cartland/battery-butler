@@ -10,13 +10,36 @@ struct AiChatScreen: View {
     }
     
     var body: some View {
+        AiChatContentView(
+            messages: wrapper.messages,
+            isProcessing: wrapper.isProcessing,
+            inputText: $inputText,
+            onSend: {
+                let text = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
+                guard !text.isEmpty else { return }
+                wrapper.sendMessage(text: text)
+                inputText = ""
+            },
+            onClear: { wrapper.clearChat() }
+        )
+    }
+}
+
+struct AiChatContentView: View {
+    let messages: [AiMessage]
+    let isProcessing: Bool
+    @Binding var inputText: String
+    let onSend: () -> Void
+    let onClear: () -> Void
+
+    var body: some View {
         VStack(spacing: 0) {
             ScrollView {
                 LazyVStack(spacing: 12) {
-                    ForEach(wrapper.messages, id: \.id) { message in
+                    ForEach(messages, id: \.id) { message in
                         MessageRow(message: message)
                     }
-                    if wrapper.isProcessing {
+                    if isProcessing {
                         HStack {
                             ProgressView()
                                 .padding()
@@ -26,25 +49,20 @@ struct AiChatScreen: View {
                 }
                 .padding()
             }
-            
+
             Divider()
-            
+
             HStack {
                 TextField("Message", text: $inputText)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .disabled(wrapper.isProcessing)
-                
-                Button(action: {
-                    let text = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
-                    guard !text.isEmpty else { return }
-                    wrapper.sendMessage(text: text)
-                    inputText = ""
-                }) {
+                    .disabled(isProcessing)
+
+                Button(action: onSend) {
                     Image(systemName: "paperplane.fill")
-                        .foregroundColor(inputText.isEmpty || wrapper.isProcessing ? .gray : .blue)
+                        .foregroundColor(inputText.isEmpty || isProcessing ? .gray : .blue)
                 }
                 .accessibilityLabel("Send message")
-                .disabled(inputText.isEmpty || wrapper.isProcessing)
+                .disabled(inputText.isEmpty || isProcessing)
             }
             .padding()
         }
@@ -52,9 +70,7 @@ struct AiChatScreen: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button(action: {
-                    wrapper.clearChat()
-                }) {
+                Button(action: onClear) {
                     Image(systemName: "trash")
                 }
                 .accessibilityLabel("Clear chat")

@@ -4,14 +4,45 @@ import SnapshotTesting
 import shared
 @testable import BatteryButler
 
-// SKIPPED: AiChatScreen does not have a separate ContentView.
-// The UI body is in AiChatScreen and depends on AiChatViewModelWrapper.
-// To enable snapshot tests, extract a stateless AiChatContentView.
-//
-// However, MessageRow is a stateless subview and CAN be tested.
-// See MessageRowTests.swift.
-
 final class AiChatScreenTests: XCTestCase {
-    // No testable AiChatContentView available yet.
-    // MessageRow tested separately in MessageRowTests.swift.
+    func testAiChatContentView_Empty() {
+        let view = AiChatContentView(
+            messages: [],
+            isProcessing: false,
+            inputText: .constant(""),
+            onSend: {},
+            onClear: {}
+        )
+
+        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)))
+    }
+
+    func testAiChatContentView_WithMessages() {
+        let messages = [
+            AiMessage(
+                id: "m1",
+                role: .user,
+                text: "What batteries does my remote use?",
+                isPartial: false,
+                hints: [:]
+            ),
+            AiMessage(
+                id: "m2",
+                role: .model,
+                text: "Your Living Room Remote uses AAA batteries (quantity: 2).",
+                isPartial: false,
+                hints: [:]
+            )
+        ]
+
+        let view = AiChatContentView(
+            messages: messages,
+            isProcessing: false,
+            inputText: .constant(""),
+            onSend: {},
+            onClear: {}
+        )
+
+        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)))
+    }
 }

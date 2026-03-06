@@ -67,4 +67,18 @@ struct TestData {
         batteryType: nil,
         notes: nil
     )
+
+    static let historyItem = HistoryItemUiModel(
+        event: batteryEvent,
+        deviceName: "Living Room Remote",
+        deviceTypeName: "TV Remote",
+        deviceLocation: "Living Room"
+    )
+
+    static let historyItem2 = HistoryItemUiModel(
+        event: batteryEvent2,
+        deviceName: "Living Room Remote",
+        deviceTypeName: "TV Remote",
+        deviceLocation: "Living Room"
+    )
 }
