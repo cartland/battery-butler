@@ -83,7 +83,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         echo "Building iOS SwiftUI Snapshot Tests..."
         xcodebuild build-for-testing -project ios-app-swift-ui/iosAppSwiftUI.xcodeproj \
             -scheme iosAppSwiftUITests \
-            -destination 'platform=iOS Simulator,name=iPhone 16' \
+            -destination 'generic/platform=iOS Simulator' \
             -derivedDataPath build/ios-tests \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
