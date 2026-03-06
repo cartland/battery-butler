@@ -1,0 +1,98 @@
+name: Verify Release Build
+
+# Builds a signed release bundle on every green CI on main.
+# This proves the release pipeline works WITHOUT deploying.
+# Artifacts are uploaded for 30 days if needed for manual deployment.
+#
+# This does NOT:
+# - Create tags
+# - Upload to Play Store
+# - Deploy anything
+
+on:
+  workflow_run:
+    workflows: ["Battery Butler CI"]
+    types: [completed]
+    branches: [main]
+
+env:
+  ORG_GRADLE_PROJECT_PRODUCTION_SERVER_URL: ${{ secrets.PRODUCTION_SERVER_URL }}
+  ORG_GRADLE_PROJECT_DEV_SERVER_URL: ${{ secrets.DEV_SERVER_URL }}
+
+permissions:
+  contents: read
+
+jobs:
+  verify-release-build:
+    # Only run if CI passed
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Verify code jobs actually ran
+        id: verify
+        run: |
+          RUN_ID="${{ github.event.workflow_run.id }}"
+
+          # Skip release build for docs-only changes (slow jobs were skipped)
+          REQUIRED_JOBS="validation_test build_android"
+          SKIP=false
+
+          for JOB in $REQUIRED_JOBS; do
+            CONCLUSION=$(gh api "repos/${{ github.repository }}/actions/runs/${RUN_ID}/jobs" \
+              --jq ".jobs[] | select(.name == \"$JOB\") | .conclusion" 2>/dev/null || echo "")
+            if [ -z "$CONCLUSION" ] || [ "$CONCLUSION" == "skipped" ]; then
+              echo "Job '$JOB' was skipped — docs-only change, skipping release build"
+              SKIP=true
+              break
+            fi
+          done
+
+          echo "skip=$SKIP" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Checkout
+        if: steps.verify.outputs.skip != 'true'
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Setup Java and Gradle
+        if: steps.verify.outputs.skip != 'true'
+        uses: ./.github/actions/setup-java-gradle
+
+      - name: Decode Keystore
+        if: steps.verify.outputs.skip != 'true'
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > ${{ github.workspace }}/release.keystore
+
+      - name: Write API keys to local.properties
+        if: steps.verify.outputs.skip != 'true'
+        run: |
+          echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> local.properties
+
+      - name: Build Release Bundle
+        if: steps.verify.outputs.skip != 'true'
+        run: |
+          # Use versionCode 1 — this is a verification build, not a real release.
+          # The actual versionCode is assigned by release-android.yml when tagging.
+          # Must be >= 1 for Android Gradle Plugin to accept it.
+          ./gradlew :compose-app:bundleRelease --stacktrace \
+            -PVERSION_CODE=1 \
+            -PKEYSTORE_PATH=${{ github.workspace }}/release.keystore \
+            -PKEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }} \
+            -PKEY_ALIAS=${{ secrets.KEY_ALIAS }} \
+            -PKEY_PASSWORD=${{ secrets.KEY_PASSWORD }}
+
+      - name: Upload Bundle Artifact
+        if: steps.verify.outputs.skip != 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-verification-${{ github.event.workflow_run.head_sha }}
+          path: compose-app/build/outputs/bundle/release/*.aab
+          retention-days: 30
+
+      - name: Cleanup Keystore
+        if: always()
+        run: rm -f ${{ github.workspace }}/release.keystore
