@@ -125,10 +125,10 @@ jobs:
       - uses: ./.github/actions/setup-java-gradle
 
       - name: Generate Screenshots Sequentially
-        run: ./scripts/generate-screenshots-sequentially.sh
+        run: ./scripts/generate-android-screenshots.sh
 
       - name: Generate Screenshot Gallery
-        run: ./scripts/generate-screenshot-gallery.sh
+        run: ./scripts/generate-android-screenshot-gallery.sh
 
       - name: Validate Generated Files
         run: ./scripts/validate-generated.sh --screenshots

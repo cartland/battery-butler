@@ -27,4 +27,4 @@ Update reference screenshots for regression testing.
 - `updateDebugScreenshotTest` and `validateDebugScreenshotTest` can't run in the same Gradle invocation (the update task's clean step deletes references mid-build)
 - All preview composables must be time-deterministic — never let `Clock.System.now()` reach a screenshot preview
 - Use `Instant.parse("2026-01-18T17:00:00Z")` as the standard fixed instant in previews
-- On CI, screenshots are generated via `scripts/generate-screenshots-sequentially.sh` to avoid OOM
+- On CI, screenshots are generated via `scripts/generate-android-screenshots.sh` to avoid OOM
