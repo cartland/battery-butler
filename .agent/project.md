@@ -143,7 +143,7 @@ The iOS SwiftUI app follows a **two-layer pattern**:
 - `AuthErrorSignInNetworkError`, `AuthErrorTokenInvalid`, `AuthErrorTokenExpired`, `AuthErrorUnknown`
 - These are class types — use `is` for type checks, `as let` for property access
 
-**iOS CI note**: `build_ios_native` and `validation_ios_ui` are skipped on PRs in development CI mode (slow jobs). iOS compile errors are only caught post-merge on `main`. `validation_ios_ui` uses `build-for-testing` (PR #864) to compile the test target without running tests — this catches API mismatches (e.g., missing parameters) but does NOT do pixel-level snapshot regression. Full snapshot testing requires pinning the CI simulator version (see `bb-yf07`). For iOS-only changes, consider local `xcodebuild` verification. **Always run from repo root** — never `cd` into `ios-app-swift-ui/`:
+**iOS CI note**: `build_ios_native` and `validation_ios_ui` are skipped on PRs in development CI mode (slow jobs). iOS compile errors are only caught post-merge on `main`. `validation_ios_ui` uses `build-for-testing` to compile the test target without running tests — this catches API mismatches (e.g., missing parameters) but does NOT do pixel-level snapshot regression. Snapshots are auto-generated post-merge by `auto-generate.yml` (like Android screenshots). For iOS-only changes, consider local `xcodebuild` verification. **Always run from repo root** — never `cd` into `ios-app-swift-ui/`:
 ```bash
 # Build
 xcodebuild -project ios-app-swift-ui/iosAppSwiftUI.xcodeproj -scheme iosAppSwiftUI \
@@ -168,7 +168,7 @@ Key systemic gaps:
 - Settings shows only app version (missing sign-out, network mode, AI engine)
 - All SwiftUI strings are hardcoded English (no localization)
 
-**iOS snapshot test coverage** (PR #862): All 13 screens follow the two-layer Screen/ContentView pattern. 27 snapshot tests cover all ContentViews across 10 test files (plus 3 pre-existing). Reference images are gitignored (`__Snapshots__/`) because they are environment-dependent — different iOS SDK versions produce different pixel output (local iOS 18.5 vs CI iOS 26.2). Tests run locally for visual verification; CI only compiles them.
+**iOS snapshot test coverage** (PR #862): All 13 screens follow the two-layer Screen/ContentView pattern. 27 snapshot tests cover all ContentViews across 10 test files (plus 3 pre-existing). Reference images are tracked in git (`__Snapshots__/`). CI uses `build-for-testing` (compile-only, no pixel comparison). Snapshots are auto-recorded post-merge by `auto-generate.yml` on `macos-latest` and committed via follow-up PRs (like Android screenshots). Use `scripts/record-ios-snapshots.sh` to record locally.
 
 **KMP Swift constructor gotchas**:
 - Kotlin `data class` with ALL default params → Swift exports only full-param init + no-arg init (no partial constructors)
@@ -306,7 +306,7 @@ ruby ios-app-swift-ui/sync_pbxproj.rb         # Sync Swift files to Xcode
   - **Two-tier structure**: Screenshot tests have exactly two tiers — (1) **full-screen** (with Scaffold, tabs, app bar) and (2) **individual components** (reusable design-system pieces). Intermediate layouts (e.g. just the filter row, just the list section, just a sub-section) must not have standalone screenshot tests. When removing an intermediate-layout screenshot test, also remove the `@Preview` annotation from the source composable (keep the composable function itself; just drop the `@Preview`).
   - **Battery age states** (`DeviceListItemOldPreview`, `DeviceListItemVeryOldPreview`) are component-level tests — they verify distinct visual states (amber warning ≥180 days, red bold ≥365 days) that matter for regression detection.
   - **Platform API overrides for previews**: When a composable reads a platform API (e.g., `WindowInsets.ime`) that always returns a fixed value in previews, use **parameter hoisting** — add a parameter with the platform read as its default (e.g., `imeVisible: Boolean = WindowInsets.ime.getBottom(LocalDensity.current) > 0`). Previews pass the desired value directly. Do NOT use CompositionLocals for test-only overrides — that leaks test concerns into production code.
-- **iOS**: Uses `swift-snapshot-testing`. 
+- **iOS**: Uses `swift-snapshot-testing`.
   - To test SwiftUI views connected to KMP, ensure the `Screen` structures are separated into stateless `ContentView` structures to bypass the `NativeComponent` DI graph during testing.
   - Native iOS snapshot tests execute inside the simulator from the repo root:
     ```bash
@@ -316,8 +316,9 @@ ruby ios-app-swift-ui/sync_pbxproj.rb         # Sync Swift files to Xcode
       CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO \
       -derivedDataPath ios-app-swift-ui/build/ios-tests
     ```
-  - Reference images are gitignored (`__Snapshots__/`) — they are environment-dependent and not portable across iOS SDK versions. Tests auto-record missing snapshots on first local run. Delete `__Snapshots__` to force re-recording.
-  - CI uses `build-for-testing` (compile-only) — does NOT run snapshot tests. Full regression testing requires pinning the simulator version (`bb-yf07`).
+  - Reference images are tracked in git (`__Snapshots__/`). They are auto-generated post-merge by `auto-generate.yml` on CI's `macos-latest` runner, then committed via follow-up PRs (same pattern as Android screenshots).
+  - CI uses `build-for-testing` (compile-only) — does NOT run snapshot comparison tests. Snapshots are a visual record, not a pass/fail gate.
+  - To record locally: `./scripts/record-ios-snapshots.sh` (uses `SNAPSHOT_TESTING_RECORD=all`)
 
 ### Detekt
 - Composable functions must order params: no-default params first, then `modifier: Modifier = Modifier`, then other defaulted params, then trailing lambda. Detekt's compose rule enforces this.
