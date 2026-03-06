@@ -308,7 +308,14 @@ ruby ios-app-swift-ui/sync_pbxproj.rb         # Sync Swift files to Xcode
   - **Platform API overrides for previews**: When a composable reads a platform API (e.g., `WindowInsets.ime`) that always returns a fixed value in previews, use **parameter hoisting** — add a parameter with the platform read as its default (e.g., `imeVisible: Boolean = WindowInsets.ime.getBottom(LocalDensity.current) > 0`). Previews pass the desired value directly. Do NOT use CompositionLocals for test-only overrides — that leaks test concerns into production code.
 - **iOS**: Uses `swift-snapshot-testing`. 
   - To test SwiftUI views connected to KMP, ensure the `Screen` structures are separated into stateless `ContentView` structures to bypass the `NativeComponent` DI graph during testing.
-  - Native iOS snapshot tests execute inside the simulator via `xcodebuild test -project iosAppSwiftUI.xcodeproj -scheme iosAppSwiftUITests -destination "platform=iOS Simulator,name=iPhone 16"` from the `ios-app-swift-ui` directory.
+  - Native iOS snapshot tests execute inside the simulator from the repo root:
+    ```bash
+    xcodebuild test -project ios-app-swift-ui/iosAppSwiftUI.xcodeproj \
+      -scheme iosAppSwiftUITests \
+      -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.5' \
+      CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO \
+      -derivedDataPath ios-app-swift-ui/build/ios-tests
+    ```
   - There is no native update flag; tests will automatically record missing snapshots, or you can delete `__Snapshots__` to force a recreation of all references.
 
 ### Detekt

@@ -31,6 +31,32 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ---
 
+## 2026-03-05
+
+### Features
+
+- **iOS ContentView extraction** ([#862](https://github.com/cartland/battery-butler/pull/862)): Extracted stateless `ContentView` structs from all 10 remaining iOS SwiftUI screens (EventDetail, HistoryList, Settings, Login, AiChat, AddDeviceType, EditDeviceType, AddBatteryEvent, DeviceTypeList, Home). All 13 screens now follow the two-layer Screen/ContentView pattern. Added 27 snapshot tests covering all ContentViews. Screens with navigation destinations use generic type parameters (e.g., `HomeContentView<DeviceDestination, SettingsDestination, AiDestination>`) so tests can inject stubs.
+
+### CI/CD
+
+- **Release build verification** ([#857](https://github.com/cartland/battery-butler/pull/857)): Added `release-build-on-green.yml` that builds a signed release AAB after every green CI on main. Proves the release pipeline (signing, bundling, Gradle config) works without deploying. Artifacts uploaded for 30 days.
+
+- **Pre-release CI gate** ([#854](https://github.com/cartland/battery-butler/pull/854)): `release-android.yml` now verifies CI passed on the tagged commit before building. `release-android.sh` also checks CI status locally before creating tags.
+
+- **iOS snapshot tests in CI** ([#853](https://github.com/cartland/battery-butler/pull/853)): Added `xcodebuild test` step to `validation_ios_ui` CI job and `validate.sh` macOS block, executing iOS snapshot tests alongside the existing compilation step.
+
+- **CI concurrency fix** ([#856](https://github.com/cartland/battery-butler/pull/856)): Push-to-main CI runs now use SHA-based concurrency groups so rapid merges don't cancel each other. PR runs still cancel stale runs on the same branch.
+
+### Fixes
+
+- **iOS test data fix** ([#860](https://github.com/cartland/battery-butler/pull/860)): Fixed test `Device` using `KotlinLong` (raw milliseconds) instead of `KotlinInstant` for `batteryLastReplaced`, which caused a crash when the snapshot test tried to format the date.
+
+### Testing
+
+- **iOS snapshot test gallery** ([#855](https://github.com/cartland/battery-butler/pull/855)): Expanded iOS snapshot test coverage to all screens with a gallery generator script. Created placeholder test files for all screens lacking ContentView extraction.
+
+---
+
 ## 2026-03-03
 
 ### Documentation
