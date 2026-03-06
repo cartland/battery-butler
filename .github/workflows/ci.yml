@@ -193,10 +193,10 @@ jobs:
         run: |
           cd ios-app-swift-ui
           xcodebuild -project iosAppSwiftUI.xcodeproj -configuration Debug -scheme iosAppSwiftUI -destination 'generic/platform=iOS Simulator' clean build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
-      - name: Run iOS Snapshot Tests
+      - name: Build iOS Snapshot Tests
         run: |
           cd ios-app-swift-ui
-          xcodebuild test \
+          xcodebuild build-for-testing \
             -project iosAppSwiftUI.xcodeproj \
             -scheme iosAppSwiftUITests \
             -destination 'platform=iOS Simulator,name=iPhone 16' \

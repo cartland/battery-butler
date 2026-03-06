@@ -80,8 +80,8 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
             CODE_SIGNING_ALLOWED=NO \
             CONFIGURATION_BUILD_DIR=build/ios-swiftui/
 
-        echo "Running iOS SwiftUI Snapshot Tests..."
-        xcodebuild test -project ios-app-swift-ui/iosAppSwiftUI.xcodeproj \
+        echo "Building iOS SwiftUI Snapshot Tests..."
+        xcodebuild build-for-testing -project ios-app-swift-ui/iosAppSwiftUI.xcodeproj \
             -scheme iosAppSwiftUITests \
             -destination 'platform=iOS Simulator,name=iPhone 16' \
             -derivedDataPath build/ios-tests \

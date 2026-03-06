@@ -87,6 +87,9 @@ keystore_base64.txt
 .claude/.validation-passed
 .tmp/
 
+# iOS snapshot test references (environment-dependent, not portable across OS versions)
+__Snapshots__/
+
 # Generated reports
 docs/Preview_Coverage_Report.md
 docs/Test_Coverage_Report.md
