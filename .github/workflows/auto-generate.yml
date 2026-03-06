@@ -163,11 +163,11 @@ jobs:
           labels: automated
 
   # ===========================================================================
-  # Job 3: iOS Screenshot Gallery
+  # Job 3: iOS Snapshots (Record + Gallery)
   # ===========================================================================
-  ios-screenshot-gallery:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
+  ios-snapshots:
+    runs-on: macos-latest
+    timeout-minutes: 45
 
     permissions:
       contents: write
@@ -177,24 +177,51 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Cache Gradle
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-ios-${{ hashFiles('**/*.gradle*', '**/libs.versions.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-ios-
+            ${{ runner.os }}-gradle-
+
+      - name: Record iOS Snapshots
+        run: ./scripts/record-ios-snapshots.sh
+
       - name: Generate iOS Screenshot Gallery
         run: ./scripts/generate-ios-screenshot-gallery.sh
 
-      - name: Check for meaningful changes
+      - name: Check for changes
         id: check-changes
         run: |
+          PNG_CHANGES=$(git diff --name-only -- '*.png' | wc -l | tr -d ' ')
+          NEW_PNGS=$(git ls-files --others --exclude-standard -- '*.png' | wc -l | tr -d ' ')
           GALLERY_CHANGES=$(git diff --name-only -- 'ios-app-swift-ui/SCREENSHOT_GALLERY.md' | wc -l | tr -d ' ')
-          echo "gallery_changes=$GALLERY_CHANGES" >> $GITHUB_OUTPUT
+          TOTAL=$(( PNG_CHANGES + NEW_PNGS + GALLERY_CHANGES ))
+          echo "total_changes=$TOTAL" >> $GITHUB_OUTPUT
 
       - name: Create Pull Request
-        if: steps.check-changes.outputs.gallery_changes != '0'
+        if: steps.check-changes.outputs.total_changes != '0'
         uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "docs(generated): Regenerate iOS screenshot gallery"
-          title: "docs(generated): Regenerate iOS screenshot gallery"
+          commit-message: "chore(generated): Update iOS snapshot references"
+          title: "chore(generated): Update iOS snapshot references"
           body: |
-            iOS screenshot gallery regenerated to match current snapshots.
+            iOS snapshot references updated to match current code.
 
             This PR was automatically created by the Auto-Generate Content workflow.
 
