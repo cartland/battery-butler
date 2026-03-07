@@ -31,7 +31,10 @@ class ReportGenerator(
 
         sb.appendLine("## Code Distribution")
         sb.appendLine()
-        sb.append(sankeyGenerator.generate(result))
+        sb.appendLine("```mermaid")
+        sb.appendLine(sankeyGenerator.generate(result))
+        sb.appendLine()
+        sb.append("```")
         sb.appendLine()
 
         return sb.toString()
