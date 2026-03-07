@@ -34,6 +34,15 @@ class SankeyChartGenerator(
             sb.appendLine()
         }
 
+        // Layer 3: Module → Language (sorted desc within each module)
+        val sortedModules = result.moduleExtensionCounts.entries
+            .sortedByDescending { it.value.values.sum() }
+        sortedModules.forEach { (moduleName, extensions) ->
+            extensions.toList().sortedByDescending { it.second }.forEach { (ext, count) ->
+                sb.appendLine("${config.displayModuleName(moduleName)},${config.displayExtensionName(ext)},$count")
+            }
+        }
+
         return sb.toString().trimEnd()
     }
 }

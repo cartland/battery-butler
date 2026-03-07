@@ -7,11 +7,19 @@ class CodeScanner(
     private val project: Project,
     private val config: CodeShareConfig = CodeShareConfig.default,
 ) {
+    /**
+     * Three orthogonal dimensions of code attribution: bucket (application layer),
+     * module (build unit), and extension (language). The six flat fields capture
+     * per-dimension totals plus cross-dimension breakdowns without nesting, keeping
+     * consumers simple—each field is independently useful for a specific report section.
+     */
     data class ScanResult(
         val totalLines: Int,
         val bucketCounts: Map<String, Int>,
         val moduleCounts: Map<String, Int>,
         val bucketModuleCounts: Map<String, Map<String, Int>>,
+        val extensionCounts: Map<String, Int>,
+        val moduleExtensionCounts: Map<String, Map<String, Int>>,
     )
 
     fun scan(): ScanResult {
@@ -19,6 +27,8 @@ class CodeScanner(
         val bucketMap = mutableMapOf<String, Int>()
         val moduleMap = mutableMapOf<String, Int>()
         val bucketModuleMap = mutableMapOf<String, MutableMap<String, Int>>()
+        val extensionMap = mutableMapOf<String, Int>()
+        val moduleExtensionMap = mutableMapOf<String, MutableMap<String, Int>>()
         var totalLines = 0
 
         // 1. Get all git tracked files
@@ -34,6 +44,10 @@ class CodeScanner(
                 val lines = countLines(file)
                 totalLines += lines
 
+                // Extension Attribution
+                val ext = file.extension
+                extensionMap[ext] = (extensionMap[ext] ?: 0) + lines
+
                 // Bucket Attribution
                 val bucket = config.buckets.firstOrNull { it.regex.matches(file.path) }
                 val bucketName = bucket?.name ?: "Other"
@@ -46,10 +60,12 @@ class CodeScanner(
                     moduleMap[module] = (moduleMap[module] ?: 0) + lines
                     val modMap = bucketModuleMap.getOrPut(bucketName) { mutableMapOf() }
                     modMap[module] = (modMap[module] ?: 0) + lines
+                    val extMap = moduleExtensionMap.getOrPut(module) { mutableMapOf() }
+                    extMap[ext] = (extMap[ext] ?: 0) + lines
                 }
             }
 
-        return ScanResult(totalLines, bucketMap, moduleMap, bucketModuleMap)
+        return ScanResult(totalLines, bucketMap, moduleMap, bucketModuleMap, extensionMap, moduleExtensionMap)
     }
 
     private fun countLines(file: File): Int = file.readLines().size

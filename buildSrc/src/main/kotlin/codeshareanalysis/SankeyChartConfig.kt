@@ -10,6 +10,7 @@ class SankeyChartConfig(
     val bucketDisplayNames: Map<String, String> = emptyMap(),
     val moduleSuffixesToStrip: List<String> = emptyList(),
     val modulePrefix: String = "",
+    val extensionDisplayNames: Map<String, String> = emptyMap(),
 ) {
     fun displayBucketName(rawName: String): String = bucketDisplayNames[rawName] ?: rawName
 
@@ -18,6 +19,8 @@ class SankeyChartConfig(
         moduleSuffixesToStrip.forEach { name = name.removeSuffix(it) }
         return name
     }
+
+    fun displayExtensionName(ext: String): String = extensionDisplayNames[ext] ?: ext
 
     companion object {
         val default =
@@ -29,6 +32,7 @@ class SankeyChartConfig(
                     ),
                 modulePrefix = ":",
                 moduleSuffixesToStrip = listOf(".xcodeproj"),
+                extensionDisplayNames = mapOf("kt" to "Kotlin", "swift" to "Swift", "java" to "Java"),
             )
     }
 }

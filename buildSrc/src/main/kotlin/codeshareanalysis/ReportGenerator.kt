@@ -1,6 +1,8 @@
 package codeshareanalysis
 
-class ReportGenerator {
+class ReportGenerator(
+    private val extensionDisplayNames: Map<String, String> = emptyMap(),
+) {
     fun generate(result: CodeScanner.ScanResult): String {
         val sb = StringBuilder()
 
@@ -24,6 +26,15 @@ class ReportGenerator {
         sortedModules.forEach { (name, count) ->
             val percentage = calculatePercentage(count, result.totalLines)
             sb.appendLine("* `$name`: ${formatNumber(count)} lines ($percentage)")
+        }
+        sb.appendLine()
+
+        sb.appendLine("## Language Breakdown")
+        val sortedExtensions = result.extensionCounts.toList().sortedByDescending { it.second }
+        sortedExtensions.forEach { (ext, count) ->
+            val displayName = extensionDisplayNames[ext] ?: ext
+            val percentage = calculatePercentage(count, result.totalLines)
+            sb.appendLine("* $displayName (.$ext): ${formatNumber(count)} lines ($percentage)")
         }
         sb.appendLine()
 
