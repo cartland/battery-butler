@@ -1,6 +1,6 @@
 # iOS Screenshot Gallery
 
-Generated on 2026-03-07 03:17:49 UTC
+Generated on 2026-03-07 06:54:06 UTC
 
 ## Table of Contents
 
@@ -73,6 +73,10 @@ Generated on 2026-03-07 03:17:49 UTC
 <img src="iosAppSwiftUITests/__Snapshots__/DeviceDetailScreenTests/testDeviceDetailContentView_Success.1.png" width="300" />
 
 ## DeviceRowTests
+
+### testDeviceRow_NilDeviceType
+
+<img src="iosAppSwiftUITests/__Snapshots__/DeviceRowTests/testDeviceRow_NilDeviceType.1.png" width="300" />
 
 ### testDeviceRow_WithLocation
 
