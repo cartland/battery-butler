@@ -5,7 +5,6 @@ class SankeyChartGenerator(
 ) {
     fun generate(result: CodeScanner.ScanResult): String {
         val sb = StringBuilder()
-        sb.appendLine("```mermaid")
         sb.appendLine("---")
         sb.appendLine("config:")
         sb.appendLine("  sankey:")
@@ -35,7 +34,6 @@ class SankeyChartGenerator(
             sb.appendLine()
         }
 
-        sb.append("```")
-        return sb.toString()
+        return sb.toString().trimEnd()
     }
 }
