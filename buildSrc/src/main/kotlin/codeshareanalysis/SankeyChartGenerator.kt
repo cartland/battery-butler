@@ -1,0 +1,41 @@
+package codeshareanalysis
+
+class SankeyChartGenerator(
+    private val config: SankeyChartConfig = SankeyChartConfig.default,
+) {
+    fun generate(result: CodeScanner.ScanResult): String {
+        val sb = StringBuilder()
+        sb.appendLine("```mermaid")
+        sb.appendLine("---")
+        sb.appendLine("config:")
+        sb.appendLine("  sankey:")
+        sb.appendLine("    showValues: ${config.showValues}")
+        sb.appendLine("    width: ${config.width}")
+        sb.appendLine("    height: ${config.height}")
+        sb.appendLine("    nodeAlignment: ${config.nodeAlignment}")
+        sb.appendLine("    linkColor: ${config.linkColor}")
+        sb.appendLine("---")
+        sb.appendLine("sankey-beta")
+        sb.appendLine()
+
+        // Layer 1: Root → Buckets (sorted desc by line count)
+        val sortedBuckets = result.bucketCounts.toList().sortedByDescending { it.second }
+        sortedBuckets.forEach { (bucketName, count) ->
+            sb.appendLine("${config.rootNodeLabel},${config.displayBucketName(bucketName)},$count")
+        }
+        sb.appendLine()
+
+        // Layer 2: Bucket → Modules (sorted desc within each bucket)
+        sortedBuckets.forEach { (bucketName, _) ->
+            val modules = result.bucketModuleCounts[bucketName] ?: return@forEach
+            val displayBucket = config.displayBucketName(bucketName)
+            modules.toList().sortedByDescending { it.second }.forEach { (moduleName, count) ->
+                sb.appendLine("$displayBucket,${config.displayModuleName(moduleName)},$count")
+            }
+            sb.appendLine()
+        }
+
+        sb.append("```")
+        return sb.toString()
+    }
+}
