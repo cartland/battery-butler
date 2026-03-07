@@ -1,4 +1,4 @@
-package codeshareanalysis
+package codeanalysis
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.FileTree
@@ -10,8 +10,8 @@ import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
 import java.io.File
 
-abstract class CodeShareAnalysisTask : DefaultTask() {
-    private val config = CodeShareConfig.default
+abstract class CodeAnalysisTask : DefaultTask() {
+    private val config = CodeAnalysisConfig.default
 
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
@@ -29,7 +29,7 @@ abstract class CodeShareAnalysisTask : DefaultTask() {
 
     init {
         group = "documentation"
-        description = "Generates a code sharing analysis report."
+        description = "Generates a code analysis report."
     }
 
     @get:Internal
@@ -66,7 +66,7 @@ abstract class CodeShareAnalysisTask : DefaultTask() {
             }
         }
 
-        println("Code Share Analysis generated at: ${reportFile.absolutePath}")
+        println("Code analysis generated at: ${reportFile.absolutePath}")
         println("Sankey chart generated at: ${sankeyFile.absolutePath}")
         println("Total Lines: ${result.totalLines}")
     }

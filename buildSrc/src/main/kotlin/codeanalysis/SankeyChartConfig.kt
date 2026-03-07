@@ -1,4 +1,4 @@
-package codeshareanalysis
+package codeanalysis
 
 class SankeyChartConfig(
     val rootNodeLabel: String = "Codebase",

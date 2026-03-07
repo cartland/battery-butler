@@ -1,6 +1,6 @@
-package codeshareanalysis
+package codeanalysis
 
-data class CodeShareConfig(
+data class CodeAnalysisConfig(
     val buckets: List<Bucket>,
     val fileExtensions: List<String> = listOf("kt", "swift", "java"),
     val ignoredDirs: List<String> = listOf("/build/", "/node_modules/", "/.git/", "/.gradle/", "/.idea/", "/bazel-", "/.bazel/"),
@@ -11,7 +11,7 @@ data class CodeShareConfig(
     )
 
     companion object {
-        val default = CodeShareConfig(
+        val default = CodeAnalysisConfig(
             buckets = listOf(
                 // Order matters: First match wins
                 Bucket("Server", Regex(".*[/\\\\]server[/\\\\].*")),

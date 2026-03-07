@@ -1,4 +1,4 @@
-package codeshareanalysis
+package codeanalysis
 
 class ReportGenerator(
     private val extensionDisplayNames: Map<String, String> = emptyMap(),
@@ -6,7 +6,7 @@ class ReportGenerator(
     fun generate(result: CodeScanner.ScanResult): String {
         val sb = StringBuilder()
 
-        sb.appendLine("# Code Share Analysis")
+        sb.appendLine("# Code Analysis")
         sb.appendLine()
         sb.appendLine("This document provides a breakdown of the codebase by application layer and module.")
         sb.appendLine("Total Lines of Code: ${result.totalLines}")
