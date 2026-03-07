@@ -23,6 +23,9 @@ abstract class CodeShareAnalysisTask : DefaultTask() {
     @get:OutputFile
     val reportFile: File = project.rootProject.file("docs/CODE_ANALYSIS.md")
 
+    @get:OutputFile
+    val sankeyFile: File = project.rootProject.file("docs/diagrams/code_distribution.mmd")
+
     init {
         group = "documentation"
         description = "Generates a code sharing analysis report."
@@ -38,11 +41,16 @@ abstract class CodeShareAnalysisTask : DefaultTask() {
 
         println("Generating report...")
         val content = generator.generate(result)
+        val sankeyContent = SankeyChartGenerator().generate(result)
 
         reportFile.parentFile.mkdirs()
         reportFile.writeText(content)
 
+        sankeyFile.parentFile.mkdirs()
+        sankeyFile.writeText(sankeyContent + "\n")
+
         println("Code Share Analysis generated at: ${reportFile.absolutePath}")
+        println("Sankey chart generated at: ${sankeyFile.absolutePath}")
         println("Total Lines: ${result.totalLines}")
     }
 }
