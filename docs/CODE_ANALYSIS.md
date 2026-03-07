@@ -44,7 +44,7 @@ config:
   sankey:
     showValues: true
     width: 800
-    height: 600
+    height: 1000
     nodeAlignment: justify
     linkColor: gradient
 ---
