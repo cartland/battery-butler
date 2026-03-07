@@ -1,8 +1,6 @@
 package codeshareanalysis
 
-class ReportGenerator(
-    private val sankeyGenerator: SankeyChartGenerator = SankeyChartGenerator(),
-) {
+class ReportGenerator {
     fun generate(result: CodeScanner.ScanResult): String {
         val sb = StringBuilder()
 
@@ -31,7 +29,7 @@ class ReportGenerator(
 
         sb.appendLine("## Code Distribution")
         sb.appendLine()
-        sb.append(sankeyGenerator.generate(result))
+        sb.appendLine("[View Code Distribution Sankey Chart](diagrams/code_distribution.mmd)")
         sb.appendLine()
 
         return sb.toString()
