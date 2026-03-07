@@ -164,7 +164,24 @@ Screen parity is 100% (all 14 screens exist) but feature-level parity is ~40%. M
 Key systemic gaps:
 - No split-screen AI overlay or persistent input bar (AI is a standalone tab)
 - No sort/group controls on Home or Device Types lists
-- No device icon mapping (hardcoded generic icons)
+
+### iOS Design System ("Sage & Linen")
+
+PR #873 implemented the full iOS design language from `docs/design/IOS_DESIGN_LANGUAGE.md`:
+
+**Token files** in `Core/Theme/`:
+- `ButlerColors.swift` — 20+ semantic color roles with light/dark support via `Color(light:dark:)`
+- `ButlerSpacing.swift`, `ButlerCornerRadius.swift`, `ButlerIconSize.swift`
+
+**Component files** in `Core/Components/`:
+- `ButlerIconBox.swift` — 44pt icon container with themed background
+- `SFSymbolMapper.swift` — maps 37 Android icon names → SF Symbols
+- `BatteryAgeHelper.swift` — 3-tier battery age coloring (gray/amber/red)
+
+**Critical Swift gotchas:**
+- `Color` extensions used with `.foregroundStyle()` require explicit `Color.` prefix (e.g., `Color.butlerPrimary`). Implicit member syntax (`.butlerPrimary`) fails with "type 'ShapeStyle' has no member" — especially in ternary expressions.
+- KMP `Instant` type cannot be referenced by name in Swift. Use `instant.toEpochMilliseconds()` and pass `Int64` to helper functions instead.
+- `sync_pbxproj.rb` now syncs both `Features/` and `Core/` subdirectories.
 - Settings shows only app version (missing sign-out, network mode, AI engine)
 - All SwiftUI strings are hardcoded English (no localization)
 
