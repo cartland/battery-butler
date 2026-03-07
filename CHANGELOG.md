@@ -31,6 +31,12 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ---
 
+## 2026-03-07
+
+### Documentation
+
+- **Agent instruction restructuring** ([#899](https://github.com/cartland/battery-butler/pull/899)): Split monolithic `.agent/AGENTS.md` (701→292 lines) and `.agent/project.md` (644→293 lines) into focused topic modules. Created 5 new sub-files: `merge-strategy.md`, `testing.md`, `ci.md`, `ios.md`, `server.md`. Agents now read topic files on-demand instead of ~1,350 lines upfront. Fixed broken `.agent/rules.md` references, added File Index tables, and deduplicated safety rules.
+
 ## 2026-03-06
 
 ### Features

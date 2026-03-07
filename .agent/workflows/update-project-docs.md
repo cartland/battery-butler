@@ -52,34 +52,39 @@ Read each documentation file and check if it's affected by the changes:
 
 | File | Update when... |
 |------|---------------|
-| `.agent/project.md` | Architecture, build system, deployment, testing, or server URL patterns change |
+| `.agent/project.md` | Architecture, build system, DI, error handling, UI patterns, or navigation change |
 | `.agent/AGENTS.md` | New workflow rules, configuration patterns, or mistakes-to-avoid are discovered |
+| `.agent/testing.md` | Test types, screenshot tests, convention tests, or E2E patterns change |
+| `.agent/ci.md` | CI modes, path filtering, auto-generate, or concurrency patterns change |
+| `.agent/ios.md` | iOS SwiftUI architecture, design system, xcodebuild, or snapshot testing change |
+| `.agent/server.md` | Server deployment, URLs, secrets, or Terraform change |
+| `.agent/merge-strategy.md` | PR merge workflow, batch merging, or integration branch strategy change |
 | `README.md` | User-facing setup, build, or configuration instructions change |
 | `server/README.md` | Server deployment, secrets, or infrastructure changes |
 | `CHANGELOG.md` | Any meaningful code change (features, fixes, CI/CD improvements) |
 | Module `README.md` files | New models, interfaces, or components added to a module |
-| `data-network/README.md` | Network layer, BuildConfig, or gRPC changes |
-| `domain/README.md` | New domain models, repository interfaces, or error types |
 
 Skip files that aren't affected by the changes. Don't update documentation speculatively.
 
 ### Phase 3: Update Agent Files
 
-#### `.agent/project.md` — Project Knowledge
+#### `.agent/project.md` — Project Knowledge (core architecture)
 
-This is the shared knowledge base for all AI agents. Update the appropriate section:
+Update for: module dependencies, DI wiring, error handling, UI patterns, navigation, AI architecture.
 
-- **Architecture** — New modules, dependencies, or patterns
-- **Build System** — New build flags, tasks, or quirks
-- **Server URL Management** — Changes to how URLs flow from terraform to code
-- **Server Deployment** — Workflow changes, new secrets, observability updates
-- **Testing** — New test categories or patterns
-- **CI** — Path filtering changes, new workflows, auto-generation updates
+#### Topic-specific files (update the relevant one):
+
+- **`.agent/testing.md`** — Test types, screenshot tests, convention tests, E2E
+- **`.agent/ci.md`** — CI modes, path filtering, auto-generate, concurrency
+- **`.agent/ios.md`** — SwiftUI architecture, design system, xcodebuild, snapshots
+- **`.agent/server.md`** — Deployment, URLs, secrets, Terraform
+
+See the File Index in `AGENTS.md` or `project.md` for the full routing table.
 
 Rules:
 - Be factual, not speculative — only document confirmed behavior
 - Include code references where helpful (file paths, class names)
-- Keep entries concise — this file is read at session start
+- Keep entries concise — these files are read by agents on-demand
 
 #### `.agent/AGENTS.md` — Workflow Rules
 

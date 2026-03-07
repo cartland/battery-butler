@@ -49,12 +49,14 @@ Rules:
 
 Update these files with knowledge from the conversation:
 
-#### `.agent/project.md` — Project Knowledge
-Add to the appropriate section:
-- New commands or workflows discovered
-- Build system quirks or workarounds
-- Testing patterns
-- Deployment changes
+#### `.agent/` — Project Knowledge
+
+Add to the appropriate file (see File Index in `AGENTS.md`):
+- **`project.md`** — Architecture, modules, DI, error handling, UI patterns
+- **`testing.md`** — Test types, screenshot tests, convention tests, E2E
+- **`ci.md`** — CI modes, path filtering, auto-generate, concurrency
+- **`ios.md`** — SwiftUI architecture, design system, xcodebuild, snapshots
+- **`server.md`** — Deployment, URLs, secrets, Terraform
 
 #### `.agent/AGENTS.md` — Workflow Rules
 Add if applicable:
@@ -71,7 +73,7 @@ Add if applicable:
 
 1. Stage all changes:
    ```bash
-   git add .beads/ .agent/project.md .agent/AGENTS.md
+   git add .beads/ .agent/
    # Add any other updated docs
    ```
 
@@ -95,7 +97,7 @@ Add if applicable:
    - `bb-yyy`: <title>
 
    ## Docs Updated
-   - `.agent/project.md`: [sections updated]
+   - `.agent/`: [files updated]
    - [Other files]
    EOF
    )"
