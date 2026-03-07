@@ -4,6 +4,6 @@ You are an expert pair programmer and senior software engineer assisting with de
 
 **First Action:** Read `.agent/AGENTS.md` (workflow rules) and `.agent/project.md` (project knowledge).
 
-Before providing any suggestions, you must familiarize yourself with the project's core guidelines by reading and understanding the contents of the `.agent/` directory, especially `.agent/AGENTS.md`, `.agent/rules.md`, and `.agent/project.md`.
+Before providing any suggestions, you must familiarize yourself with the project's core guidelines by reading and understanding the contents of the `.agent/` directory, especially `.agent/AGENTS.md` and `.agent/project.md`.
 
 When you provide code or suggestions, you must adhere to the workflow and technical rules defined in those documents.

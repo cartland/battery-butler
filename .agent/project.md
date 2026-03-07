@@ -125,75 +125,6 @@ All data types follow a consistent **List → Detail (read-only) → Edit** arch
 
 For a detailed breakdown of how the shared Compose Multiplatform UI maps to the native SwiftUI implementation (and why they intuitively differ structurally), see `docs/UI_SCREENS_MAPPING.md`.
 
-### iOS SwiftUI Architecture
-
-The iOS SwiftUI app follows a **two-layer pattern**:
-- **Screen** (e.g., `AddDeviceScreen`): Owns `@State` vars, creates `@StateObject` wrapper, composes the content view
-- **ContentView** (e.g., `AddDeviceContentView`): Stateless view with `@Binding` params, renders the UI
-
-**ViewModelWrapper** bridges KMP ViewModels to SwiftUI:
-- `@StateObject` in the Screen, wraps the KMP ViewModel
-- Uses `KmpViewModelStore` for lifecycle management
-- Subscribes to KMP `StateFlow` via async `for await` loops in `Task`s
-- Publishes state via `@Published` properties
-
-**SKIE AuthError subtypes** in Swift:
-- `AuthErrorConfigurationNotConfigured`, `AuthErrorConfigurationServerUnavailable`
-- `AuthErrorSignInCancelled`, `AuthErrorSignInFailed` (has `.cause` property)
-- `AuthErrorSignInNetworkError`, `AuthErrorTokenInvalid`, `AuthErrorTokenExpired`, `AuthErrorUnknown`
-- These are class types — use `is` for type checks, `as let` for property access
-
-**iOS CI note**: `build_ios_native` and `validation_ios_ui` are skipped on PRs in development CI mode (slow jobs). iOS compile errors are only caught post-merge on `main`. `validation_ios_ui` uses `build-for-testing` to compile the test target without running tests — this catches API mismatches (e.g., missing parameters) but does NOT do pixel-level snapshot regression. Snapshots are auto-generated post-merge by `auto-generate.yml` (like Android screenshots). For iOS-only changes, consider local `xcodebuild` verification. **Always run from repo root** — never `cd` into `ios-app-swift-ui/`:
-```bash
-# Build
-xcodebuild -project ios-app-swift-ui/iosAppSwiftUI.xcodeproj -scheme iosAppSwiftUI \
-  -destination 'generic/platform=iOS Simulator' build \
-  CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO \
-  -derivedDataPath ios-app-swift-ui/build/ios-build
-# Test (must specify OS version — no 'latest' match)
-xcodebuild test -project ios-app-swift-ui/iosAppSwiftUI.xcodeproj -scheme iosAppSwiftUITests \
-  -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.5' \
-  CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO \
-  -derivedDataPath ios-app-swift-ui/build/ios-tests
-```
-
-### iOS SwiftUI Feature Parity
-
-Screen parity is 100% (all 14 screens exist) but feature-level parity is ~50%. PR #873 added the design system (icons, colors, battery age), lifting History from MINIMAL to PARTIAL. Remaining gaps are mostly sort/group controls, error states, and interactive features. See `docs/FEATURE_PARITY_MAPPING.md` for per-screen gap tables. All gap tracking beads are parented to epic `bb-rrs4`.
-
-Key systemic gaps:
-- No split-screen AI overlay or persistent input bar (AI is a standalone tab)
-- No sort/group controls on Home or Device Types lists
-
-### iOS Design System ("Sage & Linen")
-
-PR #873 implemented the full iOS design language from `docs/design/IOS_DESIGN_LANGUAGE.md`:
-
-**Token files** in `Core/Theme/`:
-- `ButlerColors.swift` — 20+ semantic color roles with light/dark support via `Color(light:dark:)`
-- `ButlerSpacing.swift`, `ButlerCornerRadius.swift`, `ButlerIconSize.swift`
-
-**Component files** in `Core/Components/`:
-- `ButlerIconBox.swift` — 44pt icon container with themed background
-- `SFSymbolMapper.swift` — maps 37 Android icon names → SF Symbols
-- `BatteryAgeHelper.swift` — 3-tier battery age coloring (gray/amber/red)
-
-**Critical Swift gotchas:**
-- `Color` extensions used with `.foregroundStyle()` require explicit `Color.` prefix (e.g., `Color.butlerPrimary`). Implicit member syntax (`.butlerPrimary`) fails with "type 'ShapeStyle' has no member" — especially in ternary expressions.
-- KMP `Instant` type cannot be referenced by name in Swift. Use `instant.toEpochMilliseconds()` and pass `Int64` to helper functions instead.
-- `sync_pbxproj.rb` now syncs both `Features/` and `Core/` subdirectories.
-- Settings shows only app version (missing sign-out, network mode, AI engine)
-- All SwiftUI strings are hardcoded English (no localization)
-
-**iOS snapshot test coverage** (PR #862): All 13 screens follow the two-layer Screen/ContentView pattern. 27 snapshot tests cover all ContentViews across 10 test files (plus 3 pre-existing). Reference images are tracked in git (`__Snapshots__/`). CI uses `build-for-testing` (compile-only, no pixel comparison). Snapshots are auto-recorded post-merge by `auto-generate.yml` on `macos-latest` and committed via follow-up PRs (like Android screenshots). Use `scripts/record-ios-snapshots.sh` to record locally.
-
-**KMP Swift constructor gotchas**:
-- Kotlin `data class` with ALL default params → Swift exports only full-param init + no-arg init (no partial constructors)
-- Kotlin `data object` types export `init()` in Swift (not just `.shared`)
-- `AiRole` values: `.user`, `.model`, `.system`, `.tool` (NOT `.assistant`)
-- `AiMessage` param order: `id:role:text:isPartial:hints:` (all required in Swift)
-- `GroupOption.none`, `SortOption.name` for default enum values
-
 ### AI Architecture
 
 AI messages are augmented in `SendChatMessageUseCase` before reaching the AI engine:
@@ -240,7 +171,6 @@ The AI chat uses a **split-screen layout** — chat and tab content share the sc
 - **`MainTab.AI`** enum value remains in the codebase but is dead code — the AI is now a split-screen panel, not a nav tab.
 - **Predictive back (Android 13+)**: Opted in via `android:enableOnBackInvokedCallback="true"` in `AndroidManifest.xml`. AI chat collapse uses `PredictiveBackHandler` for gesture-tracked animation. Back on Login is a no-op (prevents revealing unauthenticated tabs). Full back gesture contract documented in `docs/TESTING.md`.
 
-
 ## Common Commands
 
 ```bash
@@ -258,164 +188,9 @@ xcodebuild -project ios-app-swift-ui/...      # iOS
 ruby ios-app-swift-ui/sync_pbxproj.rb         # Sync Swift files to Xcode
 ```
 
-## Testing
-
-### Test Types
-
-| Type | Command | Server? | Emulator? | CI Job |
-|------|---------|---------|-----------|--------|
-| Unit | `./gradlew test` | No | No | `validation_test` |
-| Instrumented | `./scripts/test.sh` | No | Yes | `validation_instrumented` |
-| Screenshot | `./gradlew :android-screenshot-tests:validateDebugScreenshotTest` | No | No | `validation_screenshots` |
-| E2E | `./scripts/e2e-tests.sh` | Yes | No | Manual only |
-
-### When Tests Run
-
-| Trigger | Unit | Instrumented | Screenshot | E2E |
-|---------|------|-------------|------------|-----|
-| PR with code changes | Yes | Yes | Yes | No |
-| PR with docs only | No | No | No | No |
-| `./scripts/validate.sh` (local) | Yes | Yes | Yes | No |
-| Manual | — | — | — | Yes |
-
-### Convention Tests
-- **`UseCaseConventionTest`** (`usecase/src/jvmTest/`): JVM-only test that uses Kotlin reflection to scan all `*UseCase` classes in the `com.chriscartland.batterybutler.usecase` package and asserts each has `operator fun invoke` (suspend or non-suspend). Runs as part of `./gradlew :usecase:jvmTest`. Requires `kotlin("reflect")` in jvmTest dependencies.
-- **`ViewModelTestConventionTest`** (`viewmodel/src/desktopTest/`): Desktop-only test (JVM reflection) that scans all `*ViewModel` classes and verifies each has a corresponding `*ViewModelTest` class. Excludes `*Factory` and `KmpViewModelStore`. Runs as part of `./gradlew :viewmodel:desktopTest`. Requires `kotlin("reflect")` in desktopTest dependencies. Note: the viewmodel module uses `jvm("desktop")` not `jvm()`, so the source set is `desktopTest/` not `jvmTest/`.
-- The tests use `kotlin.test.assertTrue(value, message)` (NOT the trailing-lambda form, which doesn't exist in `kotlin.test`).
-- **`desktopTest`** is in the detekt FunctionNaming excludes list (alongside `jvmTest`, `commonTest`, etc.) to allow backtick test names.
-
-### Unit Tests (`./gradlew test`)
-- Pure Kotlin tests across all modules (domain, data, viewmodel, usecase, server, etc.)
-- Located in `src/commonTest/`, `src/test/`
-- **Coroutine test gotcha**: `DefaultSyncManager` has an infinite `subscribeWithRetry()` loop in `init`. Never use `advanceUntilIdle()` in tests that create a SyncManager with a subscribe source that throws or completes (it schedules infinite tasks). Use `testDispatcher.scheduler.advanceTimeBy(ms)` + `runCurrent()` instead, and always call `scope.cancel()` at end.
-- `applyRemoteUpdate` and `nextBackoff` are `internal` on `DefaultSyncManager` for direct testing without the subscribe loop
-- **Crash-proof ViewModel tests** (`CrashProof*Test.kt`): Test error handling gaps in ViewModels. Two patterns:
-  - **Pattern A** (safeStateIn): Throwing repo flow → verify `safeStateIn` catches exception but UI stays stuck at initial value (e.g., `Loading`). Tests pass, documenting the broken UX.
-  - **Pattern B** (viewModelScope.launch): Can't use `assertFailsWith` because `SupervisorJob` sends exceptions to the thread's uncaught handler asynchronously (not through `advanceUntilIdle()`). `runTest` catches these and fails. Use **intercepting repo** pattern instead: record exception without rethrowing, then assert no error state exists on the ViewModel.
-
-### Instrumented Tests (`scripts/test.sh`)
-- Require an Android emulator (CI uses managed Pixel 5 API 34 with KVM)
-- All tests are offline-capable — no server needed (app defaults to `NetworkMode.None`)
-- `compose-app/src/androidInstrumentedTest/`: `ComposeUITest` (UI navigation), `ExampleInstrumentedTest` (app context)
-- `data/src/androidInstrumentedTest/`: `DatabaseSanityTest` (Room schema), `MigrationTest` (Room migrations 3→4→5)
-- **BackHandler priority**: The app uses a single unified NavDisplay back stack. The AI overlay's `PredictiveBackHandler` composes deeper than NavDisplay's handler, giving it higher priority when expanded. In tests, use actual UI back buttons (Cancel/Done/Back arrow) instead of `Espresso.pressBack()` to avoid BackHandler conflicts.
-- **Managed device test filtering**: `--tests` flag doesn't work with managed device tasks. Use `-Pandroid.testInstrumentationRunnerArguments.class=com.example.TestClass#testMethod` instead.
-- **Test isolation**: Tests within a single managed device run share database state. Avoid tests that depend on empty-state UI when other tests create persistent data.
-
-### Screenshot Tests
-- Pixel-perfect UI regression tests against reference images
-- Failures indicate UI changes, not broken infrastructure
-- **Android**: Use `updateDebugScreenshotTest` / `validateDebugScreenshotTest` (Paparazzi/Roborazzi).
-  - All preview composables must be time-deterministic — never let `Clock.System.now()` reach a screenshot preview
-  - Use `Instant.parse("2026-01-18T17:00:00Z")` as the standard fixed instant in previews
-  - Pass explicit `nowInstant` / date parameters through the full composable chain — don't rely on defaults
-  - `updateDebugScreenshotTest` and `validateDebugScreenshotTest` can't run in the same Gradle invocation (the update task's clean step deletes references mid-build)
-  - **Never use `--tests` filter with `updateDebugScreenshotTest`** — the gallery generator deletes reference images for non-included test classes. Always use `scripts/generate-android-screenshots.sh` to regenerate all baselines safely (runs one test file at a time to avoid OOM)
-  - **OOM guard**: `updateDebugScreenshotTest` and `validateDebugScreenshotTest` are blocked by default — a `doFirst` guard in `build.gradle.kts` prevents all-at-once runs that OOM. The sequential script bypasses via `-PretainedReferenceScreenshots`. To force a direct run, pass `-PforceAllScreenshots`.
-  - **File size limit**: Keep screenshot test files to ~10 tests (20 images with Light/Dark). Files with 20+ tests OOM on CI runners during auto-generate. `ScreensScreenshotTest.kt` was split into two files (PR #894) to fix this. When adding new screen-level tests, create a new file if the existing one has ~10 tests.
-  - **Validating specific classes after regen**: `-PforceAllScreenshots` still OOMs on large previews (e.g. `PlayStoreAddDeviceTest_Light`). After regenerating baselines, validate only the affected test classes: `./gradlew :android-screenshot-tests:validateDebugScreenshotTest --tests "com.chriscartland.batterybutler.androidscreenshottests.<TestClass>Kt" -PforceAllScreenshots`. Full all-at-once local validation is unreliable; CI handles the full suite. See `bb-cpe4` for the sequential validation script task.
-  - When refactoring shared components (e.g. list items), ALL screen-level baselines that embed those components will change — regenerate everything, not just the component tests
-  - **Always regenerate and commit reference images** when adding or changing screenshot tests. Run `./scripts/generate-android-screenshots.sh`, then `git add` the new/updated PNGs in `android-screenshot-tests/src/screenshotTestDebug/reference/` and `SCREENSHOT_GALLERY.md`. PRs that add screenshot tests without reference images are incomplete.
-  - **Preview coverage enforcement**: `./gradlew checkPreviewCoverage` scans `presentation-core` and `presentation-feature` for `@Preview` composables and verifies each has a corresponding screenshot test import. Fails the build on gaps. Also generates `docs/Preview_Coverage_Report.md` (gitignored). When adding a new `@Preview`, also add a screenshot test or the coverage check will fail.
-  - **Test coverage enforcement**: `./gradlew checkTestCoverage` scans `usecase` (`*UseCase`), `viewmodel` (`*ViewModel`), `data` (`Default*`), and `ai` (`*AiEngine`, `*AiConfig`) for classes matching enforced patterns and verifies each has a corresponding `*Test.kt` file. Fails the build on gaps. Generates `docs/Test_Coverage_Report.md` (gitignored). Two suppression mechanisms: (1) inline `// @NoTestRequired: <reason>` above the class, (2) central `test-coverage-exemptions.txt` with glob patterns. Hard-coded exclusions: `*Factory`, `*Component`, `KmpViewModelStore`, `di/` and `provider/` directories. When adding a new class matching an enforced pattern, also add a test file or use a suppression.
-  - **Two-tier structure**: Screenshot tests have exactly two tiers — (1) **full-screen** (with Scaffold, tabs, app bar) and (2) **individual components** (reusable design-system pieces). Intermediate layouts (e.g. just the filter row, just the list section, just a sub-section) must not have standalone screenshot tests. When removing an intermediate-layout screenshot test, also remove the `@Preview` annotation from the source composable (keep the composable function itself; just drop the `@Preview`).
-  - **Battery age states** (`DeviceListItemOldPreview`, `DeviceListItemVeryOldPreview`) are component-level tests — they verify distinct visual states (amber warning ≥180 days, red bold ≥365 days) that matter for regression detection.
-  - **Platform API overrides for previews**: When a composable reads a platform API (e.g., `WindowInsets.ime`) that always returns a fixed value in previews, use **parameter hoisting** — add a parameter with the platform read as its default (e.g., `imeVisible: Boolean = WindowInsets.ime.getBottom(LocalDensity.current) > 0`). Previews pass the desired value directly. Do NOT use CompositionLocals for test-only overrides — that leaks test concerns into production code.
-- **iOS**: Uses `swift-snapshot-testing`.
-  - To test SwiftUI views connected to KMP, ensure the `Screen` structures are separated into stateless `ContentView` structures to bypass the `NativeComponent` DI graph during testing.
-  - Native iOS snapshot tests execute inside the simulator from the repo root:
-    ```bash
-    xcodebuild test -project ios-app-swift-ui/iosAppSwiftUI.xcodeproj \
-      -scheme iosAppSwiftUITests \
-      -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.5' \
-      CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO \
-      -derivedDataPath ios-app-swift-ui/build/ios-tests
-    ```
-  - Reference images are tracked in git (`__Snapshots__/`). They are auto-generated post-merge by `auto-generate.yml` on CI's `macos-latest` runner, then committed via follow-up PRs (same pattern as Android screenshots).
-  - CI uses `build-for-testing` (compile-only) — does NOT run snapshot comparison tests. Snapshots are a visual record, not a pass/fail gate.
-  - To record locally: `./scripts/record-ios-snapshots.sh` (uses `SNAPSHOT_TESTING_RECORD=all`)
-
-### Detekt
-- Composable functions must order params: no-default params first, then `modifier: Modifier = Modifier`, then other defaulted params, then trailing lambda. Detekt's compose rule enforces this.
-
-### Spotless / ktlint
-- ktlint enforces the **single top-level declaration filename rule**: if a `.kt` file contains only one top-level declaration (class, object, etc.), the file must be named after that declaration. If you remove a declaration leaving only one, rename the file accordingly.
-
-### E2E Tests (`e2e-tests/`)
-- Wire gRPC client tests against a real server (`SyncPushE2eTest`, `ServerHealthE2eTest`)
-- NOT included in CI or `validate.sh` — manual only
-  ```bash
-  ./scripts/e2e-tests.sh                    # Auto-starts local server (auto-generates auth token)
-  ./scripts/e2e-tests.sh --remote           # Uses E2E_SERVER_URL and E2E_AUTH_TOKEN env vars
-  E2E_SERVER_URL=http://<nlb>:80 E2E_AUTH_TOKEN=<token> ./scripts/e2e-tests.sh --remote  # Against cloud
-  ./gradlew :e2e-tests:test -De2e.server.url=http://localhost:50051 -De2e.auth.token=<token>  # Direct
-  ```
-- **E2E Auth**: Server reads `E2E_TEST_TOKEN` env var and pre-seeds a synthetic session. Tests attach the token as a Bearer header via OkHttp interceptor. This tests the real auth path (not a bypass).
-- **Local mode**: Script auto-generates a UUID token and passes it to both server and tests.
-- **Remote mode**: Token must match the `E2E_TEST_TOKEN` GitHub secret deployed to the dev server. Token value stored in `local.properties` (gitignored).
-- **GitHub secret**: `E2E_TEST_TOKEN` — only set for dev environment. After setting/rotating, must redeploy dev for the container to pick it up.
-- **Build cache disabled**: E2E tests use `outputs.cacheIf { false }` because they test a live server whose state is external to Gradle inputs. Without this, Gradle can serve stale cached results instead of actually running the tests.
-
 ## Build System
 
 - **Bazel disk cache issue**: When running `bazel build` in scripts called from Xcode, use `--disk_cache=""` to ensure outputs are materialized locally. The disk cache can return metadata without creating actual files.
-- **iOS protos**: Run `./scripts/generate-protos.sh` before iOS builds if proto files changed. The script generates Swift protobuf files from Bazel.
-- **iOS Swift wrapper API sync**: When a KMP shared ViewModel or use case changes its public API (e.g., adding a parameter to `sendMessage`), the corresponding Swift wrapper in `ios-app-swift-ui/Features/*/` must be updated too. The iOS build (`build_ios_native`) is the canary — a mismatch causes a Swift compile error with "missing argument for parameter". After any KMP API change, grep `ios-app-swift-ui/` for the function name to catch wrappers that need updating.
-
-## Server URL Management
-
-> **Note:** AWS is hibernated. The URLs in gradle.properties and GitHub secrets
-> point to decommissioned endpoints. Only GrpcLocal mode works.
-
-Server URLs (prod and dev) flow through the system as follows:
-
-**Source of truth:** GitHub secrets `PRODUCTION_SERVER_URL` and `DEV_SERVER_URL`, auto-synced from terraform output after each deploy.
-
-**How it propagates:**
-1. Terraform creates NLB → deploy workflows capture `nlb_dns_name` → `gh secret set PRODUCTION_SERVER_URL` / `DEV_SERVER_URL`
-2. CI workflows set `ORG_GRADLE_PROJECT_PRODUCTION_SERVER_URL` and `ORG_GRADLE_PROJECT_DEV_SERVER_URL` env vars from the secrets
-3. Gradle reads them as project properties → `data-network/build.gradle.kts` generates `BuildConfig.kt` with both constants
-4. Code accesses via `BuildConfig.PRODUCTION_SERVER_URL` and `BuildConfig.DEV_SERVER_URL`
-
-**DI pattern for modules without data-network dependency:**
-- `ProductionServerUrl` and `DevServerUrl` data classes (in `domain/model/`) wrap the URLs for type-safe injection
-- `AppComponent` (Android/Desktop) and `NativeComponent` (iOS) provide both from BuildConfig
-- ViewModels and other components receive them via constructor injection
-
-**NetworkMode variants:**
-- `NetworkMode.GrpcAws(url)` — Prod server
-- `NetworkMode.GrpcDev(url)` — Dev server
-- `NetworkMode.GrpcLocal(url)` — Local development server
-- `NetworkMode.Mock` — Offline mock data
-- `NetworkMode.None` — Network disabled (default)
-
-Settings UI displays them in this order: Prod Server / Dev Server / gRPC Local / Mock / None (Offline).
-
-**Key rules:**
-- **NEVER hardcode NLB hostnames** in Kotlin source — use `BuildConfig.PRODUCTION_SERVER_URL` / `BuildConfig.DEV_SERVER_URL` or `ProductionServerUrl` / `DevServerUrl`
-- `gradle.properties` has fallback values for local dev only; CI always overrides from secrets
-- `release-android.yml` validates server connectivity before uploading to Play Store
-- When adding a new NetworkMode variant, update all `when` branches (check: DelegatingGrpcClient, DelegatingRemoteDataSource, DynamicDatabaseProvider, DataStoreNetworkModeRepository, SettingsContent, DebugNetworkReceiver, NetworkModeTest)
-
-## Secrets Management
-
-**GitHub Secrets** (write-only — values can't be read back):
-- `GEMINI_API_KEY` — Gemini AI API key, written to `local.properties` during Android release builds
-- `E2E_TEST_TOKEN` — Pre-seeds synthetic auth session on dev server
-- `PRODUCTION_SERVER_URL` — Auto-synced from terraform after each deploy
-- `DEV_SERVER_URL` — Auto-synced from terraform after each dev deploy
-- `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD` — Android signing
-- `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` — Play Store upload
-
-**Local secrets** in `local.properties` (gitignored) — can get overwritten by IDE/Gradle:
-- Back up important keys to macOS Keychain:
-  ```bash
-  # Save
-  security add-generic-password -a "KEY_NAME" -s "battery-butler" -w "value" -U
-  # Retrieve
-  security find-generic-password -a "KEY_NAME" -s "battery-butler" -w
-  ```
-- Currently stored in Keychain: `GEMINI_API_KEY`
 
 ## Releases
 
@@ -478,145 +253,6 @@ git commit -m "chore(beads): Update task tracking"
 
 **What stays local (gitignored):** `*.db*`, `daemon.*`, `bd.sock`
 
-## Server Deployment
-
-> **HIBERNATED (Feb 2026):** AWS infrastructure is not running. Server workflows
-> are disabled via GitHub (`gh workflow disable`). Server runs locally only. See server/README.md.
-
-Multi-environment deployment pipeline: dev -> staging -> prod. Same Docker image SHA promoted through environments.
-
-**Deployment rules:**
-- **All deploys go to dev first.** Never deploy directly to prod.
-- **Prod is always a promotion from dev.** Use `./scripts/promote-server.sh` (or `/promote-server`) to promote the dev image to prod. This ensures prod only runs images that have been validated on dev.
-
-**Workflows:**
-- `server-build.yml` -- Auto-deploys to dev on push to main (server changes), syncs `DEV_SERVER_URL` secret
-- `server-deploy-staging.yml` -- Manual trigger with `image_tag` input
-- `server-deploy-prod.yml` -- Manual trigger with approval gate, syncs `PRODUCTION_SERVER_URL` secret
-- `server-destroy.yml` -- Tear down staging/dev infrastructure
-- `server-rollback.yml` -- Emergency rollback
-
-**Deploy commands:**
-```bash
-# Check what's deployed right now
-./scripts/deploy-status.sh
-
-# Promote to staging
-gh workflow run server-deploy-staging.yml -f image_tag=<sha>
-
-# Promote to prod (requires approval)
-gh workflow run server-deploy-prod.yml -f image_tag=<sha>
-
-# Test endpoints
-grpcurl -plaintext -proto protos/com/chriscartland/batterybutler/protos/battery_service.proto \
-  <nlb-dns>:80 com.chriscartland.batterybutler.proto.BatteryService/GetServerStatus
-
-# Run E2E tests against a live environment
-E2E_SERVER_URL=http://<nlb-dns>:80 ./scripts/e2e-tests.sh --remote
-```
-
-**Deployment observability:**
-- `./scripts/deploy-status.sh` -- Shows image tag, status, commit, and drift warnings for each environment
-- GitHub commit statuses (`deploy/dev`, `deploy/staging`, `deploy/prod`) -- Annotated on each commit after deploy, visible on GitHub commit pages
-- Deploy workflows always check prod vs dev drift (run `deploy-status.sh` at session start)
-
-**Key architecture decisions:**
-- ECR is managed outside terraform (data source, not resource) to avoid state lock issues
-- Each environment has separate terraform state (`server/{env}/terraform.tfstate`)
-- Concurrency groups prevent parallel deploys to same environment
-- IAM permissions documented in `server/iam_policy.json` -- update AWS Console manually when changed
-- Deploy workflows auto-sync NLB hostname to GitHub secrets (`PRODUCTION_SERVER_URL`, `DEV_SERVER_URL`)
-- `release-android.yml` validates server connectivity before Play Store upload
-
-**AWS free-tier limitations:**
-- Only `db.t3.micro` RDS instances allowed
-- Max 2 RDS instances -- can't run dev + staging + prod simultaneously
-- Use `server-destroy.yml` to tear down unused environments
-
-## CI
-
-### CI Mode (Development vs Release)
-
-CI operates in one of two modes, controlled by `.github/ci-mode.txt`:
-
-- **`development`** (default): Only fast checks (spotless, lint, detekt, unit tests, architecture, theme layer) are required on PRs. Slow jobs (instrumented tests, iOS builds, desktop builds, Android build, server build) are skipped on PRs but always run post-merge on `main`. This speeds up the PR cycle during active development.
-- **`release`**: All jobs are required on PRs. Use this before cutting a release to ensure full coverage.
-
-**Switching modes:**
-```bash
-# Switch to release mode
-echo "release" > .github/ci-mode.txt
-git add .github/ci-mode.txt
-git commit -m "chore: Switch CI to release mode"
-
-# Switch back to development mode
-echo "development" > .github/ci-mode.txt
-git add .github/ci-mode.txt
-git commit -m "chore: Switch CI to development mode"
-```
-
-**How it works:**
-- The `changes` job reads `.github/ci-mode.txt` and outputs `ci_mode`
-- Slow jobs have an additional condition: `github.event_name == 'push' || ci_mode != 'development'`
-- The `ci` gate job is mode-aware: in dev mode on PRs, it only checks fast job results
-- On push to `main`, ALL jobs run regardless of mode (post-merge safety net)
-- Issues caught post-merge in dev mode get fixed in follow-up PRs
-
-**Hook behavior by mode:**
-- Shell control flow (`for`/`while`/`if`): Always warning (never blocks)
-- `--admin` bypass: Warning in development mode, blocked in release mode
-- Validation-before-push: Always warning
-
-### Path Filtering
-
-CI uses `dorny/paths-filter` to skip expensive builds for non-code changes:
-- **Beads-only changes** (`.beads/**`): Skip all builds, only run `ci` gate
-- **Docs-only changes** (`*.md`, `.agent/**`): Skip all builds
-- **Non-code server files** (`server/*.json`, `server/*.md`): Skip all builds
-- **Code changes**: Run full build matrix (Android, iOS, Desktop, Server)
-
-### Auto-Generated Content (Diagrams, Screenshots)
-
-**Workflows NEVER push commits to PR branches.** Generated content is updated post-merge on `main` via follow-up PRs.
-
-**How it works:**
-1. Code merges to `main` -> `auto-generate.yml` runs
-2. Generates diagrams + analysis (Job 1) and screenshots sequentially (Job 2)
-3. Screenshots use `scripts/generate-android-screenshots.sh` to avoid OOM on CI runners
-4. Creates follow-up PRs on `auto/update-generated-content` and `auto/update-screenshots`
-5. Uses `GITHUB_TOKEN` (not `BOT_PAT`) -- loop-proof by design
-6. `ci-trigger-auto-prs.yml` dispatches CI on auto PRs (runs on any workflow completion, not just success)
-
-### CI Concurrency on Main (PR #856)
-
-Push-to-main CI runs use SHA-based concurrency groups so rapid merges don't cancel each other. PR runs still cancel stale runs on the same branch. This ensures every main commit gets a complete CI result.
-
-### Release Build Verification (PR #857)
-
-`release-build-on-green.yml` builds a signed release AAB after every green CI on main. This proves the release pipeline (signing, bundling, Gradle config) works without deploying. Uses `VERSION_CODE=1` (must be >= 1 for Android Gradle Plugin). Artifacts uploaded for 30 days. Skips docs-only changes.
-
-### Pre-Release CI Gate (PR #854)
-
-`release-android.yml` has a `verify-ci` job that checks CI passed on the tagged commit before building. Uses `[.check_runs[] | select(.name == "ci")] | last | .conclusion` to handle multiple check-runs from CI re-runs. `release-android.sh` also checks CI status locally before creating tags.
-
-### GitHub CLI Workflow Scope
-
-Merging PRs that modify `.github/workflows/` files requires the `workflow` OAuth scope. If `gh pr merge` fails with "base branch policy prohibits the merge" and the PR touches workflow files, run `gh auth refresh -s workflow` to add the scope (requires browser-based device code flow).
-
-### Concurrency Group Gotcha
-
-CI uses concurrency groups to prevent parallel runs on the same branch. If a `workflow_dispatch` run starts while a `pull_request` run is in-flight, the `pull_request` run gets cancelled. The `ci` gate treats `cancelled` as failure. **PR status checks only track `pull_request`-event runs**, so a successful `workflow_dispatch` run won't clear the red status. Fix: push a new commit to the PR branch to trigger a fresh `pull_request` CI run.
-
-### Dependabot PRs
-
-Dependabot is configured (`.github/dependabot.yml`) for weekly updates.
-
-**Merge criteria:**
-- Simple updates (patch/minor versions with passing CI) -> merge
-- Needs rebase -> use `@dependabot rebase` comment, then merge if CI passes
-- Breaking changes -> close PR (large version jumps, CI compilation errors, critical infrastructure changes)
-- PRs that modify `.github/workflows/` files cannot be merged via CLI (GitHub security restriction) -> manual merge via web UI
-
 ## Claude Code Hooks
 
 Pre-tool-use hooks in `.claude/hooks/` enforce guardrails on agent Bash commands:
@@ -642,3 +278,16 @@ Registered in `.claude/settings.json` under `hooks.PreToolUse`.
 - **Always iterate locally** - Run local validation while CI runs remotely.
 - **Check CI status without waiting** - Use `gh pr view` or `gh run list` without `--watch`.
 - **Work in parallel** - While one PR's CI runs, work on other tasks from `bd ready`.
+
+## File Index
+
+| File | Contains | Read when |
+|------|----------|-----------|
+| `project.md` (this file) | Architecture, modules, DI, error handling, UI patterns | Always (entry point) |
+| `AGENTS.md` | Safety rules, git workflow, core processes | Always (entry point) |
+| `testing.md` | Test types, screenshot tests, convention tests, E2E | Writing/running tests |
+| `ci.md` | CI modes, path filtering, auto-generate, concurrency | Modifying CI or debugging failures |
+| `ios.md` | SwiftUI architecture, design system, xcodebuild, snapshots | iOS work |
+| `server.md` | Deployment, URLs, secrets, Terraform, E2E auth | Server work |
+| `merge-strategy.md` | PR merge workflow, batch merging, integration branches | Merging PRs |
+| `workflows/` | Step-by-step playbooks (29 files) | Specific operations |
