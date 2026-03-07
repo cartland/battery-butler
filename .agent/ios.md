@@ -1,0 +1,99 @@
+# iOS Architecture & Design
+
+SwiftUI architecture, design system, xcodebuild patterns, and snapshot testing.
+
+> **Parent doc:** See `project.md` for shared architecture and `AGENTS.md` for workflow rules.
+
+## iOS SwiftUI Architecture
+
+The iOS SwiftUI app follows a **two-layer pattern**:
+- **Screen** (e.g., `AddDeviceScreen`): Owns `@State` vars, creates `@StateObject` wrapper, composes the content view
+- **ContentView** (e.g., `AddDeviceContentView`): Stateless view with `@Binding` params, renders the UI
+
+**ViewModelWrapper** bridges KMP ViewModels to SwiftUI:
+- `@StateObject` in the Screen, wraps the KMP ViewModel
+- Uses `KmpViewModelStore` for lifecycle management
+- Subscribes to KMP `StateFlow` via async `for await` loops in `Task`s
+- Publishes state via `@Published` properties
+
+**SKIE AuthError subtypes** in Swift:
+- `AuthErrorConfigurationNotConfigured`, `AuthErrorConfigurationServerUnavailable`
+- `AuthErrorSignInCancelled`, `AuthErrorSignInFailed` (has `.cause` property)
+- `AuthErrorSignInNetworkError`, `AuthErrorTokenInvalid`, `AuthErrorTokenExpired`, `AuthErrorUnknown`
+- These are class types — use `is` for type checks, `as let` for property access
+
+**iOS CI note**: `build_ios_native` and `validation_ios_ui` are skipped on PRs in development CI mode (slow jobs). iOS compile errors are only caught post-merge on `main`. `validation_ios_ui` uses `build-for-testing` to compile the test target without running tests — this catches API mismatches (e.g., missing parameters) but does NOT do pixel-level snapshot regression. Snapshots are auto-generated post-merge by `auto-generate.yml` (like Android screenshots). For iOS-only changes, consider local `xcodebuild` verification. **Always run from repo root** — never `cd` into `ios-app-swift-ui/`:
+```bash
+# Build
+xcodebuild -project ios-app-swift-ui/iosAppSwiftUI.xcodeproj -scheme iosAppSwiftUI \
+  -destination 'generic/platform=iOS Simulator' build \
+  CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO \
+  -derivedDataPath ios-app-swift-ui/build/ios-build
+# Test (must specify OS version — no 'latest' match)
+xcodebuild test -project ios-app-swift-ui/iosAppSwiftUI.xcodeproj -scheme iosAppSwiftUITests \
+  -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.5' \
+  CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO \
+  -derivedDataPath ios-app-swift-ui/build/ios-tests
+```
+
+## iOS SwiftUI Feature Parity
+
+Screen parity is 100% (all 14 screens exist) but feature-level parity is ~50%. PR #873 added the design system (icons, colors, battery age), lifting History from MINIMAL to PARTIAL. Remaining gaps are mostly sort/group controls, error states, and interactive features. See `docs/FEATURE_PARITY_MAPPING.md` for per-screen gap tables. All gap tracking beads are parented to epic `bb-rrs4`.
+
+Key systemic gaps:
+- No split-screen AI overlay or persistent input bar (AI is a standalone tab)
+- No sort/group controls on Home or Device Types lists
+
+## iOS Design System ("Sage & Linen")
+
+PR #873 implemented the full iOS design language from `docs/design/IOS_DESIGN_LANGUAGE.md`:
+
+**Token files** in `Core/Theme/`:
+- `ButlerColors.swift` — 20+ semantic color roles with light/dark support via `Color(light:dark:)`
+- `ButlerSpacing.swift`, `ButlerCornerRadius.swift`, `ButlerIconSize.swift`
+
+**Component files** in `Core/Components/`:
+- `ButlerIconBox.swift` — 44pt icon container with themed background
+- `SFSymbolMapper.swift` — maps 37 Android icon names → SF Symbols
+- `BatteryAgeHelper.swift` — 3-tier battery age coloring (gray/amber/red)
+
+**Critical Swift gotchas:**
+- `Color` extensions used with `.foregroundStyle()` require explicit `Color.` prefix (e.g., `Color.butlerPrimary`). Implicit member syntax (`.butlerPrimary`) fails with "type 'ShapeStyle' has no member" — especially in ternary expressions.
+- KMP `Instant` type cannot be referenced by name in Swift. Use `instant.toEpochMilliseconds()` and pass `Int64` to helper functions instead.
+- `sync_pbxproj.rb` now syncs both `Features/` and `Core/` subdirectories.
+- Settings shows only app version (missing sign-out, network mode, AI engine)
+- All SwiftUI strings are hardcoded English (no localization)
+
+## KMP Swift Constructor Gotchas
+
+- Kotlin `data class` with ALL default params → Swift exports only full-param init + no-arg init (no partial constructors)
+- Kotlin `data object` types export `init()` in Swift (not just `.shared`)
+- `AiRole` values: `.user`, `.model`, `.system`, `.tool` (NOT `.assistant`)
+- `AiMessage` param order: `id:role:text:isPartial:hints:` (all required in Swift)
+- `GroupOption.none`, `SortOption.name` for default enum values
+
+## iOS Snapshot Tests
+
+All 13 screens follow the two-layer Screen/ContentView pattern. 27 snapshot tests cover all ContentViews across 10 test files (plus 3 pre-existing). Reference images are tracked in git (`__Snapshots__/`). CI uses `build-for-testing` (compile-only, no pixel comparison). Snapshots are auto-recorded post-merge by `auto-generate.yml` on `macos-latest` and committed via follow-up PRs (like Android screenshots). Use `scripts/record-ios-snapshots.sh` to record locally.
+
+To test SwiftUI views connected to KMP, ensure the `Screen` structures are separated into stateless `ContentView` structures to bypass the `NativeComponent` DI graph during testing.
+
+Native iOS snapshot tests execute inside the simulator from the repo root:
+```bash
+xcodebuild test -project ios-app-swift-ui/iosAppSwiftUI.xcodeproj \
+  -scheme iosAppSwiftUITests \
+  -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.5' \
+  CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO \
+  -derivedDataPath ios-app-swift-ui/build/ios-tests
+```
+
+Reference images are tracked in git (`__Snapshots__/`). They are auto-generated post-merge by `auto-generate.yml` on CI's `macos-latest` runner, then committed via follow-up PRs (same pattern as Android screenshots).
+
+CI uses `build-for-testing` (compile-only) — does NOT run snapshot comparison tests. Snapshots are a visual record, not a pass/fail gate.
+
+To record locally: `./scripts/record-ios-snapshots.sh` (uses `SNAPSHOT_TESTING_RECORD=all`)
+
+## iOS Build System
+
+- **iOS protos**: Run `./scripts/generate-protos.sh` before iOS builds if proto files changed. The script generates Swift protobuf files from Bazel.
+- **iOS Swift wrapper API sync**: When a KMP shared ViewModel or use case changes its public API (e.g., adding a parameter to `sendMessage`), the corresponding Swift wrapper in `ios-app-swift-ui/Features/*/` must be updated too. The iOS build (`build_ios_native`) is the canary — a mismatch causes a Swift compile error with "missing argument for parameter". After any KMP API change, grep `ios-app-swift-ui/` for the function name to catch wrappers that need updating.
