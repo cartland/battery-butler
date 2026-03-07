@@ -38,5 +38,5 @@ Update all generated documentation (architecture diagrams and code analysis).
 ## Notes
 
 - Diagrams reflect the current module dependency structure
-- Code share analysis shows breakdown of code by module and platform
+- Code analysis shows breakdown of code by module and platform
 - Both tasks are idempotent - safe to run multiple times
