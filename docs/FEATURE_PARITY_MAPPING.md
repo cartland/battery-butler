@@ -15,10 +15,10 @@ Most SwiftUI screens are minimal implementations that render basic data but lack
 | Metric | Value |
 |--------|-------|
 | Screen parity (screen exists in both) | **14 / 14 (100%)** |
-| Feature parity (per-feature match) | **~40%** |
+| Feature parity (per-feature match) | **~50%** |
 | Screens at FULL parity | 0 |
-| Screens at PARTIAL parity | 10 |
-| Screens at MINIMAL parity | 4 |
+| Screens at PARTIAL parity | 11 |
+| Screens at MINIMAL parity | 3 |
 | Screens at NONE parity | 0 |
 
 ## Rating Key
@@ -40,7 +40,7 @@ These issues affect all SwiftUI screens, not just individual ones:
 
 - **Localization**: All SwiftUI screens use hardcoded English strings. Compose uses full i18n string resources. This is a systemic gap that should be addressed holistically.
 - **"Add New..." picker options**: Several Compose type pickers include inline "Add New Device Type..." or "Add New Device..." options. SwiftUI pickers lack these shortcuts across Add Device, Edit Device, and Add Battery Event screens.
-- **Icon mapping**: SwiftUI uses generic system icons (e.g., "cpu", "bolt.fill") instead of the `DeviceIconMapper` that maps device types to specific icons. Affects Home, Device Detail, Device Types List, and type pickers.
+- **~~Icon mapping~~**: ✅ Fixed in PR #873. `SFSymbolMapper` maps all 37 device type icon names to SF Symbols. `ButlerIconBox` wraps icons with themed sage green containers.
 
 ---
 
@@ -64,8 +64,8 @@ These issues affect all SwiftUI screens, not just individual ones:
 | Feature | Compose | SwiftUI | Gap |
 |---------|---------|---------|-----|
 | Device list display | ✅ | ✅ | — |
-| Device icons (mapped by type) | ✅ | ❌ | SwiftUI uses generic `bolt.fill` for all |
-| Battery age colors (gray/amber/red) | ✅ | ❌ | No age-based coloring |
+| Device icons (mapped by type) | ✅ | ✅ | `SFSymbolMapper` + `ButlerIconBox` (PR #873) |
+| Battery age colors (gray/amber/red) | ✅ | ✅ | `BatteryAgeHelper` 3-tier coloring (PR #873) |
 | Sort controls (name/type/age/location) | ✅ | ❌ | No sort UI |
 | Group by location | ✅ | ❌ | Flat list only |
 | Sync status indicator | ✅ | ❌ | No sync status display |
@@ -74,26 +74,26 @@ These issues affect all SwiftUI screens, not just individual ones:
 | Add device card | ✅ | ✅ | — |
 
 **Compose:** `HomeScreenContent.kt` — full-featured with `DeviceIconMapper`, `StatCard`, sort/group dropdowns, battery age colors.
-**SwiftUI:** `HomeScreen.swift` — basic `List` with device name and days-since display.
+**SwiftUI:** `HomeScreen.swift` — themed list with `ButlerIconBox`, resolved type/location subtitle, battery age trailing with 3-tier coloring (PR #873).
 **Tracking:** `bb-847x` (sort/group), `bb-wddv` (sync status)
 
-### 3. History — MINIMAL
+### 3. History — PARTIAL
 
 | Feature | Compose | SwiftUI | Gap |
 |---------|---------|---------|-----|
 | Event list display | ✅ | ✅ | — |
-| Device name on each event | ✅ | ❌ | Shows event type only |
-| Device type display | ✅ | ❌ | — |
-| Location display | ✅ | ❌ | — |
-| Days-ago relative date | ✅ | ❌ | Shows raw date |
+| Device name on each event | ✅ | ✅ | PR #873 |
+| Device type display | ✅ | ✅ | PR #873 |
+| Location display | ✅ | ✅ | PR #873 |
+| Days-ago relative date | ✅ | ✅ | PR #873 |
 | Empty state | ✅ | ❌ | No empty state message |
 | Tap to event detail | ✅ | ❌ | Items are not tappable — no navigation |
 | Add event card | ✅ | ❌ | No add-event shortcut |
-| Date badge visual (month/day) | ✅ | ❌ | No leading date badge |
+| Date badge visual (month/day) | ✅ | ✅ | Calendar badge with month/day (PR #873) |
 | Sync status | ✅ | ❌ | — |
 
 **Compose:** `HistoryListContent.kt` — enriched items with device context, relative dates, icons.
-**SwiftUI:** `HistoryListScreen.swift` — basic list of events with minimal detail.
+**SwiftUI:** `HistoryListScreen.swift` — enriched rows with calendar badge (month/day), device name, type/location subtitle, days-ago trailing (PR #873).
 **Tracking:** `bb-wddv`
 
 ### 4. AI Chat — PARTIAL
@@ -102,7 +102,7 @@ These issues affect all SwiftUI screens, not just individual ones:
 |---------|---------|---------|-----|
 | Chat message display | ✅ | ✅ | — |
 | Send message | ✅ | ✅ | — |
-| Chat bubble styling | ✅ | ✅ | SwiftUI has iMessage-style bubbles (arguably nicer) |
+| Chat bubble styling | ✅ | ✅ | Sage green user / steel blue AI bubbles (PR #873) |
 | Split-screen overlay mode | ✅ | ❌ | SwiftUI is standalone screen only |
 | Cross-tab persistence | ✅ | ❌ | Chat only visible in AI tab |
 | Context hints | ✅ | ❌ | No contextual suggestions |
@@ -110,7 +110,7 @@ These issues affect all SwiftUI screens, not just individual ones:
 | Loading indicator | ✅ | ✅ | — |
 
 **Compose:** `MainScreenShell` bottom bar + `AiTabContent` split-screen overlay; `AiChatScreen.kt` standalone.
-**SwiftUI:** `AiChatScreen.swift` — standalone tab with native `ChatBubbleShape`.
+**SwiftUI:** `AiChatScreen.swift` — standalone tab with themed `ChatBubbleShape` (sage green user, steel blue AI bubbles, PR #873).
 **Tracking:** `bb-ke1y`
 
 ### 5. Settings — MINIMAL
@@ -152,15 +152,15 @@ These issues affect all SwiftUI screens, not just individual ones:
 | Device name display | ✅ | ✅ | — |
 | Device type display | ✅ | ✅ | — |
 | Location display | ✅ | ❌ | No location shown |
-| Mapped device icon | ✅ | ❌ | Hardcoded "cpu" icon |
+| Mapped device icon | ✅ | ✅ | `SFSymbolMapper` + `ButlerIconBox` (PR #873) |
 | Battery stat cards (age, last replaced) | ✅ | ❌ | No stat cards |
-| Battery age color | ✅ | ❌ | No age-based coloring |
+| Battery age color | ✅ | ✅ | `BatteryAgeHelper` in DeviceRow trailing (PR #873) |
 | Battery history list | ✅ | ✅ | — |
 | Edit button | ✅ | ✅ | — |
 | Navigation to event detail | ✅ | ✅ | — |
 
 **Compose:** `DeviceDetailScreen.kt` — `DeviceIconMapper`, `LocationOn` icon, `StatCard` components, age colors.
-**SwiftUI:** `DeviceDetailScreen.swift` — basic display with hardcoded icon, no location or stat cards.
+**SwiftUI:** `DeviceDetailScreen.swift` — themed header with `ButlerIconBox`, sage green CTA button, resolved type name. Still missing stat cards and location display (PR #873).
 **Tracking:** `bb-rrs4.1`
 
 ### 8. Edit Device — PARTIAL

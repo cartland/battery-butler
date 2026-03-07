@@ -31,6 +31,18 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ---
 
+## 2026-03-06
+
+### Features
+
+- **iOS "Sage & Linen" design language** ([#873](https://github.com/cartland/battery-butler/pull/873)): Implemented the full iOS design system from `docs/design/IOS_DESIGN_LANGUAGE.md`. Added design tokens (`ButlerColors` with 20+ semantic color roles supporting light/dark, `ButlerSpacing`, `ButlerCornerRadius`, `ButlerIconSize`), reusable components (`ButlerIconBox`, `SFSymbolMapper` mapping 37 device icons, `BatteryAgeHelper` with 3-tier age coloring), and migrated all 13 screens from hardcoded `.blue`/`.green`/`.accentColor` to themed tokens. Key visual improvements: DeviceRow shows mapped icons + battery age trailing, HistoryListScreen has calendar badges replacing raw ISO timestamps, AiChat uses sage green/steel blue themed bubbles. Feature parity lifted from ~40% to ~50%.
+
+### Documentation
+
+- **iOS design language specification** ([#871](https://github.com/cartland/battery-butler/pull/871)): Added `docs/design/IOS_DESIGN_LANGUAGE.md` defining the complete visual identity — color palette, spacing scale, corner radii, icon sizes, 6 component patterns, battery age coloring, SF Symbol mapping table, typography mapping, and anti-patterns.
+
+---
+
 ## 2026-03-05
 
 ### Features
