@@ -35,3 +35,50 @@ Total Lines of Code: 34969
 * `:compose-resources`: 70 lines (0.2%)
 * `:server:domain`: 34 lines (0.1%)
 * `:iosAppComposeUI.xcodeproj`: 31 lines (0.1%)
+
+## Code Distribution
+
+```mermaid
+---
+config:
+  sankey:
+    showValues: true
+---
+sankey-beta
+
+Codebase,Shared Code,24592
+Codebase,Other,2917
+Codebase,iOS Swift App,2780
+Codebase,CMP Apps,2169
+Codebase,Server,1528
+Codebase,Screenshot Tests,983
+
+Shared Code,presentation-feature,5730
+Shared Code,viewmodel,4566
+Shared Code,usecase,4073
+Shared Code,data-network,2412
+Shared Code,domain,2293
+Shared Code,presentation-core,2095
+Shared Code,data,1801
+Shared Code,data-local,1059
+Shared Code,ai,493
+Shared Code,compose-resources,70
+
+Other,buildSrc,1353
+Other,test-common,609
+Other,e2e-tests,271
+Other,ios-swift-di,235
+Other,fixtures,209
+Other,presentation-model,209
+Other,iosAppComposeUI,31
+
+iOS Swift App,iosAppSwiftUI,2780
+
+CMP Apps,compose-app,2169
+
+Server,server:app,1342
+Server,server:data,152
+Server,server:domain,34
+
+Screenshot Tests,android-screenshot-tests,983
+```

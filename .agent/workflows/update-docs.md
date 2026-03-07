@@ -21,7 +21,7 @@ Update all generated documentation (architecture diagrams and code share analysi
    ```
 
    This updates:
-   - `docs/Code_Share_Analysis.md`
+   - `docs/CODE_ANALYSIS.md`
 
 3. Review and commit changes:
    ```bash

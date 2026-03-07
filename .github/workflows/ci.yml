@@ -424,7 +424,7 @@ jobs:
         run: ./gradlew generateMermaidGraph analyzeCodeShare
       - name: Check for drift
         run: |
-          if git diff --quiet docs/diagrams/ docs/Code_Share_Analysis.md; then
+          if git diff --quiet docs/diagrams/ docs/CODE_ANALYSIS.md; then
             echo "Generated content is up to date"
           else
             echo "::warning::Generated content (diagrams/analysis) would change with this PR."
@@ -432,7 +432,7 @@ jobs:
             echo "::warning::after merge via the Auto-Generate Content workflow."
             echo ""
             echo "Files that would change:"
-            git diff --name-only docs/diagrams/ docs/Code_Share_Analysis.md
+            git diff --name-only docs/diagrams/ docs/CODE_ANALYSIS.md
           fi
 
   # Single required status check that works with path filtering

@@ -260,7 +260,7 @@ validate_analysis() {
     echo "=== Validating Code Share Analysis ==="
     echo ""
 
-    local analysis_file="docs/Code_Share_Analysis.md"
+    local analysis_file="docs/CODE_ANALYSIS.md"
     local min_analysis_size=500  # Minimum bytes for a valid analysis
 
     # Check file exists
