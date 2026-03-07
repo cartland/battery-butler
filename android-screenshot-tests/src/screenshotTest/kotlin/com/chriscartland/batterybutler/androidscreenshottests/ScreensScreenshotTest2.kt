@@ -4,15 +4,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.android.tools.screenshot.PreviewTest
 import com.chriscartland.batterybutler.androidscreenshottests.util.ScreenshotTestTheme
-import com.chriscartland.batterybutler.presentationfeature.addbatteryevent.AddBatteryEventContentPreview
-import com.chriscartland.batterybutler.presentationfeature.adddevicetype.AddDeviceTypeContentPreview
-import com.chriscartland.batterybutler.presentationfeature.aichat.AiChatContentEmptyPreview
-import com.chriscartland.batterybutler.presentationfeature.aichat.AiChatContentPreview
-import com.chriscartland.batterybutler.presentationfeature.devicetypes.DeviceTypeListContentEmptyPreview
-import com.chriscartland.batterybutler.presentationfeature.devicetypes.EditDeviceTypeContentPreview
-import com.chriscartland.batterybutler.presentationfeature.editdevice.EditDeviceContentPreview
-import com.chriscartland.batterybutler.presentationfeature.history.HistoryListContentEmptyPreview
-import com.chriscartland.batterybutler.presentationfeature.home.HomeScreenEmptyPreview
+import com.chriscartland.batterybutler.presentationfeature.devicetypes.DeviceTypeDetailContentPreview
+import com.chriscartland.batterybutler.presentationfeature.devicetypes.DeviceTypeDetailLoadingPreview
+import com.chriscartland.batterybutler.presentationfeature.devicetypes.DeviceTypeDetailNotFoundPreview
+import com.chriscartland.batterybutler.presentationfeature.eventdetail.EditBatteryEventContentPreview
+import com.chriscartland.batterybutler.presentationfeature.eventdetail.EditBatteryEventNotFoundPreview
+import com.chriscartland.batterybutler.presentationfeature.eventdetail.EventDetailContentDeletedDevicePreview
+import com.chriscartland.batterybutler.presentationfeature.eventdetail.EventDetailContentNotFoundPreview
+import com.chriscartland.batterybutler.presentationfeature.eventdetail.EventDetailContentPreview
+import com.chriscartland.batterybutler.presentationfeature.settings.SettingsContentAllNetworkModesPreview
+import com.chriscartland.batterybutler.presentationfeature.settings.SettingsContentPreview
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
@@ -20,9 +21,9 @@ import kotlin.time.ExperimentalTime
 @Preview(showBackground = true, name = "Light")
 @Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun HomeScreenEmptyPreviewTest() {
+fun EventDetailScreenPreviewTest() {
     ScreenshotTestTheme {
-        HomeScreenEmptyPreview()
+        EventDetailContentPreview()
     }
 }
 
@@ -30,9 +31,29 @@ fun HomeScreenEmptyPreviewTest() {
 @Preview(showBackground = true, name = "Light")
 @Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun DeviceTypeListEmptyScreenPreviewTest() {
+fun EventDetailDeletedDeviceScreenPreviewTest() {
     ScreenshotTestTheme {
-        DeviceTypeListContentEmptyPreview()
+        EventDetailContentDeletedDevicePreview()
+    }
+}
+
+@PreviewTest
+@Preview(showBackground = true, name = "Light")
+@Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun SettingsScreenPreviewTest() {
+    ScreenshotTestTheme {
+        SettingsContentPreview()
+    }
+}
+
+@PreviewTest
+@Preview(showBackground = true, name = "Light")
+@Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun SettingsAllNetworkModesPreviewTest() {
+    ScreenshotTestTheme {
+        SettingsContentAllNetworkModesPreview()
     }
 }
 
@@ -41,9 +62,9 @@ fun DeviceTypeListEmptyScreenPreviewTest() {
 @Preview(showBackground = true, name = "Light")
 @Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun HistoryListEmptyScreenPreviewTest() {
+fun DeviceTypeDetailScreenPreviewTest() {
     ScreenshotTestTheme {
-        HistoryListContentEmptyPreview()
+        DeviceTypeDetailContentPreview()
     }
 }
 
@@ -51,9 +72,9 @@ fun HistoryListEmptyScreenPreviewTest() {
 @Preview(showBackground = true, name = "Light")
 @Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun AddDeviceTypeScreenPreviewTest() {
+fun DeviceTypeDetailLoadingPreviewTest() {
     ScreenshotTestTheme {
-        AddDeviceTypeContentPreview()
+        DeviceTypeDetailLoadingPreview()
     }
 }
 
@@ -61,9 +82,20 @@ fun AddDeviceTypeScreenPreviewTest() {
 @Preview(showBackground = true, name = "Light")
 @Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun AddBatteryEventScreenPreviewTest() {
+fun DeviceTypeDetailNotFoundPreviewTest() {
     ScreenshotTestTheme {
-        AddBatteryEventContentPreview()
+        DeviceTypeDetailNotFoundPreview()
+    }
+}
+
+@OptIn(ExperimentalTime::class)
+@PreviewTest
+@Preview(showBackground = true, name = "Light")
+@Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun EditBatteryEventScreenPreviewTest() {
+    ScreenshotTestTheme {
+        EditBatteryEventContentPreview()
     }
 }
 
@@ -71,9 +103,9 @@ fun AddBatteryEventScreenPreviewTest() {
 @Preview(showBackground = true, name = "Light")
 @Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun EditDeviceScreenPreviewTest() {
+fun EditBatteryEventNotFoundPreviewTest() {
     ScreenshotTestTheme {
-        EditDeviceContentPreview()
+        EditBatteryEventNotFoundPreview()
     }
 }
 
@@ -81,28 +113,8 @@ fun EditDeviceScreenPreviewTest() {
 @Preview(showBackground = true, name = "Light")
 @Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun EditDeviceTypeScreenPreviewTest() {
+fun EventDetailNotFoundPreviewTest() {
     ScreenshotTestTheme {
-        EditDeviceTypeContentPreview()
-    }
-}
-
-@PreviewTest
-@Preview(showBackground = true, name = "Light")
-@Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun AiChatContentPreviewTest() {
-    ScreenshotTestTheme {
-        AiChatContentPreview()
-    }
-}
-
-@PreviewTest
-@Preview(showBackground = true, name = "Light")
-@Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun AiChatContentEmptyPreviewTest() {
-    ScreenshotTestTheme {
-        AiChatContentEmptyPreview()
+        EventDetailContentNotFoundPreview()
     }
 }
