@@ -421,7 +421,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-java-gradle
       - name: Generate diagrams and analysis
-        run: ./gradlew generateMermaidGraph analyzeCodeShare
+        run: ./gradlew generateMermaidGraph analyzeCode
       - name: Check for drift
         run: |
           if git diff --quiet docs/diagrams/ docs/CODE_ANALYSIS.md; then

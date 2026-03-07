@@ -11,7 +11,7 @@
 # USAGE:
 #   ./scripts/validate-generated.sh --diagrams     # Validate Mermaid diagrams
 #   ./scripts/validate-generated.sh --screenshots  # Validate screenshot baselines
-#   ./scripts/validate-generated.sh --analysis     # Validate code share analysis
+#   ./scripts/validate-generated.sh --analysis     # Validate code analysis
 #   ./scripts/validate-generated.sh --all          # Validate everything
 #
 # EXIT CODES:
@@ -252,51 +252,51 @@ validate_screenshots() {
 }
 
 # -----------------------------------------------------------------------------
-# Code Share Analysis Validation
+# Code Analysis Validation
 # -----------------------------------------------------------------------------
 
 validate_analysis() {
     echo ""
-    echo "=== Validating Code Share Analysis ==="
+    echo "=== Validating Code Analysis ==="
     echo ""
 
     local analysis_file="docs/CODE_ANALYSIS.md"
     local min_analysis_size=500  # Minimum bytes for a valid analysis
 
     # Check file exists
-    if ! check_file_exists "$analysis_file" "Code share analysis"; then
+    if ! check_file_exists "$analysis_file" "Code analysis"; then
         echo "::error::"
         echo "::error::To generate analysis, run:"
-        echo "::error::  ./gradlew analyzeCodeShare"
+        echo "::error::  ./gradlew analyzeCode"
         return 1
     fi
 
     # Check minimum size
     local size=$(wc -c < "$analysis_file" | tr -d ' ')
     if [[ "$size" -lt "$min_analysis_size" ]]; then
-        error "Code share analysis is suspiciously small ($size bytes)"
+        error "Code analysis is suspiciously small ($size bytes)"
         echo "::error::Analysis file is only $size bytes (expected >$min_analysis_size)"
         echo "::error::The analysis may have failed to parse modules correctly."
         return 1
     fi
 
-    success "Code share analysis is valid ($size bytes)"
+    success "Code analysis is valid ($size bytes)"
 
     # Check for expected content markers
     if ! grep -qi "module\|platform\|share\|common" "$analysis_file"; then
         warning "Analysis may not contain expected module/platform information"
         echo "::warning::Analysis file doesn't mention modules or platforms"
-        echo "::warning::Content may not reflect actual code sharing"
+        echo "::warning::Content may not reflect actual code distribution"
     fi
 
     # Check that embed markers exist
     if ! grep -qF -- "<!-- GENERATED:BEGIN code_distribution.mmd -->" "$analysis_file"; then
         error "Missing GENERATED:BEGIN marker in $analysis_file"
-        echo "::error::The embed marker is missing. Run: ./gradlew analyzeCodeShare"
+        echo "::error::The embed marker is missing. Run: ./gradlew analyzeCode"
     fi
     if ! grep -qF -- "<!-- GENERATED:END code_distribution.mmd -->" "$analysis_file"; then
         error "Missing GENERATED:END marker in $analysis_file"
-        echo "::error::The embed marker is missing. Run: ./gradlew analyzeCodeShare"
+        echo "::error::The embed marker is missing. Run: ./gradlew analyzeCode"
     fi
 
     # Check that sankey-beta content is embedded between markers
@@ -342,7 +342,7 @@ show_usage() {
     echo "Options:"
     echo "  --diagrams     Validate Mermaid diagrams"
     echo "  --screenshots  Validate screenshot baselines"
-    echo "  --analysis     Validate code share analysis"
+    echo "  --analysis     Validate code analysis"
     echo "  --all          Validate everything"
     echo "  --help         Show this help message"
     echo ""

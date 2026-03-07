@@ -1,4 +1,4 @@
-package codeshareanalysis
+package codeanalysis
 
 class SankeyChartGenerator(
     private val config: SankeyChartConfig = SankeyChartConfig.default,

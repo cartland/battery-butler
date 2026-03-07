@@ -3,7 +3,7 @@
 # =============================================================================
 #
 # PURPOSE:
-#   Generates architecture diagrams, code share analysis, and screenshot
+#   Generates architecture diagrams, code analysis, and screenshot
 #   baselines on main, then creates follow-up PRs with any changes.
 #
 # DESIGN:
@@ -53,7 +53,7 @@ env:
 
 jobs:
   # ===========================================================================
-  # Job 1: Diagrams + Code Share Analysis
+  # Job 1: Diagrams + Code Analysis
   # ===========================================================================
   diagrams-and-analysis:
     runs-on: ubuntu-latest
@@ -69,8 +69,8 @@ jobs:
 
       - uses: ./.github/actions/setup-java-gradle
 
-      - name: Generate Diagrams and Code Share Analysis
-        run: ./gradlew generateMermaidGraph analyzeCodeShare
+      - name: Generate Diagrams and Code Analysis
+        run: ./gradlew generateMermaidGraph analyzeCode
 
       - name: Validate Generated Files
         run: ./scripts/validate-generated.sh --diagrams --analysis
@@ -95,7 +95,7 @@ jobs:
           commit-message: "docs(generated): Regenerate architecture diagrams and analysis"
           title: "docs(generated): Regenerate architecture diagrams and analysis"
           body: |
-            Architecture diagrams and code share analysis regenerated to match current code.
+            Architecture diagrams and code analysis regenerated to match current code.
 
             This PR was automatically created by the Auto-Generate Content workflow
             after a code change was merged to main.

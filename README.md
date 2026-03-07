@@ -25,6 +25,86 @@ The project follows **Clean Architecture** principles adapted for Kotlin Multipl
 
 For a detailed deep-dive into the module structure, dependency graph, and strict layer rules, please read the **[Architecture Documentation](docs/Architecture.md)**.
 
+### Code Distribution
+
+The project spans **Kotlin**, **Swift**, and **Java** across multiple modules.
+See [Code Analysis](docs/CODE_ANALYSIS.md) for the full breakdown.
+
+<!-- GENERATED:BEGIN code_distribution.mmd -->
+```mermaid
+---
+config:
+  sankey:
+    showValues: true
+    width: 800
+    height: 1000
+    nodeAlignment: justify
+    linkColor: gradient
+---
+sankey-beta
+
+Codebase,Shared Code,24592
+Codebase,Other,3102
+Codebase,iOS Swift App,3079
+Codebase,CMP Apps,2169
+Codebase,Server,1528
+Codebase,Screenshot Tests,983
+
+Shared Code,presentation-feature,5730
+Shared Code,viewmodel,4566
+Shared Code,usecase,4073
+Shared Code,data-network,2412
+Shared Code,domain,2293
+Shared Code,presentation-core,2095
+Shared Code,data,1801
+Shared Code,data-local,1059
+Shared Code,ai,493
+Shared Code,compose-resources,70
+
+Other,buildSrc,1538
+Other,test-common,609
+Other,e2e-tests,271
+Other,ios-swift-di,235
+Other,fixtures,209
+Other,presentation-model,209
+Other,iosAppComposeUI,31
+
+iOS Swift App,iosAppSwiftUI,3079
+
+CMP Apps,compose-app,2169
+
+Server,server:app,1342
+Server,server:data,152
+Server,server:domain,34
+
+Screenshot Tests,android-screenshot-tests,983
+
+presentation-feature,Kotlin,5730
+viewmodel,Kotlin,4566
+usecase,Kotlin,4073
+iosAppSwiftUI,Swift,3079
+data-network,Kotlin,2412
+domain,Kotlin,2293
+compose-app,Kotlin,2169
+presentation-core,Kotlin,2095
+data,Kotlin,1801
+buildSrc,Kotlin,1538
+server:app,Kotlin,1342
+data-local,Kotlin,1059
+android-screenshot-tests,Kotlin,983
+test-common,Kotlin,609
+ai,Kotlin,493
+e2e-tests,Kotlin,271
+ios-swift-di,Kotlin,235
+fixtures,Kotlin,209
+presentation-model,Kotlin,209
+server:data,Kotlin,152
+compose-resources,Kotlin,70
+server:domain,Kotlin,34
+iosAppComposeUI,Swift,31
+```
+<!-- GENERATED:END code_distribution.mmd -->
+
 ### Tech Stack
 
 *   **Language**: Kotlin 2.0+

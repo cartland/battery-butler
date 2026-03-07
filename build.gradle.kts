@@ -107,7 +107,7 @@ tasks.register<modulegraph.GenerateGraphTask>("generateMermaidGraph") {
     description = "Generates Mermaid architecture graph from project dependencies"
 }
 
-tasks.register<codeshareanalysis.CodeShareAnalysisTask>("analyzeCodeShare") {
+tasks.register<codeanalysis.CodeAnalysisTask>("analyzeCode") {
     group = "documentation"
-    description = "Generates a code sharing analysis report."
+    description = "Generates a code analysis report."
 }

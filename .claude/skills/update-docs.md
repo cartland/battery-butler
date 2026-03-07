@@ -1,6 +1,6 @@
 # Update Docs
 
-Update all generated documentation (architecture diagrams and code share analysis).
+Update all generated documentation (architecture diagrams and code analysis).
 
 ## Steps
 
@@ -15,9 +15,9 @@ Update all generated documentation (architecture diagrams and code share analysi
    - `docs/diagrams/full_system_structure.mmd`
    - `docs/diagrams/full_system_structure.svg`
 
-2. Generate code share analysis report:
+2. Generate code analysis report:
    ```bash
-   ./gradlew analyzeCodeShare
+   ./gradlew analyzeCode
    ```
 
    This updates:

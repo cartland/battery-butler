@@ -1,11 +1,11 @@
-package codeshareanalysis
+package codeanalysis
 
 import org.gradle.api.Project
 import java.io.File
 
 class CodeScanner(
     private val project: Project,
-    private val config: CodeShareConfig = CodeShareConfig.default,
+    private val config: CodeAnalysisConfig = CodeAnalysisConfig.default,
 ) {
     /**
      * Three orthogonal dimensions of code attribution: bucket (application layer),
