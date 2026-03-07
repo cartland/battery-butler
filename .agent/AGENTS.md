@@ -145,7 +145,7 @@ Keeping the build and tests healthy is a top priority. When you identify or fix 
     | **Detekt Compose plugin** | `detekt.yml` Compose section | Compose-specific: modifier naming, parameter order, CompositionLocal allowlist | Built-in detekt format |
     | **Custom Gradle tasks** (`buildSrc/`) | `buildSrc/src/main/kotlin/` | Cross-file rules, dependency graphs, theme layer boundaries, coverage gaps | Custom `GradleException` |
     | **Convention tests** (test source sets) | `*Test.kt` in `jvmTest`/`desktopTest` | Runtime reflection checks: "every X has a Y", API shape enforcement | JUnit assertion messages |
-    | **Shell-based analysis** (`scripts/`) | `scripts/analyze-architecture.sh` | Multi-tool pipelines, graph analysis, report generation | Script exit codes + stdout |
+    | **Shell-based analysis** (`scripts/`) | `scripts/*.sh` | Multi-tool pipelines, graph analysis, report generation | Script exit codes + stdout |
     | **Spotless / ktlint** | `build.gradle.kts` | Formatting, import ordering, whitespace | Built-in ktlint format |
     | **Android Lint** | `lint.xml` / Gradle lint config | Android-specific: resource issues, API level compat, accessibility | Built-in Android Lint format |
     | **Claude Code hooks** (`.claude/hooks/`) | `.claude/hooks/*.sh` | Agent-specific guardrails: git safety, workflow enforcement | Hook stdout (warn or block) |
@@ -153,7 +153,7 @@ Keeping the build and tests healthy is a top priority. When you identify or fix 
   - **Decision guide — which mechanism to use:**
     1. Can an existing detekt rule cover it? → Enable/configure it in `detekt.yml`
     2. Is it a file-scanning pattern match (regex on source)? → Custom Gradle task (follow `ThemeLayerCheckTask` pattern)
-    3. Is it a structural rule about module dependencies? → Extend `ArchitectureCheckTask` or `analyze-architecture.sh`
+    3. Is it a structural rule about module dependencies? → Extend `ArchitectureCheckTask`
     4. Does it require runtime reflection (class/method existence)? → Convention test (follow `UseCaseConventionTest` pattern)
     5. Is it agent-specific (git safety, workflow)? → Claude Code hook in `.claude/hooks/`
 

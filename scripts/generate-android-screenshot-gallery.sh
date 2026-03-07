@@ -7,7 +7,9 @@ OUTPUT_FILE="android-screenshot-tests/SCREENSHOT_GALLERY.md"
 REFERENCE_DIR="android-screenshot-tests/src/screenshotTestDebug/reference"
 
 # Ensure the output file exists and is empty
-echo "# Screenshot Gallery" > "$OUTPUT_FILE"
+echo "<!-- GENERATED FILE - DO NOT EDIT -->" > "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
+echo "# Screenshot Gallery" >> "$OUTPUT_FILE"
 echo "" >> "$OUTPUT_FILE"
 echo "Generated on $(date)" >> "$OUTPUT_FILE"
 echo "" >> "$OUTPUT_FILE"

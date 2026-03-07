@@ -10,7 +10,7 @@
 
 ## Testing
 - Run `./gradlew check` to run all unit tests.
-- See `TESTING_PLAN.md` for detailed testing strategy.
+- See `docs/TESTING.md` for detailed testing strategy.
 
 ## Architecture
 - Follow Clean Architecture principles (Domain, Data, Presentation).

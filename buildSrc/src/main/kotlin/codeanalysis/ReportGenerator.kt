@@ -6,6 +6,8 @@ class ReportGenerator(
     fun generate(result: CodeScanner.ScanResult): String {
         val sb = StringBuilder()
 
+        sb.appendLine("<!-- GENERATED FILE - DO NOT EDIT -->")
+        sb.appendLine()
         sb.appendLine("# Code Analysis")
         sb.appendLine()
         sb.appendLine("This document provides a breakdown of the codebase by application layer and module.")
