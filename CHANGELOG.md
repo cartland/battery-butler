@@ -39,9 +39,9 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ### Documentation
 
-- **iOS design language specification** ([#871](https://github.com/cartland/battery-butler/pull/871)): Added `docs/design/IOS_DESIGN_LANGUAGE.md` defining the complete visual identity — color palette, spacing scale, corner radii, icon sizes, 6 component patterns, battery age coloring, SF Symbol mapping table, typography mapping, and anti-patterns.
+- **Sankey chart for code analysis** ([#878](https://github.com/cartland/battery-butler/pull/878)): Added a Mermaid Sankey diagram to `docs/CODE_ANALYSIS.md` visualizing two-level code distribution (Codebase → platform categories → individual modules). Renamed file from `Code_Share_Analysis.md` to `CODE_ANALYSIS.md` to match project naming conventions, updating all references across CI, scripts, and docs.
 
----
+- **iOS design language specification** ([#871](https://github.com/cartland/battery-butler/pull/871)): Added `docs/design/IOS_DESIGN_LANGUAGE.md` defining the complete visual identity — color palette, spacing scale, corner radii, icon sizes, 6 component patterns, battery age coloring, SF Symbol mapping table, typography mapping, and anti-patterns.
 
 ## 2026-03-05
 
