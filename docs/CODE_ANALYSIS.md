@@ -43,6 +43,10 @@ Total Lines of Code: 34969
 config:
   sankey:
     showValues: true
+    width: 800
+    height: 600
+    nodeAlignment: justify
+    linkColor: gradient
 ---
 sankey-beta
 
