@@ -49,8 +49,41 @@ abstract class CodeShareAnalysisTask : DefaultTask() {
         sankeyFile.parentFile.mkdirs()
         sankeyFile.writeText(sankeyContent + "\n")
 
+        // Embed the .mmd content into the report between markers
+        embedMermaid(reportFile, sankeyContent)
+
         println("Code Share Analysis generated at: ${reportFile.absolutePath}")
         println("Sankey chart generated at: ${sankeyFile.absolutePath}")
         println("Total Lines: ${result.totalLines}")
+    }
+
+    private fun embedMermaid(
+        target: File,
+        mermaidContent: String,
+    ) {
+        val beginMarker = "<!-- GENERATED:BEGIN ${sankeyFile.name} -->"
+        val endMarker = "<!-- GENERATED:END ${sankeyFile.name} -->"
+        val lines = target.readLines()
+        val output = StringBuilder()
+        var skipping = false
+
+        for (line in lines) {
+            when {
+                line == beginMarker -> {
+                    output.appendLine(line)
+                    output.appendLine("```mermaid")
+                    output.appendLine(mermaidContent)
+                    output.appendLine("```")
+                    skipping = true
+                }
+                line == endMarker -> {
+                    skipping = false
+                    output.appendLine(line)
+                }
+                !skipping -> output.appendLine(line)
+            }
+        }
+
+        target.writeText(output.toString())
     }
 }

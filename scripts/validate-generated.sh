@@ -95,7 +95,7 @@ validate_diagrams() {
     echo ""
 
     local diagram_dir="docs/diagrams"
-    local expected_diagrams=("kotlin_module_structure.mmd" "full_system_structure.mmd")
+    local expected_diagrams=("kotlin_module_structure.mmd" "full_system_structure.mmd" "code_distribution.mmd")
     local min_diagram_size=100  # Minimum bytes for a valid diagram
 
     # Check diagram directory exists
@@ -129,7 +129,7 @@ validate_diagrams() {
         fi
 
         # Check for Mermaid syntax markers
-        if ! grep -q "graph\|flowchart\|classDiagram\|sequenceDiagram" "$file"; then
+        if ! grep -q "graph\|flowchart\|classDiagram\|sequenceDiagram\|sankey-beta" "$file"; then
             warning "Diagram $diagram may not contain valid Mermaid syntax"
             echo "::warning::Diagram $diagram doesn't contain recognizable Mermaid diagram type"
         fi
@@ -287,6 +287,26 @@ validate_analysis() {
         warning "Analysis may not contain expected module/platform information"
         echo "::warning::Analysis file doesn't mention modules or platforms"
         echo "::warning::Content may not reflect actual code sharing"
+    fi
+
+    # Check that embed markers exist
+    if ! grep -qF -- "<!-- GENERATED:BEGIN code_distribution.mmd -->" "$analysis_file"; then
+        error "Missing GENERATED:BEGIN marker in $analysis_file"
+        echo "::error::The embed marker is missing. Run: ./gradlew analyzeCodeShare"
+    fi
+    if ! grep -qF -- "<!-- GENERATED:END code_distribution.mmd -->" "$analysis_file"; then
+        error "Missing GENERATED:END marker in $analysis_file"
+        echo "::error::The embed marker is missing. Run: ./gradlew analyzeCodeShare"
+    fi
+
+    # Check that sankey-beta content is embedded between markers
+    if grep -qF -- "<!-- GENERATED:BEGIN code_distribution.mmd -->" "$analysis_file"; then
+        if ! grep -q "sankey-beta" "$analysis_file"; then
+            warning "Sankey chart not embedded in $analysis_file"
+            echo "::warning::Run: ./scripts/embed-mermaid.sh"
+        else
+            success "Sankey chart is embedded in analysis"
+        fi
     fi
 
     # Count bullet points/sections (the analysis uses bullet lists, not tables)

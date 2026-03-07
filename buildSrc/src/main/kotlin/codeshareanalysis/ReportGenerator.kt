@@ -1,8 +1,6 @@
 package codeshareanalysis
 
-class ReportGenerator(
-    private val sankeyGenerator: SankeyChartGenerator = SankeyChartGenerator(),
-) {
+class ReportGenerator {
     fun generate(result: CodeScanner.ScanResult): String {
         val sb = StringBuilder()
 
@@ -31,10 +29,8 @@ class ReportGenerator(
 
         sb.appendLine("## Code Distribution")
         sb.appendLine()
-        sb.appendLine("```mermaid")
-        sb.appendLine(sankeyGenerator.generate(result))
-        sb.appendLine()
-        sb.append("```")
+        sb.appendLine("<!-- GENERATED:BEGIN code_distribution.mmd -->")
+        sb.appendLine("<!-- GENERATED:END code_distribution.mmd -->")
         sb.appendLine()
 
         return sb.toString()
