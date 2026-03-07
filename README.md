@@ -32,6 +32,7 @@ See [Code Analysis](docs/CODE_ANALYSIS.md) for the full breakdown.
 
 <!-- GENERATED:BEGIN code_distribution.mmd -->
 ```mermaid
+%% GENERATED FILE - DO NOT EDIT
 ---
 config:
   sankey:
@@ -44,7 +45,7 @@ config:
 sankey-beta
 
 Codebase,Shared Code,24592
-Codebase,Other,3102
+Codebase,Other,3108
 Codebase,iOS Swift App,3079
 Codebase,CMP Apps,2169
 Codebase,Server,1528
@@ -61,7 +62,7 @@ Shared Code,data-local,1059
 Shared Code,ai,493
 Shared Code,compose-resources,70
 
-Other,buildSrc,1538
+Other,buildSrc,1544
 Other,test-common,609
 Other,e2e-tests,271
 Other,ios-swift-di,235
@@ -88,7 +89,7 @@ domain,Kotlin,2293
 compose-app,Kotlin,2169
 presentation-core,Kotlin,2095
 data,Kotlin,1801
-buildSrc,Kotlin,1538
+buildSrc,Kotlin,1544
 server:app,Kotlin,1342
 data-local,Kotlin,1059
 android-screenshot-tests,Kotlin,983

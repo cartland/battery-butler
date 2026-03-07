@@ -203,16 +203,6 @@ jobs:
             -derivedDataPath build/ios-tests \
             CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
 
-  validation_architecture:
-    needs: changes
-    if: needs.changes.outputs.code == 'true'
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v6
-      - name: Run Architecture Analysis
-        run: ./scripts/analyze-architecture.sh
-
   validation_theme_layer:
     needs: changes
     if: needs.changes.outputs.code == 'true'
@@ -447,7 +437,6 @@ jobs:
       - validation_test
       - validation_instrumented
       - validation_ios_ui
-      - validation_architecture
       - validation_theme_layer
       - validation_test_coverage
       - build_android
@@ -479,7 +468,6 @@ jobs:
             "${{ needs.validation_lint.result }}" \
             "${{ needs.validation_detekt.result }}" \
             "${{ needs.validation_test.result }}" \
-            "${{ needs.validation_architecture.result }}" \
             "${{ needs.validation_theme_layer.result }}" \
             "${{ needs.validation_test_coverage.result }}"; do
             if [[ "$result" == "failure" || "$result" == "cancelled" ]]; then

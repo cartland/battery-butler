@@ -46,7 +46,8 @@ abstract class GenerateGraphTask : DefaultTask() {
         val logger = project.logger
 
         val kotlinGraphData = scanner.scan(includeIos = false)
-        val kotlinContent = generator.generateContent(kotlinGraphData, logger)
+        val mmdBanner = "%% GENERATED FILE - DO NOT EDIT\n"
+        val kotlinContent = mmdBanner + generator.generateContent(kotlinGraphData, logger)
         val kotlinChanged = updateFile(kotlinModuleMmdFile, kotlinContent)
 
         if (kotlinChanged || !kotlinModuleSvgFile.exists()) {
@@ -54,7 +55,7 @@ abstract class GenerateGraphTask : DefaultTask() {
         }
 
         val fullGraphData = scanner.scan(includeIos = true)
-        val fullContent = generator.generateContent(fullGraphData, logger)
+        val fullContent = mmdBanner + generator.generateContent(fullGraphData, logger)
         val fullChanged = updateFile(fullSystemMmdFile, fullContent)
 
         if (fullChanged || !fullSystemSvgFile.exists()) {

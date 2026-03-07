@@ -41,7 +41,9 @@ find "$REFERENCE_DIR" -name "*.png" | sort | while read -r filepath; do
 done
 
 # Assemble final file
-echo "# iOS Screenshot Gallery" > "$OUTPUT_FILE"
+echo "<!-- GENERATED FILE - DO NOT EDIT -->" > "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
+echo "# iOS Screenshot Gallery" >> "$OUTPUT_FILE"
 echo "" >> "$OUTPUT_FILE"
 echo "Generated on $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> "$OUTPUT_FILE"
 echo "" >> "$OUTPUT_FILE"

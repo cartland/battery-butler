@@ -84,6 +84,8 @@ open class PreviewCoverageCheckTask : DefaultTask() {
         val coveredCount = covered.size
         val pct = if (total > 0) (coveredCount * 100 / total) else 100
         return buildString {
+            appendLine("<!-- GENERATED FILE - DO NOT EDIT -->")
+            appendLine()
             appendLine("# Preview Screenshot Coverage Report")
             appendLine()
             appendLine("**Coverage: $coveredCount/$total ($pct%)**")
