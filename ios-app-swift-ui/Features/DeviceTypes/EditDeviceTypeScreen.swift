@@ -61,13 +61,13 @@ struct EditDeviceTypeContentView: View {
                     Button("Delete Type") {
                         showDeleteConfirmation = true
                     }
-                    .foregroundColor(.red)
+                    .foregroundStyle(Color.butlerError)
                 }
 
                 if let error = state.saveError {
                     Section {
                         Text(error)
-                            .foregroundColor(.red)
+                            .foregroundStyle(Color.butlerError)
                     }
                 }
             }
@@ -85,7 +85,7 @@ struct EditDeviceTypeContentView: View {
             Button("Delete", role: .destructive) {
                 onDelete()
             }
-            Button("Cancel", role: .cancel) { }
+            Button("Cancel", role: .cancel) {}
         } message: {
             Text("This action cannot be undone.")
         }

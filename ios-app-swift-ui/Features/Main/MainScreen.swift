@@ -37,5 +37,6 @@ struct MainScreen: View {
             }
             .tag(MainTab.history)
         }
+        .tint(Color.butlerPrimary)
     }
 }

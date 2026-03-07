@@ -7,11 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		09C4C7A3A37AEC0AE2AB8837 /* ButlerIconSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = E745DFA94763AF92797AF9B0 /* ButlerIconSize.swift */; };
 		0B8A00C05740714CA09EA3DF /* AiChatViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9127CC9BB55BC761853552F0 /* AiChatViewModelWrapper.swift */; };
 		1211B65CDB19EBD3475155ED /* AddBatteryEventViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348ECD40844BC056AA8019FF /* AddBatteryEventViewModelWrapper.swift */; };
 		14C9539A085FC4157ED6ECCB /* EventDetailViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 484371A677F858AB3865E844 /* EventDetailViewModelWrapper.swift */; };
 		17583375029A96F5152F5B92 /* AddDeviceScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7FFABCF0C5C31A595C3F1CF /* AddDeviceScreenTests.swift */; };
 		1B738E7DBF7242EC0DB27A36 /* HistoryListScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B969CDAC29B255B6A99F0A8 /* HistoryListScreenTests.swift */; };
+		1C334F3F015C1D39485934F7 /* BatteryAgeHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36C882E51E3C5A80D0CEDBDA /* BatteryAgeHelper.swift */; };
 		246295A22F14EEF40047C600 /* AddDeviceScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2462958F2F14EEF40047C600 /* AddDeviceScreen.swift */; };
 		246295A32F14EEF40047C600 /* MainTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2462959C2F14EEF40047C600 /* MainTab.swift */; };
 		246295A42F14EEF40047C600 /* MainScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2462959B2F14EEF40047C600 /* MainScreen.swift */; };
@@ -35,10 +37,13 @@
 		2855F56B7B730259E73A04CD /* EditDeviceViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28903408708ECF67A8991592 /* EditDeviceViewModelWrapper.swift */; };
 		2FA78B928A0A3E325BA1D464 /* EditDeviceScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C424550B976EA19E32F00C2 /* EditDeviceScreenTests.swift */; };
 		3817672E5800D02B74BBCAE6 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 171E07C13F4D360A2E8F8F1B /* Foundation.framework */; };
+		4205D2EA3201CE5260E36CC6 /* ButlerSpacing.swift in Sources */ = {isa = PBXBuildFile; fileRef = E928FDF7E978787EE2AEC52F /* ButlerSpacing.swift */; };
 		4965F8DE9488CA44D1213210 /* HomeScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D54F827E245B0DE9785703 /* HomeScreenTests.swift */; };
 		512CC7D51E6C42B5C0FF3F5F /* DeviceDetailScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417E5F5994DD57326CBFBB02 /* DeviceDetailScreenTests.swift */; };
+		69167925374428CD712E239D /* SFSymbolMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E844014BE2F02549004580F /* SFSymbolMapper.swift */; };
 		77177175D5AE0F2363AB6DDA /* AiChatScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18BC9C9B9E6E29A48DCAC5C2 /* AiChatScreen.swift */; };
 		7837EFBEECD11652F225A828 /* MessageRowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C64AF092C61D54E3E0BB972E /* MessageRowTests.swift */; };
+		785C51ADA7A324EE132F276A /* ButlerIconBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2E97FAF9E58B3B6789E5657 /* ButlerIconBox.swift */; };
 		7B995C9514A7E13CDD597E53 /* EventDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB2BC212BA886F9EA0057B5 /* EventDetailScreen.swift */; };
 		8A840B0B44DA5BED1152B8B2 /* AddDeviceTypeScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C97AD8F27356E0133B28ADE /* AddDeviceTypeScreenTests.swift */; };
 		998E133AD56CF4D0A133506A /* EditDeviceScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4217F0EB61A27BAB5D26D37A /* EditDeviceScreen.swift */; };
@@ -46,6 +51,7 @@
 		9E310559114A9C3509F5106D /* LoginScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05276AAFBE18E0BD342E186F /* LoginScreen.swift */; };
 		9EC6A2E16CEA57929E345F5C /* LoginViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D976428F6B0003DDB354405 /* LoginViewModelWrapper.swift */; };
 		A57202E629408A9C8F778165 /* EventDetailScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEFA05173F04BE4075FBABA5 /* EventDetailScreenTests.swift */; };
+		AE530C71EB0F1899C36F2C0D /* ButlerCornerRadius.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63736EB2CA3F58B280FBFA96 /* ButlerCornerRadius.swift */; };
 		AG1000000000000000000002 /* Generated in Sources */ = {isa = PBXBuildFile; fileRef = AG1000000000000000000001 /* Generated */; };
 		B2E94A4898D213A80796E832 /* SettingsScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F369A0F48183F2527CD88B41 /* SettingsScreenTests.swift */; };
 		B675B24ABC559905E825F17A /* DeviceRowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72E31482FD860FC114F618F9 /* DeviceRowTests.swift */; };
@@ -55,6 +61,7 @@
 		E6A9ECE54EB11428104907E6 /* AiChatScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C6AF38EDA50AE221A59AC4B /* AiChatScreenTests.swift */; };
 		E6EB00919B8BE1AFBFBB8734 /* DeviceTypeRowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03A47AB044FC5D4C786970EE /* DeviceTypeRowTests.swift */; };
 		E9FB7497FF4ADBFB164B431C /* SimpleSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F821268475E1398BE0B048 /* SimpleSnapshotTests.swift */; };
+		F3F4E0A0D24D24C957EE8ECF /* ButlerColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = B50A0F9CABC4E39A5F7BCAAB /* ButlerColors.swift */; };
 		F6F9C4B2E592FAFBFA1FD460 /* AddBatteryEventScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6161923E993256241FF44A49 /* AddBatteryEventScreen.swift */; };
 		FBA8D6CCEF62C27710F0AF2C /* AddBatteryEventScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32F2E55509C388E5CC4D034F /* AddBatteryEventScreenTests.swift */; };
 /* End PBXBuildFile section */
@@ -99,25 +106,32 @@
 		28903408708ECF67A8991592 /* EditDeviceViewModelWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EditDeviceViewModelWrapper.swift; sourceTree = "<group>"; };
 		32F2E55509C388E5CC4D034F /* AddBatteryEventScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddBatteryEventScreenTests.swift; sourceTree = "<group>"; };
 		348ECD40844BC056AA8019FF /* AddBatteryEventViewModelWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddBatteryEventViewModelWrapper.swift; sourceTree = "<group>"; };
+		36C882E51E3C5A80D0CEDBDA /* BatteryAgeHelper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BatteryAgeHelper.swift; sourceTree = "<group>"; };
 		3C97AD8F27356E0133B28ADE /* AddDeviceTypeScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddDeviceTypeScreenTests.swift; sourceTree = "<group>"; };
 		3FDAA129CFA4B9C38F69243C /* DeviceTypeListScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DeviceTypeListScreenTests.swift; sourceTree = "<group>"; };
 		417E5F5994DD57326CBFBB02 /* DeviceDetailScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DeviceDetailScreenTests.swift; sourceTree = "<group>"; };
 		4217F0EB61A27BAB5D26D37A /* EditDeviceScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EditDeviceScreen.swift; sourceTree = "<group>"; };
 		484371A677F858AB3865E844 /* EventDetailViewModelWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EventDetailViewModelWrapper.swift; sourceTree = "<group>"; };
 		4D976428F6B0003DDB354405 /* LoginViewModelWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LoginViewModelWrapper.swift; sourceTree = "<group>"; };
+		4E844014BE2F02549004580F /* SFSymbolMapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SFSymbolMapper.swift; sourceTree = "<group>"; };
 		5B969CDAC29B255B6A99F0A8 /* HistoryListScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HistoryListScreenTests.swift; sourceTree = "<group>"; };
 		6161923E993256241FF44A49 /* AddBatteryEventScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddBatteryEventScreen.swift; sourceTree = "<group>"; };
+		63736EB2CA3F58B280FBFA96 /* ButlerCornerRadius.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ButlerCornerRadius.swift; sourceTree = "<group>"; };
 		6C424550B976EA19E32F00C2 /* EditDeviceScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EditDeviceScreenTests.swift; sourceTree = "<group>"; };
 		72E31482FD860FC114F618F9 /* DeviceRowTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DeviceRowTests.swift; sourceTree = "<group>"; };
 		8EBF127BDE68EF62BDAFA150 /* TestData.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TestData.swift; sourceTree = "<group>"; };
 		9127CC9BB55BC761853552F0 /* AiChatViewModelWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AiChatViewModelWrapper.swift; sourceTree = "<group>"; };
 		9C6AF38EDA50AE221A59AC4B /* AiChatScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AiChatScreenTests.swift; sourceTree = "<group>"; };
 		AG1000000000000000000001 /* Generated */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Generated; sourceTree = "<group>"; };
+		B50A0F9CABC4E39A5F7BCAAB /* ButlerColors.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ButlerColors.swift; sourceTree = "<group>"; };
 		B9DA97B12DC1472C00A4DA20 /* BatteryButler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BatteryButler.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C2E97FAF9E58B3B6789E5657 /* ButlerIconBox.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ButlerIconBox.swift; sourceTree = "<group>"; };
 		C64AF092C61D54E3E0BB972E /* MessageRowTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MessageRowTests.swift; sourceTree = "<group>"; };
 		C7FFABCF0C5C31A595C3F1CF /* AddDeviceScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddDeviceScreenTests.swift; sourceTree = "<group>"; };
 		CE7C8996ACEF6EABE0989D13 /* iosAppSwiftUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iosAppSwiftUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D8F821268475E1398BE0B048 /* SimpleSnapshotTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SimpleSnapshotTests.swift; sourceTree = "<group>"; };
+		E745DFA94763AF92797AF9B0 /* ButlerIconSize.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ButlerIconSize.swift; sourceTree = "<group>"; };
+		E928FDF7E978787EE2AEC52F /* ButlerSpacing.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ButlerSpacing.swift; sourceTree = "<group>"; };
 		EBB2BC212BA886F9EA0057B5 /* EventDetailScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EventDetailScreen.swift; sourceTree = "<group>"; };
 		EEFA05173F04BE4075FBABA5 /* EventDetailScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EventDetailScreenTests.swift; sourceTree = "<group>"; };
 		F33A7778DFBA813603E9B307 /* EditDeviceTypeScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EditDeviceTypeScreenTests.swift; sourceTree = "<group>"; };
@@ -171,10 +185,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		020286E928CECF6CEDD014D7 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				36C882E51E3C5A80D0CEDBDA /* BatteryAgeHelper.swift */,
+				C2E97FAF9E58B3B6789E5657 /* ButlerIconBox.swift */,
+				4E844014BE2F02549004580F /* SFSymbolMapper.swift */,
+			);
+			name = Components;
+			path = Components;
+			sourceTree = "<group>";
+		};
 		2462958E2F14EEF40047C600 /* Core */ = {
 			isa = PBXGroup;
 			children = (
 				2462958D2F14EEF40047C600 /* ViewModelWrapper.swift */,
+				020286E928CECF6CEDD014D7 /* Components */,
+				8D13C339397E3C383B55A55E /* Theme */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -320,6 +347,18 @@
 			);
 			name = AiChat;
 			path = AiChat;
+			sourceTree = "<group>";
+		};
+		8D13C339397E3C383B55A55E /* Theme */ = {
+			isa = PBXGroup;
+			children = (
+				B50A0F9CABC4E39A5F7BCAAB /* ButlerColors.swift */,
+				63736EB2CA3F58B280FBFA96 /* ButlerCornerRadius.swift */,
+				E745DFA94763AF92797AF9B0 /* ButlerIconSize.swift */,
+				E928FDF7E978787EE2AEC52F /* ButlerSpacing.swift */,
+			);
+			name = Theme;
+			path = Theme;
 			sourceTree = "<group>";
 		};
 		A00B023A177BE37C44746F6E /* Frameworks */ = {
@@ -584,6 +623,13 @@
 				0B8A00C05740714CA09EA3DF /* AiChatViewModelWrapper.swift in Sources */,
 				998E133AD56CF4D0A133506A /* EditDeviceScreen.swift in Sources */,
 				2855F56B7B730259E73A04CD /* EditDeviceViewModelWrapper.swift in Sources */,
+				1C334F3F015C1D39485934F7 /* BatteryAgeHelper.swift in Sources */,
+				785C51ADA7A324EE132F276A /* ButlerIconBox.swift in Sources */,
+				69167925374428CD712E239D /* SFSymbolMapper.swift in Sources */,
+				F3F4E0A0D24D24C957EE8ECF /* ButlerColors.swift in Sources */,
+				AE530C71EB0F1899C36F2C0D /* ButlerCornerRadius.swift in Sources */,
+				09C4C7A3A37AEC0AE2AB8837 /* ButlerIconSize.swift in Sources */,
+				4205D2EA3201CE5260E36CC6 /* ButlerSpacing.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

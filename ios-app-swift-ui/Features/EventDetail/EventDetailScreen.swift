@@ -25,7 +25,7 @@ struct EventDetailContentView: View {
                     Section(header: Text("Event Details")) {
                         HStack {
                             Text("Date")
-                                .foregroundColor(.secondary)
+                                .foregroundStyle(Color.butlerOnSurfaceVariant)
                             Spacer()
                             let date = Date(timeIntervalSince1970: TimeInterval(event.date.toEpochMilliseconds()) / 1000.0)
                             Text(date, style: .date)
@@ -34,7 +34,7 @@ struct EventDetailContentView: View {
                         if let batteryType = event.batteryType {
                             HStack {
                                 Text("Battery Type")
-                                    .foregroundColor(.secondary)
+                                    .foregroundStyle(Color.butlerOnSurfaceVariant)
                                 Spacer()
                                 Text(batteryType)
                             }
@@ -43,7 +43,7 @@ struct EventDetailContentView: View {
                         if let notes = event.notes {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text("Notes")
-                                    .foregroundColor(.secondary)
+                                    .foregroundStyle(Color.butlerOnSurfaceVariant)
                                 Text(notes)
                             }
                         }
@@ -53,14 +53,14 @@ struct EventDetailContentView: View {
                         Section(header: Text("Device Information")) {
                             HStack {
                                 Text("Name")
-                                    .foregroundColor(.secondary)
+                                    .foregroundStyle(Color.butlerOnSurfaceVariant)
                                 Spacer()
                                 Text(device.name)
                             }
 
                             HStack {
                                 Text("Location")
-                                    .foregroundColor(.secondary)
+                                    .foregroundStyle(Color.butlerOnSurfaceVariant)
                                 Spacer()
                                 Text(device.location ?? "Unknown")
                             }
@@ -68,7 +68,7 @@ struct EventDetailContentView: View {
                             if let deviceType = success.deviceType {
                                 HStack {
                                     Text("Type")
-                                        .foregroundColor(.secondary)
+                                        .foregroundStyle(Color.butlerOnSurfaceVariant)
                                     Spacer()
                                     Text(deviceType.name)
                                 }
@@ -80,7 +80,7 @@ struct EventDetailContentView: View {
                 VStack {
                     Text("Event Not Found")
                         .font(.headline)
-                        .foregroundColor(.secondary)
+                        .foregroundStyle(Color.butlerOnSurfaceVariant)
                 }
             } else {
                 ProgressView("Loading...")

@@ -41,7 +41,7 @@ struct SettingsContentView: View {
 
             Section {
                 Text("Version 1.0.0")
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(Color.butlerOnSurfaceVariant)
             }
         }
         .navigationTitle("Settings")

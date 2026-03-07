@@ -56,7 +56,7 @@ struct HomeContentView<DeviceDestination: View, SettingsDestination: View, AiDes
                     Section(header: Text(key)) {
                         ForEach(state.groupedDevices[key] ?? [], id: \.id) { device in
                             NavigationLink(destination: deviceDestination(device.id)) {
-                                DeviceRow(device: device)
+                                DeviceRow(device: device, deviceType: state.deviceTypes[device.typeId])
                             }
                         }
                     }

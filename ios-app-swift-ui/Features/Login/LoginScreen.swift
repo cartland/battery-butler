@@ -58,13 +58,13 @@ struct LoginContentView: View {
     let onDismissError: () -> Void
 
     var body: some View {
-        VStack(spacing: 24) {
+        VStack(spacing: ButlerSpacing.large) {
             Image(systemName: "bolt.batteryblock.fill")
                 .resizable()
                 .scaledToFit()
                 .accessibilityHidden(true)
                 .frame(width: 100, height: 100)
-                .foregroundStyle(.blue)
+                .foregroundStyle(Color.butlerPrimary)
                 .padding(.top, 40)
 
             Text("Battery Butler")
@@ -92,9 +92,9 @@ struct LoginContentView: View {
                         }
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(Color.blue)
+                        .background(Color.butlerPrimary)
                         .foregroundStyle(.white)
-                        .cornerRadius(12)
+                        .clipShape(RoundedRectangle(cornerRadius: ButlerCornerRadius.medium))
                     }
                 }
 
@@ -104,7 +104,7 @@ struct LoginContentView: View {
                     Text("Skip for now")
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .foregroundStyle(.blue)
+                        .foregroundStyle(Color.butlerPrimary)
                 }
             }
 

@@ -13,7 +13,7 @@ struct DeviceDetailScreen: View {
         let viewModel = component.deviceDetailViewModelFactory.create(deviceId: deviceId)
         _wrapper = StateObject(wrappedValue: DeviceDetailViewModelWrapper(viewModel))
     }
-    
+
     var body: some View {
         DeviceDetailContentView(
             state: wrapper.state,
@@ -42,68 +42,73 @@ struct DeviceDetailContentView<Destination: View>: View {
     let state: DeviceDetailUiState
     let onRecordReplacement: () -> Void
     let eventDestination: (String) -> Destination
-    
+
     var body: some View {
         Group {
             if let success = state as? DeviceDetailUiStateSuccess {
+                let sfSymbol = SFSymbolMapper.sfSymbolName(for: success.deviceType?.defaultIcon)
+
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 16) {
+                    VStack(alignment: .leading, spacing: ButlerSpacing.standard) {
                         // Header
-                        HStack {
-                            Image(systemName: "cpu")
-                                .font(.largeTitle)
-                                .foregroundColor(.accentColor)
+                        HStack(spacing: ButlerSpacing.standard) {
+                            ButlerIconBox(systemName: sfSymbol)
                                 .accessibilityHidden(true)
-                            
+
                             VStack(alignment: .leading) {
                                 Text(success.device.name)
                                     .font(.title)
                                     .bold()
                                 Text(success.deviceType?.name ?? success.device.typeId)
                                     .font(.headline)
-                                    .foregroundColor(.secondary)
+                                    .foregroundStyle(Color.butlerOnSurfaceVariant)
                             }
                             Spacer()
                         }
-                        .padding()
-                        .background(Color(.systemBackground))
-                        .cornerRadius(12)
-                        .shadow(radius: 2)
-                        
+                        .padding(ButlerSpacing.standard)
+                        .background(Color.butlerSurface)
+                        .clipShape(RoundedRectangle(cornerRadius: ButlerCornerRadius.medium))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: ButlerCornerRadius.medium)
+                                .stroke(Color.butlerOutline.opacity(0.5), lineWidth: 1)
+                        )
+
                         // Actions
                         Button(action: onRecordReplacement) {
                             Text("Replaced Battery")
                                 .frame(maxWidth: .infinity)
                                 .padding()
-                                .background(Color.accentColor)
-                                .foregroundColor(.white)
-                                .cornerRadius(10)
+                                .background(Color.butlerPrimary)
+                                .foregroundStyle(.white)
+                                .clipShape(RoundedRectangle(cornerRadius: ButlerCornerRadius.medium))
                         }
                         .accessibilityHint("Records a battery replacement for today")
-                        
+
                         Divider()
-                        
+
                         // History Section
                         Text("Battery History")
                             .font(.title2)
                             .bold()
-                        
+
                         if success.events.isEmpty {
                             Text("No history recorded")
                                 .italic()
-                                .foregroundColor(.secondary)
+                                .foregroundStyle(Color.butlerOnSurfaceVariant)
                         } else {
                             ForEach(success.events, id: \.self) { event in
                                 NavigationLink(destination: eventDestination(event.id)) {
                                     HStack {
-                                        let dateString = Date(timeIntervalSince1970: TimeInterval(event.date.toEpochMilliseconds()) / 1000.0).formatted(date: .abbreviated, time: .shortened)
+                                        let dateString = Date(
+                                            timeIntervalSince1970: TimeInterval(event.date.toEpochMilliseconds()) / 1000.0
+                                        ).formatted(date: .abbreviated, time: .shortened)
                                         Text(dateString)
-                                            .foregroundColor(.primary)
+                                            .foregroundStyle(Color.butlerOnSurface)
                                         Spacer()
                                         Text("Details")
-                                            .foregroundColor(.accentColor)
+                                            .foregroundStyle(Color.butlerPrimary)
                                     }
-                                    .padding(.vertical, 4)
+                                    .padding(.vertical, ButlerSpacing.extraSmall)
                                 }
                             }
                         }
