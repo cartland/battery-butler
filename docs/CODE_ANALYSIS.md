@@ -1,12 +1,12 @@
-# Code Share Analysis
+# Code Analysis
 
 This document provides a breakdown of the codebase by application layer and module.
-Total Lines of Code: 35390
+Total Lines of Code: 35453
 
 ## Application Breakdown
-* Shared Code: 24,592 lines (69.5%)
+* Shared Code: 24,592 lines (69.4%)
+* Other: 3,102 lines (8.7%)
 * iOS Swift App: 3,079 lines (8.7%)
-* Other: 3,039 lines (8.6%)
 * CMP Android, iOS, Desktop: 2,169 lines (6.1%)
 * Server: 1,528 lines (4.3%)
 * Android Screenshot Tests: 983 lines (2.8%)
@@ -21,7 +21,7 @@ Total Lines of Code: 35390
 * `:compose-app`: 2,169 lines (6.1%)
 * `:presentation-core`: 2,095 lines (5.9%)
 * `:data`: 1,801 lines (5.1%)
-* `:buildSrc`: 1,475 lines (4.2%)
+* `:buildSrc`: 1,538 lines (4.3%)
 * `:server:app`: 1,342 lines (3.8%)
 * `:data-local`: 1,059 lines (3.0%)
 * `:android-screenshot-tests`: 983 lines (2.8%)
@@ -35,6 +35,10 @@ Total Lines of Code: 35390
 * `:compose-resources`: 70 lines (0.2%)
 * `:server:domain`: 34 lines (0.1%)
 * `:iosAppComposeUI.xcodeproj`: 31 lines (0.1%)
+
+## Language Breakdown
+* Kotlin (.kt): 32,343 lines (91.2%)
+* Swift (.swift): 3,110 lines (8.8%)
 
 ## Code Distribution
 
@@ -52,8 +56,8 @@ config:
 sankey-beta
 
 Codebase,Shared Code,24592
+Codebase,Other,3102
 Codebase,iOS Swift App,3079
-Codebase,Other,3039
 Codebase,CMP Apps,2169
 Codebase,Server,1528
 Codebase,Screenshot Tests,983
@@ -69,15 +73,15 @@ Shared Code,data-local,1059
 Shared Code,ai,493
 Shared Code,compose-resources,70
 
-iOS Swift App,iosAppSwiftUI,3079
-
-Other,buildSrc,1475
+Other,buildSrc,1538
 Other,test-common,609
 Other,e2e-tests,271
 Other,ios-swift-di,235
 Other,fixtures,209
 Other,presentation-model,209
 Other,iosAppComposeUI,31
+
+iOS Swift App,iosAppSwiftUI,3079
 
 CMP Apps,compose-app,2169
 
@@ -86,6 +90,30 @@ Server,server:data,152
 Server,server:domain,34
 
 Screenshot Tests,android-screenshot-tests,983
+
+presentation-feature,Kotlin,5730
+viewmodel,Kotlin,4566
+usecase,Kotlin,4073
+iosAppSwiftUI,Swift,3079
+data-network,Kotlin,2412
+domain,Kotlin,2293
+compose-app,Kotlin,2169
+presentation-core,Kotlin,2095
+data,Kotlin,1801
+buildSrc,Kotlin,1538
+server:app,Kotlin,1342
+data-local,Kotlin,1059
+android-screenshot-tests,Kotlin,983
+test-common,Kotlin,609
+ai,Kotlin,493
+e2e-tests,Kotlin,271
+ios-swift-di,Kotlin,235
+fixtures,Kotlin,209
+presentation-model,Kotlin,209
+server:data,Kotlin,152
+compose-resources,Kotlin,70
+server:domain,Kotlin,34
+iosAppComposeUI,Swift,31
 ```
 <!-- GENERATED:END code_distribution.mmd -->
 
