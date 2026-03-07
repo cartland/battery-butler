@@ -66,12 +66,12 @@ dependencies {
 tasks.register<Exec>("generateScreenshotGallery") {
     group = "screenshot"
     description = "Generates a Markdown gallery of all reference screenshots."
-    // Script is located at project_root/scripts/generate-screenshot-gallery.sh
+    // Script is located at project_root/scripts/generate-android-screenshot-gallery.sh
     // build.gradle.kts is in android-screenshot-tests/
-    // So distinct path is ../scripts/generate-screenshot-gallery.sh from projectDir?
+    // So distinct path is ../scripts/generate-android-screenshot-gallery.sh from projectDir?
     // Gradle executes in projectDir usually.
     workingDir = rootProject.projectDir
-    commandLine("./scripts/generate-screenshot-gallery.sh")
+    commandLine("./scripts/generate-android-screenshot-gallery.sh")
 }
 
 tasks.register("cleanReferenceScreenshots") {
@@ -107,7 +107,7 @@ tasks.whenTaskAdded {
                     ===========================================================
 
                     Use the sequential script instead:
-                      ./scripts/generate-screenshots-sequentially.sh
+                      ./scripts/generate-android-screenshots.sh
 
                     To force a single-invocation run (e.g. on a machine with
                     enough memory), add the Gradle property:
