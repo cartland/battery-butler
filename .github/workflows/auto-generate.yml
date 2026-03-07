@@ -136,7 +136,8 @@ jobs:
       - name: Check for meaningful changes
         id: check-changes
         run: |
-          CHANGES=$(git diff --name-only -- '*.png' 'android-screenshot-tests/SCREENSHOT_GALLERY.md' | wc -l | tr -d ' ')
+          # Only check PNG changes — gallery markdown has timestamps that change every run
+          CHANGES=$(git diff --name-only -- '*.png' | wc -l | tr -d ' ')
           echo "changes=$CHANGES" >> $GITHUB_OUTPUT
           if [ "$CHANGES" -eq 0 ]; then
             echo "No screenshot changes detected — skipping PR creation"
@@ -209,10 +210,10 @@ jobs:
       - name: Check for changes
         id: check-changes
         run: |
+          # Only check PNG changes — gallery markdown has timestamps that change every run
           PNG_CHANGES=$(git diff --name-only -- '*.png' | wc -l | tr -d ' ')
           NEW_PNGS=$(git ls-files --others --exclude-standard -- '*.png' | wc -l | tr -d ' ')
-          GALLERY_CHANGES=$(git diff --name-only -- 'ios-app-swift-ui/SCREENSHOT_GALLERY.md' | wc -l | tr -d ' ')
-          TOTAL=$(( PNG_CHANGES + NEW_PNGS + GALLERY_CHANGES ))
+          TOTAL=$(( PNG_CHANGES + NEW_PNGS ))
           echo "total_changes=$TOTAL" >> $GITHUB_OUTPUT
 
       - name: Create Pull Request
