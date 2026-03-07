@@ -3,6 +3,7 @@ package codeshareanalysis
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.FileTree
 import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
@@ -31,17 +32,21 @@ abstract class CodeShareAnalysisTask : DefaultTask() {
         description = "Generates a code sharing analysis report."
     }
 
+    @get:Internal
+    var additionalEmbedTargetPaths: List<String> = listOf("README.md")
+
     @TaskAction
     fun analyze() {
         val scanner = CodeScanner(project, config)
-        val generator = ReportGenerator()
+        val sankeyConfig = SankeyChartConfig.default
+        val generator = ReportGenerator(extensionDisplayNames = sankeyConfig.extensionDisplayNames)
 
         println("Scanning codebase for lines of code...")
         val result = scanner.scan()
 
         println("Generating report...")
         val content = generator.generate(result)
-        val sankeyContent = SankeyChartGenerator().generate(result)
+        val sankeyContent = SankeyChartGenerator(sankeyConfig).generate(result)
 
         reportFile.parentFile.mkdirs()
         reportFile.writeText(content)
@@ -50,40 +55,19 @@ abstract class CodeShareAnalysisTask : DefaultTask() {
         sankeyFile.writeText(sankeyContent + "\n")
 
         // Embed the .mmd content into the report between markers
-        embedMermaid(reportFile, sankeyContent)
+        MermaidEmbedder.embed(reportFile, sankeyFile.name, sankeyContent)
+
+        // Also embed into additional targets if they have the markers
+        for (path in additionalEmbedTargetPaths) {
+            val targetFile = project.rootProject.file(path)
+            if (targetFile.exists() && targetFile.readText().contains("<!-- GENERATED:BEGIN ${sankeyFile.name} -->")) {
+                MermaidEmbedder.embed(targetFile, sankeyFile.name, sankeyContent)
+                println("Sankey chart embedded into: ${targetFile.absolutePath}")
+            }
+        }
 
         println("Code Share Analysis generated at: ${reportFile.absolutePath}")
         println("Sankey chart generated at: ${sankeyFile.absolutePath}")
         println("Total Lines: ${result.totalLines}")
-    }
-
-    private fun embedMermaid(
-        target: File,
-        mermaidContent: String,
-    ) {
-        val beginMarker = "<!-- GENERATED:BEGIN ${sankeyFile.name} -->"
-        val endMarker = "<!-- GENERATED:END ${sankeyFile.name} -->"
-        val lines = target.readLines()
-        val output = StringBuilder()
-        var skipping = false
-
-        for (line in lines) {
-            when {
-                line == beginMarker -> {
-                    output.appendLine(line)
-                    output.appendLine("```mermaid")
-                    output.appendLine(mermaidContent)
-                    output.appendLine("```")
-                    skipping = true
-                }
-                line == endMarker -> {
-                    skipping = false
-                    output.appendLine(line)
-                }
-                !skipping -> output.appendLine(line)
-            }
-        }
-
-        target.writeText(output.toString())
     }
 }

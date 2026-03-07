@@ -309,6 +309,19 @@ validate_analysis() {
         fi
     fi
 
+    # Check README.md has embedded sankey chart
+    local readme_file="README.md"
+    if [[ -f "$readme_file" ]]; then
+        if grep -qF -- "<!-- GENERATED:BEGIN code_distribution.mmd -->" "$readme_file"; then
+            if ! grep -q "sankey-beta" "$readme_file"; then
+                warning "Sankey chart not embedded in $readme_file"
+                echo "::warning::Run: ./scripts/embed-mermaid.sh"
+            else
+                success "Sankey chart is embedded in README"
+            fi
+        fi
+    fi
+
     # Count bullet points/sections (the analysis uses bullet lists, not tables)
     local bullet_count
     bullet_count=$(grep -c "^\* " "$analysis_file" 2>/dev/null) || bullet_count=0
