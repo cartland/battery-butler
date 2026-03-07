@@ -1,6 +1,8 @@
 package codeshareanalysis
 
-class ReportGenerator {
+class ReportGenerator(
+    private val sankeyGenerator: SankeyChartGenerator = SankeyChartGenerator(),
+) {
     fun generate(result: CodeScanner.ScanResult): String {
         val sb = StringBuilder()
 
@@ -25,6 +27,12 @@ class ReportGenerator {
             val percentage = calculatePercentage(count, result.totalLines)
             sb.appendLine("* `$name`: ${formatNumber(count)} lines ($percentage)")
         }
+        sb.appendLine()
+
+        sb.appendLine("## Code Distribution")
+        sb.appendLine()
+        sb.append(sankeyGenerator.generate(result))
+        sb.appendLine()
 
         return sb.toString()
     }

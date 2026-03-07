@@ -11,12 +11,14 @@ class CodeScanner(
         val totalLines: Int,
         val bucketCounts: Map<String, Int>,
         val moduleCounts: Map<String, Int>,
+        val bucketModuleCounts: Map<String, Map<String, Int>>,
     )
 
     fun scan(): ScanResult {
         val rootDir = project.rootDir
         val bucketMap = mutableMapOf<String, Int>()
         val moduleMap = mutableMapOf<String, Int>()
+        val bucketModuleMap = mutableMapOf<String, MutableMap<String, Int>>()
         var totalLines = 0
 
         // 1. Get all git tracked files
@@ -42,10 +44,12 @@ class CodeScanner(
                 val module = findModuleForFile(file, rootDir)
                 if (module != null) {
                     moduleMap[module] = (moduleMap[module] ?: 0) + lines
+                    val modMap = bucketModuleMap.getOrPut(bucketName) { mutableMapOf() }
+                    modMap[module] = (modMap[module] ?: 0) + lines
                 }
             }
 
-        return ScanResult(totalLines, bucketMap, moduleMap)
+        return ScanResult(totalLines, bucketMap, moduleMap, bucketModuleMap)
     }
 
     private fun countLines(file: File): Int = file.readLines().size
