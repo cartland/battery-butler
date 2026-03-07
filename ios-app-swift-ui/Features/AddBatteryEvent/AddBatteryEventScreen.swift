@@ -4,19 +4,19 @@ import shared
 struct AddBatteryEventScreen: View {
     @StateObject private var wrapper: AddBatteryEventViewModelWrapper
     @Environment(\.presentationMode) private var presentationMode
-    
+
     @State private var selectedDeviceId: String?
     @State private var eventDate = Date()
     @State private var batteryType: String = ""
     @State private var notes: String = ""
     @State private var showMoreDetails = false
-    
+
     @State private var batchInput: String = ""
-    
+
     init(viewModel: AddBatteryEventViewModel) {
         _wrapper = StateObject(wrappedValue: AddBatteryEventViewModelWrapper(viewModel))
     }
-    
+
     var body: some View {
         AddBatteryEventContentView(
             devices: wrapper.devices,
@@ -67,7 +67,7 @@ struct AddBatteryEventContentView: View {
             Section(header: Text("Add Event Manually")) {
                 if devices.isEmpty {
                     Text("No devices available. Please add a device first.")
-                        .foregroundColor(.secondary)
+                        .foregroundStyle(.secondary)
                 } else {
                     Picker("Device", selection: $selectedDeviceId) {
                         Text("Select a device").tag(String?.none)
@@ -102,16 +102,16 @@ struct AddBatteryEventContentView: View {
                     .disabled(batchInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
 
                     if !aiMessages.isEmpty {
-                        ForEach(Array(aiMessages.enumerated()), id: \.offset) { index, msg in
+                        ForEach(Array(aiMessages.enumerated()), id: \.offset) { _, msg in
                             Text(getMessageText(msg))
                                 .font(.caption)
-                                .foregroundColor(getColor(for: msg))
+                                .foregroundStyle(getColor(for: msg))
                         }
 
                         Button("Clear Messages") {
                             onClearAiMessages()
                         }
-                        .foregroundColor(.red)
+                        .foregroundStyle(Color.butlerError)
                     }
                 }
             }
@@ -133,9 +133,9 @@ struct AddBatteryEventContentView: View {
 
     private func getColor(for result: BatchOperationResult) -> Color {
         if result is BatchOperationResultSuccess {
-            return .green
+            return Color.butlerPrimary
         } else if result is BatchOperationResultError {
-            return .red
+            return Color.butlerError
         }
         return .primary
     }

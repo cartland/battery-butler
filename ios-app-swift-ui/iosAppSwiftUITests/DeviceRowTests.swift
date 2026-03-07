@@ -6,13 +6,19 @@ import shared
 
 final class DeviceRowTests: XCTestCase {
     func testDeviceRow_WithLocation() {
-        let view = DeviceRow(device: TestData.device)
+        let view = DeviceRow(device: TestData.device, deviceType: TestData.deviceType)
 
         assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)))
     }
 
     func testDeviceRow_WithoutLocation() {
-        let view = DeviceRow(device: TestData.device3)
+        let view = DeviceRow(device: TestData.device3, deviceType: TestData.deviceType)
+
+        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)))
+    }
+
+    func testDeviceRow_NilDeviceType() {
+        let view = DeviceRow(device: TestData.device, deviceType: nil)
 
         assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)))
     }

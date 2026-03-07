@@ -4,11 +4,11 @@ import shared
 struct AiChatScreen: View {
     @StateObject private var wrapper: AiChatViewModelWrapper
     @State private var inputText: String = ""
-    
+
     init(viewModel: AiChatViewModel) {
         _wrapper = StateObject(wrappedValue: AiChatViewModelWrapper(viewModel))
     }
-    
+
     var body: some View {
         AiChatContentView(
             messages: wrapper.messages,
@@ -35,7 +35,7 @@ struct AiChatContentView: View {
     var body: some View {
         VStack(spacing: 0) {
             ScrollView {
-                LazyVStack(spacing: 12) {
+                LazyVStack(spacing: ButlerSpacing.medium) {
                     ForEach(messages, id: \.id) { message in
                         MessageRow(message: message)
                     }
@@ -59,7 +59,7 @@ struct AiChatContentView: View {
 
                 Button(action: onSend) {
                     Image(systemName: "paperplane.fill")
-                        .foregroundColor(inputText.isEmpty || isProcessing ? .gray : .blue)
+                        .foregroundStyle(inputText.isEmpty || isProcessing ? Color.gray : Color.butlerPrimary)
                 }
                 .accessibilityLabel("Send message")
                 .disabled(inputText.isEmpty || isProcessing)
@@ -81,21 +81,21 @@ struct AiChatContentView: View {
 
 struct MessageRow: View {
     let message: AiMessage
-    
+
     private var isUser: Bool {
         message.role == .user
     }
-    
+
     var body: some View {
         HStack {
             if isUser { Spacer() }
-            
+
             Text(message.text)
-                .padding(12)
-                .background(isUser ? Color.blue : Color(UIColor.systemGray5))
-                .foregroundColor(isUser ? .white : .primary)
+                .padding(ButlerSpacing.medium)
+                .background(isUser ? Color.butlerPrimaryContainer : Color.butlerTertiaryContainer)
+                .foregroundStyle(isUser ? Color.butlerOnPrimaryContainer : Color.butlerOnTertiaryContainer)
                 .clipShape(ChatBubbleShape(isUser: isUser))
-            
+
             if !isUser { Spacer() }
         }
     }
@@ -103,16 +103,16 @@ struct MessageRow: View {
 
 struct ChatBubbleShape: Shape {
     let isUser: Bool
-    
+
     func path(in rect: CGRect) -> Path {
         let path = UIBezierPath(
             roundedRect: rect,
             byRoundingCorners: [
                 .topLeft,
                 .topRight,
-                isUser ? .bottomLeft : .bottomRight
+                isUser ? .bottomLeft : .bottomRight,
             ],
-            cornerRadii: CGSize(width: 16, height: 16)
+            cornerRadii: CGSize(width: ButlerCornerRadius.large, height: ButlerCornerRadius.large)
         )
         return Path(path.cgPath)
     }

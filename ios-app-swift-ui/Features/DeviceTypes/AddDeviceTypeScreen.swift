@@ -51,7 +51,7 @@ struct AddDeviceTypeContentView: View {
                 if let error = state.saveError {
                     Section {
                         Text(error)
-                            .foregroundColor(.red)
+                            .foregroundStyle(Color.butlerError)
                     }
                 }
             }
