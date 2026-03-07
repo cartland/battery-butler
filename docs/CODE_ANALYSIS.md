@@ -1,12 +1,12 @@
 # Code Share Analysis
 
 This document provides a breakdown of the codebase by application layer and module.
-Total Lines of Code: 35364
+Total Lines of Code: 35390
 
 ## Application Breakdown
 * Shared Code: 24,592 lines (69.5%)
 * iOS Swift App: 3,079 lines (8.7%)
-* Other: 3,013 lines (8.5%)
+* Other: 3,039 lines (8.6%)
 * CMP Android, iOS, Desktop: 2,169 lines (6.1%)
 * Server: 1,528 lines (4.3%)
 * Android Screenshot Tests: 983 lines (2.8%)
@@ -21,7 +21,7 @@ Total Lines of Code: 35364
 * `:compose-app`: 2,169 lines (6.1%)
 * `:presentation-core`: 2,095 lines (5.9%)
 * `:data`: 1,801 lines (5.1%)
-* `:buildSrc`: 1,449 lines (4.1%)
+* `:buildSrc`: 1,475 lines (4.2%)
 * `:server:app`: 1,342 lines (3.8%)
 * `:data-local`: 1,059 lines (3.0%)
 * `:android-screenshot-tests`: 983 lines (2.8%)
@@ -38,6 +38,7 @@ Total Lines of Code: 35364
 
 ## Code Distribution
 
+<!-- GENERATED:BEGIN code_distribution.mmd -->
 ```mermaid
 ---
 config:
@@ -52,7 +53,7 @@ sankey-beta
 
 Codebase,Shared Code,24592
 Codebase,iOS Swift App,3079
-Codebase,Other,3013
+Codebase,Other,3039
 Codebase,CMP Apps,2169
 Codebase,Server,1528
 Codebase,Screenshot Tests,983
@@ -70,7 +71,7 @@ Shared Code,compose-resources,70
 
 iOS Swift App,iosAppSwiftUI,3079
 
-Other,buildSrc,1449
+Other,buildSrc,1475
 Other,test-common,609
 Other,e2e-tests,271
 Other,ios-swift-di,235
@@ -85,5 +86,6 @@ Server,server:data,152
 Server,server:domain,34
 
 Screenshot Tests,android-screenshot-tests,983
-
 ```
+<!-- GENERATED:END code_distribution.mmd -->
+
