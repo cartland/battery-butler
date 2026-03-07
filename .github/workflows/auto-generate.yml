@@ -79,7 +79,7 @@ jobs:
         id: check-changes
         run: |
           # Check if any diagram or analysis content files changed
-          CONTENT_CHANGES=$(git diff --name-only -- '*.mmd' '*.svg' 'docs/Code_Share_Analysis.md' | wc -l | tr -d ' ')
+          CONTENT_CHANGES=$(git diff --name-only -- '*.mmd' '*.svg' 'docs/CODE_ANALYSIS.md' | wc -l | tr -d ' ')
           echo "content_changes=$CONTENT_CHANGES" >> $GITHUB_OUTPUT
           if [ "$CONTENT_CHANGES" -eq 0 ]; then
             echo "No diagram or analysis content changes detected — skipping PR creation"

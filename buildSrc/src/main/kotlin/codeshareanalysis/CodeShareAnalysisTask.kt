@@ -21,7 +21,7 @@ abstract class CodeShareAnalysisTask : DefaultTask() {
         }
 
     @get:OutputFile
-    val reportFile: File = project.rootProject.file("docs/Code_Share_Analysis.md")
+    val reportFile: File = project.rootProject.file("docs/CODE_ANALYSIS.md")
 
     init {
         group = "documentation"
