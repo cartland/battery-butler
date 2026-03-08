@@ -31,6 +31,12 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ---
 
+## 2026-03-08
+
+### Features
+
+- **iOS EditBatteryEvent screen** ([#907](https://github.com/cartland/battery-butler/pull/907)): Implemented the last missing iOS SwiftUI screen, completing all 15 KMP screens on iOS. Added ViewModelWrapper (KMP-to-SwiftUI bridge with Date/Instant conversion), Screen + ContentView (DatePicker, battery type/notes fields, delete confirmation), Edit button on EventDetailScreen with sheet navigation, and 3 snapshot tests with reference images.
+
 ## 2026-03-07
 
 ### Documentation

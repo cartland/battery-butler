@@ -24,6 +24,7 @@ The goal is to achieve feature parity between these two UI implementations by co
 | **Edit Device** | `EditDeviceScreen.kt` | `EditDeviceScreen.swift` | `EditDeviceViewModel` (via Factory) |
 | **Add Battery Event** | `AddBatteryEventScreen.kt` | `AddBatteryEventScreen.swift` | `AddBatteryEventViewModel` |
 | **Event Detail** | `EventDetailScreen.kt` | `EventDetailScreen.swift` | `EventDetailViewModel` (via Factory) |
+| **Edit Battery Event** | `EditBatteryEventScreen.kt` | `EditBatteryEventScreen.swift` | `EditBatteryEventViewModel` (via Factory) |
 | **Add Device Type** | `AddDeviceTypeScreen.kt` | `AddDeviceTypeScreen.swift` | `AddDeviceTypeViewModel` |
 | **Edit Device Type** | `EditDeviceTypeScreen.kt` | `EditDeviceTypeScreen.swift` | `EditDeviceTypeViewModel` (via Factory) |
 | **Settings** | `SettingsScreen.kt` | `SettingsScreen.swift` | `SettingsViewModel` |
@@ -50,7 +51,7 @@ The goal is to achieve feature parity between these two UI implementations by co
 
 ### 3. Adding & Editing (Devices, Types, Events)
 - **Compose:** Often presents these via regular `NavHost` pushed screens or modals.
-- **SwiftUI:** Makes heavy use of the `.sheet()` modifier for presenting entry forms modally (e.g., `AddDeviceScreen`, `AddBatteryEventScreen`, `EditDeviceScreen`). Form items use the native `Form` component.
+- **SwiftUI:** Makes heavy use of the `.sheet()` modifier for presenting entry forms modally (e.g., `AddDeviceScreen`, `AddBatteryEventScreen`, `EditDeviceScreen`, `EditBatteryEventScreen`). Form items use the native `Form` component.
 
 > **Known Feature Gaps** (see [FEATURE_PARITY_MAPPING.md](FEATURE_PARITY_MAPPING.md) for details):
 > - Add Device: no location field, no loading indicator during save
