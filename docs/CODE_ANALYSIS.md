@@ -46,7 +46,6 @@ Total Lines of Code: 36502
 
 <!-- GENERATED:BEGIN code_distribution.mmd -->
 ```mermaid
-%% GENERATED FILE - DO NOT EDIT
 ---
 config:
   sankey:
@@ -56,6 +55,7 @@ config:
     nodeAlignment: justify
     linkColor: gradient
 ---
+%% GENERATED FILE - DO NOT EDIT
 sankey-beta
 
 Codebase,Shared Code,24705

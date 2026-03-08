@@ -5,7 +5,6 @@ class SankeyChartGenerator(
 ) {
     fun generate(result: CodeScanner.ScanResult): String {
         val sb = StringBuilder()
-        sb.appendLine("%% GENERATED FILE - DO NOT EDIT")
         sb.appendLine("---")
         sb.appendLine("config:")
         sb.appendLine("  sankey:")
@@ -15,6 +14,7 @@ class SankeyChartGenerator(
         sb.appendLine("    nodeAlignment: ${config.nodeAlignment}")
         sb.appendLine("    linkColor: ${config.linkColor}")
         sb.appendLine("---")
+        sb.appendLine("%% GENERATED FILE - DO NOT EDIT")
         sb.appendLine("sankey-beta")
         sb.appendLine()
 

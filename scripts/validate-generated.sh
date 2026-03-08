@@ -309,6 +309,16 @@ validate_analysis() {
         fi
     fi
 
+    # Check that frontmatter is first line in mermaid block (not a comment)
+    local first_mermaid_line
+    first_mermaid_line=$(sed -n '/```mermaid/{n;p;q;}' "$analysis_file")
+    if [[ -n "$first_mermaid_line" && "$first_mermaid_line" != "---" ]]; then
+        error "Sankey frontmatter must be first line in mermaid block (got: $first_mermaid_line)"
+        echo "::error::Mermaid frontmatter not on first line. Regenerate: ./gradlew analyzeCode"
+    elif [[ -n "$first_mermaid_line" ]]; then
+        success "Sankey frontmatter is first line in $analysis_file mermaid block"
+    fi
+
     # Check README.md has embedded sankey chart
     local readme_file="README.md"
     if [[ -f "$readme_file" ]]; then
@@ -318,6 +328,16 @@ validate_analysis() {
                 echo "::warning::Run: ./scripts/embed-mermaid.sh"
             else
                 success "Sankey chart is embedded in README"
+            fi
+
+            # Check frontmatter in README mermaid block too
+            local readme_first_mermaid_line
+            readme_first_mermaid_line=$(sed -n '/```mermaid/{n;p;q;}' "$readme_file")
+            if [[ -n "$readme_first_mermaid_line" && "$readme_first_mermaid_line" != "---" ]]; then
+                error "Sankey frontmatter must be first line in README mermaid block (got: $readme_first_mermaid_line)"
+                echo "::error::Mermaid frontmatter not on first line in README. Regenerate: ./gradlew analyzeCode"
+            elif [[ -n "$readme_first_mermaid_line" ]]; then
+                success "Sankey frontmatter is first line in README mermaid block"
             fi
         fi
     fi
