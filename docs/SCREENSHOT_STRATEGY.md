@@ -48,7 +48,7 @@ When adding a screenshot test to one platform, check the parity matrix below. If
 
 ## Current State — Parity Matrix
 
-**Counts:** Android 131 PNGs (74 test functions, 14 files) · iOS 40 PNGs (40 test functions, 17 files)
+**Counts:** Android 131 PNGs (74 test functions, 14 files) · iOS 43 PNGs (43 test functions, 18 files)
 
 **Key structural differences:**
 - Android tests every state in both light and dark mode; iOS is light-only throughout
@@ -96,8 +96,9 @@ When adding a screenshot test to one platform, check the parity matrix below. If
 | | Deleted device ref | ✓ L/D | — | iOS: edge case not tested |
 | | NotFound | ✓ L/D | ✓ | iOS: no dark mode |
 | | Loading | ✓ L/D | ✓ | — |
-| **EditBatteryEvent** | Loaded form | ✓ L/D | — | iOS: screen not snapshot-tested |
-| | NotFound | ✓ L/D | — | iOS: screen not snapshot-tested |
+| **EditBatteryEvent** | Loaded form | ✓ L/D | ✓ | iOS: no dark mode (PR #907) |
+| | Loading | — | ✓ | Android: state not previewed |
+| | NotFound | ✓ L/D | ✓ | iOS: no dark mode (PR #907) |
 | **AI Chat** | With messages | ✓ L/D | ✓ | iOS: no dark mode |
 | | Empty | ✓ L/D | ✓ | iOS: no dark mode |
 | **AI Overlay** | Collapsed (Devices) | ✓ L/D | — | Platform-specific: Android-only split-screen panel |
@@ -141,8 +142,8 @@ When adding a screenshot test to one platform, check the parity matrix below. If
 
 ### Systemic gaps
 
-1. **iOS has no dark mode snapshots** — all 35 snapshots are light-only. Android has light + dark for every non-marketing state. Adding `.preferredColorScheme(.dark)` variants would roughly double iOS snapshot count.
-2. **iOS missing states** for DeviceTypeDetail (all states) and EditBatteryEvent (all states) — screens not yet implemented in iOS SwiftUI (tracked by bead `bb-57ln`). These are Tier 1 gaps blocked on screen implementation.
+1. **iOS has no dark mode snapshots** — all 43 snapshots are light-only. Android has light + dark for every non-marketing state. Adding `.preferredColorScheme(.dark)` variants would roughly double iOS snapshot count.
+2. **iOS missing states** for DeviceTypeDetail (all states) — screen not yet implemented in iOS SwiftUI (tracked by bead `bb-tgd6`). This is a Tier 1 gap blocked on screen implementation. EditBatteryEvent coverage was added in PR #907 (3 states: Success, Loading, NotFound).
 3. **Android Tier 1 gaps closed** — History, Types, EventDetail, EditDeviceType Loading states and EditDevice Loading/NotFound states now have coverage.
 
 ### Unique strengths
