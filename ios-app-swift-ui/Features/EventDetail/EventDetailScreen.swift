@@ -4,13 +4,28 @@ import shared
 struct EventDetailScreen: View {
     @StateObject private var wrapper: EventDetailViewModelWrapper
     @Environment(\.presentationMode) private var presentationMode
+    private let eventId: String
+    private let component: NativeComponent
+    @State private var showingEditEvent = false
 
     init(eventId: String, component: NativeComponent) {
+        self.eventId = eventId
+        self.component = component
         _wrapper = StateObject(wrappedValue: EventDetailViewModelWrapper(eventId: eventId, component: component))
     }
 
     var body: some View {
         EventDetailContentView(state: wrapper.state)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Edit") {
+                        showingEditEvent = true
+                    }
+                }
+            }
+            .sheet(isPresented: $showingEditEvent) {
+                EditBatteryEventScreen(eventId: eventId, component: component)
+            }
     }
 }
 
