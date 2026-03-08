@@ -48,4 +48,27 @@ final class LoginScreenTests: XCTestCase {
             named: "dark"
         )
     }
+
+    func testLoginContentView_NotConfigured() {
+        let view = LoginContentView(
+            authState: nil,
+            isSignInAvailable: false,
+            errorTitle: "",
+            errorMessage: "",
+            showRetryButton: false,
+            showError: .constant(false),
+            onSignIn: {},
+            onSkipLogin: {},
+            onRetry: {},
+            onDismissError: {}
+        )
+
+        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)), named: "light")
+        assertSnapshot(
+            of: view.preferredColorScheme(.dark),
+            as: .image(layout: .device(config: .iPhone13Pro)),
+            named: "dark"
+        )
+    }
+
 }

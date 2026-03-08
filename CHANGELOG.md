@@ -35,6 +35,8 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ### Features
 
+- **iOS Login NotConfigured snapshot**: Added snapshot test for Login screen's NotConfigured state (sign-in unavailable, only "Skip for now" visible). Confirmed SwiftUI `.alert()` is not captured in snapshot tests, so Login Error remains an accepted framework limitation. iOS coverage now 94 PNGs (47 test functions).
+
 - **iOS dark mode snapshots**: Added `.preferredColorScheme(.dark)` variants to all 46 iOS snapshot tests, doubling coverage from 46 to 92 PNGs (light + dark). Closes the biggest systemic gap in the screenshot strategy (`bb-b7t2`). Each test function now produces both `testName.light.png` and `testName.dark.png`.
 
 - **iOS DeviceTypeDetail screen** ([#911](https://github.com/cartland/battery-butler/pull/911)): Added the last missing iOS SwiftUI screen — a read-only detail view for device types. Includes centered icon header, battery info card, navigable device list, and Edit toolbar button opening a sheet. Changed DeviceTypeList navigation to go through detail (matching Compose flow). 3 snapshot tests with reference images. Closes `bb-tgd6`.
