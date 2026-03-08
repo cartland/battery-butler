@@ -36,4 +36,34 @@ final class EditDeviceScreenTests: XCTestCase {
         
         assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)))
     }
+
+    func testEditDeviceContentView_Loading() {
+        let view = EditDeviceContentView(
+            state: EditDeviceUiStateLoading(),
+            name: .constant(""),
+            location: .constant(""),
+            selectedTypeId: .constant(""),
+            hasInitializedFields: .constant(false),
+            onSave: {},
+            onDelete: {},
+            onCancel: {}
+        )
+
+        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)))
+    }
+
+    func testEditDeviceContentView_NotFound() {
+        let view = EditDeviceContentView(
+            state: EditDeviceUiStateNotFound(),
+            name: .constant(""),
+            location: .constant(""),
+            selectedTypeId: .constant(""),
+            hasInitializedFields: .constant(false),
+            onSave: {},
+            onDelete: {},
+            onCancel: {}
+        )
+
+        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)))
+    }
 }

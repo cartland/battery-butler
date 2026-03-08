@@ -48,7 +48,7 @@ When adding a screenshot test to one platform, check the parity matrix below. If
 
 ## Current State — Parity Matrix
 
-**Counts:** Android 131 PNGs (74 test functions, 14 files) · iOS 35 PNGs (35 test functions, 17 files)
+**Counts:** Android 131 PNGs (74 test functions, 14 files) · iOS 40 PNGs (40 test functions, 17 files)
 
 **Key structural differences:**
 - Android tests every state in both light and dark mode; iOS is light-only throughout
@@ -66,7 +66,7 @@ When adding a screenshot test to one platform, check the parity matrix below. If
 | **Devices** | With data | ✓ L/D | ✓ | iOS: no dark mode |
 | | Empty | ✓ L/D | ✓ | iOS: no dark mode |
 | **History** | With data | ✓ L/D | ✓ | iOS: no dark mode |
-| | Empty | ✓ L/D | — | iOS: only has Loading, not Empty |
+| | Empty | ✓ L/D | ✓ | iOS: no dark mode |
 | | Loading | ✓ L/D | ✓ | — |
 | **Types** | With data | ✓ L/D | ✓ | iOS: no dark mode |
 | | Empty | ✓ L/D | ✓ | iOS: no dark mode |
@@ -81,14 +81,14 @@ When adding a screenshot test to one platform, check the parity matrix below. If
 | | Filled form | — | ✓ | Android: only tests empty form |
 | | Error (duplicate) | — | ✓ | Android: error state not previewed |
 | **DeviceDetail** | Success | ✓ L/D | ✓ | iOS: no dark mode |
-| | Loading | ✓ L/D | — | iOS: state not snapshot-tested |
-| | NotFound | ✓ L/D | — | iOS: state not snapshot-tested |
+| | Loading | ✓ L/D | ✓ | iOS: no dark mode |
+| | NotFound | ✓ L/D | ✓ | iOS: no dark mode |
 | **DeviceTypeDetail** | Success | ✓ L/D | — | iOS: screen not snapshot-tested |
 | | Loading | ✓ L/D | — | iOS: screen not snapshot-tested |
 | | NotFound | ✓ L/D | — | iOS: screen not snapshot-tested |
 | **EditDevice** | Loaded form | ✓ L/D | ✓ | iOS: no dark mode |
-| | Loading | ✓ L/D | — | iOS: state not snapshot-tested |
-| | NotFound | ✓ L/D | — | iOS: state not snapshot-tested |
+| | Loading | ✓ L/D | ✓ | iOS: no dark mode |
+| | NotFound | ✓ L/D | ✓ | iOS: no dark mode |
 | **EditDeviceType** | Loaded form | ✓ L/D | ✓ | iOS: no dark mode |
 | | Loading | ✓ L/D | ✓ | — |
 | | NotFound | ✓ L/D | ✓ | — |
@@ -142,7 +142,7 @@ When adding a screenshot test to one platform, check the parity matrix below. If
 ### Systemic gaps
 
 1. **iOS has no dark mode snapshots** — all 35 snapshots are light-only. Android has light + dark for every non-marketing state. Adding `.preferredColorScheme(.dark)` variants would roughly double iOS snapshot count.
-2. **iOS missing Loading/NotFound states** for DeviceDetail, DeviceTypeDetail (all states), EditDevice, and EditBatteryEvent. These are Tier 1 gaps.
+2. **iOS missing states** for DeviceTypeDetail (all states) and EditBatteryEvent (all states) — screens not yet implemented in iOS SwiftUI (tracked by bead `bb-57ln`). These are Tier 1 gaps blocked on screen implementation.
 3. **Android Tier 1 gaps closed** — History, Types, EventDetail, EditDeviceType Loading states and EditDevice Loading/NotFound states now have coverage.
 
 ### Unique strengths
