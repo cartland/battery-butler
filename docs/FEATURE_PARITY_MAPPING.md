@@ -193,18 +193,19 @@ These issues affect all SwiftUI screens, not just individual ones:
 **Compose:** `AddBatteryEventScreen.kt` — has expandable "More Details" section and inline "Add New Device" picker option.
 **SwiftUI:** `AddBatteryEventScreen.swift` — core flow works but missing progressive disclosure and add-device shortcut.
 
-### 10. Event Detail — PARTIAL
+### 10. Event Detail — NEAR FULL
 
 | Feature | Compose | SwiftUI | Gap |
 |---------|---------|---------|-----|
 | Event data display | ✅ | ✅ | — |
 | Device name display | ✅ | ✅ | — |
-| Edit button (toolbar) | ✅ | ❌ | No edit action |
-| Delete capability | ❌ | ❌ | Missing from both platforms |
+| Edit button (toolbar) | ✅ | ✅ | — (PR #907) |
+| Edit event form (sheet) | ✅ | ✅ | — (PR #907) |
+| Delete capability | ✅ | ✅ | — (PR #907, via edit screen) |
 | Navigate to device | ✅ | ❌ | No device navigation link |
 
-**Compose:** `EventDetailScreen.kt` — edit action in toolbar, device navigation. Delete not yet implemented.
-**SwiftUI:** `EventDetailScreen.swift` — read-only display only.
+**Compose:** `EventDetailScreen.kt` — edit action in toolbar, device navigation.
+**SwiftUI:** `EventDetailScreen.swift` — edit action opens `EditBatteryEventScreen` as sheet (PR #907). Device navigation not yet implemented.
 **Tracking:** `bb-rrs4.5`
 
 ### 11. Add Device Type — MINIMAL
@@ -278,7 +279,7 @@ These issues affect all SwiftUI screens, not just individual ones:
 | Bead | Area | Priority | Status |
 |------|------|----------|--------|
 | `bb-rrs4` | Epic: iOS Feature Parity | P2 | Open |
-| `bb-57ln` | EditBatteryEvent + DeviceTypeDetail | P2 | Open |
+| `bb-57ln` | EditBatteryEvent + DeviceTypeDetail | P2 | Closed (EditBatteryEvent done PR #907; DeviceTypeDetail → `bb-tgd6`) |
 | `bb-ke1y` | AI chat tab/overlay parity | P2 | Open |
 | `bb-847x` | Sort/group controls (Home + Types) | P2 | Open |
 | `bb-abn6` | Settings (network, AI engine, account) | P2 | Open |
