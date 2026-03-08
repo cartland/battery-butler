@@ -1,6 +1,6 @@
 # Feature Parity Mapping
 
-This document tracks the feature parity between the **Compose Multiplatform (CMP)** app and the **native iOS SwiftUI** app at the **per-feature** level. Screen-level parity is 100% (all 14 screens exist in both), but feature-level parity is approximately **40%**.
+This document tracks the feature parity between the **Compose Multiplatform (CMP)** app and the **native iOS SwiftUI** app at the **per-feature** level. Screen-level parity is 100% (all 15 screens exist in both), but feature-level parity is approximately **40%**.
 
 ## Overview
 
@@ -14,10 +14,10 @@ Most SwiftUI screens are minimal implementations that render basic data but lack
 
 | Metric | Value |
 |--------|-------|
-| Screen parity (screen exists in both) | **14 / 14 (100%)** |
+| Screen parity (screen exists in both) | **15 / 15 (100%)** |
 | Feature parity (per-feature match) | **~50%** |
 | Screens at FULL parity | 0 |
-| Screens at PARTIAL parity | 11 |
+| Screens at PARTIAL parity | 12 |
 | Screens at MINIMAL parity | 3 |
 | Screens at NONE parity | 0 |
 
@@ -271,6 +271,23 @@ These issues affect all SwiftUI screens, not just individual ones:
 **Compose:** `LoginScreen.kt` — maps `AuthError` subtypes to specific user-facing messages.
 **SwiftUI:** `LoginScreen.swift` — shows a single generic error string.
 **Tracking:** `bb-omvv`
+
+### 15. Device Type Detail — PARTIAL
+
+| Feature | Compose | SwiftUI | Gap |
+|---------|---------|---------|-----|
+| Type name + icon header | ✅ | ✅ | — |
+| Battery type info | ✅ | ✅ | — |
+| Battery quantity info | ✅ | ✅ | — |
+| Devices list with navigation | ✅ | ✅ | — |
+| Edit button (toolbar → sheet) | ✅ | ✅ | — |
+| Empty devices state | ✅ | ✅ | — |
+| Loading state | ✅ | ✅ | — |
+| Not found state | ✅ | ✅ | — |
+
+**Compose:** `DeviceTypeDetailContent.kt` — read-only detail with device list and edit navigation.
+**SwiftUI:** `DeviceTypeDetailScreen.swift` — two-layer Screen + ContentView matching Compose flow (PR #911).
+**Tracking:** `bb-tgd6` (closed)
 
 ---
 

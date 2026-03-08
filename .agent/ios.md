@@ -38,7 +38,7 @@ xcodebuild test -project ios-app-swift-ui/iosAppSwiftUI.xcodeproj -scheme iosApp
 
 ## iOS SwiftUI Feature Parity
 
-Screen parity is 15/15 (all screens exist including EditBatteryEvent from PR #907) but feature-level parity is ~50%. PR #873 added the design system (icons, colors, battery age), lifting History from MINIMAL to PARTIAL. Remaining gaps are mostly sort/group controls, error states, and interactive features. See `docs/FEATURE_PARITY_MAPPING.md` for per-screen gap tables. All gap tracking beads are parented to epic `bb-rrs4`.
+Screen parity is 15/15 (all screens exist including DeviceTypeDetail from PR #911) but feature-level parity is ~50%. PR #873 added the design system (icons, colors, battery age), lifting History from MINIMAL to PARTIAL. Remaining gaps are mostly sort/group controls, error states, and interactive features. See `docs/FEATURE_PARITY_MAPPING.md` for per-screen gap tables. All gap tracking beads are parented to epic `bb-rrs4`.
 
 Key systemic gaps:
 - No split-screen AI overlay or persistent input bar (AI is a standalone tab)
@@ -74,7 +74,7 @@ PR #873 implemented the full iOS design language from `docs/design/IOS_DESIGN_LA
 
 ## iOS Snapshot Tests
 
-All 15 screens follow the two-layer Screen/ContentView pattern. 30 snapshot tests cover all ContentViews across 11 test files (plus 3 pre-existing). Reference images are tracked in git (`__Snapshots__/`). CI uses `build-for-testing` (compile-only, no pixel comparison). Snapshots are auto-recorded post-merge by `auto-generate.yml` on `macos-latest` and committed via follow-up PRs (like Android screenshots). Use `scripts/record-ios-snapshots.sh` to record locally.
+All 15 screens follow the two-layer Screen/ContentView pattern. 46 snapshot tests cover all ContentViews across 19 test files. Reference images are tracked in git (`__Snapshots__/`). CI uses `build-for-testing` (compile-only, no pixel comparison). Snapshots are auto-recorded post-merge by `auto-generate.yml` on `macos-latest` and committed via follow-up PRs (like Android screenshots). Use `scripts/record-ios-snapshots.sh` to record locally.
 
 To test SwiftUI views connected to KMP, ensure the `Screen` structures are separated into stateless `ContentView` structures to bypass the `NativeComponent` DI graph during testing.
 
