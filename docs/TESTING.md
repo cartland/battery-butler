@@ -175,7 +175,7 @@ When CI passes, here's what each layer of the test pyramid proves — and what i
 | **UseCase unit tests** | Business logic is correct: batch parsing, deduplication, date handling, device-event relationships, data export formatting, AI context building | ~87 tests |
 | **ViewModel unit tests** | State management works: loading → success/error transitions, user action processing, sort/group/filter logic, form validation | ~107 tests |
 | **Convention tests** | Every UseCase has `operator invoke()`, every ViewModel has a corresponding test file | 2 tests |
-| **Screenshot tests** | UI previews are captured as a visual record — regenerated on changes, reviewed manually for unintended regressions | ~50 tests |
+| **Screenshot tests** | UI previews are captured as a visual record — regenerated on changes, reviewed manually for unintended regressions. See [SCREENSHOT_STRATEGY.md](SCREENSHOT_STRATEGY.md) for the decision framework, priority tiers, and platform parity matrix | ~50 tests |
 | **Instrumented tests** | App navigates correctly on a real Android device, Room database schema is valid, migrations work | ~10 tests |
 | **Architecture checks** | Module dependency rules are enforced (domain depends on nothing, viewmodel doesn't import data, etc.) | Gradle task |
 | **Detekt + Spotless** | Code style and Compose rules (modifier naming, parameter order) are enforced | Gradle tasks |
