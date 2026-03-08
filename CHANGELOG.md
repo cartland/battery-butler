@@ -37,6 +37,10 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 - **Broken Mermaid sankey diagram**: Fixed the Mermaid sankey diagram in README.md and CODE_ANALYSIS.md that GitHub couldn't render. The `SankeyChartGenerator` was emitting a `%% GENERATED FILE` comment before the YAML frontmatter `---` block, but Mermaid requires `---` to be the first line. Moved the comment after the frontmatter closing delimiter. Added buildSrc unit test and validate-generated.sh check to prevent regression.
 
+### Testing
+
+- **Generated content test coverage**: Added unit tests for `MermaidGenerator` (architecture graph output, subgraph grouping, edge definitions, empty input) and `MermaidEmbedder` (marker-based embedding, mermaid code fencing, idempotency, content preservation). Added `validate-generated.sh --analysis` to `validate.sh` so broken diagrams are caught locally before push.
+
 ### Features
 
 - **iOS Login NotConfigured snapshot**: Added snapshot test for Login screen's NotConfigured state (sign-in unavailable, only "Skip for now" visible). Confirmed SwiftUI `.alert()` is not captured in snapshot tests, so Login Error remains an accepted framework limitation. iOS coverage now 94 PNGs (47 test functions).

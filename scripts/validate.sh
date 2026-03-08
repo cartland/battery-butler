@@ -29,6 +29,9 @@ echo "--- 3c. Architecture Check ---"
 echo "--- 3d. Test Coverage Check ---"
 ./gradlew checkTestCoverage
 
+echo "--- 3e. Generated Content Analysis ---"
+./scripts/validate-generated.sh --analysis
+
 echo "--- 4. Tests (Unit & Instrumented) ---"
 ./scripts/test.sh
 
