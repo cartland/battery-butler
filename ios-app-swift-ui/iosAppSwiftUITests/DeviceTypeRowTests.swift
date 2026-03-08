@@ -8,7 +8,12 @@ final class DeviceTypeRowTests: XCTestCase {
     func testDeviceTypeRow_WithBatteryType() {
         let view = DeviceTypeRow(deviceType: TestData.deviceType)
 
-        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)))
+        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)), named: "light")
+        assertSnapshot(
+            of: view.preferredColorScheme(.dark),
+            as: .image(layout: .device(config: .iPhone13Pro)),
+            named: "dark"
+        )
     }
 
     func testDeviceTypeRow_WithoutBatteryType() {
@@ -21,6 +26,11 @@ final class DeviceTypeRowTests: XCTestCase {
         )
         let view = DeviceTypeRow(deviceType: noBattery)
 
-        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)))
+        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)), named: "light")
+        assertSnapshot(
+            of: view.preferredColorScheme(.dark),
+            as: .image(layout: .device(config: .iPhone13Pro)),
+            named: "dark"
+        )
     }
 }

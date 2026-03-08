@@ -20,7 +20,12 @@ final class EditDeviceTypeScreenTests: XCTestCase {
             onDelete: {}
         )
 
-        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)))
+        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)), named: "light")
+        assertSnapshot(
+            of: view.preferredColorScheme(.dark),
+            as: .image(layout: .device(config: .iPhone13Pro)),
+            named: "dark"
+        )
     }
 
     func testEditDeviceTypeContentView_Loading() {
@@ -34,7 +39,12 @@ final class EditDeviceTypeScreenTests: XCTestCase {
             onDelete: {}
         )
 
-        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)))
+        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)), named: "light")
+        assertSnapshot(
+            of: view.preferredColorScheme(.dark),
+            as: .image(layout: .device(config: .iPhone13Pro)),
+            named: "dark"
+        )
     }
 
     func testEditDeviceTypeContentView_NotFound() {
@@ -50,6 +60,11 @@ final class EditDeviceTypeScreenTests: XCTestCase {
             onDelete: {}
         )
 
-        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)))
+        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)), named: "light")
+        assertSnapshot(
+            of: view.preferredColorScheme(.dark),
+            as: .image(layout: .device(config: .iPhone13Pro)),
+            named: "dark"
+        )
     }
 }

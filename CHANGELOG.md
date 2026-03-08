@@ -35,6 +35,8 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ### Features
 
+- **iOS dark mode snapshots**: Added `.preferredColorScheme(.dark)` variants to all 46 iOS snapshot tests, doubling coverage from 46 to 92 PNGs (light + dark). Closes the biggest systemic gap in the screenshot strategy (`bb-b7t2`). Each test function now produces both `testName.light.png` and `testName.dark.png`.
+
 - **iOS DeviceTypeDetail screen** ([#911](https://github.com/cartland/battery-butler/pull/911)): Added the last missing iOS SwiftUI screen — a read-only detail view for device types. Includes centered icon header, battery info card, navigable device list, and Edit toolbar button opening a sheet. Changed DeviceTypeList navigation to go through detail (matching Compose flow). 3 snapshot tests with reference images. Closes `bb-tgd6`.
 
 - **iOS EditBatteryEvent screen** ([#907](https://github.com/cartland/battery-butler/pull/907)): Implemented the EditBatteryEvent iOS SwiftUI screen. Added ViewModelWrapper (KMP-to-SwiftUI bridge with Date/Instant conversion), Screen + ContentView (DatePicker, battery type/notes fields, delete confirmation), Edit button on EventDetailScreen with sheet navigation, and 3 snapshot tests with reference images.

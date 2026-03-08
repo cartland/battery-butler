@@ -10,7 +10,7 @@ final class AddDeviceScreenTests: XCTestCase {
             DeviceType(id: "t1", name: "Smoke Alarm", defaultIcon: "detector_smoke", batteryType: "9V", batteryQuantity: 1),
             DeviceType(id: "t2", name: "TV Remote", defaultIcon: "tv", batteryType: "AAA", batteryQuantity: 2)
         ]
-        
+
         let view = AddDeviceContentView(
             name: .constant(""),
             location: .constant(""),
@@ -19,16 +19,21 @@ final class AddDeviceScreenTests: XCTestCase {
             onAdd: {},
             onCancel: {}
         )
-        
-        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)))
+
+        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)), named: "light")
+        assertSnapshot(
+            of: view.preferredColorScheme(.dark),
+            as: .image(layout: .device(config: .iPhone13Pro)),
+            named: "dark"
+        )
     }
-    
+
     func testAddDeviceContentView_Filled() {
         let dummyTypes = [
             DeviceType(id: "t1", name: "Smoke Alarm", defaultIcon: "detector_smoke", batteryType: "9V", batteryQuantity: 1),
             DeviceType(id: "t2", name: "TV Remote", defaultIcon: "tv", batteryType: "AAA", batteryQuantity: 2)
         ]
-        
+
         let view = AddDeviceContentView(
             name: .constant("Living Room Smoke Alarm"),
             location: .constant("Living Room"),
@@ -37,7 +42,12 @@ final class AddDeviceScreenTests: XCTestCase {
             onAdd: {},
             onCancel: {}
         )
-        
-        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)))
+
+        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)), named: "light")
+        assertSnapshot(
+            of: view.preferredColorScheme(.dark),
+            as: .image(layout: .device(config: .iPhone13Pro)),
+            named: "dark"
+        )
     }
 }

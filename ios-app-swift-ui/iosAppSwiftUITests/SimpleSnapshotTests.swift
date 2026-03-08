@@ -9,8 +9,12 @@ final class SimpleSnapshotTests: XCTestCase {
             .padding()
             .background(Color.blue)
             .foregroundColor(.white)
-        
-        // Assert snapshot
-        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)))
+
+        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)), named: "light")
+        assertSnapshot(
+            of: view.preferredColorScheme(.dark),
+            as: .image(layout: .device(config: .iPhone13Pro)),
+            named: "dark"
+        )
     }
 }

@@ -24,7 +24,12 @@ final class DeviceTypeListScreenTests: XCTestCase {
             detailDestination: { _ in Text("Edit") }
         )
 
-        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)))
+        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)), named: "light")
+        assertSnapshot(
+            of: view.preferredColorScheme(.dark),
+            as: .image(layout: .device(config: .iPhone13Pro)),
+            named: "dark"
+        )
     }
 
     func testDeviceTypeListContentView_Empty() {
@@ -42,7 +47,12 @@ final class DeviceTypeListScreenTests: XCTestCase {
             detailDestination: { _ in Text("Edit") }
         )
 
-        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)))
+        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)), named: "light")
+        assertSnapshot(
+            of: view.preferredColorScheme(.dark),
+            as: .image(layout: .device(config: .iPhone13Pro)),
+            named: "dark"
+        )
     }
 
     func testDeviceTypeListContentView_Loading() {
@@ -52,6 +62,11 @@ final class DeviceTypeListScreenTests: XCTestCase {
             detailDestination: { _ in Text("Edit") }
         )
 
-        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)))
+        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)), named: "light")
+        assertSnapshot(
+            of: view.preferredColorScheme(.dark),
+            as: .image(layout: .device(config: .iPhone13Pro)),
+            named: "dark"
+        )
     }
 }
