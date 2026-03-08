@@ -15,13 +15,13 @@ final class EditDeviceScreenTests: XCTestCase {
             location: "Living Room",
             imagePath: nil
         )
-        
+
         let dummyTypes = [
             DeviceType(id: "t1", name: "TV Remote", defaultIcon: "tv", batteryType: "AAA", batteryQuantity: 2)
         ]
-        
+
         let state = EditDeviceUiStateSuccess(device: dummyDevice, deviceTypes: dummyTypes)
-        
+
         // Use bindings populated with initial fake data to simulate `.onAppear` having fired
         let view = EditDeviceContentView(
             state: state,
@@ -33,8 +33,13 @@ final class EditDeviceScreenTests: XCTestCase {
             onDelete: {},
             onCancel: {}
         )
-        
-        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)))
+
+        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)), named: "light")
+        assertSnapshot(
+            of: view.preferredColorScheme(.dark),
+            as: .image(layout: .device(config: .iPhone13Pro)),
+            named: "dark"
+        )
     }
 
     func testEditDeviceContentView_Loading() {
@@ -49,7 +54,12 @@ final class EditDeviceScreenTests: XCTestCase {
             onCancel: {}
         )
 
-        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)))
+        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)), named: "light")
+        assertSnapshot(
+            of: view.preferredColorScheme(.dark),
+            as: .image(layout: .device(config: .iPhone13Pro)),
+            named: "dark"
+        )
     }
 
     func testEditDeviceContentView_NotFound() {
@@ -64,6 +74,11 @@ final class EditDeviceScreenTests: XCTestCase {
             onCancel: {}
         )
 
-        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)))
+        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)), named: "light")
+        assertSnapshot(
+            of: view.preferredColorScheme(.dark),
+            as: .image(layout: .device(config: .iPhone13Pro)),
+            named: "dark"
+        )
     }
 }

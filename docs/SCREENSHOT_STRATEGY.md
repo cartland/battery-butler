@@ -19,7 +19,7 @@ Each screen in `Screen.kt` must have at least one screenshot per **meaningful UI
 - **Loading** — spinner or skeleton
 - **NotFound / Error** — entity missing or request failed
 
-Light and dark mode for each state (Android has this today; iOS does not yet — see [Platform Parity Rules](#platform-parity-rules)).
+Light and dark mode for each state (both Android and iOS have this today).
 
 ### Tier 2 — Recommended (data variations within a state)
 
@@ -40,7 +40,7 @@ For each screen, both platforms should cover the same set of **Tier 1** states u
 
 | Reason | Example |
 |--------|---------|
-| **Framework limitation** | iOS dark mode snapshots require `.preferredColorScheme` wiring — not yet implemented |
+| **Framework limitation** | (No current examples — dark mode snapshots implemented for both platforms) |
 | **Platform-specific UI** | AI overlay is Android-only (split-screen panel in Compose, not yet built in SwiftUI) |
 | **Deliberate deferral** | Low-risk state deferred with tracking issue |
 
@@ -48,10 +48,10 @@ When adding a screenshot test to one platform, check the parity matrix below. If
 
 ## Current State — Parity Matrix
 
-**Counts:** Android 131 PNGs (74 test functions, 14 files) · iOS 46 PNGs (46 test functions, 19 files)
+**Counts:** Android 131 PNGs (74 test functions, 14 files) · iOS 92 PNGs (46 test functions, 19 files)
 
 **Key structural differences:**
-- Android tests every state in both light and dark mode; iOS is light-only throughout
+- Both platforms test every state in light and dark mode
 - Android has Play Store marketing screenshots (phone + 7" tablet + 10" tablet); iOS does not
 - Android has component gallery tests (12 components); iOS tests a smaller set of row components
 
@@ -59,48 +59,48 @@ When adding a screenshot test to one platform, check the parity matrix below. If
 
 | Screen | State | Android | iOS | Gap Reason |
 |--------|-------|---------|-----|------------|
-| **Login** | Unauthenticated | ✓ L/D | ✓ | iOS: no dark mode snapshots yet |
-| | Authenticating | ✓ L/D | ✓ | iOS: no dark mode |
+| **Login** | Unauthenticated | ✓ L/D | ✓ | — |
+| | Authenticating | ✓ L/D | ✓ | — |
 | | NotConfigured | ✓ L/D | — | iOS: state not implemented in SwiftUI snapshot tests |
 | | Error | ✓ L/D | — | iOS: error alert not snapshot-tested |
-| **Devices** | With data | ✓ L/D | ✓ | iOS: no dark mode |
-| | Empty | ✓ L/D | ✓ | iOS: no dark mode |
-| **History** | With data | ✓ L/D | ✓ | iOS: no dark mode |
-| | Empty | ✓ L/D | ✓ | iOS: no dark mode |
+| **Devices** | With data | ✓ L/D | ✓ | — |
+| | Empty | ✓ L/D | ✓ | — |
+| **History** | With data | ✓ L/D | ✓ | — |
+| | Empty | ✓ L/D | ✓ | — |
 | | Loading | ✓ L/D | ✓ | — |
-| **Types** | With data | ✓ L/D | ✓ | iOS: no dark mode |
-| | Empty | ✓ L/D | ✓ | iOS: no dark mode |
+| **Types** | With data | ✓ L/D | ✓ | — |
+| | Empty | ✓ L/D | ✓ | — |
 | | Loading | ✓ L/D | ✓ | — |
-| **Settings** | Default | ✓ L/D | ✓ | iOS: no dark mode |
+| **Settings** | Default | ✓ L/D | ✓ | — |
 | | All network modes | ✓ L/D | — | iOS: variant not tested |
-| **AddDevice** | Empty form | ✓ L/D | ✓ | iOS: no dark mode |
+| **AddDevice** | Empty form | ✓ L/D | ✓ | — |
 | | Filled form | — | ✓ | Android: only tests empty form |
-| **AddBatteryEvent** | With devices | ✓ L/D | ✓ | iOS: no dark mode |
+| **AddBatteryEvent** | With devices | ✓ L/D | ✓ | — |
 | | Empty (no devices) | ✓ L/D | ✓ | — |
-| **AddDeviceType** | Empty form | ✓ L/D | ✓ | iOS: no dark mode |
+| **AddDeviceType** | Empty form | ✓ L/D | ✓ | — |
 | | Filled form | — | ✓ | Android: only tests empty form |
 | | Error (duplicate) | — | ✓ | Android: error state not previewed |
-| **DeviceDetail** | Success | ✓ L/D | ✓ | iOS: no dark mode |
-| | Loading | ✓ L/D | ✓ | iOS: no dark mode |
-| | NotFound | ✓ L/D | ✓ | iOS: no dark mode |
-| **DeviceTypeDetail** | Success | ✓ L/D | ✓ | iOS: no dark mode (PR #911) |
-| | Loading | ✓ L/D | ✓ | iOS: no dark mode (PR #911) |
-| | NotFound | ✓ L/D | ✓ | iOS: no dark mode (PR #911) |
-| **EditDevice** | Loaded form | ✓ L/D | ✓ | iOS: no dark mode |
-| | Loading | ✓ L/D | ✓ | iOS: no dark mode |
-| | NotFound | ✓ L/D | ✓ | iOS: no dark mode |
-| **EditDeviceType** | Loaded form | ✓ L/D | ✓ | iOS: no dark mode |
+| **DeviceDetail** | Success | ✓ L/D | ✓ | — |
 | | Loading | ✓ L/D | ✓ | — |
 | | NotFound | ✓ L/D | ✓ | — |
-| **EventDetail** | Success | ✓ L/D | ✓ | iOS: no dark mode |
-| | Deleted device ref | ✓ L/D | — | iOS: edge case not tested |
-| | NotFound | ✓ L/D | ✓ | iOS: no dark mode |
+| **DeviceTypeDetail** | Success | ✓ L/D | ✓ | — |
 | | Loading | ✓ L/D | ✓ | — |
-| **EditBatteryEvent** | Loaded form | ✓ L/D | ✓ | iOS: no dark mode (PR #907) |
+| | NotFound | ✓ L/D | ✓ | — |
+| **EditDevice** | Loaded form | ✓ L/D | ✓ | — |
+| | Loading | ✓ L/D | ✓ | — |
+| | NotFound | ✓ L/D | ✓ | — |
+| **EditDeviceType** | Loaded form | ✓ L/D | ✓ | — |
+| | Loading | ✓ L/D | ✓ | — |
+| | NotFound | ✓ L/D | ✓ | — |
+| **EventDetail** | Success | ✓ L/D | ✓ | — |
+| | Deleted device ref | ✓ L/D | — | iOS: edge case not tested |
+| | NotFound | ✓ L/D | ✓ | — |
+| | Loading | ✓ L/D | ✓ | — |
+| **EditBatteryEvent** | Loaded form | ✓ L/D | ✓ | — |
 | | Loading | — | ✓ | Android: state not previewed |
-| | NotFound | ✓ L/D | ✓ | iOS: no dark mode (PR #907) |
-| **AI Chat** | With messages | ✓ L/D | ✓ | iOS: no dark mode |
-| | Empty | ✓ L/D | ✓ | iOS: no dark mode |
+| | NotFound | ✓ L/D | ✓ | — |
+| **AI Chat** | With messages | ✓ L/D | ✓ | — |
+| | Empty | ✓ L/D | ✓ | — |
 | **AI Overlay** | Collapsed (Devices) | ✓ L/D | — | Platform-specific: Android-only split-screen panel |
 | | Collapsed (Types) | ✓ L/D | — | Platform-specific |
 | | Collapsed (History) | ✓ L/D | — | Platform-specific |
@@ -142,7 +142,7 @@ When adding a screenshot test to one platform, check the parity matrix below. If
 
 ### Systemic gaps
 
-1. **iOS has no dark mode snapshots** — all 46 snapshots are light-only. Android has light + dark for every non-marketing state. Adding `.preferredColorScheme(.dark)` variants would roughly double iOS snapshot count.
+1. **iOS dark mode snapshots complete** — all 46 test functions produce both light and dark snapshots (92 PNGs total), matching Android's dual-mode coverage.
 2. **iOS Tier 1 complete** — all screens now have snapshot coverage for their meaningful states. DeviceTypeDetail was the last gap, closed by PR #911.
 3. **Android Tier 1 gaps closed** — History, Types, EventDetail, EditDeviceType Loading states and EditDevice Loading/NotFound states now have coverage.
 
@@ -187,7 +187,12 @@ class NewScreenScreenshotTest {
 final class NewScreenTests: XCTestCase {
     func testNewScreenContentView_Success() {
         let view = NewScreenContentView(/* ... */)
-        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhoneX)))
+        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)), named: "light")
+        assertSnapshot(
+            of: view.preferredColorScheme(.dark),
+            as: .image(layout: .device(config: .iPhone13Pro)),
+            named: "dark"
+        )
     }
 }
 ```

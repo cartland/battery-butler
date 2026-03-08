@@ -15,7 +15,7 @@ final class DeviceDetailScreenTests: XCTestCase {
             location: "Living Room",
             imagePath: nil
         )
-        
+
         let dummyType = DeviceType(
             id: "t1",
             name: "TV Remote",
@@ -23,20 +23,25 @@ final class DeviceDetailScreenTests: XCTestCase {
             batteryType: "AAA",
             batteryQuantity: 2
         )
-        
+
         let successState = DeviceDetailUiStateSuccess(
             device: dummyDevice,
             deviceType: dummyType,
             events: []
         )
-        
+
         let view = DeviceDetailContentView(
             state: successState,
             onRecordReplacement: {},
             eventDestination: { _ in Text("Event Details") }
         )
-        
-        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)))
+
+        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)), named: "light")
+        assertSnapshot(
+            of: view.preferredColorScheme(.dark),
+            as: .image(layout: .device(config: .iPhone13Pro)),
+            named: "dark"
+        )
     }
 
     func testDeviceDetailContentView_Loading() {
@@ -46,7 +51,12 @@ final class DeviceDetailScreenTests: XCTestCase {
             eventDestination: { _ in Text("Event Details") }
         )
 
-        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)))
+        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)), named: "light")
+        assertSnapshot(
+            of: view.preferredColorScheme(.dark),
+            as: .image(layout: .device(config: .iPhone13Pro)),
+            named: "dark"
+        )
     }
 
     func testDeviceDetailContentView_NotFound() {
@@ -56,6 +66,11 @@ final class DeviceDetailScreenTests: XCTestCase {
             eventDestination: { _ in Text("Event Details") }
         )
 
-        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)))
+        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)), named: "light")
+        assertSnapshot(
+            of: view.preferredColorScheme(.dark),
+            as: .image(layout: .device(config: .iPhone13Pro)),
+            named: "dark"
+        )
     }
 }

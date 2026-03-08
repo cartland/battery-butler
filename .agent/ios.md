@@ -74,7 +74,7 @@ PR #873 implemented the full iOS design language from `docs/design/IOS_DESIGN_LA
 
 ## iOS Snapshot Tests
 
-All 15 screens follow the two-layer Screen/ContentView pattern. 46 snapshot tests cover all ContentViews across 19 test files. Reference images are tracked in git (`__Snapshots__/`). CI uses `build-for-testing` (compile-only, no pixel comparison). Snapshots are auto-recorded post-merge by `auto-generate.yml` on `macos-latest` and committed via follow-up PRs (like Android screenshots). Use `scripts/record-ios-snapshots.sh` to record locally.
+All 15 screens follow the two-layer Screen/ContentView pattern. 46 snapshot test functions (92 PNGs — light + dark) cover all ContentViews across 19 test files. Reference images are tracked in git (`__Snapshots__/`). CI uses `build-for-testing` (compile-only, no pixel comparison). Snapshots are auto-recorded post-merge by `auto-generate.yml` on `macos-latest` and committed via follow-up PRs (like Android screenshots). Use `scripts/record-ios-snapshots.sh` to record locally.
 
 To test SwiftUI views connected to KMP, ensure the `Screen` structures are separated into stateless `ContentView` structures to bypass the `NativeComponent` DI graph during testing.
 
