@@ -262,6 +262,19 @@ fun EventDetailContentDeletedDevicePreview() {
 
 @Preview(showBackground = true)
 @Composable
+fun EventDetailLoadingPreview() {
+    BatteryButlerTheme {
+        EventDetailContent(
+            uiState = EventDetailUiState.Loading,
+            onBack = {},
+            onEdit = {},
+            onDeviceClick = {},
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
 fun EventDetailContentNotFoundPreview() {
     BatteryButlerTheme {
         EventDetailContent(

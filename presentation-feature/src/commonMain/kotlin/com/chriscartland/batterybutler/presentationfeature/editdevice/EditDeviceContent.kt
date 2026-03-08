@@ -283,6 +283,34 @@ fun EditDeviceContent(
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun EditDeviceLoadingPreview() {
+    BatteryButlerTheme {
+        EditDeviceContent(
+            uiState = EditDeviceUiState.Loading,
+            onSave = {},
+            onDelete = {},
+            onAddDeviceTypeClick = {},
+            onBack = {},
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun EditDeviceNotFoundPreview() {
+    BatteryButlerTheme {
+        EditDeviceContent(
+            uiState = EditDeviceUiState.NotFound,
+            onSave = {},
+            onDelete = {},
+            onAddDeviceTypeClick = {},
+            onBack = {},
+        )
+    }
+}
+
 @OptIn(ExperimentalTime::class)
 @Preview(showBackground = true)
 @Composable

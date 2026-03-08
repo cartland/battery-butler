@@ -227,6 +227,23 @@ fun DeviceTypeListContentEmptyPreview() {
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun DeviceTypeListContentLoadingPreview() {
+    BatteryButlerTheme {
+        DeviceTypeListContent(
+            state = DeviceTypeListUiState.Loading,
+            onEditType = {},
+            onAddTypeClick = {},
+            onPreloadTypes = {},
+            onSortOptionSelected = {},
+            onGroupOptionSelected = {},
+            onSortDirectionToggle = {},
+            onGroupDirectionToggle = {},
+        )
+    }
+}
+
 @Composable
 fun DeviceTypeListContentPreview() {
     BatteryButlerTheme {

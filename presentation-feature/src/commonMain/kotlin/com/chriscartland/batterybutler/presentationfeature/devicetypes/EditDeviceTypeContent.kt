@@ -209,6 +209,32 @@ fun EditDeviceTypeContent(
 
 @Preview(showBackground = true)
 @Composable
+fun EditDeviceTypeLoadingPreview() {
+    BatteryButlerTheme {
+        EditDeviceTypeContent(
+            uiState = EditDeviceTypeUiState.Loading,
+            onSave = {},
+            onDelete = {},
+            onBack = {},
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun EditDeviceTypeNotFoundPreview() {
+    BatteryButlerTheme {
+        EditDeviceTypeContent(
+            uiState = EditDeviceTypeUiState.NotFound,
+            onSave = {},
+            onDelete = {},
+            onBack = {},
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
 fun EditDeviceTypeContentPreview() {
     BatteryButlerTheme {
         val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
