@@ -40,7 +40,7 @@ For each screen, both platforms should cover the same set of **Tier 1** states u
 
 | Reason | Example |
 |--------|---------|
-| **Framework limitation** | (No current examples — dark mode snapshots implemented for both platforms) |
+| **Framework limitation** | SwiftUI `.alert()` not captured in snapshot tests (Login Error state) |
 | **Platform-specific UI** | AI overlay is Android-only (split-screen panel in Compose, not yet built in SwiftUI) |
 | **Deliberate deferral** | Low-risk state deferred with tracking issue |
 
@@ -48,7 +48,7 @@ When adding a screenshot test to one platform, check the parity matrix below. If
 
 ## Current State — Parity Matrix
 
-**Counts:** Android 131 PNGs (74 test functions, 14 files) · iOS 92 PNGs (46 test functions, 19 files)
+**Counts:** Android 131 PNGs (74 test functions, 14 files) · iOS 94 PNGs (47 test functions, 19 files)
 
 **Key structural differences:**
 - Both platforms test every state in light and dark mode
@@ -61,8 +61,8 @@ When adding a screenshot test to one platform, check the parity matrix below. If
 |--------|-------|---------|-----|------------|
 | **Login** | Unauthenticated | ✓ L/D | ✓ | — |
 | | Authenticating | ✓ L/D | ✓ | — |
-| | NotConfigured | ✓ L/D | — | iOS: state not implemented in SwiftUI snapshot tests |
-| | Error | ✓ L/D | — | iOS: error alert not snapshot-tested |
+| | NotConfigured | ✓ L/D | ✓ | — |
+| | Error | ✓ L/D | — | Framework limitation: SwiftUI `.alert()` not captured in snapshot tests |
 | **Devices** | With data | ✓ L/D | ✓ | — |
 | | Empty | ✓ L/D | ✓ | — |
 | **History** | With data | ✓ L/D | ✓ | — |
