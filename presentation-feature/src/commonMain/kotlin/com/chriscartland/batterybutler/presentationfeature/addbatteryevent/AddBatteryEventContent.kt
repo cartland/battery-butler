@@ -275,6 +275,23 @@ fun AddBatteryEventContent(
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun AddBatteryEventContentEmptyPreview() {
+    BatteryButlerTheme {
+        AddBatteryEventContent(
+            devices = emptyList(),
+            aiMessages = emptyList(),
+            isAiBatchImportEnabled = true,
+            onAddEvent = { _, _, _, _ -> },
+            onBatchAdd = {},
+            onAddDeviceClick = {},
+            onBack = {},
+            initialDate = "2026-01-18",
+        )
+    }
+}
+
 @OptIn(ExperimentalTime::class)
 @Preview
 @Composable

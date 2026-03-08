@@ -96,6 +96,18 @@ fun HistoryListContentEmptyPreview() {
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun HistoryListContentLoadingPreview() {
+    BatteryButlerTheme {
+        HistoryListContent(
+            state = HistoryListUiState.Loading,
+            onEventClick = { _, _ -> },
+            onAddEventClick = {},
+        )
+    }
+}
+
 @OptIn(ExperimentalTime::class)
 @Preview
 @Composable
