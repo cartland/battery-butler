@@ -44,14 +44,14 @@ config:
 ---
 sankey-beta
 
-Codebase,Shared Code,24592
+Codebase,Shared Code,24705
+Codebase,iOS Swift App,3137
 Codebase,Other,3108
-Codebase,iOS Swift App,3079
 Codebase,CMP Apps,2169
 Codebase,Server,1528
-Codebase,Screenshot Tests,991
+Codebase,Screenshot Tests,1085
 
-Shared Code,presentation-feature,5730
+Shared Code,presentation-feature,5843
 Shared Code,viewmodel,4566
 Shared Code,usecase,4073
 Shared Code,data-network,2412
@@ -62,6 +62,8 @@ Shared Code,data-local,1059
 Shared Code,ai,493
 Shared Code,compose-resources,70
 
+iOS Swift App,iosAppSwiftUI,3137
+
 Other,buildSrc,1544
 Other,test-common,609
 Other,e2e-tests,271
@@ -70,20 +72,18 @@ Other,fixtures,209
 Other,presentation-model,209
 Other,iosAppComposeUI,31
 
-iOS Swift App,iosAppSwiftUI,3079
-
 CMP Apps,compose-app,2169
 
 Server,server:app,1342
 Server,server:data,152
 Server,server:domain,34
 
-Screenshot Tests,android-screenshot-tests,991
+Screenshot Tests,android-screenshot-tests,1085
 
-presentation-feature,Kotlin,5730
+presentation-feature,Kotlin,5843
 viewmodel,Kotlin,4566
 usecase,Kotlin,4073
-iosAppSwiftUI,Swift,3079
+iosAppSwiftUI,Swift,3137
 data-network,Kotlin,2412
 domain,Kotlin,2293
 compose-app,Kotlin,2169
@@ -91,8 +91,8 @@ presentation-core,Kotlin,2095
 data,Kotlin,1801
 buildSrc,Kotlin,1544
 server:app,Kotlin,1342
+android-screenshot-tests,Kotlin,1085
 data-local,Kotlin,1059
-android-screenshot-tests,Kotlin,991
 test-common,Kotlin,609
 ai,Kotlin,493
 e2e-tests,Kotlin,271
