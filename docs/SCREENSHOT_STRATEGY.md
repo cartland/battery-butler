@@ -48,7 +48,7 @@ When adding a screenshot test to one platform, check the parity matrix below. If
 
 ## Current State — Parity Matrix
 
-**Counts:** Android 131 PNGs (74 test functions, 14 files) · iOS 43 PNGs (43 test functions, 18 files)
+**Counts:** Android 131 PNGs (74 test functions, 14 files) · iOS 46 PNGs (46 test functions, 19 files)
 
 **Key structural differences:**
 - Android tests every state in both light and dark mode; iOS is light-only throughout
@@ -83,9 +83,9 @@ When adding a screenshot test to one platform, check the parity matrix below. If
 | **DeviceDetail** | Success | ✓ L/D | ✓ | iOS: no dark mode |
 | | Loading | ✓ L/D | ✓ | iOS: no dark mode |
 | | NotFound | ✓ L/D | ✓ | iOS: no dark mode |
-| **DeviceTypeDetail** | Success | ✓ L/D | — | iOS: screen not snapshot-tested |
-| | Loading | ✓ L/D | — | iOS: screen not snapshot-tested |
-| | NotFound | ✓ L/D | — | iOS: screen not snapshot-tested |
+| **DeviceTypeDetail** | Success | ✓ L/D | ✓ | iOS: no dark mode (PR #911) |
+| | Loading | ✓ L/D | ✓ | iOS: no dark mode (PR #911) |
+| | NotFound | ✓ L/D | ✓ | iOS: no dark mode (PR #911) |
 | **EditDevice** | Loaded form | ✓ L/D | ✓ | iOS: no dark mode |
 | | Loading | ✓ L/D | ✓ | iOS: no dark mode |
 | | NotFound | ✓ L/D | ✓ | iOS: no dark mode |
@@ -142,8 +142,8 @@ When adding a screenshot test to one platform, check the parity matrix below. If
 
 ### Systemic gaps
 
-1. **iOS has no dark mode snapshots** — all 43 snapshots are light-only. Android has light + dark for every non-marketing state. Adding `.preferredColorScheme(.dark)` variants would roughly double iOS snapshot count.
-2. **iOS missing states** for DeviceTypeDetail (all states) — screen not yet implemented in iOS SwiftUI (tracked by bead `bb-tgd6`). This is a Tier 1 gap blocked on screen implementation. EditBatteryEvent coverage was added in PR #907 (3 states: Success, Loading, NotFound).
+1. **iOS has no dark mode snapshots** — all 46 snapshots are light-only. Android has light + dark for every non-marketing state. Adding `.preferredColorScheme(.dark)` variants would roughly double iOS snapshot count.
+2. **iOS Tier 1 complete** — all screens now have snapshot coverage for their meaningful states. DeviceTypeDetail was the last gap, closed by PR #911.
 3. **Android Tier 1 gaps closed** — History, Types, EventDetail, EditDeviceType Loading states and EditDevice Loading/NotFound states now have coverage.
 
 ### Unique strengths

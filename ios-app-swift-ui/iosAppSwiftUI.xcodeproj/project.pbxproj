@@ -39,6 +39,7 @@
 		3817672E5800D02B74BBCAE6 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 171E07C13F4D360A2E8F8F1B /* Foundation.framework */; };
 		3F7D7AB1C26C22E8C0769793 /* EditBatteryEventScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3170F3330B0DB17C06BD2DC /* EditBatteryEventScreenTests.swift */; };
 		4205D2EA3201CE5260E36CC6 /* ButlerSpacing.swift in Sources */ = {isa = PBXBuildFile; fileRef = E928FDF7E978787EE2AEC52F /* ButlerSpacing.swift */; };
+		455C3A62D09593ABF1CB2D3D /* DeviceTypeDetailViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2627A06EE560ED0714722885 /* DeviceTypeDetailViewModelWrapper.swift */; };
 		4965F8DE9488CA44D1213210 /* HomeScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16D54F827E245B0DE9785703 /* HomeScreenTests.swift */; };
 		512CC7D51E6C42B5C0FF3F5F /* DeviceDetailScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417E5F5994DD57326CBFBB02 /* DeviceDetailScreenTests.swift */; };
 		69167925374428CD712E239D /* SFSymbolMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E844014BE2F02549004580F /* SFSymbolMapper.swift */; };
@@ -46,12 +47,14 @@
 		7837EFBEECD11652F225A828 /* MessageRowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C64AF092C61D54E3E0BB972E /* MessageRowTests.swift */; };
 		785C51ADA7A324EE132F276A /* ButlerIconBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2E97FAF9E58B3B6789E5657 /* ButlerIconBox.swift */; };
 		7B995C9514A7E13CDD597E53 /* EventDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB2BC212BA886F9EA0057B5 /* EventDetailScreen.swift */; };
+		82BCF8FE74F6D132CE79F1B5 /* DeviceTypeDetailScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFFB914D7CB3EE76065E96D9 /* DeviceTypeDetailScreenTests.swift */; };
 		8A840B0B44DA5BED1152B8B2 /* AddDeviceTypeScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C97AD8F27356E0133B28ADE /* AddDeviceTypeScreenTests.swift */; };
 		998E133AD56CF4D0A133506A /* EditDeviceScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4217F0EB61A27BAB5D26D37A /* EditDeviceScreen.swift */; };
 		9C2D5FB0AF0B031138E5AEC3 /* DeviceTypeListScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FDAA129CFA4B9C38F69243C /* DeviceTypeListScreenTests.swift */; };
 		9E310559114A9C3509F5106D /* LoginScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05276AAFBE18E0BD342E186F /* LoginScreen.swift */; };
 		9EC6A2E16CEA57929E345F5C /* LoginViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D976428F6B0003DDB354405 /* LoginViewModelWrapper.swift */; };
 		A57202E629408A9C8F778165 /* EventDetailScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEFA05173F04BE4075FBABA5 /* EventDetailScreenTests.swift */; };
+		A74A111ED72A22540285B044 /* DeviceTypeDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62EEFBA1150A1B5BB4BE34E7 /* DeviceTypeDetailScreen.swift */; };
 		AE530C71EB0F1899C36F2C0D /* ButlerCornerRadius.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63736EB2CA3F58B280FBFA96 /* ButlerCornerRadius.swift */; };
 		AG1000000000000000000002 /* Generated in Sources */ = {isa = PBXBuildFile; fileRef = AG1000000000000000000001 /* Generated */; };
 		B2E94A4898D213A80796E832 /* SettingsScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F369A0F48183F2527CD88B41 /* SettingsScreenTests.swift */; };
@@ -106,6 +109,7 @@
 		24ABD5742F1CEC230036E1DD /* DeviceTypeRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceTypeRow.swift; sourceTree = "<group>"; };
 		24ABD5752F1CEC230036E1DD /* EditDeviceTypeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDeviceTypeScreen.swift; sourceTree = "<group>"; };
 		24ABD5762F1CEC230036E1DD /* EditDeviceTypeViewModelWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDeviceTypeViewModelWrapper.swift; sourceTree = "<group>"; };
+		2627A06EE560ED0714722885 /* DeviceTypeDetailViewModelWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DeviceTypeDetailViewModelWrapper.swift; sourceTree = "<group>"; };
 		28903408708ECF67A8991592 /* EditDeviceViewModelWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EditDeviceViewModelWrapper.swift; sourceTree = "<group>"; };
 		32F2E55509C388E5CC4D034F /* AddBatteryEventScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddBatteryEventScreenTests.swift; sourceTree = "<group>"; };
 		348ECD40844BC056AA8019FF /* AddBatteryEventViewModelWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddBatteryEventViewModelWrapper.swift; sourceTree = "<group>"; };
@@ -119,6 +123,7 @@
 		4E844014BE2F02549004580F /* SFSymbolMapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SFSymbolMapper.swift; sourceTree = "<group>"; };
 		5B969CDAC29B255B6A99F0A8 /* HistoryListScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HistoryListScreenTests.swift; sourceTree = "<group>"; };
 		6161923E993256241FF44A49 /* AddBatteryEventScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddBatteryEventScreen.swift; sourceTree = "<group>"; };
+		62EEFBA1150A1B5BB4BE34E7 /* DeviceTypeDetailScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DeviceTypeDetailScreen.swift; sourceTree = "<group>"; };
 		63736EB2CA3F58B280FBFA96 /* ButlerCornerRadius.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ButlerCornerRadius.swift; sourceTree = "<group>"; };
 		6C424550B976EA19E32F00C2 /* EditDeviceScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EditDeviceScreenTests.swift; sourceTree = "<group>"; };
 		72E31482FD860FC114F618F9 /* DeviceRowTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DeviceRowTests.swift; sourceTree = "<group>"; };
@@ -136,6 +141,7 @@
 		CE7C8996ACEF6EABE0989D13 /* iosAppSwiftUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iosAppSwiftUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D8F821268475E1398BE0B048 /* SimpleSnapshotTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SimpleSnapshotTests.swift; sourceTree = "<group>"; };
 		DFE633CDE982339D210E430D /* EditBatteryEventScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EditBatteryEventScreen.swift; sourceTree = "<group>"; };
+		DFFB914D7CB3EE76065E96D9 /* DeviceTypeDetailScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DeviceTypeDetailScreenTests.swift; sourceTree = "<group>"; };
 		E745DFA94763AF92797AF9B0 /* ButlerIconSize.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ButlerIconSize.swift; sourceTree = "<group>"; };
 		E928FDF7E978787EE2AEC52F /* ButlerSpacing.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ButlerSpacing.swift; sourceTree = "<group>"; };
 		EBB2BC212BA886F9EA0057B5 /* EventDetailScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EventDetailScreen.swift; sourceTree = "<group>"; };
@@ -296,6 +302,8 @@
 				24ABD5742F1CEC230036E1DD /* DeviceTypeRow.swift */,
 				24ABD5752F1CEC230036E1DD /* EditDeviceTypeScreen.swift */,
 				24ABD5762F1CEC230036E1DD /* EditDeviceTypeViewModelWrapper.swift */,
+				62EEFBA1150A1B5BB4BE34E7 /* DeviceTypeDetailScreen.swift */,
+				2627A06EE560ED0714722885 /* DeviceTypeDetailViewModelWrapper.swift */,
 			);
 			path = DeviceTypes;
 			sourceTree = "<group>";
@@ -322,6 +330,7 @@
 				F369A0F48183F2527CD88B41 /* SettingsScreenTests.swift */,
 				8EBF127BDE68EF62BDAFA150 /* TestData.swift */,
 				B3170F3330B0DB17C06BD2DC /* EditBatteryEventScreenTests.swift */,
+				DFFB914D7CB3EE76065E96D9 /* DeviceTypeDetailScreenTests.swift */,
 			);
 			name = iosAppSwiftUITests;
 			path = iosAppSwiftUITests;
@@ -604,6 +613,7 @@
 				B2E94A4898D213A80796E832 /* SettingsScreenTests.swift in Sources */,
 				B98DBAFBE2DC0C16669CB684 /* TestData.swift in Sources */,
 				3F7D7AB1C26C22E8C0769793 /* EditBatteryEventScreenTests.swift in Sources */,
+				82BCF8FE74F6D132CE79F1B5 /* DeviceTypeDetailScreenTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -651,6 +661,8 @@
 				4205D2EA3201CE5260E36CC6 /* ButlerSpacing.swift in Sources */,
 				E0A8DE9231A158420BA314E6 /* EditBatteryEventScreen.swift in Sources */,
 				C988F312CE053CB66B0F89C0 /* EditBatteryEventViewModelWrapper.swift in Sources */,
+				A74A111ED72A22540285B044 /* DeviceTypeDetailScreen.swift in Sources */,
+				455C3A62D09593ABF1CB2D3D /* DeviceTypeDetailViewModelWrapper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

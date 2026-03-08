@@ -26,6 +26,7 @@ The goal is to achieve feature parity between these two UI implementations by co
 | **Event Detail** | `EventDetailScreen.kt` | `EventDetailScreen.swift` | `EventDetailViewModel` (via Factory) |
 | **Edit Battery Event** | `EditBatteryEventScreen.kt` | `EditBatteryEventScreen.swift` | `EditBatteryEventViewModel` (via Factory) |
 | **Add Device Type** | `AddDeviceTypeScreen.kt` | `AddDeviceTypeScreen.swift` | `AddDeviceTypeViewModel` |
+| **Device Type Detail** | `DeviceTypeDetailScreen.kt` | `DeviceTypeDetailScreen.swift` | `DeviceTypeDetailViewModel` (via Factory) |
 | **Edit Device Type** | `EditDeviceTypeScreen.kt` | `EditDeviceTypeScreen.swift` | `EditDeviceTypeViewModel` (via Factory) |
 | **Settings** | `SettingsScreen.kt` | `SettingsScreen.swift` | `SettingsViewModel` |
 | **Login** | `LoginScreen.kt` | `LoginScreen.swift` | `LoginViewModel` |

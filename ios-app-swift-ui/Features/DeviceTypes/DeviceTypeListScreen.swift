@@ -15,11 +15,8 @@ struct DeviceTypeListScreen: View {
         DeviceTypeListContentView(
             state: viewModelWrapper.state,
             onAddTypeTapped: { isAddTypePresented = true },
-            editDestination: { typeId in
-                EditDeviceTypeScreen(
-                    factory: component.editDeviceTypeViewModelFactory,
-                    typeId: typeId
-                )
+            detailDestination: { typeId in
+                DeviceTypeDetailScreen(component: component, typeId: typeId)
             }
         )
         .sheet(isPresented: $isAddTypePresented) {
@@ -28,10 +25,10 @@ struct DeviceTypeListScreen: View {
     }
 }
 
-struct DeviceTypeListContentView<EditDestination: View>: View {
+struct DeviceTypeListContentView<DetailDestination: View>: View {
     let state: DeviceTypeListUiState
     let onAddTypeTapped: () -> Void
-    let editDestination: (String) -> EditDestination
+    let detailDestination: (String) -> DetailDestination
 
     var body: some View {
         List {
@@ -46,7 +43,7 @@ struct DeviceTypeListContentView<EditDestination: View>: View {
                     ForEach(successState.groupedTypes.keys.sorted(), id: \.self) { key in
                         Section(header: Text(key)) {
                             ForEach(successState.groupedTypes[key] ?? [], id: \.id) { type in
-                                NavigationLink(destination: editDestination(type.id)) {
+                                NavigationLink(destination: detailDestination(type.id)) {
                                     DeviceTypeRow(deviceType: type)
                                 }
                             }
