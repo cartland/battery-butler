@@ -21,7 +21,7 @@ final class DeviceTypeListScreenTests: XCTestCase {
         let view = DeviceTypeListContentView(
             state: successState,
             onAddTypeTapped: {},
-            editDestination: { _ in Text("Edit") }
+            detailDestination: { _ in Text("Edit") }
         )
 
         assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)))
@@ -39,7 +39,7 @@ final class DeviceTypeListScreenTests: XCTestCase {
         let view = DeviceTypeListContentView(
             state: successState,
             onAddTypeTapped: {},
-            editDestination: { _ in Text("Edit") }
+            detailDestination: { _ in Text("Edit") }
         )
 
         assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)))
@@ -49,7 +49,7 @@ final class DeviceTypeListScreenTests: XCTestCase {
         let view = DeviceTypeListContentView(
             state: DeviceTypeListUiStateLoading(),
             onAddTypeTapped: {},
-            editDestination: { _ in Text("Edit") }
+            detailDestination: { _ in Text("Edit") }
         )
 
         assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)))
