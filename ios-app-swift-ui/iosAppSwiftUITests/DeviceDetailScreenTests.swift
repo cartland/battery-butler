@@ -38,4 +38,24 @@ final class DeviceDetailScreenTests: XCTestCase {
         
         assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)))
     }
+
+    func testDeviceDetailContentView_Loading() {
+        let view = DeviceDetailContentView(
+            state: DeviceDetailUiStateLoading(),
+            onRecordReplacement: {},
+            eventDestination: { _ in Text("Event Details") }
+        )
+
+        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)))
+    }
+
+    func testDeviceDetailContentView_NotFound() {
+        let view = DeviceDetailContentView(
+            state: DeviceDetailUiStateNotFound(),
+            onRecordReplacement: {},
+            eventDestination: { _ in Text("Event Details") }
+        )
+
+        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)))
+    }
 }

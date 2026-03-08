@@ -20,4 +20,12 @@ final class HistoryListScreenTests: XCTestCase {
 
         assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)))
     }
+
+    func testHistoryListContentView_Empty() {
+        let emptyState = HistoryListUiStateSuccess(items: [])
+
+        let view = HistoryListContentView(state: emptyState)
+
+        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)))
+    }
 }
