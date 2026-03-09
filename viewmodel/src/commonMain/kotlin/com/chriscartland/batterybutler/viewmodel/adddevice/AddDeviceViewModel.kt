@@ -45,6 +45,10 @@ class AddDeviceViewModel(
             scope = viewModelScope,
             started = defaultWhileSubscribed(),
             initialValue = emptyList(),
+            onError = { e ->
+                _actionError.value = e.message ?: "Failed to load device types"
+                emptyList()
+            },
         )
 
     private val _isLoading = MutableStateFlow(false)

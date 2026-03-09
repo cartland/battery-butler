@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.outlined.Devices
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
@@ -253,7 +254,15 @@ fun HomeScreenList(
 ) {
     val allDevices = state.groupedDevices.values.flatten()
 
-    if (allDevices.isEmpty()) {
+    val errorMessage = state.error
+    if (errorMessage != null && allDevices.isEmpty()) {
+        EmptyStateContent(
+            icon = Icons.Default.Warning,
+            title = "Something went wrong",
+            message = errorMessage,
+            modifier = Modifier.padding(contentPadding),
+        )
+    } else if (allDevices.isEmpty()) {
         EmptyStateContent(
             icon = Icons.Outlined.Devices,
             title = composeStringResource(Res.string.empty_devices_title),
@@ -365,6 +374,24 @@ fun HomeScreenPreview() {
             onDeviceClick = {},
             onAddDeviceClick = {},
             nowInstant = nowInstant,
+        )
+    }
+}
+
+@OptIn(ExperimentalTime::class)
+@Preview(showBackground = true)
+@Composable
+fun HomeScreenErrorPreview() {
+    BatteryButlerTheme {
+        HomeScreenContent(
+            state = HomeUiState(error = "Failed to load devices"),
+            onGroupOptionToggle = {},
+            onGroupOptionSelected = {},
+            onSortOptionToggle = {},
+            onSortOptionSelected = {},
+            onDeviceClick = {},
+            onAddDeviceClick = {},
+            nowInstant = Instant.parse("2026-01-18T17:00:00Z"),
         )
     }
 }

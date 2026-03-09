@@ -15,6 +15,7 @@ data class HomeUiState(
     val groupOption: GroupOption = GroupOption.NONE,
     val exportData: String? = null,
     val syncStatus: SyncStatus = SyncStatus.Idle,
+    val error: String? = null,
 )
 
 enum class SortOption {

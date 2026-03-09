@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
@@ -68,6 +69,14 @@ fun DeviceTypeListContent(
         when (state) {
             DeviceTypeListUiState.Loading -> {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            }
+            is DeviceTypeListUiState.Error -> {
+                EmptyStateContent(
+                    icon = Icons.Default.Warning,
+                    title = "Something went wrong",
+                    message = state.message,
+                    modifier = Modifier.padding(contentPadding),
+                )
             }
             is DeviceTypeListUiState.Success -> {
                 val allTypes = state.groupedTypes.values.flatten()
@@ -233,6 +242,23 @@ fun DeviceTypeListContentLoadingPreview() {
     BatteryButlerTheme {
         DeviceTypeListContent(
             state = DeviceTypeListUiState.Loading,
+            onEditType = {},
+            onAddTypeClick = {},
+            onPreloadTypes = {},
+            onSortOptionSelected = {},
+            onGroupOptionSelected = {},
+            onSortDirectionToggle = {},
+            onGroupDirectionToggle = {},
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DeviceTypeListContentErrorPreview() {
+    BatteryButlerTheme {
+        DeviceTypeListContent(
+            state = DeviceTypeListUiState.Error("Failed to load device types"),
             onEditType = {},
             onAddTypeClick = {},
             onPreloadTypes = {},

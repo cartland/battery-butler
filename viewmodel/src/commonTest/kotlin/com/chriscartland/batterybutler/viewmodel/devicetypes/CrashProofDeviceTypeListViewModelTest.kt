@@ -23,7 +23,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class CrashProofDeviceTypeListViewModelTest {
@@ -40,7 +39,7 @@ class CrashProofDeviceTypeListViewModelTest {
     }
 
     @Test
-    fun `uiState stays at initial value when getAllDeviceTypes flow throws`() =
+    fun `uiState transitions to Error when getAllDeviceTypes flow throws`() =
         runTest {
             val fakeRepo = FakeDeviceRepository()
             val throwingRepo = object : DeviceRepository by fakeRepo {
@@ -53,16 +52,15 @@ class CrashProofDeviceTypeListViewModelTest {
             val viewModel = createViewModel(throwingRepo)
 
             // Trigger the stateIn flow collection
-            val state = viewModel.uiState.value
+            viewModel.uiState.value
 
             // Advance coroutines so the upstream flow throws
             testDispatcher.scheduler.advanceUntilIdle()
 
-            // safeStateIn catches the exception — no crash — but the UI is stuck
-            // at the initial Success(emptyMap) value forever
+            // safeStateIn catches the exception and emits an Error state
             val finalState = viewModel.uiState.value
-            assertIs<DeviceTypeListUiState.Success>(finalState)
-            assertTrue(finalState.groupedTypes.isEmpty())
+            assertIs<DeviceTypeListUiState.Error>(finalState)
+            assertEquals("Simulated getAllDeviceTypes failure", finalState.message)
         }
 
     @Test

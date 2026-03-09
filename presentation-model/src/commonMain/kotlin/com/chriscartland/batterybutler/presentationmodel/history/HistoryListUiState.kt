@@ -8,6 +8,10 @@ sealed interface HistoryListUiState {
     data class Success(
         val items: List<HistoryItemUiModel>,
     ) : HistoryListUiState
+
+    data class Error(
+        val message: String,
+    ) : HistoryListUiState
 }
 
 data class HistoryItemUiModel(

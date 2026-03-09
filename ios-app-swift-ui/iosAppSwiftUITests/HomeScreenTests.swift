@@ -20,7 +20,8 @@ final class HomeScreenTests: XCTestCase {
             sortOption: .name,
             groupOption: .none,
             exportData: nil,
-            syncStatus: SyncStatusIdle()
+            syncStatus: SyncStatusIdle(),
+            error: nil
         )
 
         let view = HomeContentView(
@@ -51,7 +52,8 @@ final class HomeScreenTests: XCTestCase {
             sortOption: .name,
             groupOption: .none,
             exportData: nil,
-            syncStatus: SyncStatusIdle()
+            syncStatus: SyncStatusIdle(),
+            error: nil
         )
 
         let view = HomeContentView(

@@ -48,7 +48,7 @@ class CrashProofAddDeviceTypeViewModelTest {
     }
 
     @Test
-    fun `usedIcons stays empty when getAllDeviceTypes flow throws`() =
+    fun `actionError is set when getAllDeviceTypes flow throws`() =
         runTest {
             val fakeRepo = FakeDeviceRepository()
             val throwingRepo = object : DeviceRepository by fakeRepo {
@@ -61,14 +61,20 @@ class CrashProofAddDeviceTypeViewModelTest {
             val viewModel = createViewModel(throwingRepo)
 
             // Trigger the stateIn flow collection
-            val state = viewModel.uiState.value
+            viewModel.uiState.value
 
             // Advance coroutines so the upstream flow throws
             testDispatcher.scheduler.advanceUntilIdle()
 
-            // safeStateIn catches the exception — no crash — but usedIcons stays empty
-            val finalState = viewModel.uiState.value
-            assertTrue(finalState.usedIcons.isEmpty())
+            // safeStateIn catches the exception and routes error to actionError
+            assertNotNull(viewModel.actionError.value)
+            assertEquals("Simulated getAllDeviceTypes failure", viewModel.actionError.value)
+
+            // usedIcons falls back to empty
+            assertTrue(
+                viewModel.uiState.value.usedIcons
+                    .isEmpty(),
+            )
         }
 
     @Test

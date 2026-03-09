@@ -37,6 +37,10 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 - **Exhaustive `when` enforcement**: Enabled the `ElseCaseInsteadOfExhaustiveWhen` detekt rule to discourage `else ->` on sealed/enum `when` expressions. Fixed one `BatchOperationResult` case to list all variants explicitly and added `@Suppress` annotations to 5 intentional catch-all usages. The rule requires type resolution (enforced in IDEs; CI enforcement planned when KMP type-resolution detekt matures).
 
+### Fixes
+
+- **safeStateIn error recovery**: `safeStateIn` now accepts an optional `onError` callback so Flow errors emit an error state instead of leaving the UI stuck at its initial value (permanent loading spinner). Added `Error` variants to `HistoryListUiState` and `DeviceTypeListUiState`, and `error: String?` to `HomeUiState`. ViewModels using `safeStateIn` now surface errors to the UI. CrashProof tests updated to assert error states.
+
 ### Documentation
 
 - **Engineering Goals document**: Created `docs/ENGINEERING_GOALS.md` — a living reference organized around four pillars (API Design, Architecture, Testing, Custom Enforcement). Each pillar lists principles, achieved techniques with file locations, aspirational goals, and key references. Includes a techniques inventory table and cross-reference index mapping topics to their primary docs, ADRs, and enforcement mechanisms.
