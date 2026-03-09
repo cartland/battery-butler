@@ -81,4 +81,47 @@ struct TestData {
         deviceTypeName: "TV Remote",
         deviceLocation: "Living Room"
     )
+
+    // MARK: - AI Messages
+
+    static let aiMessage = AiMessage(
+        id: "m1",
+        role: .user,
+        text: "What batteries does my remote use?",
+        isPartial: false,
+        hints: [:]
+    )
+
+    static let aiModelMessage = AiMessage(
+        id: "m2",
+        role: .model,
+        text: "Your TV remote uses AAA batteries.",
+        isPartial: false,
+        hints: [:]
+    )
+
+    // MARK: - Input Types
+
+    static let deviceInput = DeviceInput(
+        name: "Living Room Remote",
+        location: "Living Room",
+        typeId: "t1",
+        imagePath: nil
+    )
+
+    static let deviceTypeInput = DeviceTypeInput(
+        name: "TV Remote",
+        defaultIcon: "tv",
+        batteryType: "AAA",
+        batteryQuantity: 2
+    )
+
+    // MARK: - User
+
+    static let user = User(
+        id: "u1",
+        email: "test@example.com",
+        displayName: "Test User",
+        photoUrl: nil
+    )
 }
