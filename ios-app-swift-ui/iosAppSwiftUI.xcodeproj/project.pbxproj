@@ -36,6 +36,7 @@
 		24ABD57E2F1CEC230036E1DD /* DeviceTypeRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24ABD5742F1CEC230036E1DD /* DeviceTypeRow.swift */; };
 		2855F56B7B730259E73A04CD /* EditDeviceViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28903408708ECF67A8991592 /* EditDeviceViewModelWrapper.swift */; };
 		2FA78B928A0A3E325BA1D464 /* EditDeviceScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C424550B976EA19E32F00C2 /* EditDeviceScreenTests.swift */; };
+		34B076CFB1DCC5E0A5B30622 /* KmpInteropTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BD21B88039A180BE432D829 /* KmpInteropTests.swift */; };
 		3817672E5800D02B74BBCAE6 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 171E07C13F4D360A2E8F8F1B /* Foundation.framework */; };
 		3F7D7AB1C26C22E8C0769793 /* EditBatteryEventScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3170F3330B0DB17C06BD2DC /* EditBatteryEventScreenTests.swift */; };
 		4205D2EA3201CE5260E36CC6 /* ButlerSpacing.swift in Sources */ = {isa = PBXBuildFile; fileRef = E928FDF7E978787EE2AEC52F /* ButlerSpacing.swift */; };
@@ -127,6 +128,7 @@
 		63736EB2CA3F58B280FBFA96 /* ButlerCornerRadius.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ButlerCornerRadius.swift; sourceTree = "<group>"; };
 		6C424550B976EA19E32F00C2 /* EditDeviceScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EditDeviceScreenTests.swift; sourceTree = "<group>"; };
 		72E31482FD860FC114F618F9 /* DeviceRowTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DeviceRowTests.swift; sourceTree = "<group>"; };
+		7BD21B88039A180BE432D829 /* KmpInteropTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KmpInteropTests.swift; sourceTree = "<group>"; };
 		8EBF127BDE68EF62BDAFA150 /* TestData.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TestData.swift; sourceTree = "<group>"; };
 		9127CC9BB55BC761853552F0 /* AiChatViewModelWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AiChatViewModelWrapper.swift; sourceTree = "<group>"; };
 		9C6AF38EDA50AE221A59AC4B /* AiChatScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AiChatScreenTests.swift; sourceTree = "<group>"; };
@@ -331,6 +333,7 @@
 				8EBF127BDE68EF62BDAFA150 /* TestData.swift */,
 				B3170F3330B0DB17C06BD2DC /* EditBatteryEventScreenTests.swift */,
 				DFFB914D7CB3EE76065E96D9 /* DeviceTypeDetailScreenTests.swift */,
+				7BD21B88039A180BE432D829 /* KmpInteropTests.swift */,
 			);
 			name = iosAppSwiftUITests;
 			path = iosAppSwiftUITests;
@@ -614,6 +617,7 @@
 				B98DBAFBE2DC0C16669CB684 /* TestData.swift in Sources */,
 				3F7D7AB1C26C22E8C0769793 /* EditBatteryEventScreenTests.swift in Sources */,
 				82BCF8FE74F6D132CE79F1B5 /* DeviceTypeDetailScreenTests.swift in Sources */,
+				34B076CFB1DCC5E0A5B30622 /* KmpInteropTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

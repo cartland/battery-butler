@@ -72,6 +72,40 @@ PR #873 implemented the full iOS design language from `docs/design/IOS_DESIGN_LA
 - `AiMessage` param order: `id:role:text:isPartial:hints:` (all required in Swift)
 - `GroupOption.none`, `SortOption.name` for default enum values
 
+## KMP Interop Patterns
+
+**KmpInteropTests.swift** is the regression safety net — it constructs every KMP type used at the iOS boundary. If a KMP API change breaks a constructor, these tests fail immediately.
+
+### Type categories and Swift constructor rules
+
+| KMP Type | Swift Constructor | Example |
+|----------|------------------|---------|
+| `data class` (no defaults) | Full-param labeled init | `Device(id:name:typeId:...)` |
+| `data class` (all defaults) | Full-param init OR no-arg init | `HomeUiState(groups:devices:...)` |
+| `data object` | `TypeName()` | `SyncStatusIdle()` |
+| `sealed interface` subtype | Flattened name + init | `AuthStateAuthenticated(user:)` |
+| `enum class` | Lowercase dot syntax | `.user`, `.model`, `.name` |
+| `Companion.shared` | Static access | `KotlinInstant.Companion.shared` |
+
+### Sealed interface naming in Swift (SKIE)
+
+Kotlin nested types flatten to concatenated names:
+- `AuthState.Authenticated` → `AuthStateAuthenticated`
+- `DeviceDetailUiState.Success` → `DeviceDetailUiStateSuccess`
+- `SyncStatus.Idle` → `SyncStatusIdle`
+- `BatchOperationResult.Progress` → `BatchOperationResultProgress`
+- `DataError.Unknown` → `DataErrorUnknown`
+
+### StateFlow casting patterns in ViewModelWrappers
+
+Three patterns exist across the 14 wrappers (not yet standardized):
+
+1. **guard/fatalError** — `guard let state = flow.value as? ConcreteType else { fatalError() }`
+2. **Direct assignment** — `self.property = flow.value` (when types match directly)
+3. **as?/fallback** — `self.property = flow.value as? ConcreteType ?? defaultValue`
+
+Pattern #3 is safest (no crash on type mismatch). Standardization is a separate refactor.
+
 ## iOS Snapshot Tests
 
 All 15 screens follow the two-layer Screen/ContentView pattern. 46 snapshot test functions (92 PNGs — light + dark) cover all ContentViews across 19 test files. Reference images are tracked in git (`__Snapshots__/`). CI uses `build-for-testing` (compile-only, no pixel comparison). Snapshots are auto-recorded post-merge by `auto-generate.yml` on `macos-latest` and committed via follow-up PRs (like Android screenshots). Use `scripts/record-ios-snapshots.sh` to record locally.
