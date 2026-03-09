@@ -21,10 +21,13 @@ CONTENT_FILE=$(mktemp)
 TOC_FILE=$(mktemp)
 CURRENT_CLASS=""
 
-find "$REFERENCE_DIR" -name "*.png" | sort | while read -r filepath; do
-    REL_PATH="${filepath#ios-app-swift-ui/}"
+# Process only *.light.png files; derive dark counterpart from each
+find "$REFERENCE_DIR" -name "*.light.png" | sort | while read -r filepath; do
+    REL_LIGHT="${filepath#ios-app-swift-ui/}"
+    DARK_PATH="${filepath%.light.png}.dark.png"
+    REL_DARK="${DARK_PATH#ios-app-swift-ui/}"
     CLASS_DIR=$(echo "${filepath#$REFERENCE_DIR/}" | cut -d'/' -f1)
-    FILENAME=$(basename "$filepath" .1.png)
+    TEST_NAME=$(basename "$filepath" .light.png)
 
     if [ "$CLASS_DIR" != "$CURRENT_CLASS" ]; then
         CURRENT_CLASS="$CLASS_DIR"
@@ -35,9 +38,11 @@ find "$REFERENCE_DIR" -name "*.png" | sort | while read -r filepath; do
     fi
 
     echo "" >> "$CONTENT_FILE"
-    echo "### $FILENAME" >> "$CONTENT_FILE"
+    echo "### $TEST_NAME" >> "$CONTENT_FILE"
     echo "" >> "$CONTENT_FILE"
-    echo "<img src=\"$REL_PATH\" width=\"300\" />" >> "$CONTENT_FILE"
+    echo "| Light | Dark |" >> "$CONTENT_FILE"
+    echo "|-------|------|" >> "$CONTENT_FILE"
+    echo "| <img src=\"$REL_LIGHT\" width=\"300\" /> | <img src=\"$REL_DARK\" width=\"300\" /> |" >> "$CONTENT_FILE"
 done
 
 # Assemble final file

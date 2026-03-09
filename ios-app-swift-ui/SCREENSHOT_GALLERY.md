@@ -2,7 +2,7 @@
 
 # iOS Screenshot Gallery
 
-Generated on 2026-03-07 16:35:19 UTC
+Generated on 2026-03-09 14:41:34 UTC
 
 ## Table of Contents
 
@@ -12,8 +12,10 @@ Generated on 2026-03-07 16:35:19 UTC
 - [AiChatScreenTests](#aichatscreentests)
 - [DeviceDetailScreenTests](#devicedetailscreentests)
 - [DeviceRowTests](#devicerowtests)
+- [DeviceTypeDetailScreenTests](#devicetypedetailscreentests)
 - [DeviceTypeListScreenTests](#devicetypelistscreentests)
 - [DeviceTypeRowTests](#devicetyperowtests)
+- [EditBatteryEventScreenTests](#editbatteryeventscreentests)
 - [EditDeviceScreenTests](#editdevicescreentests)
 - [EditDeviceTypeScreenTests](#editdevicetypescreentests)
 - [EventDetailScreenTests](#eventdetailscreentests)
@@ -28,173 +30,319 @@ Generated on 2026-03-07 16:35:19 UTC
 
 ### testAddBatteryEventContentView_Empty
 
-<img src="iosAppSwiftUITests/__Snapshots__/AddBatteryEventScreenTests/testAddBatteryEventContentView_Empty.1.png" width="300" />
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/AddBatteryEventScreenTests/testAddBatteryEventContentView_Empty.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/AddBatteryEventScreenTests/testAddBatteryEventContentView_Empty.dark.png" width="300" /> |
 
 ### testAddBatteryEventContentView_WithDevices
 
-<img src="iosAppSwiftUITests/__Snapshots__/AddBatteryEventScreenTests/testAddBatteryEventContentView_WithDevices.1.png" width="300" />
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/AddBatteryEventScreenTests/testAddBatteryEventContentView_WithDevices.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/AddBatteryEventScreenTests/testAddBatteryEventContentView_WithDevices.dark.png" width="300" /> |
 
 ## AddDeviceScreenTests
 
 ### testAddDeviceContentView_Empty
 
-<img src="iosAppSwiftUITests/__Snapshots__/AddDeviceScreenTests/testAddDeviceContentView_Empty.1.png" width="300" />
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/AddDeviceScreenTests/testAddDeviceContentView_Empty.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/AddDeviceScreenTests/testAddDeviceContentView_Empty.dark.png" width="300" /> |
 
 ### testAddDeviceContentView_Filled
 
-<img src="iosAppSwiftUITests/__Snapshots__/AddDeviceScreenTests/testAddDeviceContentView_Filled.1.png" width="300" />
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/AddDeviceScreenTests/testAddDeviceContentView_Filled.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/AddDeviceScreenTests/testAddDeviceContentView_Filled.dark.png" width="300" /> |
 
 ## AddDeviceTypeScreenTests
 
 ### testAddDeviceTypeContentView_Empty
 
-<img src="iosAppSwiftUITests/__Snapshots__/AddDeviceTypeScreenTests/testAddDeviceTypeContentView_Empty.1.png" width="300" />
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/AddDeviceTypeScreenTests/testAddDeviceTypeContentView_Empty.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/AddDeviceTypeScreenTests/testAddDeviceTypeContentView_Empty.dark.png" width="300" /> |
 
 ### testAddDeviceTypeContentView_Error
 
-<img src="iosAppSwiftUITests/__Snapshots__/AddDeviceTypeScreenTests/testAddDeviceTypeContentView_Error.1.png" width="300" />
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/AddDeviceTypeScreenTests/testAddDeviceTypeContentView_Error.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/AddDeviceTypeScreenTests/testAddDeviceTypeContentView_Error.dark.png" width="300" /> |
 
 ### testAddDeviceTypeContentView_Filled
 
-<img src="iosAppSwiftUITests/__Snapshots__/AddDeviceTypeScreenTests/testAddDeviceTypeContentView_Filled.1.png" width="300" />
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/AddDeviceTypeScreenTests/testAddDeviceTypeContentView_Filled.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/AddDeviceTypeScreenTests/testAddDeviceTypeContentView_Filled.dark.png" width="300" /> |
 
 ## AiChatScreenTests
 
 ### testAiChatContentView_Empty
 
-<img src="iosAppSwiftUITests/__Snapshots__/AiChatScreenTests/testAiChatContentView_Empty.1.png" width="300" />
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/AiChatScreenTests/testAiChatContentView_Empty.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/AiChatScreenTests/testAiChatContentView_Empty.dark.png" width="300" /> |
 
 ### testAiChatContentView_WithMessages
 
-<img src="iosAppSwiftUITests/__Snapshots__/AiChatScreenTests/testAiChatContentView_WithMessages.1.png" width="300" />
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/AiChatScreenTests/testAiChatContentView_WithMessages.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/AiChatScreenTests/testAiChatContentView_WithMessages.dark.png" width="300" /> |
 
 ## DeviceDetailScreenTests
 
+### testDeviceDetailContentView_Loading
+
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/DeviceDetailScreenTests/testDeviceDetailContentView_Loading.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/DeviceDetailScreenTests/testDeviceDetailContentView_Loading.dark.png" width="300" /> |
+
+### testDeviceDetailContentView_NotFound
+
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/DeviceDetailScreenTests/testDeviceDetailContentView_NotFound.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/DeviceDetailScreenTests/testDeviceDetailContentView_NotFound.dark.png" width="300" /> |
+
 ### testDeviceDetailContentView_Success
 
-<img src="iosAppSwiftUITests/__Snapshots__/DeviceDetailScreenTests/testDeviceDetailContentView_Success.1.png" width="300" />
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/DeviceDetailScreenTests/testDeviceDetailContentView_Success.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/DeviceDetailScreenTests/testDeviceDetailContentView_Success.dark.png" width="300" /> |
 
 ## DeviceRowTests
 
 ### testDeviceRow_NilDeviceType
 
-<img src="iosAppSwiftUITests/__Snapshots__/DeviceRowTests/testDeviceRow_NilDeviceType.1.png" width="300" />
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/DeviceRowTests/testDeviceRow_NilDeviceType.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/DeviceRowTests/testDeviceRow_NilDeviceType.dark.png" width="300" /> |
 
 ### testDeviceRow_WithLocation
 
-<img src="iosAppSwiftUITests/__Snapshots__/DeviceRowTests/testDeviceRow_WithLocation.1.png" width="300" />
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/DeviceRowTests/testDeviceRow_WithLocation.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/DeviceRowTests/testDeviceRow_WithLocation.dark.png" width="300" /> |
 
 ### testDeviceRow_WithoutLocation
 
-<img src="iosAppSwiftUITests/__Snapshots__/DeviceRowTests/testDeviceRow_WithoutLocation.1.png" width="300" />
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/DeviceRowTests/testDeviceRow_WithoutLocation.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/DeviceRowTests/testDeviceRow_WithoutLocation.dark.png" width="300" /> |
+
+## DeviceTypeDetailScreenTests
+
+### testDeviceTypeDetailContentView_Loading
+
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/DeviceTypeDetailScreenTests/testDeviceTypeDetailContentView_Loading.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/DeviceTypeDetailScreenTests/testDeviceTypeDetailContentView_Loading.dark.png" width="300" /> |
+
+### testDeviceTypeDetailContentView_NotFound
+
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/DeviceTypeDetailScreenTests/testDeviceTypeDetailContentView_NotFound.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/DeviceTypeDetailScreenTests/testDeviceTypeDetailContentView_NotFound.dark.png" width="300" /> |
+
+### testDeviceTypeDetailContentView_Success
+
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/DeviceTypeDetailScreenTests/testDeviceTypeDetailContentView_Success.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/DeviceTypeDetailScreenTests/testDeviceTypeDetailContentView_Success.dark.png" width="300" /> |
 
 ## DeviceTypeListScreenTests
 
 ### testDeviceTypeListContentView_Empty
 
-<img src="iosAppSwiftUITests/__Snapshots__/DeviceTypeListScreenTests/testDeviceTypeListContentView_Empty.1.png" width="300" />
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/DeviceTypeListScreenTests/testDeviceTypeListContentView_Empty.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/DeviceTypeListScreenTests/testDeviceTypeListContentView_Empty.dark.png" width="300" /> |
 
 ### testDeviceTypeListContentView_Loading
 
-<img src="iosAppSwiftUITests/__Snapshots__/DeviceTypeListScreenTests/testDeviceTypeListContentView_Loading.1.png" width="300" />
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/DeviceTypeListScreenTests/testDeviceTypeListContentView_Loading.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/DeviceTypeListScreenTests/testDeviceTypeListContentView_Loading.dark.png" width="300" /> |
 
 ### testDeviceTypeListContentView_Success
 
-<img src="iosAppSwiftUITests/__Snapshots__/DeviceTypeListScreenTests/testDeviceTypeListContentView_Success.1.png" width="300" />
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/DeviceTypeListScreenTests/testDeviceTypeListContentView_Success.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/DeviceTypeListScreenTests/testDeviceTypeListContentView_Success.dark.png" width="300" /> |
 
 ## DeviceTypeRowTests
 
 ### testDeviceTypeRow_WithBatteryType
 
-<img src="iosAppSwiftUITests/__Snapshots__/DeviceTypeRowTests/testDeviceTypeRow_WithBatteryType.1.png" width="300" />
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/DeviceTypeRowTests/testDeviceTypeRow_WithBatteryType.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/DeviceTypeRowTests/testDeviceTypeRow_WithBatteryType.dark.png" width="300" /> |
 
 ### testDeviceTypeRow_WithoutBatteryType
 
-<img src="iosAppSwiftUITests/__Snapshots__/DeviceTypeRowTests/testDeviceTypeRow_WithoutBatteryType.1.png" width="300" />
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/DeviceTypeRowTests/testDeviceTypeRow_WithoutBatteryType.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/DeviceTypeRowTests/testDeviceTypeRow_WithoutBatteryType.dark.png" width="300" /> |
+
+## EditBatteryEventScreenTests
+
+### testEditBatteryEventContentView_Loading
+
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/EditBatteryEventScreenTests/testEditBatteryEventContentView_Loading.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/EditBatteryEventScreenTests/testEditBatteryEventContentView_Loading.dark.png" width="300" /> |
+
+### testEditBatteryEventContentView_NotFound
+
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/EditBatteryEventScreenTests/testEditBatteryEventContentView_NotFound.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/EditBatteryEventScreenTests/testEditBatteryEventContentView_NotFound.dark.png" width="300" /> |
+
+### testEditBatteryEventContentView_Success
+
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/EditBatteryEventScreenTests/testEditBatteryEventContentView_Success.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/EditBatteryEventScreenTests/testEditBatteryEventContentView_Success.dark.png" width="300" /> |
 
 ## EditDeviceScreenTests
 
+### testEditDeviceContentView_Loading
+
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/EditDeviceScreenTests/testEditDeviceContentView_Loading.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/EditDeviceScreenTests/testEditDeviceContentView_Loading.dark.png" width="300" /> |
+
+### testEditDeviceContentView_NotFound
+
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/EditDeviceScreenTests/testEditDeviceContentView_NotFound.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/EditDeviceScreenTests/testEditDeviceContentView_NotFound.dark.png" width="300" /> |
+
 ### testEditDeviceContentView_Success
 
-<img src="iosAppSwiftUITests/__Snapshots__/EditDeviceScreenTests/testEditDeviceContentView_Success.1.png" width="300" />
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/EditDeviceScreenTests/testEditDeviceContentView_Success.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/EditDeviceScreenTests/testEditDeviceContentView_Success.dark.png" width="300" /> |
 
 ## EditDeviceTypeScreenTests
 
 ### testEditDeviceTypeContentView_Loaded
 
-<img src="iosAppSwiftUITests/__Snapshots__/EditDeviceTypeScreenTests/testEditDeviceTypeContentView_Loaded.1.png" width="300" />
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/EditDeviceTypeScreenTests/testEditDeviceTypeContentView_Loaded.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/EditDeviceTypeScreenTests/testEditDeviceTypeContentView_Loaded.dark.png" width="300" /> |
 
 ### testEditDeviceTypeContentView_Loading
 
-<img src="iosAppSwiftUITests/__Snapshots__/EditDeviceTypeScreenTests/testEditDeviceTypeContentView_Loading.1.png" width="300" />
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/EditDeviceTypeScreenTests/testEditDeviceTypeContentView_Loading.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/EditDeviceTypeScreenTests/testEditDeviceTypeContentView_Loading.dark.png" width="300" /> |
 
 ### testEditDeviceTypeContentView_NotFound
 
-<img src="iosAppSwiftUITests/__Snapshots__/EditDeviceTypeScreenTests/testEditDeviceTypeContentView_NotFound.1.png" width="300" />
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/EditDeviceTypeScreenTests/testEditDeviceTypeContentView_NotFound.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/EditDeviceTypeScreenTests/testEditDeviceTypeContentView_NotFound.dark.png" width="300" /> |
 
 ## EventDetailScreenTests
 
 ### testEventDetailContentView_Loading
 
-<img src="iosAppSwiftUITests/__Snapshots__/EventDetailScreenTests/testEventDetailContentView_Loading.1.png" width="300" />
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/EventDetailScreenTests/testEventDetailContentView_Loading.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/EventDetailScreenTests/testEventDetailContentView_Loading.dark.png" width="300" /> |
 
 ### testEventDetailContentView_NotFound
 
-<img src="iosAppSwiftUITests/__Snapshots__/EventDetailScreenTests/testEventDetailContentView_NotFound.1.png" width="300" />
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/EventDetailScreenTests/testEventDetailContentView_NotFound.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/EventDetailScreenTests/testEventDetailContentView_NotFound.dark.png" width="300" /> |
 
 ### testEventDetailContentView_Success
 
-<img src="iosAppSwiftUITests/__Snapshots__/EventDetailScreenTests/testEventDetailContentView_Success.1.png" width="300" />
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/EventDetailScreenTests/testEventDetailContentView_Success.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/EventDetailScreenTests/testEventDetailContentView_Success.dark.png" width="300" /> |
 
 ## HistoryListScreenTests
 
+### testHistoryListContentView_Empty
+
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/HistoryListScreenTests/testHistoryListContentView_Empty.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/HistoryListScreenTests/testHistoryListContentView_Empty.dark.png" width="300" /> |
+
 ### testHistoryListContentView_Loading
 
-<img src="iosAppSwiftUITests/__Snapshots__/HistoryListScreenTests/testHistoryListContentView_Loading.1.png" width="300" />
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/HistoryListScreenTests/testHistoryListContentView_Loading.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/HistoryListScreenTests/testHistoryListContentView_Loading.dark.png" width="300" /> |
 
 ### testHistoryListContentView_Success
 
-<img src="iosAppSwiftUITests/__Snapshots__/HistoryListScreenTests/testHistoryListContentView_Success.1.png" width="300" />
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/HistoryListScreenTests/testHistoryListContentView_Success.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/HistoryListScreenTests/testHistoryListContentView_Success.dark.png" width="300" /> |
 
 ## HomeScreenTests
 
 ### testHomeContentView_Empty
 
-<img src="iosAppSwiftUITests/__Snapshots__/HomeScreenTests/testHomeContentView_Empty.1.png" width="300" />
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/HomeScreenTests/testHomeContentView_Empty.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/HomeScreenTests/testHomeContentView_Empty.dark.png" width="300" /> |
 
 ### testHomeContentView_WithDevices
 
-<img src="iosAppSwiftUITests/__Snapshots__/HomeScreenTests/testHomeContentView_WithDevices.1.png" width="300" />
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/HomeScreenTests/testHomeContentView_WithDevices.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/HomeScreenTests/testHomeContentView_WithDevices.dark.png" width="300" /> |
 
 ## LoginScreenTests
 
 ### testLoginContentView_Authenticating
 
-<img src="iosAppSwiftUITests/__Snapshots__/LoginScreenTests/testLoginContentView_Authenticating.1.png" width="300" />
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/LoginScreenTests/testLoginContentView_Authenticating.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/LoginScreenTests/testLoginContentView_Authenticating.dark.png" width="300" /> |
 
 ### testLoginContentView_Default
 
-<img src="iosAppSwiftUITests/__Snapshots__/LoginScreenTests/testLoginContentView_Default.1.png" width="300" />
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/LoginScreenTests/testLoginContentView_Default.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/LoginScreenTests/testLoginContentView_Default.dark.png" width="300" /> |
+
+### testLoginContentView_NotConfigured
+
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/LoginScreenTests/testLoginContentView_NotConfigured.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/LoginScreenTests/testLoginContentView_NotConfigured.dark.png" width="300" /> |
 
 ## MessageRowTests
 
 ### testMessageRow_ModelMessage
 
-<img src="iosAppSwiftUITests/__Snapshots__/MessageRowTests/testMessageRow_ModelMessage.1.png" width="300" />
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/MessageRowTests/testMessageRow_ModelMessage.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/MessageRowTests/testMessageRow_ModelMessage.dark.png" width="300" /> |
 
 ### testMessageRow_UserMessage
 
-<img src="iosAppSwiftUITests/__Snapshots__/MessageRowTests/testMessageRow_UserMessage.1.png" width="300" />
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/MessageRowTests/testMessageRow_UserMessage.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/MessageRowTests/testMessageRow_UserMessage.dark.png" width="300" /> |
 
 ## SettingsScreenTests
 
 ### testSettingsContentView_Default
 
-<img src="iosAppSwiftUITests/__Snapshots__/SettingsScreenTests/testSettingsContentView_Default.1.png" width="300" />
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/SettingsScreenTests/testSettingsContentView_Default.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/SettingsScreenTests/testSettingsContentView_Default.dark.png" width="300" /> |
 
 ## SimpleSnapshotTests
 
 ### testSimpleView
 
-<img src="iosAppSwiftUITests/__Snapshots__/SimpleSnapshotTests/testSimpleView.1.png" width="300" />
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/SimpleSnapshotTests/testSimpleView.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/SimpleSnapshotTests/testSimpleView.dark.png" width="300" /> |
 
