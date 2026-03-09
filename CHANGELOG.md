@@ -33,6 +33,10 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ## 2026-03-08
 
+### Fixes
+
+- **safeStateIn error recovery**: `safeStateIn` now accepts an optional `onError` callback so Flow errors emit an error state instead of leaving the UI stuck at its initial value (permanent loading spinner). Added `Error` variants to `HistoryListUiState` and `DeviceTypeListUiState`, and `error: String?` to `HomeUiState`. ViewModels using `safeStateIn` now surface errors to the UI. CrashProof tests updated to assert error states.
+
 ### Documentation
 
 - **Engineering Goals document**: Created `docs/ENGINEERING_GOALS.md` — a living reference organized around four pillars (API Design, Architecture, Testing, Custom Enforcement). Each pillar lists principles, achieved techniques with file locations, aspirational goals, and key references. Includes a techniques inventory table and cross-reference index mapping topics to their primary docs, ADRs, and enforcement mechanisms.

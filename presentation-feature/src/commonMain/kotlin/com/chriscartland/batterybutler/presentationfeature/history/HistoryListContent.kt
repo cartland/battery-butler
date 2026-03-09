@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -45,6 +46,14 @@ fun HistoryListContent(
         when (state) {
             HistoryListUiState.Loading -> {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            }
+            is HistoryListUiState.Error -> {
+                EmptyStateContent(
+                    icon = Icons.Default.Warning,
+                    title = "Something went wrong",
+                    message = state.message,
+                    modifier = Modifier.padding(contentPadding),
+                )
             }
             is HistoryListUiState.Success -> {
                 if (state.items.isEmpty()) {
@@ -102,6 +111,18 @@ fun HistoryListContentLoadingPreview() {
     BatteryButlerTheme {
         HistoryListContent(
             state = HistoryListUiState.Loading,
+            onEventClick = { _, _ -> },
+            onAddEventClick = {},
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun HistoryListContentErrorPreview() {
+    BatteryButlerTheme {
+        HistoryListContent(
+            state = HistoryListUiState.Error("Failed to load history"),
             onEventClick = { _, _ -> },
             onAddEventClick = {},
         )

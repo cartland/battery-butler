@@ -43,7 +43,7 @@ class CrashProofViewModelTest {
     }
 
     @Test
-    fun `ViewModel initialization does not crash when upstream flow throws exception`() =
+    fun `actionError is set when upstream flow throws exception`() =
         runTest {
             // Create an intentionally broken repository that throws on flow collection
             // like an uninitialized SQLite driver on iOS would.
@@ -67,13 +67,17 @@ class CrashProofViewModelTest {
             )
 
             // Read the property to trigger the stateIn flow collection
-            val value = viewModel.deviceTypes.value
+            viewModel.deviceTypes.value
 
             // Advance coroutines, which will execute the upstream flow and throw the exception
             testDispatcher.scheduler.advanceUntilIdle()
 
-            // safeStateIn catches the exception and falls back to emptyList()
-            assertTrue(value.isEmpty())
+            // safeStateIn catches the exception and routes error to actionError
+            assertNotNull(viewModel.actionError.value)
+            assertEquals("Simulated SQLite driver failure on iOS", viewModel.actionError.value)
+
+            // deviceTypes falls back to emptyList()
+            assertTrue(viewModel.deviceTypes.value.isEmpty())
         }
 
     @Test

@@ -20,6 +20,7 @@ import kotlinx.coroutines.test.setMain
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertIs
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -37,7 +38,7 @@ class CrashProofHistoryListViewModelTest {
     }
 
     @Test
-    fun `uiState stuck at Loading when getAllEvents flow throws`() =
+    fun `uiState transitions to Error when getAllEvents flow throws`() =
         runTest {
             val fakeRepo = FakeDeviceRepository()
             val throwingRepo = object : DeviceRepository by fakeRepo {
@@ -55,13 +56,14 @@ class CrashProofHistoryListViewModelTest {
             // Advance coroutines so the upstream flow throws
             testDispatcher.scheduler.advanceUntilIdle()
 
-            // safeStateIn catches the exception — no crash — but the UI is stuck at Loading
+            // safeStateIn catches the exception and emits an Error state
             val finalState = viewModel.uiState.value
-            assertIs<HistoryListUiState.Loading>(finalState)
+            assertIs<HistoryListUiState.Error>(finalState)
+            assertEquals("Simulated getAllEvents failure", finalState.message)
         }
 
     @Test
-    fun `uiState stuck at Loading when getAllDevices flow throws`() =
+    fun `uiState transitions to Error when getAllDevices flow throws`() =
         runTest {
             val fakeRepo = FakeDeviceRepository()
             val throwingRepo = object : DeviceRepository by fakeRepo {
@@ -79,13 +81,14 @@ class CrashProofHistoryListViewModelTest {
             // Advance coroutines so the upstream flow throws
             testDispatcher.scheduler.advanceUntilIdle()
 
-            // safeStateIn catches the exception — no crash — but the UI is stuck at Loading
+            // safeStateIn catches the exception and emits an Error state
             val finalState = viewModel.uiState.value
-            assertIs<HistoryListUiState.Loading>(finalState)
+            assertIs<HistoryListUiState.Error>(finalState)
+            assertEquals("Simulated getAllDevices failure", finalState.message)
         }
 
     @Test
-    fun `uiState stuck at Loading when getAllDeviceTypes flow throws`() =
+    fun `uiState transitions to Error when getAllDeviceTypes flow throws`() =
         runTest {
             val fakeRepo = FakeDeviceRepository()
             val throwingRepo = object : DeviceRepository by fakeRepo {
@@ -103,9 +106,10 @@ class CrashProofHistoryListViewModelTest {
             // Advance coroutines so the upstream flow throws
             testDispatcher.scheduler.advanceUntilIdle()
 
-            // safeStateIn catches the exception — no crash — but the UI is stuck at Loading
+            // safeStateIn catches the exception and emits an Error state
             val finalState = viewModel.uiState.value
-            assertIs<HistoryListUiState.Loading>(finalState)
+            assertIs<HistoryListUiState.Error>(finalState)
+            assertEquals("Simulated getAllDeviceTypes failure", finalState.message)
         }
 
     private fun createViewModel(repo: DeviceRepository): HistoryListViewModel =
