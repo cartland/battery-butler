@@ -33,6 +33,10 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ## 2026-03-08
 
+### Linting
+
+- **Exhaustive `when` enforcement**: Enabled the `ElseCaseInsteadOfExhaustiveWhen` detekt rule to discourage `else ->` on sealed/enum `when` expressions. Fixed one `BatchOperationResult` case to list all variants explicitly and added `@Suppress` annotations to 5 intentional catch-all usages. The rule requires type resolution (enforced in IDEs; CI enforcement planned when KMP type-resolution detekt matures).
+
 ### Documentation
 
 - **Engineering Goals document**: Created `docs/ENGINEERING_GOALS.md` — a living reference organized around four pillars (API Design, Architecture, Testing, Custom Enforcement). Each pillar lists principles, achieved techniques with file locations, aspirational goals, and key references. Includes a techniques inventory table and cross-reference index mapping topics to their primary docs, ADRs, and enforcement mechanisms.

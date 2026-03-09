@@ -26,14 +26,14 @@ A living reference documenting what we believe about software engineering, where
 | `AuthError` sealed hierarchy | `ConfigurationNotConfigured`, `SignInFailed`, `SignOutFailed` | `domain/src/commonMain/.../model/AuthError.kt` |
 | Try-catch only at boundaries | Room/SQLite in `DefaultDeviceRepository`, gRPC in network layer, Gemini in AI engine | `data/src/commonMain/.../DefaultDeviceRepository.kt` |
 | `operator fun invoke()` | All use cases enforce callable convention | `usecase/src/commonMain/` (enforced by `UseCaseConventionTest`) |
-| Exhaustive `when` on sealed types | ViewModels switch on `Result`, `SyncStatus`, `Screen` | `viewmodel/src/commonMain/` |
+| Exhaustive `when` on sealed types | ViewModels switch on `Result`, `SyncStatus`, `Screen`; `ElseCaseInsteadOfExhaustiveWhen` detekt rule enabled | `viewmodel/src/commonMain/`, `detekt.yml` |
 | `@Deprecated` with `ReplaceWith` | `DataResult<T>` → `Result<T, DataError>` migration | `domain/src/commonMain/.../model/DataResult.kt` |
 
 ### Aspirational
 
 - **`throw` checker Gradle task** — Scan non-boundary modules for `throw` statements (excluding `CancellationException`) and fail the build.
 - **`Result.combine()` extension** — Aggregate multiple `Result` values (e.g., parallel fetches) into a single `Result<List<D>, E>`.
-- **Exhaustive `when` linter** — Warn when a `when` on a sealed type uses `else` instead of listing all branches (catches accidental catch-all after new subtypes are added).
+- **Exhaustive `when` CI enforcement** — The `ElseCaseInsteadOfExhaustiveWhen` detekt rule is enabled but requires type resolution (not yet available in CI for KMP). Enable CI enforcement when KMP type-resolution detekt matures.
 - **Error code catalog** — Centralize all `DataError` subtypes into a reference table in docs, linking each to its boundary source.
 
 ### Key References

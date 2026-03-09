@@ -66,11 +66,12 @@ private val slideTransitionMetadata =
             slideOutHorizontally(tween(300)) { it } + fadeOut(tween(300))
     }
 
+@Suppress("ElseCaseInsteadOfExhaustiveWhen")
 private fun Screen?.toMainTab(): MainTab =
     when (this) {
         is Screen.Types -> MainTab.Types
         is Screen.History -> MainTab.History
-        else -> MainTab.Devices
+        else -> MainTab.Devices // Intentional: all other screens default to Devices tab
     }
 
 // Preview removed as we can't easily preview with DI and Interfaces
@@ -119,11 +120,12 @@ fun App(
             val currentTab = backStack.lastOrNull { it.isTabScreen }.toMainTab()
 
             // Determine active tab name for AI context hints
+            @Suppress("ElseCaseInsteadOfExhaustiveWhen")
             val currentTabName = when (backStack.lastOrNull { it.isTabScreen }) {
                 is Screen.Devices -> MainTab.Devices.name
                 is Screen.Types -> MainTab.Types.name
                 is Screen.History -> MainTab.History.name
-                else -> null
+                else -> null // Intentional: non-tab screens have no tab name
             }
 
             val onSendAiMessage: (String) -> Unit = { text ->

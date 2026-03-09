@@ -54,10 +54,11 @@ class DelegatingGrpcClient(
                         }
                     }
                     is NetworkMode.GrpcAws, is NetworkMode.GrpcDev -> {
+                        @Suppress("ElseCaseInsteadOfExhaustiveWhen")
                         val url = when (mode) {
                             is NetworkMode.GrpcAws -> mode.url
                             is NetworkMode.GrpcDev -> mode.url
-                            else -> null
+                            else -> null // Intentional: nested inside GrpcAws/GrpcDev branch
                         }
                         if (url.isNullOrBlank()) {
                             GrpcClientState.InvalidConfiguration
