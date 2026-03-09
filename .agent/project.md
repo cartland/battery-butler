@@ -4,7 +4,7 @@ Shared project-specific knowledge for all AI agents. This supplements the workfl
 
 ## Architecture
 
-**Battery Butler** is a Kotlin Multiplatform (KMP) app with a Ktor gRPC server.
+**Battery Butler** is a Kotlin Multiplatform (KMP) app with a Ktor gRPC server. For the project's engineering beliefs, current techniques, and aspirational goals, see [`docs/ENGINEERING_GOALS.md`](../docs/ENGINEERING_GOALS.md).
 
 - **Platforms**: Android, iOS (SwiftUI + Compose), Desktop
 - **Server**: Ktor + gRPC on AWS ECS Fargate
