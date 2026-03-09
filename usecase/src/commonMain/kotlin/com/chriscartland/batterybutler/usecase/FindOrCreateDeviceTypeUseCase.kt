@@ -1,7 +1,10 @@
 package com.chriscartland.batterybutler.usecase
 
 import com.benasher44.uuid.uuid4
+import com.chriscartland.batterybutler.domain.model.DataError
 import com.chriscartland.batterybutler.domain.model.DeviceType
+import com.chriscartland.batterybutler.domain.model.Result
+import com.chriscartland.batterybutler.domain.model.map
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import kotlinx.coroutines.flow.first
 import me.tatarka.inject.annotations.Inject
@@ -16,20 +19,20 @@ import me.tatarka.inject.annotations.Inject
 class FindOrCreateDeviceTypeUseCase(
     private val deviceRepository: DeviceRepository,
 ) {
-    suspend operator fun invoke(typeName: String?): String {
+    suspend operator fun invoke(typeName: String?): Result<String, DataError> {
         if (typeName.isNullOrBlank()) {
-            return "default_type"
+            return Result.Success("default_type")
         }
         val existingTypes = deviceRepository.getAllDeviceTypes().first()
         val existingType = existingTypes.find { it.name == typeName }
         if (existingType != null) {
-            return existingType.id
+            return Result.Success(existingType.id)
         }
 
         val newTypeId = uuid4().toString()
-        deviceRepository.addDeviceType(
-            DeviceType(id = newTypeId, name = typeName, defaultIcon = "default"),
-        )
-        return newTypeId
+        return deviceRepository
+            .addDeviceType(
+                DeviceType(id = newTypeId, name = typeName, defaultIcon = "default"),
+            ).map { newTypeId }
     }
 }

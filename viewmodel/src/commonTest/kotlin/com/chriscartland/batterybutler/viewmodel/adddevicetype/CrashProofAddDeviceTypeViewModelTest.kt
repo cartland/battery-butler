@@ -1,8 +1,10 @@
 package com.chriscartland.batterybutler.viewmodel.adddevicetype
 
+import com.chriscartland.batterybutler.domain.model.DataError
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.DeviceTypeInput
 import com.chriscartland.batterybutler.domain.model.FeatureFlag
+import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.model.ai.AiEngine
 import com.chriscartland.batterybutler.domain.model.ai.AiMessage
 import com.chriscartland.batterybutler.domain.model.ai.ToolHandler
@@ -28,6 +30,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -69,24 +72,17 @@ class CrashProofAddDeviceTypeViewModelTest {
         }
 
     @Test
-    fun `addDeviceType has no error handling - exception from repo is not caught`() =
+    fun `addDeviceType sets actionError when repo returns error`() =
         runTest {
             val fakeRepo = FakeDeviceRepository()
-            // Intercept the exception in the repo to prevent it from crashing the test.
-            // In production, this exception would propagate uncaught through
-            // viewModelScope.launch and crash the app.
-            var thrownException: Throwable? = null
-            val interceptingRepo = object : DeviceRepository by fakeRepo {
-                override suspend fun addDeviceType(type: DeviceType) {
-                    val exception = RuntimeException("Simulated addDeviceType failure")
-                    thrownException = exception
-                    // Don't rethrow — we're documenting the bug, not crashing the test.
-                    // In production code, this throw would propagate uncaught because
-                    // addDeviceType() has no try-catch in viewModelScope.launch.
-                }
+            val errorRepo = object : DeviceRepository by fakeRepo {
+                override suspend fun addDeviceType(type: DeviceType): Result<Unit, DataError> = Result.Error(DataError.Database.WriteFailed(message = "Simulated addDeviceType failure"))
             }
 
-            val viewModel = createViewModel(interceptingRepo)
+            val viewModel = createViewModel(errorRepo)
+
+            // Verify no error initially
+            assertNull(viewModel.actionError.value)
 
             val input = DeviceTypeInput(
                 name = "Smoke Detector",
@@ -98,12 +94,16 @@ class CrashProofAddDeviceTypeViewModelTest {
             viewModel.addDeviceType(input)
             testDispatcher.scheduler.advanceUntilIdle()
 
-            // The repo method WAS called and WOULD have thrown
-            assertNotNull(thrownException)
+            // The error is captured in actionError instead of crashing the app
+            assertNotNull(viewModel.actionError.value)
+            assertEquals("Simulated addDeviceType failure", viewModel.actionError.value)
+
             // The type was NOT added — operation failed
             assertEquals(0, fakeRepo.deviceTypes.size)
-            // BUG: There is no error state on the ViewModel — the user gets no
-            // feedback that the operation failed. The ViewModel has no error flow.
+
+            // dismissActionError clears the error
+            viewModel.dismissActionError()
+            assertNull(viewModel.actionError.value)
         }
 
     private fun createViewModel(repo: DeviceRepository): AddDeviceTypeViewModel =

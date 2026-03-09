@@ -4,10 +4,12 @@ import com.benasher44.uuid.uuid4
 import com.chriscartland.batterybutler.domain.model.BatchOperationResult
 import com.chriscartland.batterybutler.domain.model.DataError
 import com.chriscartland.batterybutler.domain.model.Device
+import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.model.ai.AiEngine
 import com.chriscartland.batterybutler.domain.model.ai.AiToolNames
 import com.chriscartland.batterybutler.domain.model.ai.AiToolParams
 import com.chriscartland.batterybutler.domain.model.ai.ToolHandler
+import com.chriscartland.batterybutler.domain.model.getOrElse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import me.tatarka.inject.annotations.Inject
@@ -36,10 +38,11 @@ class BatchAddDevicesUseCase(
                         val name = args[AiToolParams.NAME] as? String ?: return@ToolHandler "Error: Missing name"
                         val typeName = args[AiToolParams.TYPE] as? String
 
-                        try {
-                            val typeId = findOrCreateDeviceTypeUseCase(typeName)
+                        val typeId = findOrCreateDeviceTypeUseCase(typeName)
+                            .getOrElse { return@ToolHandler "Error: ${it.message}" }
 
-                            addDeviceUseCase(
+                        when (
+                            val result = addDeviceUseCase(
                                 Device(
                                     id = uuid4().toString(),
                                     name = name,
@@ -48,10 +51,9 @@ class BatchAddDevicesUseCase(
                                     lastUpdated = Clock.System.now(),
                                 ),
                             )
-                            "Success: Added device '$name' (Type: ${typeName ?: "Default"})"
-                        } catch (e: Exception) {
-                            if (e is CancellationException) throw e
-                            "Error adding device: ${e.message}"
+                        ) {
+                            is Result.Success -> "Success: Added device '$name' (Type: ${typeName ?: "Default"})"
+                            is Result.Error -> "Error adding device: ${result.error.message}"
                         }
                     }
                     else -> "Error: This tool is not supported in this context. Use '${AiToolNames.ADD_DEVICE}' only."

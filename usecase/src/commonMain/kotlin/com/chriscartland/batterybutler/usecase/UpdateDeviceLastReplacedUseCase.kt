@@ -1,5 +1,8 @@
 package com.chriscartland.batterybutler.usecase
 
+import com.chriscartland.batterybutler.domain.model.DataError
+import com.chriscartland.batterybutler.domain.model.Result
+import com.chriscartland.batterybutler.domain.model.map
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import kotlinx.coroutines.flow.first
 import me.tatarka.inject.annotations.Inject
@@ -23,18 +26,17 @@ class UpdateDeviceLastReplacedUseCase(
      * Updates the device's batteryLastReplaced timestamp based on its events.
      *
      * @param deviceId The ID of the device to update
-     * @return true if the device was updated, false if no update was needed
+     * @return [Result.Success] with true if the device was updated, false if no update was needed
      */
-    suspend operator fun invoke(deviceId: String): Boolean {
-        val device = deviceRepository.getDeviceById(deviceId).first() ?: return false
+    suspend operator fun invoke(deviceId: String): Result<Boolean, DataError> {
+        val device = deviceRepository.getDeviceById(deviceId).first() ?: return Result.Success(false)
         val events = deviceRepository.getEventsForDevice(deviceId).first()
         val latestDate = events.maxByOrNull { it.date }?.date ?: Instant.fromEpochMilliseconds(0)
 
         return if (latestDate != device.batteryLastReplaced) {
-            deviceRepository.updateDevice(device.copy(batteryLastReplaced = latestDate))
-            true
+            deviceRepository.updateDevice(device.copy(batteryLastReplaced = latestDate)).map { true }
         } else {
-            false
+            Result.Success(false)
         }
     }
 
@@ -46,19 +48,18 @@ class UpdateDeviceLastReplacedUseCase(
      *
      * @param deviceId The ID of the device to update
      * @param newTimestamp The timestamp to compare against
-     * @return true if the device was updated, false if no update was needed
+     * @return [Result.Success] with true if the device was updated, false if no update was needed
      */
     suspend fun ifNewer(
         deviceId: String,
         newTimestamp: Instant,
-    ): Boolean {
-        val device = deviceRepository.getDeviceById(deviceId).first() ?: return false
+    ): Result<Boolean, DataError> {
+        val device = deviceRepository.getDeviceById(deviceId).first() ?: return Result.Success(false)
 
         return if (newTimestamp > device.batteryLastReplaced) {
-            deviceRepository.updateDevice(device.copy(batteryLastReplaced = newTimestamp))
-            true
+            deviceRepository.updateDevice(device.copy(batteryLastReplaced = newTimestamp)).map { true }
         } else {
-            false
+            Result.Success(false)
         }
     }
 }

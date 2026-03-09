@@ -4,6 +4,7 @@ import com.benasher44.uuid.uuid4
 import com.chriscartland.batterybutler.domain.model.BatchOperationResult
 import com.chriscartland.batterybutler.domain.model.DataError
 import com.chriscartland.batterybutler.domain.model.DeviceType
+import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.model.ai.AiEngine
 import com.chriscartland.batterybutler.domain.model.ai.AiToolNames
 import com.chriscartland.batterybutler.domain.model.ai.AiToolParams
@@ -36,15 +37,15 @@ class BatchAddDeviceTypesUseCase(
                         val name = args[AiToolParams.NAME] as? String ?: return@ToolHandler "Error: Missing name"
                         val iconName = args[AiToolParams.ICON] as? String ?: "default"
 
-                        try {
-                            // Smart deduplication
-                            val existingTypes: List<DeviceType> = deviceRepository.getAllDeviceTypes().first()
-                            val existingType = existingTypes.find { type -> type.name == name }
+                        // Smart deduplication
+                        val existingTypes: List<DeviceType> = deviceRepository.getAllDeviceTypes().first()
+                        val existingType = existingTypes.find { type -> type.name == name }
 
-                            if (existingType != null) {
-                                "Success: Device type '$name' already exists."
-                            } else {
-                                deviceRepository.addDeviceType(
+                        if (existingType != null) {
+                            "Success: Device type '$name' already exists."
+                        } else {
+                            when (
+                                val result = deviceRepository.addDeviceType(
                                     DeviceType(
                                         id = uuid4().toString(),
                                         name = name,
@@ -57,11 +58,10 @@ class BatchAddDeviceTypesUseCase(
                                         },
                                     ),
                                 )
-                                "Success: Added device type '$name'"
+                            ) {
+                                is Result.Success -> "Success: Added device type '$name'"
+                                is Result.Error -> "Error adding device type: ${result.error.message}"
                             }
-                        } catch (e: Exception) {
-                            if (e is CancellationException) throw e
-                            "Error adding device type: ${e.message}"
                         }
                     }
                     else -> "Error: This tool is not supported in this context. Use '${AiToolNames.ADD_DEVICE_TYPE}' only."

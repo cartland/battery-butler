@@ -1,9 +1,11 @@
 package com.chriscartland.batterybutler.usecase
 
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
+import com.chriscartland.batterybutler.domain.model.DataError
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.DispatcherProvider
+import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.model.SyncStatus
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import kotlinx.coroutines.CoroutineDispatcher
@@ -254,34 +256,40 @@ private class TestExportRepository : DeviceRepository {
 
     override fun getDeviceById(id: String): Flow<Device?> = flowOf(devices.find { it.id == id })
 
-    override suspend fun addDevice(device: Device) {
+    override suspend fun addDevice(device: Device): Result<Unit, DataError> {
         devices.add(device)
+        return Result.Success(Unit)
     }
 
-    override suspend fun updateDevice(device: Device) {
+    override suspend fun updateDevice(device: Device): Result<Unit, DataError> {
         devices.removeAll { it.id == device.id }
         devices.add(device)
+        return Result.Success(Unit)
     }
 
-    override suspend fun deleteDevice(id: String) {
+    override suspend fun deleteDevice(id: String): Result<Unit, DataError> {
         devices.removeAll { it.id == id }
+        return Result.Success(Unit)
     }
 
     override fun getAllDeviceTypes(): Flow<List<DeviceType>> = flowOf(deviceTypes.toList())
 
     override fun getDeviceTypeById(id: String): Flow<DeviceType?> = flowOf(deviceTypes.find { it.id == id })
 
-    override suspend fun addDeviceType(type: DeviceType) {
+    override suspend fun addDeviceType(type: DeviceType): Result<Unit, DataError> {
         deviceTypes.add(type)
+        return Result.Success(Unit)
     }
 
-    override suspend fun updateDeviceType(type: DeviceType) {
+    override suspend fun updateDeviceType(type: DeviceType): Result<Unit, DataError> {
         deviceTypes.removeAll { it.id == type.id }
         deviceTypes.add(type)
+        return Result.Success(Unit)
     }
 
-    override suspend fun deleteDeviceType(id: String) {
+    override suspend fun deleteDeviceType(id: String): Result<Unit, DataError> {
         deviceTypes.removeAll { it.id == id }
+        return Result.Success(Unit)
     }
 
     override fun getEventsForDevice(deviceId: String): Flow<List<BatteryEvent>> = flowOf(events.filter { it.deviceId == deviceId })
@@ -290,16 +298,19 @@ private class TestExportRepository : DeviceRepository {
 
     override fun getEventById(id: String): Flow<BatteryEvent?> = flowOf(events.find { it.id == id })
 
-    override suspend fun addEvent(event: BatteryEvent) {
+    override suspend fun addEvent(event: BatteryEvent): Result<Unit, DataError> {
         events.add(event)
+        return Result.Success(Unit)
     }
 
-    override suspend fun updateEvent(event: BatteryEvent) {
+    override suspend fun updateEvent(event: BatteryEvent): Result<Unit, DataError> {
         events.removeAll { it.id == event.id }
         events.add(event)
+        return Result.Success(Unit)
     }
 
-    override suspend fun deleteEvent(id: String) {
+    override suspend fun deleteEvent(id: String): Result<Unit, DataError> {
         events.removeAll { it.id == id }
+        return Result.Success(Unit)
     }
 }

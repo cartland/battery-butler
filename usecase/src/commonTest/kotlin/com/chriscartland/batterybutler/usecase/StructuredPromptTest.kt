@@ -1,8 +1,10 @@
 package com.chriscartland.batterybutler.usecase
 
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
+import com.chriscartland.batterybutler.domain.model.DataError
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
+import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.model.SyncStatus
 import com.chriscartland.batterybutler.domain.model.ai.AiEngine
 import com.chriscartland.batterybutler.domain.model.ai.AiMessage
@@ -42,21 +44,21 @@ class StructuredPromptTest {
 
         override fun getDeviceById(id: String) = flowOf(null)
 
-        override suspend fun addDevice(device: Device) {}
+        override suspend fun addDevice(device: Device): Result<Unit, DataError> = Result.Success(Unit)
 
-        override suspend fun updateDevice(device: Device) {}
+        override suspend fun updateDevice(device: Device): Result<Unit, DataError> = Result.Success(Unit)
 
-        override suspend fun deleteDevice(id: String) {}
+        override suspend fun deleteDevice(id: String): Result<Unit, DataError> = Result.Success(Unit)
 
         override fun getAllDeviceTypes() = flowOf(emptyList<DeviceType>())
 
         override fun getDeviceTypeById(id: String) = flowOf(null)
 
-        override suspend fun addDeviceType(type: DeviceType) {}
+        override suspend fun addDeviceType(type: DeviceType): Result<Unit, DataError> = Result.Success(Unit)
 
-        override suspend fun updateDeviceType(type: DeviceType) {}
+        override suspend fun updateDeviceType(type: DeviceType): Result<Unit, DataError> = Result.Success(Unit)
 
-        override suspend fun deleteDeviceType(id: String) {}
+        override suspend fun deleteDeviceType(id: String): Result<Unit, DataError> = Result.Success(Unit)
 
         override fun getEventsForDevice(deviceId: String) = flowOf(emptyList<BatteryEvent>())
 
@@ -64,11 +66,11 @@ class StructuredPromptTest {
 
         override fun getEventById(id: String) = flowOf(null)
 
-        override suspend fun addEvent(event: BatteryEvent) {}
+        override suspend fun addEvent(event: BatteryEvent): Result<Unit, DataError> = Result.Success(Unit)
 
-        override suspend fun updateEvent(event: BatteryEvent) {}
+        override suspend fun updateEvent(event: BatteryEvent): Result<Unit, DataError> = Result.Success(Unit)
 
-        override suspend fun deleteEvent(id: String) {}
+        override suspend fun deleteEvent(id: String): Result<Unit, DataError> = Result.Success(Unit)
     }
 
     @Test
