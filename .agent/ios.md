@@ -72,19 +72,31 @@ PR #873 implemented the full iOS design language from `docs/design/IOS_DESIGN_LA
 - `AiMessage` param order: `id:role:text:isPartial:hints:` (all required in Swift)
 - `GroupOption.none`, `SortOption.name` for default enum values
 
+## iOS Unit Tests
+
+28 unit tests cover Swift-only pure/static code (no KMP mock infrastructure needed):
+- `BatteryAgeHelperTests` (13 tests) — color thresholds, font weight, daysSince
+- `SFSymbolMapperTests` (7 tests) — nil/unknown/known icon mappings
+- `LoginErrorInfoTests` (8 tests) — all AuthError subtypes → title/message/showRetry
+
+`LoginViewModelWrapper.errorInfo(for:)` is `static` (internal) for direct testability.
+
+**KMP AuthError constructors in Swift**: All subtypes require full-param init including `message:` — the no-arg init is unavailable despite Kotlin defaults. Example: `AuthErrorSignInFailed(message: "Sign-in failed", cause: nil)`.
+
 ## iOS Snapshot Tests
 
 All 15 screens follow the two-layer Screen/ContentView pattern. 46 snapshot test functions (92 PNGs — light + dark) cover all ContentViews across 19 test files. Reference images are tracked in git (`__Snapshots__/`). CI uses `build-for-testing` (compile-only, no pixel comparison). Snapshots are auto-recorded post-merge by `auto-generate.yml` on `macos-latest` and committed via follow-up PRs (like Android screenshots). Use `scripts/record-ios-snapshots.sh` to record locally.
 
 To test SwiftUI views connected to KMP, ensure the `Screen` structures are separated into stateless `ContentView` structures to bypass the `NativeComponent` DI graph during testing.
 
-Native iOS snapshot tests execute inside the simulator from the repo root:
+Use the convenience scripts instead of raw xcodebuild commands:
 ```bash
-xcodebuild test -project ios-app-swift-ui/iosAppSwiftUI.xcodeproj \
-  -scheme iosAppSwiftUITests \
-  -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.5' \
-  CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO \
-  -derivedDataPath ios-app-swift-ui/build/ios-tests
+./scripts/build-ios.sh                        # Build for simulator
+./scripts/test-ios.sh                         # Run all tests
+./scripts/test-ios.sh BatteryAgeHelperTests   # Run one test class
+./scripts/test-ios.sh Foo Bar                 # Run multiple test classes
+./scripts/sync-ios-project.sh                 # Sync files into Xcode project
+./scripts/record-ios-snapshots.sh             # Record snapshot references
 ```
 
 Reference images are tracked in git (`__Snapshots__/`). They are auto-generated post-merge by `auto-generate.yml` on CI's `macos-latest` runner, then committed via follow-up PRs (same pattern as Android screenshots).
