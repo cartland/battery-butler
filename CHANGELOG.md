@@ -33,6 +33,10 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ## 2026-03-08
 
+### Documentation
+
+- **Engineering Goals document**: Created `docs/ENGINEERING_GOALS.md` — a living reference organized around four pillars (API Design, Architecture, Testing, Custom Enforcement). Each pillar lists principles, achieved techniques with file locations, aspirational goals, and key references. Includes a techniques inventory table and cross-reference index mapping topics to their primary docs, ADRs, and enforcement mechanisms.
+
 ### Refactoring
 
 - **DeviceRepository Result<D, E> migration**: Migrated all 9 `DeviceRepository` suspend functions from throwing to returning `Result<Unit, DataError>`. Try-catch is now confined to the `DefaultDeviceRepository` boundary (Room/SQLite). All 15+ UseCases propagate Result, ViewModels use `when` on Result instead of try-catch, and CrashProof tests verify error handling via `Result.Error` instead of intercepting exceptions. Establishes `Result<D, E>` as the standard API pattern per `AuthRepository` exemplar.
