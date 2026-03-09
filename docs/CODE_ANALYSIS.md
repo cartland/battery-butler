@@ -3,44 +3,44 @@
 # Code Analysis
 
 This document provides a breakdown of the codebase by application layer and module.
-Total Lines of Code: 36731
+Total Lines of Code: 36846
 
 ## Application Breakdown
-* Shared Code: 24,868 lines (67.7%)
-* iOS Swift App: 3,907 lines (10.6%)
-* Other: 3,172 lines (8.6%)
+* Shared Code: 24,972 lines (67.8%)
+* iOS Swift App: 3,909 lines (10.6%)
+* Other: 3,181 lines (8.6%)
 * CMP Android, iOS, Desktop: 2,171 lines (5.9%)
-* Server: 1,528 lines (4.2%)
-* Android Screenshot Tests: 1,085 lines (3.0%)
+* Server: 1,528 lines (4.1%)
+* Android Screenshot Tests: 1,085 lines (2.9%)
 
 ## Module Breakdown
-* `:presentation-feature`: 5,844 lines (15.9%)
-* `:viewmodel`: 4,597 lines (12.5%)
-* `:usecase`: 4,170 lines (11.4%)
-* `:iosAppSwiftUI.xcodeproj`: 3,907 lines (10.6%)
-* `:data-network`: 2,413 lines (6.6%)
+* `:presentation-feature`: 5,918 lines (16.1%)
+* `:viewmodel`: 4,627 lines (12.6%)
+* `:usecase`: 4,170 lines (11.3%)
+* `:iosAppSwiftUI.xcodeproj`: 3,909 lines (10.6%)
+* `:data-network`: 2,413 lines (6.5%)
 * `:domain`: 2,295 lines (6.2%)
 * `:compose-app`: 2,171 lines (5.9%)
 * `:presentation-core`: 2,095 lines (5.7%)
 * `:data`: 1,832 lines (5.0%)
 * `:buildSrc`: 1,597 lines (4.3%)
-* `:server:app`: 1,342 lines (3.7%)
-* `:android-screenshot-tests`: 1,085 lines (3.0%)
+* `:server:app`: 1,342 lines (3.6%)
+* `:android-screenshot-tests`: 1,085 lines (2.9%)
 * `:data-local`: 1,059 lines (2.9%)
 * `:test-common`: 620 lines (1.7%)
 * `:ai`: 493 lines (1.3%)
 * `:e2e-tests`: 271 lines (0.7%)
 * `:ios-swift-di`: 235 lines (0.6%)
+* `:presentation-model`: 218 lines (0.6%)
 * `:fixtures`: 209 lines (0.6%)
-* `:presentation-model`: 209 lines (0.6%)
 * `:server:data`: 152 lines (0.4%)
 * `:compose-resources`: 70 lines (0.2%)
 * `:server:domain`: 34 lines (0.1%)
 * `:iosAppComposeUI.xcodeproj`: 31 lines (0.1%)
 
 ## Language Breakdown
-* Kotlin (.kt): 32,793 lines (89.3%)
-* Swift (.swift): 3,938 lines (10.7%)
+* Kotlin (.kt): 32,906 lines (89.3%)
+* Swift (.swift): 3,940 lines (10.7%)
 
 ## Code Distribution
 
@@ -58,15 +58,15 @@ config:
 %% GENERATED FILE - DO NOT EDIT
 sankey-beta
 
-Codebase,Shared Code,24868
-Codebase,iOS Swift App,3907
-Codebase,Other,3172
+Codebase,Shared Code,24972
+Codebase,iOS Swift App,3909
+Codebase,Other,3181
 Codebase,CMP Apps,2171
 Codebase,Server,1528
 Codebase,Screenshot Tests,1085
 
-Shared Code,presentation-feature,5844
-Shared Code,viewmodel,4597
+Shared Code,presentation-feature,5918
+Shared Code,viewmodel,4627
 Shared Code,usecase,4170
 Shared Code,data-network,2413
 Shared Code,domain,2295
@@ -76,14 +76,14 @@ Shared Code,data-local,1059
 Shared Code,ai,493
 Shared Code,compose-resources,70
 
-iOS Swift App,iosAppSwiftUI,3907
+iOS Swift App,iosAppSwiftUI,3909
 
 Other,buildSrc,1597
 Other,test-common,620
 Other,e2e-tests,271
 Other,ios-swift-di,235
+Other,presentation-model,218
 Other,fixtures,209
-Other,presentation-model,209
 Other,iosAppComposeUI,31
 
 CMP Apps,compose-app,2171
@@ -94,10 +94,10 @@ Server,server:domain,34
 
 Screenshot Tests,android-screenshot-tests,1085
 
-presentation-feature,Kotlin,5844
-viewmodel,Kotlin,4597
+presentation-feature,Kotlin,5918
+viewmodel,Kotlin,4627
 usecase,Kotlin,4170
-iosAppSwiftUI,Swift,3907
+iosAppSwiftUI,Swift,3909
 data-network,Kotlin,2413
 domain,Kotlin,2295
 compose-app,Kotlin,2171
@@ -111,8 +111,8 @@ test-common,Kotlin,620
 ai,Kotlin,493
 e2e-tests,Kotlin,271
 ios-swift-di,Kotlin,235
+presentation-model,Kotlin,218
 fixtures,Kotlin,209
-presentation-model,Kotlin,209
 server:data,Kotlin,152
 compose-resources,Kotlin,70
 server:domain,Kotlin,34
