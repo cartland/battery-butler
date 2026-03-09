@@ -1,8 +1,10 @@
 package com.chriscartland.batterybutler.viewmodel.devicedetail
 
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
+import com.chriscartland.batterybutler.domain.model.DataError
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
+import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.model.SyncStatus
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.presentationmodel.devicedetail.DeviceDetailUiState
@@ -251,24 +253,25 @@ private class FakeDetailRepository : DeviceRepository {
 
     override fun getDeviceById(id: String): Flow<Device?> = deviceFlow
 
-    override suspend fun addDevice(device: Device) {}
+    override suspend fun addDevice(device: Device): Result<Unit, DataError> = Result.Success(Unit)
 
-    override suspend fun updateDevice(device: Device) {
+    override suspend fun updateDevice(device: Device): Result<Unit, DataError> {
         updatedDevices.add(device)
         deviceFlow.value = device
+        return Result.Success(Unit)
     }
 
-    override suspend fun deleteDevice(id: String) {}
+    override suspend fun deleteDevice(id: String): Result<Unit, DataError> = Result.Success(Unit)
 
     override fun getAllDeviceTypes(): Flow<List<DeviceType>> = deviceTypesFlow
 
     override fun getDeviceTypeById(id: String): Flow<DeviceType?> = flowOf(deviceTypesFlow.value.find { it.id == id })
 
-    override suspend fun addDeviceType(type: DeviceType) {}
+    override suspend fun addDeviceType(type: DeviceType): Result<Unit, DataError> = Result.Success(Unit)
 
-    override suspend fun updateDeviceType(type: DeviceType) {}
+    override suspend fun updateDeviceType(type: DeviceType): Result<Unit, DataError> = Result.Success(Unit)
 
-    override suspend fun deleteDeviceType(id: String) {}
+    override suspend fun deleteDeviceType(id: String): Result<Unit, DataError> = Result.Success(Unit)
 
     override fun getEventsForDevice(deviceId: String): Flow<List<BatteryEvent>> = eventsMap.getOrPut(deviceId) { MutableStateFlow(emptyList()) }
 
@@ -276,13 +279,14 @@ private class FakeDetailRepository : DeviceRepository {
 
     override fun getEventById(id: String): Flow<BatteryEvent?> = flowOf(eventsMap.values.flatMap { it.value }.find { it.id == id })
 
-    override suspend fun addEvent(event: BatteryEvent) {
+    override suspend fun addEvent(event: BatteryEvent): Result<Unit, DataError> {
         addedEvents.add(event)
         val flow = eventsMap.getOrPut(event.deviceId) { MutableStateFlow(emptyList()) }
         flow.value = flow.value + event
+        return Result.Success(Unit)
     }
 
-    override suspend fun updateEvent(event: BatteryEvent) {}
+    override suspend fun updateEvent(event: BatteryEvent): Result<Unit, DataError> = Result.Success(Unit)
 
-    override suspend fun deleteEvent(id: String) {}
+    override suspend fun deleteEvent(id: String): Result<Unit, DataError> = Result.Success(Unit)
 }

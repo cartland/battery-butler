@@ -33,6 +33,10 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ## 2026-03-08
 
+### Refactoring
+
+- **DeviceRepository Result<D, E> migration**: Migrated all 9 `DeviceRepository` suspend functions from throwing to returning `Result<Unit, DataError>`. Try-catch is now confined to the `DefaultDeviceRepository` boundary (Room/SQLite). All 15+ UseCases propagate Result, ViewModels use `when` on Result instead of try-catch, and CrashProof tests verify error handling via `Result.Error` instead of intercepting exceptions. Establishes `Result<D, E>` as the standard API pattern per `AuthRepository` exemplar.
+
 ### Fixes
 
 - **Broken Mermaid sankey diagram**: Fixed the Mermaid sankey diagram in README.md and CODE_ANALYSIS.md that GitHub couldn't render. The `SankeyChartGenerator` was emitting a `%% GENERATED FILE` comment before the YAML frontmatter `---` block, but Mermaid requires `---` to be the first line. Moved the comment after the frontmatter closing delimiter. Added buildSrc unit test and validate-generated.sh check to prevent regression.

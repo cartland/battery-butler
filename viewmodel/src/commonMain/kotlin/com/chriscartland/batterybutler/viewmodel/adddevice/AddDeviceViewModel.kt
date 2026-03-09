@@ -7,6 +7,7 @@ import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceInput
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.FeatureFlag
+import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.repository.FeatureFlagProvider
 import com.chriscartland.batterybutler.usecase.AddDeviceUseCase
 import com.chriscartland.batterybutler.usecase.BatchAddDevicesUseCase
@@ -49,24 +50,31 @@ class AddDeviceViewModel(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
+    private val _actionError = MutableStateFlow<String?>(null)
+    val actionError: StateFlow<String?> = _actionError
+
+    fun dismissActionError() {
+        _actionError.value = null
+    }
+
     @OptIn(ExperimentalUuidApi::class)
     fun addDevice(input: DeviceInput) {
         viewModelScope.launch {
             _isLoading.value = true
-            try {
-                val newDevice = Device(
-                    id = Uuid.random().toString(),
-                    name = input.name,
-                    location = input.location,
-                    typeId = input.typeId,
-                    imagePath = input.imagePath,
-                    batteryLastReplaced = Instant.fromEpochMilliseconds(0),
-                    lastUpdated = Clock.System.now(),
-                )
-                addDeviceUseCase(newDevice)
-            } finally {
-                _isLoading.value = false
+            val newDevice = Device(
+                id = Uuid.random().toString(),
+                name = input.name,
+                location = input.location,
+                typeId = input.typeId,
+                imagePath = input.imagePath,
+                batteryLastReplaced = Instant.fromEpochMilliseconds(0),
+                lastUpdated = Clock.System.now(),
+            )
+            when (val result = addDeviceUseCase(newDevice)) {
+                is Result.Success -> { /* success */ }
+                is Result.Error -> _actionError.value = result.error.message
             }
+            _isLoading.value = false
         }
     }
 

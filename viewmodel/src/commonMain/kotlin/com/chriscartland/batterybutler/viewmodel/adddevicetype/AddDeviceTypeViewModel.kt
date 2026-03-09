@@ -6,6 +6,7 @@ import com.chriscartland.batterybutler.domain.model.BatchOperationResult
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.DeviceTypeInput
 import com.chriscartland.batterybutler.domain.model.FeatureFlag
+import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.repository.FeatureFlagProvider
 import com.chriscartland.batterybutler.presentationmodel.adddevicetype.AddDeviceTypeUiState
 import com.chriscartland.batterybutler.usecase.AddDeviceTypeUseCase
@@ -34,6 +35,13 @@ class AddDeviceTypeViewModel(
 ) : ViewModel() {
     private val isAiBatchImportEnabledFlow =
         featureFlagProvider.observeEnabled(FeatureFlag.AI_BATCH_IMPORT)
+
+    private val _actionError = MutableStateFlow<String?>(null)
+    val actionError: StateFlow<String?> = _actionError
+
+    fun dismissActionError() {
+        _actionError.value = null
+    }
 
     private val suggestIconMutex = Mutex()
     private val suggestedIconFlow = MutableStateFlow<String?>(null)
@@ -96,7 +104,10 @@ class AddDeviceTypeViewModel(
                 batteryType = input.batteryType,
                 batteryQuantity = input.batteryQuantity,
             )
-            addDeviceTypeUseCase(newType)
+            when (val result = addDeviceTypeUseCase(newType)) {
+                is Result.Success -> { /* success */ }
+                is Result.Error -> _actionError.value = result.error.message
+            }
         }
     }
 

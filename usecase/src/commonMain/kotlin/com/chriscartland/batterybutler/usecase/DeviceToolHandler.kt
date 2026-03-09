@@ -4,14 +4,15 @@ import com.benasher44.uuid.uuid4
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
+import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.model.ai.AiToolNames
 import com.chriscartland.batterybutler.domain.model.ai.AiToolParams
 import com.chriscartland.batterybutler.domain.model.ai.ToolHandler
+import com.chriscartland.batterybutler.domain.model.getOrElse
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.datetime.atStartOfDayIn
 import me.tatarka.inject.annotations.Inject
-import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Clock
 
 /**
@@ -37,22 +38,17 @@ class DeviceToolHandler(
         name: String,
         args: Map<String, Any?>,
     ): String =
-        try {
-            when (name) {
-                AiToolNames.ADD_DEVICE -> addDevice(args)
-                AiToolNames.ADD_DEVICE_TYPE -> addDeviceType(args)
-                AiToolNames.RECORD_BATTERY_REPLACEMENT -> recordBatteryReplacement(args)
-                AiToolNames.UPDATE_DEVICE -> updateDevice(args)
-                AiToolNames.DELETE_DEVICE -> deleteDevice(args)
-                AiToolNames.UPDATE_DEVICE_TYPE -> updateDeviceType(args)
-                AiToolNames.DELETE_DEVICE_TYPE -> deleteDeviceType(args)
-                AiToolNames.UPDATE_BATTERY_EVENT -> updateBatteryEvent(args)
-                AiToolNames.DELETE_BATTERY_EVENT -> deleteBatteryEvent(args)
-                else -> "Error: Unknown tool '$name'"
-            }
-        } catch (e: Exception) {
-            if (e is CancellationException) throw e
-            "Error executing $name: ${e.message}"
+        when (name) {
+            AiToolNames.ADD_DEVICE -> addDevice(args)
+            AiToolNames.ADD_DEVICE_TYPE -> addDeviceType(args)
+            AiToolNames.RECORD_BATTERY_REPLACEMENT -> recordBatteryReplacement(args)
+            AiToolNames.UPDATE_DEVICE -> updateDevice(args)
+            AiToolNames.DELETE_DEVICE -> deleteDevice(args)
+            AiToolNames.UPDATE_DEVICE_TYPE -> updateDeviceType(args)
+            AiToolNames.DELETE_DEVICE_TYPE -> deleteDeviceType(args)
+            AiToolNames.UPDATE_BATTERY_EVENT -> updateBatteryEvent(args)
+            AiToolNames.DELETE_BATTERY_EVENT -> deleteBatteryEvent(args)
+            else -> "Error: Unknown tool '$name'"
         }
 
     private suspend fun addDevice(args: Map<String, Any?>): String {
@@ -60,17 +56,22 @@ class DeviceToolHandler(
         val typeName = args[AiToolParams.TYPE] as? String
 
         val typeId = findOrCreateDeviceTypeUseCase(typeName)
+            .getOrElse { return "Error: ${it.message}" }
 
-        deviceRepository.addDevice(
-            Device(
-                id = uuid4().toString(),
-                name = name,
-                typeId = typeId,
-                batteryLastReplaced = kotlin.time.Instant.fromEpochMilliseconds(0),
-                lastUpdated = Clock.System.now(),
-            ),
-        )
-        return "Success: Added device '$name' (Type: ${typeName ?: "Default"})"
+        return when (
+            val result = deviceRepository.addDevice(
+                Device(
+                    id = uuid4().toString(),
+                    name = name,
+                    typeId = typeId,
+                    batteryLastReplaced = kotlin.time.Instant.fromEpochMilliseconds(0),
+                    lastUpdated = Clock.System.now(),
+                ),
+            )
+        ) {
+            is Result.Success -> "Success: Added device '$name' (Type: ${typeName ?: "Default"})"
+            is Result.Error -> "Error: ${result.error.message}"
+        }
     }
 
     private suspend fun addDeviceType(args: Map<String, Any?>): String {
@@ -78,10 +79,14 @@ class DeviceToolHandler(
         val batteryType = args[AiToolParams.BATTERY_TYPE] as? String ?: "Unknown"
         val icon = args[AiToolParams.ICON] as? String ?: "default"
 
-        deviceRepository.addDeviceType(
-            DeviceType(id = uuid4().toString(), name = name, defaultIcon = icon),
-        )
-        return "Success: Added device type '$name' (Battery: $batteryType, Icon: $icon)"
+        return when (
+            val result = deviceRepository.addDeviceType(
+                DeviceType(id = uuid4().toString(), name = name, defaultIcon = icon),
+            )
+        ) {
+            is Result.Success -> "Success: Added device type '$name' (Battery: $batteryType, Icon: $icon)"
+            is Result.Error -> "Error: ${result.error.message}"
+        }
     }
 
     private suspend fun recordBatteryReplacement(args: Map<String, Any?>): String {
@@ -90,6 +95,7 @@ class DeviceToolHandler(
         val deviceTypeName = args[AiToolParams.DEVICE_TYPE] as? String
 
         val targetDevice = findOrCreateDeviceUseCase(deviceName, deviceTypeName)
+            .getOrElse { return "Error: ${it.message}" }
 
         // Parse date
         val date = kotlinx.datetime.LocalDate.parse(dateStr)
@@ -104,11 +110,15 @@ class DeviceToolHandler(
             date = instant,
             notes = "Added via AI Chat",
         )
-        deviceRepository.addEvent(event)
+        deviceRepository
+            .addEvent(event)
+            .getOrElse { return "Error: ${it.message}" }
 
         // Update device if newer
         if (instant > targetDevice.batteryLastReplaced) {
-            deviceRepository.updateDevice(targetDevice.copy(batteryLastReplaced = instant))
+            deviceRepository
+                .updateDevice(targetDevice.copy(batteryLastReplaced = instant))
+                .getOrElse { return "Error: ${it.message}" }
         }
 
         return "Success: Recorded battery replacement for '$deviceName' on $dateStr"
@@ -123,7 +133,12 @@ class DeviceToolHandler(
         val newLocation = args[AiToolParams.NEW_LOCATION] as? String
         val newType = args[AiToolParams.NEW_TYPE] as? String
 
-        val newTypeId = if (newType != null) findOrCreateDeviceTypeUseCase(newType) else device.typeId
+        val newTypeId = if (newType != null) {
+            findOrCreateDeviceTypeUseCase(newType)
+                .getOrElse { return "Error: ${it.message}" }
+        } else {
+            device.typeId
+        }
 
         val updated = device.copy(
             name = newName ?: device.name,
@@ -131,7 +146,9 @@ class DeviceToolHandler(
             typeId = newTypeId,
             lastUpdated = Clock.System.now(),
         )
-        deviceRepository.updateDevice(updated)
+        deviceRepository
+            .updateDevice(updated)
+            .getOrElse { return "Error: ${it.message}" }
 
         val changes = buildList {
             if (newName != null) add("name → '$newName'")
@@ -148,9 +165,15 @@ class DeviceToolHandler(
 
         // Delete all events for this device
         val events = deviceRepository.getEventsForDevice(id).first()
-        events.forEach { deviceRepository.deleteEvent(it.id) }
+        for (event in events) {
+            deviceRepository
+                .deleteEvent(event.id)
+                .getOrElse { return "Error: ${it.message}" }
+        }
 
-        deviceRepository.deleteDevice(id)
+        deviceRepository
+            .deleteDevice(id)
+            .getOrElse { return "Error: ${it.message}" }
         return "Success: Deleted device '${device.name}' and ${events.size} associated event(s)"
     }
 
@@ -170,7 +193,9 @@ class DeviceToolHandler(
             batteryQuantity = newBatteryQuantity ?: deviceType.batteryQuantity,
             defaultIcon = newIcon ?: deviceType.defaultIcon,
         )
-        deviceRepository.updateDeviceType(updated)
+        deviceRepository
+            .updateDeviceType(updated)
+            .getOrElse { return "Error: ${it.message}" }
 
         val changes = buildList {
             if (newName != null) add("name → '$newName'")
@@ -192,8 +217,10 @@ class DeviceToolHandler(
                 "${devicesUsingType.size} device(s) still use it. Reassign them first."
         }
 
-        deviceRepository.deleteDeviceType(id)
-        return "Success: Deleted device type '${deviceType.name}'"
+        return when (val result = deviceRepository.deleteDeviceType(id)) {
+            is Result.Success -> "Success: Deleted device type '${deviceType.name}'"
+            is Result.Error -> "Error: ${result.error.message}"
+        }
     }
 
     private suspend fun updateBatteryEvent(args: Map<String, Any?>): String {
@@ -216,11 +243,14 @@ class DeviceToolHandler(
             date = newDate,
             notes = notes ?: event.notes,
         )
-        deviceRepository.updateEvent(updated)
+        deviceRepository
+            .updateEvent(updated)
+            .getOrElse { return "Error: ${it.message}" }
 
         // Recalculate device's lastReplaced if date changed
         if (newDateStr != null) {
             updateDeviceLastReplacedUseCase(event.deviceId)
+                .getOrElse { return "Error: ${it.message}" }
         }
 
         val changes = buildList {
@@ -236,10 +266,13 @@ class DeviceToolHandler(
             ?: return "Error: Battery event not found with id '$id'"
 
         val deviceId = event.deviceId
-        deviceRepository.deleteEvent(id)
+        deviceRepository
+            .deleteEvent(id)
+            .getOrElse { return "Error: ${it.message}" }
 
         // Recalculate device's lastReplaced
         updateDeviceLastReplacedUseCase(deviceId)
+            .getOrElse { return "Error: ${it.message}" }
 
         val deviceName = deviceRepository.getDeviceById(deviceId).first()?.name ?: "Unknown"
         return "Success: Deleted battery event for '$deviceName'"

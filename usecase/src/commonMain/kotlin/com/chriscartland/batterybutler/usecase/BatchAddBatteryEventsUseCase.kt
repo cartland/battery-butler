@@ -4,10 +4,12 @@ import com.benasher44.uuid.uuid4
 import com.chriscartland.batterybutler.domain.model.BatchOperationResult
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.DataError
+import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.model.ai.AiEngine
 import com.chriscartland.batterybutler.domain.model.ai.AiToolNames
 import com.chriscartland.batterybutler.domain.model.ai.AiToolParams
 import com.chriscartland.batterybutler.domain.model.ai.ToolHandler
+import com.chriscartland.batterybutler.domain.model.getOrElse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.datetime.atStartOfDayIn
@@ -37,28 +39,25 @@ class BatchAddBatteryEventsUseCase(
                         val dateStr = args[AiToolParams.DATE] as? String ?: return@ToolHandler "Error: Missing date"
                         val deviceTypeName = args[AiToolParams.DEVICE_TYPE] as? String
 
-                        try {
-                            val targetDevice = findOrCreateDeviceUseCase(deviceName, deviceTypeName)
+                        val targetDevice = findOrCreateDeviceUseCase(deviceName, deviceTypeName)
+                            .getOrElse { return@ToolHandler "Error: ${it.message}" }
 
-                            // Parse Date
-                            val date = kotlinx.datetime.LocalDate.parse(dateStr)
-                            val kxInstant = date.atStartOfDayIn(kotlinx.datetime.TimeZone.currentSystemDefault())
-                            val instant = kotlin.time.Instant.fromEpochMilliseconds(kxInstant.toEpochMilliseconds())
+                        // Parse Date
+                        val date = kotlinx.datetime.LocalDate.parse(dateStr)
+                        val kxInstant = date.atStartOfDayIn(kotlinx.datetime.TimeZone.currentSystemDefault())
+                        val instant = kotlin.time.Instant.fromEpochMilliseconds(kxInstant.toEpochMilliseconds())
 
-                            // Add Battery Event (also updates device's batteryLastReplaced)
-                            val event = BatteryEvent(
-                                id = uuid4().toString(),
-                                batteryType = "AA",
-                                deviceId = targetDevice.id,
-                                date = instant,
-                                notes = "Imported via AI",
-                            )
-                            addBatteryEventUseCase(event)
-
-                            "Success: Recorded battery replacement for '$deviceName' on $dateStr"
-                        } catch (e: Exception) {
-                            if (e is CancellationException) throw e
-                            "Error recording battery replacement: ${e.message}"
+                        // Add Battery Event (also updates device's batteryLastReplaced)
+                        val event = BatteryEvent(
+                            id = uuid4().toString(),
+                            batteryType = "AA",
+                            deviceId = targetDevice.id,
+                            date = instant,
+                            notes = "Imported via AI",
+                        )
+                        when (val result = addBatteryEventUseCase(event)) {
+                            is Result.Success -> "Success: Recorded battery replacement for '$deviceName' on $dateStr"
+                            is Result.Error -> "Error recording battery replacement: ${result.error.message}"
                         }
                     }
                     else -> "Error: This tool is not supported in this context. Use '${AiToolNames.RECORD_BATTERY_REPLACEMENT}' only."

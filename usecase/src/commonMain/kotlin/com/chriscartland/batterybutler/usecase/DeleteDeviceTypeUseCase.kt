@@ -1,5 +1,7 @@
 package com.chriscartland.batterybutler.usecase
 
+import com.chriscartland.batterybutler.domain.model.DataError
+import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import me.tatarka.inject.annotations.Inject
 
@@ -7,5 +9,5 @@ import me.tatarka.inject.annotations.Inject
 class DeleteDeviceTypeUseCase(
     private val deviceRepository: DeviceRepository,
 ) {
-    suspend operator fun invoke(typeId: String) = deviceRepository.deleteDeviceType(typeId)
+    suspend operator fun invoke(typeId: String): Result<Unit, DataError> = deviceRepository.deleteDeviceType(typeId)
 }

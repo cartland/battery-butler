@@ -1,9 +1,12 @@
 package com.chriscartland.batterybutler.usecase
 
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
+import com.chriscartland.batterybutler.domain.model.DataError
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
+import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.model.SyncStatus
+import com.chriscartland.batterybutler.domain.model.getOrThrow
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.testcommon.TestDevices
 import kotlinx.coroutines.flow.Flow
@@ -32,7 +35,7 @@ class UpdateDeviceLastReplacedUseCaseTest {
             repo.events.add(event)
 
             val useCase = UpdateDeviceLastReplacedUseCase(repo)
-            val result = useCase("d1")
+            val result = useCase("d1").getOrThrow()
 
             assertTrue(result)
             assertEquals(newDate, repo.devices.first().batteryLastReplaced)
@@ -50,7 +53,7 @@ class UpdateDeviceLastReplacedUseCaseTest {
             repo.events.add(event)
 
             val useCase = UpdateDeviceLastReplacedUseCase(repo)
-            val result = useCase("d1")
+            val result = useCase("d1").getOrThrow()
 
             assertTrue(result)
             assertEquals(oldDate, repo.devices.first().batteryLastReplaced)
@@ -62,7 +65,7 @@ class UpdateDeviceLastReplacedUseCaseTest {
             val repo = TestRepository()
             val useCase = UpdateDeviceLastReplacedUseCase(repo)
 
-            val result = useCase("nonexistent")
+            val result = useCase("nonexistent").getOrThrow()
 
             assertFalse(result)
         }
@@ -79,7 +82,7 @@ class UpdateDeviceLastReplacedUseCaseTest {
             repo.devices.add(device)
 
             val useCase = UpdateDeviceLastReplacedUseCase(repo)
-            val result = useCase("d1")
+            val result = useCase("d1").getOrThrow()
 
             assertTrue(result)
             assertEquals(Instant.fromEpochMilliseconds(0), repo.devices.first().batteryLastReplaced)
@@ -97,7 +100,7 @@ class UpdateDeviceLastReplacedUseCaseTest {
             repo.devices.add(device)
 
             val useCase = UpdateDeviceLastReplacedUseCase(repo)
-            val result = useCase("d1")
+            val result = useCase("d1").getOrThrow()
 
             assertFalse(result)
         }
@@ -113,7 +116,7 @@ class UpdateDeviceLastReplacedUseCaseTest {
             repo.events.add(event)
 
             val useCase = UpdateDeviceLastReplacedUseCase(repo)
-            val result = useCase("d1")
+            val result = useCase("d1").getOrThrow()
 
             assertFalse(result)
             assertEquals(date, repo.devices.first().batteryLastReplaced)
@@ -131,7 +134,7 @@ class UpdateDeviceLastReplacedUseCaseTest {
             repo.events.addAll(listOf(event1, event2, event3))
 
             val useCase = UpdateDeviceLastReplacedUseCase(repo)
-            val result = useCase("d1")
+            val result = useCase("d1").getOrThrow()
 
             assertTrue(result)
             assertEquals(Instant.parse("2024-06-15T00:00:00Z"), repo.devices.first().batteryLastReplaced)
@@ -147,7 +150,7 @@ class UpdateDeviceLastReplacedUseCaseTest {
             repo.devices.add(device)
 
             val useCase = UpdateDeviceLastReplacedUseCase(repo)
-            val result = useCase.ifNewer("d1", newDate)
+            val result = useCase.ifNewer("d1", newDate).getOrThrow()
 
             assertTrue(result)
             assertEquals(newDate, repo.devices.first().batteryLastReplaced)
@@ -163,7 +166,7 @@ class UpdateDeviceLastReplacedUseCaseTest {
             repo.devices.add(device)
 
             val useCase = UpdateDeviceLastReplacedUseCase(repo)
-            val result = useCase.ifNewer("d1", oldDate)
+            val result = useCase.ifNewer("d1", oldDate).getOrThrow()
 
             assertFalse(result)
             assertEquals(currentDate, repo.devices.first().batteryLastReplaced)
@@ -175,7 +178,7 @@ class UpdateDeviceLastReplacedUseCaseTest {
             val repo = TestRepository()
             val useCase = UpdateDeviceLastReplacedUseCase(repo)
 
-            val result = useCase.ifNewer("nonexistent", Instant.parse("2024-01-01T00:00:00Z"))
+            val result = useCase.ifNewer("nonexistent", Instant.parse("2024-01-01T00:00:00Z")).getOrThrow()
 
             assertFalse(result)
         }
@@ -191,28 +194,31 @@ class UpdateDeviceLastReplacedUseCaseTest {
 
         override fun getDeviceById(id: String): Flow<Device?> = flowOf(devices.find { it.id == id })
 
-        override suspend fun addDevice(device: Device) {
+        override suspend fun addDevice(device: Device): Result<Unit, DataError> {
             devices.add(device)
+            return Result.Success(Unit)
         }
 
-        override suspend fun updateDevice(device: Device) {
+        override suspend fun updateDevice(device: Device): Result<Unit, DataError> {
             devices.removeAll { it.id == device.id }
             devices.add(device)
+            return Result.Success(Unit)
         }
 
-        override suspend fun deleteDevice(id: String) {
+        override suspend fun deleteDevice(id: String): Result<Unit, DataError> {
             devices.removeAll { it.id == id }
+            return Result.Success(Unit)
         }
 
         override fun getAllDeviceTypes(): Flow<List<DeviceType>> = flowOf(emptyList())
 
         override fun getDeviceTypeById(id: String): Flow<DeviceType?> = flowOf(null)
 
-        override suspend fun addDeviceType(type: DeviceType) {}
+        override suspend fun addDeviceType(type: DeviceType): Result<Unit, DataError> = Result.Success(Unit)
 
-        override suspend fun updateDeviceType(type: DeviceType) {}
+        override suspend fun updateDeviceType(type: DeviceType): Result<Unit, DataError> = Result.Success(Unit)
 
-        override suspend fun deleteDeviceType(id: String) {}
+        override suspend fun deleteDeviceType(id: String): Result<Unit, DataError> = Result.Success(Unit)
 
         override fun getEventsForDevice(deviceId: String): Flow<List<BatteryEvent>> = flowOf(events.filter { it.deviceId == deviceId })
 
@@ -220,17 +226,20 @@ class UpdateDeviceLastReplacedUseCaseTest {
 
         override fun getEventById(id: String): Flow<BatteryEvent?> = flowOf(events.find { it.id == id })
 
-        override suspend fun addEvent(event: BatteryEvent) {
+        override suspend fun addEvent(event: BatteryEvent): Result<Unit, DataError> {
             events.add(event)
+            return Result.Success(Unit)
         }
 
-        override suspend fun updateEvent(event: BatteryEvent) {
+        override suspend fun updateEvent(event: BatteryEvent): Result<Unit, DataError> {
             events.removeAll { it.id == event.id }
             events.add(event)
+            return Result.Success(Unit)
         }
 
-        override suspend fun deleteEvent(id: String) {
+        override suspend fun deleteEvent(id: String): Result<Unit, DataError> {
             events.removeAll { it.id == id }
+            return Result.Success(Unit)
         }
     }
 }

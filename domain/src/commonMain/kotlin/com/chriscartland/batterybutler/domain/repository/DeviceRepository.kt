@@ -1,8 +1,10 @@
 package com.chriscartland.batterybutler.domain.repository
 
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
+import com.chriscartland.batterybutler.domain.model.DataError
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
+import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.model.SyncStatus
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
@@ -46,13 +48,13 @@ interface DeviceRepository {
     fun getDeviceById(id: String): Flow<Device?>
 
     /** Adds a new device and triggers remote sync. */
-    suspend fun addDevice(device: Device)
+    suspend fun addDevice(device: Device): Result<Unit, DataError>
 
     /** Updates an existing device and triggers remote sync. */
-    suspend fun updateDevice(device: Device)
+    suspend fun updateDevice(device: Device): Result<Unit, DataError>
 
     /** Deletes the device with the given [id] and triggers remote sync. */
-    suspend fun deleteDevice(id: String)
+    suspend fun deleteDevice(id: String): Result<Unit, DataError>
 
     // endregion
 
@@ -65,13 +67,13 @@ interface DeviceRepository {
     fun getDeviceTypeById(id: String): Flow<DeviceType?>
 
     /** Adds a new device type and triggers remote sync. */
-    suspend fun addDeviceType(type: DeviceType)
+    suspend fun addDeviceType(type: DeviceType): Result<Unit, DataError>
 
     /** Updates an existing device type and triggers remote sync. */
-    suspend fun updateDeviceType(type: DeviceType)
+    suspend fun updateDeviceType(type: DeviceType): Result<Unit, DataError>
 
     /** Deletes the device type with the given [id] and triggers remote sync. */
-    suspend fun deleteDeviceType(id: String)
+    suspend fun deleteDeviceType(id: String): Result<Unit, DataError>
 
     // endregion
 
@@ -87,13 +89,13 @@ interface DeviceRepository {
     fun getEventById(id: String): Flow<BatteryEvent?>
 
     /** Adds a new battery event and triggers remote sync. */
-    suspend fun addEvent(event: BatteryEvent)
+    suspend fun addEvent(event: BatteryEvent): Result<Unit, DataError>
 
     /** Updates an existing battery event and triggers remote sync. */
-    suspend fun updateEvent(event: BatteryEvent)
+    suspend fun updateEvent(event: BatteryEvent): Result<Unit, DataError>
 
     /** Deletes the battery event with the given [id] and triggers remote sync. */
-    suspend fun deleteEvent(id: String)
+    suspend fun deleteEvent(id: String): Result<Unit, DataError>
 
     // endregion
 }

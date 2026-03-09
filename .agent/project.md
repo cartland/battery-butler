@@ -53,6 +53,34 @@ Use `DispatcherProvider` (in `:domain:model`) instead of hardcoding `Dispatchers
 
 **Project code NEVER throws exceptions except `CancellationException`.**
 
+**`Result<D, E>` is the standard API pattern** for all fallible operations. Try-catch should only appear at external dependency boundaries (Room/SQLite, gRPC, AI engine). Exemplar: `AuthRepository.signIn()` → `Result<User, AuthError>`.
+
+Key types (see `domain/model/Result.kt`):
+- `Result<D, E : AppError>` — sealed interface with `Success<D>` and `Error<E>`
+- `DataError` — sealed hierarchy: Network, Database, Ai, Unknown (in `DataResult.kt`)
+- `DataResult<T>` — **deprecated**, use `Result<T, DataError>` instead
+- Extension functions: `map`, `flatMap`, `getOrNull`, `getOrElse`, `getOrThrow`, `onSuccess`, `onError`
+
+Pattern for repository implementations (try-catch at boundary):
+```kotlin
+override suspend fun addDevice(device: Device): Result<Unit, DataError> =
+    try {
+        localDataSource.addDevice(device)
+        Result.Success(Unit)
+    } catch (e: CancellationException) { throw e }
+    catch (e: Exception) {
+        Result.Error(DataError.Database.WriteFailed(message = e.message ?: "Failed"))
+    }
+```
+
+Pattern for ViewModels (when on Result):
+```kotlin
+when (val result = addDeviceUseCase(device)) {
+    is Result.Success -> { /* success path */ }
+    is Result.Error -> _actionError.value = result.error.message
+}
+```
+
 Use sealed class hierarchies for exhaustive `when` expressions:
 ```kotlin
 // GOOD: Required sealed type - compiler enforces handling all cases
@@ -69,11 +97,6 @@ when (status) {
 // BAD: Optional field - callers can ignore typed error
 data class Failed(val message: String, val error: DataError? = null)
 ```
-
-Key types (see `domain/model/DataResult.kt`):
-- `DataResult<T>` - Success/Error wrapper for operations
-- `DataError` - Sealed hierarchy: Network, Database, Ai, Unknown
-- Catch library exceptions at data layer boundaries, return typed errors
 
 ### Single Responsibility Principle
 

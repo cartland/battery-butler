@@ -3,6 +3,7 @@ package com.chriscartland.batterybutler.viewmodel.devicetypes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chriscartland.batterybutler.domain.model.DeviceType
+import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeGroupOption
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeListUiState
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeSortOption
@@ -22,6 +23,13 @@ class DeviceTypeListViewModel(
     private val getDeviceTypesUseCase: GetDeviceTypesUseCase,
     private val preloadCommonTypesUseCase: PreloadCommonTypesUseCase,
 ) : ViewModel() {
+    private val _actionError = MutableStateFlow<String?>(null)
+    val actionError: StateFlow<String?> = _actionError
+
+    fun dismissActionError() {
+        _actionError.value = null
+    }
+
     private val sortOptionFlow = MutableStateFlow(DeviceTypeSortOption.NAME)
     private val groupOptionFlow = MutableStateFlow(DeviceTypeGroupOption.NONE)
     private val isSortAscendingFlow = MutableStateFlow(true)
@@ -89,7 +97,10 @@ class DeviceTypeListViewModel(
 
     fun preloadCommonTypes() {
         viewModelScope.launch {
-            preloadCommonTypesUseCase()
+            when (val result = preloadCommonTypesUseCase()) {
+                is Result.Success -> { /* success */ }
+                is Result.Error -> _actionError.value = result.error.message
+            }
         }
     }
 }

@@ -1,8 +1,10 @@
 package com.chriscartland.batterybutler.testcommon
 
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
+import com.chriscartland.batterybutler.domain.model.DataError
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
+import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.model.SyncStatus
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import kotlinx.coroutines.flow.Flow
@@ -83,44 +85,50 @@ class FakeDeviceRepository : DeviceRepository {
 
     override fun getDeviceById(id: String): Flow<Device?> = devicesFlow.map { list -> list.find { it.id == id } }
 
-    override suspend fun addDevice(device: Device) {
+    override suspend fun addDevice(device: Device): Result<Unit, DataError> {
         devices.add(device)
         devicesFlow.value = devices.toList()
+        return Result.Success(Unit)
     }
 
-    override suspend fun updateDevice(device: Device) {
+    override suspend fun updateDevice(device: Device): Result<Unit, DataError> {
         val index = devices.indexOfFirst { it.id == device.id }
         if (index >= 0) {
             devices[index] = device
             devicesFlow.value = devices.toList()
         }
+        return Result.Success(Unit)
     }
 
-    override suspend fun deleteDevice(id: String) {
+    override suspend fun deleteDevice(id: String): Result<Unit, DataError> {
         devices.removeAll { it.id == id }
         devicesFlow.value = devices.toList()
+        return Result.Success(Unit)
     }
 
     override fun getAllDeviceTypes(): Flow<List<DeviceType>> = deviceTypesFlow
 
     override fun getDeviceTypeById(id: String): Flow<DeviceType?> = deviceTypesFlow.map { list -> list.find { it.id == id } }
 
-    override suspend fun addDeviceType(type: DeviceType) {
+    override suspend fun addDeviceType(type: DeviceType): Result<Unit, DataError> {
         deviceTypes.add(type)
         deviceTypesFlow.value = deviceTypes.toList()
+        return Result.Success(Unit)
     }
 
-    override suspend fun updateDeviceType(type: DeviceType) {
+    override suspend fun updateDeviceType(type: DeviceType): Result<Unit, DataError> {
         val index = deviceTypes.indexOfFirst { it.id == type.id }
         if (index >= 0) {
             deviceTypes[index] = type
             deviceTypesFlow.value = deviceTypes.toList()
         }
+        return Result.Success(Unit)
     }
 
-    override suspend fun deleteDeviceType(id: String) {
+    override suspend fun deleteDeviceType(id: String): Result<Unit, DataError> {
         deviceTypes.removeAll { it.id == id }
         deviceTypesFlow.value = deviceTypes.toList()
+        return Result.Success(Unit)
     }
 
     override fun getEventsForDevice(deviceId: String): Flow<List<BatteryEvent>> = eventsFlow.map { list -> list.filter { it.deviceId == deviceId } }
@@ -129,22 +137,25 @@ class FakeDeviceRepository : DeviceRepository {
 
     override fun getEventById(id: String): Flow<BatteryEvent?> = eventsFlow.map { list -> list.find { it.id == id } }
 
-    override suspend fun addEvent(event: BatteryEvent) {
+    override suspend fun addEvent(event: BatteryEvent): Result<Unit, DataError> {
         events.add(event)
         eventsFlow.value = events.toList()
+        return Result.Success(Unit)
     }
 
-    override suspend fun updateEvent(event: BatteryEvent) {
+    override suspend fun updateEvent(event: BatteryEvent): Result<Unit, DataError> {
         val index = events.indexOfFirst { it.id == event.id }
         if (index >= 0) {
             events[index] = event
             eventsFlow.value = events.toList()
         }
+        return Result.Success(Unit)
     }
 
-    override suspend fun deleteEvent(id: String) {
+    override suspend fun deleteEvent(id: String): Result<Unit, DataError> {
         events.removeAll { it.id == id }
         eventsFlow.value = events.toList()
+        return Result.Success(Unit)
     }
 
     // endregion
