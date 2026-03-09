@@ -141,7 +141,7 @@ fun AddBatteryEventContent(
                             val color = when (msg) {
                                 is BatchOperationResult.Error -> MaterialTheme.colorScheme.error
                                 is BatchOperationResult.Success -> MaterialTheme.colorScheme.primary
-                                else -> MaterialTheme.colorScheme.onSurface
+                                is BatchOperationResult.Progress -> MaterialTheme.colorScheme.onSurface
                             }
                             Text(
                                 text = text,

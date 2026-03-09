@@ -76,11 +76,12 @@ class SettingsViewModel(
         }
     }
 
+    @Suppress("ElseCaseInsteadOfExhaustiveWhen")
     val currentUser: StateFlow<User?> = authRepository.authState
         .map { state ->
             when (state) {
                 is AuthState.Authenticated -> state.user
-                else -> null
+                else -> null // Intentional: unauthenticated states have no user
             }
         }.safeStateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 

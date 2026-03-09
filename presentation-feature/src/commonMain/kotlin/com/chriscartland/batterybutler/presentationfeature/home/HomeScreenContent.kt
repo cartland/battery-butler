@@ -82,13 +82,14 @@ fun HomeScreenContent(
 
     // Show snackbar when sync fails
     LaunchedEffect(state.syncStatus) {
+        @Suppress("ElseCaseInsteadOfExhaustiveWhen")
         when (val status = state.syncStatus) {
             is SyncStatus.Failed -> {
                 snackbarHostState.showSnackbar(
                     message = getSyncErrorMessage(status.error),
                 )
             }
-            else -> {}
+            else -> {} // Intentional: only Failed triggers a snackbar
         }
     }
 

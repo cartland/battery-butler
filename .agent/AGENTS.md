@@ -188,6 +188,11 @@ Keeping the build and tests healthy is a top priority. When you identify or fix 
   - Parameter order in `@Composable` functions: **non-default params first**, then `modifier: Modifier = Modifier`, then other params with defaults, then trailing lambdas.
   - When extracting or creating new composables that accept a `Modifier`, verify both rules before committing.
 
+- **Exhaustive `when` on Sealed/Enum Types** (`ElseCaseInsteadOfExhaustiveWhen` rule in `detekt.yml`):
+  - **Prefer listing all cases explicitly** over `else ->` when the `when` subject is a sealed class, enum, or boolean. This ensures the compiler catches unhandled variants when new subtypes are added.
+  - When `else ->` is intentionally used as a catch-all default (e.g., many Screen subtypes mapping to a single default), add `@Suppress("ElseCaseInsteadOfExhaustiveWhen")` with a comment explaining why.
+  - **Note**: This rule requires type resolution, which the plain `detekt` Gradle task does not provide. It is enforced in IDEs with the detekt plugin and will be enforced in CI when type-resolution detekt is enabled.
+
 - **CI Workflow Synchronization**:
   - **When changing JDK version**: Update ALL workflow files in `.github/workflows/` that use `setup-java`.
   - **When changing Gradle version**: Verify all workflows use compatible settings.

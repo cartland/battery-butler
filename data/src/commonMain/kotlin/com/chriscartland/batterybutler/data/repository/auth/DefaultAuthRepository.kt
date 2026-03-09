@@ -55,10 +55,11 @@ class DefaultAuthRepository(
     override val authState: StateFlow<AuthState> = _authState.asStateFlow()
     private var expiryJob: Job? = null
 
+    @Suppress("ElseCaseInsteadOfExhaustiveWhen")
     override val currentUser: Flow<User?> = authState.map { state ->
         when (state) {
             is AuthState.Authenticated -> state.user
-            else -> null
+            else -> null // Intentional: unauthenticated states have no user
         }
     }
 
