@@ -25,6 +25,133 @@ The project follows **Clean Architecture** principles adapted for Kotlin Multipl
 
 For a detailed deep-dive into the module structure, dependency graph, and strict layer rules, please read the **[Architecture Documentation](docs/Architecture.md)**.
 
+### Module Structure
+
+<!-- GENERATED:BEGIN full_system_structure.mmd -->
+```mermaid
+%% GENERATED FILE - DO NOT EDIT
+graph TD
+    subgraph "iOS Apps"
+        IosSwiftDi[":ios-swift-di"]
+        IosAppComposeUi.xcodeproj["ios-app-compose-ui.xcodeproj"]
+        IosAppSwiftUi.xcodeproj["ios-app-swift-ui.xcodeproj"]
+    end
+
+    subgraph "Compose Apps"
+        ComposeApp[":compose-app"]
+    end
+
+    subgraph "Server"
+        ServerApp[":server:app"]
+        ServerData[":server:data"]
+        ServerDomain[":server:domain"]
+    end
+
+    subgraph "Presentation"
+        ComposeResources[":compose-resources"]
+        PresentationCore[":presentation-core"]
+        PresentationFeature[":presentation-feature"]
+        PresentationModel[":presentation-model"]
+        Viewmodel[":viewmodel"]
+    end
+
+    subgraph "Domain Layer"
+        Ai[":ai"]
+        Domain[":domain"]
+        Usecase[":usecase"]
+    end
+
+    subgraph "Data Layer"
+        Data[":data"]
+        DataLocal[":data-local"]
+        DataNetwork[":data-network"]
+    end
+
+    subgraph "Screenshot Tests"
+        AndroidScreenshotTests[":android-screenshot-tests"]
+    end
+
+    subgraph "Test Infrastructure"
+        E2eTests[":e2e-tests"]
+        Fixtures[":fixtures"]
+        TestCommon[":test-common"]
+    end
+
+    %% Dependencies
+    Ai --> Domain
+    Ai --> PresentationModel
+
+    AndroidScreenshotTests --> ComposeResources
+    AndroidScreenshotTests --> Domain
+    AndroidScreenshotTests --> PresentationCore
+    AndroidScreenshotTests --> PresentationFeature
+    AndroidScreenshotTests --> PresentationModel
+
+    ComposeApp --> Ai
+    ComposeApp --> ComposeResources
+    ComposeApp --> Data
+    ComposeApp --> PresentationCore
+    ComposeApp --> PresentationFeature
+    ComposeApp --> Usecase
+    ComposeApp --> Viewmodel
+
+    Data --> DataLocal
+    Data --> DataNetwork
+    Data --> Domain
+    Data --> TestCommon
+
+    DataLocal --> Domain
+
+    DataNetwork --> Domain
+    DataNetwork --> Fixtures
+
+    Fixtures --> Domain
+
+    IosSwiftDi --> Ai
+    IosSwiftDi --> Data
+    IosSwiftDi --> PresentationModel
+    IosSwiftDi --> Usecase
+    IosSwiftDi --> Viewmodel
+
+    PresentationCore --> ComposeResources
+    PresentationCore --> Domain
+    PresentationCore --> PresentationModel
+
+    PresentationFeature --> ComposeResources
+    PresentationFeature --> PresentationCore
+    PresentationFeature --> PresentationModel
+
+    PresentationModel --> Domain
+
+    ServerApp --> Domain
+    ServerApp --> ServerData
+    ServerApp --> ServerDomain
+
+    ServerData --> Domain
+    ServerData --> Fixtures
+    ServerData --> ServerDomain
+
+    ServerDomain --> Domain
+
+    TestCommon --> DataLocal
+    TestCommon --> DataNetwork
+    TestCommon --> Domain
+
+    Usecase --> Domain
+    Usecase --> PresentationModel
+    Usecase --> TestCommon
+
+    Viewmodel --> Domain
+    Viewmodel --> PresentationModel
+    Viewmodel --> TestCommon
+    Viewmodel --> Usecase
+
+    IosAppComposeUi.xcodeproj --> ComposeApp
+
+    IosAppSwiftUi.xcodeproj --> IosSwiftDi
+```
+<!-- GENERATED:END full_system_structure.mmd -->
+
 ### Code Distribution
 
 The project spans **Kotlin**, **Swift**, and **Java** across multiple modules.
