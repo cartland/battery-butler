@@ -31,6 +31,19 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ---
 
+## 2026-03-09
+
+### CI/CD
+
+- **Inline CI trigger for auto-generated PRs**: Auto-generate workflow now closes/reopens PRs with `BOT_PAT` immediately after creation to trigger CI within seconds, instead of waiting for `ci-trigger-auto-prs.yml` (which could delay CI by ~16 minutes when `cancel-in-progress` cancelled an earlier run). ([#928](https://github.com/cartland/battery-butler/pull/928))
+- **Mermaid files in docs_only filter**: Added `**/*.mmd` to the `docs_only` path filter in `ci.yml` so diagram-only PRs skip full CI. ([#928](https://github.com/cartland/battery-butler/pull/928))
+
+### Releases
+
+- **Android release `android/27`**: Released on commit `af8049cd`.
+
+---
+
 ## 2026-03-08
 
 ### Linting
