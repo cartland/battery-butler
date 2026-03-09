@@ -330,15 +330,41 @@ validate_analysis() {
                 success "Sankey chart is embedded in README"
             fi
 
-            # Check frontmatter in README mermaid block too
-            local readme_first_mermaid_line
-            readme_first_mermaid_line=$(sed -n '/```mermaid/{n;p;q;}' "$readme_file")
-            if [[ -n "$readme_first_mermaid_line" && "$readme_first_mermaid_line" != "---" ]]; then
-                error "Sankey frontmatter must be first line in README mermaid block (got: $readme_first_mermaid_line)"
-                echo "::error::Mermaid frontmatter not on first line in README. Regenerate: ./gradlew analyzeCode"
-            elif [[ -n "$readme_first_mermaid_line" ]]; then
-                success "Sankey frontmatter is first line in README mermaid block"
+            # Check frontmatter in README sankey mermaid block (extract sankey section, then find first line after ```mermaid)
+            local readme_sankey_first_line
+            readme_sankey_first_line=$(sed -n '/<!-- GENERATED:BEGIN code_distribution.mmd -->/,/<!-- GENERATED:END code_distribution.mmd -->/p' "$readme_file" | sed -n '/```mermaid/{n;p;q;}')
+            if [[ -n "$readme_sankey_first_line" && "$readme_sankey_first_line" != "---" ]]; then
+                error "Sankey frontmatter must be first line in README sankey block (got: $readme_sankey_first_line)"
+                echo "::error::Mermaid frontmatter not on first line in README sankey block. Regenerate: ./gradlew analyzeCode"
+            elif [[ -n "$readme_sankey_first_line" ]]; then
+                success "Sankey frontmatter is first line in README sankey block"
             fi
+        fi
+
+        # Check README.md has embedded module structure diagram
+        if grep -qF -- "<!-- GENERATED:BEGIN full_system_structure.mmd -->" "$readme_file"; then
+            if grep -qF -- "<!-- GENERATED:END full_system_structure.mmd -->" "$readme_file"; then
+                # Extract content between markers and check it's non-empty
+                local structure_content
+                structure_content=$(sed -n '/<!-- GENERATED:BEGIN full_system_structure.mmd -->/,/<!-- GENERATED:END full_system_structure.mmd -->/p' "$readme_file")
+                if echo "$structure_content" | grep -q '```mermaid'; then
+                    if echo "$structure_content" | grep -q 'graph'; then
+                        success "Module structure diagram is embedded in README"
+                    else
+                        warning "Module structure diagram in README missing 'graph' keyword"
+                        echo "::warning::Run: ./gradlew generateMermaidGraph"
+                    fi
+                else
+                    warning "Module structure diagram not embedded in README (no mermaid block)"
+                    echo "::warning::Run: ./gradlew generateMermaidGraph"
+                fi
+            else
+                error "Missing GENERATED:END marker for full_system_structure.mmd in $readme_file"
+                echo "::error::Mismatched markers in README. Check for typos."
+            fi
+        else
+            error "Missing GENERATED:BEGIN marker for full_system_structure.mmd in $readme_file"
+            echo "::error::Add <!-- GENERATED:BEGIN full_system_structure.mmd --> markers to README.md"
         fi
     fi
 

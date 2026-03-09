@@ -33,8 +33,13 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ## 2026-03-09
 
+### Features
+
+- **Module structure diagram in README**: Embedded `full_system_structure.mmd` (module dependency graph) into the README Architecture section using the existing `MermaidEmbedder` pipeline. `GenerateGraphTask` now auto-embeds into README alongside the existing sankey chart. Added `MermaidEmbedderTest` with 7 unit tests. ([#942](https://github.com/cartland/battery-butler/pull/942))
+
 ### CI/CD
 
+- **README in auto-generate change detection**: Added `README.md` to the `git diff` check in `auto-generate.yml` so README embedding changes trigger follow-up PRs. Fixed sankey frontmatter validation to scope within `code_distribution.mmd` markers (was incorrectly matching the first mermaid block when multiple blocks exist). ([#942](https://github.com/cartland/battery-butler/pull/942))
 - **Inline CI trigger for auto-generated PRs**: Auto-generate workflow now closes/reopens PRs with `BOT_PAT` immediately after creation to trigger CI within seconds, instead of waiting for `ci-trigger-auto-prs.yml` (which could delay CI by ~16 minutes when `cancel-in-progress` cancelled an earlier run). ([#928](https://github.com/cartland/battery-butler/pull/928))
 - **Mermaid files in docs_only filter**: Added `**/*.mmd` to the `docs_only` path filter in `ci.yml` so diagram-only PRs skip full CI. ([#928](https://github.com/cartland/battery-butler/pull/928))
 

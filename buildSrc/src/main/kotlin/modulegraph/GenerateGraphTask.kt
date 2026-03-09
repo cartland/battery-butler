@@ -1,5 +1,6 @@
 package modulegraph
 
+import codeanalysis.MermaidEmbedder
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
@@ -60,6 +61,13 @@ abstract class GenerateGraphTask : DefaultTask() {
 
         if (fullChanged || !fullSystemSvgFile.exists()) {
             generateSvg(fullSystemMmdFile, fullSystemSvgFile)
+        }
+
+        // Embed the full system structure into README if markers are present
+        val readmeFile = project.rootProject.file("README.md")
+        if (readmeFile.exists() && readmeFile.readText().contains("<!-- GENERATED:BEGIN ${fullSystemMmdFile.name} -->")) {
+            MermaidEmbedder.embed(readmeFile, fullSystemMmdFile.name, fullContent)
+            println("Module structure diagram embedded into: ${readmeFile.absolutePath}")
         }
     }
 
