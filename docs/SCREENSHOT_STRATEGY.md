@@ -162,6 +162,7 @@ When adding a screenshot test to one platform, check the parity matrix below. If
 5. **iOS**: Add XCTest function with `assertSnapshot(of:as:)` using `ViewImageConfig.iPhoneX` (or appropriate device config)
 6. **Keep test files ≤ 10 tests** to avoid OOM on CI runners (see [ADR: Split files, not heap](../docs/architecture/adr-005-screenshot-oom-split-files.md))
 7. **Regenerate reference images**: Android: `./scripts/generate-android-screenshots.sh` · iOS: `./scripts/record-ios-snapshots.sh`
+   - **Validate existing references**: Android: `./scripts/validate-android-screenshots.sh` · iOS: `./scripts/validate-ios-screenshots.sh`
 8. **Update this matrix** when adding or removing screenshot tests
 
 ### Android file template
