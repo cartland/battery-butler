@@ -12,6 +12,10 @@ sealed interface DeviceTypeListUiState {
         val isSortAscending: Boolean = true,
         val isGroupAscending: Boolean = true,
     ) : DeviceTypeListUiState
+
+    data class Error(
+        val message: String,
+    ) : DeviceTypeListUiState
 }
 
 enum class DeviceTypeSortOption {

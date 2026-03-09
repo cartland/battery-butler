@@ -109,6 +109,7 @@ class HomeViewModel(
         scope = viewModelScope,
         started = defaultWhileSubscribed(),
         initialValue = HomeUiState(),
+        onError = { HomeUiState(error = it.message ?: "Failed to load devices") },
     )
 
     fun onSortOptionSelected(option: SortOption) {

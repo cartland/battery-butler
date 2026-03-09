@@ -43,5 +43,6 @@ class HistoryListViewModel(
         scope = viewModelScope,
         started = defaultWhileSubscribed(),
         initialValue = HistoryListUiState.Loading,
+        onError = { HistoryListUiState.Error(it.message ?: "Failed to load history") },
     )
 }

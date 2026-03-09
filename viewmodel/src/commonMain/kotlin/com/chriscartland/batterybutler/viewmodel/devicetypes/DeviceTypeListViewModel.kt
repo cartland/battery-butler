@@ -77,6 +77,7 @@ class DeviceTypeListViewModel(
             scope = viewModelScope,
             started = defaultWhileSubscribed(),
             initialValue = DeviceTypeListUiState.Success(emptyMap()),
+            onError = { DeviceTypeListUiState.Error(it.message ?: "Failed to load device types") },
         )
 
     fun onSortOptionSelected(option: DeviceTypeSortOption) {

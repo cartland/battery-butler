@@ -69,6 +69,10 @@ class AddDeviceTypeViewModel(
         scope = viewModelScope,
         started = defaultWhileSubscribed(),
         initialValue = AddDeviceTypeUiState(),
+        onError = { e ->
+            _actionError.value = e.message ?: "Failed to load device type data"
+            AddDeviceTypeUiState()
+        },
     )
 
     fun suggestIcon(name: String) {
