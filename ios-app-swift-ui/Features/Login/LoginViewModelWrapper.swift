@@ -47,7 +47,7 @@ class LoginViewModelWrapper: ObservableObject {
         viewModel.dismissError()
     }
 
-    private static func errorInfo(for error: AuthError) -> (String, String, Bool) {
+    static func errorInfo(for error: AuthError) -> (String, String, Bool) {
         switch error {
         case is AuthErrorConfigurationNotConfigured:
             return ("Coming Soon", "Sign-in is not yet available for this build.", false)
