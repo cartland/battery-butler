@@ -79,6 +79,7 @@ jobs:
               - '.github/actions/**'
             docs_only:
               - '**/*.md'
+              - '**/*.mmd'
               - '.beads/**'
               - '.agent/**'
               - '.claude/**'
