@@ -50,11 +50,14 @@ CI uses `dorny/paths-filter` to skip expensive builds for non-code changes:
 
 **How it works:**
 1. Code merges to `main` -> `auto-generate.yml` runs
-2. Generates diagrams + analysis (Job 1) and screenshots sequentially (Job 2)
+2. Generates diagrams + analysis (Job 1), screenshots sequentially (Job 2), and iOS snapshots (Job 3)
 3. Screenshots use `scripts/generate-android-screenshots.sh` to avoid OOM on CI runners
-4. Creates follow-up PRs on `auto/update-generated-content` and `auto/update-screenshots`
-5. Uses `GITHUB_TOKEN` (not `BOT_PAT`) -- loop-proof by design
-6. `ci-trigger-auto-prs.yml` dispatches CI on auto PRs (runs on any workflow completion, not just success)
+4. Creates follow-up PRs on `auto/update-generated-content`, `auto/update-screenshots`, and `auto/update-ios-screenshots`
+5. Uses `GITHUB_TOKEN` (not `BOT_PAT`) for PR creation -- loop-proof by design
+6. **Inline CI trigger** (PR #928): Each job closes/reopens its PR with `BOT_PAT` immediately after creation, triggering CI within seconds
+7. `ci-trigger-auto-prs.yml` remains as a fallback (fires on workflow completion)
+
+**Why inline trigger was needed:** `cancel-in-progress: true` could cancel an auto-generate run after it created a PR but before the workflow completed. Since `ci-trigger-auto-prs.yml` only fires on completion, the PR would sit with no CI checks for ~16 minutes until the next run completed.
 
 ## CI Concurrency on Main (PR #856)
 
