@@ -12,6 +12,7 @@ fun EventDetailScreen(
     viewModel: EventDetailViewModel,
     onBack: () -> Unit,
     onEdit: () -> Unit,
+    onDelete: () -> Unit,
     onDeviceClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -20,6 +21,10 @@ fun EventDetailScreen(
         uiState = uiState,
         onBack = onBack,
         onEdit = onEdit,
+        onDelete = {
+            viewModel.deleteEvent()
+            onDelete()
+        },
         onDeviceClick = onDeviceClick,
         modifier = modifier,
     )
