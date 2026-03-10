@@ -37,16 +37,16 @@ The following table tracks specific feature gaps between the Compose Multiplatfo
 
 | Feature | Compose | iOS SwiftUI | Gap |
 |---------|---------|-------------|-----|
-| Sort/Group controls (Home) | Yes | No | bb-847x |
-| Sort/Group controls (Types) | Yes | No | bb-847x |
-| Settings: Network mode | Yes | No | bb-abn6 |
-| Settings: AI engine picker | Yes | No | bb-abn6 |
-| Settings: Account section | Yes | No | bb-abn6 |
-| History enrichment (icons, location) | Yes | No | bb-wddv |
-| Sync status indicator | Yes | No | bb-wddv |
-| Device Detail: location, stats | Yes | No | bb-rrs4.1 |
-| Device Detail: mapped icons | Yes | No | bb-rrs4.1 |
-| Event Detail: delete button | Yes | No | bb-0km4 |
+| Sort/Group controls (Home) | Yes | Yes | ~~bb-847x~~ (PR #971) |
+| Sort/Group controls (Types) | Yes | Yes | ~~bb-847x~~ (PR #971) |
+| Settings: Network mode | Yes | Yes | ~~bb-abn6~~ (PR #972) |
+| Settings: AI engine picker | Yes | Yes | ~~bb-abn6~~ (PR #972) |
+| Settings: Account section | Yes | Yes | ~~bb-abn6~~ (PR #972) |
+| History enrichment (icons, location) | Yes | Yes | ~~bb-wddv~~ (PR #973) |
+| Sync status indicator | Yes | Yes | ~~bb-wddv~~ (PR #973) |
+| Device Detail: location, stats | Yes | Yes | ~~bb-rrs4.1~~ (PR #970) |
+| Device Detail: mapped icons | Yes | Yes | ~~bb-rrs4.1~~ (PR #970) |
+| Event Detail: delete button | Yes | Yes | ~~bb-0km4~~ (PR #961) |
 | Add Device Type: icon picker | Yes | No | bb-rrs4.3 |
 | AI Chat | Yes | No | bb-ke1y |
 | Nav animations | Yes | N/A | Platform-specific |
@@ -65,10 +65,12 @@ The following table tracks specific feature gaps between the Compose Multiplatfo
 - **Compose:** Handled by `HomeScreenContent.kt` representing the pure UI, while state collection happens in `DevicesScreenRoot`. Uses `LazyColumn` with dynamic grouped headers for locations.
 - **SwiftUI:** Handled by `HomeScreen.swift` wrapping its own state collection. Utilizes `List` and `Section` which automatically apply native iOS styling and grouping (similar to clustered tables in UIKit).
 
-> **Known Feature Gaps** (see [FEATURE_PARITY_MAPPING.md](FEATURE_PARITY_MAPPING.md) for details):
-> - No sort/group controls (Compose has name/type/age/location sort + group-by-location)
-> - No mapped device icons or battery age colors (gray/amber/red)
-> - No sync status indicator, error state, or empty state
+> **Resolved Feature Gaps:**
+> - Sort/group controls added (PR #971) — Name/Location/Battery Age/Type sort + group by None/Type/Location
+> - Sync status indicator added (PR #973) — animated "Syncing..." pill overlay
+>
+> **Remaining Gaps:**
+> - No mapped device icons or battery age colors in Home list (icons/colors are on Device Detail only)
 
 ### 3. Adding & Editing (Devices, Types, Events)
 - **Compose:** Often presents these via regular `NavHost` pushed screens or modals.
@@ -84,9 +86,12 @@ The following table tracks specific feature gaps between the Compose Multiplatfo
 - **Both:** Display read-only parameters and related lists (e.g., Device showing Battery History).
 - **SwiftUI:** Integrates `ViewModelWrappers` using parameter-based factories derived from `NativeComponent` instead of generic `koinViewModel()`/`inject()` navigation parameters. Examples include `DeviceDetailViewModelFactory` and `EventDetailViewModelFactory`.
 
-> **Known Feature Gaps** (see [FEATURE_PARITY_MAPPING.md](FEATURE_PARITY_MAPPING.md) for details):
-> - Device Detail: no location display, no mapped icon (hardcoded "cpu"), no battery stat cards or age colors
-> - Event Detail: read-only only — no Edit button, no delete capability, no navigation to associated device
+> **Resolved Feature Gaps:**
+> - Device Detail: mapped icons via SFSymbolMapper, location field, stat cards with battery age colors (PR #970)
+> - Event Detail: delete button (PR #961)
+>
+> **Remaining Gaps:**
+> - Event Detail: no Edit button or navigation to associated device
 
 ### 5. Authentication (Login)
 - **Compose:** Implements the `LoginScreen` through the shared Compose navigation graph to manage AuthState.
@@ -107,9 +112,14 @@ The following table tracks specific feature gaps between the Compose Multiplatfo
 - **Compose:** `SettingsScreen.kt` provides a full settings experience: network mode selector (Prod/Dev/Local/Mock/None), AI engine selector, sign-out button, account info, export data, check for updates, and dynamic app version from `BuildConfig`.
 - **SwiftUI:** `SettingsScreen.swift` currently displays only the app version string.
 
-> **Known Feature Gaps** (see [FEATURE_PARITY_MAPPING.md](FEATURE_PARITY_MAPPING.md) for details):
-> - No sign-out, account info, network mode, AI engine, export data, or check-for-updates
-> - App version is hardcoded rather than dynamically read from build config
+> **Resolved Feature Gaps (PR #972):**
+> - Account section with user info and Sign Out
+> - Network mode selector (DisclosureGroup)
+> - AI engine selector
+> - Enhanced app version display
+>
+> **Remaining Gaps:**
+> - No check-for-updates link
 
 ## SKIE & ViewModel Wrapper Pattern
 
