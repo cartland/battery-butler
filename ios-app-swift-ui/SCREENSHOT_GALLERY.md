@@ -2,7 +2,7 @@
 
 # iOS Screenshot Gallery
 
-Generated on 2026-03-09 14:41:34 UTC
+Generated on 2026-03-10 05:35:50 UTC
 
 ## Table of Contents
 
@@ -243,6 +243,12 @@ Generated on 2026-03-09 14:41:34 UTC
 | <img src="iosAppSwiftUITests/__Snapshots__/EditDeviceTypeScreenTests/testEditDeviceTypeContentView_NotFound.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/EditDeviceTypeScreenTests/testEditDeviceTypeContentView_NotFound.dark.png" width="300" /> |
 
 ## EventDetailScreenTests
+
+### testEventDetailContentView_DeletedDevice
+
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/EventDetailScreenTests/testEventDetailContentView_DeletedDevice.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/EventDetailScreenTests/testEventDetailContentView_DeletedDevice.dark.png" width="300" /> |
 
 ### testEventDetailContentView_Loading
 
