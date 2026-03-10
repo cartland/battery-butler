@@ -137,9 +137,13 @@ abstract class NativeComponent(
     fun provideDevServerUrl(): DevServerUrl = DevServerUrl(BuildConfig.DEV_SERVER_URL)
 
     @Provides
-    fun provideAppVersion(): com.chriscartland.batterybutler.domain.model.AppVersion =
-        com.chriscartland.batterybutler.domain.model.AppVersion
-            .Ios(versionName = "iOS Native", buildNumber = "1")
+    fun provideAppVersion(): com.chriscartland.batterybutler.domain.model.AppVersion {
+        val bundle = platform.Foundation.NSBundle.mainBundle
+        val version = bundle.infoDictionary?.get("CFBundleShortVersionString") as? String ?: "Unknown"
+        val build = bundle.infoDictionary?.get("CFBundleVersion") as? String ?: "0"
+        return com.chriscartland.batterybutler.domain.model.AppVersion
+            .Ios(versionName = version, buildNumber = build)
+    }
 
     @Provides
     @SharedSingleton

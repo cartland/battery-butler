@@ -10,7 +10,8 @@ final class SettingsScreenTests: XCTestCase {
             exportData: nil,
             isShareSheetPresented: .constant(false),
             onExportData: {},
-            onExportDataConsumed: {}
+            onExportDataConsumed: {},
+            appVersion: "1.0.0-42"
         )
 
         assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)), named: "light")

@@ -33,6 +33,10 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ## 2026-03-09
 
+### Fixes
+
+- **iOS Settings version display**: Fixed iOS Settings screen showing hardcoded "Version 1.0.0" instead of the real app version. `NativeComponent.kt` now reads `CFBundleShortVersionString` and `CFBundleVersion` from `NSBundle.mainBundle` (was returning hardcoded "iOS Native"/"1"). `SettingsViewModelWrapper` now collects the KMP `appVersion` StateFlow and formats it as `$name-$build` to match Android.
+
 ### Features
 
 - **Module structure diagram in README**: Embedded `full_system_structure.mmd` (module dependency graph) into the README Architecture section using the existing `MermaidEmbedder` pipeline. `GenerateGraphTask` now auto-embeds into README alongside the existing sankey chart. Added `MermaidEmbedderTest` with 7 unit tests. ([#942](https://github.com/cartland/battery-butler/pull/942))

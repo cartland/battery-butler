@@ -15,7 +15,8 @@ struct SettingsScreen: View {
             exportData: wrapper.exportData,
             isShareSheetPresented: $isShareSheetPresented,
             onExportData: { wrapper.onExportData() },
-            onExportDataConsumed: { wrapper.onExportDataConsumed() }
+            onExportDataConsumed: { wrapper.onExportDataConsumed() },
+            appVersion: wrapper.appVersion
         )
         .onChange(of: wrapper.exportData) { _, newData in
             if newData != nil {
@@ -30,6 +31,7 @@ struct SettingsContentView: View {
     @Binding var isShareSheetPresented: Bool
     let onExportData: () -> Void
     let onExportDataConsumed: () -> Void
+    let appVersion: String
 
     var body: some View {
         Form {
@@ -40,7 +42,7 @@ struct SettingsContentView: View {
             }
 
             Section {
-                Text("Version 1.0.0")
+                Text(appVersion)
                     .foregroundStyle(Color.butlerOnSurfaceVariant)
             }
         }
