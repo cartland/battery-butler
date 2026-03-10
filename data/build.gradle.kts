@@ -1,14 +1,22 @@
 plugins {
-    id("convention.android-library")
+    alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.ksp)
 }
 
 kotlin {
     androidLibrary {
         namespace = "com.chriscartland.batterybutler.data"
+        compileSdk = libs.versions.android.compileSdk
+            .get()
+            .toInt()
+        minSdk = libs.versions.android.minSdk
+            .get()
+            .toInt()
         withDeviceTest {
         }
     }
+    jvmToolchain(21)
 
     jvm {
         compilerOptions {

@@ -1,5 +1,6 @@
 plugins {
-    id("convention.android-library")
+    alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
 }
@@ -7,7 +8,14 @@ plugins {
 kotlin {
     androidLibrary {
         namespace = "com.chriscartland.batterybutler.presentationcore"
+        compileSdk = libs.versions.android.compileSdk
+            .get()
+            .toInt()
+        minSdk = libs.versions.android.minSdk
+            .get()
+            .toInt()
     }
+    jvmToolchain(21)
 
     jvm()
 
