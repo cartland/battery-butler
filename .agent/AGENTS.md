@@ -77,7 +77,7 @@ Keeping the build and tests healthy is a top priority. When you identify or fix 
 4. **Test Categories**:
    - **Unit tests**: Must pass (`./gradlew test`)
    - **Instrumented tests**: Must run (all tests are offline-capable, no server needed)
-   - **Screenshot tests**: Must run (baseline mismatches indicate UI changes, not broken infrastructure). Use the `/update-screenshots` and `/update-ios-screenshots` workflows to regenerate missing or changed baselines locally before pushing.
+   - **Screenshot tests**: Must run (baseline mismatches indicate UI changes, not broken infrastructure). Use the `/update-android-screenshots` and `/update-ios-screenshots` workflows to regenerate missing or changed baselines locally before pushing.
    - **Always regenerate and commit reference images** when adding or changing screenshot tests. Run `./scripts/generate-android-screenshots.sh` to generate PNGs, then commit the new/updated images in `android-screenshot-tests/src/screenshotTestDebug/reference/` alongside the test code. PRs that add screenshot tests without reference images are incomplete.
 
 ## Project Technical Rules

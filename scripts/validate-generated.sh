@@ -10,7 +10,7 @@
 #
 # USAGE:
 #   ./scripts/validate-generated.sh --diagrams     # Validate Mermaid diagrams
-#   ./scripts/validate-generated.sh --screenshots  # Validate screenshot baselines
+#   ./scripts/validate-generated.sh --android-screenshots  # Validate Android screenshot baselines
 #   ./scripts/validate-generated.sh --analysis     # Validate code analysis
 #   ./scripts/validate-generated.sh --all          # Validate everything
 #
@@ -160,9 +160,9 @@ validate_diagrams() {
 # Screenshot Validation
 # -----------------------------------------------------------------------------
 
-validate_screenshots() {
+validate_android_screenshots() {
     echo ""
-    echo "=== Validating Screenshot Baselines ==="
+    echo "=== Validating Android Screenshot Baselines ==="
     echo ""
 
     local screenshot_dir="android-screenshot-tests/src/screenshotTestDebug/reference"
@@ -387,7 +387,7 @@ show_usage() {
     echo ""
     echo "Options:"
     echo "  --diagrams     Validate Mermaid diagrams"
-    echo "  --screenshots  Validate screenshot baselines"
+    echo "  --android-screenshots  Validate Android screenshot baselines"
     echo "  --analysis     Validate code analysis"
     echo "  --all          Validate everything"
     echo "  --help         Show this help message"
@@ -399,7 +399,7 @@ show_usage() {
 
 main() {
     local validate_diagrams=false
-    local validate_screenshots=false
+    local validate_android_screenshots=false
     local validate_analysis=false
 
     # Parse arguments
@@ -413,15 +413,15 @@ main() {
             --diagrams)
                 validate_diagrams=true
                 ;;
-            --screenshots)
-                validate_screenshots=true
+            --android-screenshots)
+                validate_android_screenshots=true
                 ;;
             --analysis)
                 validate_analysis=true
                 ;;
             --all)
                 validate_diagrams=true
-                validate_screenshots=true
+                validate_android_screenshots=true
                 validate_analysis=true
                 ;;
             --help)
@@ -441,8 +441,8 @@ main() {
         validate_diagrams || true
     fi
 
-    if $validate_screenshots; then
-        validate_screenshots || true
+    if $validate_android_screenshots; then
+        validate_android_screenshots || true
     fi
 
     if $validate_analysis; then

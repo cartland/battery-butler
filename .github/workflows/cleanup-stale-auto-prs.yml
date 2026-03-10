@@ -14,7 +14,8 @@
 #
 # MANAGED BRANCHES:
 #   - auto/update-generated-content (diagrams + analysis)
-#   - auto/update-screenshots (screenshot baselines)
+#   - auto/update-android-screenshots (Android screenshot baselines)
+#   - auto/update-ios-screenshots (iOS snapshot references)
 #
 # =============================================================================
 
@@ -53,7 +54,7 @@ jobs:
           MAX_AGE_SECONDS=$((MAX_AGE_HOURS * 3600))
 
           # Check the two managed auto branches
-          for BRANCH in auto/update-generated-content auto/update-screenshots; do
+          for BRANCH in auto/update-generated-content auto/update-android-screenshots auto/update-ios-screenshots; do
             echo "Checking branch: $BRANCH"
 
             OPEN_PRS=$(gh pr list --head "$BRANCH" --state open --json number,createdAt,mergeable --jq '.[]')
