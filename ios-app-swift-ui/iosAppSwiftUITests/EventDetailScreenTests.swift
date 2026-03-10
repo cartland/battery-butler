@@ -35,6 +35,23 @@ final class EventDetailScreenTests: XCTestCase {
         )
     }
 
+    func testEventDetailContentView_DeletedDevice() {
+        let state = EventDetailUiStateSuccess(
+            event: TestData.batteryEvent,
+            device: nil,
+            deviceType: nil
+        )
+
+        let view = EventDetailContentView(state: state)
+
+        assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)), named: "light")
+        assertSnapshot(
+            of: view.preferredColorScheme(.dark),
+            as: .image(layout: .device(config: .iPhone13Pro)),
+            named: "dark"
+        )
+    }
+
     func testEventDetailContentView_Loading() {
         let view = EventDetailContentView(state: nil)
 

@@ -17,6 +17,7 @@ fun AddDeviceTypeScreen(
     modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val actionError by viewModel.actionError.collectAsStateWithLifecycle()
 
     AddDeviceTypeContent(
         uiState = uiState,
@@ -29,5 +30,6 @@ fun AddDeviceTypeScreen(
         onBatchAdd = viewModel::batchAddDeviceTypes,
         onBack = onBack,
         modifier = modifier,
+        errorMessage = actionError,
     )
 }

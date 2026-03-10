@@ -87,6 +87,7 @@ fun AddDeviceTypeContent(
     onSuggestIcon: (String) -> Unit = {},
     onConsumeSuggestedIcon: () -> Unit = {},
     initialName: String = "",
+    errorMessage: String? = null,
 ) {
     var name by rememberSaveable { mutableStateOf(initialName) }
     var selectedIcon by rememberSaveable { mutableStateOf<String?>("videogame_asset") }
@@ -299,6 +300,14 @@ fun AddDeviceTypeContent(
                     }
                 }
             }
+
+            if (errorMessage != null) {
+                Text(
+                    text = errorMessage,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
         }
     }
 }
@@ -333,6 +342,21 @@ fun AddDeviceTypeContentFilledPreview() {
             onBatchAdd = {},
             onBack = {},
             initialName = "Smoke Detector",
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun AddDeviceTypeContentErrorPreview() {
+    BatteryButlerTheme {
+        AddDeviceTypeContent(
+            uiState = AddDeviceTypeUiState(),
+            onDeviceTypeAdded = {},
+            onBatchAdd = {},
+            onBack = {},
+            initialName = "Smoke Alarm",
+            errorMessage = "A device type with this name already exists.",
         )
     }
 }

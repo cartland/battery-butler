@@ -48,7 +48,7 @@ When adding a screenshot test to one platform, check the parity matrix below. If
 
 ## Current State — Parity Matrix
 
-**Counts:** Android 137 PNGs (77 test functions, 14 files) · iOS 94 PNGs (47 test functions, 19 files)
+**Counts:** Android 139 PNGs (78 test functions, 14 files) · iOS 96 PNGs (48 test functions, 19 files)
 
 **Key structural differences:**
 - Both platforms test every state in light and dark mode
@@ -72,14 +72,14 @@ When adding a screenshot test to one platform, check the parity matrix below. If
 | | Empty | ✓ L/D | ✓ | — |
 | | Loading | ✓ L/D | ✓ | — |
 | **Settings** | Default | ✓ L/D | ✓ | — |
-| | All network modes | ✓ L/D | — | iOS: variant not tested |
+| | All network modes | ✓ L/D | — | Platform divergence: iOS Settings has no network mode UI |
 | **AddDevice** | Empty form | ✓ L/D | ✓ | — |
 | | Filled form | ✓ L/D | ✓ | — |
 | **AddBatteryEvent** | With devices | ✓ L/D | ✓ | — |
 | | Empty (no devices) | ✓ L/D | ✓ | — |
 | **AddDeviceType** | Empty form | ✓ L/D | ✓ | — |
 | | Filled form | ✓ L/D | ✓ | — |
-| | Error (duplicate) | — | ✓ | Android: error state not previewed |
+| | Error (duplicate) | ✓ L/D | ✓ | — |
 | **DeviceDetail** | Success | ✓ L/D | ✓ | — |
 | | Loading | ✓ L/D | ✓ | — |
 | | NotFound | ✓ L/D | ✓ | — |
@@ -93,7 +93,7 @@ When adding a screenshot test to one platform, check the parity matrix below. If
 | | Loading | ✓ L/D | ✓ | — |
 | | NotFound | ✓ L/D | ✓ | — |
 | **EventDetail** | Success | ✓ L/D | ✓ | — |
-| | Deleted device ref | ✓ L/D | — | iOS: edge case not tested |
+| | Deleted device ref | ✓ L/D | ✓ | — |
 | | NotFound | ✓ L/D | ✓ | — |
 | | Loading | ✓ L/D | ✓ | — |
 | **EditBatteryEvent** | Loaded form | ✓ L/D | ✓ | — |
@@ -142,14 +142,15 @@ When adding a screenshot test to one platform, check the parity matrix below. If
 
 ### Systemic gaps
 
-1. **iOS dark mode snapshots complete** — all 46 test functions produce both light and dark snapshots (92 PNGs total), matching Android's dual-mode coverage.
+1. **iOS dark mode snapshots complete** — all 48 test functions produce both light and dark snapshots (96 PNGs total), matching Android's dual-mode coverage.
 2. **iOS Tier 1 complete** — all screens now have snapshot coverage for their meaningful states. DeviceTypeDetail was the last gap, closed by PR #911.
 3. **Android Tier 1 gaps closed** — History, Types, EventDetail, EditDeviceType Loading states and EditDevice Loading/NotFound states now have coverage.
+4. **Remaining platform divergence** — Settings "All network modes" is Android-only (iOS Settings has no network mode UI).
 
 ### Unique strengths
 
 - **Android**: Comprehensive dark mode coverage, component gallery, Play Store form factor screenshots, AI overlay states, battery age color edge cases
-- **iOS**: More form-state variants (filled forms, error states for AddDeviceType), Loading states for several screens Android lacks
+- **iOS**: Form-state variants (filled forms, error states for AddDeviceType)
 
 ## Adding a New Screenshot Test
 
