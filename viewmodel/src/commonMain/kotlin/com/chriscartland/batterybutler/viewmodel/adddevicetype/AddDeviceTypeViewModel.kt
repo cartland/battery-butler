@@ -83,9 +83,16 @@ class AddDeviceTypeViewModel(
             if (!suggestIconMutex.tryLock()) return@launch
             try {
                 isSuggestingIconFlow.value = true
-                val icon = suggestDeviceIconUseCase(name)
-                if (icon != null && icon != "default") {
-                    suggestedIconFlow.value = icon
+                when (val result = suggestDeviceIconUseCase(name)) {
+                    is Result.Success -> {
+                        val icon = result.data
+                        if (icon != "default") {
+                            suggestedIconFlow.value = icon
+                        }
+                    }
+                    is Result.Error -> {
+                        _actionError.value = result.error.message
+                    }
                 }
             } finally {
                 isSuggestingIconFlow.value = false

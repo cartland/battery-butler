@@ -1,7 +1,9 @@
 package com.chriscartland.batterybutler.usecase
 
 import co.touchlab.kermit.Logger
+import com.chriscartland.batterybutler.domain.model.DataError
 import com.chriscartland.batterybutler.domain.model.DeviceIcons
+import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.model.ai.AiEngine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
@@ -19,7 +21,7 @@ class SuggestDeviceIconUseCase(
         If no good match is found, return 'default'.
         """.trimIndent()
 
-    suspend operator fun invoke(typeName: String): String? {
+    suspend operator fun invoke(typeName: String): Result<String, DataError.Ai> {
         val availableIcons = DeviceIcons.AvailableIcons.joinToString(", ")
         val prompt =
             """
@@ -32,16 +34,32 @@ class SuggestDeviceIconUseCase(
             """.trimIndent()
 
         return try {
-            aiEngine
+            val icon = aiEngine
                 .generateResponse(prompt, null)
                 .map { it.text }
                 .firstOrNull { it?.isNotBlank() == true }
                 ?.trim()
                 ?.filter { !it.isWhitespace() }
+
+            if (icon != null) {
+                Result.Success(icon)
+            } else {
+                Result.Error(
+                    DataError.Ai.ApiError(
+                        message = "No icon suggestion returned for type: $typeName",
+                    ),
+                )
+            }
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
-            if (e is CancellationException) throw e
             Logger.e("SuggestDeviceIconUseCase", e) { "Failed to suggest icon for type: $typeName" }
-            null
+            Result.Error(
+                DataError.Ai.ApiError(
+                    message = "Failed to suggest icon for type: $typeName",
+                    cause = e.message,
+                ),
+            )
         }
     }
 }

@@ -60,27 +60,47 @@ class BatchAddDevicesUseCase(
                 }
             }
 
-            try {
-                val prompt =
-                    """
-                    *** SYSTEM INSTRUCTIONS ***
-                    $systemInstructions
+            val prompt =
+                """
+                *** SYSTEM INSTRUCTIONS ***
+                $systemInstructions
 
-                    *** USER INPUT DATA ***
-                    $input
-                    """.trimIndent()
+                *** USER INPUT DATA ***
+                $input
+                """.trimIndent()
 
-                aiEngine.generateResponse(prompt, toolHandler).collect { tokenMsg ->
-                    send(BatchOperationResult.Progress(tokenMsg.text))
+            val result = generateAiResponse(prompt, toolHandler)
+            when (result) {
+                is Result.Success -> {
+                    result.data.forEach { msg ->
+                        send(BatchOperationResult.Progress(msg))
+                    }
+                    send(BatchOperationResult.Success("Batch operation completed."))
                 }
-                send(BatchOperationResult.Success("Batch operation completed."))
-            } catch (e: Exception) {
-                if (e is CancellationException) throw e
-                send(
-                    BatchOperationResult.Error(
-                        DataError.Ai.ApiError("Error processing input: ${e.message}", e.toString()),
-                    ),
-                )
+                is Result.Error -> {
+                    send(BatchOperationResult.Error(result.error))
+                }
             }
+        }
+
+    private suspend fun generateAiResponse(
+        prompt: String,
+        toolHandler: ToolHandler,
+    ): Result<List<String>, DataError.Ai> =
+        try {
+            val messages = mutableListOf<String>()
+            aiEngine.generateResponse(prompt, toolHandler).collect { tokenMsg ->
+                messages.add(tokenMsg.text)
+            }
+            Result.Success(messages)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Result.Error(
+                DataError.Ai.ApiError(
+                    message = "Error processing input: ${e.message}",
+                    cause = e.toString(),
+                ),
+            )
         }
 }
