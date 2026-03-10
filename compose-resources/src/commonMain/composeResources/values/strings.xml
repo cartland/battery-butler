@@ -118,6 +118,9 @@
     <string name="action_clear_chat">Clear chat</string>
     <string name="ai_chat_empty_message">Ask me to add devices, record battery replacements, or manage your inventory.</string>
     <string name="content_desc_send_message">Send message</string>
+    <string name="placeholder_ask_ai">Ask AI...</string>
+    <string name="content_desc_expand_ai_chat">Expand AI chat</string>
+    <string name="content_desc_collapse_ai_chat">Collapse AI chat</string>
     <string name="placeholder_type_message">Type a message...</string>
 
     <!-- Edit Device -->
