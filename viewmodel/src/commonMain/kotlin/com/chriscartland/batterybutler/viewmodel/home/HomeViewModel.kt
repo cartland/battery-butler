@@ -14,7 +14,7 @@ import com.chriscartland.batterybutler.usecase.GetDevicesUseCase
 import com.chriscartland.batterybutler.usecase.GetSyncStatusUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
 import com.chriscartland.batterybutler.viewmodel.safeStateIn
-import com.chriscartland.batterybutler.viewmodel.sortAndGroup
+import com.chriscartland.batterybutler.viewmodel.util.sortAndGroup
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
