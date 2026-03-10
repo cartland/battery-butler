@@ -12,10 +12,23 @@ struct SettingsScreen: View {
 
     var body: some View {
         SettingsContentView(
+            // Account
+            currentUser: wrapper.currentUser,
+            onSignOut: { wrapper.signOut() },
+            // Network mode
+            networkMode: wrapper.networkMode,
+            availableNetworkModes: wrapper.availableNetworkModes,
+            onNetworkModeSelected: { mode in wrapper.onNetworkModeSelected(mode) },
+            // AI engine
+            aiEngineType: wrapper.aiEngineType,
+            availableAiEngines: wrapper.availableAiEngines,
+            onAiEngineSelected: { type in wrapper.onAiEngineSelected(type) },
+            // Export
             exportData: wrapper.exportData,
             isShareSheetPresented: $isShareSheetPresented,
             onExportData: { wrapper.onExportData() },
             onExportDataConsumed: { wrapper.onExportDataConsumed() },
+            // Version
             appVersion: wrapper.appVersion
         )
         .onChange(of: wrapper.exportData) { _, newData in
@@ -27,23 +40,157 @@ struct SettingsScreen: View {
 }
 
 struct SettingsContentView: View {
+    // Account
+    let currentUser: User?
+    let onSignOut: () -> Void
+    // Network mode
+    let networkMode: NetworkMode
+    let availableNetworkModes: [NetworkMode]
+    let onNetworkModeSelected: (NetworkMode) -> Void
+    // AI engine
+    let aiEngineType: AiEngineType
+    let availableAiEngines: [AiEngineType]
+    let onAiEngineSelected: (AiEngineType) -> Void
+    // Export
     let exportData: String?
     @Binding var isShareSheetPresented: Bool
     let onExportData: () -> Void
     let onExportDataConsumed: () -> Void
+    // Version
     let appVersion: String
+
+    @State private var isNetworkModeExpanded = false
+    @State private var isAiEngineExpanded = false
 
     var body: some View {
         Form {
-            Section(header: Text("settings.section.data")) {
-                Button("settings.button.export") {
-                    onExportData()
+            // Account section
+            if let user = currentUser {
+                Section {
+                    HStack(spacing: ButlerSpacing.medium) {
+                        Image(systemName: "person.circle.fill")
+                            .font(.title2)
+                            .foregroundStyle(Color.butlerPrimary)
+                        VStack(alignment: .leading, spacing: ButlerSpacing.extraSmall) {
+                            Text(user.displayName ?? String(localized: "settings.account.signed_in"))
+                                .font(.headline)
+                                .foregroundStyle(Color.butlerOnSurface)
+                            if let email = user.email {
+                                Text(email)
+                                    .font(.subheadline)
+                                    .foregroundStyle(Color.butlerOnSurfaceVariant)
+                            }
+                        }
+                    }
+                    .padding(.vertical, ButlerSpacing.extraSmall)
+
+                    Button(role: .destructive, action: onSignOut) {
+                        HStack {
+                            Image(systemName: "rectangle.portrait.and.arrow.right")
+                            Text("settings.account.sign_out")
+                        }
+                    }
+                } header: {
+                    Text("settings.section.account")
                 }
             }
 
+            // Network Mode section
             Section {
-                Text(appVersion)
-                    .foregroundStyle(Color.butlerOnSurfaceVariant)
+                DisclosureGroup(isExpanded: $isNetworkModeExpanded) {
+                    ForEach(Array(availableNetworkModes.enumerated()), id: \.offset) { _, mode in
+                        Button {
+                            onNetworkModeSelected(mode)
+                            isNetworkModeExpanded = false
+                        } label: {
+                            HStack {
+                                Text(SettingsViewModelWrapper.networkModeDisplayName(mode))
+                                    .foregroundStyle(Color.butlerOnSurface)
+                                Spacer()
+                                if networkModesEqual(networkMode, mode) {
+                                    Image(systemName: "checkmark")
+                                        .foregroundStyle(Color.butlerPrimary)
+                                }
+                            }
+                        }
+                    }
+                } label: {
+                    HStack(spacing: ButlerSpacing.medium) {
+                        Image(systemName: "wifi")
+                            .foregroundStyle(Color.butlerPrimary)
+                        VStack(alignment: .leading, spacing: ButlerSpacing.extraSmall) {
+                            Text("settings.network_mode.title")
+                                .foregroundStyle(Color.butlerOnSurface)
+                            Text(SettingsViewModelWrapper.networkModeDisplayName(networkMode))
+                                .font(.caption)
+                                .foregroundStyle(Color.butlerOnSurfaceVariant)
+                        }
+                    }
+                }
+            } header: {
+                Text("settings.section.network")
+            }
+
+            // AI Engine section
+            Section {
+                DisclosureGroup(isExpanded: $isAiEngineExpanded) {
+                    ForEach(Array(availableAiEngines.enumerated()), id: \.offset) { _, engine in
+                        Button {
+                            onAiEngineSelected(engine)
+                            isAiEngineExpanded = false
+                        } label: {
+                            HStack {
+                                Text(SettingsViewModelWrapper.aiEngineDisplayName(engine))
+                                    .foregroundStyle(Color.butlerOnSurface)
+                                Spacer()
+                                if aiEngineType == engine {
+                                    Image(systemName: "checkmark")
+                                        .foregroundStyle(Color.butlerPrimary)
+                                }
+                            }
+                        }
+                    }
+                } label: {
+                    HStack(spacing: ButlerSpacing.medium) {
+                        Image(systemName: "wand.and.stars")
+                            .foregroundStyle(Color.butlerPrimary)
+                        VStack(alignment: .leading, spacing: ButlerSpacing.extraSmall) {
+                            Text("settings.ai_engine.title")
+                                .foregroundStyle(Color.butlerOnSurface)
+                            Text(SettingsViewModelWrapper.aiEngineDisplayName(aiEngineType))
+                                .font(.caption)
+                                .foregroundStyle(Color.butlerOnSurfaceVariant)
+                        }
+                    }
+                }
+            } header: {
+                Text("settings.section.ai")
+            }
+
+            // Data Management section
+            Section {
+                Button("settings.button.export") {
+                    onExportData()
+                }
+            } header: {
+                Text("settings.section.data")
+            }
+
+            // App Version section
+            Section {
+                HStack(spacing: ButlerSpacing.medium) {
+                    Image(systemName: "info.circle")
+                        .foregroundStyle(Color.butlerPrimary)
+                    VStack(alignment: .leading, spacing: ButlerSpacing.extraSmall) {
+                        Text("settings.version.title")
+                            .foregroundStyle(Color.butlerOnSurface)
+                        Text(appVersion)
+                            .font(.caption)
+                            .foregroundStyle(Color.butlerOnSurfaceVariant)
+                    }
+                }
+            } header: {
+                Text("settings.section.about")
             }
         }
         .navigationTitle("settings.title")
@@ -74,6 +221,25 @@ struct SettingsContentView: View {
         } catch {
             print("Failed to save file: \(error)")
             return nil
+        }
+    }
+
+    /// Compares two NetworkMode instances for equality by type and URL.
+    /// NetworkMode is a sealed interface in Kotlin, so we compare by concrete type.
+    private func networkModesEqual(_ a: NetworkMode, _ b: NetworkMode) -> Bool {
+        switch (a, b) {
+        case (is NetworkModeNone, is NetworkModeNone):
+            return true
+        case (is NetworkModeMock, is NetworkModeMock):
+            return true
+        case (let aLocal as NetworkModeGrpcLocal, let bLocal as NetworkModeGrpcLocal):
+            return aLocal.url == bLocal.url
+        case (let aAws as NetworkModeGrpcAws, let bAws as NetworkModeGrpcAws):
+            return aAws.url == bAws.url
+        case (let aDev as NetworkModeGrpcDev, let bDev as NetworkModeGrpcDev):
+            return aDev.url == bDev.url
+        default:
+            return false
         }
     }
 }
