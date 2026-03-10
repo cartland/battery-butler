@@ -21,6 +21,10 @@ final class DeviceTypeListScreenTests: XCTestCase {
         let view = DeviceTypeListContentView(
             state: successState,
             onAddTypeTapped: {},
+            onSortOptionSelected: { _ in },
+            onGroupOptionSelected: { _ in },
+            onSortDirectionToggle: {},
+            onGroupDirectionToggle: {},
             detailDestination: { _ in Text("Edit") }
         )
 
@@ -44,6 +48,10 @@ final class DeviceTypeListScreenTests: XCTestCase {
         let view = DeviceTypeListContentView(
             state: successState,
             onAddTypeTapped: {},
+            onSortOptionSelected: { _ in },
+            onGroupOptionSelected: { _ in },
+            onSortDirectionToggle: {},
+            onGroupDirectionToggle: {},
             detailDestination: { _ in Text("Edit") }
         )
 
@@ -59,6 +67,10 @@ final class DeviceTypeListScreenTests: XCTestCase {
         let view = DeviceTypeListContentView(
             state: DeviceTypeListUiStateLoading(),
             onAddTypeTapped: {},
+            onSortOptionSelected: { _ in },
+            onGroupOptionSelected: { _ in },
+            onSortDirectionToggle: {},
+            onGroupDirectionToggle: {},
             detailDestination: { _ in Text("Edit") }
         )
 

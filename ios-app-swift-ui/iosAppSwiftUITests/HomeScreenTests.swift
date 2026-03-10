@@ -28,6 +28,10 @@ final class HomeScreenTests: XCTestCase {
             state: state,
             onAddDeviceTapped: {},
             onAddEventTapped: {},
+            onSortOptionSelected: { _ in },
+            onGroupOptionSelected: { _ in },
+            onSortDirectionToggle: {},
+            onGroupDirectionToggle: {},
             deviceDestination: { _ in Text("Detail") },
             settingsDestination: { Text("Settings") },
             aiDestination: { Text("AI Chat") }
@@ -60,6 +64,10 @@ final class HomeScreenTests: XCTestCase {
             state: state,
             onAddDeviceTapped: {},
             onAddEventTapped: {},
+            onSortOptionSelected: { _ in },
+            onGroupOptionSelected: { _ in },
+            onSortDirectionToggle: {},
+            onGroupDirectionToggle: {},
             deviceDestination: { _ in Text("Detail") },
             settingsDestination: { Text("Settings") },
             aiDestination: { Text("AI Chat") }

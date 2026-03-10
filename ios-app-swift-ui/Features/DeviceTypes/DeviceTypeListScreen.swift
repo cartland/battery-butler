@@ -5,16 +5,20 @@ struct DeviceTypeListScreen: View {
     @StateObject var viewModelWrapper: DeviceTypeListViewModelWrapper
     private let component: NativeComponent
     @State private var isAddTypePresented = false
-    
+
     init(component: NativeComponent) {
         self.component = component
         _viewModelWrapper = StateObject(wrappedValue: DeviceTypeListViewModelWrapper(component.deviceTypeListViewModel))
     }
-    
+
     var body: some View {
         DeviceTypeListContentView(
             state: viewModelWrapper.state,
             onAddTypeTapped: { isAddTypePresented = true },
+            onSortOptionSelected: { viewModelWrapper.onSortOptionSelected($0) },
+            onGroupOptionSelected: { viewModelWrapper.onGroupOptionSelected($0) },
+            onSortDirectionToggle: { viewModelWrapper.toggleSortDirection() },
+            onGroupDirectionToggle: { viewModelWrapper.toggleGroupDirection() },
             detailDestination: { typeId in
                 DeviceTypeDetailScreen(component: component, typeId: typeId)
             }
@@ -28,6 +32,10 @@ struct DeviceTypeListScreen: View {
 struct DeviceTypeListContentView<DetailDestination: View>: View {
     let state: DeviceTypeListUiState
     let onAddTypeTapped: () -> Void
+    let onSortOptionSelected: (DeviceTypeSortOption) -> Void
+    let onGroupOptionSelected: (DeviceTypeGroupOption) -> Void
+    let onSortDirectionToggle: () -> Void
+    let onGroupDirectionToggle: () -> Void
     let detailDestination: (String) -> DetailDestination
 
     var body: some View {
@@ -36,6 +44,29 @@ struct DeviceTypeListContentView<DetailDestination: View>: View {
                 ProgressView()
                     .accessibilityLabel("device_types.accessibility.loading")
             } else if let successState = state as? DeviceTypeListUiStateSuccess {
+                // Sort/Group filter row
+                if !successState.groupedTypes.isEmpty {
+                    Section {
+                        DeviceTypeFilterRow(
+                            sortOption: successState.sortOption,
+                            groupOption: successState.groupOption,
+                            isSortAscending: successState.isSortAscending,
+                            isGroupAscending: successState.isGroupAscending,
+                            onSortOptionSelected: onSortOptionSelected,
+                            onGroupOptionSelected: onGroupOptionSelected,
+                            onSortDirectionToggle: onSortDirectionToggle,
+                            onGroupDirectionToggle: onGroupDirectionToggle
+                        )
+                    }
+                    .listRowInsets(EdgeInsets(
+                        top: ButlerSpacing.small,
+                        leading: ButlerSpacing.standard,
+                        bottom: ButlerSpacing.small,
+                        trailing: ButlerSpacing.standard
+                    ))
+                    .listRowBackground(Color.clear)
+                }
+
                 if successState.groupedTypes.isEmpty {
                     Text("device_types.no_types")
                         .foregroundColor(.secondary)
@@ -60,6 +91,83 @@ struct DeviceTypeListContentView<DetailDestination: View>: View {
                         .accessibilityLabel("device_types.accessibility.add")
                 }
             }
+        }
+    }
+}
+
+// MARK: - Device Type Filter Row
+
+struct DeviceTypeFilterRow: View {
+    let sortOption: DeviceTypeSortOption
+    let groupOption: DeviceTypeGroupOption
+    let isSortAscending: Bool
+    let isGroupAscending: Bool
+    let onSortOptionSelected: (DeviceTypeSortOption) -> Void
+    let onGroupOptionSelected: (DeviceTypeGroupOption) -> Void
+    let onSortDirectionToggle: () -> Void
+    let onGroupDirectionToggle: () -> Void
+
+    var body: some View {
+        HStack(spacing: ButlerSpacing.small) {
+            // Sort control
+            Menu {
+                ForEach(sortOptions, id: \.self) { option in
+                    Button(deviceTypeSortOptionLabel(option)) {
+                        onSortOptionSelected(option)
+                    }
+                }
+            } label: {
+                SortGroupControlView(
+                    label: "\(String(localized: "sort.label")): \(deviceTypeSortOptionLabel(sortOption))",
+                    isActive: true,
+                    isAscending: isSortAscending,
+                    onTapped: {},
+                    onDirectionToggle: onSortDirectionToggle
+                )
+            }
+
+            // Group control
+            Menu {
+                ForEach(groupOptions, id: \.self) { option in
+                    Button(deviceTypeGroupOptionLabel(option)) {
+                        onGroupOptionSelected(option)
+                    }
+                }
+            } label: {
+                SortGroupControlView(
+                    label: "\(String(localized: "group.label")): \(deviceTypeGroupOptionLabel(groupOption))",
+                    isActive: groupOption != .none,
+                    isAscending: isGroupAscending,
+                    onTapped: {},
+                    onDirectionToggle: onGroupDirectionToggle
+                )
+            }
+
+            Spacer()
+        }
+    }
+
+    private var sortOptions: [DeviceTypeSortOption] {
+        [.name, .batteryType]
+    }
+
+    private var groupOptions: [DeviceTypeGroupOption] {
+        [.none, .batteryType]
+    }
+
+    private func deviceTypeSortOptionLabel(_ option: DeviceTypeSortOption) -> String {
+        switch option {
+        case .name: return String(localized: "sort.name")
+        case .batteryType: return String(localized: "sort.battery_type")
+        default: return String(localized: "common.unknown")
+        }
+    }
+
+    private func deviceTypeGroupOptionLabel(_ option: DeviceTypeGroupOption) -> String {
+        switch option {
+        case .none: return String(localized: "group.none")
+        case .batteryType: return String(localized: "group.battery_type")
+        default: return String(localized: "common.unknown")
         }
     }
 }

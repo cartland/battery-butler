@@ -58,6 +58,7 @@
 		A5644892EF1C2D5A7D2BB56B /* LoginErrorInfoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9F7F52DF807E4C730427A2 /* LoginErrorInfoTests.swift */; };
 		A57202E629408A9C8F778165 /* EventDetailScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEFA05173F04BE4075FBABA5 /* EventDetailScreenTests.swift */; };
 		A74A111ED72A22540285B044 /* DeviceTypeDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62EEFBA1150A1B5BB4BE34E7 /* DeviceTypeDetailScreen.swift */; };
+		A7AC0D97ABD8C337F08EB02B /* SortGroupControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D81DF9117CEBD961876923F5 /* SortGroupControlView.swift */; };
 		AE530C71EB0F1899C36F2C0D /* ButlerCornerRadius.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63736EB2CA3F58B280FBFA96 /* ButlerCornerRadius.swift */; };
 		AG1000000000000000000002 /* Generated in Sources */ = {isa = PBXBuildFile; fileRef = AG1000000000000000000001 /* Generated */; };
 		B2E94A4898D213A80796E832 /* SettingsScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F369A0F48183F2527CD88B41 /* SettingsScreenTests.swift */; };
@@ -146,6 +147,7 @@
 		C64AF092C61D54E3E0BB972E /* MessageRowTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MessageRowTests.swift; sourceTree = "<group>"; };
 		C7FFABCF0C5C31A595C3F1CF /* AddDeviceScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddDeviceScreenTests.swift; sourceTree = "<group>"; };
 		CE7C8996ACEF6EABE0989D13 /* iosAppSwiftUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iosAppSwiftUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D81DF9117CEBD961876923F5 /* SortGroupControlView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SortGroupControlView.swift; sourceTree = "<group>"; };
 		D8F821268475E1398BE0B048 /* SimpleSnapshotTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SimpleSnapshotTests.swift; sourceTree = "<group>"; };
 		DFE633CDE982339D210E430D /* EditBatteryEventScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EditBatteryEventScreen.swift; sourceTree = "<group>"; };
 		DFFB914D7CB3EE76065E96D9 /* DeviceTypeDetailScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DeviceTypeDetailScreenTests.swift; sourceTree = "<group>"; };
@@ -211,6 +213,7 @@
 				36C882E51E3C5A80D0CEDBDA /* BatteryAgeHelper.swift */,
 				C2E97FAF9E58B3B6789E5657 /* ButlerIconBox.swift */,
 				4E844014BE2F02549004580F /* SFSymbolMapper.swift */,
+				D81DF9117CEBD961876923F5 /* SortGroupControlView.swift */,
 			);
 			name = Components;
 			path = Components;
@@ -679,6 +682,7 @@
 				C988F312CE053CB66B0F89C0 /* EditBatteryEventViewModelWrapper.swift in Sources */,
 				A74A111ED72A22540285B044 /* DeviceTypeDetailScreen.swift in Sources */,
 				455C3A62D09593ABF1CB2D3D /* DeviceTypeDetailViewModelWrapper.swift in Sources */,
+				A7AC0D97ABD8C337F08EB02B /* SortGroupControlView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

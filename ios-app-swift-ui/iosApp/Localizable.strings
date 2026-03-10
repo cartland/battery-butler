@@ -187,6 +187,22 @@
 "login.error.unknown.title" = "Something Went Wrong";
 "login.error.unknown.message" = "An unexpected error occurred. Your data is safe.";
 
+// MARK: - Sort & Group Controls
+
+"sort.label" = "Sort";
+"group.label" = "Group";
+"sort.name" = "Name";
+"sort.location" = "Location";
+"sort.battery_age" = "Battery Age";
+"sort.type" = "Type";
+"sort.battery_type" = "Battery Type";
+"group.none" = "None";
+"group.type" = "Type";
+"group.location" = "Location";
+"group.battery_type" = "Battery Type";
+"sort.accessibility.ascending" = "Ascending";
+"sort.accessibility.descending" = "Descending";
+
 // MARK: - Settings Screen
 
 "settings.title" = "Settings";
