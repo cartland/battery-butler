@@ -37,6 +37,10 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 - **Module structure diagram in README**: Embedded `full_system_structure.mmd` (module dependency graph) into the README Architecture section using the existing `MermaidEmbedder` pipeline. `GenerateGraphTask` now auto-embeds into README alongside the existing sankey chart. Added `MermaidEmbedderTest` with 7 unit tests. ([#942](https://github.com/cartland/battery-butler/pull/942))
 
+### Testing
+
+- **Close screenshot parity gaps**: Added error state UI + preview + screenshot test for AddDeviceType on Android. Added deleted-device-ref snapshot test for EventDetail on iOS. Updated Settings network modes gap reason to "platform divergence" (iOS has no network mode UI). Updated parity matrix counts (Android: 139 PNGs/78 tests, iOS: 96 PNGs/48 tests).
+
 ### CI/CD
 
 - **README in auto-generate change detection**: Added `README.md` to the `git diff` check in `auto-generate.yml` so README embedding changes trigger follow-up PRs. Fixed sankey frontmatter validation to scope within `code_distribution.mmd` markers (was incorrectly matching the first mermaid block when multiple blocks exist). ([#942](https://github.com/cartland/battery-butler/pull/942))
