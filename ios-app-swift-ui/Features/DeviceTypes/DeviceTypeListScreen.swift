@@ -34,10 +34,10 @@ struct DeviceTypeListContentView<DetailDestination: View>: View {
         List {
             if state is DeviceTypeListUiStateLoading {
                 ProgressView()
-                    .accessibilityLabel("Loading device types")
+                    .accessibilityLabel("device_types.accessibility.loading")
             } else if let successState = state as? DeviceTypeListUiStateSuccess {
                 if successState.groupedTypes.isEmpty {
-                    Text("No device types found")
+                    Text("device_types.no_types")
                         .foregroundColor(.secondary)
                 } else {
                     ForEach(successState.groupedTypes.keys.sorted(), id: \.self) { key in
@@ -52,12 +52,12 @@ struct DeviceTypeListContentView<DetailDestination: View>: View {
                 }
             }
         }
-        .navigationTitle("Device Types")
+        .navigationTitle("device_types.title")
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: onAddTypeTapped) {
                     Image(systemName: "plus")
-                        .accessibilityLabel("Add device type")
+                        .accessibilityLabel("device_types.accessibility.add")
                 }
             }
         }

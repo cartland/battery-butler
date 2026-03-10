@@ -35,8 +35,8 @@ struct SettingsContentView: View {
 
     var body: some View {
         Form {
-            Section(header: Text("Data Management")) {
-                Button("Export Data") {
+            Section(header: Text("settings.section.data")) {
+                Button("settings.button.export") {
                     onExportData()
                 }
             }
@@ -46,7 +46,7 @@ struct SettingsContentView: View {
                     .foregroundStyle(Color.butlerOnSurfaceVariant)
             }
         }
-        .navigationTitle("Settings")
+        .navigationTitle("settings.title")
         .sheet(isPresented: $isShareSheetPresented, onDismiss: {
             onExportDataConsumed()
         }) {

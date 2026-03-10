@@ -60,7 +60,7 @@ struct EditBatteryEventContentView: View {
                     Form {
                         // Device context section (read-only)
                         if let device = successState.device {
-                            Section(header: Text("Device")) {
+                            Section(header: Text("edit_event.section.device")) {
                                 HStack(spacing: ButlerSpacing.standard) {
                                     let sfSymbol = SFSymbolMapper.sfSymbolName(for: successState.deviceType?.defaultIcon)
                                     ButlerIconBox(systemName: sfSymbol)
@@ -79,29 +79,29 @@ struct EditBatteryEventContentView: View {
                         }
 
                         // Event details section
-                        Section(header: Text("Event Details")) {
-                            DatePicker("Date", selection: $eventDate, displayedComponents: .date)
+                        Section(header: Text("edit_event.section.details")) {
+                            DatePicker("edit_event.field.date", selection: $eventDate, displayedComponents: .date)
 
-                            TextField("Battery Type (Optional)", text: $batteryType)
+                            TextField("edit_event.field.battery_type", text: $batteryType)
 
-                            TextField("Notes (Optional)", text: $notes)
+                            TextField("edit_event.field.notes", text: $notes)
                         }
 
                         Section {
-                            Button("Save Changes", action: onSave)
+                            Button("edit_event.button.save", action: onSave)
                         }
 
                         Section {
-                            Button("Delete Event", role: .destructive) {
+                            Button("edit_event.button.delete", role: .destructive) {
                                 showDeleteConfirmation = true
                             }
                         }
                     }
-                    .alert("Delete Event?", isPresented: $showDeleteConfirmation) {
-                        Button("Delete", role: .destructive, action: onDelete)
-                        Button("Cancel", role: .cancel) {}
+                    .alert("edit_event.alert.delete_title", isPresented: $showDeleteConfirmation) {
+                        Button("common.delete", role: .destructive, action: onDelete)
+                        Button("common.cancel", role: .cancel) {}
                     } message: {
-                        Text("This action cannot be undone.")
+                        Text("common.action_cannot_be_undone")
                     }
                     .onAppear {
                         if !hasInitializedFields {
@@ -113,17 +113,17 @@ struct EditBatteryEventContentView: View {
                         }
                     }
                 } else if state is EditBatteryEventUiStateLoading {
-                    ProgressView("Loading event...")
+                    ProgressView("edit_event.loading")
                 } else {
-                    Text("Event not found")
+                    Text("edit_event.not_found")
                         .foregroundColor(.secondary)
                 }
             }
-            .navigationTitle("Edit Event")
+            .navigationTitle("edit_event.title")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel", action: onCancel)
+                    Button("common.cancel", action: onCancel)
                 }
             }
         }

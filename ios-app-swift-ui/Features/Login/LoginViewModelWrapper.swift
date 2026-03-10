@@ -50,22 +50,54 @@ class LoginViewModelWrapper: ObservableObject {
     static func errorInfo(for error: AuthError) -> (String, String, Bool) {
         switch error {
         case is AuthErrorConfigurationNotConfigured:
-            return ("Coming Soon", "Sign-in is not yet available for this build.", false)
+            return (
+                String(localized: "login.error.coming_soon.title"),
+                String(localized: "login.error.coming_soon.message"),
+                false
+            )
         case is AuthErrorConfigurationServerUnavailable:
-            return ("Can't Connect", "The authentication server is not reachable. Please try again later.", true)
+            return (
+                String(localized: "login.error.cant_connect.title"),
+                String(localized: "login.error.cant_connect.message"),
+                true
+            )
         case is AuthErrorSignInCancelled:
-            return ("Cancelled", "Sign-in was cancelled. You can try again when you're ready.", true)
+            return (
+                String(localized: "login.error.cancelled.title"),
+                String(localized: "login.error.cancelled.message"),
+                true
+            )
         case is AuthErrorSignInNetworkError:
-            return ("Connection Problem", "Please check your internet connection and try again.", true)
+            return (
+                String(localized: "login.error.network.title"),
+                String(localized: "login.error.network.message"),
+                true
+            )
         case let failed as AuthErrorSignInFailed:
-            let msg = failed.cause ?? "Your data is safe. Please try signing in again."
-            return ("Sign In Failed", msg, true)
+            let msg = failed.cause ?? String(localized: "login.error.sign_in_failed.default_message")
+            return (
+                String(localized: "login.error.sign_in_failed.title"),
+                msg,
+                true
+            )
         case is AuthErrorTokenInvalid:
-            return ("Session Error", "Please sign in again to continue.", true)
+            return (
+                String(localized: "login.error.session.title"),
+                String(localized: "login.error.session.message"),
+                true
+            )
         case is AuthErrorTokenExpired:
-            return ("Session Expired", "Your session has expired. Please sign in again.", true)
+            return (
+                String(localized: "login.error.expired.title"),
+                String(localized: "login.error.expired.message"),
+                true
+            )
         default:
-            return ("Something Went Wrong", "An unexpected error occurred. Your data is safe.", true)
+            return (
+                String(localized: "login.error.unknown.title"),
+                String(localized: "login.error.unknown.message"),
+                true
+            )
         }
     }
 }

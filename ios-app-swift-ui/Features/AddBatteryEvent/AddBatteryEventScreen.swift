@@ -64,27 +64,27 @@ struct AddBatteryEventContentView: View {
 
     var body: some View {
         Form {
-            Section(header: Text("Add Event Manually")) {
+            Section(header: Text("add_event.section.manual")) {
                 if devices.isEmpty {
-                    Text("No devices available. Please add a device first.")
+                    Text("add_event.no_devices")
                         .foregroundStyle(.secondary)
                 } else {
-                    Picker("Device", selection: $selectedDeviceId) {
-                        Text("Select a device").tag(String?.none)
+                    Picker("add_event.field.device", selection: $selectedDeviceId) {
+                        Text("add_event.field.select_device").tag(String?.none)
                         ForEach(devices, id: \.id) { device in
                             Text(device.name).tag(String?.some(device.id))
                         }
                     }
 
-                    DatePicker("Date & Time", selection: $eventDate)
+                    DatePicker("add_event.field.date_time", selection: $eventDate)
 
-                    DisclosureGroup("More Details", isExpanded: $showMoreDetails) {
-                        TextField("Battery Type (Optional)", text: $batteryType)
+                    DisclosureGroup("add_event.field.more_details", isExpanded: $showMoreDetails) {
+                        TextField("add_event.field.battery_type", text: $batteryType)
 
-                        TextField("Notes (Optional)", text: $notes)
+                        TextField("add_event.field.notes", text: $notes)
                     }
 
-                    Button("Save Event") {
+                    Button("add_event.button.save") {
                         onSaveEvent()
                     }
                     .disabled(selectedDeviceId == nil)
@@ -92,11 +92,11 @@ struct AddBatteryEventContentView: View {
             }
 
             if isAiBatchImportEnabled {
-                Section(header: Text("Batch Import with AI")) {
+                Section(header: Text("add_event.section.batch")) {
                     TextEditor(text: $batchInput)
                         .frame(minHeight: 100)
 
-                    Button("Process Batch Data") {
+                    Button("add_event.button.process_batch") {
                         onProcessBatch()
                     }
                     .disabled(batchInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
@@ -108,7 +108,7 @@ struct AddBatteryEventContentView: View {
                                 .foregroundStyle(getColor(for: msg))
                         }
 
-                        Button("Clear Messages") {
+                        Button("add_event.button.clear_messages") {
                             onClearAiMessages()
                         }
                         .foregroundStyle(Color.butlerError)
@@ -116,7 +116,7 @@ struct AddBatteryEventContentView: View {
                 }
             }
         }
-        .navigationTitle("Add Battery Event")
+        .navigationTitle("add_event.title")
         .navigationBarTitleDisplayMode(.inline)
     }
 
@@ -126,9 +126,9 @@ struct AddBatteryEventContentView: View {
         } else if let success = result as? BatchOperationResultSuccess {
             return success.message
         } else if result is BatchOperationResultError {
-            return "An error occurred during import."
+            return String(localized: "add_event.batch.error")
         }
-        return "Unknown status"
+        return String(localized: "add_event.batch.unknown")
     }
 
     private func getColor(for result: BatchOperationResult) -> Color {

@@ -43,22 +43,22 @@ struct EditDeviceTypeContentView: View {
             if state.isLoading {
                 ProgressView()
             } else if state.isNotFound {
-                Text("Device Type not found")
+                Text("edit_device_type.not_found")
             } else {
-                Section(header: Text("Details")) {
-                    TextField("Name", text: Binding(
+                Section(header: Text("edit_device_type.section.details")) {
+                    TextField("edit_device_type.field.name", text: Binding(
                         get: { state.name },
                         set: { onUpdateName($0) }
                     ))
 
-                    TextField("Battery Type", text: Binding(
+                    TextField("edit_device_type.field.battery_type", text: Binding(
                         get: { state.batteryType },
                         set: { onUpdateBatteryType($0) }
                     ))
                 }
 
                 Section {
-                    Button("Delete Type") {
+                    Button("edit_device_type.button.delete") {
                         showDeleteConfirmation = true
                     }
                     .foregroundStyle(Color.butlerError)
@@ -72,22 +72,22 @@ struct EditDeviceTypeContentView: View {
                 }
             }
         }
-        .navigationTitle("Edit Device Type")
+        .navigationTitle("edit_device_type.title")
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
-                Button("Save") {
+                Button("common.save") {
                     onSave()
                 }
                 .disabled(state.isLoading || state.isNotFound)
             }
         }
-        .alert("Delete Device Type?", isPresented: $showDeleteConfirmation) {
-            Button("Delete", role: .destructive) {
+        .alert("edit_device_type.alert.delete_title", isPresented: $showDeleteConfirmation) {
+            Button("common.delete", role: .destructive) {
                 onDelete()
             }
-            Button("Cancel", role: .cancel) {}
+            Button("common.cancel", role: .cancel) {}
         } message: {
-            Text("This action cannot be undone.")
+            Text("common.action_cannot_be_undone")
         }
     }
 }

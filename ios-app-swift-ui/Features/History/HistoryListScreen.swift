@@ -91,9 +91,9 @@ struct HistoryListContentView: View {
                 }
             } else if state is HistoryListUiStateLoading {
                 ProgressView()
-                    .accessibilityLabel("Loading history")
+                    .accessibilityLabel("history.accessibility.loading")
             }
         }
-        .navigationTitle("History")
+        .navigationTitle("history.title")
     }
 }

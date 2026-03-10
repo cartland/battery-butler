@@ -1,0 +1,194 @@
+/*
+ * Localizable.strings
+ * Battery Butler iOS App
+ *
+ * English (en-US) — Base localization
+ */
+
+// MARK: - Common / Shared
+
+"common.cancel" = "Cancel";
+"common.save" = "Save";
+"common.delete" = "Delete";
+"common.edit" = "Edit";
+"common.ok" = "OK";
+"common.details" = "Details";
+"common.loading" = "Loading...";
+"common.action_cannot_be_undone" = "This action cannot be undone.";
+"common.try_again" = "Try Again";
+"common.not_specified" = "Not specified";
+"common.unknown" = "Unknown";
+
+// MARK: - Main Tabs
+
+"tab.devices" = "Devices";
+"tab.types" = "Types";
+"tab.history" = "History";
+
+// MARK: - Home Screen
+
+"home.title" = "Battery Butler Native";
+"home.devices_section" = "Devices";
+"home.no_devices" = "No devices found";
+"home.accessibility.settings" = "Settings";
+"home.accessibility.ai_chat" = "AI Chat";
+"home.accessibility.add_event" = "Add battery event";
+"home.accessibility.add_device" = "Add device";
+
+// MARK: - Device Detail Screen
+
+"device_detail.title" = "Device Details";
+"device_detail.replaced_battery" = "Replaced Battery";
+"device_detail.accessibility.replaced_battery_hint" = "Records a battery replacement for today";
+"device_detail.battery_history" = "Battery History";
+"device_detail.no_history" = "No history recorded";
+"device_detail.not_found" = "Device not found";
+"device_detail.accessibility.loading" = "Loading device details";
+
+// MARK: - Add Device Screen
+
+"add_device.title" = "Add Device";
+"add_device.section.details" = "Device Details";
+"add_device.field.name" = "Device Name";
+"add_device.field.location" = "Location (Optional)";
+"add_device.field.type" = "Type";
+"add_device.field.select_type" = "Select Type";
+"add_device.button.add" = "Add Device";
+
+// MARK: - Edit Device Screen
+
+"edit_device.title" = "Edit Device";
+"edit_device.section.details" = "Device Details";
+"edit_device.field.name" = "Device Name";
+"edit_device.field.location" = "Location (Optional)";
+"edit_device.field.type" = "Type";
+"edit_device.field.select_type" = "Select Type";
+"edit_device.button.save" = "Save Changes";
+"edit_device.button.delete" = "Delete Device";
+"edit_device.alert.delete_title" = "Delete Device?";
+"edit_device.loading" = "Loading device...";
+"edit_device.not_found" = "Device not found";
+
+// MARK: - Device Types List Screen
+
+"device_types.title" = "Device Types";
+"device_types.no_types" = "No device types found";
+"device_types.accessibility.loading" = "Loading device types";
+"device_types.accessibility.add" = "Add device type";
+
+// MARK: - Device Type Detail Screen
+
+"device_type_detail.title" = "Device Type";
+"device_type_detail.battery_type" = "Battery Type";
+"device_type_detail.battery_quantity" = "Battery Quantity";
+"device_type_detail.devices_section" = "Devices";
+"device_type_detail.no_devices" = "No devices of this type";
+"device_type_detail.not_found" = "Device type not found";
+"device_type_detail.loading" = "Loading device type...";
+
+// MARK: - Add Device Type Screen
+
+"add_device_type.title" = "Add Device Type";
+"add_device_type.section.details" = "Device Type Details";
+"add_device_type.field.name" = "Name";
+"add_device_type.field.battery_type" = "Battery Type";
+
+// MARK: - Edit Device Type Screen
+
+"edit_device_type.title" = "Edit Device Type";
+"edit_device_type.section.details" = "Details";
+"edit_device_type.field.name" = "Name";
+"edit_device_type.field.battery_type" = "Battery Type";
+"edit_device_type.button.delete" = "Delete Type";
+"edit_device_type.alert.delete_title" = "Delete Device Type?";
+"edit_device_type.not_found" = "Device Type not found";
+
+// MARK: - Add Battery Event Screen
+
+"add_event.title" = "Add Battery Event";
+"add_event.section.manual" = "Add Event Manually";
+"add_event.no_devices" = "No devices available. Please add a device first.";
+"add_event.field.device" = "Device";
+"add_event.field.select_device" = "Select a device";
+"add_event.field.date_time" = "Date & Time";
+"add_event.field.more_details" = "More Details";
+"add_event.field.battery_type" = "Battery Type (Optional)";
+"add_event.field.notes" = "Notes (Optional)";
+"add_event.button.save" = "Save Event";
+"add_event.section.batch" = "Batch Import with AI";
+"add_event.button.process_batch" = "Process Batch Data";
+"add_event.button.clear_messages" = "Clear Messages";
+"add_event.batch.error" = "An error occurred during import.";
+"add_event.batch.unknown" = "Unknown status";
+
+// MARK: - Edit Battery Event Screen
+
+"edit_event.title" = "Edit Event";
+"edit_event.section.device" = "Device";
+"edit_event.section.details" = "Event Details";
+"edit_event.field.date" = "Date";
+"edit_event.field.battery_type" = "Battery Type (Optional)";
+"edit_event.field.notes" = "Notes (Optional)";
+"edit_event.button.save" = "Save Changes";
+"edit_event.button.delete" = "Delete Event";
+"edit_event.alert.delete_title" = "Delete Event?";
+"edit_event.loading" = "Loading event...";
+"edit_event.not_found" = "Event not found";
+
+// MARK: - Event Detail Screen
+
+"event_detail.title" = "Event Detail";
+"event_detail.section.details" = "Event Details";
+"event_detail.field.date" = "Date";
+"event_detail.field.battery_type" = "Battery Type";
+"event_detail.field.notes" = "Notes";
+"event_detail.section.device" = "Device Information";
+"event_detail.field.name" = "Name";
+"event_detail.field.location" = "Location";
+"event_detail.field.type" = "Type";
+"event_detail.not_found" = "Event Not Found";
+
+// MARK: - History Screen
+
+"history.title" = "History";
+"history.accessibility.loading" = "Loading history";
+
+// MARK: - AI Chat Screen
+
+"ai_chat.title" = "AI Butler";
+"ai_chat.field.message" = "Message";
+"ai_chat.accessibility.send" = "Send message";
+"ai_chat.accessibility.clear" = "Clear chat";
+
+// MARK: - Login Screen
+
+"login.app_name" = "Battery Butler";
+"login.subtitle" = "Manage your devices and battery replacements securely across all platforms.";
+"login.signing_in" = "Signing in...";
+"login.button.sign_in" = "Sign in with Google";
+"login.button.skip" = "Skip for now";
+
+// MARK: - Login Errors
+
+"login.error.coming_soon.title" = "Coming Soon";
+"login.error.coming_soon.message" = "Sign-in is not yet available for this build.";
+"login.error.cant_connect.title" = "Can't Connect";
+"login.error.cant_connect.message" = "The authentication server is not reachable. Please try again later.";
+"login.error.cancelled.title" = "Cancelled";
+"login.error.cancelled.message" = "Sign-in was cancelled. You can try again when you're ready.";
+"login.error.network.title" = "Connection Problem";
+"login.error.network.message" = "Please check your internet connection and try again.";
+"login.error.sign_in_failed.title" = "Sign In Failed";
+"login.error.sign_in_failed.default_message" = "Your data is safe. Please try signing in again.";
+"login.error.session.title" = "Session Error";
+"login.error.session.message" = "Please sign in again to continue.";
+"login.error.expired.title" = "Session Expired";
+"login.error.expired.message" = "Your session has expired. Please sign in again.";
+"login.error.unknown.title" = "Something Went Wrong";
+"login.error.unknown.message" = "An unexpected error occurred. Your data is safe.";
+
+// MARK: - Settings Screen
+
+"settings.title" = "Settings";
+"settings.section.data" = "Data Management";
+"settings.button.export" = "Export Data";

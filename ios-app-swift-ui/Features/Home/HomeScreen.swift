@@ -47,8 +47,8 @@ struct HomeContentView<DeviceDestination: View, SettingsDestination: View, AiDes
     var body: some View {
         List {
             if state.groupedDevices.isEmpty {
-                 Section(header: Text("Devices")) {
-                     Text("No devices found")
+                 Section(header: Text("home.devices_section")) {
+                     Text("home.no_devices")
                         .foregroundColor(.secondary)
                  }
             } else {
@@ -63,12 +63,12 @@ struct HomeContentView<DeviceDestination: View, SettingsDestination: View, AiDes
                 }
             }
         }
-        .navigationTitle("Battery Butler Native")
+        .navigationTitle("home.title")
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 NavigationLink(destination: settingsDestination()) {
                     Image(systemName: "gear")
-                        .accessibilityLabel("Settings")
+                        .accessibilityLabel("home.accessibility.settings")
                 }
             }
 
@@ -76,15 +76,15 @@ struct HomeContentView<DeviceDestination: View, SettingsDestination: View, AiDes
                 HStack(spacing: 16) {
                     NavigationLink(destination: aiDestination()) {
                         Image(systemName: "wand.and.stars")
-                            .accessibilityLabel("AI Chat")
+                            .accessibilityLabel("home.accessibility.ai_chat")
                     }
                     Button(action: onAddEventTapped) {
                         Image(systemName: "bolt.badge.plus")
-                            .accessibilityLabel("Add battery event")
+                            .accessibilityLabel("home.accessibility.add_event")
                     }
                     Button(action: onAddDeviceTapped) {
                         Image(systemName: "plus")
-                            .accessibilityLabel("Add device")
+                            .accessibilityLabel("home.accessibility.add_device")
                     }
                 }
             }
