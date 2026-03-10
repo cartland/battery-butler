@@ -38,6 +38,7 @@ Architecture is enforced by `buildSrc/.../ArchitectureCheckTask.kt`. Key rules:
   - iOS Compose: `IosComponentHelper.kt` (3 files: iosArm64Main, iosSimulatorArm64Main, iosX64Main)
   - iOS Native: `NativeComponent.kt` in `ios-swift-di` (uses `@Provides` methods, not constructor params)
 - Non-Android platforms use `InMemoryAiPreferencesRepository` (in `:data`); Android uses `AiPreferencesRepositoryImpl` with `SharedPreferencesSettings`
+- **Shared no-op implementations** (PR #951): `NoOpRemoteDataSource` (`:data-network`), `NoOpAuthRepository` (`:domain`), `NoOpAiEngine` (`:ai`). Platform entry points use these instead of inline anonymous objects. `IosNativeHelper.kt` in `ios-swift-di` delegates to these shared objects.
 - Modules using `@Inject` need BOTH `kotlin-inject-runtime` (commonMain) AND `kotlin-inject-compiler` (KSP)
 - `multiplatform-settings` is `implementation` in `:data` — not transitive. Add directly to modules using platform-specific Settings classes (e.g. `SharedPreferencesSettings`)
 
@@ -191,7 +192,7 @@ The AI chat uses a **split-screen layout** — chat and tab content share the sc
 - **`AiTabContent`** (`presentation-feature/aichat/AiTabContent.kt`) has a `showInput: Boolean = true` param. The split-screen chat panel passes `showInput = false` so only the chat history appears.
 - **AI messages** include an `[Active tab: <name>]` context prefix so the AI knows which screen the user is viewing.
 - **Tab transitions** are directional: `tabTransitionForward` is set before each backstack mutation based on tab index. `NavDisplay.transitionSpec` reads it to slide left or right.
-- **`MainTab.AI`** enum value remains in the codebase but is dead code — the AI is now a split-screen panel, not a nav tab.
+- **`MainTab.AI`** was removed (PR #952) — the AI is a split-screen panel, not a nav tab. The `MainTab` enum now only contains `DEVICES`, `TYPES`, `HISTORY`.
 - **Predictive back (Android 13+)**: Opted in via `android:enableOnBackInvokedCallback="true"` in `AndroidManifest.xml`. AI chat collapse uses `PredictiveBackHandler` for gesture-tracked animation. Back on Login is a no-op (prevents revealing unauthenticated tabs). Full back gesture contract documented in `docs/TESTING.md`.
 
 ## Common Commands
