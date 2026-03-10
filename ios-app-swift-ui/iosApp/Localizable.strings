@@ -190,5 +190,22 @@
 // MARK: - Settings Screen
 
 "settings.title" = "Settings";
+"settings.section.account" = "Account";
+"settings.account.signed_in" = "Signed In";
+"settings.account.sign_out" = "Sign Out";
+"settings.section.network" = "Network";
+"settings.network_mode.title" = "Network Mode";
+"settings.network_mode.none" = "None (Offline)";
+"settings.network_mode.mock" = "Mock Data";
+"settings.network_mode.grpc_local" = "Local Server";
+"settings.network_mode.grpc_aws" = "Cloud (AWS)";
+"settings.network_mode.grpc_dev" = "Dev Server";
+"settings.section.ai" = "AI";
+"settings.ai_engine.title" = "AI Engine";
+"settings.ai_engine.cloud" = "Cloud (Gemini)";
+"settings.ai_engine.on_device" = "On-Device";
+"settings.ai_engine.noop" = "Disabled";
 "settings.section.data" = "Data Management";
 "settings.button.export" = "Export Data";
+"settings.section.about" = "About";
+"settings.version.title" = "App Version";
