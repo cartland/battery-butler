@@ -207,7 +207,9 @@ jobs:
 
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: latest-stable
+          # Pin Xcode version for reproducible iOS snapshots.
+          # Update this when changing local dev Xcode version.
+          xcode-version: '26.3'
 
       - name: Set up JDK
         uses: actions/setup-java@v5
