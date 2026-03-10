@@ -411,6 +411,9 @@ fun App(
                                                 Screen.EditBatteryEvent(args.eventId),
                                             )
                                         },
+                                        onDelete = {
+                                            backStack.removeLastOrNull()
+                                        },
                                         onDeviceClick = { deviceId ->
                                             backStack.navigateTo(
                                                 Screen.DeviceDetail(deviceId),
