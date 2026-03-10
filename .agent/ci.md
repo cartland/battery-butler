@@ -81,6 +81,19 @@ Merging PRs that modify `.github/workflows/` files requires the `workflow` OAuth
 
 CI uses concurrency groups to prevent parallel runs on the same branch. If a `workflow_dispatch` run starts while a `pull_request` run is in-flight, the `pull_request` run gets cancelled. The `ci` gate treats `cancelled` as failure. **PR status checks only track `pull_request`-event runs**, so a successful `workflow_dispatch` run won't clear the red status. Fix: push a new commit to the PR branch to trigger a fresh `pull_request` CI run.
 
+## iOS CI — Xcode Version Pinning
+
+iOS CI jobs (`validation_ios_ui`, `build_ios_compose`, `build_ios_native`, `ios-snapshots` in auto-generate) use `maxim-lobanov/setup-xcode@v1` to select an Xcode version.
+
+**Key constraint:** The pinned Xcode version's SDK must have a matching simulator runtime installed on the runner. As of March 2026, `macos-latest` (macos-15-arm64) has:
+- **Installed Xcodes:** 16.0–16.4, 26.0.1–26.3
+- **Simulator runtimes:** iOS 18.5, 18.6, 26.0, 26.1, 26.2 (no 18.0–18.4)
+- **Default:** Xcode 16.4; `latest-stable` resolves to Xcode 26.3
+
+**Xcode 16.2 fails** because it bundles iOS 18.2 SDK but no 18.2 simulator runtime is installed. The fix (PR #965) was to pin to `26.3` which matches the `latest-stable` resolution.
+
+**When updating the pin:** Check the [runner-images readme](https://github.com/actions/runner-images/blob/main/images/macos/macos-15-Readme.md) for available Xcode versions and simulator runtimes. All 4 pin sites must be updated together (3 in `ci.yml`, 1 in `auto-generate.yml`).
+
 ## Dependabot PRs
 
 Dependabot is configured (`.github/dependabot.yml`) for weekly updates.
