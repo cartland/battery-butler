@@ -149,6 +149,7 @@ graph TD
     IosAppComposeUi.xcodeproj --> ComposeApp
 
     IosAppSwiftUi.xcodeproj --> IosSwiftDi
+
 ```
 <!-- GENERATED:END full_system_structure.mmd -->
 
@@ -171,14 +172,14 @@ config:
 %% GENERATED FILE - DO NOT EDIT
 sankey-beta
 
-Codebase,Shared Code,24972
-Codebase,iOS Swift App,4369
-Codebase,Other,3181
-Codebase,CMP Apps,2171
+Codebase,Shared Code,25046
+Codebase,iOS Swift App,4402
+Codebase,Other,3347
+Codebase,CMP Apps,2173
 Codebase,Server,1528
-Codebase,Screenshot Tests,1085
+Codebase,Screenshot Tests,1129
 
-Shared Code,presentation-feature,5918
+Shared Code,presentation-feature,5992
 Shared Code,viewmodel,4627
 Shared Code,usecase,4170
 Shared Code,data-network,2413
@@ -189,41 +190,41 @@ Shared Code,data-local,1059
 Shared Code,ai,493
 Shared Code,compose-resources,70
 
-iOS Swift App,iosAppSwiftUI,4369
+iOS Swift App,iosAppSwiftUI,4402
 
-Other,buildSrc,1597
+Other,buildSrc,1759
 Other,test-common,620
 Other,e2e-tests,271
-Other,ios-swift-di,235
+Other,ios-swift-di,239
 Other,presentation-model,218
 Other,fixtures,209
 Other,iosAppComposeUI,31
 
-CMP Apps,compose-app,2171
+CMP Apps,compose-app,2173
 
 Server,server:app,1342
 Server,server:data,152
 Server,server:domain,34
 
-Screenshot Tests,android-screenshot-tests,1085
+Screenshot Tests,android-screenshot-tests,1129
 
-presentation-feature,Kotlin,5918
+presentation-feature,Kotlin,5992
 viewmodel,Kotlin,4627
-iosAppSwiftUI,Swift,4369
+iosAppSwiftUI,Swift,4402
 usecase,Kotlin,4170
 data-network,Kotlin,2413
 domain,Kotlin,2295
-compose-app,Kotlin,2171
+compose-app,Kotlin,2173
 presentation-core,Kotlin,2095
 data,Kotlin,1832
-buildSrc,Kotlin,1597
+buildSrc,Kotlin,1759
 server:app,Kotlin,1342
-android-screenshot-tests,Kotlin,1085
+android-screenshot-tests,Kotlin,1129
 data-local,Kotlin,1059
 test-common,Kotlin,620
 ai,Kotlin,493
 e2e-tests,Kotlin,271
-ios-swift-di,Kotlin,235
+ios-swift-di,Kotlin,239
 presentation-model,Kotlin,218
 fixtures,Kotlin,209
 server:data,Kotlin,152
