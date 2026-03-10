@@ -1,10 +1,11 @@
 package com.chriscartland.batterybutler.usecase
 
+import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.testcommon.FakeAiEngine
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
+import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 class SuggestDeviceIconUseCaseTest {
@@ -41,11 +42,12 @@ class SuggestDeviceIconUseCaseTest {
 
             val result = useCase("Smoke Detector")
 
-            assertEquals("detector_smoke", result)
+            assertIs<Result.Success<String>>(result)
+            assertEquals("detector_smoke", result.data)
         }
 
     @Test
-    fun `returns null on AI error`() =
+    fun `returns error on AI failure`() =
         runTest {
             val engine = FakeAiEngine()
             engine.errorToThrow = RuntimeException("API failure")
@@ -53,6 +55,7 @@ class SuggestDeviceIconUseCaseTest {
 
             val result = useCase("Smoke Detector")
 
-            assertNull(result)
+            assertIs<Result.Error<*>>(result)
+            assertTrue(result.error.message.contains("Failed to suggest icon"))
         }
 }
