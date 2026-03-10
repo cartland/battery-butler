@@ -43,6 +43,10 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 - **Inline CI trigger for auto-generated PRs**: Auto-generate workflow now closes/reopens PRs with `BOT_PAT` immediately after creation to trigger CI within seconds, instead of waiting for `ci-trigger-auto-prs.yml` (which could delay CI by ~16 minutes when `cancel-in-progress` cancelled an earlier run). ([#928](https://github.com/cartland/battery-butler/pull/928))
 - **Mermaid files in docs_only filter**: Added `**/*.mmd` to the `docs_only` path filter in `ci.yml` so diagram-only PRs skip full CI. ([#928](https://github.com/cartland/battery-butler/pull/928))
 
+### Testing
+
+- **Close Android Tier 2 screenshot gaps**: Added filled-form previews for AddDevice and AddDeviceType screens (via `initialName`/`initialLocation` parameters) and loading-state preview for EditBatteryEvent. Added corresponding screenshot test wrappers. Updated parity matrix in `SCREENSHOT_STRATEGY.md`. Added `validate-android-screenshots.sh` script for local screenshot validation.
+
 ### Releases
 
 - **Android release `android/27`**: Released on commit `af8049cd`.

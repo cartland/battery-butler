@@ -72,9 +72,11 @@ fun AddDeviceContent(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
     isLoading: Boolean = false,
+    initialName: String = "",
+    initialLocation: String = "",
 ) {
-    var name by rememberSaveable { mutableStateOf("") }
-    var location by rememberSaveable { mutableStateOf("") }
+    var name by rememberSaveable { mutableStateOf(initialName) }
+    var location by rememberSaveable { mutableStateOf(initialLocation) }
     var selectedType by remember { mutableStateOf<DeviceType?>(null) }
     var expanded by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
@@ -338,6 +340,26 @@ fun AddDeviceContentPreview() {
             onAddDeviceTypeClick = {},
             onBack = {},
             isLoading = false,
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun AddDeviceContentFilledPreview() {
+    BatteryButlerTheme {
+        AddDeviceContent(
+            deviceTypes = listOf(
+                DeviceType("1", "Smoke Detector", "detector_smoke"),
+            ),
+            aiMessages = emptyList(),
+            isAiBatchImportEnabled = false,
+            onAddDevice = {},
+            onBatchAdd = {},
+            onAddDeviceTypeClick = {},
+            onBack = {},
+            initialName = "Kitchen Smoke Detector",
+            initialLocation = "Kitchen",
         )
     }
 }
