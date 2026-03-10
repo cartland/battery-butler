@@ -11,29 +11,27 @@ struct MainScreen: View {
             // Devices Tab
             NavigationStack {
                 HomeScreen(component: component)
-                    .navigationTitle(MainTab.devices.rawValue)
             }
             .tabItem {
-                Label(MainTab.devices.rawValue, systemImage: MainTab.devices.iconName)
+                Label(MainTab.devices.titleKey, systemImage: MainTab.devices.iconName)
             }
             .tag(MainTab.devices)
-            
+
             // Types Tab
             NavigationStack {
                 DeviceTypeListScreen(component: component)
             }
             .tabItem {
-                Label(MainTab.types.rawValue, systemImage: MainTab.types.iconName)
+                Label(MainTab.types.titleKey, systemImage: MainTab.types.iconName)
             }
             .tag(MainTab.types)
-            
+
             // History Tab
             NavigationStack {
                 HistoryListScreen(viewModel: component.historyListViewModel)
-                    .navigationTitle(MainTab.history.rawValue)
             }
             .tabItem {
-                Label(MainTab.history.rawValue, systemImage: MainTab.history.iconName)
+                Label(MainTab.history.titleKey, systemImage: MainTab.history.iconName)
             }
             .tag(MainTab.history)
         }

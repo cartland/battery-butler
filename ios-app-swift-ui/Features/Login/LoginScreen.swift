@@ -67,11 +67,11 @@ struct LoginContentView: View {
                 .foregroundStyle(Color.butlerPrimary)
                 .padding(.top, 40)
 
-            Text("Battery Butler")
+            Text("login.app_name")
                 .font(.largeTitle)
                 .fontWeight(.bold)
 
-            Text("Manage your devices and battery replacements securely across all platforms.")
+            Text("login.subtitle")
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.secondary)
                 .padding(.horizontal)
@@ -79,7 +79,7 @@ struct LoginContentView: View {
             Spacer()
 
             if authState is AuthStateAuthenticating {
-                ProgressView("Signing in...")
+                ProgressView("login.signing_in")
             } else {
                 if isSignInAvailable {
                     Button(action: {
@@ -88,7 +88,7 @@ struct LoginContentView: View {
                         HStack {
                             Image(systemName: "person.crop.circle.badge.plus")
                                 .accessibilityHidden(true)
-                            Text("Sign in with Google")
+                            Text("login.button.sign_in")
                         }
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -101,7 +101,7 @@ struct LoginContentView: View {
                 Button(action: {
                     onSkipLogin()
                 }) {
-                    Text("Skip for now")
+                    Text("login.button.skip")
                         .frame(maxWidth: .infinity)
                         .padding()
                         .foregroundStyle(Color.butlerPrimary)
@@ -113,11 +113,11 @@ struct LoginContentView: View {
         .padding()
         .alert(errorTitle, isPresented: $showError) {
             if showRetryButton {
-                Button("Try Again") {
+                Button("common.try_again") {
                     onRetry()
                 }
             }
-            Button("OK", role: .cancel) {
+            Button("common.ok", role: .cancel) {
                 onDismissError()
             }
         } message: {

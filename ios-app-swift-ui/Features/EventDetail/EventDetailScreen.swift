@@ -18,7 +18,7 @@ struct EventDetailScreen: View {
         EventDetailContentView(state: wrapper.state)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Edit") {
+                    Button("common.edit") {
                         showingEditEvent = true
                     }
                 }
@@ -37,9 +37,9 @@ struct EventDetailContentView: View {
             if let success = state as? EventDetailUiStateSuccess {
                 let event = success.event
                 Form {
-                    Section(header: Text("Event Details")) {
+                    Section(header: Text("event_detail.section.details")) {
                         HStack {
-                            Text("Date")
+                            Text("event_detail.field.date")
                                 .foregroundStyle(Color.butlerOnSurfaceVariant)
                             Spacer()
                             let date = Date(timeIntervalSince1970: TimeInterval(event.date.toEpochMilliseconds()) / 1000.0)
@@ -48,7 +48,7 @@ struct EventDetailContentView: View {
 
                         if let batteryType = event.batteryType {
                             HStack {
-                                Text("Battery Type")
+                                Text("event_detail.field.battery_type")
                                     .foregroundStyle(Color.butlerOnSurfaceVariant)
                                 Spacer()
                                 Text(batteryType)
@@ -57,7 +57,7 @@ struct EventDetailContentView: View {
 
                         if let notes = event.notes {
                             VStack(alignment: .leading, spacing: 4) {
-                                Text("Notes")
+                                Text("event_detail.field.notes")
                                     .foregroundStyle(Color.butlerOnSurfaceVariant)
                                 Text(notes)
                             }
@@ -65,24 +65,24 @@ struct EventDetailContentView: View {
                     }
 
                     if let device = success.device {
-                        Section(header: Text("Device Information")) {
+                        Section(header: Text("event_detail.section.device")) {
                             HStack {
-                                Text("Name")
+                                Text("event_detail.field.name")
                                     .foregroundStyle(Color.butlerOnSurfaceVariant)
                                 Spacer()
                                 Text(device.name)
                             }
 
                             HStack {
-                                Text("Location")
+                                Text("event_detail.field.location")
                                     .foregroundStyle(Color.butlerOnSurfaceVariant)
                                 Spacer()
-                                Text(device.location ?? "Unknown")
+                                Text(device.location ?? String(localized: "common.unknown"))
                             }
 
                             if let deviceType = success.deviceType {
                                 HStack {
-                                    Text("Type")
+                                    Text("event_detail.field.type")
                                         .foregroundStyle(Color.butlerOnSurfaceVariant)
                                     Spacer()
                                     Text(deviceType.name)
@@ -93,15 +93,15 @@ struct EventDetailContentView: View {
                 }
             } else if state is EventDetailUiStateNotFound {
                 VStack {
-                    Text("Event Not Found")
+                    Text("event_detail.not_found")
                         .font(.headline)
                         .foregroundStyle(Color.butlerOnSurfaceVariant)
                 }
             } else {
-                ProgressView("Loading...")
+                ProgressView("common.loading")
             }
         }
-        .navigationTitle("Event Detail")
+        .navigationTitle("event_detail.title")
         .navigationBarTitleDisplayMode(.inline)
     }
 }

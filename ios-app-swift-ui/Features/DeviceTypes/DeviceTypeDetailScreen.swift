@@ -21,10 +21,10 @@ struct DeviceTypeDetailScreen: View {
                 DeviceDetailScreen(component: component, deviceId: deviceId)
             }
         )
-        .navigationTitle("Device Type")
+        .navigationTitle("device_type_detail.title")
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button("Edit") {
+                Button("common.edit") {
                     showingEditDeviceType = true
                 }
             }
@@ -70,11 +70,11 @@ struct DeviceTypeDetailContentView<DeviceDestination: View>: View {
                         // Info rows
                         VStack(spacing: 0) {
                             HStack {
-                                Text("Battery Type")
+                                Text("device_type_detail.battery_type")
                                     .foregroundStyle(Color.butlerOnSurfaceVariant)
                                 Spacer()
                                 Text(success.deviceType.batteryType.isEmpty
-                                    ? "Not specified"
+                                    ? String(localized: "common.not_specified")
                                     : success.deviceType.batteryType)
                             }
                             .padding(ButlerSpacing.standard)
@@ -82,7 +82,7 @@ struct DeviceTypeDetailContentView<DeviceDestination: View>: View {
                             Divider()
 
                             HStack {
-                                Text("Battery Quantity")
+                                Text("device_type_detail.battery_quantity")
                                     .foregroundStyle(Color.butlerOnSurfaceVariant)
                                 Spacer()
                                 Text("\(success.deviceType.batteryQuantity)")
@@ -100,7 +100,7 @@ struct DeviceTypeDetailContentView<DeviceDestination: View>: View {
 
                         // Devices section
                         HStack {
-                            Text("Devices")
+                            Text("device_type_detail.devices_section")
                                 .font(.title2)
                                 .bold()
                             Text("\(success.devices.count)")
@@ -113,7 +113,7 @@ struct DeviceTypeDetailContentView<DeviceDestination: View>: View {
                         }
 
                         if success.devices.isEmpty {
-                            Text("No devices of this type")
+                            Text("device_type_detail.no_devices")
                                 .italic()
                                 .foregroundStyle(Color.butlerOnSurfaceVariant)
                         } else {
@@ -141,9 +141,9 @@ struct DeviceTypeDetailContentView<DeviceDestination: View>: View {
                     .padding()
                 }
             } else if state is DeviceTypeDetailUiStateNotFound {
-                Text("Device type not found")
+                Text("device_type_detail.not_found")
             } else {
-                ProgressView("Loading device type...")
+                ProgressView("device_type_detail.loading")
             }
         }
     }

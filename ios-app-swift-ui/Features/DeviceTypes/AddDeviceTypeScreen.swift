@@ -36,13 +36,13 @@ struct AddDeviceTypeContentView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section(header: Text("Device Type Details")) {
-                    TextField("Name", text: Binding(
+                Section(header: Text("add_device_type.section.details")) {
+                    TextField("add_device_type.field.name", text: Binding(
                         get: { state.name },
                         set: { onUpdateName($0) }
                     ))
 
-                    TextField("Battery Type", text: Binding(
+                    TextField("add_device_type.field.battery_type", text: Binding(
                         get: { state.batteryType },
                         set: { onUpdateBatteryType($0) }
                     ))
@@ -55,15 +55,15 @@ struct AddDeviceTypeContentView: View {
                     }
                 }
             }
-            .navigationTitle("Add Device Type")
+            .navigationTitle("add_device_type.title")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
+                    Button("common.cancel") {
                         onCancel()
                     }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
+                    Button("common.save") {
                         onSave()
                     }
                     .disabled(state.isSaving || state.name.isEmpty)

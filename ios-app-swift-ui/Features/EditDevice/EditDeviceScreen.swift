@@ -59,12 +59,12 @@ struct EditDeviceContentView: View {
             Group {
                 if let successState = state as? EditDeviceUiStateSuccess {
                     Form {
-                        Section(header: Text("Device Details")) {
-                            TextField("Device Name", text: $name)
-                            TextField("Location (Optional)", text: $location)
+                        Section(header: Text("edit_device.section.details")) {
+                            TextField("edit_device.field.name", text: $name)
+                            TextField("edit_device.field.location", text: $location)
 
-                            Picker("Type", selection: $selectedTypeId) {
-                                Text("Select Type").tag("")
+                            Picker("edit_device.field.type", selection: $selectedTypeId) {
+                                Text("edit_device.field.select_type").tag("")
                                 ForEach(successState.deviceTypes, id: \.id) { type in
                                     Text(type.name).tag(type.id)
                                 }
@@ -72,21 +72,21 @@ struct EditDeviceContentView: View {
                         }
 
                         Section {
-                            Button("Save Changes", action: onSave)
+                            Button("edit_device.button.save", action: onSave)
                             .disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || selectedTypeId.isEmpty)
                         }
-                        
+
                         Section {
-                            Button("Delete Device", role: .destructive) {
+                            Button("edit_device.button.delete", role: .destructive) {
                                 showDeleteConfirmation = true
                             }
                         }
                     }
-                    .alert("Delete Device?", isPresented: $showDeleteConfirmation) {
-                        Button("Delete", role: .destructive, action: onDelete)
-                        Button("Cancel", role: .cancel) {}
+                    .alert("edit_device.alert.delete_title", isPresented: $showDeleteConfirmation) {
+                        Button("common.delete", role: .destructive, action: onDelete)
+                        Button("common.cancel", role: .cancel) {}
                     } message: {
-                        Text("This action cannot be undone.")
+                        Text("common.action_cannot_be_undone")
                     }
                     .onAppear {
                         if !hasInitializedFields {
@@ -98,17 +98,17 @@ struct EditDeviceContentView: View {
                         }
                     }
                 } else if state is EditDeviceUiStateLoading {
-                    ProgressView("Loading device...")
+                    ProgressView("edit_device.loading")
                 } else {
-                    Text("Device not found")
+                    Text("edit_device.not_found")
                         .foregroundColor(.secondary)
                 }
             }
-            .navigationTitle("Edit Device")
+            .navigationTitle("edit_device.title")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel", action: onCancel)
+                    Button("common.cancel", action: onCancel)
                 }
             }
         }

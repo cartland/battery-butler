@@ -24,10 +24,10 @@ struct DeviceDetailScreen: View {
                 EventDetailScreen(eventId: eventId, component: component)
             }
         )
-        .navigationTitle("Device Details")
+        .navigationTitle("device_detail.title")
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button("Edit") {
+                Button("common.edit") {
                     showingEditDevice = true
                 }
             }
@@ -75,24 +75,24 @@ struct DeviceDetailContentView<Destination: View>: View {
 
                         // Actions
                         Button(action: onRecordReplacement) {
-                            Text("Replaced Battery")
+                            Text("device_detail.replaced_battery")
                                 .frame(maxWidth: .infinity)
                                 .padding()
                                 .background(Color.butlerPrimary)
                                 .foregroundStyle(.white)
                                 .clipShape(RoundedRectangle(cornerRadius: ButlerCornerRadius.medium))
                         }
-                        .accessibilityHint("Records a battery replacement for today")
+                        .accessibilityHint("device_detail.accessibility.replaced_battery_hint")
 
                         Divider()
 
                         // History Section
-                        Text("Battery History")
+                        Text("device_detail.battery_history")
                             .font(.title2)
                             .bold()
 
                         if success.events.isEmpty {
-                            Text("No history recorded")
+                            Text("device_detail.no_history")
                                 .italic()
                                 .foregroundStyle(Color.butlerOnSurfaceVariant)
                         } else {
@@ -105,7 +105,7 @@ struct DeviceDetailContentView<Destination: View>: View {
                                         Text(dateString)
                                             .foregroundStyle(Color.butlerOnSurface)
                                         Spacer()
-                                        Text("Details")
+                                        Text("common.details")
                                             .foregroundStyle(Color.butlerPrimary)
                                     }
                                     .padding(.vertical, ButlerSpacing.extraSmall)
@@ -116,10 +116,10 @@ struct DeviceDetailContentView<Destination: View>: View {
                     .padding()
                 }
             } else if state is DeviceDetailUiStateNotFound {
-                Text("Device not found")
+                Text("device_detail.not_found")
             } else {
                 ProgressView()
-                    .accessibilityLabel("Loading device details")
+                    .accessibilityLabel("device_detail.accessibility.loading")
             }
         }
     }

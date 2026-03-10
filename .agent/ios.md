@@ -62,7 +62,7 @@ PR #873 implemented the full iOS design language from `docs/design/IOS_DESIGN_LA
 - KMP `Instant` type cannot be referenced by name in Swift. Use `instant.toEpochMilliseconds()` and pass `Int64` to helper functions instead.
 - `sync_pbxproj.rb` now syncs both `Features/` and `Core/` subdirectories.
 - Settings shows only app version (missing sign-out, network mode, AI engine)
-- All SwiftUI strings are hardcoded English (no localization)
+- **Localization**: `iosApp/Localizable.strings` provides en-US base strings (~130 keys). SwiftUI views use dot-notation keys (e.g., `Text("home.title")`). Non-SwiftUI contexts use `String(localized:)`. Dynamic user data is not localized. Short format strings with interpolation (`"\(days)d"`) are not yet localized (need pluralization support). The `iosApp/` directory uses `PBXFileSystemSynchronizedRootGroup` so new files are auto-included in builds.
 
 ## KMP Swift Constructor Gotchas
 

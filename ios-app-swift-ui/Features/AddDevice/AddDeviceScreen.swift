@@ -42,12 +42,12 @@ struct AddDeviceContentView: View {
         // NavigationStack used for proper toolbar support in sheets
         NavigationStack {
             Form {
-                Section(header: Text("Device Details")) {
-                    TextField("Device Name", text: $name)
-                    TextField("Location (Optional)", text: $location)
+                Section(header: Text("add_device.section.details")) {
+                    TextField("add_device.field.name", text: $name)
+                    TextField("add_device.field.location", text: $location)
 
-                    Picker("Type", selection: $selectedTypeId) {
-                        Text("Select Type").tag("")
+                    Picker("add_device.field.type", selection: $selectedTypeId) {
+                        Text("add_device.field.select_type").tag("")
                         ForEach(deviceTypes, id: \.id) { type in
                             Text(type.name).tag(type.id)
                         }
@@ -55,14 +55,14 @@ struct AddDeviceContentView: View {
                 }
 
                 Section {
-                    Button("Add Device", action: onAdd)
+                    Button("add_device.button.add", action: onAdd)
                     .disabled(name.isEmpty || selectedTypeId.isEmpty)
                 }
             }
-            .navigationTitle("Add Device")
+            .navigationTitle("add_device.title")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel", action: onCancel)
+                    Button("common.cancel", action: onCancel)
                 }
             }
         }

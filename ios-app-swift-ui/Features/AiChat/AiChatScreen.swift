@@ -53,7 +53,7 @@ struct AiChatContentView: View {
             Divider()
 
             HStack {
-                TextField("Message", text: $inputText)
+                TextField("ai_chat.field.message", text: $inputText)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .disabled(isProcessing)
 
@@ -61,19 +61,19 @@ struct AiChatContentView: View {
                     Image(systemName: "paperplane.fill")
                         .foregroundStyle(inputText.isEmpty || isProcessing ? Color.gray : Color.butlerPrimary)
                 }
-                .accessibilityLabel("Send message")
+                .accessibilityLabel("ai_chat.accessibility.send")
                 .disabled(inputText.isEmpty || isProcessing)
             }
             .padding()
         }
-        .navigationTitle("AI Butler")
+        .navigationTitle("ai_chat.title")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: onClear) {
                     Image(systemName: "trash")
                 }
-                .accessibilityLabel("Clear chat")
+                .accessibilityLabel("ai_chat.accessibility.clear")
             }
         }
     }
