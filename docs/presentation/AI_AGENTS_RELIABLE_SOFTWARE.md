@@ -381,7 +381,7 @@ Both require documenting *why* the test isn't needed — forcing a deliberate de
 | Category | Playbooks |
 |----------|-----------|
 | **Build & Run** | `run-android.md`, `run-desktop.md`, `run-ios-swiftui.md`, `run-server.md`, `build-docker.md`, `build-ios-framework.md` |
-| **Testing** | `run-tests.md`, `update-screenshots.md`, `update-ios-screenshots.md`, `validate-changes.md` |
+| **Testing** | `run-tests.md`, `update-android-screenshots.md`, `update-ios-screenshots.md`, `validate-changes.md` |
 | **Release** | `release-android.md`, `deploy-server.md`, `promote-server.md`, `generate-mobile-release-notes.md` |
 | **Code Quality** | `format-code.md`, `create-pr.md`, `merge-prs.md`, `prepare-commit-then-push.md` |
 | **Maintenance** | `update-docs.md`, `update-project-docs.md`, `dump-context.md`, `sync-ios-pbxproj.md` |

@@ -39,7 +39,8 @@ Generates diagrams + analysis + screenshots
     v
 Creates follow-up PRs:
   - auto/update-generated-content
-  - auto/update-screenshots
+  - auto/update-android-screenshots
+  - auto/update-ios-screenshots
     |
     v
 ci-trigger-auto-prs.yml dispatches CI on auto PRs

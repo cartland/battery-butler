@@ -54,7 +54,7 @@ CI uses `dorny/paths-filter` to skip expensive builds for non-code changes:
 3. `generateMermaidGraph` embeds `full_system_structure.mmd` into README.md (module dependency graph); `analyzeCode` embeds `code_distribution.mmd` into both README.md and CODE_ANALYSIS.md (sankey chart)
 4. Screenshots use `scripts/generate-android-screenshots.sh` to avoid OOM on CI runners
 5. Change detection includes `*.mmd`, `*.svg`, `docs/CODE_ANALYSIS.md`, and `README.md` — any of these trigger a follow-up PR
-6. Creates follow-up PRs on `auto/update-generated-content`, `auto/update-screenshots`, and `auto/update-ios-screenshots`
+6. Creates follow-up PRs on `auto/update-generated-content`, `auto/update-android-screenshots`, and `auto/update-ios-screenshots`
 5. Uses `GITHUB_TOKEN` (not `BOT_PAT`) for PR creation -- loop-proof by design
 6. **Inline CI trigger** (PR #928): Each job closes/reopens its PR with `BOT_PAT` immediately after creation, triggering CI within seconds
 7. `ci-trigger-auto-prs.yml` remains as a fallback (fires on workflow completion)

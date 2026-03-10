@@ -121,9 +121,9 @@ jobs:
           echo "CI should now be triggered on PR #$PR_NUM"
 
   # ===========================================================================
-  # Job 2: Screenshot Baselines
+  # Job 2: Android Screenshot Baselines
   # ===========================================================================
-  screenshots:
+  android-screenshots:
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
@@ -137,14 +137,14 @@ jobs:
 
       - uses: ./.github/actions/setup-java-gradle
 
-      - name: Generate Screenshots Sequentially
+      - name: Generate Android Screenshots Sequentially
         run: ./scripts/generate-android-screenshots.sh
 
-      - name: Generate Screenshot Gallery
+      - name: Generate Android Screenshot Gallery
         run: ./scripts/generate-android-screenshot-gallery.sh
 
       - name: Validate Generated Files
-        run: ./scripts/validate-generated.sh --screenshots
+        run: ./scripts/validate-generated.sh --android-screenshots
 
       - name: Check for meaningful changes
         id: check-changes
@@ -153,7 +153,7 @@ jobs:
           CHANGES=$(git diff --name-only -- '*.png' | wc -l | tr -d ' ')
           echo "changes=$CHANGES" >> $GITHUB_OUTPUT
           if [ "$CHANGES" -eq 0 ]; then
-            echo "No screenshot changes detected — skipping PR creation"
+            echo "No Android screenshot changes detected — skipping PR creation"
           else
             echo "$CHANGES file(s) changed"
           fi
@@ -164,17 +164,17 @@ jobs:
         uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "chore(generated): Regenerate screenshots"
-          title: "chore(generated): Regenerate screenshots"
+          commit-message: "chore(generated): Regenerate Android screenshots"
+          title: "chore(generated): Regenerate Android screenshots"
           body: |
-            Screenshots regenerated to match current UI.
+            Android screenshots regenerated to match current UI.
 
             This PR was automatically created by the Auto-Generate Content workflow
             after a UI code change was merged to main.
 
             **Source commit:** ${{ github.sha }}
             **Triggered by:** ${{ github.event_name }}
-          branch: auto/update-screenshots
+          branch: auto/update-android-screenshots
           base: main
           delete-branch: true
           labels: automated

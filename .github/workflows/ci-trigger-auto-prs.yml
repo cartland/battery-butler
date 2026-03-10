@@ -43,7 +43,7 @@ jobs:
             const { owner, repo } = context.repo;
             const branches = [
               'auto/update-generated-content',
-              'auto/update-screenshots',
+              'auto/update-android-screenshots',
               'auto/update-ios-screenshots'
             ];
 

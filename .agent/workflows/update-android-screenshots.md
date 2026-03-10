@@ -1,11 +1,11 @@
 ---
-description: Update reference screenshots for visual regression testing.
+description: Update Android reference screenshots for visual regression testing.
 allowed-tools: Bash(*), Read, Glob, Grep
 ---
 
-# Update Screenshots
+# Update Android Screenshots
 
-Update reference screenshots for regression testing.
+Update Android reference screenshots for regression testing.
 
 ## Steps
 
