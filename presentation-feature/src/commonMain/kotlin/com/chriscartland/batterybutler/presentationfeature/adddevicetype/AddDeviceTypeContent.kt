@@ -86,8 +86,9 @@ fun AddDeviceTypeContent(
     modifier: Modifier = Modifier,
     onSuggestIcon: (String) -> Unit = {},
     onConsumeSuggestedIcon: () -> Unit = {},
+    initialName: String = "",
 ) {
-    var name by rememberSaveable { mutableStateOf("") }
+    var name by rememberSaveable { mutableStateOf(initialName) }
     var selectedIcon by rememberSaveable { mutableStateOf<String?>("videogame_asset") }
     var batteryType by rememberSaveable { mutableStateOf("AA") }
     var batteryQuantity by rememberSaveable { mutableIntStateOf(1) }
@@ -318,6 +319,20 @@ fun AddDeviceTypeContentPreview() {
             onDeviceTypeAdded = {},
             onBatchAdd = {},
             onBack = {},
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun AddDeviceTypeContentFilledPreview() {
+    BatteryButlerTheme {
+        AddDeviceTypeContent(
+            uiState = AddDeviceTypeUiState(),
+            onDeviceTypeAdded = {},
+            onBatchAdd = {},
+            onBack = {},
+            initialName = "Smoke Detector",
         )
     }
 }

@@ -48,7 +48,7 @@ When adding a screenshot test to one platform, check the parity matrix below. If
 
 ## Current State — Parity Matrix
 
-**Counts:** Android 131 PNGs (74 test functions, 14 files) · iOS 94 PNGs (47 test functions, 19 files)
+**Counts:** Android 137 PNGs (77 test functions, 14 files) · iOS 94 PNGs (47 test functions, 19 files)
 
 **Key structural differences:**
 - Both platforms test every state in light and dark mode
@@ -74,11 +74,11 @@ When adding a screenshot test to one platform, check the parity matrix below. If
 | **Settings** | Default | ✓ L/D | ✓ | — |
 | | All network modes | ✓ L/D | — | iOS: variant not tested |
 | **AddDevice** | Empty form | ✓ L/D | ✓ | — |
-| | Filled form | — | ✓ | Android: only tests empty form |
+| | Filled form | ✓ L/D | ✓ | — |
 | **AddBatteryEvent** | With devices | ✓ L/D | ✓ | — |
 | | Empty (no devices) | ✓ L/D | ✓ | — |
 | **AddDeviceType** | Empty form | ✓ L/D | ✓ | — |
-| | Filled form | — | ✓ | Android: only tests empty form |
+| | Filled form | ✓ L/D | ✓ | — |
 | | Error (duplicate) | — | ✓ | Android: error state not previewed |
 | **DeviceDetail** | Success | ✓ L/D | ✓ | — |
 | | Loading | ✓ L/D | ✓ | — |
@@ -97,7 +97,7 @@ When adding a screenshot test to one platform, check the parity matrix below. If
 | | NotFound | ✓ L/D | ✓ | — |
 | | Loading | ✓ L/D | ✓ | — |
 | **EditBatteryEvent** | Loaded form | ✓ L/D | ✓ | — |
-| | Loading | — | ✓ | Android: state not previewed |
+| | Loading | ✓ L/D | ✓ | — |
 | | NotFound | ✓ L/D | ✓ | — |
 | **AI Chat** | With messages | ✓ L/D | ✓ | — |
 | | Empty | ✓ L/D | ✓ | — |
