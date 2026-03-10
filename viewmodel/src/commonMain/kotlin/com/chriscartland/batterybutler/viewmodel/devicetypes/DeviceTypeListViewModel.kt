@@ -11,7 +11,7 @@ import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.PreloadCommonTypesUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
 import com.chriscartland.batterybutler.viewmodel.safeStateIn
-import com.chriscartland.batterybutler.viewmodel.sortAndGroup
+import com.chriscartland.batterybutler.viewmodel.util.sortAndGroup
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
