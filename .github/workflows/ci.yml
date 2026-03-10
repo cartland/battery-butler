@@ -167,7 +167,7 @@ jobs:
         with:
           # Pin Xcode version for reproducible iOS snapshots.
           # Update this when changing local dev Xcode version.
-          xcode-version: '16.2'
+          xcode-version: '26.3'
       - name: Set up JDK
         uses: actions/setup-java@v5
         with:
@@ -257,7 +257,7 @@ jobs:
         with:
           # Pin Xcode version for reproducible iOS snapshots.
           # Update this when changing local dev Xcode version.
-          xcode-version: '16.2'
+          xcode-version: '26.3'
 
       - name: Checkout
         uses: actions/checkout@v6
@@ -309,7 +309,7 @@ jobs:
         with:
           # Pin Xcode version for reproducible iOS snapshots.
           # Update this when changing local dev Xcode version.
-          xcode-version: '16.2'
+          xcode-version: '26.3'
 
       - name: Checkout
         uses: actions/checkout@v6
