@@ -166,7 +166,6 @@ fun App(
                     MainTab.Devices -> navigateToDevices()
                     MainTab.Types -> navigateToTypes()
                     MainTab.History -> navigateToHistory()
-                    MainTab.AI -> {} // AI is an overlay, not a tab
                 }
             }
 

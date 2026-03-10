@@ -18,7 +18,6 @@
     <string name="tab_devices">Devices</string>
     <string name="tab_types">Types</string>
     <string name="tab_history">History</string>
-    <string name="tab_ai">Assistant</string>
 
     <!-- Network Mode -->
     <string name="network_mode_none">None (Offline)</string>

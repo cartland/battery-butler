@@ -66,7 +66,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.composeresources.composeStringResource
 import com.chriscartland.batterybutler.composeresources.generated.resources.Res
-import com.chriscartland.batterybutler.composeresources.generated.resources.tab_ai
 import com.chriscartland.batterybutler.composeresources.generated.resources.tab_devices
 import com.chriscartland.batterybutler.composeresources.generated.resources.tab_history
 import com.chriscartland.batterybutler.composeresources.generated.resources.tab_types
@@ -103,7 +102,6 @@ enum class MainTab {
     Devices,
     Types,
     History,
-    AI,
 }
 
 fun MainTab.labelRes(): StringResource =
@@ -111,7 +109,6 @@ fun MainTab.labelRes(): StringResource =
         MainTab.Devices -> Res.string.tab_devices
         MainTab.Types -> Res.string.tab_types
         MainTab.History -> Res.string.tab_history
-        MainTab.AI -> Res.string.tab_ai
     }
 
 fun MainTab.icon(): ImageVector =
@@ -119,7 +116,6 @@ fun MainTab.icon(): ImageVector =
         MainTab.Devices -> Icons.Default.Home
         MainTab.Types -> Icons.AutoMirrored.Filled.List
         MainTab.History -> Icons.Default.History
-        MainTab.AI -> Icons.Default.AutoAwesome
     }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -140,7 +136,6 @@ fun MainScreenShell(
     content: @Composable (Modifier, PaddingValues) -> Unit,
 ) {
     val isAiAvailable = LocalAiAvailable.current
-    val visibleTabs = MainTab.entries.filter { it != MainTab.AI }
     var inputText by rememberSaveable { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
     val density = LocalDensity.current
@@ -238,7 +233,7 @@ fun MainScreenShell(
                             }
                         }
                         NavigationBar {
-                            visibleTabs.forEach { tab ->
+                            MainTab.entries.forEach { tab ->
                                 NavigationBarItem(
                                     selected = currentTab == tab,
                                     onClick = { onTabSelected(tab) },
