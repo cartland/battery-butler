@@ -149,6 +149,8 @@ All data types follow a consistent **List → Detail (read-only) → Edit** arch
 
 For a detailed breakdown of how the shared Compose Multiplatform UI maps to the native SwiftUI implementation (and why they intuitively differ structurally), see `docs/UI_SCREENS_MAPPING.md`.
 
+When implementing a new Compose UI feature, check if a corresponding iOS SwiftUI implementation is needed. If so, create a bead for the iOS gap and reference it in `docs/UI_SCREENS_MAPPING.md`.
+
 ### AI Architecture
 
 AI messages are augmented in `SendChatMessageUseCase` before reaching the AI engine:
