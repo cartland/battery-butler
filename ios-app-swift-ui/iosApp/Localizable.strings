@@ -39,11 +39,16 @@
 
 "device_detail.title" = "Device Details";
 "device_detail.replaced_battery" = "Replaced Battery";
+"device_detail.replaced_battery_description" = "Record a new replacement";
 "device_detail.accessibility.replaced_battery_hint" = "Records a battery replacement for today";
 "device_detail.battery_history" = "Battery History";
 "device_detail.no_history" = "No history recorded";
 "device_detail.not_found" = "Device not found";
 "device_detail.accessibility.loading" = "Loading device details";
+"device_detail.stat.type" = "TYPE";
+"device_detail.stat.quantity" = "QUANTITY";
+"device_detail.stat.not_available" = "N/A";
+"device_detail.view_all" = "View All";
 
 // MARK: - Add Device Screen
 
