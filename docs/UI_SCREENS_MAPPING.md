@@ -31,6 +31,26 @@ The goal is to achieve feature parity between these two UI implementations by co
 | **Settings** | `SettingsScreen.kt` | `SettingsScreen.swift` | `SettingsViewModel` |
 | **Login** | `LoginScreen.kt` | `LoginScreen.swift` | `LoginViewModel` |
 
+## Feature Parity Matrix
+
+The following table tracks specific feature gaps between the Compose Multiplatform UI and the native SwiftUI UI. Each gap references a bead ID for tracking.
+
+| Feature | Compose | iOS SwiftUI | Gap |
+|---------|---------|-------------|-----|
+| Sort/Group controls (Home) | Yes | No | bb-847x |
+| Sort/Group controls (Types) | Yes | No | bb-847x |
+| Settings: Network mode | Yes | No | bb-abn6 |
+| Settings: AI engine picker | Yes | No | bb-abn6 |
+| Settings: Account section | Yes | No | bb-abn6 |
+| History enrichment (icons, location) | Yes | No | bb-wddv |
+| Sync status indicator | Yes | No | bb-wddv |
+| Device Detail: location, stats | Yes | No | bb-rrs4.1 |
+| Device Detail: mapped icons | Yes | No | bb-rrs4.1 |
+| Event Detail: delete button | Yes | No | bb-0km4 |
+| Add Device Type: icon picker | Yes | No | bb-rrs4.3 |
+| AI Chat | Yes | No | bb-ke1y |
+| Nav animations | Yes | N/A | Platform-specific |
+
 ## Detailed Breakdown & Unique Characteristics
 
 ### 1. Main Navigation, Tabs, & The "Content" Asymmetry
