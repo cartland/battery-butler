@@ -69,7 +69,9 @@ class CounterViewModelTest {
     fun `start transitions through Loading to Active`() = runTest {
         viewModel.start()
         assertIs<CounterState.Loading>(viewModel.state.value)
-        testDispatcher.scheduler.advanceUntilIdle()
+        // Use targeted advancement instead of advanceUntilIdle() because
+        // startCounterUseCase runs an infinite loop that never becomes idle.
+        testDispatcher.scheduler.runCurrent()
         assertIs<CounterState.Active>(viewModel.state.value)
         assertEquals(1L, (viewModel.state.value as CounterState.Active).value)
     }
@@ -77,7 +79,7 @@ class CounterViewModelTest {
     @Test
     fun `start increments counter over time`() = runTest {
         viewModel.start()
-        testDispatcher.scheduler.advanceUntilIdle()
+        testDispatcher.scheduler.runCurrent()
         assertEquals(1L, (viewModel.state.value as CounterState.Active).value)
 
         advanceTimeBy(1001L)
@@ -100,13 +102,13 @@ class CounterViewModelTest {
     @Test
     fun `stop cancels the counter job`() = runTest {
         viewModel.start()
-        testDispatcher.scheduler.advanceUntilIdle()
+        testDispatcher.scheduler.runCurrent()
         assertIs<CounterState.Active>(viewModel.state.value)
         val valueAtStop = (viewModel.state.value as CounterState.Active).value
 
         viewModel.stop()
         advanceTimeBy(3000L)
-        testDispatcher.scheduler.advanceUntilIdle()
+        testDispatcher.scheduler.runCurrent()
 
         assertIs<CounterState.Active>(viewModel.state.value)
         assertEquals(valueAtStop, (viewModel.state.value as CounterState.Active).value)

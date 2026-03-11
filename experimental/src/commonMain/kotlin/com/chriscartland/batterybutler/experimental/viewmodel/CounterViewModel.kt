@@ -35,6 +35,7 @@ class CounterViewModel(
         }
         val incrementJob = viewModelScope.launch {
             when (val result = startCounterUseCase()) {
+                is Result.Success -> Unit // Never reached; loop runs until cancelled or error
                 is Result.Error -> {
                     observeJob.cancel()
                     _state.value = CounterState.Error(result.error.message)
