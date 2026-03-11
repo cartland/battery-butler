@@ -22,12 +22,11 @@ A living reference documenting what we believe about software engineering, where
 | Technique | Implementation | Location |
 |-----------|---------------|----------|
 | `Result<D, E>` sealed type | `Success<D>` / `Error<E>` with `map`, `flatMap`, `getOrNull`, `onSuccess`, `onError` | `domain/src/commonMain/.../model/Result.kt` |
-| Sealed error hierarchies | `DataError` → `Network`, `Database`, `Ai`, `Unknown` subtypes | `domain/src/commonMain/.../model/DataResult.kt` |
+| Sealed error hierarchies | `DataError` → `Network`, `Database`, `Ai`, `Unknown` subtypes | `domain/src/commonMain/.../model/DataError.kt` |
 | `AuthError` sealed hierarchy | `ConfigurationNotConfigured`, `SignInFailed`, `SignOutFailed` | `domain/src/commonMain/.../model/AuthError.kt` |
 | Try-catch only at boundaries | Room/SQLite in `DefaultDeviceRepository`, gRPC in network layer, Gemini in AI engine | `data/src/commonMain/.../DefaultDeviceRepository.kt` |
 | `operator fun invoke()` | All use cases enforce callable convention | `usecase/src/commonMain/` (enforced by `UseCaseConventionTest`) |
 | Exhaustive `when` on sealed types | ViewModels switch on `Result`, `SyncStatus`, `Screen`; `ElseCaseInsteadOfExhaustiveWhen` detekt rule enabled | `viewmodel/src/commonMain/`, `detekt.yml` |
-| `@Deprecated` with `ReplaceWith` | `DataResult<T>` → `Result<T, DataError>` migration | `domain/src/commonMain/.../model/DataResult.kt` |
 
 ### Aspirational
 
@@ -189,9 +188,8 @@ A single table cataloging every engineering technique in use.
 | Category | Technique | Location |
 |----------|-----------|----------|
 | **API Design** | `Result<D, E>` sealed type | `domain/.../model/Result.kt` |
-| **API Design** | Sealed error hierarchies (`DataError`, `AuthError`) | `domain/.../model/DataResult.kt`, `domain/.../model/AuthError.kt` |
+| **API Design** | Sealed error hierarchies (`DataError`, `AuthError`) | `domain/.../model/DataError.kt`, `domain/.../model/AuthError.kt` |
 | **API Design** | `operator fun invoke()` convention | All use cases in `usecase/src/commonMain/` |
-| **API Design** | `@Deprecated` with `ReplaceWith` | `DataResult.kt` |
 | **Architecture** | Module dependency enforcement | `buildSrc/.../ArchitectureCheckTask.kt` |
 | **Architecture** | Theme layer boundary | `buildSrc/.../ThemeLayerCheckTask.kt` |
 | **Architecture** | Domain purity (zero dependencies) | `domain/` module |

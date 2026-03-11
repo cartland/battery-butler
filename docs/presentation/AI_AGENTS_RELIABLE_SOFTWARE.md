@@ -516,7 +516,7 @@ Every engineering technique in use, organized by category:
 | `Result<D, E>` sealed type | `Success<D>` / `Error<E>` with `map`, `flatMap`, `getOrNull`, `onSuccess`, `onError` | `domain/src/commonMain/.../model/Result.kt` |
 | Sealed error hierarchies | `DataError` (Network, Database, Ai, Unknown), `AuthError` (ConfigurationNotConfigured, SignInFailed, SignOutFailed) | `domain/src/commonMain/.../model/` |
 | `operator fun invoke()` | All use cases enforce callable convention via `UseCaseConventionTest` | `usecase/src/commonMain/` |
-| `@Deprecated` with `ReplaceWith` | `DataResult<T>` → `Result<T, DataError>` migration guide | `domain/src/commonMain/.../model/DataResult.kt` |
+| `@Deprecated` with `ReplaceWith` | Deprecated types removed after migration complete (e.g., `DataResult<T>` → `Result<T, DataError>`) | — |
 | Exhaustive `when` | `ElseCaseInsteadOfExhaustiveWhen` detekt rule on sealed/enum types | `detekt.yml` |
 
 ### Architecture

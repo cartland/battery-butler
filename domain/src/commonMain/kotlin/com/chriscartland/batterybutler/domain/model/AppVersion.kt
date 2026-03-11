@@ -1,19 +1,19 @@
 package com.chriscartland.batterybutler.domain.model
 
-sealed class AppVersion {
-    data object Unavailable : AppVersion()
+sealed interface AppVersion {
+    data object Unavailable : AppVersion
 
     data class Android(
         val versionName: String,
         val versionCode: Int,
-    ) : AppVersion()
+    ) : AppVersion
 
     data class Ios(
         val versionName: String,
         val buildNumber: String,
-    ) : AppVersion()
+    ) : AppVersion
 
     data class Desktop(
         val versionName: String,
-    ) : AppVersion()
+    ) : AppVersion
 }
