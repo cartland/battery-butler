@@ -47,9 +47,9 @@ The following table tracks specific feature gaps between the Compose Multiplatfo
 | Device Detail: location, stats | Yes | Yes | ~~bb-rrs4.1~~ (PR #970) |
 | Device Detail: mapped icons | Yes | Yes | ~~bb-rrs4.1~~ (PR #970) |
 | Event Detail: delete button | Yes | Yes | ~~bb-0km4~~ (PR #961) |
-| Add Device Type: icon picker | Yes | No | bb-rrs4.3 |
-| AI Chat | Yes | No | bb-ke1y |
-| Nav animations | Yes | N/A | Platform-specific |
+| Add Device Type: icon picker | Yes | Yes | ~~bb-rrs4.3~~ (PR #978) |
+| AI Chat | Split-screen overlay | Full-screen (toolbar) | Design decision (bb-ke1y closed) |
+| Nav animations | Yes | N/A | Platform-specific (iOS uses native UIKit transitions) |
 
 ## Detailed Breakdown & Unique Characteristics
 
@@ -76,9 +76,12 @@ The following table tracks specific feature gaps between the Compose Multiplatfo
 - **Compose:** Often presents these via regular `NavHost` pushed screens or modals.
 - **SwiftUI:** Makes heavy use of the `.sheet()` modifier for presenting entry forms modally (e.g., `AddDeviceScreen`, `AddBatteryEventScreen`, `EditDeviceScreen`, `EditBatteryEventScreen`). Form items use the native `Form` component.
 
-> **Known Feature Gaps** (see [FEATURE_PARITY_MAPPING.md](FEATURE_PARITY_MAPPING.md) for details):
+> **Resolved:**
+> - Add Device Type: icon picker, battery quantity, AI suggestion added (PR #978)
+>
+> **Remaining Gaps:**
 > - Add Device: no location field, no loading indicator during save
-> - Add Device Type: no icon picker grid, battery quantity controls, AI features, or batch import
+> - Add Device Type: batch import deferred
 > - Edit Device: no delete confirmation dialog (deletes immediately)
 > - Edit Device Type: no icon picker or battery quantity controls
 
@@ -104,9 +107,11 @@ The following table tracks specific feature gaps between the Compose Multiplatfo
 - **Compose:** The AI input is always visible in `MainScreenShell`'s bottom bar (`OutlinedTextField` + send button). Sending a message expands an `AnimatedVisibility` overlay (`AiTabContent` with `showInput = false`) that slides up the chat history while the input stays fixed. `BackHandler(enabled = isAiExpanded)` in `App.kt` collapses the overlay on back press. Tab switches dismiss the overlay via `onTabSelected`. `AiChatScreen.kt` also exists as a standalone full-screen chat (accessed via nav). Custom chat bubbles using basic Composables and Modifiers; handles state changes via Kotlin `StateFlow`.
 - **SwiftUI:** Uses nested `ScrollView`/`LazyVStack` and custom `Shape` paths for native iMessage-like bubbles via `ChatBubbleShape`. Collects state changes asynchronously using SKIE wrappers mapping `StateFlow` to `@Published` variables.
 
-> **Known Feature Gaps** (see [FEATURE_PARITY_MAPPING.md](FEATURE_PARITY_MAPPING.md) for details):
-> - No split-screen overlay mode — SwiftUI AI chat is a standalone screen only
-> - No cross-tab chat persistence or contextual hints
+> **Design Decision (bb-ke1y closed):**
+> - Compose uses a split-screen overlay pattern integrated into MainScreenShell's bottom bar
+> - SwiftUI uses a full-screen AI chat accessed from toolbar buttons — this is the platform-appropriate pattern for iOS TabView architecture
+> - The split-screen overlay doesn't map well to iOS's per-tab NavigationStack model
+> - Both approaches provide equivalent functionality through platform-native UX patterns
 
 ### 7. Settings
 - **Compose:** `SettingsScreen.kt` provides a full settings experience: network mode selector (Prod/Dev/Local/Mock/None), AI engine selector, sign-out button, account info, export data, check for updates, and dynamic app version from `BuildConfig`.
