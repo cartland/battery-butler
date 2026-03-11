@@ -28,6 +28,10 @@ class CounterViewModelWrapper: ObservableObject {
         viewModel.start()
     }
 
+    func stop() {
+        viewModel.stop()
+    }
+
     func get() {
         viewModel.get()
     }

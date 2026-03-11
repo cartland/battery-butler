@@ -23,15 +23,17 @@ class GetCounterUseCaseTest {
 
     @Test
     fun `invoke returns success with current counter value`() = runTest {
-        fakeDataSource.setCounter(99L)
+        fakeDataSource.incrementCounter()
+        fakeDataSource.incrementCounter()
+        fakeDataSource.incrementCounter()
         val result = useCase()
         assertIs<Result.Success<Long>>(result)
-        assertEquals(99L, result.data)
+        assertEquals(3L, result.data)
     }
 
     @Test
     fun `invoke returns error when read fails`() = runTest {
-        fakeDataSource.shouldThrowOnRead = true
+        fakeDataSource.setReadError(true)
         val result = useCase()
         assertIs<Result.Error<CounterError>>(result)
         assertIs<CounterError.ReadFailed>(result.error)

@@ -24,9 +24,11 @@ class DataStoreCounterDataSource(
     override suspend fun getCounter(): Long =
         dataStore.data.first()[COUNTER_KEY] ?: 0L
 
-    override suspend fun setCounter(value: Long) {
-        dataStore.edit { preferences ->
-            preferences[COUNTER_KEY] = value
+    override suspend fun incrementCounter(): Long {
+        val prefs = dataStore.edit { preferences ->
+            val current = preferences[COUNTER_KEY] ?: 0L
+            preferences[COUNTER_KEY] = current + 1
         }
+        return prefs[COUNTER_KEY] ?: 0L
     }
 }

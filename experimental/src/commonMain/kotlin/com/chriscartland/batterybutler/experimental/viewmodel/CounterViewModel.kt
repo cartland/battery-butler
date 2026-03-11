@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.experimental.model.CounterState
+import com.chriscartland.batterybutler.experimental.repository.CounterRepository
 import com.chriscartland.batterybutler.experimental.usecase.GetCounterUseCase
 import com.chriscartland.batterybutler.experimental.usecase.StartCounterUseCase
 import kotlinx.coroutines.Job
@@ -16,27 +17,39 @@ import me.tatarka.inject.annotations.Inject
 class CounterViewModel(
     private val startCounterUseCase: StartCounterUseCase,
     private val getCounterUseCase: GetCounterUseCase,
+    private val counterRepository: CounterRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<CounterState>(CounterState.Idle)
     val state: StateFlow<CounterState> = _state
 
-    private var counterJob: Job? = null
+    private val counterJob = MutableStateFlow<Job?>(null)
 
     fun start() {
-        counterJob?.cancel()
+        counterJob.value?.cancel()
         _state.value = CounterState.Loading
-        counterJob = viewModelScope.launch {
+        val observeJob = viewModelScope.launch {
+            counterRepository.observeCounter().collect { value ->
+                _state.value = CounterState.Active(value)
+            }
+        }
+        val incrementJob = viewModelScope.launch {
             when (val result = startCounterUseCase()) {
-                is Result.Success -> {
-                    result.data.collect { value ->
-                        _state.value = CounterState.Active(value)
-                    }
-                }
                 is Result.Error -> {
+                    observeJob.cancel()
                     _state.value = CounterState.Error(result.error.message)
                 }
             }
+        }
+        counterJob.value = incrementJob
+    }
+
+    fun stop() {
+        counterJob.value?.cancel()
+        counterJob.value = null
+        val currentState = _state.value
+        if (currentState is CounterState.Active) {
+            _state.value = CounterState.Active(currentState.value)
         }
     }
 

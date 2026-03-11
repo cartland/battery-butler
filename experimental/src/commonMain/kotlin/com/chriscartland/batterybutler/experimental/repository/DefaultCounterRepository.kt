@@ -14,7 +14,7 @@ class DefaultCounterRepository(
 
     override fun observeCounter(): Flow<Long> = localDataSource.observeCounter()
 
-    override suspend fun getCounter(): Result<Long, CounterError> =
+    override suspend fun get(): Result<Long, CounterError> =
         try {
             Result.Success(localDataSource.getCounter())
         } catch (e: CancellationException) {
@@ -28,16 +28,15 @@ class DefaultCounterRepository(
             )
         }
 
-    override suspend fun setCounter(value: Long): Result<Unit, CounterError> =
+    override suspend fun increment(): Result<Long, CounterError> =
         try {
-            localDataSource.setCounter(value)
-            Result.Success(Unit)
+            Result.Success(localDataSource.incrementCounter())
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
             Result.Error(
                 CounterError.WriteFailed(
-                    message = e.message ?: "Failed to write counter",
+                    message = e.message ?: "Failed to increment counter",
                     cause = e.toString(),
                 ),
             )

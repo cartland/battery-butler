@@ -6,6 +6,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface CounterRepository {
     fun observeCounter(): Flow<Long>
-    suspend fun getCounter(): Result<Long, CounterError>
-    suspend fun setCounter(value: Long): Result<Unit, CounterError>
+    suspend fun get(): Result<Long, CounterError>
+    suspend fun increment(): Result<Long, CounterError>
 }

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,6 +26,7 @@ import com.chriscartland.batterybutler.presentationcore.theme.Padding
 fun CounterContent(
     state: CounterState,
     onStart: () -> Unit,
+    onStop: () -> Unit,
     onGet: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -74,6 +76,9 @@ fun CounterContent(
                 Button(onClick = onStart) {
                     Text("Start")
                 }
+                OutlinedButton(onClick = onStop) {
+                    Text("Stop")
+                }
                 Button(onClick = onGet) {
                     Text("Get")
                 }
@@ -89,6 +94,7 @@ fun CounterContentIdlePreview() {
         CounterContent(
             state = CounterState.Idle,
             onStart = {},
+            onStop = {},
             onGet = {},
         )
     }
@@ -101,6 +107,7 @@ fun CounterContentLoadingPreview() {
         CounterContent(
             state = CounterState.Loading,
             onStart = {},
+            onStop = {},
             onGet = {},
         )
     }
@@ -113,6 +120,7 @@ fun CounterContentActivePreview() {
         CounterContent(
             state = CounterState.Active(value = 42),
             onStart = {},
+            onStop = {},
             onGet = {},
         )
     }
@@ -125,6 +133,7 @@ fun CounterContentErrorPreview() {
         CounterContent(
             state = CounterState.Error(message = "Failed to read counter"),
             onStart = {},
+            onStop = {},
             onGet = {},
         )
     }

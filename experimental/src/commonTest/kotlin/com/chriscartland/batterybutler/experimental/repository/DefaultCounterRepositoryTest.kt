@@ -22,40 +22,41 @@ class DefaultCounterRepositoryTest {
     }
 
     @Test
-    fun `getCounter returns success with current value`() = runTest {
-        fakeDataSource.setCounter(42L)
-        val result = repository.getCounter()
+    fun `get returns success with current value`() = runTest {
+        fakeDataSource.incrementCounter()
+        fakeDataSource.incrementCounter()
+        val result = repository.get()
         assertIs<Result.Success<Long>>(result)
-        assertEquals(42L, result.data)
+        assertEquals(2L, result.data)
     }
 
     @Test
-    fun `getCounter returns error when data source throws`() = runTest {
-        fakeDataSource.shouldThrowOnRead = true
-        val result = repository.getCounter()
+    fun `get returns error when data source throws`() = runTest {
+        fakeDataSource.setReadError(true)
+        val result = repository.get()
         assertIs<Result.Error<CounterError>>(result)
         assertIs<CounterError.ReadFailed>(result.error)
     }
 
     @Test
-    fun `setCounter returns success`() = runTest {
-        val result = repository.setCounter(10L)
-        assertIs<Result.Success<Unit>>(result)
-        assertEquals(10L, fakeDataSource.getCounter())
+    fun `increment returns success with new value`() = runTest {
+        val result = repository.increment()
+        assertIs<Result.Success<Long>>(result)
+        assertEquals(1L, result.data)
     }
 
     @Test
-    fun `setCounter returns error when data source throws`() = runTest {
-        fakeDataSource.shouldThrowOnWrite = true
-        val result = repository.setCounter(10L)
+    fun `increment returns error when data source throws`() = runTest {
+        fakeDataSource.setWriteError(true)
+        val result = repository.increment()
         assertIs<Result.Error<CounterError>>(result)
         assertIs<CounterError.WriteFailed>(result.error)
     }
 
     @Test
     fun `observeCounter emits values from data source`() = runTest {
-        fakeDataSource.setCounter(5L)
+        fakeDataSource.incrementCounter()
         val value = repository.observeCounter().first()
-        assertEquals(5L, value)
+        assertEquals(1L, value)
     }
 }
