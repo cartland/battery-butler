@@ -1,8 +1,11 @@
 package com.chriscartland.batterybutler.composeapp
 
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
@@ -57,13 +60,26 @@ import com.chriscartland.batterybutler.presentationfeature.main.MainScreenShell
 import com.chriscartland.batterybutler.presentationfeature.main.MainTab
 import com.chriscartland.batterybutler.viewmodel.aichat.AiChatViewModel
 
+private const val NAV_ANIM_DURATION = 300
+
+/** Reusable tween with FastOutSlowIn easing for all nav animations. */
+private inline fun <reified T> navTween() = tween<T>(NAV_ANIM_DURATION, easing = FastOutSlowInEasing)
+
 private val slideTransitionMetadata =
     NavDisplay.transitionSpec {
-        slideInHorizontally(tween(300)) { it } + fadeIn(tween(300)) togetherWith
-            slideOutHorizontally(tween(300)) { -it / 3 } + fadeOut(tween(300))
+        // Detail push: new screen slides in from right with scale-up
+        slideInHorizontally(navTween()) { it } +
+            fadeIn(navTween()) +
+            scaleIn(navTween(), initialScale = 0.95f) togetherWith
+            slideOutHorizontally(navTween()) { -it / 2 } +
+            fadeOut(navTween())
     } + NavDisplay.popTransitionSpec {
-        slideInHorizontally(tween(300)) { -it / 3 } + fadeIn(tween(300)) togetherWith
-            slideOutHorizontally(tween(300)) { it } + fadeOut(tween(300))
+        // Detail pop: previous screen slides back in from left with parallax
+        slideInHorizontally(navTween()) { -it / 2 } +
+            fadeIn(navTween()) togetherWith
+            slideOutHorizontally(navTween()) { it } +
+            fadeOut(navTween()) +
+            scaleOut(navTween(), targetScale = 0.95f)
     }
 
 @Suppress("ElseCaseInsteadOfExhaustiveWhen")
@@ -209,31 +225,52 @@ fun App(
                             ),
                             transitionSpec = {
                                 if (isTabTransition) {
-                                    // Tab-to-tab: use directional slide
+                                    // Tab-to-tab: directional slide with easing
                                     if (tabTransitionForward) {
-                                        slideInHorizontally(tween(300)) { it } +
-                                            fadeIn(tween(300)) togetherWith
-                                            slideOutHorizontally(tween(300)) { -it / 3 } +
-                                            fadeOut(tween(300))
+                                        slideInHorizontally(navTween()) { it } +
+                                            fadeIn(navTween()) togetherWith
+                                            slideOutHorizontally(navTween()) { -it / 3 } +
+                                            fadeOut(navTween())
                                     } else {
-                                        slideInHorizontally(tween(300)) { -it / 3 } +
-                                            fadeIn(tween(300)) togetherWith
-                                            slideOutHorizontally(tween(300)) { it } +
-                                            fadeOut(tween(300))
+                                        slideInHorizontally(navTween()) { -it / 3 } +
+                                            fadeIn(navTween()) togetherWith
+                                            slideOutHorizontally(navTween()) { it } +
+                                            fadeOut(navTween())
                                     }
                                 } else {
-                                    // Detail push: standard right-in slide
-                                    slideInHorizontally(tween(300)) { it } +
-                                        fadeIn(tween(300)) togetherWith
-                                        slideOutHorizontally(tween(300)) { -it / 3 } +
-                                        fadeOut(tween(300))
+                                    // Detail push: slide + scale + deeper parallax
+                                    slideInHorizontally(navTween()) { it } +
+                                        fadeIn(navTween()) +
+                                        scaleIn(
+                                            navTween(),
+                                            initialScale = 0.95f,
+                                        ) togetherWith
+                                        slideOutHorizontally(navTween()) { -it / 2 } +
+                                        fadeOut(navTween())
                                 }
                             },
                             popTransitionSpec = {
-                                slideInHorizontally(tween(300)) { -it / 3 } +
-                                    fadeIn(tween(300)) togetherWith
-                                    slideOutHorizontally(tween(300)) { it } +
-                                    fadeOut(tween(300))
+                                if (isTabTransition) {
+                                    // Tab-to-tab pop: reverse directional slide
+                                    if (tabTransitionForward) {
+                                        slideInHorizontally(navTween()) { -it / 3 } +
+                                            fadeIn(navTween()) togetherWith
+                                            slideOutHorizontally(navTween()) { it } +
+                                            fadeOut(navTween())
+                                    } else {
+                                        slideInHorizontally(navTween()) { it } +
+                                            fadeIn(navTween()) togetherWith
+                                            slideOutHorizontally(navTween()) { -it / 3 } +
+                                            fadeOut(navTween())
+                                    }
+                                } else {
+                                    // Detail pop: parallax return + scale-down exit
+                                    slideInHorizontally(navTween()) { -it / 2 } +
+                                        fadeIn(navTween()) togetherWith
+                                        slideOutHorizontally(navTween()) { it } +
+                                        fadeOut(navTween()) +
+                                        scaleOut(navTween(), targetScale = 0.95f)
+                                }
                             },
                             entryProvider = entryProvider {
                                 // Tab entries
