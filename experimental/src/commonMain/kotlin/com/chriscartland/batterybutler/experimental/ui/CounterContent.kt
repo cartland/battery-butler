@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -24,7 +25,8 @@ import com.chriscartland.batterybutler.presentationcore.theme.Padding
 
 @Composable
 fun CounterContent(
-    state: CounterState,
+    observeState: CounterState,
+    getState: CounterState,
     onStart: () -> Unit,
     onStop: () -> Unit,
     onGet: () -> Unit,
@@ -44,33 +46,14 @@ fun CounterContent(
                 style = MaterialTheme.typography.headlineMedium,
             )
             Spacer(modifier = Modifier.height(Padding.large))
-            when (state) {
-                is CounterState.Idle -> {
-                    Text(
-                        text = "Press Start to begin counting",
-                        style = MaterialTheme.typography.bodyLarge,
-                    )
-                }
-                is CounterState.Loading -> {
-                    CircularProgressIndicator()
-                }
-                is CounterState.Active -> {
-                    Text(
-                        text = "${state.value}",
-                        style = MaterialTheme.typography.displayLarge,
-                    )
-                }
-                is CounterState.Error -> {
-                    Text(
-                        text = state.message,
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.error,
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(Padding.large))
+            Text(
+                text = "Observe",
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Spacer(modifier = Modifier.height(Padding.small))
+            CounterValueDisplay(observeState)
+            Spacer(modifier = Modifier.height(Padding.small))
             Row(
-                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(Padding.standard, Alignment.CenterHorizontally),
             ) {
                 Button(onClick = onStart) {
@@ -79,10 +62,48 @@ fun CounterContent(
                 OutlinedButton(onClick = onStop) {
                     Text("Stop")
                 }
-                Button(onClick = onGet) {
-                    Text("Get")
-                }
             }
+            Spacer(modifier = Modifier.height(Padding.large))
+            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+            Spacer(modifier = Modifier.height(Padding.large))
+            Text(
+                text = "Get",
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Spacer(modifier = Modifier.height(Padding.small))
+            CounterValueDisplay(getState)
+            Spacer(modifier = Modifier.height(Padding.small))
+            Button(onClick = onGet) {
+                Text("Get")
+            }
+        }
+    }
+}
+
+@Composable
+private fun CounterValueDisplay(state: CounterState) {
+    when (state) {
+        is CounterState.Idle -> {
+            Text(
+                text = "—",
+                style = MaterialTheme.typography.displayLarge,
+            )
+        }
+        is CounterState.Loading -> {
+            CircularProgressIndicator()
+        }
+        is CounterState.Active -> {
+            Text(
+                text = "${state.value}",
+                style = MaterialTheme.typography.displayLarge,
+            )
+        }
+        is CounterState.Error -> {
+            Text(
+                text = state.message,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.error,
+            )
         }
     }
 }
@@ -92,7 +113,8 @@ fun CounterContent(
 fun CounterContentIdlePreview() {
     BatteryButlerTheme {
         CounterContent(
-            state = CounterState.Idle,
+            observeState = CounterState.Idle,
+            getState = CounterState.Idle,
             onStart = {},
             onStop = {},
             onGet = {},
@@ -105,7 +127,8 @@ fun CounterContentIdlePreview() {
 fun CounterContentLoadingPreview() {
     BatteryButlerTheme {
         CounterContent(
-            state = CounterState.Loading,
+            observeState = CounterState.Loading,
+            getState = CounterState.Loading,
             onStart = {},
             onStop = {},
             onGet = {},
@@ -118,7 +141,8 @@ fun CounterContentLoadingPreview() {
 fun CounterContentActivePreview() {
     BatteryButlerTheme {
         CounterContent(
-            state = CounterState.Active(value = 42),
+            observeState = CounterState.Active(value = 42),
+            getState = CounterState.Active(value = 7),
             onStart = {},
             onStop = {},
             onGet = {},
@@ -131,7 +155,8 @@ fun CounterContentActivePreview() {
 fun CounterContentErrorPreview() {
     BatteryButlerTheme {
         CounterContent(
-            state = CounterState.Error(message = "Failed to read counter"),
+            observeState = CounterState.Error(message = "Failed to observe counter"),
+            getState = CounterState.Error(message = "Failed to read counter"),
             onStart = {},
             onStop = {},
             onGet = {},

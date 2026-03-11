@@ -20,17 +20,20 @@ class CounterViewModel(
     private val counterRepository: CounterRepository,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow<CounterState>(CounterState.Idle)
-    val state: StateFlow<CounterState> = _state
+    private val _observeState = MutableStateFlow<CounterState>(CounterState.Idle)
+    val observeState: StateFlow<CounterState> = _observeState
+
+    private val _getState = MutableStateFlow<CounterState>(CounterState.Idle)
+    val getState: StateFlow<CounterState> = _getState
 
     private val counterJob = MutableStateFlow<Job?>(null)
 
     fun start() {
         counterJob.value?.cancel()
-        _state.value = CounterState.Loading
+        _observeState.value = CounterState.Loading
         val observeJob = viewModelScope.launch {
             counterRepository.observeCounter().collect { value ->
-                _state.value = CounterState.Active(value)
+                _observeState.value = CounterState.Active(value)
             }
         }
         val incrementJob = viewModelScope.launch {
@@ -38,7 +41,7 @@ class CounterViewModel(
                 is Result.Success -> Unit // Never reached; loop runs until cancelled or error
                 is Result.Error -> {
                     observeJob.cancel()
-                    _state.value = CounterState.Error(result.error.message)
+                    _observeState.value = CounterState.Error(result.error.message)
                 }
             }
         }
@@ -48,21 +51,21 @@ class CounterViewModel(
     fun stop() {
         counterJob.value?.cancel()
         counterJob.value = null
-        val currentState = _state.value
+        val currentState = _observeState.value
         if (currentState is CounterState.Active) {
-            _state.value = CounterState.Active(currentState.value)
+            _observeState.value = CounterState.Active(currentState.value)
         }
     }
 
     fun get() {
         viewModelScope.launch {
-            _state.value = CounterState.Loading
+            _getState.value = CounterState.Loading
             when (val result = getCounterUseCase()) {
                 is Result.Success -> {
-                    _state.value = CounterState.Active(result.data)
+                    _getState.value = CounterState.Active(result.data)
                 }
                 is Result.Error -> {
-                    _state.value = CounterState.Error(result.error.message)
+                    _getState.value = CounterState.Error(result.error.message)
                 }
             }
         }
