@@ -12,6 +12,7 @@ struct CounterScreen: View {
         CounterContentView(
             state: wrapper.state,
             onStart: { wrapper.start() },
+            onStop: { wrapper.stop() },
             onGet: { wrapper.get() }
         )
     }
@@ -20,6 +21,7 @@ struct CounterScreen: View {
 struct CounterContentView: View {
     let state: CounterState
     let onStart: () -> Void
+    let onStop: () -> Void
     let onGet: () -> Void
 
     var body: some View {
@@ -47,6 +49,8 @@ struct CounterContentView: View {
             HStack(spacing: 16) {
                 Button("Start", action: onStart)
                     .buttonStyle(.borderedProminent)
+                Button("Stop", action: onStop)
+                    .buttonStyle(.bordered)
                 Button("Get", action: onGet)
                     .buttonStyle(.bordered)
             }
@@ -59,6 +63,7 @@ struct CounterContentView: View {
     CounterContentView(
         state: CounterStateIdle(),
         onStart: {},
+        onStop: {},
         onGet: {}
     )
 }
@@ -67,6 +72,7 @@ struct CounterContentView: View {
     CounterContentView(
         state: CounterStateActive(value: 42),
         onStart: {},
+        onStop: {},
         onGet: {}
     )
 }
@@ -75,6 +81,7 @@ struct CounterContentView: View {
     CounterContentView(
         state: CounterStateLoading(),
         onStart: {},
+        onStop: {},
         onGet: {}
     )
 }
@@ -83,6 +90,7 @@ struct CounterContentView: View {
     CounterContentView(
         state: CounterStateError(message: "Failed to read counter"),
         onStart: {},
+        onStop: {},
         onGet: {}
     )
 }

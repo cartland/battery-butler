@@ -33,6 +33,7 @@ class CounterViewModelTest {
         viewModel = CounterViewModel(
             startCounterUseCase = StartCounterUseCase(repository),
             getCounterUseCase = GetCounterUseCase(repository),
+            counterRepository = repository,
         )
     }
 
@@ -48,16 +49,17 @@ class CounterViewModelTest {
 
     @Test
     fun `get updates state to Active with current counter value`() = runTest {
-        fakeDataSource.setCounter(42L)
+        fakeDataSource.incrementCounter()
+        fakeDataSource.incrementCounter()
         viewModel.get()
         testDispatcher.scheduler.advanceUntilIdle()
         assertIs<CounterState.Active>(viewModel.state.value)
-        assertEquals(42L, (viewModel.state.value as CounterState.Active).value)
+        assertEquals(2L, (viewModel.state.value as CounterState.Active).value)
     }
 
     @Test
     fun `get updates state to Error when read fails`() = runTest {
-        fakeDataSource.shouldThrowOnRead = true
+        fakeDataSource.setReadError(true)
         viewModel.get()
         testDispatcher.scheduler.advanceUntilIdle()
         assertIs<CounterState.Error>(viewModel.state.value)
@@ -66,37 +68,47 @@ class CounterViewModelTest {
     @Test
     fun `start transitions through Loading to Active`() = runTest {
         viewModel.start()
-        // After start, state should be Loading
         assertIs<CounterState.Loading>(viewModel.state.value)
-        // Advance past the initial emit (no delay for first value)
         testDispatcher.scheduler.advanceUntilIdle()
-        // After the use case starts, first emission is 0
         assertIs<CounterState.Active>(viewModel.state.value)
-        assertEquals(0L, (viewModel.state.value as CounterState.Active).value)
+        assertEquals(1L, (viewModel.state.value as CounterState.Active).value)
     }
 
     @Test
     fun `start increments counter over time`() = runTest {
         viewModel.start()
         testDispatcher.scheduler.advanceUntilIdle()
-        assertEquals(0L, (viewModel.state.value as CounterState.Active).value)
+        assertEquals(1L, (viewModel.state.value as CounterState.Active).value)
 
         advanceTimeBy(1001L)
         testDispatcher.scheduler.runCurrent()
-        assertEquals(1L, (viewModel.state.value as CounterState.Active).value)
+        assertEquals(2L, (viewModel.state.value as CounterState.Active).value)
 
         advanceTimeBy(1000L)
         testDispatcher.scheduler.runCurrent()
-        assertEquals(2L, (viewModel.state.value as CounterState.Active).value)
+        assertEquals(3L, (viewModel.state.value as CounterState.Active).value)
     }
 
     @Test
     fun `start shows error when write fails`() = runTest {
-        fakeDataSource.shouldThrowOnWrite = true
+        fakeDataSource.setWriteError(true)
         viewModel.start()
         testDispatcher.scheduler.advanceUntilIdle()
-        // The flow completes without emitting Active — stays at Loading
-        // because the flow returns early on write error
-        assertIs<CounterState.Loading>(viewModel.state.value)
+        assertIs<CounterState.Error>(viewModel.state.value)
+    }
+
+    @Test
+    fun `stop cancels the counter job`() = runTest {
+        viewModel.start()
+        testDispatcher.scheduler.advanceUntilIdle()
+        assertIs<CounterState.Active>(viewModel.state.value)
+        val valueAtStop = (viewModel.state.value as CounterState.Active).value
+
+        viewModel.stop()
+        advanceTimeBy(3000L)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertIs<CounterState.Active>(viewModel.state.value)
+        assertEquals(valueAtStop, (viewModel.state.value as CounterState.Active).value)
     }
 }

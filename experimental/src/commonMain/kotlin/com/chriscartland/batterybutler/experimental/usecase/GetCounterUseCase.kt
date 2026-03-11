@@ -10,5 +10,5 @@ class GetCounterUseCase(
     private val counterRepository: CounterRepository,
 ) {
     suspend operator fun invoke(): Result<Long, CounterError> =
-        counterRepository.getCounter()
+        counterRepository.get()
 }

@@ -2,9 +2,10 @@ package com.chriscartland.batterybutler.experimental.usecase
 
 import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.experimental.datasource.FakeLocalCounterDataSource
+import com.chriscartland.batterybutler.experimental.model.CounterError
 import com.chriscartland.batterybutler.experimental.repository.DefaultCounterRepository
-import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -23,25 +24,50 @@ class StartCounterUseCaseTest {
     }
 
     @Test
-    fun `invoke returns flow that emits incrementing values`() = runTest {
-        val result = useCase(delayMs = 1L)
-        assertIs<Result.Success<*>>(result)
-        val values = result.data.take(4).toList()
-        assertEquals(listOf(0L, 1L, 2L, 3L), values)
+    fun `invoke increments counter through data source`() = runTest {
+        val job = launch { useCase(delayMs = 100L) }
+        advanceTimeBy(350L)
+        job.cancel()
+        // After 350ms with 100ms delay: increment at 0ms, 100ms, 200ms, 300ms = 4 increments
+        // But first increment happens immediately, then delay, so:
+        // t=0: increment (1), delay 100
+        // t=100: increment (2), delay 100
+        // t=200: increment (3), delay 100
+        // t=300: increment (4), delay 100
+        assertEquals(4L, fakeDataSource.currentValue)
     }
 
     @Test
-    fun `invoke stops emitting when write fails`() = runTest {
-        var emitCount = 0
+    fun `invoke returns error when increment fails`() = runTest {
+        fakeDataSource.setWriteError(true)
         val result = useCase(delayMs = 1L)
-        assertIs<Result.Success<*>>(result)
-        result.data.collect { value ->
-            emitCount++
-            if (value == 2L) {
-                fakeDataSource.shouldThrowOnWrite = true
-            }
+        assertIs<Result.Error<CounterError>>(result)
+        assertIs<CounterError.WriteFailed>(result.error)
+    }
+
+    @Test
+    fun `invoke writes each increment to data source`() = runTest {
+        val job = launch { useCase(delayMs = 100L) }
+        advanceTimeBy(1L)
+        assertEquals(1L, fakeDataSource.currentValue)
+        advanceTimeBy(100L)
+        assertEquals(2L, fakeDataSource.currentValue)
+        advanceTimeBy(100L)
+        assertEquals(3L, fakeDataSource.currentValue)
+        job.cancel()
+    }
+
+    @Test
+    fun `invoke stops and returns error when write fails mid-loop`() = runTest {
+        val resultHolder = mutableListOf<Result<Nothing, CounterError>>()
+        val job = launch {
+            resultHolder.add(useCase(delayMs = 100L))
         }
-        // Should have emitted 0, 1, 2, then stopped after write failure on 3
-        assertEquals(3, emitCount)
+        advanceTimeBy(250L)
+        fakeDataSource.setWriteError(true)
+        advanceTimeBy(100L)
+        job.join()
+        assertEquals(1, resultHolder.size)
+        assertIs<Result.Error<CounterError>>(resultHolder.first())
     }
 }

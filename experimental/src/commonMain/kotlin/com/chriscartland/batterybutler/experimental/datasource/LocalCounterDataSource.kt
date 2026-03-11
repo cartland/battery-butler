@@ -5,5 +5,5 @@ import kotlinx.coroutines.flow.Flow
 interface LocalCounterDataSource {
     fun observeCounter(): Flow<Long>
     suspend fun getCounter(): Long
-    suspend fun setCounter(value: Long)
+    suspend fun incrementCounter(): Long
 }

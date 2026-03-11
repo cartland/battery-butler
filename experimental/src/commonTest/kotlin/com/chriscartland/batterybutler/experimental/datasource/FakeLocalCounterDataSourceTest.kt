@@ -22,31 +22,43 @@ class FakeLocalCounterDataSourceTest {
     }
 
     @Test
-    fun `setCounter updates the value`() = runTest {
-        dataSource.setCounter(100L)
-        assertEquals(100L, dataSource.getCounter())
+    fun `incrementCounter increments the value`() = runTest {
+        val first = dataSource.incrementCounter()
+        assertEquals(1L, first)
+        val second = dataSource.incrementCounter()
+        assertEquals(2L, second)
     }
 
     @Test
     fun `observeCounter emits current value`() = runTest {
-        dataSource.setCounter(55L)
+        dataSource.incrementCounter()
+        dataSource.incrementCounter()
         val value = dataSource.observeCounter().first()
-        assertEquals(55L, value)
+        assertEquals(2L, value)
     }
 
     @Test
-    fun `getCounter throws when shouldThrowOnRead is true`() = runTest {
-        dataSource.shouldThrowOnRead = true
+    fun `getCounter throws when read error is enabled`() = runTest {
+        dataSource.setReadError(true)
         assertFailsWith<RuntimeException> {
             dataSource.getCounter()
         }
     }
 
     @Test
-    fun `setCounter throws when shouldThrowOnWrite is true`() = runTest {
-        dataSource.shouldThrowOnWrite = true
+    fun `incrementCounter throws when write error is enabled`() = runTest {
+        dataSource.setWriteError(true)
         assertFailsWith<RuntimeException> {
-            dataSource.setCounter(1L)
+            dataSource.incrementCounter()
         }
+    }
+
+    @Test
+    fun `resetCounter sets value back to zero`() = runTest {
+        dataSource.incrementCounter()
+        dataSource.incrementCounter()
+        assertEquals(2L, dataSource.currentValue)
+        dataSource.resetCounter()
+        assertEquals(0L, dataSource.currentValue)
     }
 }
