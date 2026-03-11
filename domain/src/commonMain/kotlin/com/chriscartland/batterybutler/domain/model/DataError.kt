@@ -1,28 +1,6 @@
 package com.chriscartland.batterybutler.domain.model
 
 /**
- * Sealed interface representing the result of a data operation.
- *
- * Project code NEVER throws exceptions except CancellationException.
- * Library exceptions are caught at data layer boundaries and returned as [Error].
- *
- * @deprecated Use [Result]<T, [DataError]> instead for generic error handling.
- */
-@Deprecated(
-    message = "Use Result<T, DataError> for generic error handling",
-    replaceWith = ReplaceWith("Result<T, DataError>", "com.chriscartland.batterybutler.domain.model.Result"),
-)
-sealed interface DataResult<out T> {
-    data class Success<T>(
-        val data: T,
-    ) : DataResult<T>
-
-    data class Error(
-        val error: DataError,
-    ) : DataResult<Nothing>
-}
-
-/**
  * Typed error hierarchy for data operations.
  *
  * Each sealed interface represents a category of errors from a specific layer:
@@ -98,30 +76,3 @@ sealed interface DataError : AppError {
         override val cause: String? = null,
     ) : DataError
 }
-
-/**
- * Extension function to map successful results.
- */
-inline fun <T, R> DataResult<T>.map(transform: (T) -> R): DataResult<R> =
-    when (this) {
-        is DataResult.Success -> DataResult.Success(transform(data))
-        is DataResult.Error -> this
-    }
-
-/**
- * Extension function to get data or null.
- */
-fun <T> DataResult<T>.getOrNull(): T? =
-    when (this) {
-        is DataResult.Success -> data
-        is DataResult.Error -> null
-    }
-
-/**
- * Extension function to get data or throw.
- */
-fun <T> DataResult<T>.getOrThrow(): T =
-    when (this) {
-        is DataResult.Success -> data
-        is DataResult.Error -> throw IllegalStateException(error.message)
-    }

@@ -41,7 +41,7 @@ class SettingsViewModelWrapper: ObservableObject {
 
         self.versionTask = Task { @MainActor [weak self] in
             for await version in viewModel.appVersion {
-                if let iosVersion = version as? AppVersion.Ios {
+                if let iosVersion = version as? AppVersionIos {
                     self?.appVersion = "\(iosVersion.versionName)-\(iosVersion.buildNumber)"
                 } else {
                     self?.appVersion = "Version"

@@ -58,8 +58,7 @@ Use `DispatcherProvider` (in `:domain:model`) instead of hardcoding `Dispatchers
 
 Key types (see `domain/model/Result.kt`):
 - `Result<D, E : AppError>` — sealed interface with `Success<D>` and `Error<E>`
-- `DataError` — sealed hierarchy: Network, Database, Ai, Unknown (in `DataResult.kt`)
-- `DataResult<T>` — **deprecated**, use `Result<T, DataError>` instead
+- `DataError` — sealed hierarchy: Network, Database, Ai, Unknown (in `DataError.kt`)
 - Extension functions: `map`, `flatMap`, `getOrNull`, `getOrElse`, `getOrThrow`, `onSuccess`, `onError`
 
 Pattern for repository implementations (try-catch at boundary):

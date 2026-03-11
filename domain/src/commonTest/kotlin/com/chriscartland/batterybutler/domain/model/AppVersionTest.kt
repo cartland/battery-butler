@@ -74,7 +74,7 @@ class AppVersionTest {
     }
 
     @Test
-    fun `sealed class variants are distinguishable`() {
+    fun `sealed interface variants are distinguishable`() {
         val unavailable: AppVersion = AppVersion.Unavailable
         val android: AppVersion = AppVersion.Android("1.0", 1)
         val ios: AppVersion = AppVersion.Ios("1.0", "1")
