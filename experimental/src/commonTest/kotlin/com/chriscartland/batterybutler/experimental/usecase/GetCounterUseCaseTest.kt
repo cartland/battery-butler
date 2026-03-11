@@ -1,0 +1,39 @@
+package com.chriscartland.batterybutler.experimental.usecase
+
+import com.chriscartland.batterybutler.domain.model.Result
+import com.chriscartland.batterybutler.experimental.datasource.FakeLocalCounterDataSource
+import com.chriscartland.batterybutler.experimental.model.CounterError
+import com.chriscartland.batterybutler.experimental.repository.DefaultCounterRepository
+import kotlinx.coroutines.test.runTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertIs
+
+class GetCounterUseCaseTest {
+
+    private lateinit var fakeDataSource: FakeLocalCounterDataSource
+    private lateinit var useCase: GetCounterUseCase
+
+    @BeforeTest
+    fun setUp() {
+        fakeDataSource = FakeLocalCounterDataSource()
+        useCase = GetCounterUseCase(DefaultCounterRepository(fakeDataSource))
+    }
+
+    @Test
+    fun `invoke returns success with current counter value`() = runTest {
+        fakeDataSource.setCounter(99L)
+        val result = useCase()
+        assertIs<Result.Success<Long>>(result)
+        assertEquals(99L, result.data)
+    }
+
+    @Test
+    fun `invoke returns error when read fails`() = runTest {
+        fakeDataSource.shouldThrowOnRead = true
+        val result = useCase()
+        assertIs<Result.Error<CounterError>>(result)
+        assertIs<CounterError.ReadFailed>(result.error)
+    }
+}
