@@ -16,6 +16,7 @@ final class AddDeviceScreenTests: XCTestCase {
             location: .constant(""),
             selectedTypeId: .constant(""),
             deviceTypes: dummyTypes,
+            isLoading: false,
             onAdd: {},
             onCancel: {}
         )
@@ -39,6 +40,7 @@ final class AddDeviceScreenTests: XCTestCase {
             location: .constant("Living Room"),
             selectedTypeId: .constant("t1"),
             deviceTypes: dummyTypes,
+            isLoading: false,
             onAdd: {},
             onCancel: {}
         )

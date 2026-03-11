@@ -238,5 +238,8 @@
 "settings.ai_engine.noop" = "Disabled";
 "settings.section.data" = "Data Management";
 "settings.button.export" = "Export Data";
+"settings.section.updates" = "Updates";
+"settings.button.check_updates" = "Check for Updates";
+"settings.check_updates.subtitle" = "Open App Store";
 "settings.section.about" = "About";
 "settings.version.title" = "App Version";
