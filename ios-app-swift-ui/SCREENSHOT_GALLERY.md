@@ -2,7 +2,7 @@
 
 # iOS Screenshot Gallery
 
-Generated on 2026-03-10 04:37:44 UTC
+Generated on 2026-03-11 03:23:50 UTC
 
 ## Table of Contents
 
@@ -343,6 +343,12 @@ Generated on 2026-03-10 04:37:44 UTC
 | Light | Dark |
 |-------|------|
 | <img src="iosAppSwiftUITests/__Snapshots__/SettingsScreenTests/testSettingsContentView_Default.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/SettingsScreenTests/testSettingsContentView_Default.dark.png" width="300" /> |
+
+### testSettingsContentView_SignedIn
+
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/SettingsScreenTests/testSettingsContentView_SignedIn.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/SettingsScreenTests/testSettingsContentView_SignedIn.dark.png" width="300" /> |
 
 ## SimpleSnapshotTests
 
