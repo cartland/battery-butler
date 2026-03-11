@@ -2,25 +2,34 @@ import SwiftUI
 import shared
 
 class CounterViewModelWrapper: ObservableObject {
-    @Published var state: CounterState = CounterStateIdle()
+    @Published var observeState: CounterState = CounterStateIdle()
+    @Published var getState: CounterState = CounterStateIdle()
 
     private let viewModel: CounterViewModel
     private let viewModelStore = KmpViewModelStore()
-    private var stateTask: Task<Void, Never>?
+    private var observeTask: Task<Void, Never>?
+    private var getTask: Task<Void, Never>?
 
     init(_ viewModel: CounterViewModel) {
         self.viewModel = viewModel
         viewModelStore.put(key: "counter-vm", viewModel: viewModel)
 
-        self.stateTask = Task { @MainActor [weak self] in
-            for await newState in viewModel.state {
-                self?.state = newState
+        self.observeTask = Task { @MainActor [weak self] in
+            for await newState in viewModel.observeState {
+                self?.observeState = newState
+            }
+        }
+
+        self.getTask = Task { @MainActor [weak self] in
+            for await newState in viewModel.getState {
+                self?.getState = newState
             }
         }
     }
 
     deinit {
-        stateTask?.cancel()
+        observeTask?.cancel()
+        getTask?.cancel()
         viewModelStore.clear()
     }
 

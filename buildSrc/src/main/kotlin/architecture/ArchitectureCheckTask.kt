@@ -35,7 +35,11 @@ open class ArchitectureCheckTask : DefaultTask() {
         ":server:domain" to listOf(":domain"),
         ":server:data" to listOf(":server:domain", ":domain", ":fixtures"),
         ":server:app" to listOf(":server:domain", ":server:data", ":domain"),
-        ":experimental" to listOf(":domain", ":presentation-core"),
+        ":experimental:domain" to listOf(":domain"),
+        ":experimental:data-local" to listOf(":experimental:domain", ":domain"),
+        ":experimental:usecase" to listOf(":experimental:domain", ":domain"),
+        ":experimental:viewmodel" to listOf(":experimental:usecase", ":experimental:domain", ":domain"),
+        ":experimental:presentation-core" to listOf(":experimental:viewmodel", ":experimental:domain", ":presentation-core"),
         ":git" to listOf(),
         ":scripts" to listOf(),
     )
@@ -49,7 +53,7 @@ open class ArchitectureCheckTask : DefaultTask() {
             val moduleName = ":" + subproject.path.removePrefix(":") // normalize to :module
             val allowed = allowedDependencies[moduleName]
 
-            if (allowed == null && !moduleName.startsWith(":server")) {
+            if (allowed == null && !moduleName.startsWith(":server") && !moduleName.startsWith(":experimental")) {
                 return@forEach
             }
 

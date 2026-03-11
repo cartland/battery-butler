@@ -10,7 +10,8 @@ struct CounterScreen: View {
 
     var body: some View {
         CounterContentView(
-            state: wrapper.state,
+            observeState: wrapper.observeState,
+            getState: wrapper.getState,
             onStart: { wrapper.start() },
             onStop: { wrapper.stop() },
             onGet: { wrapper.get() }
@@ -19,7 +20,8 @@ struct CounterScreen: View {
 }
 
 struct CounterContentView: View {
-    let state: CounterState
+    let observeState: CounterState
+    let getState: CounterState
     let onStart: () -> Void
     let onStop: () -> Void
     let onGet: () -> Void
@@ -29,39 +31,57 @@ struct CounterContentView: View {
             Text("Experimental Counter")
                 .font(.title)
 
-            Spacer().frame(height: 16)
+            Spacer().frame(height: 8)
 
-            if state is CounterStateIdle {
-                Text("Press Start to begin counting")
-                    .foregroundStyle(.secondary)
-            } else if state is CounterStateLoading {
-                ProgressView()
-            } else if let active = state as? CounterStateActive {
-                Text("\(active.value)")
-                    .font(.system(size: 64, weight: .bold, design: .rounded))
-            } else if let error = state as? CounterStateError {
-                Text(error.message)
-                    .foregroundStyle(.red)
-            }
+            Text("Observe")
+                .font(.title3)
 
-            Spacer().frame(height: 16)
+            CounterValueDisplay(state: observeState)
 
             HStack(spacing: 16) {
                 Button("Start", action: onStart)
                     .buttonStyle(.borderedProminent)
                 Button("Stop", action: onStop)
                     .buttonStyle(.bordered)
-                Button("Get", action: onGet)
-                    .buttonStyle(.bordered)
             }
+
+            Divider()
+
+            Text("Get")
+                .font(.title3)
+
+            CounterValueDisplay(state: getState)
+
+            Button("Get", action: onGet)
+                .buttonStyle(.bordered)
         }
         .padding()
     }
 }
 
+private struct CounterValueDisplay: View {
+    let state: CounterState
+
+    var body: some View {
+        if state is CounterStateIdle {
+            Text("—")
+                .font(.system(size: 64, weight: .bold, design: .rounded))
+        } else if state is CounterStateLoading {
+            ProgressView()
+        } else if let active = state as? CounterStateActive {
+            Text("\(active.value)")
+                .font(.system(size: 64, weight: .bold, design: .rounded))
+        } else if let error = state as? CounterStateError {
+            Text(error.message)
+                .foregroundStyle(.red)
+        }
+    }
+}
+
 #Preview("Idle") {
     CounterContentView(
-        state: CounterStateIdle(),
+        observeState: CounterStateIdle(),
+        getState: CounterStateIdle(),
         onStart: {},
         onStop: {},
         onGet: {}
@@ -70,7 +90,8 @@ struct CounterContentView: View {
 
 #Preview("Active") {
     CounterContentView(
-        state: CounterStateActive(value: 42),
+        observeState: CounterStateActive(value: 42),
+        getState: CounterStateActive(value: 7),
         onStart: {},
         onStop: {},
         onGet: {}
@@ -79,7 +100,8 @@ struct CounterContentView: View {
 
 #Preview("Loading") {
     CounterContentView(
-        state: CounterStateLoading(),
+        observeState: CounterStateLoading(),
+        getState: CounterStateLoading(),
         onStart: {},
         onStop: {},
         onGet: {}
@@ -88,7 +110,8 @@ struct CounterContentView: View {
 
 #Preview("Error") {
     CounterContentView(
-        state: CounterStateError(message: "Failed to read counter"),
+        observeState: CounterStateError(message: "Failed to observe counter"),
+        getState: CounterStateError(message: "Failed to read counter"),
         onStart: {},
         onStop: {},
         onGet: {}

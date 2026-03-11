@@ -60,7 +60,7 @@ dependencies {
     implementation(project(":compose-resources"))
 
     implementation(project(":presentation-model"))
-    implementation(project(":experimental"))
+    implementation(project(":experimental:presentation-core"))
     implementation(libs.kotlinx.datetime)
 }
 

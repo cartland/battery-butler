@@ -4,10 +4,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.android.tools.screenshot.PreviewTest
 import com.chriscartland.batterybutler.androidscreenshottests.util.ScreenshotTestTheme
-import com.chriscartland.batterybutler.experimental.ui.CounterContentActivePreview
-import com.chriscartland.batterybutler.experimental.ui.CounterContentErrorPreview
-import com.chriscartland.batterybutler.experimental.ui.CounterContentIdlePreview
-import com.chriscartland.batterybutler.experimental.ui.CounterContentLoadingPreview
+import com.chriscartland.batterybutler.experimental.presentationcore.CounterContentActivePreview
+import com.chriscartland.batterybutler.experimental.presentationcore.CounterContentErrorPreview
+import com.chriscartland.batterybutler.experimental.presentationcore.CounterContentIdlePreview
+import com.chriscartland.batterybutler.experimental.presentationcore.CounterContentLoadingPreview
 
 @PreviewTest
 @Preview(showBackground = true, name = "Light")
