@@ -1,6 +1,29 @@
 import Foundation
 
 enum SFSymbolMapper {
+    /// Available icon names matching the KMP DeviceIcons.AvailableIcons order.
+    static let availableIcons: [String] = [
+        // Shapes
+        "star", "circle", "square", "favorite", "diamond", "hexagon",
+        // Electronics
+        "smartphone", "tablet", "laptop", "watch", "headphones", "camera",
+        "speaker", "videogame_asset", "game_controller", "tv", "router", "power",
+        "smart_button", "settings_remote", "mouse", "keyboard",
+        // Home
+        "lightbulb", "detector_smoke", "thermostat", "sensors", "lock", "garage_home",
+        // Tools/Utility
+        "flashlight_on", "drill", "brush", "scale", "straighten", "water_drop",
+        // Other
+        "car", "bike", "schedule", "location_on", "account_balance_wallet", "toys",
+    ]
+
+    /// Returns a human-readable label for an icon name.
+    static func displayName(for iconName: String) -> String {
+        return iconName
+            .replacingOccurrences(of: "_", with: " ")
+            .localizedCapitalized
+    }
+
     static func sfSymbolName(for iconName: String?) -> String {
         guard let iconName = iconName else { return "desktopcomputer" }
         return mapping[iconName] ?? "desktopcomputer"

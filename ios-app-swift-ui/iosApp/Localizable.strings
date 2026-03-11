@@ -94,9 +94,14 @@
 // MARK: - Add Device Type Screen
 
 "add_device_type.title" = "Add Device Type";
+"add_device_type.section.icon" = "Icon";
 "add_device_type.section.details" = "Device Type Details";
 "add_device_type.field.name" = "Name";
+"add_device_type.field.name_label" = "Name";
 "add_device_type.field.battery_type" = "Battery Type";
+"add_device_type.field.battery_type_label" = "Battery Type";
+"add_device_type.field.battery_quantity_label" = "Battery Quantity";
+"add_device_type.field.batteries_needed" = "Batteries needed";
 
 // MARK: - Edit Device Type Screen
 

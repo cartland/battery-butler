@@ -12,6 +12,9 @@ final class AddDeviceTypeScreenTests: XCTestCase {
             state: state,
             onUpdateName: { _ in },
             onUpdateBatteryType: { _ in },
+            onSelectIcon: { _ in },
+            onIncrementQuantity: {},
+            onDecrementQuantity: {},
             onSave: {},
             onCancel: {}
         )
@@ -28,11 +31,16 @@ final class AddDeviceTypeScreenTests: XCTestCase {
         var state = AddDeviceTypeState()
         state.name = "Smoke Alarm"
         state.batteryType = "9V"
+        state.selectedIcon = "detector_smoke"
+        state.batteryQuantity = 2
 
         let view = AddDeviceTypeContentView(
             state: state,
             onUpdateName: { _ in },
             onUpdateBatteryType: { _ in },
+            onSelectIcon: { _ in },
+            onIncrementQuantity: {},
+            onDecrementQuantity: {},
             onSave: {},
             onCancel: {}
         )
@@ -55,6 +63,9 @@ final class AddDeviceTypeScreenTests: XCTestCase {
             state: state,
             onUpdateName: { _ in },
             onUpdateBatteryType: { _ in },
+            onSelectIcon: { _ in },
+            onIncrementQuantity: {},
+            onDecrementQuantity: {},
             onSave: {},
             onCancel: {}
         )
