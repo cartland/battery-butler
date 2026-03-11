@@ -106,9 +106,14 @@
 // MARK: - Edit Device Type Screen
 
 "edit_device_type.title" = "Edit Device Type";
+"edit_device_type.section.icon" = "Icon";
 "edit_device_type.section.details" = "Details";
 "edit_device_type.field.name" = "Name";
+"edit_device_type.field.name_label" = "Name";
 "edit_device_type.field.battery_type" = "Battery Type";
+"edit_device_type.field.battery_type_label" = "Battery Type";
+"edit_device_type.field.battery_quantity_label" = "Battery Quantity";
+"edit_device_type.field.batteries_needed" = "Batteries needed";
 "edit_device_type.button.delete" = "Delete Type";
 "edit_device_type.alert.delete_title" = "Delete Device Type?";
 "edit_device_type.not_found" = "Device Type not found";
