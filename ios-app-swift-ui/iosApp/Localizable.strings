@@ -112,6 +112,11 @@
 "edit_device_type.button.delete" = "Delete Type";
 "edit_device_type.alert.delete_title" = "Delete Device Type?";
 "edit_device_type.not_found" = "Device Type not found";
+"edit_device_type.section.icon" = "Icon";
+"edit_device_type.field.name_label" = "Name";
+"edit_device_type.field.battery_type_label" = "Battery Type";
+"edit_device_type.field.battery_quantity_label" = "Battery Quantity";
+"edit_device_type.field.batteries_needed" = "Batteries needed";
 
 // MARK: - Add Battery Event Screen
 
@@ -233,5 +238,8 @@
 "settings.ai_engine.noop" = "Disabled";
 "settings.section.data" = "Data Management";
 "settings.button.export" = "Export Data";
+"settings.section.updates" = "Updates";
+"settings.button.check_updates" = "Check for Updates";
+"settings.check_updates.subtitle" = "Open App Store";
 "settings.section.about" = "About";
 "settings.version.title" = "App Version";

@@ -16,6 +16,9 @@ final class EditDeviceTypeScreenTests: XCTestCase {
             state: state,
             onUpdateName: { _ in },
             onUpdateBatteryType: { _ in },
+            onSelectIcon: { _ in },
+            onIncrementQuantity: {},
+            onDecrementQuantity: {},
             onSave: {},
             onDelete: {}
         )
@@ -35,6 +38,9 @@ final class EditDeviceTypeScreenTests: XCTestCase {
             state: state,
             onUpdateName: { _ in },
             onUpdateBatteryType: { _ in },
+            onSelectIcon: { _ in },
+            onIncrementQuantity: {},
+            onDecrementQuantity: {},
             onSave: {},
             onDelete: {}
         )
@@ -56,6 +62,9 @@ final class EditDeviceTypeScreenTests: XCTestCase {
             state: state,
             onUpdateName: { _ in },
             onUpdateBatteryType: { _ in },
+            onSelectIcon: { _ in },
+            onIncrementQuantity: {},
+            onDecrementQuantity: {},
             onSave: {},
             onDelete: {}
         )
