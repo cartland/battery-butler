@@ -77,12 +77,21 @@ graph TD
         TestCommon[":test-common"]
     end
 
+    subgraph "Others"
+        ExperimentalDataLocal[":experimental:data-local"]
+        ExperimentalDomain[":experimental:domain"]
+        ExperimentalPresentationCore[":experimental:presentation-core"]
+        ExperimentalUsecase[":experimental:usecase"]
+        ExperimentalViewmodel[":experimental:viewmodel"]
+    end
+
     %% Dependencies
     Ai --> Domain
     Ai --> PresentationModel
 
     AndroidScreenshotTests --> ComposeResources
     AndroidScreenshotTests --> Domain
+    AndroidScreenshotTests --> ExperimentalPresentationCore
     AndroidScreenshotTests --> PresentationCore
     AndroidScreenshotTests --> PresentationFeature
     AndroidScreenshotTests --> PresentationModel
@@ -104,6 +113,24 @@ graph TD
 
     DataNetwork --> Domain
     DataNetwork --> Fixtures
+
+    ExperimentalDataLocal --> Domain
+    ExperimentalDataLocal --> ExperimentalDomain
+
+    ExperimentalDomain --> Domain
+
+    ExperimentalPresentationCore --> ExperimentalDomain
+    ExperimentalPresentationCore --> ExperimentalViewmodel
+    ExperimentalPresentationCore --> PresentationCore
+
+    ExperimentalUsecase --> Domain
+    ExperimentalUsecase --> ExperimentalDataLocal
+    ExperimentalUsecase --> ExperimentalDomain
+
+    ExperimentalViewmodel --> Domain
+    ExperimentalViewmodel --> ExperimentalDataLocal
+    ExperimentalViewmodel --> ExperimentalDomain
+    ExperimentalViewmodel --> ExperimentalUsecase
 
     Fixtures --> Domain
 
