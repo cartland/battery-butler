@@ -213,7 +213,7 @@ config:
 sankey-beta
 
 Codebase,Shared Code,26397
-Codebase,iOS Swift App,5673
+Codebase,iOS Swift App,5925
 Codebase,Other,3484
 Codebase,CMP Apps,2431
 Codebase,Server,1528
@@ -235,7 +235,7 @@ Shared Code,experimental:presentation-core,165
 Shared Code,compose-resources,70
 Shared Code,experimental:domain,43
 
-iOS Swift App,iosAppSwiftUI,5673
+iOS Swift App,iosAppSwiftUI,5925
 
 Other,buildSrc,1780
 Other,test-common,620
@@ -256,7 +256,7 @@ Server,server:domain,34
 Screenshot Tests,android-screenshot-tests,1179
 
 presentation-feature,Kotlin,6036
-iosAppSwiftUI,Swift,5673
+iosAppSwiftUI,Swift,5925
 viewmodel,Kotlin,4936
 usecase,Kotlin,4251
 data-network,Kotlin,2429
