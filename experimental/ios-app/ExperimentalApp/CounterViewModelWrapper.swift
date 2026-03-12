@@ -12,7 +12,9 @@ class CounterViewModelWrapper: ObservableObject {
     init(_ viewModel: CounterViewModel) {
         self.viewModel = viewModel
 
-        // Poll ViewModel state flows at ~60Hz to bridge Kotlin StateFlow → SwiftUI
+        // Poll ViewModel state flows at ~60Hz to bridge Kotlin StateFlow → SwiftUI.
+        // Intentional simplification: the main app uses SKIE for zero-copy Flow interop,
+        // but polling is sufficient for this teaching reference and avoids the SKIE dependency.
         self.timer = Timer.publish(every: 1.0 / 60.0, on: .main, in: .common)
             .autoconnect()
             .sink { [weak self] _ in

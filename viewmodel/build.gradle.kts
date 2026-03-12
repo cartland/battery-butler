@@ -51,6 +51,7 @@ kotlin {
         val desktopTest by getting {
             dependencies {
                 implementation(kotlin("reflect"))
+                implementation(project(":experimental:viewmodel"))
             }
         }
     }

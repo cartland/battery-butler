@@ -58,6 +58,25 @@ open class TestCoverageCheckTask : DefaultTask() {
                 sourceSets = listOf("commonMain", "androidMain"),
                 testSourceSets = listOf("commonTest"),
             ),
+            // Experimental modules — teaching reference, must maintain full coverage
+            ModuleRule(
+                module = "experimental/usecase",
+                classPatterns = listOf(Regex("""\w*UseCase""")),
+                sourceSets = listOf("commonMain"),
+                testSourceSets = listOf("commonTest"),
+            ),
+            ModuleRule(
+                module = "experimental/viewmodel",
+                classPatterns = listOf(Regex("""\w*ViewModel""")),
+                sourceSets = listOf("commonMain"),
+                testSourceSets = listOf("commonTest"),
+            ),
+            ModuleRule(
+                module = "experimental/data-local",
+                classPatterns = listOf(Regex("""Default\w+""")),
+                sourceSets = listOf("commonMain"),
+                testSourceSets = listOf("commonTest"),
+            ),
         )
 
         // 2. Parse central exemptions file

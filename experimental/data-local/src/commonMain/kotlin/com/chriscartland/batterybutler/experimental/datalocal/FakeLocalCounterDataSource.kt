@@ -4,6 +4,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
+/**
+ * Test double for [LocalCounterDataSource]. Lives in commonMain (not commonTest) because
+ * it is consumed by tests in other modules (experimental:usecase, experimental:viewmodel).
+ * This follows the same pattern as the main app's `test-common` module.
+ */
 class FakeLocalCounterDataSource(
     private val shouldThrowOnRead: MutableStateFlow<Boolean> = MutableStateFlow(false),
     private val shouldThrowOnWrite: MutableStateFlow<Boolean> = MutableStateFlow(false),

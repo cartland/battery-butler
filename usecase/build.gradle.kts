@@ -40,6 +40,7 @@ kotlin {
         }
         jvmTest.dependencies {
             implementation(kotlin("reflect"))
+            implementation(project(":experimental:usecase"))
         }
     }
     sourceSets.all {

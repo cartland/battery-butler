@@ -17,12 +17,15 @@ import kotlin.test.fail
 class UseCaseConventionTest {
     @Test
     fun `every UseCase class has an operator invoke function`() {
-        val packageName = "com.chriscartland.batterybutler.usecase"
-        val useCaseClasses = discoverUseCaseClasses(packageName)
+        val packages = listOf(
+            "com.chriscartland.batterybutler.usecase",
+            "com.chriscartland.batterybutler.experimental.usecase",
+        )
+        val useCaseClasses = packages.flatMap { discoverUseCaseClasses(it) }
 
         assertTrue(
             useCaseClasses.isNotEmpty(),
-            "Expected to find UseCase classes in package '$packageName', but found none. " +
+            "Expected to find UseCase classes in packages $packages, but found none. " +
                 "Ensure the test is running against compiled sources.",
         )
 
