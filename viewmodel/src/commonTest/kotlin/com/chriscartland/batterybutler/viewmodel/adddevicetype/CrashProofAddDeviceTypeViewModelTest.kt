@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -60,8 +61,8 @@ class CrashProofAddDeviceTypeViewModelTest {
 
             val viewModel = createViewModel(throwingRepo)
 
-            // Trigger the stateIn flow collection
-            viewModel.uiState.value
+            // Actively subscribe to trigger the stateIn flow collection
+            val job = launch { viewModel.uiState.collect {} }
 
             // Advance coroutines so the upstream flow throws
             testDispatcher.scheduler.advanceUntilIdle()
@@ -75,6 +76,8 @@ class CrashProofAddDeviceTypeViewModelTest {
                 viewModel.uiState.value.usedIcons
                     .isEmpty(),
             )
+
+            job.cancel()
         }
 
     @Test

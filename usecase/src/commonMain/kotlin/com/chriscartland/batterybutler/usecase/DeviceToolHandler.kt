@@ -38,17 +38,21 @@ class DeviceToolHandler(
         name: String,
         args: Map<String, Any?>,
     ): String =
-        when (name) {
-            AiToolNames.ADD_DEVICE -> addDevice(args)
-            AiToolNames.ADD_DEVICE_TYPE -> addDeviceType(args)
-            AiToolNames.RECORD_BATTERY_REPLACEMENT -> recordBatteryReplacement(args)
-            AiToolNames.UPDATE_DEVICE -> updateDevice(args)
-            AiToolNames.DELETE_DEVICE -> deleteDevice(args)
-            AiToolNames.UPDATE_DEVICE_TYPE -> updateDeviceType(args)
-            AiToolNames.DELETE_DEVICE_TYPE -> deleteDeviceType(args)
-            AiToolNames.UPDATE_BATTERY_EVENT -> updateBatteryEvent(args)
-            AiToolNames.DELETE_BATTERY_EVENT -> deleteBatteryEvent(args)
-            else -> "Error: Unknown tool '$name'"
+        try {
+            when (name) {
+                AiToolNames.ADD_DEVICE -> addDevice(args)
+                AiToolNames.ADD_DEVICE_TYPE -> addDeviceType(args)
+                AiToolNames.RECORD_BATTERY_REPLACEMENT -> recordBatteryReplacement(args)
+                AiToolNames.UPDATE_DEVICE -> updateDevice(args)
+                AiToolNames.DELETE_DEVICE -> deleteDevice(args)
+                AiToolNames.UPDATE_DEVICE_TYPE -> updateDeviceType(args)
+                AiToolNames.DELETE_DEVICE_TYPE -> deleteDeviceType(args)
+                AiToolNames.UPDATE_BATTERY_EVENT -> updateBatteryEvent(args)
+                AiToolNames.DELETE_BATTERY_EVENT -> deleteBatteryEvent(args)
+                else -> "Error: Unknown tool '$name'"
+            }
+        } catch (e: Exception) {
+            "Error executing $name: ${e.message}"
         }
 
     private suspend fun addDevice(args: Map<String, Any?>): String {

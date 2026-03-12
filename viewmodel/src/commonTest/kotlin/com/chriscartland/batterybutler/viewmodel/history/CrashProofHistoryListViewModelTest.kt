@@ -13,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -50,8 +51,8 @@ class CrashProofHistoryListViewModelTest {
 
             val viewModel = createViewModel(throwingRepo)
 
-            // Trigger the stateIn flow collection
-            viewModel.uiState.value
+            // Actively subscribe to trigger the stateIn flow collection
+            val job = launch { viewModel.uiState.collect {} }
 
             // Advance coroutines so the upstream flow throws
             testDispatcher.scheduler.advanceUntilIdle()
@@ -60,6 +61,8 @@ class CrashProofHistoryListViewModelTest {
             val finalState = viewModel.uiState.value
             assertIs<HistoryListUiState.Error>(finalState)
             assertEquals("Simulated getAllEvents failure", finalState.message)
+
+            job.cancel()
         }
 
     @Test
@@ -75,8 +78,8 @@ class CrashProofHistoryListViewModelTest {
 
             val viewModel = createViewModel(throwingRepo)
 
-            // Trigger the stateIn flow collection
-            viewModel.uiState.value
+            // Actively subscribe to trigger the stateIn flow collection
+            val job = launch { viewModel.uiState.collect {} }
 
             // Advance coroutines so the upstream flow throws
             testDispatcher.scheduler.advanceUntilIdle()
@@ -85,6 +88,8 @@ class CrashProofHistoryListViewModelTest {
             val finalState = viewModel.uiState.value
             assertIs<HistoryListUiState.Error>(finalState)
             assertEquals("Simulated getAllDevices failure", finalState.message)
+
+            job.cancel()
         }
 
     @Test
@@ -100,8 +105,8 @@ class CrashProofHistoryListViewModelTest {
 
             val viewModel = createViewModel(throwingRepo)
 
-            // Trigger the stateIn flow collection
-            viewModel.uiState.value
+            // Actively subscribe to trigger the stateIn flow collection
+            val job = launch { viewModel.uiState.collect {} }
 
             // Advance coroutines so the upstream flow throws
             testDispatcher.scheduler.advanceUntilIdle()
@@ -110,6 +115,8 @@ class CrashProofHistoryListViewModelTest {
             val finalState = viewModel.uiState.value
             assertIs<HistoryListUiState.Error>(finalState)
             assertEquals("Simulated getAllDeviceTypes failure", finalState.message)
+
+            job.cancel()
         }
 
     private fun createViewModel(repo: DeviceRepository): HistoryListViewModel =

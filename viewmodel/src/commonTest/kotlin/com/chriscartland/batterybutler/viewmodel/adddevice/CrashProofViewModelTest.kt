@@ -15,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -66,8 +67,8 @@ class CrashProofViewModelTest {
                 featureFlagProvider = FakeFeatureFlagProvider(),
             )
 
-            // Read the property to trigger the stateIn flow collection
-            viewModel.deviceTypes.value
+            // Actively subscribe to trigger the stateIn flow collection
+            val job = launch { viewModel.deviceTypes.collect {} }
 
             // Advance coroutines, which will execute the upstream flow and throw the exception
             testDispatcher.scheduler.advanceUntilIdle()
@@ -78,6 +79,8 @@ class CrashProofViewModelTest {
 
             // deviceTypes falls back to emptyList()
             assertTrue(viewModel.deviceTypes.value.isEmpty())
+
+            job.cancel()
         }
 
     @Test
