@@ -2,6 +2,7 @@ package com.chriscartland.batterybutler.experimental.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.chriscartland.batterybutler.domain.model.DispatcherProvider
 import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.experimental.domain.model.CounterState
 import com.chriscartland.batterybutler.experimental.usecase.GetCounterUseCase
@@ -18,6 +19,7 @@ class CounterViewModel(
     private val startCounterUseCase: StartCounterUseCase,
     private val getCounterUseCase: GetCounterUseCase,
     private val observeCounterUseCase: ObserveCounterUseCase,
+    private val dispatcherProvider: DispatcherProvider,
 ) : ViewModel() {
     private val _observeState = MutableStateFlow<CounterState>(CounterState.Idle)
     val observeState: StateFlow<CounterState> = _observeState
@@ -30,7 +32,7 @@ class CounterViewModel(
     fun start() {
         counterJob.value?.cancel()
         _observeState.value = CounterState.Loading
-        counterJob.value = viewModelScope.launch {
+        counterJob.value = viewModelScope.launch(dispatcherProvider.main) {
             val observeJob = launch {
                 observeCounterUseCase().collect { value ->
                     _observeState.value = CounterState.Active(value)
@@ -56,7 +58,7 @@ class CounterViewModel(
     }
 
     fun get() {
-        viewModelScope.launch {
+        viewModelScope.launch(dispatcherProvider.main) {
             _getState.value = CounterState.Loading
             when (val result = getCounterUseCase()) {
                 is Result.Success -> {

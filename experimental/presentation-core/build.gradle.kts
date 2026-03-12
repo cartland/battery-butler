@@ -32,6 +32,8 @@ kotlin {
             implementation(libs.compose.ui.tooling.preview)
             implementation(project(":experimental:viewmodel"))
             implementation(project(":experimental:domain"))
+            // Shared design system: reuses BatteryButlerTheme and Padding from the main app's
+            // presentation-core module so experimental screens match the production look-and-feel.
             implementation(project(":presentation-core"))
         }
         androidMain.dependencies {

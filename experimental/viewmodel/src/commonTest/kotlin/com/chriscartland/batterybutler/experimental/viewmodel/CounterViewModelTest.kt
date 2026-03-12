@@ -1,11 +1,13 @@
 package com.chriscartland.batterybutler.experimental.viewmodel
 
+import com.chriscartland.batterybutler.domain.model.DispatcherProvider
 import com.chriscartland.batterybutler.experimental.datalocal.DefaultCounterRepository
 import com.chriscartland.batterybutler.experimental.datalocal.FakeLocalCounterDataSource
 import com.chriscartland.batterybutler.experimental.domain.model.CounterState
 import com.chriscartland.batterybutler.experimental.usecase.GetCounterUseCase
 import com.chriscartland.batterybutler.experimental.usecase.ObserveCounterUseCase
 import com.chriscartland.batterybutler.experimental.usecase.StartCounterUseCase
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -22,6 +24,11 @@ import kotlin.test.assertIs
 @OptIn(ExperimentalCoroutinesApi::class)
 class CounterViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
+    private val testDispatcherProvider = object : DispatcherProvider {
+        override val default: CoroutineDispatcher = testDispatcher
+        override val io: CoroutineDispatcher = testDispatcher
+        override val main: CoroutineDispatcher = testDispatcher
+    }
     private lateinit var fakeDataSource: FakeLocalCounterDataSource
     private lateinit var viewModel: CounterViewModel
 
@@ -34,6 +41,7 @@ class CounterViewModelTest {
             startCounterUseCase = StartCounterUseCase(repository),
             getCounterUseCase = GetCounterUseCase(repository),
             observeCounterUseCase = ObserveCounterUseCase(repository),
+            dispatcherProvider = testDispatcherProvider,
         )
     }
 

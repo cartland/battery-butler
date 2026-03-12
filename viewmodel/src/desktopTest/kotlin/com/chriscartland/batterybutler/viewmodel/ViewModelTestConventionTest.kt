@@ -20,8 +20,12 @@ import kotlin.test.fail
 class ViewModelTestConventionTest {
     @Test
     fun `every ViewModel class has a corresponding test class`() {
-        val packageName = "com.chriscartland.batterybutler.viewmodel"
-        val viewModelClasses = discoverClasses(packageName, "ViewModel")
+        val packages = listOf(
+            "com.chriscartland.batterybutler.viewmodel",
+            "com.chriscartland.batterybutler.experimental.viewmodel",
+        )
+        val viewModelClasses = packages
+            .flatMap { discoverClasses(it, "ViewModel") }
             .filterNot { klass ->
                 val name = klass.simpleName ?: ""
                 name.endsWith("Factory") ||
@@ -31,11 +35,12 @@ class ViewModelTestConventionTest {
 
         assertTrue(
             viewModelClasses.isNotEmpty(),
-            "Expected to find ViewModel classes in package '$packageName', but found none. " +
+            "Expected to find ViewModel classes in packages $packages, but found none. " +
                 "Ensure the test is running against compiled sources.",
         )
 
-        val testClassNames = discoverClasses(packageName, "ViewModelTest")
+        val testClassNames = packages
+            .flatMap { discoverClasses(it, "ViewModelTest") }
             .map { it.simpleName ?: "" }
             .toSet()
 
