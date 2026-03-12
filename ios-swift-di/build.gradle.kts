@@ -16,6 +16,8 @@ kotlin {
             export(project(":domain"))
             export(project(":viewmodel"))
             export(project(":presentation-model"))
+            export(project(":experimental:viewmodel"))
+            export(project(":experimental:domain"))
             export(libs.androidx.lifecycle.viewmodel)
         }
     }
@@ -29,6 +31,9 @@ kotlin {
             implementation(project(":usecase"))
             api(project(":viewmodel"))
             api(project(":presentation-model"))
+            api(project(":experimental:viewmodel"))
+            implementation(project(":experimental:usecase"))
+            implementation(project(":experimental:data-local"))
 
             implementation(libs.kotlin.inject.runtime)
         }

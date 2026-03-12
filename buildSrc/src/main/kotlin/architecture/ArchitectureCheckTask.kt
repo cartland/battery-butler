@@ -35,6 +35,11 @@ open class ArchitectureCheckTask : DefaultTask() {
         ":server:domain" to listOf(":domain"),
         ":server:data" to listOf(":server:domain", ":domain", ":fixtures"),
         ":server:app" to listOf(":server:domain", ":server:data", ":domain"),
+        ":experimental:domain" to listOf(":domain"),
+        ":experimental:data-local" to listOf(":experimental:domain", ":domain"),
+        ":experimental:usecase" to listOf(":experimental:domain", ":domain"),
+        ":experimental:viewmodel" to listOf(":experimental:usecase", ":experimental:domain", ":domain"),
+        ":experimental:presentation-core" to listOf(":experimental:viewmodel", ":experimental:domain", ":presentation-core"),
         ":git" to listOf(),
         ":scripts" to listOf(),
     )
@@ -48,7 +53,7 @@ open class ArchitectureCheckTask : DefaultTask() {
             val moduleName = ":" + subproject.path.removePrefix(":") // normalize to :module
             val allowed = allowedDependencies[moduleName]
 
-            if (allowed == null && !moduleName.startsWith(":server")) {
+            if (!shouldCheckDependencies(moduleName, allowed)) {
                 return@forEach
             }
 
@@ -100,5 +105,20 @@ open class ArchitectureCheckTask : DefaultTask() {
         } else {
             println("Architecture Check Passed!")
         }
+    }
+
+    /**
+     * Modules with explicit rules in [allowedDependencies] are always checked.
+     * Modules under enforced namespaces (:server, :experimental) are checked even
+     * without explicit rules, so new sub-modules can't silently add bad dependencies.
+     * All other modules are skipped.
+     */
+    private fun shouldCheckDependencies(
+        moduleName: String,
+        allowed: List<String>?,
+    ): Boolean {
+        if (allowed != null) return true
+        val enforcedNamespaces = listOf(":server", ":experimental")
+        return enforcedNamespaces.any { moduleName.startsWith(it) }
     }
 }
