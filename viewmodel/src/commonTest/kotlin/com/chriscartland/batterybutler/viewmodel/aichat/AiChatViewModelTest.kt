@@ -8,6 +8,7 @@ import com.chriscartland.batterybutler.usecase.DeviceToolHandler
 import com.chriscartland.batterybutler.usecase.FindOrCreateDeviceTypeUseCase
 import com.chriscartland.batterybutler.usecase.FindOrCreateDeviceUseCase
 import com.chriscartland.batterybutler.usecase.SendChatMessageUseCase
+import com.chriscartland.batterybutler.usecase.UpdateDeviceLastReplacedUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -140,7 +141,8 @@ class AiChatViewModelTest {
         val repo = FakeDeviceRepository()
         val findOrCreateType = FindOrCreateDeviceTypeUseCase(repo)
         val findOrCreateDevice = FindOrCreateDeviceUseCase(repo, findOrCreateType)
-        val toolHandler = DeviceToolHandler(repo, findOrCreateType, findOrCreateDevice)
+        val updateLastReplaced = UpdateDeviceLastReplacedUseCase(repo)
+        val toolHandler = DeviceToolHandler(repo, findOrCreateType, findOrCreateDevice, updateLastReplaced)
         val buildAiContext = BuildAiContextUseCase(repo)
         val sendChatMessage = SendChatMessageUseCase(engine, toolHandler, buildAiContext)
         return AiChatViewModel(sendChatMessage)

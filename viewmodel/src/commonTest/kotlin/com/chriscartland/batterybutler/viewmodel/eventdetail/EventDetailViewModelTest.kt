@@ -4,9 +4,11 @@ import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationmodel.eventdetail.EventDetailUiState
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
 import com.chriscartland.batterybutler.testcommon.TestDevices
+import com.chriscartland.batterybutler.usecase.DeleteBatteryEventUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceDetailUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.GetEventDetailUseCase
+import com.chriscartland.batterybutler.usecase.UpdateDeviceLastReplacedUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -100,5 +102,6 @@ class EventDetailViewModelTest {
             getEventDetailUseCase = GetEventDetailUseCase(repo),
             getDeviceDetailUseCase = GetDeviceDetailUseCase(repo),
             getDeviceTypesUseCase = GetDeviceTypesUseCase(repo),
+            deleteBatteryEventUseCase = DeleteBatteryEventUseCase(repo, UpdateDeviceLastReplacedUseCase(repo)),
         )
 }
