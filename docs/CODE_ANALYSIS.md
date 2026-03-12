@@ -3,27 +3,27 @@
 # Code Analysis
 
 This document provides a breakdown of the codebase by application layer and module.
-Total Lines of Code: 40692
+Total Lines of Code: 40944
 
 ## Application Breakdown
-* Shared Code: 26,397 lines (64.9%)
-* iOS Swift App: 5,673 lines (13.9%)
-* Other: 3,484 lines (8.6%)
-* CMP Android, iOS, Desktop: 2,431 lines (6.0%)
-* Server: 1,528 lines (3.8%)
+* Shared Code: 26,397 lines (64.5%)
+* iOS Swift App: 5,925 lines (14.5%)
+* Other: 3,484 lines (8.5%)
+* CMP Android, iOS, Desktop: 2,431 lines (5.9%)
+* Server: 1,528 lines (3.7%)
 * Android Screenshot Tests: 1,179 lines (2.9%)
 
 ## Module Breakdown
-* `:presentation-feature`: 6,036 lines (14.8%)
-* `:iosAppSwiftUI.xcodeproj`: 5,673 lines (13.9%)
+* `:presentation-feature`: 6,036 lines (14.7%)
+* `:iosAppSwiftUI.xcodeproj`: 5,925 lines (14.5%)
 * `:viewmodel`: 4,936 lines (12.1%)
 * `:usecase`: 4,251 lines (10.4%)
-* `:data-network`: 2,429 lines (6.0%)
+* `:data-network`: 2,429 lines (5.9%)
 * `:domain`: 2,284 lines (5.6%)
 * `:compose-app`: 2,217 lines (5.4%)
 * `:presentation-core`: 2,095 lines (5.1%)
 * `:data`: 1,832 lines (4.5%)
-* `:buildSrc`: 1,780 lines (4.4%)
+* `:buildSrc`: 1,780 lines (4.3%)
 * `:server:app`: 1,342 lines (3.3%)
 * `:android-screenshot-tests`: 1,179 lines (2.9%)
 * `:data-local`: 1,059 lines (2.6%)
@@ -46,8 +46,8 @@ Total Lines of Code: 40692
 * `:iosAppComposeUI.xcodeproj`: 31 lines (0.1%)
 
 ## Language Breakdown
-* Kotlin (.kt): 34,815 lines (85.6%)
-* Swift (.swift): 5,877 lines (14.4%)
+* Kotlin (.kt): 34,815 lines (85.0%)
+* Swift (.swift): 6,129 lines (15.0%)
 
 ## Code Distribution
 
@@ -66,7 +66,7 @@ config:
 sankey-beta
 
 Codebase,Shared Code,26397
-Codebase,iOS Swift App,5673
+Codebase,iOS Swift App,5925
 Codebase,Other,3484
 Codebase,CMP Apps,2431
 Codebase,Server,1528
@@ -88,7 +88,7 @@ Shared Code,experimental:presentation-core,165
 Shared Code,compose-resources,70
 Shared Code,experimental:domain,43
 
-iOS Swift App,iosAppSwiftUI,5673
+iOS Swift App,iosAppSwiftUI,5925
 
 Other,buildSrc,1780
 Other,test-common,620
@@ -109,7 +109,7 @@ Server,server:domain,34
 Screenshot Tests,android-screenshot-tests,1179
 
 presentation-feature,Kotlin,6036
-iosAppSwiftUI,Swift,5673
+iosAppSwiftUI,Swift,5925
 viewmodel,Kotlin,4936
 usecase,Kotlin,4251
 data-network,Kotlin,2429
