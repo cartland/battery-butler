@@ -116,6 +116,7 @@ graph TD
     DataNetwork --> Domain
     DataNetwork --> Fixtures
 
+    ExperimentalComposeApp --> DataLocal
     ExperimentalComposeApp --> Domain
     ExperimentalComposeApp --> ExperimentalDataLocal
     ExperimentalComposeApp --> ExperimentalDomain
