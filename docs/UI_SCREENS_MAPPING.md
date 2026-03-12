@@ -48,6 +48,11 @@ The following table tracks specific feature gaps between the Compose Multiplatfo
 | Device Detail: mapped icons | Yes | Yes | ~~bb-rrs4.1~~ (PR #970) |
 | Event Detail: delete button | Yes | Yes | ~~bb-0km4~~ (PR #961) |
 | Add Device Type: icon picker | Yes | Yes | ~~bb-rrs4.3~~ (PR #978) |
+| Edit Device Type: icon picker | Yes | Yes | PR #986 |
+| Edit Device Type: battery quantity | Yes | Yes | PR #986 |
+| Add Device: loading indicator | Yes | Yes | PR #984 |
+| Event Detail: device navigation | Yes | Yes | PR #984 |
+| Settings: check for updates | Yes | Yes | PR #984 |
 | AI Chat | Split-screen overlay | Full-screen (toolbar) | Design decision (bb-ke1y closed) |
 | Nav animations | Yes | N/A | Platform-specific (iOS uses native UIKit transitions) |
 
@@ -78,12 +83,11 @@ The following table tracks specific feature gaps between the Compose Multiplatfo
 
 > **Resolved:**
 > - Add Device Type: icon picker, battery quantity, AI suggestion added (PR #978)
+> - Edit Device Type: icon picker and battery quantity controls (PR #986)
+> - Add Device: loading indicator during save (PR #984)
 >
 > **Remaining Gaps:**
-> - Add Device: no location field, no loading indicator during save
 > - Add Device Type: batch import deferred
-> - Edit Device: no delete confirmation dialog (deletes immediately)
-> - Edit Device Type: no icon picker or battery quantity controls
 
 ### 4. Details (Device Detail & Event Detail)
 - **Both:** Display read-only parameters and related lists (e.g., Device showing Battery History).
@@ -93,8 +97,8 @@ The following table tracks specific feature gaps between the Compose Multiplatfo
 > - Device Detail: mapped icons via SFSymbolMapper, location field, stat cards with battery age colors (PR #970)
 > - Event Detail: delete button (PR #961)
 >
-> **Remaining Gaps:**
-> - Event Detail: no Edit button or navigation to associated device
+> **Resolved:**
+> - Event Detail: Edit button (already implemented) and navigation to associated device (PR #984)
 
 ### 5. Authentication (Login)
 - **Compose:** Implements the `LoginScreen` through the shared Compose navigation graph to manage AuthState.
@@ -115,7 +119,7 @@ The following table tracks specific feature gaps between the Compose Multiplatfo
 
 ### 7. Settings
 - **Compose:** `SettingsScreen.kt` provides a full settings experience: network mode selector (Prod/Dev/Local/Mock/None), AI engine selector, sign-out button, account info, export data, check for updates, and dynamic app version from `BuildConfig`.
-- **SwiftUI:** `SettingsScreen.swift` currently displays only the app version string.
+- **SwiftUI:** `SettingsScreen.swift` provides full feature parity: account section, network mode selector, AI engine selector, export data, check for updates, and app version.
 
 > **Resolved Feature Gaps (PR #972):**
 > - Account section with user info and Sign Out
@@ -123,8 +127,8 @@ The following table tracks specific feature gaps between the Compose Multiplatfo
 > - AI engine selector
 > - Enhanced app version display
 >
-> **Remaining Gaps:**
-> - No check-for-updates link
+> **Resolved:**
+> - Check-for-updates link (PR #984)
 
 ## SKIE & ViewModel Wrapper Pattern
 
