@@ -10,12 +10,17 @@ final class EditDeviceTypeScreenTests: XCTestCase {
         state.isLoading = false
         state.name = "TV Remote"
         state.batteryType = "AAA"
+        state.selectedIcon = "settings_remote"
+        state.batteryQuantity = 2
         state.originalId = "t1"
 
         let view = EditDeviceTypeContentView(
             state: state,
             onUpdateName: { _ in },
             onUpdateBatteryType: { _ in },
+            onSelectIcon: { _ in },
+            onIncrementQuantity: {},
+            onDecrementQuantity: {},
             onSave: {},
             onDelete: {}
         )
@@ -35,6 +40,9 @@ final class EditDeviceTypeScreenTests: XCTestCase {
             state: state,
             onUpdateName: { _ in },
             onUpdateBatteryType: { _ in },
+            onSelectIcon: { _ in },
+            onIncrementQuantity: {},
+            onDecrementQuantity: {},
             onSave: {},
             onDelete: {}
         )
@@ -56,6 +64,9 @@ final class EditDeviceTypeScreenTests: XCTestCase {
             state: state,
             onUpdateName: { _ in },
             onUpdateBatteryType: { _ in },
+            onSelectIcon: { _ in },
+            onIncrementQuantity: {},
+            onDecrementQuantity: {},
             onSave: {},
             onDelete: {}
         )
