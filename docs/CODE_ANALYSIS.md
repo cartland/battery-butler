@@ -3,13 +3,13 @@
 # Code Analysis
 
 This document provides a breakdown of the codebase by application layer and module.
-Total Lines of Code: 41120
+Total Lines of Code: 41135
 
 ## Application Breakdown
 * Shared Code: 26,397 lines (64.2%)
 * iOS Swift App: 6,101 lines (14.8%)
 * Other: 3,484 lines (8.5%)
-* CMP Android, iOS, Desktop: 2,431 lines (5.9%)
+* CMP Android, iOS, Desktop: 2,446 lines (5.9%)
 * Server: 1,528 lines (3.7%)
 * Android Screenshot Tests: 1,179 lines (2.9%)
 
@@ -32,8 +32,8 @@ Total Lines of Code: 41120
 * `:e2e-tests`: 271 lines (0.7%)
 * `:experimental:data-local`: 260 lines (0.6%)
 * `:experimental:viewmodel`: 239 lines (0.6%)
+* `:experimental:compose-app`: 229 lines (0.6%)
 * `:presentation-model`: 218 lines (0.5%)
-* `:experimental:compose-app`: 214 lines (0.5%)
 * `:fixtures`: 209 lines (0.5%)
 * `:experimental:usecase`: 205 lines (0.5%)
 * `:ios-swift-di`: 182 lines (0.4%)
@@ -46,7 +46,7 @@ Total Lines of Code: 41120
 * `:iosAppComposeUI.xcodeproj`: 31 lines (0.1%)
 
 ## Language Breakdown
-* Kotlin (.kt): 34,815 lines (84.7%)
+* Kotlin (.kt): 34,830 lines (84.7%)
 * Swift (.swift): 6,305 lines (15.3%)
 
 ## Code Distribution
@@ -68,7 +68,7 @@ sankey-beta
 Codebase,Shared Code,26397
 Codebase,iOS Swift App,6101
 Codebase,Other,3484
-Codebase,CMP Apps,2431
+Codebase,CMP Apps,2446
 Codebase,Server,1528
 Codebase,Screenshot Tests,1179
 
@@ -100,7 +100,7 @@ Other,ExperimentalApp,173
 Other,iosAppComposeUI,31
 
 CMP Apps,compose-app,2217
-CMP Apps,experimental:compose-app,214
+CMP Apps,experimental:compose-app,229
 
 Server,server:app,1342
 Server,server:data,152
@@ -126,8 +126,8 @@ ai,Kotlin,493
 e2e-tests,Kotlin,271
 experimental:data-local,Kotlin,260
 experimental:viewmodel,Kotlin,239
+experimental:compose-app,Kotlin,229
 presentation-model,Kotlin,218
-experimental:compose-app,Kotlin,214
 fixtures,Kotlin,209
 experimental:usecase,Kotlin,205
 ios-swift-di,Kotlin,182
