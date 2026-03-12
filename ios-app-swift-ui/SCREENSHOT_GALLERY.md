@@ -2,7 +2,7 @@
 
 # iOS Screenshot Gallery
 
-Generated on 2026-03-11 03:23:50 UTC
+Generated on 2026-03-12 07:57:15 UTC
 
 ## Table of Contents
 
@@ -295,6 +295,12 @@ Generated on 2026-03-11 03:23:50 UTC
 | Light | Dark |
 |-------|------|
 | <img src="iosAppSwiftUITests/__Snapshots__/HomeScreenTests/testHomeContentView_Empty.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/HomeScreenTests/testHomeContentView_Empty.dark.png" width="300" /> |
+
+### testHomeContentView_Syncing
+
+| Light | Dark |
+|-------|------|
+| <img src="iosAppSwiftUITests/__Snapshots__/HomeScreenTests/testHomeContentView_Syncing.light.png" width="300" /> | <img src="iosAppSwiftUITests/__Snapshots__/HomeScreenTests/testHomeContentView_Syncing.dark.png" width="300" /> |
 
 ### testHomeContentView_WithDevices
 
