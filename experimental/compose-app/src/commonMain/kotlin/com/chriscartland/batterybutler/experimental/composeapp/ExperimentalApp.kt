@@ -17,6 +17,7 @@ import com.chriscartland.batterybutler.experimental.composeapp.util.Experimental
 import com.chriscartland.batterybutler.experimental.presentationcore.CounterContent
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 
+@Suppress("ViewModelInjection")
 @Composable
 fun ExperimentalApp(component: ExperimentalAppComponent) {
     BatteryButlerTheme {
