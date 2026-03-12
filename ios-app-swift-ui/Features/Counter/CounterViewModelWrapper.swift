@@ -2,8 +2,8 @@ import SwiftUI
 import shared
 
 class CounterViewModelWrapper: ObservableObject {
-    @Published var observeState: CounterState = CounterStateIdle()
-    @Published var getState: CounterState = CounterStateIdle()
+    @Published var observeState: CounterState = CounterState.Idle.shared
+    @Published var getState: CounterState = CounterState.Idle.shared
 
     private let viewModel: CounterViewModel
     private let viewModelStore = KmpViewModelStore()
