@@ -48,9 +48,14 @@ if echo "$STRIPPED" | grep -qE '\bgit\s+push\b'; then
     fi
   fi
 
-  # 3. Block force push
+  # 3. Block force push to main/master; allow --force-with-lease on feature branches
   if echo "$STRIPPED" | grep -qE '\bgit\s+push\b.*(-f\b|--force\b|--force-with-lease\b)'; then
-    deny "BLOCKED: Force push is destructive. Use normal push."
+    if echo "$STRIPPED" | grep -qE '\bgit\s+push\b.*\b(main|master)\b'; then
+      deny "BLOCKED: Force push to main/master is never allowed."
+    fi
+    if echo "$STRIPPED" | grep -qE '\bgit\s+push\b.*--force\b' && ! echo "$STRIPPED" | grep -qF -- '--force-with-lease'; then
+      deny "BLOCKED: Use --force-with-lease instead of --force for safety."
+    fi
   fi
 
   # 1. Block push without validation (skip for docs/beads-only changes)
