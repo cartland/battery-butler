@@ -1,5 +1,6 @@
 package com.chriscartland.batterybutler.usecase
 
+import com.chriscartland.batterybutler.domain.model.getOrThrow
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
 import com.chriscartland.batterybutler.testcommon.TestDevices
 import kotlinx.coroutines.test.runTest
@@ -19,7 +20,7 @@ class FindOrCreateDeviceUseCaseTest {
                 listOf(TestDevices.createDevice(id = "device-1", name = "Smoke Detector")),
             )
 
-            val result = useCase("Smoke Detector")
+            val result = useCase("Smoke Detector").getOrThrow()
 
             assertEquals("Smoke Detector", result.name)
             assertEquals(1, repo.devices.size)
@@ -48,7 +49,7 @@ class FindOrCreateDeviceUseCaseTest {
                 listOf(TestDevices.createDeviceType(id = "type-sensor", name = "Sensor")),
             )
 
-            val result = useCase("My Sensor", "Sensor")
+            val result = useCase("My Sensor", "Sensor").getOrThrow()
 
             assertEquals("type-sensor", result.typeId)
         }
@@ -60,7 +61,7 @@ class FindOrCreateDeviceUseCaseTest {
             val findOrCreateType = FindOrCreateDeviceTypeUseCase(repo)
             val useCase = FindOrCreateDeviceUseCase(repo, findOrCreateType)
 
-            val result = useCase("Device Without Type", null)
+            val result = useCase("Device Without Type", null).getOrThrow()
 
             assertEquals("default_type", result.typeId)
         }

@@ -17,7 +17,8 @@ class SendChatMessageUseCaseTest {
     ): Pair<SendChatMessageUseCase, FakeAiEngine> {
         val findOrCreateType = FindOrCreateDeviceTypeUseCase(repo)
         val findOrCreateDevice = FindOrCreateDeviceUseCase(repo, findOrCreateType)
-        val toolHandler = DeviceToolHandler(repo, findOrCreateType, findOrCreateDevice)
+        val updateLastReplaced = UpdateDeviceLastReplacedUseCase(repo)
+        val toolHandler = DeviceToolHandler(repo, findOrCreateType, findOrCreateDevice, updateLastReplaced)
         val buildContext = BuildAiContextUseCase(repo)
         val useCase = SendChatMessageUseCase(engine, toolHandler, buildContext)
         return useCase to engine
