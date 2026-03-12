@@ -35,6 +35,9 @@ echo "--- 4. Tests (Unit & Instrumented) ---"
 echo "--- 5. Build Android App ---"
 ./gradlew :compose-app:assembleDebug
 
+echo "--- 5b. Build Experimental App ---"
+./gradlew :experimental:compose-app:assembleDebug
+
 echo "--- 6. Build Desktop App ---"
 ./gradlew :compose-app:packageDistributionForCurrentOS
 
@@ -51,7 +54,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 
     # Compile iOS Kotlin modules (catches import/dependency errors early)
     echo "Compiling iOS Kotlin modules..."
-    ./gradlew :compose-app:compileKotlinIosSimulatorArm64 :ios-swift-di:compileKotlinIosSimulatorArm64
+    ./gradlew :compose-app:compileKotlinIosSimulatorArm64 :ios-swift-di:compileKotlinIosSimulatorArm64 :experimental:compose-app:compileKotlinIosSimulatorArm64
 
     # Check for Xcode and xcodebuild
     if command -v xcodebuild >/dev/null 2>&1; then
@@ -79,6 +82,17 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
             CONFIGURATION_BUILD_DIR=build/ios-swiftui/
+
+        echo "Building Experimental iOS App..."
+        xcodebuild -project experimental/ios-app/ExperimentalApp.xcodeproj \
+            -configuration Debug \
+            -scheme ExperimentalApp \
+            -destination 'generic/platform=iOS Simulator' \
+            clean build \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            CONFIGURATION_BUILD_DIR=build/ios-experimental/
 
         echo "Building iOS SwiftUI Snapshot Tests..."
         xcodebuild build-for-testing -project ios-app-swift-ui/iosAppSwiftUI.xcodeproj \

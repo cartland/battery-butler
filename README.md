@@ -35,6 +35,7 @@ graph TD
         IosSwiftDi[":ios-swift-di"]
         IosAppComposeUi.xcodeproj["ios-app-compose-ui.xcodeproj"]
         IosAppSwiftUi.xcodeproj["ios-app-swift-ui.xcodeproj"]
+        IosApp.xcodeproj["ios-app.xcodeproj"]
     end
 
     subgraph "Compose Apps"
@@ -78,6 +79,7 @@ graph TD
     end
 
     subgraph "Others"
+        ExperimentalComposeApp[":experimental:compose-app"]
         ExperimentalDataLocal[":experimental:data-local"]
         ExperimentalDomain[":experimental:domain"]
         ExperimentalPresentationCore[":experimental:presentation-core"]
@@ -113,6 +115,14 @@ graph TD
 
     DataNetwork --> Domain
     DataNetwork --> Fixtures
+
+    ExperimentalComposeApp --> Domain
+    ExperimentalComposeApp --> ExperimentalDataLocal
+    ExperimentalComposeApp --> ExperimentalDomain
+    ExperimentalComposeApp --> ExperimentalPresentationCore
+    ExperimentalComposeApp --> ExperimentalUsecase
+    ExperimentalComposeApp --> ExperimentalViewmodel
+    ExperimentalComposeApp --> PresentationCore
 
     ExperimentalDataLocal --> Domain
     ExperimentalDataLocal --> ExperimentalDomain
