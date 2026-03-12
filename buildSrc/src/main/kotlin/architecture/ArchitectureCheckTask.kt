@@ -40,6 +40,7 @@ open class ArchitectureCheckTask : DefaultTask() {
         ":experimental:usecase" to listOf(":experimental:domain", ":domain"),
         ":experimental:viewmodel" to listOf(":experimental:usecase", ":experimental:domain", ":domain"),
         ":experimental:presentation-core" to listOf(":experimental:viewmodel", ":experimental:domain", ":presentation-core"),
+        ":experimental:compose-app" to listOf("*"), // App wires everything
         ":git" to listOf(),
         ":scripts" to listOf(),
     )
