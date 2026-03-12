@@ -136,6 +136,9 @@ graph TD
 
     IosSwiftDi --> Ai
     IosSwiftDi --> Data
+    IosSwiftDi --> ExperimentalDataLocal
+    IosSwiftDi --> ExperimentalUsecase
+    IosSwiftDi --> ExperimentalViewmodel
     IosSwiftDi --> PresentationModel
     IosSwiftDi --> Usecase
     IosSwiftDi --> Viewmodel
