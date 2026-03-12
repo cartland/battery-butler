@@ -87,6 +87,7 @@ The following table tracks specific feature gaps between the Compose Multiplatfo
 > - Add Device: loading indicator during save (PR #984)
 >
 > **Remaining Gaps:**
+> - Add Device: no location field
 > - Add Device Type: batch import deferred
 
 ### 4. Details (Device Detail & Event Detail)

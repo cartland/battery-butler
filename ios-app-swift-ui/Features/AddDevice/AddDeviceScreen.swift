@@ -19,6 +19,7 @@ struct AddDeviceScreen: View {
             location: $location,
             selectedTypeId: $selectedTypeId,
             deviceTypes: wrapper.deviceTypes,
+            isLoading: wrapper.isLoading,
             onAdd: {
                 wrapper.addDevice(name: name, location: location, typeId: selectedTypeId)
                 dismiss()
@@ -35,9 +36,10 @@ struct AddDeviceContentView: View {
     @Binding var location: String
     @Binding var selectedTypeId: String
     let deviceTypes: [DeviceType]
+    let isLoading: Bool
     let onAdd: () -> Void
     let onCancel: () -> Void
-    
+
     var body: some View {
         // NavigationStack used for proper toolbar support in sheets
         NavigationStack {
@@ -56,7 +58,13 @@ struct AddDeviceContentView: View {
 
                 Section {
                     Button("add_device.button.add", action: onAdd)
-                    .disabled(name.isEmpty || selectedTypeId.isEmpty)
+                        .disabled(name.isEmpty || selectedTypeId.isEmpty || isLoading)
+                }
+            }
+            .disabled(isLoading)
+            .overlay {
+                if isLoading {
+                    ProgressView()
                 }
             }
             .navigationTitle("add_device.title")

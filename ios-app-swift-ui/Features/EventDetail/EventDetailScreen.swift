@@ -15,7 +15,7 @@ struct EventDetailScreen: View {
     }
 
     var body: some View {
-        EventDetailContentView(state: wrapper.state)
+        EventDetailContentView(state: wrapper.state, component: component)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("common.edit") {
@@ -31,6 +31,7 @@ struct EventDetailScreen: View {
 
 struct EventDetailContentView: View {
     let state: EventDetailUiState?
+    var component: NativeComponent?
 
     var body: some View {
         Group {
@@ -66,11 +67,24 @@ struct EventDetailContentView: View {
 
                     if let device = success.device {
                         Section(header: Text("event_detail.section.device")) {
-                            HStack {
-                                Text("event_detail.field.name")
-                                    .foregroundStyle(Color.butlerOnSurfaceVariant)
-                                Spacer()
-                                Text(device.name)
+                            if let component = component {
+                                NavigationLink {
+                                    DeviceDetailScreen(component: component, deviceId: device.id)
+                                } label: {
+                                    HStack {
+                                        Text("event_detail.field.name")
+                                            .foregroundStyle(Color.butlerOnSurfaceVariant)
+                                        Spacer()
+                                        Text(device.name)
+                                    }
+                                }
+                            } else {
+                                HStack {
+                                    Text("event_detail.field.name")
+                                        .foregroundStyle(Color.butlerOnSurfaceVariant)
+                                    Spacer()
+                                    Text(device.name)
+                                }
                             }
 
                             HStack {

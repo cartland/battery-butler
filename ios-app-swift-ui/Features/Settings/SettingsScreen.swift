@@ -176,6 +176,25 @@ struct SettingsContentView: View {
                 Text("settings.section.data")
             }
 
+            // Check for Updates section
+            Section {
+                Link(destination: URL(string: "https://apps.apple.com/app/battery-butler/id0000000000")!) {
+                    HStack(spacing: ButlerSpacing.medium) {
+                        Image(systemName: "arrow.up.circle")
+                            .foregroundStyle(Color.butlerPrimary)
+                        VStack(alignment: .leading, spacing: ButlerSpacing.extraSmall) {
+                            Text("settings.button.check_updates")
+                                .foregroundStyle(Color.butlerOnSurface)
+                            Text("settings.check_updates.subtitle")
+                                .font(.caption)
+                                .foregroundStyle(Color.butlerOnSurfaceVariant)
+                        }
+                    }
+                }
+            } header: {
+                Text("settings.section.updates")
+            }
+
             // App Version section
             Section {
                 HStack(spacing: ButlerSpacing.medium) {
