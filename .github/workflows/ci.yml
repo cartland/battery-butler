@@ -207,6 +207,9 @@ jobs:
         run: |
           cd ios-app-swift-ui
           xcodebuild -project iosAppSwiftUI.xcodeproj -configuration Debug -scheme iosAppSwiftUI -destination 'generic/platform=iOS Simulator' clean build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+      - name: Build Experimental iOS App
+        run: |
+          xcodebuild -project experimental/ios-app/ExperimentalApp.xcodeproj -configuration Debug -scheme ExperimentalApp -destination 'generic/platform=iOS Simulator' clean build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO CONFIGURATION_BUILD_DIR=build/ios-experimental/
       - name: Build iOS Snapshot Tests
         run: |
           cd ios-app-swift-ui
@@ -249,6 +252,8 @@ jobs:
       - uses: ./.github/actions/setup-java-gradle
       - name: Build Android App
         run: ./gradlew :compose-app:assembleDebug
+      - name: Build Experimental Android App
+        run: ./gradlew :experimental:compose-app:assembleDebug
       - name: Upload Android APKs and AABs
         uses: actions/upload-artifact@v7
         with:

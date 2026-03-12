@@ -18,20 +18,22 @@ import kotlin.test.fail
  * - Inner/anonymous classes (names containing '$')
  */
 class ViewModelTestConventionTest {
+    private val packages = listOf(
+        "com.chriscartland.batterybutler.viewmodel",
+        "com.chriscartland.batterybutler.experimental.viewmodel",
+    )
+
     @Test
     fun `every ViewModel class has a corresponding test class`() {
-        val packages = listOf(
-            "com.chriscartland.batterybutler.viewmodel",
-            "com.chriscartland.batterybutler.experimental.viewmodel",
-        )
-        val viewModelClasses = packages
-            .flatMap { discoverClasses(it, "ViewModel") }
-            .filterNot { klass ->
-                val name = klass.simpleName ?: ""
-                name.endsWith("Factory") ||
-                    name == "KmpViewModelStore" ||
-                    name == "ViewModelTestConventionTest"
-            }
+        val viewModelClasses = packages.flatMap { pkg ->
+            discoverClasses(pkg, "ViewModel")
+                .filterNot { klass ->
+                    val name = klass.simpleName ?: ""
+                    name.endsWith("Factory") ||
+                        name == "KmpViewModelStore" ||
+                        name == "ViewModelTestConventionTest"
+                }
+        }
 
         assertTrue(
             viewModelClasses.isNotEmpty(),
@@ -40,8 +42,9 @@ class ViewModelTestConventionTest {
         )
 
         val testClassNames = packages
-            .flatMap { discoverClasses(it, "ViewModelTest") }
-            .map { it.simpleName ?: "" }
+            .flatMap { pkg ->
+                discoverClasses(pkg, "ViewModelTest")
+            }.map { it.simpleName ?: "" }
             .toSet()
 
         val violations = viewModelClasses.filterNot { klass ->

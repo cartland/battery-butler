@@ -15,12 +15,13 @@ import kotlin.test.fail
  * Both suspend and non-suspend invoke functions satisfy the check.
  */
 class UseCaseConventionTest {
+    private val packages = listOf(
+        "com.chriscartland.batterybutler.usecase",
+        "com.chriscartland.batterybutler.experimental.usecase",
+    )
+
     @Test
     fun `every UseCase class has an operator invoke function`() {
-        val packages = listOf(
-            "com.chriscartland.batterybutler.usecase",
-            "com.chriscartland.batterybutler.experimental.usecase",
-        )
         val useCaseClasses = packages.flatMap { discoverUseCaseClasses(it) }
 
         assertTrue(
