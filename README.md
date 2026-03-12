@@ -216,7 +216,7 @@ sankey-beta
 Codebase,Shared Code,26397
 Codebase,iOS Swift App,6101
 Codebase,Other,3484
-Codebase,CMP Apps,2431
+Codebase,CMP Apps,2446
 Codebase,Server,1528
 Codebase,Screenshot Tests,1179
 
@@ -248,7 +248,7 @@ Other,ExperimentalApp,173
 Other,iosAppComposeUI,31
 
 CMP Apps,compose-app,2217
-CMP Apps,experimental:compose-app,214
+CMP Apps,experimental:compose-app,229
 
 Server,server:app,1342
 Server,server:data,152
@@ -274,8 +274,8 @@ ai,Kotlin,493
 e2e-tests,Kotlin,271
 experimental:data-local,Kotlin,260
 experimental:viewmodel,Kotlin,239
+experimental:compose-app,Kotlin,229
 presentation-model,Kotlin,218
-experimental:compose-app,Kotlin,214
 fixtures,Kotlin,209
 experimental:usecase,Kotlin,205
 ios-swift-di,Kotlin,182
