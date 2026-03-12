@@ -28,7 +28,7 @@ struct MainScreen: View {
 
             // History Tab
             NavigationStack {
-                HistoryListScreen(viewModel: component.historyListViewModel)
+                HistoryListScreen(component: component)
             }
             .tabItem {
                 Label(MainTab.history.titleKey, systemImage: MainTab.history.iconName)

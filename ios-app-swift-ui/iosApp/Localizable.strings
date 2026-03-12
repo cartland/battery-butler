@@ -163,10 +163,18 @@
 "event_detail.field.type" = "Type";
 "event_detail.not_found" = "Event Not Found";
 
+// MARK: - Home Screen (sync)
+
+"home.syncing" = "Syncing...";
+
 // MARK: - History Screen
 
 "history.title" = "History";
 "history.accessibility.loading" = "Loading history";
+"history.add_event" = "Add a battery event";
+"history.empty.title" = "No History";
+"history.empty.message" = "Battery replacement events will appear here.";
+"history.error.title" = "Something went wrong";
 
 // MARK: - AI Chat Screen
 

@@ -55,46 +55,73 @@ struct HomeContentView<DeviceDestination: View, SettingsDestination: View, AiDes
     @State private var showSortMenu = false
     @State private var showGroupMenu = false
 
-    var body: some View {
-        List {
-            // Sort/Group filter row
-            if !state.groupedDevices.isEmpty {
-                Section {
-                    HomeFilterRow(
-                        sortOption: state.sortOption,
-                        groupOption: state.groupOption,
-                        isSortAscending: state.isSortAscending,
-                        isGroupAscending: state.isGroupAscending,
-                        onSortOptionSelected: onSortOptionSelected,
-                        onGroupOptionSelected: onGroupOptionSelected,
-                        onSortDirectionToggle: onSortDirectionToggle,
-                        onGroupDirectionToggle: onGroupDirectionToggle
-                    )
-                }
-                .listRowInsets(EdgeInsets(
-                    top: ButlerSpacing.small,
-                    leading: ButlerSpacing.standard,
-                    bottom: ButlerSpacing.small,
-                    trailing: ButlerSpacing.standard
-                ))
-                .listRowBackground(Color.clear)
-            }
+    private var isSyncing: Bool {
+        state.syncStatus is SyncStatusSyncing
+    }
 
-            if state.groupedDevices.isEmpty {
-                Section(header: Text("home.devices_section")) {
-                    Text("home.no_devices")
-                        .foregroundColor(.secondary)
+    var body: some View {
+        ZStack(alignment: .top) {
+            List {
+                // Sort/Group filter row
+                if !state.groupedDevices.isEmpty {
+                    Section {
+                        HomeFilterRow(
+                            sortOption: state.sortOption,
+                            groupOption: state.groupOption,
+                            isSortAscending: state.isSortAscending,
+                            isGroupAscending: state.isGroupAscending,
+                            onSortOptionSelected: onSortOptionSelected,
+                            onGroupOptionSelected: onGroupOptionSelected,
+                            onSortDirectionToggle: onSortDirectionToggle,
+                            onGroupDirectionToggle: onGroupDirectionToggle
+                        )
+                    }
+                    .listRowInsets(EdgeInsets(
+                        top: ButlerSpacing.small,
+                        leading: ButlerSpacing.standard,
+                        bottom: ButlerSpacing.small,
+                        trailing: ButlerSpacing.standard
+                    ))
+                    .listRowBackground(Color.clear)
                 }
-            } else {
-                ForEach(state.groupedDevices.keys.sorted(), id: \.self) { key in
-                    Section(header: Text(key)) {
-                        ForEach(state.groupedDevices[key] ?? [], id: \.id) { device in
-                            NavigationLink(destination: deviceDestination(device.id)) {
-                                DeviceRow(device: device, deviceType: state.deviceTypes[device.typeId])
+
+                if state.groupedDevices.isEmpty {
+                    Section(header: Text("home.devices_section")) {
+                        Text("home.no_devices")
+                            .foregroundColor(.secondary)
+                    }
+                } else {
+                    ForEach(state.groupedDevices.keys.sorted(), id: \.self) { key in
+                        Section(header: Text(key)) {
+                            ForEach(state.groupedDevices[key] ?? [], id: \.id) { device in
+                                NavigationLink(destination: deviceDestination(device.id)) {
+                                    DeviceRow(device: device, deviceType: state.deviceTypes[device.typeId])
+                                }
                             }
                         }
                     }
                 }
+            }
+
+            // Sync status indicator overlay
+            if isSyncing {
+                HStack(spacing: ButlerSpacing.small) {
+                    ProgressView()
+                        .scaleEffect(0.7)
+                    Text("home.syncing")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundStyle(Color.butlerOnSurfaceVariant)
+                }
+                .padding(.horizontal, ButlerSpacing.medium)
+                .padding(.vertical, ButlerSpacing.small)
+                .background(Color.butlerSurfaceVariant.opacity(0.9))
+                .clipShape(Capsule())
+                .shadow(radius: 4)
+                .padding(.top, ButlerSpacing.small)
+                .transition(.opacity)
+                .animation(.easeInOut(duration: 0.3), value: isSyncing)
+                .accessibilityLabel("home.syncing")
             }
         }
         .navigationTitle("home.title")
