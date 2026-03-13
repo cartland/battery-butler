@@ -1,0 +1,94 @@
+package com.chriscartland.batterybutler.viewmodel.eventdetail
+
+import com.chriscartland.batterybutler.domain.model.DeviceType
+import com.chriscartland.batterybutler.presentationmodel.eventdetail.EditBatteryEventUiState
+import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
+import com.chriscartland.batterybutler.testcommon.TestDevices
+import com.chriscartland.batterybutler.usecase.DeleteBatteryEventUseCase
+import com.chriscartland.batterybutler.usecase.GetDeviceDetailUseCase
+import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
+import com.chriscartland.batterybutler.usecase.GetEventDetailUseCase
+import com.chriscartland.batterybutler.usecase.UpdateBatteryEventUseCase
+import com.chriscartland.batterybutler.usecase.UpdateDeviceLastReplacedUseCase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertIs
+
+@OptIn(ExperimentalCoroutinesApi::class)
+class EditBatteryEventViewModelTest {
+    private val testDispatcher = StandardTestDispatcher()
+
+    @BeforeTest
+    fun setUp() {
+        Dispatchers.setMain(testDispatcher)
+    }
+
+    @AfterTest
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
+
+    @Test
+    fun `initial state is Loading`() =
+        runTest {
+            val repo = FakeDeviceRepository()
+            val viewModel = createViewModel(repo, "event-1")
+
+            assertEquals(EditBatteryEventUiState.Loading, viewModel.uiState.value)
+        }
+
+    @Test
+    fun `event not found emits NotFound state`() =
+        runTest {
+            val repo = FakeDeviceRepository()
+
+            val viewModel = createViewModel(repo, "nonexistent-event")
+
+            val state = viewModel.uiState.first { it is EditBatteryEventUiState.NotFound }
+            assertIs<EditBatteryEventUiState.NotFound>(state)
+        }
+
+    @Test
+    fun `event found with device and type emits Success`() =
+        runTest {
+            val repo = FakeDeviceRepository()
+            val device = TestDevices.createDevice(id = "device-1", name = "Smoke Detector", typeId = "type-1")
+            val type = DeviceType(id = "type-1", name = "Smoke Detector Type", batteryType = "9V")
+            val event = TestDevices.createBatteryEvent(id = "event-1", deviceId = "device-1", batteryType = "9V")
+            repo.setDevices(listOf(device))
+            repo.setDeviceTypes(listOf(type))
+            repo.setEvents(listOf(event))
+
+            val viewModel = createViewModel(repo, "event-1")
+
+            val state = viewModel.uiState.first { it is EditBatteryEventUiState.Success }
+            assertIs<EditBatteryEventUiState.Success>(state)
+            assertEquals("event-1", state.event.id)
+            assertEquals("Smoke Detector", state.device?.name)
+            assertEquals("Smoke Detector Type", state.deviceType?.name)
+        }
+
+    private fun createViewModel(
+        repo: FakeDeviceRepository,
+        eventId: String,
+    ): EditBatteryEventViewModel {
+        val updateDeviceLastReplacedUseCase = UpdateDeviceLastReplacedUseCase(repo)
+        return EditBatteryEventViewModel(
+            eventId = eventId,
+            getEventDetailUseCase = GetEventDetailUseCase(repo),
+            getDeviceDetailUseCase = GetDeviceDetailUseCase(repo),
+            getDeviceTypesUseCase = GetDeviceTypesUseCase(repo),
+            updateBatteryEventUseCase = UpdateBatteryEventUseCase(repo, updateDeviceLastReplacedUseCase),
+            deleteBatteryEventUseCase = DeleteBatteryEventUseCase(repo, updateDeviceLastReplacedUseCase),
+        )
+    }
+}
