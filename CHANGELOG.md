@@ -31,6 +31,12 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ---
 
+## 2026-03-12
+
+### Features
+
+- **Icon color roles**: Activated per-category icon color system ([#1011](https://github.com/cartland/battery-butler/pull/1011)) — Device icons now display in semantic colors by category (Primary/sage for home, Secondary/walnut for tools, Tertiary/steel-blue for electronics, Error/red for safety, Surface/neutral for other) instead of all using Primary. Data-only change in `DeviceIconMapper.getIconColorRole()`.
+
 ## 2026-03-09
 
 ### Fixes
