@@ -42,10 +42,13 @@ fun ButlerListItemCard(
     trailing: (@Composable () -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    val borderColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+    val borderColor = MaterialTheme.colorScheme.outlineVariant
     val shape = MaterialTheme.shapes.medium
     Card(
         colors = colors,
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 1.dp,
+        ),
         modifier = modifier
             .fillMaxWidth()
             .border(1.dp, borderColor, shape)
