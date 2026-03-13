@@ -207,6 +207,8 @@ jobs:
         run: |
           cd ios-app-swift-ui
           xcodebuild -project iosAppSwiftUI.xcodeproj -configuration Debug -scheme iosAppSwiftUI -destination 'generic/platform=iOS Simulator' clean build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+      - name: Build Experimental KMP Framework
+        run: ./gradlew :experimental:compose-app:linkDebugFrameworkIosSimulatorArm64
       - name: Build Experimental iOS App
         run: |
           xcodebuild -project experimental/ios-app/ExperimentalApp.xcodeproj -configuration Debug -scheme ExperimentalApp -destination 'generic/platform=iOS Simulator' clean build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO CONFIGURATION_BUILD_DIR=build/ios-experimental/
