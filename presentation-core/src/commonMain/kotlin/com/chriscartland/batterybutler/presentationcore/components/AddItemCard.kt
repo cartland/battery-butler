@@ -21,12 +21,15 @@ fun AddItemCard(
         onClick = onClick,
         modifier = modifier,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary,
         ),
         leading = {
             ButlerIconBox(
                 icon = Icons.Default.Add,
                 contentDescription = text,
+                containerColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f),
+                contentColor = MaterialTheme.colorScheme.onPrimary,
             )
         },
     ) {
@@ -34,7 +37,7 @@ fun AddItemCard(
             text = text,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
+            color = MaterialTheme.colorScheme.onPrimary,
         )
     }
 }

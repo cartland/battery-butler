@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BatteryFull
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -70,14 +68,7 @@ fun DeviceListItem(
         }
     }
 
-    val daysSinceBatteryChange = when {
-        daysInt == null -> "N/A"
-        daysInt == 1 -> "1 day"
-        else -> "$daysInt days"
-    }
-
     val ageColor = batteryAgeColor(daysInt)
-    val ageFontWeight = if (daysInt != null && daysInt >= 365) FontWeight.Bold else null
 
     ButlerListItemCard(
         onClick = onClick,
@@ -94,19 +85,22 @@ fun DeviceListItem(
         trailing = {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.width(60.dp),
+                modifier = Modifier.width(64.dp),
             ) {
-                Icon(
-                    imageVector = Icons.Default.BatteryFull,
-                    contentDescription = "Battery Age",
-                    tint = ageColor,
-                    modifier = Modifier.size(IconSize.Medium),
+                Text(
+                    text = daysInt?.toString() ?: "—",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = ageColor,
+                    fontWeight = if (daysInt != null) FontWeight.Bold else null,
                 )
                 Text(
-                    text = daysSinceBatteryChange,
+                    text = when {
+                        daysInt == null -> ""
+                        daysInt == 1 -> "day"
+                        else -> "days"
+                    },
                     style = MaterialTheme.typography.labelSmall,
                     color = ageColor,
-                    fontWeight = ageFontWeight,
                 )
             }
         },
