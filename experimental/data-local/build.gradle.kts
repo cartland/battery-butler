@@ -37,6 +37,9 @@ kotlin {
         val desktopTest by getting {
             dependencies {
                 implementation(kotlin("reflect"))
+                implementation(libs.kotlin.test)
+                implementation(libs.kotlinx.coroutines.test)
+                implementation(libs.androidx.datastore.preferences.core)
             }
         }
     }
