@@ -126,7 +126,7 @@ Icon sizes live in `presentation-core/.../theme/IconSize.kt`.
 
 Custom app colors beyond Material3 live in `ButlerColors` (data class) provided via `LocalButlerColors` composition local. Access with `LocalButlerColors.current.batteryWarning`. New custom colors should be added to `ButlerColors`, provided in `BatteryButlerTheme`, and defined in `Color.kt`.
 
-Icon colors use the **`IconColorRole` enum** (`presentation-core/.../theme/IconColorRole.kt`) — all device icons use **Primary (sage green)**. `DeviceIconMapper.getIconColorRole(iconName)` returns `IconColorRole.Primary` for all inputs. `DeviceIconMapperTest` (in `presentation-core/src/commonTest/`) guards against regression to per-category colors. `DeviceIconMapper.getResolvedIconAccent(iconName)` returns the resolved `(containerColor, contentColor)` pair. `IconAccent.kt` has been deleted — do not recreate it.
+Icon colors use the **`IconColorRole` enum** (`presentation-core/.../theme/IconColorRole.kt`) with per-category color assignments. `DeviceIconMapper.getIconColorRole(iconName)` maps icons to roles: **Primary** (home/shapes), **Secondary** (tools), **Tertiary** (electronics), **Error** (safety), **Surface** (other). `DeviceIconMapperTest` (in `presentation-core/src/commonTest/`) verifies per-category assignments and ensures all available icons have explicit mappings. `DeviceIconMapper.getResolvedIconAccent(iconName)` returns the resolved `(containerColor, contentColor)` pair. `IconAccent.kt` has been deleted — do not recreate it.
 
 **Standard dropdown component**: Use `ButlerDropdownMenu` (`presentation-core/.../components/ButlerDropdownMenu.kt`) instead of `DropdownMenu` directly. Note: CMP 1.10.0 `DropdownMenu` does NOT support `enter`/`exit` animation params (Jetpack Compose only).
 
