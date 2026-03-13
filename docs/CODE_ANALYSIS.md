@@ -3,29 +3,29 @@
 # Code Analysis
 
 This document provides a breakdown of the codebase by application layer and module.
-Total Lines of Code: 41266
+Total Lines of Code: 41463
 
 ## Application Breakdown
-* Shared Code: 26,495 lines (64.2%)
-* iOS Swift App: 6,101 lines (14.8%)
+* Shared Code: 26,692 lines (64.4%)
+* iOS Swift App: 6,101 lines (14.7%)
 * Other: 3,505 lines (8.5%)
-* CMP Android, iOS, Desktop: 2,458 lines (6.0%)
+* CMP Android, iOS, Desktop: 2,458 lines (5.9%)
 * Server: 1,528 lines (3.7%)
-* Android Screenshot Tests: 1,179 lines (2.9%)
+* Android Screenshot Tests: 1,179 lines (2.8%)
 
 ## Module Breakdown
-* `:iosAppSwiftUI.xcodeproj`: 6,101 lines (14.8%)
+* `:iosAppSwiftUI.xcodeproj`: 6,101 lines (14.7%)
 * `:presentation-feature`: 6,036 lines (14.6%)
-* `:viewmodel`: 4,946 lines (12.0%)
-* `:usecase`: 4,257 lines (10.3%)
+* `:viewmodel`: 5,139 lines (12.4%)
+* `:usecase`: 4,261 lines (10.3%)
 * `:data-network`: 2,429 lines (5.9%)
 * `:domain`: 2,284 lines (5.5%)
-* `:compose-app`: 2,217 lines (5.4%)
+* `:compose-app`: 2,217 lines (5.3%)
 * `:presentation-core`: 2,095 lines (5.1%)
 * `:data`: 1,832 lines (4.4%)
-* `:buildSrc`: 1,799 lines (4.4%)
-* `:server:app`: 1,342 lines (3.3%)
-* `:android-screenshot-tests`: 1,179 lines (2.9%)
+* `:buildSrc`: 1,799 lines (4.3%)
+* `:server:app`: 1,342 lines (3.2%)
+* `:android-screenshot-tests`: 1,179 lines (2.8%)
 * `:data-local`: 1,059 lines (2.6%)
 * `:test-common`: 620 lines (1.5%)
 * `:ai`: 493 lines (1.2%)
@@ -46,8 +46,8 @@ Total Lines of Code: 41266
 * `:iosAppComposeUI.xcodeproj`: 31 lines (0.1%)
 
 ## Language Breakdown
-* Kotlin (.kt): 34,959 lines (84.7%)
-* Swift (.swift): 6,307 lines (15.3%)
+* Kotlin (.kt): 35,156 lines (84.8%)
+* Swift (.swift): 6,307 lines (15.2%)
 
 ## Code Distribution
 
@@ -65,7 +65,7 @@ config:
 %% GENERATED FILE - DO NOT EDIT
 sankey-beta
 
-Codebase,Shared Code,26495
+Codebase,Shared Code,26692
 Codebase,iOS Swift App,6101
 Codebase,Other,3505
 Codebase,CMP Apps,2458
@@ -73,8 +73,8 @@ Codebase,Server,1528
 Codebase,Screenshot Tests,1179
 
 Shared Code,presentation-feature,6036
-Shared Code,viewmodel,4946
-Shared Code,usecase,4257
+Shared Code,viewmodel,5139
+Shared Code,usecase,4261
 Shared Code,data-network,2429
 Shared Code,domain,2284
 Shared Code,presentation-core,2095
@@ -110,8 +110,8 @@ Screenshot Tests,android-screenshot-tests,1179
 
 iosAppSwiftUI,Swift,6101
 presentation-feature,Kotlin,6036
-viewmodel,Kotlin,4946
-usecase,Kotlin,4257
+viewmodel,Kotlin,5139
+usecase,Kotlin,4261
 data-network,Kotlin,2429
 domain,Kotlin,2284
 compose-app,Kotlin,2217
