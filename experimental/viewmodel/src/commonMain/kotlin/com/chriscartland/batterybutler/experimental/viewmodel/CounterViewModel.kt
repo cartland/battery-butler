@@ -5,68 +5,84 @@ import androidx.lifecycle.viewModelScope
 import com.chriscartland.batterybutler.domain.model.DispatcherProvider
 import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.experimental.domain.model.CounterState
+import com.chriscartland.batterybutler.experimental.domain.service.AppCounterService
 import com.chriscartland.batterybutler.experimental.usecase.GetCounterUseCase
 import com.chriscartland.batterybutler.experimental.usecase.ObserveCounterUseCase
-import com.chriscartland.batterybutler.experimental.usecase.StartCounterUseCase
+import com.chriscartland.batterybutler.experimental.usecase.RunCounterUseCase
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 
 @Inject
 class CounterViewModel(
-    private val startCounterUseCase: StartCounterUseCase,
-    private val getCounterUseCase: GetCounterUseCase,
+    private val runCounterUseCase: RunCounterUseCase,
     private val observeCounterUseCase: ObserveCounterUseCase,
+    private val getCounterUseCase: GetCounterUseCase,
+    private val appCounterService: AppCounterService,
     private val dispatcherProvider: DispatcherProvider,
 ) : ViewModel() {
+    private val _counterRunning = MutableStateFlow(false)
+    val counterRunning: StateFlow<Boolean> = _counterRunning.asStateFlow()
+
+    val appCounterRunning: StateFlow<Boolean> = appCounterService.isRunning
+
     private val _observeState = MutableStateFlow<CounterState>(CounterState.Idle)
-    val observeState: StateFlow<CounterState> = _observeState
+    val observeState: StateFlow<CounterState> = _observeState.asStateFlow()
 
     private val _getState = MutableStateFlow<CounterState>(CounterState.Idle)
-    val getState: StateFlow<CounterState> = _getState
+    val getState: StateFlow<CounterState> = _getState.asStateFlow()
 
-    private val counterJob = MutableStateFlow<Job?>(null)
+    private var counterJob: Job? = null
+    private var observeJob: Job? = null
 
-    fun start() {
-        counterJob.value?.cancel()
+    fun startCounter() {
+        if (counterJob?.isActive == true) return
+        _counterRunning.value = true
+        counterJob = viewModelScope.launch(dispatcherProvider.default) {
+            runCounterUseCase()
+            _counterRunning.value = false
+        }
+    }
+
+    fun stopCounter() {
+        counterJob?.cancel()
+        counterJob = null
+        _counterRunning.value = false
+    }
+
+    fun startAppCounter() {
+        appCounterService.start()
+    }
+
+    fun stopAppCounter() {
+        appCounterService.stop()
+    }
+
+    fun startObserving() {
+        if (observeJob?.isActive == true) return
         _observeState.value = CounterState.Loading
-        counterJob.value = viewModelScope.launch(dispatcherProvider.main) {
-            val observeJob = launch {
-                observeCounterUseCase().collect { value ->
-                    _observeState.value = CounterState.Active(value)
-                }
-            }
-            when (val result = startCounterUseCase()) {
-                is Result.Success -> Unit // Never reached; loop runs until cancelled or error
-                is Result.Error -> {
-                    observeJob.cancel()
-                    _observeState.value = CounterState.Error(result.error.message)
-                }
+        observeJob = viewModelScope.launch(dispatcherProvider.main) {
+            observeCounterUseCase().collect { value ->
+                _observeState.value = CounterState.Active(value)
             }
         }
     }
 
-    fun stop() {
-        counterJob.value?.cancel()
-        counterJob.value = null
-        val currentState = _observeState.value
-        if (currentState is CounterState.Active) {
-            _observeState.value = CounterState.Active(currentState.value)
-        }
+    fun stopObserving() {
+        observeJob?.cancel()
+        observeJob = null
+        _observeState.value = CounterState.Idle
     }
 
-    fun get() {
+    fun getOnce() {
+        _getState.value = CounterState.Loading
         viewModelScope.launch(dispatcherProvider.main) {
-            _getState.value = CounterState.Loading
             when (val result = getCounterUseCase()) {
-                is Result.Success -> {
-                    _getState.value = CounterState.Active(result.data)
-                }
-                is Result.Error -> {
-                    _getState.value = CounterState.Error(result.error.message)
-                }
+                is Result.Success -> _getState.value = CounterState.Active(result.data)
+                is Result.Error -> _getState.value = CounterState.Error(result.error.message)
             }
         }
     }

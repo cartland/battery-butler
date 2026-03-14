@@ -3,6 +3,8 @@ import ExperimentalShared
 import SwiftUI
 
 class CounterViewModelWrapper: ObservableObject {
+    @Published var counterRunning: Bool = false
+    @Published var appCounterRunning: Bool = false
     @Published var observeState: CounterState = CounterState.Idle.shared
     @Published var getState: CounterState = CounterState.Idle.shared
 
@@ -19,6 +21,8 @@ class CounterViewModelWrapper: ObservableObject {
             .autoconnect()
             .sink { [weak self] _ in
                 guard let self else { return }
+                self.counterRunning = viewModel.counterRunning.value as! Bool
+                self.appCounterRunning = viewModel.appCounterRunning.value as! Bool
                 self.observeState = viewModel.observeState.value as! CounterState
                 self.getState = viewModel.getState.value as! CounterState
             }
@@ -28,15 +32,31 @@ class CounterViewModelWrapper: ObservableObject {
         timer?.cancel()
     }
 
-    func start() {
-        viewModel.start()
+    func startCounter() {
+        viewModel.startCounter()
     }
 
-    func stop() {
-        viewModel.stop()
+    func stopCounter() {
+        viewModel.stopCounter()
     }
 
-    func get() {
-        viewModel.get()
+    func startAppCounter() {
+        viewModel.startAppCounter()
+    }
+
+    func stopAppCounter() {
+        viewModel.stopAppCounter()
+    }
+
+    func startObserving() {
+        viewModel.startObserving()
+    }
+
+    func stopObserving() {
+        viewModel.stopObserving()
+    }
+
+    func getOnce() {
+        viewModel.getOnce()
     }
 }

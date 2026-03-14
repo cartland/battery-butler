@@ -10,21 +10,33 @@ struct CounterScreen: View {
 
     var body: some View {
         CounterContentView(
+            counterRunning: wrapper.counterRunning,
+            appCounterRunning: wrapper.appCounterRunning,
             observeState: wrapper.observeState,
             getState: wrapper.getState,
-            onStart: { wrapper.start() },
-            onStop: { wrapper.stop() },
-            onGet: { wrapper.get() }
+            onStartCounter: { wrapper.startCounter() },
+            onStopCounter: { wrapper.stopCounter() },
+            onStartAppCounter: { wrapper.startAppCounter() },
+            onStopAppCounter: { wrapper.stopAppCounter() },
+            onStartObserving: { wrapper.startObserving() },
+            onStopObserving: { wrapper.stopObserving() },
+            onGetOnce: { wrapper.getOnce() }
         )
     }
 }
 
 struct CounterContentView: View {
+    let counterRunning: Bool
+    let appCounterRunning: Bool
     let observeState: CounterState
     let getState: CounterState
-    let onStart: () -> Void
-    let onStop: () -> Void
-    let onGet: () -> Void
+    let onStartCounter: () -> Void
+    let onStopCounter: () -> Void
+    let onStartAppCounter: () -> Void
+    let onStopAppCounter: () -> Void
+    let onStartObserving: () -> Void
+    let onStopObserving: () -> Void
+    let onGetOnce: () -> Void
 
     var body: some View {
         VStack(spacing: 24) {
@@ -33,15 +45,43 @@ struct CounterContentView: View {
 
             Spacer().frame(height: 8)
 
+            Text("VM Counter")
+                .font(.title3)
+
+            Text(counterRunning ? "Running" : "Stopped")
+
+            HStack(spacing: 16) {
+                Button("Start", action: onStartCounter)
+                    .buttonStyle(.borderedProminent)
+                Button("Stop", action: onStopCounter)
+                    .buttonStyle(.bordered)
+            }
+
+            Divider()
+
+            Text("App Counter")
+                .font(.title3)
+
+            Text(appCounterRunning ? "Running" : "Stopped")
+
+            HStack(spacing: 16) {
+                Button("Start", action: onStartAppCounter)
+                    .buttonStyle(.borderedProminent)
+                Button("Stop", action: onStopAppCounter)
+                    .buttonStyle(.bordered)
+            }
+
+            Divider()
+
             Text("Observe")
                 .font(.title3)
 
             CounterValueDisplay(state: observeState)
 
             HStack(spacing: 16) {
-                Button("Start", action: onStart)
+                Button("Start", action: onStartObserving)
                     .buttonStyle(.borderedProminent)
-                Button("Stop", action: onStop)
+                Button("Stop", action: onStopObserving)
                     .buttonStyle(.bordered)
             }
 
@@ -52,7 +92,7 @@ struct CounterContentView: View {
 
             CounterValueDisplay(state: getState)
 
-            Button("Get", action: onGet)
+            Button("Get Once", action: onGetOnce)
                 .buttonStyle(.bordered)
         }
         .padding()
@@ -80,40 +120,64 @@ private struct CounterValueDisplay: View {
 
 #Preview("Idle") {
     CounterContentView(
+        counterRunning: false,
+        appCounterRunning: false,
         observeState: CounterState.Idle.shared,
         getState: CounterState.Idle.shared,
-        onStart: {},
-        onStop: {},
-        onGet: {}
+        onStartCounter: {},
+        onStopCounter: {},
+        onStartAppCounter: {},
+        onStopAppCounter: {},
+        onStartObserving: {},
+        onStopObserving: {},
+        onGetOnce: {}
     )
 }
 
 #Preview("Active") {
     CounterContentView(
+        counterRunning: true,
+        appCounterRunning: true,
         observeState: CounterState.Active(value: 42),
         getState: CounterState.Active(value: 7),
-        onStart: {},
-        onStop: {},
-        onGet: {}
+        onStartCounter: {},
+        onStopCounter: {},
+        onStartAppCounter: {},
+        onStopAppCounter: {},
+        onStartObserving: {},
+        onStopObserving: {},
+        onGetOnce: {}
     )
 }
 
 #Preview("Loading") {
     CounterContentView(
+        counterRunning: true,
+        appCounterRunning: true,
         observeState: CounterState.Loading.shared,
         getState: CounterState.Loading.shared,
-        onStart: {},
-        onStop: {},
-        onGet: {}
+        onStartCounter: {},
+        onStopCounter: {},
+        onStartAppCounter: {},
+        onStopAppCounter: {},
+        onStartObserving: {},
+        onStopObserving: {},
+        onGetOnce: {}
     )
 }
 
 #Preview("Error") {
     CounterContentView(
+        counterRunning: false,
+        appCounterRunning: false,
         observeState: CounterState.Error(message: "Failed to observe counter"),
         getState: CounterState.Error(message: "Failed to read counter"),
-        onStart: {},
-        onStop: {},
-        onGet: {}
+        onStartCounter: {},
+        onStopCounter: {},
+        onStartAppCounter: {},
+        onStopAppCounter: {},
+        onStartObserving: {},
+        onStopObserving: {},
+        onGetOnce: {}
     )
 }
