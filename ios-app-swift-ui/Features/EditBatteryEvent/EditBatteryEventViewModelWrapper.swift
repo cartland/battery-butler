@@ -6,7 +6,7 @@ class EditBatteryEventViewModelWrapper: ObservableObject {
     private let viewModel: EditBatteryEventViewModel
     private let store: KmpViewModelStore
 
-    @Published var state: EditBatteryEventUiState
+    @Published var state: EditBatteryEventScreenState
 
     init(eventId: String, component: NativeComponent) {
         self.store = KmpViewModelStore()

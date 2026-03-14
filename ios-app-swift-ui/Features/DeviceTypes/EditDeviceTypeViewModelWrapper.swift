@@ -40,11 +40,11 @@ class EditDeviceTypeViewModelWrapper: ObservableObject {
         viewModelStore.clear()
     }
 
-    private func updateFromState(_ newState: EditDeviceTypeUiState) {
-        if newState is EditDeviceTypeUiStateLoading {
+    private func updateFromState(_ newState: EditDeviceTypeScreenState) {
+        if newState is EditDeviceTypeScreenStateLoading {
             state.isLoading = true
             state.isNotFound = false
-        } else if let success = newState as? EditDeviceTypeUiStateSuccess {
+        } else if let success = newState as? EditDeviceTypeScreenStateSuccess {
             state.isLoading = false
             state.isNotFound = false
             state.usedIcons = success.usedIcons as? [String] ?? []
@@ -56,7 +56,7 @@ class EditDeviceTypeViewModelWrapper: ObservableObject {
                 state.selectedIcon = success.deviceType.defaultIcon ?? "videogame_asset"
                 state.batteryQuantity = Int(success.deviceType.batteryQuantity)
             }
-        } else if newState is EditDeviceTypeUiStateNotFound {
+        } else if newState is EditDeviceTypeScreenStateNotFound {
             state.isLoading = false
             state.isNotFound = true
         }

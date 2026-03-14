@@ -2,7 +2,7 @@ package com.chriscartland.batterybutler.viewmodel.eventdetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.chriscartland.batterybutler.presentationmodel.eventdetail.EventDetailUiState
+import com.chriscartland.batterybutler.presentationmodel.eventdetail.EventDetailScreenState
 import com.chriscartland.batterybutler.usecase.DeleteBatteryEventUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceDetailUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
@@ -41,17 +41,17 @@ class EventDetailViewModel(
     getDeviceTypesUseCase: GetDeviceTypesUseCase,
     private val deleteBatteryEventUseCase: DeleteBatteryEventUseCase,
 ) : ViewModel() {
-    val uiState: StateFlow<EventDetailUiState> = getEventDetailUseCase(eventId)
+    val uiState: StateFlow<EventDetailScreenState> = getEventDetailUseCase(eventId)
         .flatMapLatest { event ->
             if (event == null) {
-                flowOf(EventDetailUiState.NotFound)
+                flowOf(EventDetailScreenState.NotFound)
             } else {
                 combine(
                     getDeviceDetailUseCase(event.deviceId),
                     getDeviceTypesUseCase(),
                 ) { device, types ->
                     val deviceType = device?.let { d -> types.find { it.id == d.typeId } }
-                    EventDetailUiState.Success(
+                    EventDetailScreenState.Success(
                         event = event,
                         device = device,
                         deviceType = deviceType,
@@ -61,7 +61,7 @@ class EventDetailViewModel(
         }.safeStateIn(
             scope = viewModelScope,
             started = defaultWhileSubscribed(),
-            initialValue = EventDetailUiState.Loading,
+            initialValue = EventDetailScreenState.Loading,
         )
 
     fun deleteEvent() {

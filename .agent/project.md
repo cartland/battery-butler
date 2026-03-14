@@ -140,6 +140,14 @@ Icon colors use the **`IconColorRole` enum** (`presentation-core/.../theme/IconC
 
 **Standard dropdown component**: Use `ButlerDropdownMenu` (`presentation-core/.../components/ButlerDropdownMenu.kt`) instead of `DropdownMenu` directly. Note: CMP 1.10.0 `DropdownMenu` does NOT support `enter`/`exit` animation params (Jetpack Compose only).
 
+### KMP-Friendly Class Naming Convention
+
+Enforced by `checkNamingConventions` Gradle task (in `validate.sh` and CI):
+
+- **No "Ui" in class names** (`no-ui-in-class-name`): Collides with iOS UIKit (`UIView`, `UIColor`). Use `ScreenState` for screen states, or drop "Ui" for models. Example: `HomeScreenState` (not `HomeUiState`), `ChatMessage` (not `ChatUiMessage`).
+- **No "View" in class names** (`no-view-in-class-name`): Ambiguous between Android View system and Compose. Exception: `ViewModel` is allowed (standard Jetpack term).
+- **Inline suppression**: Add `// @NamingExempt: <reason>` on the declaration line if a name must break convention.
+
 ### Data View/Edit Pattern
 
 All data types follow a consistent **List → Detail (read-only) → Edit** architecture:

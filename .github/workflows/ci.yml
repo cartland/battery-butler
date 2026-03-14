@@ -242,6 +242,17 @@ jobs:
       - name: Check Test Coverage
         run: ./gradlew checkTestCoverage
 
+  validation_naming_convention:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup-java-gradle
+      - name: Check Naming Conventions
+        run: ./gradlew checkNamingConventions
+
   build_android:
     needs: changes
     if: needs.changes.outputs.code == 'true' && (github.event_name == 'push' || needs.changes.outputs.ci_mode != 'development')
@@ -463,6 +474,7 @@ jobs:
       - validation_ios_ui
       - validation_theme_layer
       - validation_test_coverage
+      - validation_naming_convention
       - build_android
       - build_ios_compose
       - build_ios_native
@@ -494,7 +506,8 @@ jobs:
             "${{ needs.validation_test.result }}" \
             "${{ needs.validation_compile_tests.result }}" \
             "${{ needs.validation_theme_layer.result }}" \
-            "${{ needs.validation_test_coverage.result }}"; do
+            "${{ needs.validation_test_coverage.result }}" \
+            "${{ needs.validation_naming_convention.result }}"; do
             if [[ "$result" == "failure" || "$result" == "cancelled" ]]; then
               FAILED=true
             fi

@@ -2,8 +2,8 @@ package com.chriscartland.batterybutler.presentationmodel.devicetypes
 
 import com.chriscartland.batterybutler.domain.model.DeviceType
 
-sealed interface DeviceTypeListUiState {
-    data object Loading : DeviceTypeListUiState
+sealed interface DeviceTypeListScreenState {
+    data object Loading : DeviceTypeListScreenState
 
     data class Success(
         val groupedTypes: Map<String, List<DeviceType>> = emptyMap(),
@@ -11,11 +11,11 @@ sealed interface DeviceTypeListUiState {
         val groupOption: DeviceTypeGroupOption = DeviceTypeGroupOption.NONE,
         val isSortAscending: Boolean = true,
         val isGroupAscending: Boolean = true,
-    ) : DeviceTypeListUiState
+    ) : DeviceTypeListScreenState
 
     data class Error(
         val message: String,
-    ) : DeviceTypeListUiState
+    ) : DeviceTypeListScreenState
 }
 
 enum class DeviceTypeSortOption {

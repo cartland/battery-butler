@@ -48,13 +48,13 @@ import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationcore.theme.Padding
 import com.chriscartland.batterybutler.presentationfeature.util.labelRes
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeGroupOption
-import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeListUiState
+import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeListScreenState
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeSortOption
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DeviceTypeListContent(
-    state: DeviceTypeListUiState,
+    state: DeviceTypeListScreenState,
     onEditType: (String) -> Unit,
     onAddTypeClick: () -> Unit,
     onPreloadTypes: () -> Unit,
@@ -67,10 +67,10 @@ fun DeviceTypeListContent(
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         when (state) {
-            DeviceTypeListUiState.Loading -> {
+            DeviceTypeListScreenState.Loading -> {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
-            is DeviceTypeListUiState.Error -> {
+            is DeviceTypeListScreenState.Error -> {
                 EmptyStateContent(
                     icon = Icons.Default.Warning,
                     title = "Something went wrong",
@@ -78,7 +78,7 @@ fun DeviceTypeListContent(
                     modifier = Modifier.padding(contentPadding),
                 )
             }
-            is DeviceTypeListUiState.Success -> {
+            is DeviceTypeListScreenState.Success -> {
                 val allTypes = state.groupedTypes.values.flatten()
                 if (allTypes.isEmpty()) {
                     EmptyStateContent(
@@ -150,7 +150,7 @@ fun DeviceTypeListContent(
 
 @Composable
 fun DeviceTypeFilterRow(
-    state: DeviceTypeListUiState.Success,
+    state: DeviceTypeListScreenState.Success,
     onSortOptionSelected: (DeviceTypeSortOption) -> Unit,
     onGroupOptionSelected: (DeviceTypeGroupOption) -> Unit,
     onSortDirectionToggle: () -> Unit,
@@ -224,7 +224,7 @@ fun DeviceTypeFilterRow(
 fun DeviceTypeListContentEmptyPreview() {
     BatteryButlerTheme {
         DeviceTypeListContent(
-            state = DeviceTypeListUiState.Success(groupedTypes = emptyMap()),
+            state = DeviceTypeListScreenState.Success(groupedTypes = emptyMap()),
             onEditType = {},
             onAddTypeClick = {},
             onPreloadTypes = {},
@@ -241,7 +241,7 @@ fun DeviceTypeListContentEmptyPreview() {
 fun DeviceTypeListContentLoadingPreview() {
     BatteryButlerTheme {
         DeviceTypeListContent(
-            state = DeviceTypeListUiState.Loading,
+            state = DeviceTypeListScreenState.Loading,
             onEditType = {},
             onAddTypeClick = {},
             onPreloadTypes = {},
@@ -258,7 +258,7 @@ fun DeviceTypeListContentLoadingPreview() {
 fun DeviceTypeListContentErrorPreview() {
     BatteryButlerTheme {
         DeviceTypeListContent(
-            state = DeviceTypeListUiState.Error("Failed to load device types"),
+            state = DeviceTypeListScreenState.Error("Failed to load device types"),
             onEditType = {},
             onAddTypeClick = {},
             onPreloadTypes = {},
@@ -274,7 +274,7 @@ fun DeviceTypeListContentErrorPreview() {
 fun DeviceTypeListContentPreview() {
     BatteryButlerTheme {
         val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
-        val state = DeviceTypeListUiState.Success(
+        val state = DeviceTypeListScreenState.Success(
             groupedTypes = mapOf("All" to listOf(type)),
             sortOption = DeviceTypeSortOption.NAME,
             groupOption = DeviceTypeGroupOption.NONE,
@@ -299,7 +299,7 @@ fun DeviceTypeFilterRowPreview() {
     BatteryButlerTheme {
         Surface {
             DeviceTypeFilterRow(
-                state = DeviceTypeListUiState.Success(
+                state = DeviceTypeListScreenState.Success(
                     groupedTypes = emptyMap(),
                     sortOption = DeviceTypeSortOption.NAME,
                     groupOption = DeviceTypeGroupOption.NONE,

@@ -35,7 +35,7 @@ final class DeviceTypeDetailScreenTests: XCTestCase {
             ),
         ]
 
-        let successState = DeviceTypeDetailUiStateSuccess(
+        let successState = DeviceTypeDetailScreenStateSuccess(
             deviceType: dummyType,
             devices: dummyDevices
         )
@@ -55,7 +55,7 @@ final class DeviceTypeDetailScreenTests: XCTestCase {
 
     func testDeviceTypeDetailContentView_Loading() {
         let view = DeviceTypeDetailContentView(
-            state: DeviceTypeDetailUiStateLoading(),
+            state: DeviceTypeDetailScreenStateLoading(),
             deviceDestination: { _ in Text("Device Details") }
         )
 
@@ -69,7 +69,7 @@ final class DeviceTypeDetailScreenTests: XCTestCase {
 
     func testDeviceTypeDetailContentView_NotFound() {
         let view = DeviceTypeDetailContentView(
-            state: DeviceTypeDetailUiStateNotFound(),
+            state: DeviceTypeDetailScreenStateNotFound(),
             deviceDestination: { _ in Text("Device Details") }
         )
 

@@ -10,7 +10,7 @@ final class DeviceTypeListScreenTests: XCTestCase {
             "Electronics": [TestData.deviceType],
             "Safety": [TestData.deviceType2]
         ]
-        let successState = DeviceTypeListUiStateSuccess(
+        let successState = DeviceTypeListScreenStateSuccess(
             groupedTypes: groupedTypes,
             sortOption: .name,
             groupOption: .none,
@@ -37,7 +37,7 @@ final class DeviceTypeListScreenTests: XCTestCase {
     }
 
     func testDeviceTypeListContentView_Empty() {
-        let successState = DeviceTypeListUiStateSuccess(
+        let successState = DeviceTypeListScreenStateSuccess(
             groupedTypes: [:],
             sortOption: .name,
             groupOption: .none,
@@ -65,7 +65,7 @@ final class DeviceTypeListScreenTests: XCTestCase {
 
     func testDeviceTypeListContentView_Loading() {
         let view = DeviceTypeListContentView(
-            state: DeviceTypeListUiStateLoading(),
+            state: DeviceTypeListScreenStateLoading(),
             onAddTypeTapped: {},
             onSortOptionSelected: { _ in },
             onGroupOptionSelected: { _ in },

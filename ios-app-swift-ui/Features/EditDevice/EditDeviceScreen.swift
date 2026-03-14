@@ -42,7 +42,7 @@ struct EditDeviceScreen: View {
 }
 
 struct EditDeviceContentView: View {
-    let state: EditDeviceUiState
+    let state: EditDeviceScreenState
     @Binding var name: String
     @Binding var location: String
     @Binding var selectedTypeId: String
@@ -57,7 +57,7 @@ struct EditDeviceContentView: View {
     var body: some View {
         NavigationStack {
             Group {
-                if let successState = state as? EditDeviceUiStateSuccess {
+                if let successState = state as? EditDeviceScreenStateSuccess {
                     Form {
                         Section(header: Text("edit_device.section.details")) {
                             TextField("edit_device.field.name", text: $name)
@@ -97,7 +97,7 @@ struct EditDeviceContentView: View {
                             hasInitializedFields = true
                         }
                     }
-                } else if state is EditDeviceUiStateLoading {
+                } else if state is EditDeviceScreenStateLoading {
                     ProgressView("edit_device.loading")
                 } else {
                     Text("edit_device.not_found")

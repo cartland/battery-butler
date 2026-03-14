@@ -28,7 +28,7 @@ class AddDeviceTypeViewModelWrapper: ObservableObject {
 
         self.uiStateTask = Task { @MainActor [weak self] in
             for await uiState in viewModel.uiState {
-                if let uiState = uiState as? AddDeviceTypeUiState {
+                if let uiState = uiState as? AddDeviceTypeScreenState {
                     self?.state.isSuggestingIcon = uiState.isSuggestingIcon
                     self?.state.usedIcons = uiState.usedIcons as? [String] ?? []
                     if let icon = uiState.suggestedIcon {

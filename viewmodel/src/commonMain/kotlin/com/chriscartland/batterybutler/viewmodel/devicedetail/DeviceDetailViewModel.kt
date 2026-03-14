@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.benasher44.uuid.uuid4
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
-import com.chriscartland.batterybutler.presentationmodel.devicedetail.DeviceDetailUiState
+import com.chriscartland.batterybutler.presentationmodel.devicedetail.DeviceDetailScreenState
 import com.chriscartland.batterybutler.usecase.AddBatteryEventUseCase
 import com.chriscartland.batterybutler.usecase.GetBatteryEventsUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceDetailUseCase
@@ -45,16 +45,16 @@ class DeviceDetailViewModel(
     private val addBatteryEventUseCase: AddBatteryEventUseCase,
     private val updateDeviceUseCase: UpdateDeviceUseCase,
 ) : ViewModel() {
-    val uiState: StateFlow<DeviceDetailUiState> = combine(
+    val uiState: StateFlow<DeviceDetailScreenState> = combine(
         getDeviceDetailUseCase(deviceId),
         getDeviceTypesUseCase(),
         getBatteryEventsUseCase.forDevice(deviceId),
     ) { device, types, events ->
         if (device == null) {
-            DeviceDetailUiState.NotFound
+            DeviceDetailScreenState.NotFound
         } else {
             val deviceType = types.find { it.id == device.typeId }
-            DeviceDetailUiState.Success(
+            DeviceDetailScreenState.Success(
                 device = device,
                 deviceType = deviceType,
                 events = events,
@@ -63,7 +63,7 @@ class DeviceDetailViewModel(
     }.safeStateIn(
         scope = viewModelScope,
         started = defaultWhileSubscribed(),
-        initialValue = DeviceDetailUiState.Loading,
+        initialValue = DeviceDetailScreenState.Loading,
     )
 
     fun recordReplacement() {
@@ -75,7 +75,7 @@ class DeviceDetailViewModel(
             )
             addBatteryEventUseCase(event)
             // Also update the device's last replaced date for quick access
-            val currentDevice = (uiState.value as? DeviceDetailUiState.Success)?.device
+            val currentDevice = (uiState.value as? DeviceDetailScreenState.Success)?.device
             if (currentDevice != null) {
                 updateDeviceUseCase(currentDevice.copy(batteryLastReplaced = event.date))
             }

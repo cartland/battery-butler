@@ -6,7 +6,7 @@ import shared
 
 final class EventDetailScreenTests: XCTestCase {
     func testEventDetailContentView_Success() {
-        let successState = EventDetailUiStateSuccess(
+        let successState = EventDetailScreenStateSuccess(
             event: TestData.batteryEvent,
             device: TestData.device,
             deviceType: TestData.deviceType
@@ -23,7 +23,7 @@ final class EventDetailScreenTests: XCTestCase {
     }
 
     func testEventDetailContentView_NotFound() {
-        let notFoundState = EventDetailUiStateNotFound()
+        let notFoundState = EventDetailScreenStateNotFound()
 
         let view = EventDetailContentView(state: notFoundState)
 
@@ -36,7 +36,7 @@ final class EventDetailScreenTests: XCTestCase {
     }
 
     func testEventDetailContentView_DeletedDevice() {
-        let state = EventDetailUiStateSuccess(
+        let state = EventDetailScreenStateSuccess(
             event: TestData.batteryEvent,
             device: nil,
             deviceType: nil

@@ -5,7 +5,7 @@ import shared
 @testable import BatteryButler
 
 final class HomeScreenTests: XCTestCase {
-    private func makeView(state: HomeUiState) -> some View {
+    private func makeView(state: HomeScreenState) -> some View {
         HomeContentView(
             state: state,
             onAddDeviceTapped: {},
@@ -25,7 +25,7 @@ final class HomeScreenTests: XCTestCase {
             "Living Room": [TestData.device],
             "Kitchen": [TestData.device2]
         ]
-        let state = HomeUiState(
+        let state = HomeScreenState(
             groups: [:],
             devices: [:],
             groupedDevices: groupedDevices,
@@ -50,7 +50,7 @@ final class HomeScreenTests: XCTestCase {
     }
 
     func testHomeContentView_Empty() {
-        let state = HomeUiState(
+        let state = HomeScreenState(
             groups: [:],
             devices: [:],
             groupedDevices: [:],
@@ -78,7 +78,7 @@ final class HomeScreenTests: XCTestCase {
         let groupedDevices: [String: [Device]] = [
             "Living Room": [TestData.device]
         ]
-        let state = HomeUiState(
+        let state = HomeScreenState(
             groups: [:],
             devices: [:],
             groupedDevices: groupedDevices,

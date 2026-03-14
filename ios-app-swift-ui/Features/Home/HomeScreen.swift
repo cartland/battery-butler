@@ -41,7 +41,7 @@ struct HomeScreen: View {
 }
 
 struct HomeContentView<DeviceDestination: View, SettingsDestination: View, AiDestination: View>: View {
-    let state: HomeUiState
+    let state: HomeScreenState
     let onAddDeviceTapped: () -> Void
     let onAddEventTapped: () -> Void
     let onSortOptionSelected: (SortOption) -> Void

@@ -64,14 +64,14 @@ import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMapper
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
-import com.chriscartland.batterybutler.presentationmodel.editdevice.EditDeviceUiState
+import com.chriscartland.batterybutler.presentationmodel.editdevice.EditDeviceScreenState
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditDeviceContent(
-    uiState: EditDeviceUiState,
+    uiState: EditDeviceScreenState,
     onSave: (DeviceInput) -> Unit,
     onDelete: () -> Unit,
     onAddDeviceTypeClick: () -> Unit,
@@ -118,13 +118,13 @@ fun EditDeviceContent(
     ) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
             when (val state = uiState) {
-                EditDeviceUiState.Loading -> {
+                EditDeviceScreenState.Loading -> {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
-                EditDeviceUiState.NotFound -> {
+                EditDeviceScreenState.NotFound -> {
                     Text(composeStringResource(Res.string.error_device_not_found), modifier = Modifier.align(Alignment.Center))
                 }
-                is EditDeviceUiState.Success -> {
+                is EditDeviceScreenState.Success -> {
                     // Initialize fields once
                     LaunchedEffect(state) {
                         if (!isInitialized) {
@@ -288,7 +288,7 @@ fun EditDeviceContent(
 fun EditDeviceLoadingPreview() {
     BatteryButlerTheme {
         EditDeviceContent(
-            uiState = EditDeviceUiState.Loading,
+            uiState = EditDeviceScreenState.Loading,
             onSave = {},
             onDelete = {},
             onAddDeviceTypeClick = {},
@@ -302,7 +302,7 @@ fun EditDeviceLoadingPreview() {
 fun EditDeviceNotFoundPreview() {
     BatteryButlerTheme {
         EditDeviceContent(
-            uiState = EditDeviceUiState.NotFound,
+            uiState = EditDeviceScreenState.NotFound,
             onSave = {},
             onDelete = {},
             onAddDeviceTypeClick = {},
@@ -320,7 +320,7 @@ fun EditDeviceContentPreview() {
         val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
         val device = Device("dev1", "Kitchen Smoke", "type1", now, now, "Kitchen")
         EditDeviceContent(
-            uiState = EditDeviceUiState.Success(
+            uiState = EditDeviceScreenState.Success(
                 device = device,
                 deviceTypes = listOf(type),
             ),

@@ -20,7 +20,7 @@ final class EditDeviceScreenTests: XCTestCase {
             DeviceType(id: "t1", name: "TV Remote", defaultIcon: "tv", batteryType: "AAA", batteryQuantity: 2)
         ]
 
-        let state = EditDeviceUiStateSuccess(device: dummyDevice, deviceTypes: dummyTypes)
+        let state = EditDeviceScreenStateSuccess(device: dummyDevice, deviceTypes: dummyTypes)
 
         // Use bindings populated with initial fake data to simulate `.onAppear` having fired
         let view = EditDeviceContentView(
@@ -44,7 +44,7 @@ final class EditDeviceScreenTests: XCTestCase {
 
     func testEditDeviceContentView_Loading() {
         let view = EditDeviceContentView(
-            state: EditDeviceUiStateLoading(),
+            state: EditDeviceScreenStateLoading(),
             name: .constant(""),
             location: .constant(""),
             selectedTypeId: .constant(""),
@@ -64,7 +64,7 @@ final class EditDeviceScreenTests: XCTestCase {
 
     func testEditDeviceContentView_NotFound() {
         let view = EditDeviceContentView(
-            state: EditDeviceUiStateNotFound(),
+            state: EditDeviceScreenStateNotFound(),
             name: .constant(""),
             location: .constant(""),
             selectedTypeId: .constant(""),

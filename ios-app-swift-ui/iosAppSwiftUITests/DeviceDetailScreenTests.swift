@@ -24,7 +24,7 @@ final class DeviceDetailScreenTests: XCTestCase {
             batteryQuantity: 2
         )
 
-        let successState = DeviceDetailUiStateSuccess(
+        let successState = DeviceDetailScreenStateSuccess(
             device: dummyDevice,
             deviceType: dummyType,
             events: []
@@ -46,7 +46,7 @@ final class DeviceDetailScreenTests: XCTestCase {
 
     func testDeviceDetailContentView_Loading() {
         let view = DeviceDetailContentView(
-            state: DeviceDetailUiStateLoading(),
+            state: DeviceDetailScreenStateLoading(),
             onRecordReplacement: {},
             eventDestination: { _ in Text("Event Details") }
         )
@@ -61,7 +61,7 @@ final class DeviceDetailScreenTests: XCTestCase {
 
     func testDeviceDetailContentView_NotFound() {
         let view = DeviceDetailContentView(
-            state: DeviceDetailUiStateNotFound(),
+            state: DeviceDetailScreenStateNotFound(),
             onRecordReplacement: {},
             eventDestination: { _ in Text("Event Details") }
         )

@@ -30,12 +30,12 @@ struct EventDetailScreen: View {
 }
 
 struct EventDetailContentView: View {
-    let state: EventDetailUiState?
+    let state: EventDetailScreenState?
     var component: NativeComponent?
 
     var body: some View {
         Group {
-            if let success = state as? EventDetailUiStateSuccess {
+            if let success = state as? EventDetailScreenStateSuccess {
                 let event = success.event
                 Form {
                     Section(header: Text("event_detail.section.details")) {
@@ -105,7 +105,7 @@ struct EventDetailContentView: View {
                         }
                     }
                 }
-            } else if state is EventDetailUiStateNotFound {
+            } else if state is EventDetailScreenStateNotFound {
                 VStack {
                     Text("event_detail.not_found")
                         .font(.headline)

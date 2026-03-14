@@ -1,7 +1,7 @@
 package com.chriscartland.batterybutler.viewmodel.devicetypes
 
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeGroupOption
-import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeListUiState
+import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeListScreenState
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeSortOption
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
 import com.chriscartland.batterybutler.testcommon.TestDevices
@@ -43,7 +43,7 @@ class DeviceTypeListViewModelTest {
             val viewModel = createViewModel(repo)
 
             val state = viewModel.uiState.value
-            assertIs<DeviceTypeListUiState.Success>(state)
+            assertIs<DeviceTypeListScreenState.Success>(state)
             assertTrue(state.groupedTypes.isEmpty())
         }
 
@@ -59,12 +59,12 @@ class DeviceTypeListViewModelTest {
             val viewModel = createViewModel(repo)
 
             val state = viewModel.uiState.first {
-                it is DeviceTypeListUiState.Success &&
+                it is DeviceTypeListScreenState.Success &&
                     it.groupedTypes.values
                         .flatten()
                         .size == 3
             }
-            assertIs<DeviceTypeListUiState.Success>(state)
+            assertIs<DeviceTypeListScreenState.Success>(state)
             val types = state.groupedTypes.values.flatten()
             assertEquals("Alpha Type", types[0].name)
             assertEquals("Mike Type", types[1].name)
@@ -83,13 +83,13 @@ class DeviceTypeListViewModelTest {
             viewModel.onSortOptionSelected(DeviceTypeSortOption.BATTERY_TYPE)
 
             val state = viewModel.uiState.first {
-                it is DeviceTypeListUiState.Success &&
+                it is DeviceTypeListScreenState.Success &&
                     it.sortOption == DeviceTypeSortOption.BATTERY_TYPE &&
                     it.groupedTypes.values
                         .flatten()
                         .size == 2
             }
-            assertIs<DeviceTypeListUiState.Success>(state)
+            assertIs<DeviceTypeListScreenState.Success>(state)
             val types = state.groupedTypes.values.flatten()
             // Sorted by batteryType first, then name
             assertEquals("Device A", types[0].name) // AA
@@ -108,12 +108,12 @@ class DeviceTypeListViewModelTest {
 
             // Default is ascending
             val ascState = viewModel.uiState.first {
-                it is DeviceTypeListUiState.Success &&
+                it is DeviceTypeListScreenState.Success &&
                     it.groupedTypes.values
                         .flatten()
                         .size == 2
             }
-            assertIs<DeviceTypeListUiState.Success>(ascState)
+            assertIs<DeviceTypeListScreenState.Success>(ascState)
             assertTrue(ascState.isSortAscending)
             assertEquals(
                 "Alpha",
@@ -125,9 +125,9 @@ class DeviceTypeListViewModelTest {
             viewModel.toggleSortDirection()
 
             val descState = viewModel.uiState.first {
-                it is DeviceTypeListUiState.Success && !it.isSortAscending
+                it is DeviceTypeListScreenState.Success && !it.isSortAscending
             }
-            assertIs<DeviceTypeListUiState.Success>(descState)
+            assertIs<DeviceTypeListScreenState.Success>(descState)
             assertFalse(descState.isSortAscending)
             assertEquals(
                 "Zulu",
@@ -151,13 +151,13 @@ class DeviceTypeListViewModelTest {
             viewModel.onGroupOptionSelected(DeviceTypeGroupOption.BATTERY_TYPE)
 
             val state = viewModel.uiState.first {
-                it is DeviceTypeListUiState.Success &&
+                it is DeviceTypeListScreenState.Success &&
                     it.groupOption == DeviceTypeGroupOption.BATTERY_TYPE &&
                     it.groupedTypes.values
                         .flatten()
                         .size == 4
             }
-            assertIs<DeviceTypeListUiState.Success>(state)
+            assertIs<DeviceTypeListScreenState.Success>(state)
             assertTrue(state.groupedTypes.containsKey("9V"))
             assertTrue(state.groupedTypes.containsKey("AAA"))
             assertTrue(state.groupedTypes.containsKey("AA"))
@@ -173,15 +173,15 @@ class DeviceTypeListViewModelTest {
             val viewModel = createViewModel(repo)
 
             val initialState = viewModel.uiState.first()
-            assertIs<DeviceTypeListUiState.Success>(initialState)
+            assertIs<DeviceTypeListScreenState.Success>(initialState)
             assertTrue(initialState.isGroupAscending)
 
             viewModel.toggleGroupDirection()
 
             val updatedState = viewModel.uiState.first {
-                it is DeviceTypeListUiState.Success && !it.isGroupAscending
+                it is DeviceTypeListScreenState.Success && !it.isGroupAscending
             }
-            assertIs<DeviceTypeListUiState.Success>(updatedState)
+            assertIs<DeviceTypeListScreenState.Success>(updatedState)
             assertFalse(updatedState.isGroupAscending)
         }
 

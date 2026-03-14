@@ -39,12 +39,12 @@ struct DeviceTypeDetailScreen: View {
 }
 
 struct DeviceTypeDetailContentView<DeviceDestination: View>: View {
-    let state: DeviceTypeDetailUiState
+    let state: DeviceTypeDetailScreenState
     let deviceDestination: (String) -> DeviceDestination
 
     var body: some View {
         Group {
-            if let success = state as? DeviceTypeDetailUiStateSuccess {
+            if let success = state as? DeviceTypeDetailScreenStateSuccess {
                 let sfSymbol = SFSymbolMapper.sfSymbolName(for: success.deviceType.defaultIcon)
 
                 ScrollView {
@@ -140,7 +140,7 @@ struct DeviceTypeDetailContentView<DeviceDestination: View>: View {
                     }
                     .padding()
                 }
-            } else if state is DeviceTypeDetailUiStateNotFound {
+            } else if state is DeviceTypeDetailScreenStateNotFound {
                 Text("device_type_detail.not_found")
             } else {
                 ProgressView("device_type_detail.loading")

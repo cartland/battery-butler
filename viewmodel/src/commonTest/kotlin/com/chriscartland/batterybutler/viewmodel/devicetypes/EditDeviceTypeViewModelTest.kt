@@ -1,7 +1,7 @@
 package com.chriscartland.batterybutler.viewmodel.devicetypes
 
 import com.chriscartland.batterybutler.domain.model.DeviceTypeInput
-import com.chriscartland.batterybutler.presentationmodel.devicetypes.EditDeviceTypeUiState
+import com.chriscartland.batterybutler.presentationmodel.devicetypes.EditDeviceTypeScreenState
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
 import com.chriscartland.batterybutler.testcommon.TestDevices
 import com.chriscartland.batterybutler.usecase.DeleteDeviceTypeUseCase
@@ -41,7 +41,7 @@ class EditDeviceTypeViewModelTest {
             val repo = FakeDeviceRepository()
             val viewModel = createViewModel(repo, "type-1")
 
-            assertEquals(EditDeviceTypeUiState.Loading, viewModel.uiState.value)
+            assertEquals(EditDeviceTypeScreenState.Loading, viewModel.uiState.value)
         }
 
     @Test
@@ -53,8 +53,8 @@ class EditDeviceTypeViewModelTest {
 
             val viewModel = createViewModel(repo, "type-1")
 
-            val state = viewModel.uiState.first { it is EditDeviceTypeUiState.Success }
-            assertIs<EditDeviceTypeUiState.Success>(state)
+            val state = viewModel.uiState.first { it is EditDeviceTypeScreenState.Success }
+            assertIs<EditDeviceTypeScreenState.Success>(state)
             assertEquals("Smoke Detector", state.deviceType.name)
             assertEquals("9V", state.deviceType.batteryType)
         }
@@ -66,8 +66,8 @@ class EditDeviceTypeViewModelTest {
 
             val viewModel = createViewModel(repo, "nonexistent-id")
 
-            val state = viewModel.uiState.first { it is EditDeviceTypeUiState.NotFound }
-            assertIs<EditDeviceTypeUiState.NotFound>(state)
+            val state = viewModel.uiState.first { it is EditDeviceTypeScreenState.NotFound }
+            assertIs<EditDeviceTypeScreenState.NotFound>(state)
         }
 
     @Test
@@ -78,7 +78,7 @@ class EditDeviceTypeViewModelTest {
             repo.setDeviceTypes(listOf(type))
 
             val viewModel = createViewModel(repo, "type-1")
-            viewModel.uiState.first { it is EditDeviceTypeUiState.Success }
+            viewModel.uiState.first { it is EditDeviceTypeScreenState.Success }
 
             val input = DeviceTypeInput(
                 name = "New Name",

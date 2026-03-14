@@ -78,17 +78,17 @@ import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationcore.theme.LocalAiAvailable
 import com.chriscartland.batterybutler.presentationcore.theme.Padding
 import com.chriscartland.batterybutler.presentationfeature.aichat.AiTabContent
-import com.chriscartland.batterybutler.presentationfeature.aichat.ChatUiMessage
+import com.chriscartland.batterybutler.presentationfeature.aichat.ChatMessage
 import com.chriscartland.batterybutler.presentationfeature.devicetypes.DeviceTypeListContent
 import com.chriscartland.batterybutler.presentationfeature.history.HistoryListContent
 import com.chriscartland.batterybutler.presentationfeature.home.HomeScreenContent
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeGroupOption
-import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeListUiState
+import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeListScreenState
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeSortOption
-import com.chriscartland.batterybutler.presentationmodel.history.HistoryItemUiModel
-import com.chriscartland.batterybutler.presentationmodel.history.HistoryListUiState
+import com.chriscartland.batterybutler.presentationmodel.history.HistoryItemModel
+import com.chriscartland.batterybutler.presentationmodel.history.HistoryListScreenState
 import com.chriscartland.batterybutler.presentationmodel.home.GroupOption
-import com.chriscartland.batterybutler.presentationmodel.home.HomeUiState
+import com.chriscartland.batterybutler.presentationmodel.home.HomeScreenState
 import com.chriscartland.batterybutler.presentationmodel.home.SortOption
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.StringResource
@@ -124,7 +124,7 @@ fun MainScreenShell(
     currentTab: MainTab,
     onTabSelected: (MainTab) -> Unit,
     onSettingsClick: () -> Unit,
-    aiMessages: List<ChatUiMessage>,
+    aiMessages: List<ChatMessage>,
     isAiProcessing: Boolean,
     isAiExpanded: Boolean,
     onAiExpandedChange: (Boolean) -> Unit,
@@ -399,7 +399,7 @@ fun MainScreenShell(
 @OptIn(ExperimentalTime::class)
 @Composable
 fun DevicesScreen(
-    state: HomeUiState,
+    state: HomeScreenState,
     onTabSelected: (MainTab) -> Unit,
     onSettingsClick: () -> Unit,
     onAddDeviceClick: () -> Unit,
@@ -408,7 +408,7 @@ fun DevicesScreen(
     onGroupOptionSelected: (GroupOption) -> Unit,
     onSortOptionToggle: () -> Unit,
     onSortOptionSelected: (SortOption) -> Unit,
-    aiMessages: List<ChatUiMessage>,
+    aiMessages: List<ChatMessage>,
     isAiProcessing: Boolean,
     isAiExpanded: Boolean,
     onAiExpandedChange: (Boolean) -> Unit,
@@ -446,7 +446,7 @@ fun DevicesScreen(
 
 @Composable
 fun TypesScreen(
-    state: DeviceTypeListUiState,
+    state: DeviceTypeListScreenState,
     onTabSelected: (MainTab) -> Unit,
     onSettingsClick: () -> Unit,
     onAddTypeClick: () -> Unit,
@@ -456,7 +456,7 @@ fun TypesScreen(
     onGroupOptionSelected: (DeviceTypeGroupOption) -> Unit,
     onSortDirectionToggle: () -> Unit,
     onGroupDirectionToggle: () -> Unit,
-    aiMessages: List<ChatUiMessage>,
+    aiMessages: List<ChatMessage>,
     isAiProcessing: Boolean,
     isAiExpanded: Boolean,
     onAiExpandedChange: (Boolean) -> Unit,
@@ -492,12 +492,12 @@ fun TypesScreen(
 @OptIn(ExperimentalTime::class)
 @Composable
 fun HistoryScreen(
-    state: HistoryListUiState,
+    state: HistoryListScreenState,
     onTabSelected: (MainTab) -> Unit,
     onSettingsClick: () -> Unit,
     onAddEventClick: () -> Unit,
     onEventClick: (String, String) -> Unit,
-    aiMessages: List<ChatUiMessage>,
+    aiMessages: List<ChatMessage>,
     isAiProcessing: Boolean,
     isAiExpanded: Boolean,
     onAiExpandedChange: (Boolean) -> Unit,
@@ -535,7 +535,7 @@ fun DevicesScreenPreview() {
             val now = Instant.parse("2026-01-18T17:00:00Z")
             val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
             val device = Device("dev1", "Kitchen Smoke", "type1", now, now, "Kitchen")
-            val state = HomeUiState(
+            val state = HomeScreenState(
                 groupedDevices = mapOf("All" to listOf(device)),
                 deviceTypes = mapOf("type1" to type),
             )
@@ -567,7 +567,7 @@ fun TypesScreenPreview() {
     BatteryButlerTheme {
         CompositionLocalProvider(LocalAiAvailable provides true) {
             val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
-            val state = DeviceTypeListUiState.Success(
+            val state = DeviceTypeListScreenState.Success(
                 groupedTypes = mapOf("All" to listOf(type)),
             )
             TypesScreen(
@@ -601,8 +601,8 @@ fun HistoryScreenPreview() {
             val nowInstant = Instant.parse("2026-01-18T17:00:00Z")
             val eventInstant = Instant.parse("2026-01-11T17:00:00Z") // 7 days ago
             val event = BatteryEvent("evt1", "dev1", eventInstant)
-            val item = HistoryItemUiModel(event, "Kitchen Smoke", "Smoke Alarm", "Kitchen")
-            val state = HistoryListUiState.Success(
+            val item = HistoryItemModel(event, "Kitchen Smoke", "Smoke Alarm", "Kitchen")
+            val state = HistoryListScreenState.Success(
                 items = listOf(item),
             )
             HistoryScreen(
@@ -631,7 +631,7 @@ fun AiBarCollapsedDevicesPreview() {
             val now = Instant.parse("2026-01-18T17:00:00Z")
             val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
             val device = Device("dev1", "Kitchen Smoke", "type1", now, now, "Kitchen")
-            val state = HomeUiState(
+            val state = HomeScreenState(
                 groupedDevices = mapOf("All" to listOf(device)),
                 deviceTypes = mapOf("type1" to type),
             )
@@ -663,7 +663,7 @@ fun AiBarCollapsedTypesPreview() {
     BatteryButlerTheme {
         CompositionLocalProvider(LocalAiAvailable provides true) {
             val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
-            val state = DeviceTypeListUiState.Success(
+            val state = DeviceTypeListScreenState.Success(
                 groupedTypes = mapOf("All" to listOf(type)),
             )
             TypesScreen(
@@ -697,8 +697,8 @@ fun AiBarCollapsedHistoryPreview() {
             val nowInstant = Instant.parse("2026-01-18T17:00:00Z")
             val eventInstant = Instant.parse("2026-01-11T17:00:00Z")
             val event = BatteryEvent("evt1", "dev1", eventInstant)
-            val item = HistoryItemUiModel(event, "Kitchen Smoke", "Smoke Alarm", "Kitchen")
-            val state = HistoryListUiState.Success(
+            val item = HistoryItemModel(event, "Kitchen Smoke", "Smoke Alarm", "Kitchen")
+            val state = HistoryListScreenState.Success(
                 items = listOf(item),
             )
             HistoryScreen(
@@ -727,7 +727,7 @@ fun AiOverlayExpandedPreview() {
             val now = Instant.parse("2026-01-18T17:00:00Z")
             val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
             val device = Device("dev1", "Kitchen Smoke", "type1", now, now, "Kitchen")
-            val state = HomeUiState(
+            val state = HomeScreenState(
                 groupedDevices = mapOf("All" to listOf(device)),
                 deviceTypes = mapOf("type1" to type),
             )
@@ -742,8 +742,8 @@ fun AiOverlayExpandedPreview() {
                 onSortOptionToggle = {},
                 onSortOptionSelected = {},
                 aiMessages = listOf(
-                    ChatUiMessage("1", "Add a smoke detector in the kitchen", isUser = true),
-                    ChatUiMessage(
+                    ChatMessage("1", "Add a smoke detector in the kitchen", isUser = true),
+                    ChatMessage(
                         "2",
                         "I've added a smoke detector device in the kitchen for you.",
                         isUser = false,
@@ -768,7 +768,7 @@ fun AiOverlayFullHeightPreview() {
             val now = Instant.parse("2026-01-18T17:00:00Z")
             val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
             val device = Device("dev1", "Kitchen Smoke", "type1", now, now, "Kitchen")
-            val state = HomeUiState(
+            val state = HomeScreenState(
                 groupedDevices = mapOf("All" to listOf(device)),
                 deviceTypes = mapOf("type1" to type),
             )
@@ -783,8 +783,8 @@ fun AiOverlayFullHeightPreview() {
                 onSortOptionToggle = {},
                 onSortOptionSelected = {},
                 aiMessages = listOf(
-                    ChatUiMessage("1", "Add a smoke detector in the kitchen", isUser = true),
-                    ChatUiMessage(
+                    ChatMessage("1", "Add a smoke detector in the kitchen", isUser = true),
+                    ChatMessage(
                         "2",
                         "I've added a smoke detector device in the kitchen for you.",
                         isUser = false,

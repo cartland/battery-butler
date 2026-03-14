@@ -4,7 +4,7 @@ import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.SyncStatus
 
-data class HomeUiState(
+data class HomeScreenState(
     val groups: Map<String, List<Device>> = emptyMap(),
     val devices: Map<String, Device> = emptyMap(), // For lookup if needed
     val groupedDevices: Map<String, List<Device>> = emptyMap(),

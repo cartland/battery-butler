@@ -2,7 +2,7 @@ package com.chriscartland.batterybutler.viewmodel.editdevice
 
 import com.chriscartland.batterybutler.domain.model.DeviceInput
 import com.chriscartland.batterybutler.domain.model.DeviceType
-import com.chriscartland.batterybutler.presentationmodel.editdevice.EditDeviceUiState
+import com.chriscartland.batterybutler.presentationmodel.editdevice.EditDeviceScreenState
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
 import com.chriscartland.batterybutler.testcommon.TestDevices
 import com.chriscartland.batterybutler.usecase.DeleteDeviceUseCase
@@ -43,7 +43,7 @@ class EditDeviceViewModelTest {
             val repo = FakeDeviceRepository()
             val viewModel = createViewModel(repo, "device-1")
 
-            assertEquals(EditDeviceUiState.Loading, viewModel.uiState.value)
+            assertEquals(EditDeviceScreenState.Loading, viewModel.uiState.value)
         }
 
     @Test
@@ -57,8 +57,8 @@ class EditDeviceViewModelTest {
 
             val viewModel = createViewModel(repo, "device-1")
 
-            val state = viewModel.uiState.first { it is EditDeviceUiState.Success }
-            assertIs<EditDeviceUiState.Success>(state)
+            val state = viewModel.uiState.first { it is EditDeviceScreenState.Success }
+            assertIs<EditDeviceScreenState.Success>(state)
             assertEquals("Smoke Detector", state.device.name)
             assertEquals(1, state.deviceTypes.size)
             assertEquals("Smoke Detector Type", state.deviceTypes[0].name)
@@ -72,8 +72,8 @@ class EditDeviceViewModelTest {
 
             val viewModel = createViewModel(repo, "nonexistent-id")
 
-            val state = viewModel.uiState.first { it is EditDeviceUiState.NotFound }
-            assertIs<EditDeviceUiState.NotFound>(state)
+            val state = viewModel.uiState.first { it is EditDeviceScreenState.NotFound }
+            assertIs<EditDeviceScreenState.NotFound>(state)
         }
 
     @Test
@@ -88,7 +88,7 @@ class EditDeviceViewModelTest {
             val viewModel = createViewModel(repo, "device-1")
 
             // Wait for Success state
-            viewModel.uiState.first { it is EditDeviceUiState.Success }
+            viewModel.uiState.first { it is EditDeviceScreenState.Success }
 
             val input = DeviceInput(
                 name = "New Name",

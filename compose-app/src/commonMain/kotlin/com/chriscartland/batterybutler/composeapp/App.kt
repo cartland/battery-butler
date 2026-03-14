@@ -55,7 +55,7 @@ import com.chriscartland.batterybutler.presentationcore.util.FileSaver
 import com.chriscartland.batterybutler.presentationcore.util.LocalFileSaver
 import com.chriscartland.batterybutler.presentationcore.util.LocalShareHandler
 import com.chriscartland.batterybutler.presentationcore.util.ShareHandler
-import com.chriscartland.batterybutler.presentationfeature.aichat.ChatUiMessage
+import com.chriscartland.batterybutler.presentationfeature.aichat.ChatMessage
 import com.chriscartland.batterybutler.presentationfeature.main.MainScreenShell
 import com.chriscartland.batterybutler.presentationfeature.main.MainTab
 import com.chriscartland.batterybutler.viewmodel.aichat.AiChatViewModel
@@ -123,7 +123,7 @@ fun App(
             var isTabTransition by rememberSaveable { mutableStateOf(false) }
 
             val aiUiMessages = aiMessages.map { msg ->
-                ChatUiMessage(
+                ChatMessage(
                     id = msg.id,
                     text = msg.text,
                     isUser = msg.role == AiRole.USER,

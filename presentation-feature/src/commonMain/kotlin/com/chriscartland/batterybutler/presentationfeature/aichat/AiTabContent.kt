@@ -55,7 +55,7 @@ import kotlinx.coroutines.flow.drop
  */
 @Composable
 fun AiTabContent(
-    messages: List<ChatUiMessage>,
+    messages: List<ChatMessage>,
     isProcessing: Boolean,
     onSendMessage: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -179,7 +179,7 @@ fun AiTabContent(
 
 @Composable
 private fun TabChatBubble(
-    message: ChatUiMessage,
+    message: ChatMessage,
     modifier: Modifier = Modifier,
 ) {
     val containerColor = if (message.isUser) {
@@ -222,8 +222,8 @@ fun AiTabContentPreview() {
     BatteryButlerTheme {
         AiTabContent(
             messages = listOf(
-                ChatUiMessage("1", "Add a smoke detector in the kitchen", isUser = true),
-                ChatUiMessage(
+                ChatMessage("1", "Add a smoke detector in the kitchen", isUser = true),
+                ChatMessage(
                     "2",
                     "I've added a smoke detector device in the kitchen for you.",
                     isUser = false,

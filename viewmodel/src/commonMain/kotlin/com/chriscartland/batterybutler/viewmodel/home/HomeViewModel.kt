@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.SyncStatus
 import com.chriscartland.batterybutler.presentationmodel.home.GroupOption
-import com.chriscartland.batterybutler.presentationmodel.home.HomeUiState
+import com.chriscartland.batterybutler.presentationmodel.home.HomeScreenState
 import com.chriscartland.batterybutler.presentationmodel.home.SortOption
 import com.chriscartland.batterybutler.usecase.DismissSyncStatusUseCase
 import com.chriscartland.batterybutler.usecase.ExportDataUseCase
@@ -57,7 +57,7 @@ class HomeViewModel(
         }
     }
 
-    val uiState: StateFlow<HomeUiState> = combine(
+    val uiState: StateFlow<HomeScreenState> = combine(
         combine(
             sortOptionFlow,
             groupOptionFlow,
@@ -95,7 +95,7 @@ class HomeViewModel(
             isGroupAscending = config.isGroupAscending,
         )
 
-        HomeUiState(
+        HomeScreenState(
             groupedDevices = finalGroupedDevices,
             deviceTypes = typeMap,
             sortOption = config.sort,
@@ -108,8 +108,8 @@ class HomeViewModel(
     }.safeStateIn(
         scope = viewModelScope,
         started = defaultWhileSubscribed(),
-        initialValue = HomeUiState(),
-        onError = { HomeUiState(error = it.message ?: "Failed to load devices") },
+        initialValue = HomeScreenState(),
+        onError = { HomeScreenState(error = it.message ?: "Failed to load devices") },
     )
 
     fun onSortOptionSelected(option: SortOption) {

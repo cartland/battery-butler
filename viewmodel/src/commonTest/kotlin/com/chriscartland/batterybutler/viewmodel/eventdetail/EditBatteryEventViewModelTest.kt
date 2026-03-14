@@ -1,7 +1,7 @@
 package com.chriscartland.batterybutler.viewmodel.eventdetail
 
 import com.chriscartland.batterybutler.domain.model.DeviceType
-import com.chriscartland.batterybutler.presentationmodel.eventdetail.EditBatteryEventUiState
+import com.chriscartland.batterybutler.presentationmodel.eventdetail.EditBatteryEventScreenState
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
 import com.chriscartland.batterybutler.testcommon.TestDevices
 import com.chriscartland.batterybutler.usecase.DeleteBatteryEventUseCase
@@ -43,7 +43,7 @@ class EditBatteryEventViewModelTest {
             val repo = FakeDeviceRepository()
             val viewModel = createViewModel(repo, "event-1")
 
-            assertEquals(EditBatteryEventUiState.Loading, viewModel.uiState.value)
+            assertEquals(EditBatteryEventScreenState.Loading, viewModel.uiState.value)
         }
 
     @Test
@@ -53,8 +53,8 @@ class EditBatteryEventViewModelTest {
 
             val viewModel = createViewModel(repo, "nonexistent-event")
 
-            val state = viewModel.uiState.first { it is EditBatteryEventUiState.NotFound }
-            assertIs<EditBatteryEventUiState.NotFound>(state)
+            val state = viewModel.uiState.first { it is EditBatteryEventScreenState.NotFound }
+            assertIs<EditBatteryEventScreenState.NotFound>(state)
         }
 
     @Test
@@ -70,8 +70,8 @@ class EditBatteryEventViewModelTest {
 
             val viewModel = createViewModel(repo, "event-1")
 
-            val state = viewModel.uiState.first { it is EditBatteryEventUiState.Success }
-            assertIs<EditBatteryEventUiState.Success>(state)
+            val state = viewModel.uiState.first { it is EditBatteryEventScreenState.Success }
+            assertIs<EditBatteryEventScreenState.Success>(state)
             assertEquals("event-1", state.event.id)
             assertEquals("Smoke Detector", state.device?.name)
             assertEquals("Smoke Detector Type", state.deviceType?.name)

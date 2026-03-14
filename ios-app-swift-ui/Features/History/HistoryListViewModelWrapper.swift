@@ -3,7 +3,7 @@ import shared
 import Combine
 
 class HistoryListViewModelWrapper: ObservableObject {
-    @Published var state: HistoryListUiState
+    @Published var state: HistoryListScreenState
     
     private let viewModel: HistoryListViewModel
     private let viewModelStore = KmpViewModelStore()
@@ -12,14 +12,14 @@ class HistoryListViewModelWrapper: ObservableObject {
     init(_ viewModel: HistoryListViewModel) {
         self.viewModel = viewModel
         viewModelStore.put(key: "vm", viewModel: viewModel)
-        guard let initialState = viewModel.uiState.value as? HistoryListUiState else {
-            fatalError("Expected HistoryListUiState but got \(type(of: viewModel.uiState.value))")
+        guard let initialState = viewModel.uiState.value as? HistoryListScreenState else {
+            fatalError("Expected HistoryListScreenState but got \(type(of: viewModel.uiState.value))")
         }
         self.state = initialState
         
         self.task = Task { @MainActor [weak self] in
             for await newState in viewModel.uiState {
-                if let state = newState as? HistoryListUiState {
+                if let state = newState as? HistoryListScreenState {
                     self?.state = state
                 }
             }

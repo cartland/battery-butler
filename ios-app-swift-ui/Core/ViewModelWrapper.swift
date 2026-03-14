@@ -6,7 +6,7 @@ import Combine
 // Ideally should be renamed/moved to Features/Home/HomeViewModelWrapper.swift.
 
 class HomeViewModelWrapper: ObservableObject {
-    @Published var state: HomeUiState
+    @Published var state: HomeScreenState
 
     private let viewModel: HomeViewModel
     private let viewModelStore = KmpViewModelStore()
@@ -14,15 +14,15 @@ class HomeViewModelWrapper: ObservableObject {
 
     init(_ viewModel: HomeViewModel) {
         self.viewModel = viewModel
-        guard let initialState = viewModel.uiState.value as? HomeUiState else {
-            fatalError("Expected HomeUiState but got \(type(of: viewModel.uiState.value))")
+        guard let initialState = viewModel.uiState.value as? HomeScreenState else {
+            fatalError("Expected HomeScreenState but got \(type(of: viewModel.uiState.value))")
         }
         self.state = initialState
         viewModelStore.put(key: "vm", viewModel: viewModel)
 
         self.task = Task { @MainActor [weak self] in
             for await newState in viewModel.uiState {
-                if let state = newState as? HomeUiState {
+                if let state = newState as? HomeScreenState {
                     self?.state = state
                 }
             }

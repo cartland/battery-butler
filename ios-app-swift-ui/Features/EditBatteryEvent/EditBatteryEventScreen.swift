@@ -41,7 +41,7 @@ struct EditBatteryEventScreen: View {
 }
 
 struct EditBatteryEventContentView: View {
-    let state: EditBatteryEventUiState
+    let state: EditBatteryEventScreenState
     @Binding var eventDate: Date
     @Binding var batteryType: String
     @Binding var notes: String
@@ -56,7 +56,7 @@ struct EditBatteryEventContentView: View {
     var body: some View {
         NavigationStack {
             Group {
-                if let successState = state as? EditBatteryEventUiStateSuccess {
+                if let successState = state as? EditBatteryEventScreenStateSuccess {
                     Form {
                         // Device context section (read-only)
                         if let device = successState.device {
@@ -112,7 +112,7 @@ struct EditBatteryEventContentView: View {
                             hasInitializedFields = true
                         }
                     }
-                } else if state is EditBatteryEventUiStateLoading {
+                } else if state is EditBatteryEventScreenStateLoading {
                     ProgressView("edit_event.loading")
                 } else {
                     Text("edit_event.not_found")

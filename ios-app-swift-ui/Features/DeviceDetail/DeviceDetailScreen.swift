@@ -39,19 +39,19 @@ struct DeviceDetailScreen: View {
 }
 
 struct DeviceDetailContentView<Destination: View>: View {
-    let state: DeviceDetailUiState
+    let state: DeviceDetailScreenState
     let onRecordReplacement: () -> Void
     let eventDestination: (String) -> Destination
 
     var body: some View {
         Group {
-            if let success = state as? DeviceDetailUiStateSuccess {
+            if let success = state as? DeviceDetailScreenStateSuccess {
                 DeviceDetailSuccessView(
                     success: success,
                     onRecordReplacement: onRecordReplacement,
                     eventDestination: eventDestination
                 )
-            } else if state is DeviceDetailUiStateNotFound {
+            } else if state is DeviceDetailScreenStateNotFound {
                 Text("device_detail.not_found")
             } else {
                 ProgressView()
@@ -64,7 +64,7 @@ struct DeviceDetailContentView<Destination: View>: View {
 // MARK: - Success State
 
 private struct DeviceDetailSuccessView<Destination: View>: View {
-    let success: DeviceDetailUiStateSuccess
+    let success: DeviceDetailScreenStateSuccess
     let onRecordReplacement: () -> Void
     let eventDestination: (String) -> Destination
 

@@ -39,14 +39,14 @@ private let historyDayFormatter: DateFormatter = {
 }()
 
 struct HistoryListContentView<EventDestination: View>: View {
-    let state: HistoryListUiState
+    let state: HistoryListScreenState
     let onAddEventTapped: () -> Void
     let onEventTapped: (String, String) -> Void
     let eventDestination: (String) -> EventDestination
 
     var body: some View {
         Group {
-            if let success = state as? HistoryListUiStateSuccess {
+            if let success = state as? HistoryListScreenStateSuccess {
                 if success.items.isEmpty {
                     VStack(spacing: ButlerSpacing.standard) {
                         Image(systemName: "clock.arrow.circlepath")
@@ -139,11 +139,11 @@ struct HistoryListContentView<EventDestination: View>: View {
                         }
                     }
                 }
-            } else if state is HistoryListUiStateLoading {
+            } else if state is HistoryListScreenStateLoading {
                 ProgressView()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .accessibilityLabel("history.accessibility.loading")
-            } else if let error = state as? HistoryListUiStateError {
+            } else if let error = state as? HistoryListScreenStateError {
                 VStack(spacing: ButlerSpacing.standard) {
                     Image(systemName: "exclamationmark.triangle")
                         .font(.system(size: 48))
