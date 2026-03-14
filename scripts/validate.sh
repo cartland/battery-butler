@@ -26,10 +26,13 @@ echo "--- 3b. Detekt ---"
 echo "--- 3c. Architecture Check ---"
 ./gradlew checkArchitecture
 
-echo "--- 3d. Test Coverage Check ---"
+echo "--- 3d. Theme Layer Check ---"
+./gradlew checkThemeLayer
+
+echo "--- 3e. Test Coverage Check ---"
 ./gradlew checkTestCoverage
 
-echo "--- 3e. Naming Convention Check ---"
+echo "--- 3f. Naming Convention Check ---"
 ./gradlew checkNamingConventions
 
 echo "--- 4. Tests (Unit & Instrumented) ---"

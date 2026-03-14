@@ -88,15 +88,18 @@ open class ArchitectureCheckTask : DefaultTask() {
         }
 
         // Specific Check for Module Purity
-        val domainProject = project.findProject(":domain")
-        if (domainProject != null) {
-            if (domainProject.plugins.hasPlugin("com.android.library") || domainProject.plugins.hasPlugin("com.android.application")) {
-                violations.add("Module ':domain' must be Pure Kotlin but has Android plugins applied.")
-            }
-            // Check for android dependencies in commonMain (rough check by name)
-            domainProject.configurations.findByName("commonMainImplementation")?.dependencies?.forEach { dep ->
-                if (dep.group?.startsWith("com.google.android") == true || dep.group?.startsWith("androidx") == true) {
-                    violations.add("Module ':domain' depends on Android library '${dep.group}:${dep.name}'. Domain must be pure.")
+        val domainModules = listOf(":domain", ":experimental:domain")
+        for (domainPath in domainModules) {
+            val domainProject = project.findProject(domainPath)
+            if (domainProject != null) {
+                if (domainProject.plugins.hasPlugin("com.android.library") || domainProject.plugins.hasPlugin("com.android.application")) {
+                    violations.add("Module '$domainPath' must be Pure Kotlin but has Android plugins applied.")
+                }
+                // Check for android dependencies in commonMain (rough check by name)
+                domainProject.configurations.findByName("commonMainImplementation")?.dependencies?.forEach { dep ->
+                    if (dep.group?.startsWith("com.google.android") == true || dep.group?.startsWith("androidx") == true) {
+                        violations.add("Module '$domainPath' depends on Android library '${dep.group}:${dep.name}'. Domain must be pure.")
+                    }
                 }
             }
         }
