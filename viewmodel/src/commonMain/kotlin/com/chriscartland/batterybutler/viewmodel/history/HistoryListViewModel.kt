@@ -2,8 +2,8 @@ package com.chriscartland.batterybutler.viewmodel.history
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.chriscartland.batterybutler.presentationmodel.history.HistoryItemUiModel
-import com.chriscartland.batterybutler.presentationmodel.history.HistoryListUiState
+import com.chriscartland.batterybutler.presentationmodel.history.HistoryItemModel
+import com.chriscartland.batterybutler.presentationmodel.history.HistoryListScreenState
 import com.chriscartland.batterybutler.usecase.GetBatteryEventsUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.GetDevicesUseCase
@@ -20,7 +20,7 @@ class HistoryListViewModel(
     private val getDevicesUseCase: GetDevicesUseCase,
     private val getDeviceTypesUseCase: GetDeviceTypesUseCase,
 ) : ViewModel() {
-    val uiState: StateFlow<HistoryListUiState> = combine(
+    val uiState: StateFlow<HistoryListScreenState> = combine(
         getBatteryEventsUseCase(),
         getDevicesUseCase(),
         getDeviceTypesUseCase(),
@@ -31,18 +31,18 @@ class HistoryListViewModel(
         val items = events.map { event ->
             val device = deviceMap[event.deviceId]
             val type = device?.let { typeMap[it.typeId] }
-            HistoryItemUiModel(
+            HistoryItemModel(
                 event = event,
                 deviceName = device?.name ?: "Unknown Device",
                 deviceTypeName = type?.name ?: "Unknown Type",
                 deviceLocation = device?.location,
             )
         }
-        HistoryListUiState.Success(items)
+        HistoryListScreenState.Success(items)
     }.safeStateIn(
         scope = viewModelScope,
         started = defaultWhileSubscribed(),
-        initialValue = HistoryListUiState.Loading,
-        onError = { HistoryListUiState.Error(it.message ?: "Failed to load history") },
+        initialValue = HistoryListScreenState.Loading,
+        onError = { HistoryListScreenState.Error(it.message ?: "Failed to load history") },
     )
 }

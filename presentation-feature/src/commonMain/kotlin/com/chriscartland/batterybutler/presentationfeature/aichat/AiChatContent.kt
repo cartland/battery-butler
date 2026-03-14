@@ -54,7 +54,7 @@ import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 
 @Composable
 fun AiChatContent(
-    messages: List<ChatUiMessage>,
+    messages: List<ChatMessage>,
     isProcessing: Boolean,
     onSendMessage: (String) -> Unit,
     onClearChat: () -> Unit,
@@ -159,7 +159,7 @@ fun AiChatContent(
 
 @Composable
 private fun ChatBubble(
-    message: ChatUiMessage,
+    message: ChatMessage,
     modifier: Modifier = Modifier,
 ) {
     val containerColor = if (message.isUser) {
@@ -244,15 +244,15 @@ fun AiChatContentPreview() {
     BatteryButlerTheme {
         AiChatContent(
             messages = listOf(
-                ChatUiMessage("1", "Add a smoke detector in the kitchen", isUser = true),
-                ChatUiMessage(
+                ChatMessage("1", "Add a smoke detector in the kitchen", isUser = true),
+                ChatMessage(
                     "2",
                     "I've added a smoke detector device in the kitchen for you. " +
                         "I also created a \"Smoke Detector\" device type.",
                     isUser = false,
                 ),
-                ChatUiMessage("3", "Record a battery replacement for it today", isUser = true),
-                ChatUiMessage(
+                ChatMessage("3", "Record a battery replacement for it today", isUser = true),
+                ChatMessage(
                     "4",
                     "Done! I've recorded a battery replacement for the kitchen smoke detector.",
                     isUser = false,

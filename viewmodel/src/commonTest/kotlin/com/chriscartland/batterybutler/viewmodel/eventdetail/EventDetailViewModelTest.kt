@@ -1,7 +1,7 @@
 package com.chriscartland.batterybutler.viewmodel.eventdetail
 
 import com.chriscartland.batterybutler.domain.model.DeviceType
-import com.chriscartland.batterybutler.presentationmodel.eventdetail.EventDetailUiState
+import com.chriscartland.batterybutler.presentationmodel.eventdetail.EventDetailScreenState
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
 import com.chriscartland.batterybutler.testcommon.TestDevices
 import com.chriscartland.batterybutler.usecase.DeleteBatteryEventUseCase
@@ -43,7 +43,7 @@ class EventDetailViewModelTest {
             val repo = FakeDeviceRepository()
             val viewModel = createViewModel(repo, "event-1")
 
-            assertEquals(EventDetailUiState.Loading, viewModel.uiState.value)
+            assertEquals(EventDetailScreenState.Loading, viewModel.uiState.value)
         }
 
     @Test
@@ -53,8 +53,8 @@ class EventDetailViewModelTest {
 
             val viewModel = createViewModel(repo, "nonexistent-event")
 
-            val state = viewModel.uiState.first { it is EventDetailUiState.NotFound }
-            assertIs<EventDetailUiState.NotFound>(state)
+            val state = viewModel.uiState.first { it is EventDetailScreenState.NotFound }
+            assertIs<EventDetailScreenState.NotFound>(state)
         }
 
     @Test
@@ -70,8 +70,8 @@ class EventDetailViewModelTest {
 
             val viewModel = createViewModel(repo, "event-1")
 
-            val state = viewModel.uiState.first { it is EventDetailUiState.Success }
-            assertIs<EventDetailUiState.Success>(state)
+            val state = viewModel.uiState.first { it is EventDetailScreenState.Success }
+            assertIs<EventDetailScreenState.Success>(state)
             assertEquals("event-1", state.event.id)
             assertEquals("Smoke Detector", state.device?.name)
             assertEquals("Smoke Detector Type", state.deviceType?.name)
@@ -88,8 +88,8 @@ class EventDetailViewModelTest {
 
             val viewModel = createViewModel(repo, "event-1")
 
-            val state = viewModel.uiState.first { it is EventDetailUiState.Success }
-            assertIs<EventDetailUiState.Success>(state)
+            val state = viewModel.uiState.first { it is EventDetailScreenState.Success }
+            assertIs<EventDetailScreenState.Success>(state)
             assertNull(state.deviceType)
         }
 

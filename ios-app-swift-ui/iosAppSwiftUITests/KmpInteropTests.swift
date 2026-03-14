@@ -115,9 +115,9 @@ final class KmpInteropTests: XCTestCase {
         XCTAssertEqual(input.batteryQuantity, 1)
     }
 
-    func testHomeUiStateConstruction() {
-        // HomeUiState has all-default params in Kotlin; Swift requires full-param init
-        let state = HomeUiState(
+    func testHomeScreenStateConstruction() {
+        // HomeScreenState has all-default params in Kotlin; Swift requires full-param init
+        let state = HomeScreenState(
             groups: [:],
             devices: [:],
             groupedDevices: [:],
@@ -168,22 +168,22 @@ final class KmpInteropTests: XCTestCase {
         XCTAssertTrue(success is SyncStatusSuccess)
     }
 
-    func testDeviceDetailUiStateSubtypes() {
-        let loading: DeviceDetailUiState = DeviceDetailUiStateLoading()
-        let notFound: DeviceDetailUiState = DeviceDetailUiStateNotFound()
+    func testDeviceDetailScreenStateSubtypes() {
+        let loading: DeviceDetailScreenState = DeviceDetailScreenStateLoading()
+        let notFound: DeviceDetailScreenState = DeviceDetailScreenStateNotFound()
 
         let device = TestData.device
         let deviceType = TestData.deviceType
         let events = [TestData.batteryEvent]
-        let success: DeviceDetailUiState = DeviceDetailUiStateSuccess(
+        let success: DeviceDetailScreenState = DeviceDetailScreenStateSuccess(
             device: device,
             deviceType: deviceType,
             events: events
         )
 
-        XCTAssertTrue(loading is DeviceDetailUiStateLoading)
-        XCTAssertTrue(notFound is DeviceDetailUiStateNotFound)
-        XCTAssertTrue(success is DeviceDetailUiStateSuccess)
+        XCTAssertTrue(loading is DeviceDetailScreenStateLoading)
+        XCTAssertTrue(notFound is DeviceDetailScreenStateNotFound)
+        XCTAssertTrue(success is DeviceDetailScreenStateSuccess)
     }
 
     func testBatchOperationResultSubtypes() {

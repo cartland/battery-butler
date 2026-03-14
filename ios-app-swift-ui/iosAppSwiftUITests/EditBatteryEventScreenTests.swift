@@ -32,7 +32,7 @@ final class EditBatteryEventScreenTests: XCTestCase {
             batteryQuantity: 2
         )
 
-        let state = EditBatteryEventUiStateSuccess(
+        let state = EditBatteryEventScreenStateSuccess(
             event: dummyEvent,
             device: dummyDevice,
             deviceType: dummyDeviceType
@@ -59,7 +59,7 @@ final class EditBatteryEventScreenTests: XCTestCase {
 
     func testEditBatteryEventContentView_Loading() {
         let view = EditBatteryEventContentView(
-            state: EditBatteryEventUiStateLoading(),
+            state: EditBatteryEventScreenStateLoading(),
             eventDate: .constant(Date()),
             batteryType: .constant(""),
             notes: .constant(""),
@@ -79,7 +79,7 @@ final class EditBatteryEventScreenTests: XCTestCase {
 
     func testEditBatteryEventContentView_NotFound() {
         let view = EditBatteryEventContentView(
-            state: EditBatteryEventUiStateNotFound(),
+            state: EditBatteryEventScreenStateNotFound(),
             eventDate: .constant(Date()),
             batteryType: .constant(""),
             notes: .constant(""),

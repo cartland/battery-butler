@@ -8,7 +8,7 @@ import com.chriscartland.batterybutler.domain.model.DeviceTypeInput
 import com.chriscartland.batterybutler.domain.model.FeatureFlag
 import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.repository.FeatureFlagProvider
-import com.chriscartland.batterybutler.presentationmodel.adddevicetype.AddDeviceTypeUiState
+import com.chriscartland.batterybutler.presentationmodel.adddevicetype.AddDeviceTypeScreenState
 import com.chriscartland.batterybutler.usecase.AddDeviceTypeUseCase
 import com.chriscartland.batterybutler.usecase.BatchAddDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.SuggestDeviceIconUseCase
@@ -51,14 +51,14 @@ class AddDeviceTypeViewModel(
     private val usedIconsFlow = getDeviceTypesUseCase()
         .map { types -> types.mapNotNull { it.defaultIcon }.distinct() }
 
-    val uiState: StateFlow<AddDeviceTypeUiState> = combine(
+    val uiState: StateFlow<AddDeviceTypeScreenState> = combine(
         isAiBatchImportEnabledFlow,
         aiMessagesFlow,
         suggestedIconFlow,
         usedIconsFlow,
         isSuggestingIconFlow,
     ) { isAiEnabled, aiMessages, suggestedIcon, usedIcons, isSuggestingIcon ->
-        AddDeviceTypeUiState(
+        AddDeviceTypeScreenState(
             isAiBatchImportEnabled = isAiEnabled,
             aiMessages = aiMessages,
             suggestedIcon = suggestedIcon,
@@ -68,10 +68,10 @@ class AddDeviceTypeViewModel(
     }.safeStateIn(
         scope = viewModelScope,
         started = defaultWhileSubscribed(),
-        initialValue = AddDeviceTypeUiState(),
+        initialValue = AddDeviceTypeScreenState(),
         onError = { e ->
             _actionError.value = e.message ?: "Failed to load device type data"
-            AddDeviceTypeUiState()
+            AddDeviceTypeScreenState()
         },
     )
 

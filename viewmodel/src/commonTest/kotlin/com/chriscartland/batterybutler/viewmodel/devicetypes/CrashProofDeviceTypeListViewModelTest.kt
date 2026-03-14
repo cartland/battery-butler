@@ -4,7 +4,7 @@ import com.chriscartland.batterybutler.domain.model.DataError
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
-import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeListUiState
+import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeListScreenState
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.PreloadCommonTypesUseCase
@@ -60,7 +60,7 @@ class CrashProofDeviceTypeListViewModelTest {
 
             // safeStateIn catches the exception and emits an Error state
             val finalState = viewModel.uiState.value
-            assertIs<DeviceTypeListUiState.Error>(finalState)
+            assertIs<DeviceTypeListScreenState.Error>(finalState)
             assertEquals("Simulated getAllDeviceTypes failure", finalState.message)
 
             job.cancel()

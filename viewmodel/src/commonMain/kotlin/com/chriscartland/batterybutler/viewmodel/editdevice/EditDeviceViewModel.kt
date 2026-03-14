@@ -3,7 +3,7 @@ package com.chriscartland.batterybutler.viewmodel.editdevice
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chriscartland.batterybutler.domain.model.DeviceInput
-import com.chriscartland.batterybutler.presentationmodel.editdevice.EditDeviceUiState
+import com.chriscartland.batterybutler.presentationmodel.editdevice.EditDeviceScreenState
 import com.chriscartland.batterybutler.usecase.DeleteDeviceUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceDetailUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
@@ -40,14 +40,14 @@ class EditDeviceViewModel(
     private val updateDeviceUseCase: UpdateDeviceUseCase,
     private val deleteDeviceUseCase: DeleteDeviceUseCase,
 ) : ViewModel() {
-    val uiState: StateFlow<EditDeviceUiState> = combine(
+    val uiState: StateFlow<EditDeviceScreenState> = combine(
         getDeviceDetailUseCase(deviceId),
         getDeviceTypesUseCase(),
     ) { device, types ->
         if (device == null) {
-            EditDeviceUiState.NotFound
+            EditDeviceScreenState.NotFound
         } else {
-            EditDeviceUiState.Success(
+            EditDeviceScreenState.Success(
                 device = device,
                 deviceTypes = types,
             )
@@ -55,12 +55,12 @@ class EditDeviceViewModel(
     }.safeStateIn(
         scope = viewModelScope,
         started = defaultWhileSubscribed(),
-        initialValue = EditDeviceUiState.Loading,
+        initialValue = EditDeviceScreenState.Loading,
     )
 
     fun updateDevice(input: DeviceInput) {
         val currentState = uiState.value
-        if (currentState is EditDeviceUiState.Success) {
+        if (currentState is EditDeviceScreenState.Success) {
             viewModelScope.launch {
                 val updatedDevice = currentState.device.copy(
                     name = input.name,

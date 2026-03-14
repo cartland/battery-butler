@@ -92,7 +92,7 @@ PR #873 implemented the full iOS design language from `docs/design/IOS_DESIGN_LA
 | KMP Type | Swift Constructor | Example |
 |----------|------------------|---------|
 | `data class` (no defaults) | Full-param labeled init | `Device(id:name:typeId:...)` |
-| `data class` (all defaults) | Full-param init OR no-arg init | `HomeUiState(groups:devices:...)` |
+| `data class` (all defaults) | Full-param init OR no-arg init | `HomeScreenState(groups:devices:...)` |
 | `data object` | `TypeName()` | `SyncStatusIdle()` |
 | `sealed interface` subtype | Flattened name + init | `AuthStateAuthenticated(user:)` |
 | `enum class` | Lowercase dot syntax | `.user`, `.model`, `.name` |
@@ -102,7 +102,7 @@ PR #873 implemented the full iOS design language from `docs/design/IOS_DESIGN_LA
 
 Kotlin nested types flatten to concatenated names:
 - `AuthState.Authenticated` → `AuthStateAuthenticated`
-- `DeviceDetailUiState.Success` → `DeviceDetailUiStateSuccess`
+- `DeviceDetailScreenState.Success` → `DeviceDetailScreenStateSuccess`
 - `SyncStatus.Idle` → `SyncStatusIdle`
 - `BatchOperationResult.Progress` → `BatchOperationResultProgress`
 - `DataError.Unknown` → `DataErrorUnknown`

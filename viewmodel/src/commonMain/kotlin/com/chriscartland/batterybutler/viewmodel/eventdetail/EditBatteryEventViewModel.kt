@@ -2,7 +2,7 @@ package com.chriscartland.batterybutler.viewmodel.eventdetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.chriscartland.batterybutler.presentationmodel.eventdetail.EditBatteryEventUiState
+import com.chriscartland.batterybutler.presentationmodel.eventdetail.EditBatteryEventScreenState
 import com.chriscartland.batterybutler.usecase.DeleteBatteryEventUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceDetailUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
@@ -46,17 +46,17 @@ class EditBatteryEventViewModel(
     private val updateBatteryEventUseCase: UpdateBatteryEventUseCase,
     private val deleteBatteryEventUseCase: DeleteBatteryEventUseCase,
 ) : ViewModel() {
-    val uiState: StateFlow<EditBatteryEventUiState> = getEventDetailUseCase(eventId)
+    val uiState: StateFlow<EditBatteryEventScreenState> = getEventDetailUseCase(eventId)
         .flatMapLatest { event ->
             if (event == null) {
-                flowOf(EditBatteryEventUiState.NotFound)
+                flowOf(EditBatteryEventScreenState.NotFound)
             } else {
                 combine(
                     getDeviceDetailUseCase(event.deviceId),
                     getDeviceTypesUseCase(),
                 ) { device, types ->
                     val deviceType = device?.let { d -> types.find { it.id == d.typeId } }
-                    EditBatteryEventUiState.Success(
+                    EditBatteryEventScreenState.Success(
                         event = event,
                         device = device,
                         deviceType = deviceType,
@@ -66,7 +66,7 @@ class EditBatteryEventViewModel(
         }.safeStateIn(
             scope = viewModelScope,
             started = defaultWhileSubscribed(),
-            initialValue = EditBatteryEventUiState.Loading,
+            initialValue = EditBatteryEventScreenState.Loading,
         )
 
     fun updateEvent(
@@ -75,7 +75,7 @@ class EditBatteryEventViewModel(
         notes: String?,
     ) {
         val currentState = uiState.value
-        if (currentState is EditBatteryEventUiState.Success) {
+        if (currentState is EditBatteryEventScreenState.Success) {
             viewModelScope.launch {
                 updateBatteryEventUseCase(
                     currentState.event.copy(

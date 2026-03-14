@@ -49,6 +49,7 @@ plugins {
     id("preview.coverage.check")
     id("theme.layer.check")
     id("test.coverage.check")
+    id("naming.convention.check")
 }
 
 allprojects {

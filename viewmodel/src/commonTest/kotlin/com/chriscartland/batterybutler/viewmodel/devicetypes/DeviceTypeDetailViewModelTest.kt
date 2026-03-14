@@ -1,6 +1,6 @@
 package com.chriscartland.batterybutler.viewmodel.devicetypes
 
-import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeDetailUiState
+import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeDetailScreenState
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
 import com.chriscartland.batterybutler.testcommon.TestDevices
 import com.chriscartland.batterybutler.usecase.GetDeviceTypeDetailUseCase
@@ -38,7 +38,7 @@ class DeviceTypeDetailViewModelTest {
             val repo = FakeDeviceRepository()
             val viewModel = createViewModel(repo, "type-1")
 
-            assertEquals(DeviceTypeDetailUiState.Loading, viewModel.uiState.value)
+            assertEquals(DeviceTypeDetailScreenState.Loading, viewModel.uiState.value)
         }
 
     @Test
@@ -48,8 +48,8 @@ class DeviceTypeDetailViewModelTest {
 
             val viewModel = createViewModel(repo, "nonexistent-type")
 
-            val state = viewModel.uiState.first { it is DeviceTypeDetailUiState.NotFound }
-            assertIs<DeviceTypeDetailUiState.NotFound>(state)
+            val state = viewModel.uiState.first { it is DeviceTypeDetailScreenState.NotFound }
+            assertIs<DeviceTypeDetailScreenState.NotFound>(state)
         }
 
     @Test
@@ -64,8 +64,8 @@ class DeviceTypeDetailViewModelTest {
 
             val viewModel = createViewModel(repo, "type-1")
 
-            val state = viewModel.uiState.first { it is DeviceTypeDetailUiState.Success }
-            assertIs<DeviceTypeDetailUiState.Success>(state)
+            val state = viewModel.uiState.first { it is DeviceTypeDetailScreenState.Success }
+            assertIs<DeviceTypeDetailScreenState.Success>(state)
             assertEquals("Smoke Detector", state.deviceType.name)
             assertEquals(1, state.devices.size)
             assertEquals("Kitchen Detector", state.devices.first().name)

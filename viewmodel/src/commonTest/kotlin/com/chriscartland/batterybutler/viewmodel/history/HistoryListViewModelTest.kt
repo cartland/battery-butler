@@ -1,7 +1,7 @@
 package com.chriscartland.batterybutler.viewmodel.history
 
 import com.chriscartland.batterybutler.domain.model.DeviceType
-import com.chriscartland.batterybutler.presentationmodel.history.HistoryListUiState
+import com.chriscartland.batterybutler.presentationmodel.history.HistoryListScreenState
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
 import com.chriscartland.batterybutler.testcommon.TestDevices
 import com.chriscartland.batterybutler.usecase.GetBatteryEventsUseCase
@@ -44,11 +44,11 @@ class HistoryListViewModelTest {
 
             val state = viewModel.uiState.value
 
-            assertIs<HistoryListUiState.Loading>(state)
+            assertIs<HistoryListScreenState.Loading>(state)
         }
 
     @Test
-    fun `events with matching devices produce correct HistoryItemUiModel`() =
+    fun `events with matching devices produce correct HistoryItemModel`() =
         runTest {
             val repo = FakeDeviceRepository()
             val device = TestDevices.createDevice(id = "d1", name = "Kitchen Smoke", typeId = "type-1")
@@ -60,8 +60,8 @@ class HistoryListViewModelTest {
 
             val viewModel = createViewModel(repo)
 
-            val state = viewModel.uiState.first { it is HistoryListUiState.Success }
-            assertIs<HistoryListUiState.Success>(state)
+            val state = viewModel.uiState.first { it is HistoryListScreenState.Success }
+            assertIs<HistoryListScreenState.Success>(state)
             assertEquals(1, state.items.size)
             assertEquals("Kitchen Smoke", state.items[0].deviceName)
             assertEquals("Smoke Detector", state.items[0].deviceTypeName)
@@ -77,8 +77,8 @@ class HistoryListViewModelTest {
 
             val viewModel = createViewModel(repo)
 
-            val state = viewModel.uiState.first { it is HistoryListUiState.Success }
-            assertIs<HistoryListUiState.Success>(state)
+            val state = viewModel.uiState.first { it is HistoryListScreenState.Success }
+            assertIs<HistoryListScreenState.Success>(state)
             assertEquals(1, state.items.size)
             assertEquals("Unknown Device", state.items[0].deviceName)
             assertEquals("Unknown Type", state.items[0].deviceTypeName)
@@ -95,8 +95,8 @@ class HistoryListViewModelTest {
 
             val viewModel = createViewModel(repo)
 
-            val state = viewModel.uiState.first { it is HistoryListUiState.Success }
-            assertIs<HistoryListUiState.Success>(state)
+            val state = viewModel.uiState.first { it is HistoryListScreenState.Success }
+            assertIs<HistoryListScreenState.Success>(state)
             assertEquals(1, state.items.size)
             assertEquals("My Device", state.items[0].deviceName)
             assertEquals("Unknown Type", state.items[0].deviceTypeName)
@@ -110,13 +110,13 @@ class HistoryListViewModelTest {
 
             val viewModel = createViewModel(repo)
 
-            val state = viewModel.uiState.first { it is HistoryListUiState.Success }
-            assertIs<HistoryListUiState.Success>(state)
+            val state = viewModel.uiState.first { it is HistoryListScreenState.Success }
+            assertIs<HistoryListScreenState.Success>(state)
             assertEquals(0, state.items.size)
         }
 
     @Test
-    fun `device location flows through to HistoryItemUiModel`() =
+    fun `device location flows through to HistoryItemModel`() =
         runTest {
             val repo = FakeDeviceRepository()
             val device = TestDevices.createDevice(
@@ -133,8 +133,8 @@ class HistoryListViewModelTest {
 
             val viewModel = createViewModel(repo)
 
-            val state = viewModel.uiState.first { it is HistoryListUiState.Success }
-            assertIs<HistoryListUiState.Success>(state)
+            val state = viewModel.uiState.first { it is HistoryListScreenState.Success }
+            assertIs<HistoryListScreenState.Success>(state)
             assertEquals("Kitchen", state.items[0].deviceLocation)
         }
 
@@ -156,8 +156,8 @@ class HistoryListViewModelTest {
 
             val viewModel = createViewModel(repo)
 
-            val state = viewModel.uiState.first { it is HistoryListUiState.Success }
-            assertIs<HistoryListUiState.Success>(state)
+            val state = viewModel.uiState.first { it is HistoryListScreenState.Success }
+            assertIs<HistoryListScreenState.Success>(state)
             assertNull(state.items[0].deviceLocation)
         }
 
@@ -177,8 +177,8 @@ class HistoryListViewModelTest {
 
             val viewModel = createViewModel(repo)
 
-            val state = viewModel.uiState.first { it is HistoryListUiState.Success }
-            assertIs<HistoryListUiState.Success>(state)
+            val state = viewModel.uiState.first { it is HistoryListScreenState.Success }
+            assertIs<HistoryListScreenState.Success>(state)
             assertEquals(2, state.items.size)
             assertEquals("Device A", state.items[0].deviceName)
             assertEquals("Type One", state.items[0].deviceTypeName)
@@ -198,8 +198,8 @@ class HistoryListViewModelTest {
             val viewModel = createViewModel(repo)
 
             // Initially empty
-            val emptyState = viewModel.uiState.first { it is HistoryListUiState.Success }
-            assertIs<HistoryListUiState.Success>(emptyState)
+            val emptyState = viewModel.uiState.first { it is HistoryListScreenState.Success }
+            assertIs<HistoryListScreenState.Success>(emptyState)
             assertEquals(0, emptyState.items.size)
 
             // Add an event
@@ -207,9 +207,9 @@ class HistoryListViewModelTest {
             repo.setEvents(listOf(event))
 
             val updatedState = viewModel.uiState.first {
-                it is HistoryListUiState.Success && it.items.isNotEmpty()
+                it is HistoryListScreenState.Success && it.items.isNotEmpty()
             }
-            assertIs<HistoryListUiState.Success>(updatedState)
+            assertIs<HistoryListScreenState.Success>(updatedState)
             assertEquals(1, updatedState.items.size)
             assertEquals("Device", updatedState.items[0].deviceName)
         }

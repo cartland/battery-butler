@@ -26,8 +26,8 @@ import com.chriscartland.batterybutler.presentationcore.components.EmptyStateCon
 import com.chriscartland.batterybutler.presentationcore.components.HistoryListItem
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationcore.theme.Padding
-import com.chriscartland.batterybutler.presentationmodel.history.HistoryItemUiModel
-import com.chriscartland.batterybutler.presentationmodel.history.HistoryListUiState
+import com.chriscartland.batterybutler.presentationmodel.history.HistoryItemModel
+import com.chriscartland.batterybutler.presentationmodel.history.HistoryListScreenState
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -35,7 +35,7 @@ import kotlin.time.Instant
 @OptIn(ExperimentalTime::class)
 @Composable
 fun HistoryListContent(
-    state: HistoryListUiState,
+    state: HistoryListScreenState,
     onEventClick: (String, String) -> Unit,
     onAddEventClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -44,10 +44,10 @@ fun HistoryListContent(
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         when (state) {
-            HistoryListUiState.Loading -> {
+            HistoryListScreenState.Loading -> {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
-            is HistoryListUiState.Error -> {
+            is HistoryListScreenState.Error -> {
                 EmptyStateContent(
                     icon = Icons.Default.Warning,
                     title = "Something went wrong",
@@ -55,7 +55,7 @@ fun HistoryListContent(
                     modifier = Modifier.padding(contentPadding),
                 )
             }
-            is HistoryListUiState.Success -> {
+            is HistoryListScreenState.Success -> {
                 if (state.items.isEmpty()) {
                     EmptyStateContent(
                         icon = Icons.Default.History,
@@ -97,7 +97,7 @@ fun HistoryListContent(
 fun HistoryListContentEmptyPreview() {
     BatteryButlerTheme {
         HistoryListContent(
-            state = HistoryListUiState.Success(items = emptyList()),
+            state = HistoryListScreenState.Success(items = emptyList()),
             onEventClick = { _, _ -> },
             onAddEventClick = {},
             nowInstant = Instant.parse("2026-01-18T17:00:00Z"),
@@ -110,7 +110,7 @@ fun HistoryListContentEmptyPreview() {
 fun HistoryListContentLoadingPreview() {
     BatteryButlerTheme {
         HistoryListContent(
-            state = HistoryListUiState.Loading,
+            state = HistoryListScreenState.Loading,
             onEventClick = { _, _ -> },
             onAddEventClick = {},
         )
@@ -122,7 +122,7 @@ fun HistoryListContentLoadingPreview() {
 fun HistoryListContentErrorPreview() {
     BatteryButlerTheme {
         HistoryListContent(
-            state = HistoryListUiState.Error("Failed to load history"),
+            state = HistoryListScreenState.Error("Failed to load history"),
             onEventClick = { _, _ -> },
             onAddEventClick = {},
         )
@@ -138,8 +138,8 @@ fun HistoryListContentPreview() {
         val nowInstant = Instant.parse("2026-01-18T17:00:00Z")
         val eventInstant = Instant.parse("2026-01-11T17:00:00Z") // 7 days ago
         val event = BatteryEvent("evt1", "dev1", eventInstant)
-        val item = HistoryItemUiModel(event, "Kitchen Smoke", "Smoke Alarm", "Kitchen")
-        val state = HistoryListUiState.Success(
+        val item = HistoryItemModel(event, "Kitchen Smoke", "Smoke Alarm", "Kitchen")
+        val state = HistoryListScreenState.Success(
             items = listOf(item),
         )
         HistoryListContent(

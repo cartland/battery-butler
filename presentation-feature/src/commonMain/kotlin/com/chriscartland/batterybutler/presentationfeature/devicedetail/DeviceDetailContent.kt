@@ -59,7 +59,7 @@ import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMap
 import com.chriscartland.batterybutler.presentationcore.components.HistoryListItem
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationcore.theme.Padding
-import com.chriscartland.batterybutler.presentationmodel.devicedetail.DeviceDetailUiState
+import com.chriscartland.batterybutler.presentationmodel.devicedetail.DeviceDetailScreenState
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -67,7 +67,7 @@ import kotlin.time.Instant
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
 @Composable
 fun DeviceDetailContent(
-    state: DeviceDetailUiState,
+    state: DeviceDetailScreenState,
     onRecordReplacement: () -> Unit,
     onBack: () -> Unit,
     onEdit: () -> Unit,
@@ -95,13 +95,13 @@ fun DeviceDetailContent(
     ) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
             when (state) {
-                DeviceDetailUiState.Loading -> {
+                DeviceDetailScreenState.Loading -> {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
-                DeviceDetailUiState.NotFound -> {
+                DeviceDetailScreenState.NotFound -> {
                     Text(composeStringResource(Res.string.error_device_not_found), modifier = Modifier.align(Alignment.Center))
                 }
-                is DeviceDetailUiState.Success -> {
+                is DeviceDetailScreenState.Success -> {
                     DeviceDetailBody(
                         state = state,
                         onRecordReplacement = onRecordReplacement,
@@ -118,7 +118,7 @@ fun DeviceDetailContent(
 @OptIn(ExperimentalTime::class)
 @Composable
 fun DeviceDetailBody(
-    state: DeviceDetailUiState.Success,
+    state: DeviceDetailScreenState.Success,
     onRecordReplacement: () -> Unit,
     onEventClick: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -369,7 +369,7 @@ fun DeviceDetailContentPreview() {
         val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
         val device = Device("dev1", "Kitchen Smoke", "type1", nowInstant, nowInstant, "Kitchen")
         val event = BatteryEvent("evt1", "dev1", eventInstant)
-        val state = DeviceDetailUiState.Success(
+        val state = DeviceDetailScreenState.Success(
             device = device,
             deviceType = type,
             events = listOf(event),
@@ -390,7 +390,7 @@ fun DeviceDetailContentPreview() {
 fun DeviceDetailLoadingPreview() {
     BatteryButlerTheme {
         DeviceDetailContent(
-            state = DeviceDetailUiState.Loading,
+            state = DeviceDetailScreenState.Loading,
             onRecordReplacement = {},
             onBack = {},
             onEdit = {},
@@ -404,7 +404,7 @@ fun DeviceDetailLoadingPreview() {
 fun DeviceDetailNotFoundPreview() {
     BatteryButlerTheme {
         DeviceDetailContent(
-            state = DeviceDetailUiState.NotFound,
+            state = DeviceDetailScreenState.NotFound,
             onRecordReplacement = {},
             onBack = {},
             onEdit = {},

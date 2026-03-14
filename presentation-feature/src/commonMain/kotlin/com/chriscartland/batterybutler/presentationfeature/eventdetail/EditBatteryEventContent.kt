@@ -57,7 +57,7 @@ import com.chriscartland.batterybutler.presentationcore.components.ButlerCentere
 import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMapper
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationcore.theme.Padding
-import com.chriscartland.batterybutler.presentationmodel.eventdetail.EditBatteryEventUiState
+import com.chriscartland.batterybutler.presentationmodel.eventdetail.EditBatteryEventScreenState
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.ExperimentalTime
@@ -66,7 +66,7 @@ import kotlin.time.Instant
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
 @Composable
 fun EditBatteryEventContent(
-    uiState: EditBatteryEventUiState,
+    uiState: EditBatteryEventScreenState,
     onSave: (Instant, String?, String?) -> Unit,
     onDelete: () -> Unit,
     onBack: () -> Unit,
@@ -110,13 +110,13 @@ fun EditBatteryEventContent(
     ) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
             when (uiState) {
-                EditBatteryEventUiState.Loading -> {
+                EditBatteryEventScreenState.Loading -> {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
-                EditBatteryEventUiState.NotFound -> {
+                EditBatteryEventScreenState.NotFound -> {
                     Text("Event not found", modifier = Modifier.align(Alignment.Center))
                 }
-                is EditBatteryEventUiState.Success -> {
+                is EditBatteryEventScreenState.Success -> {
                     val event = uiState.event
                     LaunchedEffect(event) {
                         if (!isInitialized) {
@@ -299,7 +299,7 @@ fun EditBatteryEventContentPreview() {
         val event = BatteryEvent("evt1", "dev1", now, batteryType = "AA", notes = "Replaced with rechargeable")
         val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
         val device = Device("dev1", "Kitchen Smoke", "type1", now, now, "Kitchen")
-        val state = EditBatteryEventUiState.Success(
+        val state = EditBatteryEventScreenState.Success(
             event = event,
             device = device,
             deviceType = type,
@@ -318,7 +318,7 @@ fun EditBatteryEventContentPreview() {
 fun EditBatteryEventNotFoundPreview() {
     BatteryButlerTheme {
         EditBatteryEventContent(
-            uiState = EditBatteryEventUiState.NotFound,
+            uiState = EditBatteryEventScreenState.NotFound,
             onSave = { _, _, _ -> },
             onDelete = {},
             onBack = {},
@@ -331,7 +331,7 @@ fun EditBatteryEventNotFoundPreview() {
 fun EditBatteryEventLoadingPreview() {
     BatteryButlerTheme {
         EditBatteryEventContent(
-            uiState = EditBatteryEventUiState.Loading,
+            uiState = EditBatteryEventScreenState.Loading,
             onSave = { _, _, _ -> },
             onDelete = {},
             onBack = {},

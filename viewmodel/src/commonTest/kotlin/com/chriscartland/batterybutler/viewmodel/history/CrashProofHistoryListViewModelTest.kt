@@ -4,7 +4,7 @@ import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
-import com.chriscartland.batterybutler.presentationmodel.history.HistoryListUiState
+import com.chriscartland.batterybutler.presentationmodel.history.HistoryListScreenState
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
 import com.chriscartland.batterybutler.usecase.GetBatteryEventsUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
@@ -59,7 +59,7 @@ class CrashProofHistoryListViewModelTest {
 
             // safeStateIn catches the exception and emits an Error state
             val finalState = viewModel.uiState.value
-            assertIs<HistoryListUiState.Error>(finalState)
+            assertIs<HistoryListScreenState.Error>(finalState)
             assertEquals("Simulated getAllEvents failure", finalState.message)
 
             job.cancel()
@@ -86,7 +86,7 @@ class CrashProofHistoryListViewModelTest {
 
             // safeStateIn catches the exception and emits an Error state
             val finalState = viewModel.uiState.value
-            assertIs<HistoryListUiState.Error>(finalState)
+            assertIs<HistoryListScreenState.Error>(finalState)
             assertEquals("Simulated getAllDevices failure", finalState.message)
 
             job.cancel()
@@ -113,7 +113,7 @@ class CrashProofHistoryListViewModelTest {
 
             // safeStateIn catches the exception and emits an Error state
             val finalState = viewModel.uiState.value
-            assertIs<HistoryListUiState.Error>(finalState)
+            assertIs<HistoryListScreenState.Error>(finalState)
             assertEquals("Simulated getAllDeviceTypes failure", finalState.message)
 
             job.cancel()

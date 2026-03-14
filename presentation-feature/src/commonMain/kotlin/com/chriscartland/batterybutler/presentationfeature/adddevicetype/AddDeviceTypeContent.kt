@@ -74,12 +74,12 @@ import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMap
 import com.chriscartland.batterybutler.presentationcore.components.DeviceTypeIconItem
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationcore.theme.Padding
-import com.chriscartland.batterybutler.presentationmodel.adddevicetype.AddDeviceTypeUiState
+import com.chriscartland.batterybutler.presentationmodel.adddevicetype.AddDeviceTypeScreenState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddDeviceTypeContent(
-    uiState: AddDeviceTypeUiState,
+    uiState: AddDeviceTypeScreenState,
     onDeviceTypeAdded: (DeviceTypeInput) -> Unit,
     onBatchAdd: (String) -> Unit,
     onBack: () -> Unit,
@@ -317,7 +317,7 @@ fun AddDeviceTypeContent(
 fun AddDeviceTypeContentPreview() {
     BatteryButlerTheme {
         AddDeviceTypeContent(
-            uiState = AddDeviceTypeUiState(
+            uiState = AddDeviceTypeScreenState(
                 aiMessages = listOf(
                     BatchOperationResult.Progress("Processing..."),
                     BatchOperationResult.Success("Confirmed"),
@@ -337,7 +337,7 @@ fun AddDeviceTypeContentPreview() {
 fun AddDeviceTypeContentFilledPreview() {
     BatteryButlerTheme {
         AddDeviceTypeContent(
-            uiState = AddDeviceTypeUiState(),
+            uiState = AddDeviceTypeScreenState(),
             onDeviceTypeAdded = {},
             onBatchAdd = {},
             onBack = {},
@@ -351,7 +351,7 @@ fun AddDeviceTypeContentFilledPreview() {
 fun AddDeviceTypeContentErrorPreview() {
     BatteryButlerTheme {
         AddDeviceTypeContent(
-            uiState = AddDeviceTypeUiState(),
+            uiState = AddDeviceTypeScreenState(),
             onDeviceTypeAdded = {},
             onBatchAdd = {},
             onBack = {},

@@ -7,7 +7,7 @@ import com.chriscartland.batterybutler.domain.model.BatchOperationResult
  *
  * Groups related state to reduce parameter count in composables.
  */
-data class AddDeviceTypeUiState(
+data class AddDeviceTypeScreenState(
     val isAiBatchImportEnabled: Boolean = false,
     val aiMessages: List<BatchOperationResult> = emptyList(),
     val suggestedIcon: String? = null,

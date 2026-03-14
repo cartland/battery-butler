@@ -3,7 +3,7 @@ import shared
 import Combine
 
 class DeviceTypeListViewModelWrapper: ObservableObject {
-    @Published var state: DeviceTypeListUiState
+    @Published var state: DeviceTypeListScreenState
 
     private let viewModel: DeviceTypeListViewModel
     private let viewModelStore = KmpViewModelStore()
@@ -11,15 +11,15 @@ class DeviceTypeListViewModelWrapper: ObservableObject {
 
     init(_ viewModel: DeviceTypeListViewModel) {
         self.viewModel = viewModel
-        guard let initialState = viewModel.uiState.value as? DeviceTypeListUiState else {
-            fatalError("Expected DeviceTypeListUiState but got \(type(of: viewModel.uiState.value))")
+        guard let initialState = viewModel.uiState.value as? DeviceTypeListScreenState else {
+            fatalError("Expected DeviceTypeListScreenState but got \(type(of: viewModel.uiState.value))")
         }
         self.state = initialState
         viewModelStore.put(key: "vm", viewModel: viewModel)
 
         self.task = Task { @MainActor [weak self] in
             for await newState in viewModel.uiState {
-                if let state = newState as? DeviceTypeListUiState {
+                if let state = newState as? DeviceTypeListScreenState {
                     self?.state = state
                 }
             }

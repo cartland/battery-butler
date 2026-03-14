@@ -7,7 +7,7 @@ import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.model.SyncStatus
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
-import com.chriscartland.batterybutler.presentationmodel.devicedetail.DeviceDetailUiState
+import com.chriscartland.batterybutler.presentationmodel.devicedetail.DeviceDetailScreenState
 import com.chriscartland.batterybutler.testcommon.TestDevices
 import com.chriscartland.batterybutler.usecase.AddBatteryEventUseCase
 import com.chriscartland.batterybutler.usecase.GetBatteryEventsUseCase
@@ -59,7 +59,7 @@ class DeviceDetailViewModelTest {
 
             val state = viewModel.uiState.value
 
-            assertIs<DeviceDetailUiState.Loading>(state)
+            assertIs<DeviceDetailScreenState.Loading>(state)
         }
 
     @Test
@@ -71,8 +71,8 @@ class DeviceDetailViewModelTest {
 
             advanceUntilIdle()
 
-            val state = viewModel.uiState.first { it !is DeviceDetailUiState.Loading }
-            assertIs<DeviceDetailUiState.NotFound>(state)
+            val state = viewModel.uiState.first { it !is DeviceDetailScreenState.Loading }
+            assertIs<DeviceDetailScreenState.NotFound>(state)
         }
 
     @Test
@@ -86,8 +86,8 @@ class DeviceDetailViewModelTest {
 
             advanceUntilIdle()
 
-            val state = viewModel.uiState.first { it is DeviceDetailUiState.Success }
-            assertIs<DeviceDetailUiState.Success>(state)
+            val state = viewModel.uiState.first { it is DeviceDetailScreenState.Success }
+            assertIs<DeviceDetailScreenState.Success>(state)
             assertEquals("device-1", state.device.id)
             assertEquals("Smoke Detector", state.device.name)
         }
@@ -105,8 +105,8 @@ class DeviceDetailViewModelTest {
 
             advanceUntilIdle()
 
-            val state = viewModel.uiState.first { it is DeviceDetailUiState.Success }
-            assertIs<DeviceDetailUiState.Success>(state)
+            val state = viewModel.uiState.first { it is DeviceDetailScreenState.Success }
+            assertIs<DeviceDetailScreenState.Success>(state)
             assertNotNull(state.deviceType)
             assertEquals("type-1", state.deviceType!!.id)
             assertEquals("Smoke Detector", state.deviceType!!.name)
@@ -125,8 +125,8 @@ class DeviceDetailViewModelTest {
 
             advanceUntilIdle()
 
-            val state = viewModel.uiState.first { it is DeviceDetailUiState.Success }
-            assertIs<DeviceDetailUiState.Success>(state)
+            val state = viewModel.uiState.first { it is DeviceDetailScreenState.Success }
+            assertIs<DeviceDetailScreenState.Success>(state)
             assertEquals(null, state.deviceType)
         }
 
@@ -152,8 +152,8 @@ class DeviceDetailViewModelTest {
 
             advanceUntilIdle()
 
-            val state = viewModel.uiState.first { it is DeviceDetailUiState.Success }
-            assertIs<DeviceDetailUiState.Success>(state)
+            val state = viewModel.uiState.first { it is DeviceDetailScreenState.Success }
+            assertIs<DeviceDetailScreenState.Success>(state)
             assertEquals(2, state.events.size)
             assertTrue(state.events.any { it.id == "event-1" })
             assertTrue(state.events.any { it.id == "event-2" })
@@ -171,7 +171,7 @@ class DeviceDetailViewModelTest {
             advanceUntilIdle()
 
             // Ensure we're in success state first
-            viewModel.uiState.first { it is DeviceDetailUiState.Success }
+            viewModel.uiState.first { it is DeviceDetailScreenState.Success }
 
             viewModel.recordReplacement()
 
@@ -197,7 +197,7 @@ class DeviceDetailViewModelTest {
             advanceUntilIdle()
 
             // Ensure we're in success state first
-            viewModel.uiState.first { it is DeviceDetailUiState.Success }
+            viewModel.uiState.first { it is DeviceDetailScreenState.Success }
 
             viewModel.recordReplacement()
 

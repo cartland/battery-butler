@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeGroupOption
-import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeListUiState
+import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeListScreenState
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeSortOption
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.PreloadCommonTypesUseCase
@@ -35,7 +35,7 @@ class DeviceTypeListViewModel(
     private val isSortAscendingFlow = MutableStateFlow(true)
     private val isGroupAscendingFlow = MutableStateFlow(true)
 
-    val uiState: StateFlow<DeviceTypeListUiState> = kotlinx.coroutines.flow
+    val uiState: StateFlow<DeviceTypeListScreenState> = kotlinx.coroutines.flow
         .combine(
             kotlinx.coroutines.flow.combine(
                 sortOptionFlow,
@@ -66,7 +66,7 @@ class DeviceTypeListViewModel(
                 isGroupAscending = config.isGroupAscending,
             )
 
-            DeviceTypeListUiState.Success(
+            DeviceTypeListScreenState.Success(
                 groupedTypes = finalGroupedList,
                 sortOption = config.sort,
                 groupOption = config.group,
@@ -76,8 +76,8 @@ class DeviceTypeListViewModel(
         }.safeStateIn(
             scope = viewModelScope,
             started = defaultWhileSubscribed(),
-            initialValue = DeviceTypeListUiState.Success(emptyMap()),
-            onError = { DeviceTypeListUiState.Error(it.message ?: "Failed to load device types") },
+            initialValue = DeviceTypeListScreenState.Success(emptyMap()),
+            onError = { DeviceTypeListScreenState.Error(it.message ?: "Failed to load device types") },
         )
 
     fun onSortOptionSelected(option: DeviceTypeSortOption) {

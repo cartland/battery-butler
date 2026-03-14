@@ -43,5 +43,9 @@ gradlePlugin {
             id = "test.coverage.check"
             implementationClass = "testcoverage.TestCoveragePlugin"
         }
+        create("namingConventionCheck") {
+            id = "naming.convention.check"
+            implementationClass = "namingconvention.NamingConventionPlugin"
+        }
     }
 }

@@ -5,7 +5,7 @@ import shared
 @testable import BatteryButler
 
 final class HistoryListScreenTests: XCTestCase {
-    private func makeView(state: HistoryListUiState) -> some View {
+    private func makeView(state: HistoryListScreenState) -> some View {
         HistoryListContentView(
             state: state,
             onAddEventTapped: {},
@@ -15,7 +15,7 @@ final class HistoryListScreenTests: XCTestCase {
     }
 
     func testHistoryListContentView_Success() {
-        let successState = HistoryListUiStateSuccess(
+        let successState = HistoryListScreenStateSuccess(
             items: [TestData.historyItem, TestData.historyItem2]
         )
 
@@ -30,7 +30,7 @@ final class HistoryListScreenTests: XCTestCase {
     }
 
     func testHistoryListContentView_Loading() {
-        let view = makeView(state: HistoryListUiStateLoading())
+        let view = makeView(state: HistoryListScreenStateLoading())
 
         assertSnapshot(of: view, as: .image(layout: .device(config: .iPhone13Pro)), named: "light")
         assertSnapshot(
@@ -41,7 +41,7 @@ final class HistoryListScreenTests: XCTestCase {
     }
 
     func testHistoryListContentView_Empty() {
-        let emptyState = HistoryListUiStateSuccess(items: [])
+        let emptyState = HistoryListScreenStateSuccess(items: [])
 
         let view = makeView(state: emptyState)
 

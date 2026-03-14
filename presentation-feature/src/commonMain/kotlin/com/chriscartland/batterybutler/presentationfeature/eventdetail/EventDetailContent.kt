@@ -51,7 +51,7 @@ import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMap
 import com.chriscartland.batterybutler.presentationcore.components.DeviceListItem
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationcore.theme.Padding
-import com.chriscartland.batterybutler.presentationmodel.eventdetail.EventDetailUiState
+import com.chriscartland.batterybutler.presentationmodel.eventdetail.EventDetailScreenState
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.ExperimentalTime
@@ -60,7 +60,7 @@ import kotlin.time.Instant
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EventDetailContent(
-    uiState: EventDetailUiState,
+    uiState: EventDetailScreenState,
     onBack: () -> Unit,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
@@ -89,13 +89,13 @@ fun EventDetailContent(
     ) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
             when (uiState) {
-                EventDetailUiState.Loading -> {
+                EventDetailScreenState.Loading -> {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
-                EventDetailUiState.NotFound -> {
+                EventDetailScreenState.NotFound -> {
                     Text("Event not found", modifier = Modifier.align(Alignment.Center))
                 }
-                is EventDetailUiState.Success -> {
+                is EventDetailScreenState.Success -> {
                     EventDetailBody(
                         state = uiState,
                         onDeviceClick = onDeviceClick,
@@ -128,7 +128,7 @@ fun EventDetailContent(
 @OptIn(ExperimentalTime::class)
 @Composable
 private fun EventDetailBody(
-    state: EventDetailUiState.Success,
+    state: EventDetailScreenState.Success,
     onDeviceClick: (String) -> Unit,
     onDeleteClick: () -> Unit,
 ) {
@@ -270,7 +270,7 @@ fun EventDetailContentPreview() {
         val event = BatteryEvent("evt1", "dev1", now, batteryType = "AA", notes = "Replaced with rechargeable")
         val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
         val device = Device("dev1", "Kitchen Smoke", "type1", now, now, "Kitchen")
-        val state = EventDetailUiState.Success(
+        val state = EventDetailScreenState.Success(
             event = event,
             device = device,
             deviceType = type,
@@ -292,7 +292,7 @@ fun EventDetailContentDeletedDevicePreview() {
     BatteryButlerTheme {
         val now = Instant.parse("2026-01-18T17:00:00Z")
         val event = BatteryEvent("evt1", "dev1", now)
-        val state = EventDetailUiState.Success(
+        val state = EventDetailScreenState.Success(
             event = event,
             device = null,
             deviceType = null,
@@ -312,7 +312,7 @@ fun EventDetailContentDeletedDevicePreview() {
 fun EventDetailLoadingPreview() {
     BatteryButlerTheme {
         EventDetailContent(
-            uiState = EventDetailUiState.Loading,
+            uiState = EventDetailScreenState.Loading,
             onBack = {},
             onEdit = {},
             onDelete = {},
@@ -326,7 +326,7 @@ fun EventDetailLoadingPreview() {
 fun EventDetailContentNotFoundPreview() {
     BatteryButlerTheme {
         EventDetailContent(
-            uiState = EventDetailUiState.NotFound,
+            uiState = EventDetailScreenState.NotFound,
             onBack = {},
             onEdit = {},
             onDelete = {},

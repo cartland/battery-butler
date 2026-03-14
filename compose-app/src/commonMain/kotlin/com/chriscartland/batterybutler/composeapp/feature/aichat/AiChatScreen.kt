@@ -6,7 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chriscartland.batterybutler.domain.model.ai.AiRole
 import com.chriscartland.batterybutler.presentationfeature.aichat.AiChatContent
-import com.chriscartland.batterybutler.presentationfeature.aichat.ChatUiMessage
+import com.chriscartland.batterybutler.presentationfeature.aichat.ChatMessage
 import com.chriscartland.batterybutler.viewmodel.aichat.AiChatViewModel
 
 @Composable
@@ -19,7 +19,7 @@ fun AiChatScreen(
     val isProcessing by viewModel.isProcessing.collectAsStateWithLifecycle()
 
     val uiMessages = messages.map { msg ->
-        ChatUiMessage(
+        ChatMessage(
             id = msg.id,
             text = msg.text,
             isUser = msg.role == AiRole.USER,

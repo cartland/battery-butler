@@ -59,7 +59,7 @@ import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationcore.theme.Padding
 import com.chriscartland.batterybutler.presentationfeature.util.labelRes
 import com.chriscartland.batterybutler.presentationmodel.home.GroupOption
-import com.chriscartland.batterybutler.presentationmodel.home.HomeUiState
+import com.chriscartland.batterybutler.presentationmodel.home.HomeScreenState
 import com.chriscartland.batterybutler.presentationmodel.home.SortOption
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -68,7 +68,7 @@ import kotlin.time.Instant
 @OptIn(ExperimentalFoundationApi::class, ExperimentalTime::class)
 @Composable
 fun HomeScreenContent(
-    state: HomeUiState,
+    state: HomeScreenState,
     onGroupOptionToggle: () -> Unit,
     onGroupOptionSelected: (GroupOption) -> Unit,
     onSortOptionToggle: () -> Unit,
@@ -169,7 +169,7 @@ fun HomeScreenContent(
 
 @Composable
 fun HomeScreenFilterRow(
-    state: HomeUiState,
+    state: HomeScreenState,
     onGroupOptionToggle: () -> Unit,
     onGroupOptionSelected: (GroupOption) -> Unit,
     onSortOptionToggle: () -> Unit,
@@ -241,7 +241,7 @@ fun HomeScreenFilterRow(
 @OptIn(ExperimentalFoundationApi::class, ExperimentalTime::class)
 @Composable
 fun HomeScreenList(
-    state: HomeUiState,
+    state: HomeScreenState,
     onGroupOptionToggle: () -> Unit,
     onGroupOptionSelected: (GroupOption) -> Unit,
     onSortOptionToggle: () -> Unit,
@@ -361,7 +361,7 @@ fun HomeScreenPreview() {
         val batteryReplacedInstant = Instant.parse("2026-01-13T17:00:00Z") // 5 days ago
         val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
         val device = Device("dev1", "Kitchen Smoke", "type1", batteryReplacedInstant, nowInstant, "Kitchen")
-        val state = HomeUiState(
+        val state = HomeScreenState(
             groupedDevices = mapOf("All" to listOf(device)),
             deviceTypes = mapOf("type1" to type),
         )
@@ -384,7 +384,7 @@ fun HomeScreenPreview() {
 fun HomeScreenErrorPreview() {
     BatteryButlerTheme {
         HomeScreenContent(
-            state = HomeUiState(error = "Failed to load devices"),
+            state = HomeScreenState(error = "Failed to load devices"),
             onGroupOptionToggle = {},
             onGroupOptionSelected = {},
             onSortOptionToggle = {},
@@ -402,7 +402,7 @@ fun HomeScreenErrorPreview() {
 fun HomeScreenEmptyPreview() {
     BatteryButlerTheme {
         HomeScreenContent(
-            state = HomeUiState(groupedDevices = emptyMap(), deviceTypes = emptyMap()),
+            state = HomeScreenState(groupedDevices = emptyMap(), deviceTypes = emptyMap()),
             onGroupOptionToggle = {},
             onGroupOptionSelected = {},
             onSortOptionToggle = {},
@@ -419,7 +419,7 @@ fun HomeScreenFilterRowPreview() {
     BatteryButlerTheme {
         Surface {
             HomeScreenFilterRow(
-                state = HomeUiState(
+                state = HomeScreenState(
                     groupedDevices = emptyMap(),
                     deviceTypes = emptyMap(),
                 ),
@@ -442,7 +442,7 @@ fun HomeScreenListPreview() {
         val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
         val device = Device("dev1", "Kitchen Smoke", "type1", batteryReplacedInstant, nowInstant, "Kitchen")
         HomeScreenList(
-            state = HomeUiState(
+            state = HomeScreenState(
                 groupedDevices = mapOf("All" to listOf(device)),
                 deviceTypes = mapOf("type1" to type),
             ),

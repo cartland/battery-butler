@@ -2,7 +2,7 @@ package com.chriscartland.batterybutler.viewmodel.devicetypes
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeDetailUiState
+import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeDetailScreenState
 import com.chriscartland.batterybutler.usecase.GetDeviceTypeDetailUseCase
 import com.chriscartland.batterybutler.usecase.GetDevicesUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
@@ -29,15 +29,15 @@ class DeviceTypeDetailViewModel(
     private val getDeviceTypeDetailUseCase: GetDeviceTypeDetailUseCase,
     private val getDevicesUseCase: GetDevicesUseCase,
 ) : ViewModel() {
-    val uiState: StateFlow<DeviceTypeDetailUiState> = combine(
+    val uiState: StateFlow<DeviceTypeDetailScreenState> = combine(
         getDeviceTypeDetailUseCase(typeId),
         getDevicesUseCase(),
     ) { deviceType, allDevices ->
         if (deviceType == null) {
-            DeviceTypeDetailUiState.NotFound
+            DeviceTypeDetailScreenState.NotFound
         } else {
             val devices = allDevices.filter { it.typeId == typeId }
-            DeviceTypeDetailUiState.Success(
+            DeviceTypeDetailScreenState.Success(
                 deviceType = deviceType,
                 devices = devices,
             )
@@ -45,6 +45,6 @@ class DeviceTypeDetailViewModel(
     }.safeStateIn(
         scope = viewModelScope,
         started = defaultWhileSubscribed(),
-        initialValue = DeviceTypeDetailUiState.Loading,
+        initialValue = DeviceTypeDetailScreenState.Loading,
     )
 }

@@ -2,7 +2,7 @@ import SwiftUI
 import shared
 
 class EventDetailViewModelWrapper: ObservableObject {
-    @Published var state: EventDetailUiState? = nil
+    @Published var state: EventDetailScreenState? = nil
 
     private let viewModel: EventDetailViewModel
     private let viewModelStore = KmpViewModelStore()
@@ -14,11 +14,11 @@ class EventDetailViewModelWrapper: ObservableObject {
         viewModelStore.put(key: "vm", viewModel: viewModel)
 
         // Ensure initial state is captured from StateFlow's value if available
-        self.state = viewModel.uiState.value as? EventDetailUiState
+        self.state = viewModel.uiState.value as? EventDetailScreenState
 
         self.stateTask = Task { @MainActor [weak self] in
             for await st in viewModel.uiState {
-                self?.state = st as? EventDetailUiState
+                self?.state = st as? EventDetailScreenState
             }
         }
     }

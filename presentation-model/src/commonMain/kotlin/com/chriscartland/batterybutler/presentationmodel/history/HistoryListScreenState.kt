@@ -2,19 +2,19 @@ package com.chriscartland.batterybutler.presentationmodel.history
 
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 
-sealed interface HistoryListUiState {
-    data object Loading : HistoryListUiState
+sealed interface HistoryListScreenState {
+    data object Loading : HistoryListScreenState
 
     data class Success(
-        val items: List<HistoryItemUiModel>,
-    ) : HistoryListUiState
+        val items: List<HistoryItemModel>,
+    ) : HistoryListScreenState
 
     data class Error(
         val message: String,
-    ) : HistoryListUiState
+    ) : HistoryListScreenState
 }
 
-data class HistoryItemUiModel(
+data class HistoryItemModel(
     val event: BatteryEvent,
     val deviceName: String,
     val deviceTypeName: String,

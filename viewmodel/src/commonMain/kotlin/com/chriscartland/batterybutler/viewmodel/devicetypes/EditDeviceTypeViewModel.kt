@@ -3,7 +3,7 @@ package com.chriscartland.batterybutler.viewmodel.devicetypes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chriscartland.batterybutler.domain.model.DeviceTypeInput
-import com.chriscartland.batterybutler.presentationmodel.devicetypes.EditDeviceTypeUiState
+import com.chriscartland.batterybutler.presentationmodel.devicetypes.EditDeviceTypeScreenState
 import com.chriscartland.batterybutler.usecase.DeleteDeviceTypeUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.UpdateDeviceTypeUseCase
@@ -35,24 +35,24 @@ class EditDeviceTypeViewModel(
     private val updateDeviceTypeUseCase: UpdateDeviceTypeUseCase,
     private val deleteDeviceTypeUseCase: DeleteDeviceTypeUseCase,
 ) : ViewModel() {
-    val uiState: StateFlow<EditDeviceTypeUiState> = getDeviceTypesUseCase()
+    val uiState: StateFlow<EditDeviceTypeScreenState> = getDeviceTypesUseCase()
         .map { types ->
             val type = types.find { it.id == typeId }
             if (type == null) {
-                EditDeviceTypeUiState.NotFound
+                EditDeviceTypeScreenState.NotFound
             } else {
                 val usedIcons = types.mapNotNull { it.defaultIcon }.distinct()
-                EditDeviceTypeUiState.Success(type, usedIcons)
+                EditDeviceTypeScreenState.Success(type, usedIcons)
             }
         }.safeStateIn(
             scope = viewModelScope,
             started = defaultWhileSubscribed(),
-            initialValue = EditDeviceTypeUiState.Loading,
+            initialValue = EditDeviceTypeScreenState.Loading,
         )
 
     fun updateDeviceType(input: DeviceTypeInput) {
         val currentState = uiState.value
-        if (currentState is EditDeviceTypeUiState.Success) {
+        if (currentState is EditDeviceTypeScreenState.Success) {
             viewModelScope.launch {
                 val updatedType = currentState.deviceType.copy(
                     name = input.name,

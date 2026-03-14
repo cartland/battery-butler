@@ -30,7 +30,7 @@ struct DeviceTypeListScreen: View {
 }
 
 struct DeviceTypeListContentView<DetailDestination: View>: View {
-    let state: DeviceTypeListUiState
+    let state: DeviceTypeListScreenState
     let onAddTypeTapped: () -> Void
     let onSortOptionSelected: (DeviceTypeSortOption) -> Void
     let onGroupOptionSelected: (DeviceTypeGroupOption) -> Void
@@ -40,10 +40,10 @@ struct DeviceTypeListContentView<DetailDestination: View>: View {
 
     var body: some View {
         List {
-            if state is DeviceTypeListUiStateLoading {
+            if state is DeviceTypeListScreenStateLoading {
                 ProgressView()
                     .accessibilityLabel("device_types.accessibility.loading")
-            } else if let successState = state as? DeviceTypeListUiStateSuccess {
+            } else if let successState = state as? DeviceTypeListScreenStateSuccess {
                 // Sort/Group filter row
                 if !successState.groupedTypes.isEmpty {
                     Section {

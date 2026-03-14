@@ -6,7 +6,7 @@ class EditDeviceViewModelWrapper: ObservableObject {
     private let viewModel: EditDeviceViewModel
     private let store: KmpViewModelStore
     
-    @Published var state: EditDeviceUiState
+    @Published var state: EditDeviceScreenState
     
     init(deviceId: String, component: NativeComponent) {
         self.store = KmpViewModelStore()
