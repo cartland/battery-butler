@@ -6,8 +6,8 @@ import com.chriscartland.batterybutler.experimental.datalocal.FakeAppCounterServ
 import com.chriscartland.batterybutler.experimental.datalocal.FakeLocalCounterDataSource
 import com.chriscartland.batterybutler.experimental.domain.model.CounterState
 import com.chriscartland.batterybutler.experimental.usecase.GetCounterUseCase
-import com.chriscartland.batterybutler.experimental.usecase.IncrementCounterUseCase
 import com.chriscartland.batterybutler.experimental.usecase.ObserveCounterUseCase
+import com.chriscartland.batterybutler.experimental.usecase.RunCounterUseCase
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -43,7 +43,7 @@ class CounterViewModelTest {
         fakeAppCounterService = FakeAppCounterService()
         val repository = DefaultCounterRepository(fakeDataSource)
         viewModel = CounterViewModel(
-            incrementCounterUseCase = IncrementCounterUseCase(repository),
+            runCounterUseCase = RunCounterUseCase(repository),
             observeCounterUseCase = ObserveCounterUseCase(repository),
             getCounterUseCase = GetCounterUseCase(repository),
             appCounterService = fakeAppCounterService,

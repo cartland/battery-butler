@@ -7,10 +7,9 @@ import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.experimental.domain.model.CounterState
 import com.chriscartland.batterybutler.experimental.domain.service.AppCounterService
 import com.chriscartland.batterybutler.experimental.usecase.GetCounterUseCase
-import com.chriscartland.batterybutler.experimental.usecase.IncrementCounterUseCase
 import com.chriscartland.batterybutler.experimental.usecase.ObserveCounterUseCase
+import com.chriscartland.batterybutler.experimental.usecase.RunCounterUseCase
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,7 +18,7 @@ import me.tatarka.inject.annotations.Inject
 
 @Inject
 class CounterViewModel(
-    private val incrementCounterUseCase: IncrementCounterUseCase,
+    private val runCounterUseCase: RunCounterUseCase,
     private val observeCounterUseCase: ObserveCounterUseCase,
     private val getCounterUseCase: GetCounterUseCase,
     private val appCounterService: AppCounterService,
@@ -43,15 +42,8 @@ class CounterViewModel(
         if (counterJob?.isActive == true) return
         _counterRunning.value = true
         counterJob = viewModelScope.launch(dispatcherProvider.default) {
-            while (true) {
-                when (incrementCounterUseCase()) {
-                    is Result.Success -> delay(DELAY_MS)
-                    is Result.Error -> {
-                        _counterRunning.value = false
-                        break
-                    }
-                }
-            }
+            runCounterUseCase()
+            _counterRunning.value = false
         }
     }
 
@@ -93,9 +85,5 @@ class CounterViewModel(
                 is Result.Error -> _getState.value = CounterState.Error(result.error.message)
             }
         }
-    }
-
-    companion object {
-        const val DELAY_MS = 1000L
     }
 }
