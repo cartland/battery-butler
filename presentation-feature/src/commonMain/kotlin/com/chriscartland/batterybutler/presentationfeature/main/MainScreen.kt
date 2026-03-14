@@ -66,6 +66,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.composeresources.composeStringResource
 import com.chriscartland.batterybutler.composeresources.generated.resources.Res
+import com.chriscartland.batterybutler.composeresources.generated.resources.placeholder_ask_ai
+import com.chriscartland.batterybutler.composeresources.generated.resources.tab_ai_chat
 import com.chriscartland.batterybutler.composeresources.generated.resources.tab_devices
 import com.chriscartland.batterybutler.composeresources.generated.resources.tab_history
 import com.chriscartland.batterybutler.composeresources.generated.resources.tab_types
@@ -195,7 +197,7 @@ fun MainScreenShell(
                                         .onFocusChanged { focusState ->
                                             if (focusState.isFocused) onAiExpandedChange(true)
                                         },
-                                    placeholder = { Text("Ask AI...") },
+                                    placeholder = { Text(composeStringResource(Res.string.placeholder_ask_ai)) },
                                     maxLines = 4,
                                     shape = RoundedCornerShape(24.dp),
                                 )
@@ -338,7 +340,7 @@ fun MainScreenShell(
                                     )
                                     Spacer(modifier = Modifier.width(Padding.small))
                                     Text(
-                                        text = "AI Chat",
+                                        text = composeStringResource(Res.string.tab_ai_chat),
                                         style = MaterialTheme.typography.titleMedium,
                                         modifier = Modifier.weight(1f),
                                     )

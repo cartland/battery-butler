@@ -127,4 +127,60 @@
     <string name="action_delete_device">Delete Device</string>
     <string name="label_select_type">Select Type</string>
     <string name="action_add_new_device_type">Add New Device Type...</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="action_sign_out">Sign Out</string>
+    <string name="settings_export_data_title">Export Data</string>
+    <string name="settings_export_data_description">Save all data as a .json file</string>
+    <string name="settings_check_updates_title">Check for updates</string>
+    <string name="settings_check_updates_description">Open Google Play Store</string>
+    <string name="settings_copied_to_clipboard">Copied to clipboard</string>
+    <string name="settings_app_version">App version</string>
+
+    <!-- Home / Sync Errors -->
+    <string name="status_syncing">Syncing...</string>
+    <string name="error_something_went_wrong">Something went wrong</string>
+    <string name="sync_error_network">Can\'t connect to server. Your changes are saved locally.</string>
+    <string name="sync_error_timeout">Connection timed out. Try again when you have a better signal.</string>
+    <string name="sync_error_server">Server is having issues. Your data is safe on this device.</string>
+    <string name="sync_error_not_ready">Sync isn\'t ready yet. Your changes are saved locally.</string>
+    <string name="sync_error_sync_failed">Couldn\'t sync your changes. They\'re saved locally and will sync later.</string>
+    <string name="sync_error_data">There was a problem with your data. Please try again.</string>
+    <string name="sync_error_ai">AI feature encountered an error. Please try again.</string>
+    <string name="sync_error_unknown">Something went wrong. Your data is safe on this device.</string>
+
+    <!-- Device Type List -->
+    <string name="action_add_type">Add Type</string>
+
+    <!-- Event Detail / Edit Event -->
+    <string name="event_detail_title">Event Detail</string>
+    <string name="error_event_not_found">Event not found</string>
+    <string name="action_delete_event">Delete Event</string>
+    <string name="dialog_delete_event_title">Delete Event</string>
+    <string name="dialog_delete_event_text">Are you sure you want to delete this battery event?</string>
+
+    <!-- Edit Battery Event -->
+    <string name="edit_event_title">Edit Event</string>
+    <string name="label_replacement_date">Replacement Date</string>
+    <string name="label_battery_type_optional">Battery Type (optional)</string>
+    <string name="label_notes_optional">Notes (optional)</string>
+
+    <!-- Add Battery Event -->
+    <string name="add_event_title">Add Battery Event</string>
+    <string name="label_manual_entry">Manual Entry</string>
+    <string name="action_hide_details">Hide Details</string>
+    <string name="action_more_details">More Details</string>
+    <string name="action_add_event">Add Event</string>
+
+    <!-- Edit Device Type -->
+    <string name="edit_device_type_title">Edit Device Type</string>
+    <string name="error_device_type_not_found">Device Type not found</string>
+    <string name="action_delete_device_type">Delete Device Type</string>
+    <string name="dialog_delete_device_type_title">Delete Device Type</string>
+    <string name="dialog_delete_device_type_text">Are you sure you want to delete this device type?</string>
+
+    <!-- Main Screen -->
+    <string name="placeholder_ask_ai">Ask AI...</string>
+    <string name="tab_ai_chat">AI Chat</string>
 </resources>

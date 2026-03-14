@@ -44,8 +44,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.composeresources.composeStringResource
 import com.chriscartland.batterybutler.composeresources.generated.resources.Res
+import com.chriscartland.batterybutler.composeresources.generated.resources.add_device_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.empty_devices_message
 import com.chriscartland.batterybutler.composeresources.generated.resources.empty_devices_title
+import com.chriscartland.batterybutler.composeresources.generated.resources.error_something_went_wrong
+import com.chriscartland.batterybutler.composeresources.generated.resources.status_syncing
+import com.chriscartland.batterybutler.composeresources.generated.resources.sync_error_ai
+import com.chriscartland.batterybutler.composeresources.generated.resources.sync_error_data
+import com.chriscartland.batterybutler.composeresources.generated.resources.sync_error_network
+import com.chriscartland.batterybutler.composeresources.generated.resources.sync_error_not_ready
+import com.chriscartland.batterybutler.composeresources.generated.resources.sync_error_server
+import com.chriscartland.batterybutler.composeresources.generated.resources.sync_error_sync_failed
+import com.chriscartland.batterybutler.composeresources.generated.resources.sync_error_timeout
+import com.chriscartland.batterybutler.composeresources.generated.resources.sync_error_unknown
 import com.chriscartland.batterybutler.domain.model.DataError
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
@@ -81,16 +92,15 @@ fun HomeScreenContent(
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
+    // Resolve sync error message in composable scope (outside LaunchedEffect)
+    val syncErrorMessage = (state.syncStatus as? SyncStatus.Failed)?.let {
+        getSyncErrorMessage(it.error)
+    }
+
     // Show snackbar when sync fails
     LaunchedEffect(state.syncStatus) {
-        @Suppress("ElseCaseInsteadOfExhaustiveWhen")
-        when (val status = state.syncStatus) {
-            is SyncStatus.Failed -> {
-                snackbarHostState.showSnackbar(
-                    message = getSyncErrorMessage(status.error),
-                )
-            }
-            else -> {} // Intentional: only Failed triggers a snackbar
+        syncErrorMessage?.let {
+            snackbarHostState.showSnackbar(message = it)
         }
     }
 
@@ -156,7 +166,7 @@ fun HomeScreenContent(
                             strokeWidth = 2.dp,
                         )
                         Text(
-                            text = "Syncing...",
+                            text = composeStringResource(Res.string.status_syncing),
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -258,7 +268,7 @@ fun HomeScreenList(
     if (errorMessage != null && allDevices.isEmpty()) {
         EmptyStateContent(
             icon = Icons.Default.Warning,
-            title = "Something went wrong",
+            title = composeStringResource(Res.string.error_something_went_wrong),
             message = errorMessage,
             modifier = Modifier.padding(contentPadding),
         )
@@ -270,7 +280,7 @@ fun HomeScreenList(
             modifier = Modifier.padding(contentPadding),
             action = {
                 androidx.compose.material3.Button(onClick = onAddDeviceClick) {
-                    Text("Add Device")
+                    Text(composeStringResource(Res.string.add_device_title))
                 }
             },
         )
@@ -327,29 +337,30 @@ fun HomeScreenList(
  * Returns a user-friendly error message for sync failures.
  */
 @OptIn(ExperimentalTime::class)
+@Composable
 fun getSyncErrorMessage(error: DataError): String =
     when (error) {
         is DataError.Network.ConnectionFailed ->
-            "Can't connect to server. Your changes are saved locally."
+            composeStringResource(Res.string.sync_error_network)
         is DataError.Network.Timeout ->
-            "Connection timed out. Try again when you have a better signal."
+            composeStringResource(Res.string.sync_error_timeout)
         is DataError.Network.ServerError ->
-            "Server is having issues. Your data is safe on this device."
+            composeStringResource(Res.string.sync_error_server)
         is DataError.Network.NotReady ->
-            "Sync isn't ready yet. Your changes are saved locally."
+            composeStringResource(Res.string.sync_error_not_ready)
         is DataError.Network.PushFailed ->
-            "Couldn't sync your changes. They're saved locally and will sync later."
+            composeStringResource(Res.string.sync_error_sync_failed)
         is DataError.Database.ReadFailed,
         is DataError.Database.WriteFailed,
         is DataError.Database.ConstraintViolation,
         ->
-            "There was a problem with your data. Please try again."
+            composeStringResource(Res.string.sync_error_data)
         is DataError.Ai.ApiError,
         is DataError.Ai.ParsingError,
         ->
-            "AI feature encountered an error. Please try again."
+            composeStringResource(Res.string.sync_error_ai)
         is DataError.Unknown ->
-            "Something went wrong. Your data is safe on this device."
+            composeStringResource(Res.string.sync_error_unknown)
     }
 
 @Preview(showBackground = true)

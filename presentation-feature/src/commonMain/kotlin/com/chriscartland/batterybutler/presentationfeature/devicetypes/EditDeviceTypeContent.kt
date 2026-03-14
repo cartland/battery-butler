@@ -45,6 +45,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.chriscartland.batterybutler.composeresources.composeStringResource
+import com.chriscartland.batterybutler.composeresources.generated.resources.Res
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_cancel
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_delete
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_delete_device_type
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_save
+import com.chriscartland.batterybutler.composeresources.generated.resources.dialog_delete_device_type_text
+import com.chriscartland.batterybutler.composeresources.generated.resources.dialog_delete_device_type_title
+import com.chriscartland.batterybutler.composeresources.generated.resources.edit_device_type_title
+import com.chriscartland.batterybutler.composeresources.generated.resources.error_device_type_not_found
+import com.chriscartland.batterybutler.composeresources.generated.resources.label_icon
+import com.chriscartland.batterybutler.composeresources.generated.resources.label_quantity
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.DeviceTypeInput
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
@@ -74,10 +86,10 @@ fun EditDeviceTypeContent(
         modifier = modifier,
         topBar = {
             ButlerCenteredTopAppBar(
-                title = "Edit Device Type",
+                title = composeStringResource(Res.string.edit_device_type_title),
                 onBack = onBack,
                 navigationIcon = {
-                    TextButton(onClick = onBack) { Text("Cancel") }
+                    TextButton(onClick = onBack) { Text(composeStringResource(Res.string.action_cancel)) }
                 },
                 actions = {
                     TextButton(
@@ -86,7 +98,7 @@ fun EditDeviceTypeContent(
                         },
                         enabled = name.isNotBlank() && batteryType.isNotBlank(),
                     ) {
-                        Text("Save", fontWeight = FontWeight.Bold)
+                        Text(composeStringResource(Res.string.action_save), fontWeight = FontWeight.Bold)
                     }
                 },
             )
@@ -95,7 +107,7 @@ fun EditDeviceTypeContent(
         Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
             when (uiState) {
                 EditDeviceTypeScreenState.Loading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                EditDeviceTypeScreenState.NotFound -> Text("Device Type not found", modifier = Modifier.align(Alignment.Center))
+                EditDeviceTypeScreenState.NotFound -> Text(composeStringResource(Res.string.error_device_type_not_found), modifier = Modifier.align(Alignment.Center))
                 is EditDeviceTypeScreenState.Success -> {
                     val original = uiState.deviceType
                     LaunchedEffect(original) {
@@ -135,7 +147,7 @@ fun EditDeviceTypeContent(
                         Spacer(modifier = Modifier.height(16.dp))
 
                         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                            Text("Quantity", style = MaterialTheme.typography.bodyLarge)
+                            Text(composeStringResource(Res.string.label_quantity), style = MaterialTheme.typography.bodyLarge)
                             Spacer(Modifier.weight(1f))
                             IconButton(onClick = { if (batteryQuantity > 1) batteryQuantity-- }) {
                                 Icon(Icons.Default.Remove, contentDescription = "Decrease")
@@ -153,7 +165,7 @@ fun EditDeviceTypeContent(
                         Spacer(modifier = Modifier.height(24.dp))
 
                         // Icon Selection
-                        Text("Icon", style = MaterialTheme.typography.labelLarge)
+                        Text(composeStringResource(Res.string.label_icon), style = MaterialTheme.typography.labelLarge)
                         val icons = remember(uiState.usedIcons) {
                             DeviceIconMapper.AvailableIcons.sortedByDescending { it in uiState.usedIcons }
                         }
@@ -184,7 +196,7 @@ fun EditDeviceTypeContent(
                             modifier = Modifier.fillMaxWidth().height(56.dp),
                             shape = RoundedCornerShape(12.dp),
                         ) {
-                            Text("Delete Device Type", fontWeight = FontWeight.SemiBold)
+                            Text(composeStringResource(Res.string.action_delete_device_type), fontWeight = FontWeight.SemiBold)
                         }
                     }
                 }
@@ -193,15 +205,15 @@ fun EditDeviceTypeContent(
         if (showDeleteDialog) {
             AlertDialog(
                 onDismissRequest = { showDeleteDialog = false },
-                title = { Text("Delete Device Type") },
-                text = { Text("Are you sure you want to delete this device type?") },
+                title = { Text(composeStringResource(Res.string.dialog_delete_device_type_title)) },
+                text = { Text(composeStringResource(Res.string.dialog_delete_device_type_text)) },
                 confirmButton = {
                     TextButton(onClick = {
                         onDelete()
                         showDeleteDialog = false
-                    }, colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)) { Text("Delete") }
+                    }, colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)) { Text(composeStringResource(Res.string.action_delete)) }
                 },
-                dismissButton = { TextButton(onClick = { showDeleteDialog = false }) { Text("Cancel") } },
+                dismissButton = { TextButton(onClick = { showDeleteDialog = false }) { Text(composeStringResource(Res.string.action_cancel)) } },
             )
         }
     }

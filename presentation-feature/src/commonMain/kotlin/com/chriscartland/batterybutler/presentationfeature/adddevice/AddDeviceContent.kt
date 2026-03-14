@@ -41,6 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.composeresources.composeStringResource
 import com.chriscartland.batterybutler.composeresources.generated.resources.Res
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_add_new_device_type
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_cancel
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_save
 import com.chriscartland.batterybutler.composeresources.generated.resources.add_device_manual_entry
@@ -278,7 +279,7 @@ fun AddDeviceManualSection(
                 }
                 HorizontalDivider()
                 DropdownMenuItem(
-                    text = { Text("Add New Device Type...", fontWeight = FontWeight.Bold) },
+                    text = { Text(composeStringResource(Res.string.action_add_new_device_type), fontWeight = FontWeight.Bold) },
                     onClick = {
                         onAddDeviceTypeClick()
                         expanded = false

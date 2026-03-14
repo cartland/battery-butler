@@ -40,6 +40,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.composeresources.composeStringResource
 import com.chriscartland.batterybutler.composeresources.generated.resources.Res
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_sign_out
 import com.chriscartland.batterybutler.composeresources.generated.resources.ai_engine_cloud
 import com.chriscartland.batterybutler.composeresources.generated.resources.ai_engine_noop
 import com.chriscartland.batterybutler.composeresources.generated.resources.ai_engine_on_device
@@ -49,6 +50,13 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.netw
 import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_grpc_local
 import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_mock
 import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_none
+import com.chriscartland.batterybutler.composeresources.generated.resources.settings_app_version
+import com.chriscartland.batterybutler.composeresources.generated.resources.settings_check_updates_description
+import com.chriscartland.batterybutler.composeresources.generated.resources.settings_check_updates_title
+import com.chriscartland.batterybutler.composeresources.generated.resources.settings_copied_to_clipboard
+import com.chriscartland.batterybutler.composeresources.generated.resources.settings_export_data_description
+import com.chriscartland.batterybutler.composeresources.generated.resources.settings_export_data_title
+import com.chriscartland.batterybutler.composeresources.generated.resources.settings_title
 import com.chriscartland.batterybutler.domain.model.AppVersion
 import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.model.User
@@ -80,12 +88,13 @@ fun SettingsContent(
     val clipboardManager = LocalClipboardManager.current
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val copiedMessage = composeStringResource(Res.string.settings_copied_to_clipboard)
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
             ButlerCenteredTopAppBar(
-                title = "Settings",
+                title = composeStringResource(Res.string.settings_title),
                 onBack = onBack,
             )
         },
@@ -155,7 +164,7 @@ fun SettingsContent(
                                 contentDescription = null,
                                 modifier = Modifier.padding(end = 8.dp),
                             )
-                            Text("Sign Out")
+                            Text(composeStringResource(Res.string.action_sign_out))
                         }
                     }
                 }
@@ -221,18 +230,18 @@ fun SettingsContent(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Download,
-                        contentDescription = "Export Data",
+                        contentDescription = composeStringResource(Res.string.settings_export_data_title),
                         tint = MaterialTheme.colorScheme.primary,
                     )
                     Column {
                         Text(
-                            text = "Export Data",
+                            text = composeStringResource(Res.string.settings_export_data_title),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         Text(
-                            text = "Save all data as a .json file",
+                            text = composeStringResource(Res.string.settings_export_data_description),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                         )
@@ -263,18 +272,18 @@ fun SettingsContent(
                 ) {
                     Icon(
                         imageVector = Icons.Default.OpenInNew,
-                        contentDescription = "Check for updates",
+                        contentDescription = composeStringResource(Res.string.settings_check_updates_title),
                         tint = MaterialTheme.colorScheme.primary,
                     )
                     Column {
                         Text(
-                            text = "Check for updates",
+                            text = composeStringResource(Res.string.settings_check_updates_title),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         Text(
-                            text = "Open Google Play Store",
+                            text = composeStringResource(Res.string.settings_check_updates_description),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                         )
@@ -293,7 +302,7 @@ fun SettingsContent(
                 onClick = {
                     clipboardManager.setText(AnnotatedString(versionText))
                     scope.launch {
-                        snackbarHostState.showSnackbar("Copied to clipboard")
+                        snackbarHostState.showSnackbar(copiedMessage)
                     }
                 },
                 colors = CardDefaults.cardColors(
@@ -311,12 +320,12 @@ fun SettingsContent(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Info,
-                        contentDescription = "App version",
+                        contentDescription = composeStringResource(Res.string.settings_app_version),
                         tint = MaterialTheme.colorScheme.primary,
                     )
                     Column {
                         Text(
-                            text = "App version",
+                            text = composeStringResource(Res.string.settings_app_version),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,

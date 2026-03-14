@@ -42,7 +42,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.composeresources.composeStringResource
 import com.chriscartland.batterybutler.composeresources.generated.resources.Res
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_cancel
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_delete
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_delete_event
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_edit
+import com.chriscartland.batterybutler.composeresources.generated.resources.dialog_delete_event_text
+import com.chriscartland.batterybutler.composeresources.generated.resources.dialog_delete_event_title
+import com.chriscartland.batterybutler.composeresources.generated.resources.error_event_not_found
+import com.chriscartland.batterybutler.composeresources.generated.resources.event_detail_title
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
@@ -73,7 +80,7 @@ fun EventDetailContent(
         modifier = modifier,
         topBar = {
             ButlerCenteredTopAppBar(
-                title = "Event Detail",
+                title = composeStringResource(Res.string.event_detail_title),
                 onBack = onBack,
                 actions = {
                     TextButton(onClick = onEdit) {
@@ -93,7 +100,7 @@ fun EventDetailContent(
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
                 EventDetailScreenState.NotFound -> {
-                    Text("Event not found", modifier = Modifier.align(Alignment.Center))
+                    Text(composeStringResource(Res.string.error_event_not_found), modifier = Modifier.align(Alignment.Center))
                 }
                 is EventDetailScreenState.Success -> {
                     EventDetailBody(
@@ -109,8 +116,8 @@ fun EventDetailContent(
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            title = { Text("Delete Event") },
-            text = { Text("Are you sure you want to delete this battery event?") },
+            title = { Text(composeStringResource(Res.string.dialog_delete_event_title)) },
+            text = { Text(composeStringResource(Res.string.dialog_delete_event_text)) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -118,9 +125,9 @@ fun EventDetailContent(
                         showDeleteDialog = false
                     },
                     colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
-                ) { Text("Delete") }
+                ) { Text(composeStringResource(Res.string.action_delete)) }
             },
-            dismissButton = { TextButton(onClick = { showDeleteDialog = false }) { Text("Cancel") } },
+            dismissButton = { TextButton(onClick = { showDeleteDialog = false }) { Text(composeStringResource(Res.string.action_cancel)) } },
         )
     }
 }
@@ -223,7 +230,7 @@ private fun EventDetailBody(
             modifier = Modifier.fillMaxWidth().height(56.dp),
             shape = RoundedCornerShape(12.dp),
         ) {
-            Text("Delete Event", fontWeight = FontWeight.SemiBold)
+            Text(composeStringResource(Res.string.action_delete_event), fontWeight = FontWeight.SemiBold)
         }
 
         Spacer(modifier = Modifier.height(32.dp))
