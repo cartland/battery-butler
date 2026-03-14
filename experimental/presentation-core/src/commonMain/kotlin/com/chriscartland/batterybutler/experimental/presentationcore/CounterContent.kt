@@ -25,11 +25,17 @@ import com.chriscartland.batterybutler.presentationcore.theme.Padding
 
 @Composable
 fun CounterContent(
+    counterRunning: Boolean,
+    appCounterRunning: Boolean,
     observeState: CounterState,
     getState: CounterState,
-    onStart: () -> Unit,
-    onStop: () -> Unit,
-    onGet: () -> Unit,
+    onStartCounter: () -> Unit,
+    onStopCounter: () -> Unit,
+    onStartAppCounter: () -> Unit,
+    onStopAppCounter: () -> Unit,
+    onStartObserving: () -> Unit,
+    onStopObserving: () -> Unit,
+    onGetOnce: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(modifier = modifier.fillMaxSize()) { innerPadding ->
@@ -47,6 +53,52 @@ fun CounterContent(
             )
             Spacer(modifier = Modifier.height(Padding.large))
             Text(
+                text = "VM Counter",
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Spacer(modifier = Modifier.height(Padding.small))
+            Text(
+                text = if (counterRunning) "Running" else "Stopped",
+                style = MaterialTheme.typography.bodyLarge,
+            )
+            Spacer(modifier = Modifier.height(Padding.small))
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(Padding.standard, Alignment.CenterHorizontally),
+            ) {
+                Button(onClick = onStartCounter) {
+                    Text("Start")
+                }
+                OutlinedButton(onClick = onStopCounter) {
+                    Text("Stop")
+                }
+            }
+            Spacer(modifier = Modifier.height(Padding.large))
+            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+            Spacer(modifier = Modifier.height(Padding.large))
+            Text(
+                text = "App Counter",
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Spacer(modifier = Modifier.height(Padding.small))
+            Text(
+                text = if (appCounterRunning) "Running" else "Stopped",
+                style = MaterialTheme.typography.bodyLarge,
+            )
+            Spacer(modifier = Modifier.height(Padding.small))
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(Padding.standard, Alignment.CenterHorizontally),
+            ) {
+                Button(onClick = onStartAppCounter) {
+                    Text("Start")
+                }
+                OutlinedButton(onClick = onStopAppCounter) {
+                    Text("Stop")
+                }
+            }
+            Spacer(modifier = Modifier.height(Padding.large))
+            HorizontalDivider(modifier = Modifier.fillMaxWidth())
+            Spacer(modifier = Modifier.height(Padding.large))
+            Text(
                 text = "Observe",
                 style = MaterialTheme.typography.titleMedium,
             )
@@ -56,10 +108,10 @@ fun CounterContent(
             Row(
                 horizontalArrangement = Arrangement.spacedBy(Padding.standard, Alignment.CenterHorizontally),
             ) {
-                Button(onClick = onStart) {
+                Button(onClick = onStartObserving) {
                     Text("Start")
                 }
-                OutlinedButton(onClick = onStop) {
+                OutlinedButton(onClick = onStopObserving) {
                     Text("Stop")
                 }
             }
@@ -73,8 +125,8 @@ fun CounterContent(
             Spacer(modifier = Modifier.height(Padding.small))
             CounterValueDisplay(getState)
             Spacer(modifier = Modifier.height(Padding.small))
-            Button(onClick = onGet) {
-                Text("Get")
+            Button(onClick = onGetOnce) {
+                Text("Get Once")
             }
         }
     }
@@ -113,11 +165,17 @@ private fun CounterValueDisplay(state: CounterState) {
 fun CounterContentIdlePreview() {
     BatteryButlerTheme {
         CounterContent(
+            counterRunning = false,
+            appCounterRunning = false,
             observeState = CounterState.Idle,
             getState = CounterState.Idle,
-            onStart = {},
-            onStop = {},
-            onGet = {},
+            onStartCounter = {},
+            onStopCounter = {},
+            onStartAppCounter = {},
+            onStopAppCounter = {},
+            onStartObserving = {},
+            onStopObserving = {},
+            onGetOnce = {},
         )
     }
 }
@@ -127,11 +185,17 @@ fun CounterContentIdlePreview() {
 fun CounterContentLoadingPreview() {
     BatteryButlerTheme {
         CounterContent(
+            counterRunning = true,
+            appCounterRunning = true,
             observeState = CounterState.Loading,
             getState = CounterState.Loading,
-            onStart = {},
-            onStop = {},
-            onGet = {},
+            onStartCounter = {},
+            onStopCounter = {},
+            onStartAppCounter = {},
+            onStopAppCounter = {},
+            onStartObserving = {},
+            onStopObserving = {},
+            onGetOnce = {},
         )
     }
 }
@@ -141,11 +205,17 @@ fun CounterContentLoadingPreview() {
 fun CounterContentActivePreview() {
     BatteryButlerTheme {
         CounterContent(
+            counterRunning = true,
+            appCounterRunning = true,
             observeState = CounterState.Active(value = 42),
             getState = CounterState.Active(value = 7),
-            onStart = {},
-            onStop = {},
-            onGet = {},
+            onStartCounter = {},
+            onStopCounter = {},
+            onStartAppCounter = {},
+            onStopAppCounter = {},
+            onStartObserving = {},
+            onStopObserving = {},
+            onGetOnce = {},
         )
     }
 }
@@ -155,11 +225,17 @@ fun CounterContentActivePreview() {
 fun CounterContentErrorPreview() {
     BatteryButlerTheme {
         CounterContent(
+            counterRunning = false,
+            appCounterRunning = false,
             observeState = CounterState.Error(message = "Failed to observe counter"),
             getState = CounterState.Error(message = "Failed to read counter"),
-            onStart = {},
-            onStop = {},
-            onGet = {},
+            onStartCounter = {},
+            onStopCounter = {},
+            onStartAppCounter = {},
+            onStopAppCounter = {},
+            onStartObserving = {},
+            onStopObserving = {},
+            onGetOnce = {},
         )
     }
 }

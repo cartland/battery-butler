@@ -7,10 +7,9 @@ import kotlinx.coroutines.delay
 import me.tatarka.inject.annotations.Inject
 
 @Inject
-class StartCounterUseCase(
+class RunCounterUseCase(
     private val counterRepository: CounterRepository,
 ) {
-    @Suppress("UNREACHABLE_CODE")
     suspend operator fun invoke(delayMs: Long = DEFAULT_DELAY_MS): Result<Nothing, CounterError> {
         while (true) {
             when (val result = counterRepository.increment()) {
