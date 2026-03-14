@@ -5,8 +5,10 @@ import androidx.datastore.preferences.core.Preferences
 import com.chriscartland.batterybutler.datalocal.preferences.DataStoreFactory
 import com.chriscartland.batterybutler.domain.model.DispatcherProvider
 import com.chriscartland.batterybutler.experimental.viewmodel.CounterViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.SupervisorJob
 import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
 
@@ -29,6 +31,10 @@ abstract class ExperimentalAppComponent(
             override val io = Dispatchers.IO
             override val main = Dispatchers.Main
         }
+
+    @Provides
+    @ExperimentalSingleton
+    fun provideAppScope(dispatcherProvider: DispatcherProvider): CoroutineScope = CoroutineScope(SupervisorJob() + dispatcherProvider.default)
 
     companion object
 }

@@ -39,14 +39,22 @@ fun ExperimentalApp(component: ExperimentalAppComponent) {
                 }
                 entry<ExperimentalScreen.Counter> {
                     val vm = viewModel { component.counterViewModel }
+                    val counterRunning by vm.counterRunning.collectAsStateWithLifecycle()
+                    val appCounterRunning by vm.appCounterRunning.collectAsStateWithLifecycle()
                     val observeState by vm.observeState.collectAsStateWithLifecycle()
                     val getState by vm.getState.collectAsStateWithLifecycle()
                     CounterContent(
+                        counterRunning = counterRunning,
+                        appCounterRunning = appCounterRunning,
                         observeState = observeState,
                         getState = getState,
-                        onStart = vm::start,
-                        onStop = vm::stop,
-                        onGet = vm::get,
+                        onStartCounter = vm::startCounter,
+                        onStopCounter = vm::stopCounter,
+                        onStartAppCounter = vm::startAppCounter,
+                        onStopAppCounter = vm::stopAppCounter,
+                        onStartObserving = vm::startObserving,
+                        onStopObserving = vm::stopObserving,
+                        onGetOnce = vm::getOnce,
                     )
                 }
             },

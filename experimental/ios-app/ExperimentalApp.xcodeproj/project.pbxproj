@@ -87,6 +87,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 03900B332A1696C75CB0BF0A /* Build configuration list for PBXNativeTarget "ExperimentalApp" */;
 			buildPhases = (
+				AAAA00001111222233334444 /* Compile Kotlin Framework */,
 				F8F42619AD51CE8262445528 /* Sources */,
 				5D5FE9EA3114F9D2F932D48F /* Frameworks */,
 				C2CF98883CC051ADC44E28D0 /* Resources */,
@@ -152,6 +153,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		AAAA00001111222233334444 /* Compile Kotlin Framework */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = ();
+			inputFileListPaths = ();
+			inputPaths = ();
+			name = "Compile Kotlin Framework";
+			outputFileListPaths = ();
+			outputPaths = ();
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ \"YES\" = \"$OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED\" ]; then\n  echo \"Skipping Gradle build task invocation due to OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED environment variable set to \\\"YES\\\"\"\n  exit 0\nfi\ncd \"$SRCROOT/../..\"\n./gradlew :experimental:compose-app:embedAndSignAppleFrameworkForXcode\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
 		6342942CE5855F433316FE39 /* Debug */ = {
@@ -227,8 +245,7 @@
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/../compose-app/build/bin/iosSimulatorArm64/debugFramework",
-					"$(SRCROOT)/../compose-app/build/bin/iosArm64/releaseFramework",
+					"$(SRCROOT)/../compose-app/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_GENERATED_CONTENT = YES;
@@ -313,8 +330,7 @@
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/../compose-app/build/bin/iosSimulatorArm64/debugFramework",
-					"$(SRCROOT)/../compose-app/build/bin/iosArm64/releaseFramework",
+					"$(SRCROOT)/../compose-app/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_GENERATED_CONTENT = YES;
