@@ -3,13 +3,13 @@
 # Code Analysis
 
 This document provides a breakdown of the codebase by application layer and module.
-Total Lines of Code: 41653
+Total Lines of Code: 41751
 
 ## Application Breakdown
-* Shared Code: 26,882 lines (64.5%)
+* Shared Code: 26,974 lines (64.6%)
 * iOS Swift App: 6,101 lines (14.6%)
 * Other: 3,505 lines (8.4%)
-* CMP Android, iOS, Desktop: 2,458 lines (5.9%)
+* CMP Android, iOS, Desktop: 2,464 lines (5.9%)
 * Server: 1,528 lines (3.7%)
 * Android Screenshot Tests: 1,179 lines (2.8%)
 
@@ -29,10 +29,10 @@ Total Lines of Code: 41653
 * `:data-local`: 1,059 lines (2.5%)
 * `:test-common`: 620 lines (1.5%)
 * `:ai`: 493 lines (1.2%)
-* `:experimental:data-local`: 332 lines (0.8%)
-* `:e2e-tests`: 271 lines (0.7%)
+* `:experimental:data-local`: 424 lines (1.0%)
+* `:e2e-tests`: 271 lines (0.6%)
 * `:experimental:viewmodel`: 249 lines (0.6%)
-* `:experimental:compose-app`: 241 lines (0.6%)
+* `:experimental:compose-app`: 247 lines (0.6%)
 * `:presentation-model`: 218 lines (0.5%)
 * `:fixtures`: 209 lines (0.5%)
 * `:experimental:usecase`: 205 lines (0.5%)
@@ -46,7 +46,7 @@ Total Lines of Code: 41653
 * `:iosAppComposeUI.xcodeproj`: 31 lines (0.1%)
 
 ## Language Breakdown
-* Kotlin (.kt): 35,346 lines (84.9%)
+* Kotlin (.kt): 35,444 lines (84.9%)
 * Swift (.swift): 6,307 lines (15.1%)
 
 ## Code Distribution
@@ -65,10 +65,10 @@ config:
 %% GENERATED FILE - DO NOT EDIT
 sankey-beta
 
-Codebase,Shared Code,26882
+Codebase,Shared Code,26974
 Codebase,iOS Swift App,6101
 Codebase,Other,3505
-Codebase,CMP Apps,2458
+Codebase,CMP Apps,2464
 Codebase,Server,1528
 Codebase,Screenshot Tests,1179
 
@@ -81,7 +81,7 @@ Shared Code,presentation-core,2281
 Shared Code,data,1832
 Shared Code,data-local,1059
 Shared Code,ai,493
-Shared Code,experimental:data-local,332
+Shared Code,experimental:data-local,424
 Shared Code,experimental:viewmodel,249
 Shared Code,experimental:usecase,205
 Shared Code,experimental:presentation-core,165
@@ -100,7 +100,7 @@ Other,ExperimentalApp,175
 Other,iosAppComposeUI,31
 
 CMP Apps,compose-app,2217
-CMP Apps,experimental:compose-app,241
+CMP Apps,experimental:compose-app,247
 
 Server,server:app,1342
 Server,server:data,152
@@ -123,10 +123,10 @@ android-screenshot-tests,Kotlin,1179
 data-local,Kotlin,1059
 test-common,Kotlin,620
 ai,Kotlin,493
-experimental:data-local,Kotlin,332
+experimental:data-local,Kotlin,424
 e2e-tests,Kotlin,271
 experimental:viewmodel,Kotlin,249
-experimental:compose-app,Kotlin,241
+experimental:compose-app,Kotlin,247
 presentation-model,Kotlin,218
 fixtures,Kotlin,209
 experimental:usecase,Kotlin,205
