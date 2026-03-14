@@ -39,10 +39,16 @@ Each use case has a single responsibility and a single `operator fun invoke()`:
 
 ### Coroutine lifecycle management
 
-- `viewModelScope` for ViewModel-scoped coroutines (counter, observe)
-- `appScope` (`SupervisorJob + Dispatchers.Default`) for background services outliving ViewModels
-- `Job` references for cancellation (`stopCounter()`, `stopObserving()`)
-- `DefaultAppCounterService` manages its own `Job` internally
+The counter has two identical 1-second increment loops running in different scopes to demonstrate lifecycle differences:
+
+- **VM Counter** (`startCounter`/`stopCounter`) — runs `RunCounterUseCase` in `viewModelScope`. Automatically cancelled when the ViewModel is cleared (e.g., navigating away, closing the screen). Tied to UI lifecycle.
+- **App Counter** (`startAppCounter`/`stopAppCounter`) — delegates to `DefaultAppCounterService`, which runs in `appScope` (`SupervisorJob + Dispatchers.Default`). Survives ViewModel destruction. Keeps incrementing until explicitly stopped or the app process dies.
+
+Both write to the same `CounterRepository`, so `ObserveCounterUseCase` sees increments from both. This makes the lifecycle difference visible: stop the VM counter by navigating away, and the app counter keeps going.
+
+Other lifecycle patterns:
+- `Job` references for explicit cancellation (`stopCounter()`, `stopObserving()`)
+- `DefaultAppCounterService` manages its own `Job` internally, independent of any ViewModel
 
 ### Dispatcher management via DispatcherProvider
 
