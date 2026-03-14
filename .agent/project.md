@@ -118,6 +118,16 @@ Classes should have one reason to change. See `docs/architecture/adr-004-single-
 
 **Established patterns:** SyncManager extraction (data module), FindOrCreate use cases (usecase module), `sortAndGroup()` utility (viewmodel module), Screen sealed interface separation (compose-app module).
 
+### Experimental Module
+
+The `experimental/` directory is a reference architecture for KMP apps. See `experimental/EXPERIMENTAL.md` for full documentation. Key facts for agents:
+
+- **7 modules**: `domain` ← `usecase` ← `viewmodel` ← `presentation-core` ← `compose-app`, plus `data-local` and `ios-app`
+- **DI**: kotlin-inject with `ExperimentalAppComponent` root; `ExperimentalDataComponent` + `ExperimentalDataModule` for data bindings
+- **Use cases**: `GetCounterUseCase`, `IncrementCounterUseCase`, `RunCounterUseCase`, `ObserveCounterUseCase` — all `@Inject`, all return `Result<T, CounterError>`
+- **Testing**: Fakes (`FakeLocalCounterDataSource`, `FakeAppCounterService`) live in `data-local/src/commonMain/` so all modules can use them
+- **iOS bridge**: `CounterViewModelWrapper` polls KMP `StateFlow` via 60Hz Timer (no SKIE)
+
 ### UI Theme Constants
 
 Padding constants live in `presentation-core/.../theme/Padding.kt`. Use `Padding.standard` (16.dp), `Padding.small` (8.dp), `Padding.large` (24.dp), etc. instead of hardcoded dp values.

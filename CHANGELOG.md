@@ -31,6 +31,16 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ---
 
+## 2026-03-14
+
+### Refactoring
+
+- **Experimental DI refactor**: Replaced `StartCounterUseCase` (loop-owning) with `IncrementCounterUseCase` (single increment) and `RunCounterUseCase` (centralized loop). Added `AppCounterService` interface (domain) with `DefaultAppCounterService` implementation (data-local) for background counter independent of ViewModel lifecycle. Wired DI through `ExperimentalDataComponent` → `ExperimentalDataModule` pattern. Updated `CounterViewModel`, `CounterContent` UI (4 sections), and iOS `CounterScreen`/`CounterViewModelWrapper`. ([#1020](https://github.com/cartland/battery-butler/pull/1020))
+
+### Documentation
+
+- **Experimental architecture guide**: Added `experimental/EXPERIMENTAL.md` documenting the reference architecture — goal, strengths (9 areas), non-goals, future direction, module map, dependency direction, and testing pattern. ([#1021](https://github.com/cartland/battery-butler/pull/1021))
+
 ## 2026-03-12
 
 ### Features
