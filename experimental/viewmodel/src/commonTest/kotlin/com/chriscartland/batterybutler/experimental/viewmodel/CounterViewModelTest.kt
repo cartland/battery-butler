@@ -1,13 +1,16 @@
 package com.chriscartland.batterybutler.experimental.viewmodel
 
 import com.chriscartland.batterybutler.domain.model.DispatcherProvider
-import com.chriscartland.batterybutler.experimental.datalocal.DefaultCounterRepository
-import com.chriscartland.batterybutler.experimental.datalocal.FakeAppCounterService
+import com.chriscartland.batterybutler.experimental.data.DefaultCounterRepository
+import com.chriscartland.batterybutler.experimental.data.FakeAppScopedCounter
 import com.chriscartland.batterybutler.experimental.datalocal.FakeLocalCounterDataSource
 import com.chriscartland.batterybutler.experimental.domain.model.CounterState
 import com.chriscartland.batterybutler.experimental.usecase.GetCounterUseCase
+import com.chriscartland.batterybutler.experimental.usecase.ObserveAppScopedCounterRunningUseCase
 import com.chriscartland.batterybutler.experimental.usecase.ObserveCounterUseCase
 import com.chriscartland.batterybutler.experimental.usecase.RunCounterUseCase
+import com.chriscartland.batterybutler.experimental.usecase.StartAppScopedCounterUseCase
+import com.chriscartland.batterybutler.experimental.usecase.StopAppScopedCounterUseCase
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -33,20 +36,22 @@ class CounterViewModelTest {
         override val main: CoroutineDispatcher = testDispatcher
     }
     private lateinit var fakeDataSource: FakeLocalCounterDataSource
-    private lateinit var fakeAppCounterService: FakeAppCounterService
+    private lateinit var fakeAppScopedCounter: FakeAppScopedCounter
     private lateinit var viewModel: CounterViewModel
 
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         fakeDataSource = FakeLocalCounterDataSource()
-        fakeAppCounterService = FakeAppCounterService()
+        fakeAppScopedCounter = FakeAppScopedCounter()
         val repository = DefaultCounterRepository(fakeDataSource)
         viewModel = CounterViewModel(
             runCounterUseCase = RunCounterUseCase(repository),
             observeCounterUseCase = ObserveCounterUseCase(repository),
             getCounterUseCase = GetCounterUseCase(repository),
-            appCounterService = fakeAppCounterService,
+            startAppScopedCounterUseCase = StartAppScopedCounterUseCase(fakeAppScopedCounter),
+            stopAppScopedCounterUseCase = StopAppScopedCounterUseCase(fakeAppScopedCounter),
+            observeAppScopedCounterRunningUseCase = ObserveAppScopedCounterRunningUseCase(fakeAppScopedCounter),
             dispatcherProvider = testDispatcherProvider,
         )
     }
@@ -253,7 +258,7 @@ class CounterViewModelTest {
     fun `startAppCounter delegates to service`() =
         runTest {
             viewModel.startAppCounter()
-            assertEquals(1, fakeAppCounterService.startCallCount)
+            assertEquals(1, fakeAppScopedCounter.startCallCount)
             assertTrue(viewModel.appCounterRunning.value)
         }
 
@@ -262,7 +267,7 @@ class CounterViewModelTest {
         runTest {
             viewModel.startAppCounter()
             viewModel.stopAppCounter()
-            assertEquals(1, fakeAppCounterService.stopCallCount)
+            assertEquals(1, fakeAppScopedCounter.stopCallCount)
             assertFalse(viewModel.appCounterRunning.value)
         }
 

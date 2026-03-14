@@ -37,6 +37,7 @@ open class ArchitectureCheckTask : DefaultTask() {
         ":server:app" to listOf(":server:domain", ":server:data", ":domain"),
         ":experimental:domain" to listOf(":domain"),
         ":experimental:data-local" to listOf(":experimental:domain", ":domain"),
+        ":experimental:data" to listOf(":experimental:data-local", ":experimental:domain", ":domain"),
         ":experimental:usecase" to listOf(":experimental:domain", ":domain"),
         ":experimental:viewmodel" to listOf(":experimental:usecase", ":experimental:domain", ":domain"),
         ":experimental:presentation-core" to listOf(":experimental:viewmodel", ":experimental:domain", ":presentation-core"),

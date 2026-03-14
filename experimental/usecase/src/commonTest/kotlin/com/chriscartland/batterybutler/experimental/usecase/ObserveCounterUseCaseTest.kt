@@ -1,6 +1,6 @@
 package com.chriscartland.batterybutler.experimental.usecase
 
-import com.chriscartland.batterybutler.experimental.datalocal.DefaultCounterRepository
+import com.chriscartland.batterybutler.experimental.data.DefaultCounterRepository
 import com.chriscartland.batterybutler.experimental.datalocal.FakeLocalCounterDataSource
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
