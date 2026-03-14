@@ -35,9 +35,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.composeresources.composeStringResource
 import com.chriscartland.batterybutler.composeresources.generated.resources.Res
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_add_type
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_load_common_types
 import com.chriscartland.batterybutler.composeresources.generated.resources.empty_types_message
 import com.chriscartland.batterybutler.composeresources.generated.resources.empty_types_title
+import com.chriscartland.batterybutler.composeresources.generated.resources.error_something_went_wrong
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationcore.components.AddItemCard
 import com.chriscartland.batterybutler.presentationcore.components.ButlerDropdownMenu
@@ -73,7 +75,7 @@ fun DeviceTypeListContent(
             is DeviceTypeListScreenState.Error -> {
                 EmptyStateContent(
                     icon = Icons.Default.Warning,
-                    title = "Something went wrong",
+                    title = composeStringResource(Res.string.error_something_went_wrong),
                     message = state.message,
                     modifier = Modifier.padding(contentPadding),
                 )
@@ -89,7 +91,7 @@ fun DeviceTypeListContent(
                         action = {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Button(onClick = onAddTypeClick) {
-                                    Text("Add Type")
+                                    Text(composeStringResource(Res.string.action_add_type))
                                 }
                                 Spacer(modifier = Modifier.height(8.dp))
                                 OutlinedButton(onClick = onPreloadTypes) {

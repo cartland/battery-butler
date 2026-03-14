@@ -20,6 +20,7 @@ import com.chriscartland.batterybutler.composeresources.composeStringResource
 import com.chriscartland.batterybutler.composeresources.generated.resources.Res
 import com.chriscartland.batterybutler.composeresources.generated.resources.empty_history_message
 import com.chriscartland.batterybutler.composeresources.generated.resources.empty_history_title
+import com.chriscartland.batterybutler.composeresources.generated.resources.error_something_went_wrong
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.presentationcore.components.AddItemCard
 import com.chriscartland.batterybutler.presentationcore.components.EmptyStateContent
@@ -50,7 +51,7 @@ fun HistoryListContent(
             is HistoryListScreenState.Error -> {
                 EmptyStateContent(
                     icon = Icons.Default.Warning,
-                    title = "Something went wrong",
+                    title = composeStringResource(Res.string.error_something_went_wrong),
                     message = state.message,
                     modifier = Modifier.padding(contentPadding),
                 )

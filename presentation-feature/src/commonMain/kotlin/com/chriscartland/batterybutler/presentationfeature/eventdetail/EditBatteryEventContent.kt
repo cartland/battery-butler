@@ -50,6 +50,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.chriscartland.batterybutler.composeresources.composeStringResource
+import com.chriscartland.batterybutler.composeresources.generated.resources.Res
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_cancel
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_delete
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_delete_event
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_ok
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_save
+import com.chriscartland.batterybutler.composeresources.generated.resources.dialog_delete_event_text
+import com.chriscartland.batterybutler.composeresources.generated.resources.dialog_delete_event_title
+import com.chriscartland.batterybutler.composeresources.generated.resources.edit_event_title
+import com.chriscartland.batterybutler.composeresources.generated.resources.error_event_not_found
+import com.chriscartland.batterybutler.composeresources.generated.resources.label_battery_type_optional
+import com.chriscartland.batterybutler.composeresources.generated.resources.label_notes_optional
+import com.chriscartland.batterybutler.composeresources.generated.resources.label_replacement_date
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
@@ -84,10 +98,10 @@ fun EditBatteryEventContent(
         modifier = modifier,
         topBar = {
             ButlerCenteredTopAppBar(
-                title = "Edit Event",
+                title = composeStringResource(Res.string.edit_event_title),
                 onBack = onBack,
                 navigationIcon = {
-                    TextButton(onClick = onBack) { Text("Cancel") }
+                    TextButton(onClick = onBack) { Text(composeStringResource(Res.string.action_cancel)) }
                 },
                 actions = {
                     TextButton(
@@ -102,7 +116,7 @@ fun EditBatteryEventContent(
                         },
                         enabled = dateMillis != null,
                     ) {
-                        Text("Save", fontWeight = FontWeight.Bold)
+                        Text(composeStringResource(Res.string.action_save), fontWeight = FontWeight.Bold)
                     }
                 },
             )
@@ -114,7 +128,7 @@ fun EditBatteryEventContent(
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
                 EditBatteryEventScreenState.NotFound -> {
-                    Text("Event not found", modifier = Modifier.align(Alignment.Center))
+                    Text(composeStringResource(Res.string.error_event_not_found), modifier = Modifier.align(Alignment.Center))
                 }
                 is EditBatteryEventScreenState.Success -> {
                     val event = uiState.event
@@ -149,12 +163,12 @@ fun EditBatteryEventContent(
                                         showDatePicker = false
                                     },
                                 ) {
-                                    Text("OK")
+                                    Text(composeStringResource(Res.string.action_ok))
                                 }
                             },
                             dismissButton = {
                                 TextButton(onClick = { showDatePicker = false }) {
-                                    Text("Cancel")
+                                    Text(composeStringResource(Res.string.action_cancel))
                                 }
                             },
                         ) {
@@ -216,7 +230,7 @@ fun EditBatteryEventContent(
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                                 Icon(Icons.Default.CalendarToday, contentDescription = "Calendar", tint = MaterialTheme.colorScheme.primary)
-                                Text("Replacement Date", fontWeight = FontWeight.Medium)
+                                Text(composeStringResource(Res.string.label_replacement_date), fontWeight = FontWeight.Medium)
                             }
                             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 Text(currentDate, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
@@ -233,7 +247,7 @@ fun EditBatteryEventContent(
                         OutlinedTextField(
                             value = batteryType,
                             onValueChange = { batteryType = it },
-                            label = { Text("Battery Type (optional)") },
+                            label = { Text(composeStringResource(Res.string.label_battery_type_optional)) },
                             modifier = Modifier.fillMaxWidth(),
                             singleLine = true,
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
@@ -245,7 +259,7 @@ fun EditBatteryEventContent(
                         OutlinedTextField(
                             value = notes,
                             onValueChange = { notes = it },
-                            label = { Text("Notes (optional)") },
+                            label = { Text(composeStringResource(Res.string.label_notes_optional)) },
                             modifier = Modifier.fillMaxWidth(),
                             minLines = 3,
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
@@ -264,7 +278,7 @@ fun EditBatteryEventContent(
                             modifier = Modifier.fillMaxWidth().height(56.dp),
                             shape = RoundedCornerShape(12.dp),
                         ) {
-                            Text("Delete Event", fontWeight = FontWeight.SemiBold)
+                            Text(composeStringResource(Res.string.action_delete_event), fontWeight = FontWeight.SemiBold)
                         }
                     }
                 }
@@ -273,8 +287,8 @@ fun EditBatteryEventContent(
         if (showDeleteDialog) {
             AlertDialog(
                 onDismissRequest = { showDeleteDialog = false },
-                title = { Text("Delete Event") },
-                text = { Text("Are you sure you want to delete this battery event?") },
+                title = { Text(composeStringResource(Res.string.dialog_delete_event_title)) },
+                text = { Text(composeStringResource(Res.string.dialog_delete_event_text)) },
                 confirmButton = {
                     TextButton(
                         onClick = {
@@ -282,9 +296,9 @@ fun EditBatteryEventContent(
                             showDeleteDialog = false
                         },
                         colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
-                    ) { Text("Delete") }
+                    ) { Text(composeStringResource(Res.string.action_delete)) }
                 },
-                dismissButton = { TextButton(onClick = { showDeleteDialog = false }) { Text("Cancel") } },
+                dismissButton = { TextButton(onClick = { showDeleteDialog = false }) { Text(composeStringResource(Res.string.action_cancel)) } },
             )
         }
     }

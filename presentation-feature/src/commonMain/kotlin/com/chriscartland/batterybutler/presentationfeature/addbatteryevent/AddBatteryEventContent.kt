@@ -40,6 +40,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.chriscartland.batterybutler.composeresources.composeStringResource
+import com.chriscartland.batterybutler.composeresources.generated.resources.Res
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_add_event
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_batch_import_ai
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_hide_details
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_more_details
+import com.chriscartland.batterybutler.composeresources.generated.resources.add_event_title
+import com.chriscartland.batterybutler.composeresources.generated.resources.label_ai_output
+import com.chriscartland.batterybutler.composeresources.generated.resources.label_battery_type_optional
+import com.chriscartland.batterybutler.composeresources.generated.resources.label_manual_entry
+import com.chriscartland.batterybutler.composeresources.generated.resources.label_notes_optional
 import com.chriscartland.batterybutler.domain.model.BatchOperationResult
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
@@ -80,7 +91,7 @@ fun AddBatteryEventContent(
         modifier = modifier,
         topBar = {
             ButlerCenteredTopAppBar(
-                title = "Add Battery Event",
+                title = composeStringResource(Res.string.add_event_title),
                 onBack = onBack,
             )
         },
@@ -95,7 +106,7 @@ fun AddBatteryEventContent(
             // AI Section (only shown when AI is available)
             if (isAiBatchImportEnabled) {
                 Text(
-                    "Batch Import (AI)",
+                    composeStringResource(Res.string.action_batch_import_ai),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.primary,
                 )
@@ -125,7 +136,7 @@ fun AddBatteryEventContent(
                 }
 
                 if (aiMessages.isNotEmpty()) {
-                    Text("AI Output:", style = MaterialTheme.typography.labelMedium)
+                    Text(composeStringResource(Res.string.label_ai_output), style = MaterialTheme.typography.labelMedium)
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -158,7 +169,7 @@ fun AddBatteryEventContent(
 
             // Manual Section
             Text(
-                "Manual Entry",
+                composeStringResource(Res.string.label_manual_entry),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,
             )
@@ -220,7 +231,11 @@ fun AddBatteryEventContent(
                 onClick = { showMoreDetails = !showMoreDetails },
             ) {
                 Text(
-                    if (showMoreDetails) "Hide Details" else "More Details",
+                    if (showMoreDetails) {
+                        composeStringResource(Res.string.action_hide_details)
+                    } else {
+                        composeStringResource(Res.string.action_more_details)
+                    },
                     style = MaterialTheme.typography.labelLarge,
                 )
             }
@@ -229,7 +244,7 @@ fun AddBatteryEventContent(
                 OutlinedTextField(
                     value = batteryTypeInput,
                     onValueChange = { batteryTypeInput = it },
-                    label = { Text("Battery Type (optional)") },
+                    label = { Text(composeStringResource(Res.string.label_battery_type_optional)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
@@ -238,7 +253,7 @@ fun AddBatteryEventContent(
                 OutlinedTextField(
                     value = notesInput,
                     onValueChange = { notesInput = it },
-                    label = { Text("Notes (optional)") },
+                    label = { Text(composeStringResource(Res.string.label_notes_optional)) },
                     modifier = Modifier.fillMaxWidth(),
                     minLines = 2,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
@@ -269,7 +284,7 @@ fun AddBatteryEventContent(
                 enabled = deviceIdInput.isNotBlank(),
                 modifier = Modifier.align(Alignment.End),
             ) {
-                Text("Add Event")
+                Text(composeStringResource(Res.string.action_add_event))
             }
         }
     }
