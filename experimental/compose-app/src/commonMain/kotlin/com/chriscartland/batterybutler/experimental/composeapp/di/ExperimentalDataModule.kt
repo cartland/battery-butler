@@ -16,7 +16,7 @@ interface ExperimentalDataModule : ExperimentalDataComponent {
 
     @Provides
     @ExperimentalSingleton
-    override fun provideLocalCounterDataSource(impl: InMemoryLocalCounterDataSource): LocalCounterDataSource = super.provideLocalCounterDataSource(impl)
+    fun provideLocalCounterDataSource(impl: InMemoryLocalCounterDataSource): LocalCounterDataSource = impl
 
     @Provides
     @ExperimentalSingleton
