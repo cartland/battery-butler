@@ -43,39 +43,46 @@ open class ThemeLayerCheckTask : DefaultTask() {
             ),
         )
 
+    private val scanDirs = listOf(
+        "presentation-feature/src",
+        "experimental/presentation-core/src",
+    )
+
     @TaskAction
     fun check() {
         val rootDir = project.rootDir
-        val featureSrc = File(rootDir, "presentation-feature/src")
-        if (!featureSrc.exists()) {
-            println("Theme Layer Check: presentation-feature/src not found, skipping.")
-            return
-        }
-
         val violations = mutableListOf<Violation>()
 
-        featureSrc
-            .walk()
-            .filter { it.extension == "kt" }
-            .filter { !it.path.contains("/test/") && !it.path.contains("/androidTest/") }
-            .forEach { file ->
-                val relativePath = file.relativeTo(rootDir).path
-                file.readLines().forEachIndexed { index, line ->
-                    for (rule in rules) {
-                        if (rule.pattern.containsMatchIn(line)) {
-                            violations.add(
-                                Violation(
-                                    file = relativePath,
-                                    line = index + 1,
-                                    rule = rule.id,
-                                    text = rule.message,
-                                    fix = rule.fix,
-                                ),
-                            )
+        for (dirPath in scanDirs) {
+            val srcDir = File(rootDir, dirPath)
+            if (!srcDir.exists()) {
+                println("Theme Layer Check: $dirPath not found, skipping.")
+                continue
+            }
+
+            srcDir
+                .walk()
+                .filter { it.extension == "kt" }
+                .filter { !it.path.contains("/test/") && !it.path.contains("/androidTest/") }
+                .forEach { file ->
+                    val relativePath = file.relativeTo(rootDir).path
+                    file.readLines().forEachIndexed { index, line ->
+                        for (rule in rules) {
+                            if (rule.pattern.containsMatchIn(line)) {
+                                violations.add(
+                                    Violation(
+                                        file = relativePath,
+                                        line = index + 1,
+                                        rule = rule.id,
+                                        text = rule.message,
+                                        fix = rule.fix,
+                                    ),
+                                )
+                            }
                         }
                     }
                 }
-            }
+        }
 
         if (violations.isNotEmpty()) {
             val msg =
