@@ -49,6 +49,7 @@ graph TD
 
     subgraph "Others"
         ExperimentalComposeApp[":experimental:compose-app"]
+        ExperimentalData[":experimental:data"]
         ExperimentalDataLocal[":experimental:data-local"]
         ExperimentalDomain[":experimental:domain"]
         ExperimentalPresentationCore[":experimental:presentation-core"]
@@ -87,12 +88,17 @@ graph TD
 
     ExperimentalComposeApp --> DataLocal
     ExperimentalComposeApp --> Domain
+    ExperimentalComposeApp --> ExperimentalData
     ExperimentalComposeApp --> ExperimentalDataLocal
     ExperimentalComposeApp --> ExperimentalDomain
     ExperimentalComposeApp --> ExperimentalPresentationCore
     ExperimentalComposeApp --> ExperimentalUsecase
     ExperimentalComposeApp --> ExperimentalViewmodel
     ExperimentalComposeApp --> PresentationCore
+
+    ExperimentalData --> Domain
+    ExperimentalData --> ExperimentalDataLocal
+    ExperimentalData --> ExperimentalDomain
 
     ExperimentalDataLocal --> Domain
     ExperimentalDataLocal --> ExperimentalDomain
@@ -104,10 +110,12 @@ graph TD
     ExperimentalPresentationCore --> PresentationCore
 
     ExperimentalUsecase --> Domain
+    ExperimentalUsecase --> ExperimentalData
     ExperimentalUsecase --> ExperimentalDataLocal
     ExperimentalUsecase --> ExperimentalDomain
 
     ExperimentalViewmodel --> Domain
+    ExperimentalViewmodel --> ExperimentalData
     ExperimentalViewmodel --> ExperimentalDataLocal
     ExperimentalViewmodel --> ExperimentalDomain
     ExperimentalViewmodel --> ExperimentalUsecase

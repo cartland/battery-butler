@@ -80,6 +80,7 @@ graph TD
 
     subgraph "Others"
         ExperimentalComposeApp[":experimental:compose-app"]
+        ExperimentalData[":experimental:data"]
         ExperimentalDataLocal[":experimental:data-local"]
         ExperimentalDomain[":experimental:domain"]
         ExperimentalPresentationCore[":experimental:presentation-core"]
@@ -118,12 +119,17 @@ graph TD
 
     ExperimentalComposeApp --> DataLocal
     ExperimentalComposeApp --> Domain
+    ExperimentalComposeApp --> ExperimentalData
     ExperimentalComposeApp --> ExperimentalDataLocal
     ExperimentalComposeApp --> ExperimentalDomain
     ExperimentalComposeApp --> ExperimentalPresentationCore
     ExperimentalComposeApp --> ExperimentalUsecase
     ExperimentalComposeApp --> ExperimentalViewmodel
     ExperimentalComposeApp --> PresentationCore
+
+    ExperimentalData --> Domain
+    ExperimentalData --> ExperimentalDataLocal
+    ExperimentalData --> ExperimentalDomain
 
     ExperimentalDataLocal --> Domain
     ExperimentalDataLocal --> ExperimentalDomain
@@ -135,10 +141,12 @@ graph TD
     ExperimentalPresentationCore --> PresentationCore
 
     ExperimentalUsecase --> Domain
+    ExperimentalUsecase --> ExperimentalData
     ExperimentalUsecase --> ExperimentalDataLocal
     ExperimentalUsecase --> ExperimentalDomain
 
     ExperimentalViewmodel --> Domain
+    ExperimentalViewmodel --> ExperimentalData
     ExperimentalViewmodel --> ExperimentalDataLocal
     ExperimentalViewmodel --> ExperimentalDomain
     ExperimentalViewmodel --> ExperimentalUsecase
@@ -215,10 +223,10 @@ config:
 %% GENERATED FILE - DO NOT EDIT
 sankey-beta
 
-Codebase,Shared Code,27569
+Codebase,Shared Code,27622
 Codebase,iOS Swift App,6199
-Codebase,Other,3811
-Codebase,CMP Apps,2484
+Codebase,Other,4028
+Codebase,CMP Apps,2534
 Codebase,Server,1528
 Codebase,Screenshot Tests,1179
 
@@ -230,17 +238,18 @@ Shared Code,domain,2284
 Shared Code,presentation-core,2281
 Shared Code,data,1832
 Shared Code,data-local,1059
-Shared Code,experimental:data-local,652
 Shared Code,ai,493
-Shared Code,experimental:viewmodel,385
-Shared Code,experimental:usecase,275
+Shared Code,experimental:viewmodel,394
+Shared Code,experimental:data,354
+Shared Code,experimental:usecase,316
+Shared Code,experimental:data-local,301
 Shared Code,experimental:presentation-core,241
 Shared Code,compose-resources,70
 Shared Code,experimental:domain,54
 
 iOS Swift App,iosAppSwiftUI,6199
 
-Other,buildSrc,1940
+Other,buildSrc,2157
 Other,test-common,620
 Other,presentation-model,323
 Other,e2e-tests,271
@@ -249,7 +258,7 @@ Other,fixtures,209
 Other,ios-swift-di,182
 Other,iosAppComposeUI,31
 
-CMP Apps,compose-app,2217
+CMP Apps,compose-app,2267
 CMP Apps,experimental:compose-app,267
 
 Server,server:app,1342
@@ -265,18 +274,19 @@ usecase,Kotlin,4262
 data-network,Kotlin,2429
 domain,Kotlin,2284
 presentation-core,Kotlin,2281
-compose-app,Kotlin,2217
-buildSrc,Kotlin,1940
+compose-app,Kotlin,2267
+buildSrc,Kotlin,2157
 data,Kotlin,1832
 server:app,Kotlin,1342
 android-screenshot-tests,Kotlin,1179
 data-local,Kotlin,1059
-experimental:data-local,Kotlin,652
 test-common,Kotlin,620
 ai,Kotlin,493
-experimental:viewmodel,Kotlin,385
+experimental:viewmodel,Kotlin,394
+experimental:data,Kotlin,354
 presentation-model,Kotlin,323
-experimental:usecase,Kotlin,275
+experimental:usecase,Kotlin,316
+experimental:data-local,Kotlin,301
 e2e-tests,Kotlin,271
 experimental:compose-app,Kotlin,267
 experimental:presentation-core,Kotlin,241
