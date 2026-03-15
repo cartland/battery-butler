@@ -33,7 +33,13 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ## 2026-03-14
 
+### Fixes
+
+- **JVM heap exhaustion in validate.sh**: Fixed Gradle daemon running out of heap space during iOS builds in `validate.sh` (~13th `./gradlew` invocation). Consolidated 4 custom check tasks into a single `./gradlew` invocation to reduce daemon overhead. Added `./gradlew --stop` before iOS builds to restart the daemon with fresh heap. Added `-XX:MaxMetaspaceSize=512m` to `gradle.properties` to cap unbounded metaspace growth. ([#1030](https://github.com/cartland/battery-butler/pull/1030))
+
 ### Refactoring
+
+- **KMP-friendly class naming convention**: Enforced naming convention via `NamingConventionCheckTask` in `buildSrc`. Sealed interface subtypes must be prefixed with parent name (e.g., `HistoryListScreenState.Success` → class `HistoryListScreenStateSuccess`). Renamed 82 files across Kotlin + Swift to comply. Added `@NamingExempt` annotation for intentional violations. CI job `validation_naming_convention` runs on every PR. ([#1027](https://github.com/cartland/battery-butler/pull/1027))
 
 - **Experimental DI refactor**: Replaced `StartCounterUseCase` (loop-owning) with `IncrementCounterUseCase` (single increment) and `RunCounterUseCase` (centralized loop). Added `AppCounterService` interface (domain) with `DefaultAppCounterService` implementation (data-local) for background counter independent of ViewModel lifecycle. Wired DI through `ExperimentalDataComponent` → `ExperimentalDataModule` pattern. Updated `CounterViewModel`, `CounterContent` UI (4 sections), and iOS `CounterScreen`/`CounterViewModelWrapper`. ([#1020](https://github.com/cartland/battery-butler/pull/1020))
 
