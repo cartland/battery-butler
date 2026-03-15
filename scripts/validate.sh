@@ -35,6 +35,9 @@ echo "--- 3e. Test Coverage Check ---"
 echo "--- 3f. Naming Convention Check ---"
 ./gradlew checkNamingConventions
 
+echo "--- 3g. Import Boundary Check ---"
+./gradlew checkImportBoundary
+
 echo "--- 4. Tests (Unit & Instrumented) ---"
 ./scripts/test.sh
 
