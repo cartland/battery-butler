@@ -56,7 +56,7 @@ E2E_SERVER_URL=http://<nlb-dns>:80 ./scripts/e2e-tests.sh --remote
 
 **AWS free-tier limitations:**
 - Only `db.t3.micro` RDS instances allowed
-- Max 2 RDS instances -- can't run dev + staging + prod simultaneously
+- Max 2 RDS instances -- can't run dev + staging + prod simultaneously (staging destroyed to stay within limit)
 - Use `server-destroy.yml` to tear down unused environments
 
 ## Server URL Management
@@ -103,6 +103,25 @@ Settings UI displays them in this order: Prod Server / Dev Server / gRPC Local /
 - `DEV_SERVER_URL` — Auto-synced from terraform after each dev deploy
 - `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD` — Android signing
 - `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` — Play Store upload
+
+## Terraform Operations
+
+- **Always** use `-var-file` when running terraform commands — omitting it causes terraform to hang waiting for input, holding the state lock until timeout.
+- DynamoDB lock key format: `{bucket-name}/{state-key}` (full S3 path). Used for manual lock removal.
+- `terraform state show` acquires locks and may not release cleanly on failure.
+- Each environment has separate terraform state: `server/{env}/terraform.tfstate`.
+- Environment configs: `server/terraform/environments/{dev,staging,prod}.tfvars` — all use `db.t3.micro` for free-tier.
+
+**Useful terraform commands:**
+```bash
+# Emergency unlock — find lock key format: {bucket}/{state-key}
+aws dynamodb delete-item --table-name <lock-table> \
+  --key '{"LockID":{"S":"<bucket>/<state-key>"}}'
+
+# Get dev NLB URL
+aws elbv2 describe-load-balancers --region us-west-1 \
+  --query 'LoadBalancers[?contains(LoadBalancerName, `dev`)].DNSName' --output text
+```
 
 **Local secrets** in `local.properties` (gitignored) — can get overwritten by IDE/Gradle:
 - Back up important keys to macOS Keychain:

@@ -79,7 +79,7 @@ Merging PRs that modify `.github/workflows/` files requires the `workflow` OAuth
 
 ## Concurrency Group Gotcha
 
-CI uses concurrency groups to prevent parallel runs on the same branch. If a `workflow_dispatch` run starts while a `pull_request` run is in-flight, the `pull_request` run gets cancelled. The `ci` gate treats `cancelled` as failure. **PR status checks only track `pull_request`-event runs**, so a successful `workflow_dispatch` run won't clear the red status. Fix: push a new commit to the PR branch to trigger a fresh `pull_request` CI run.
+CI uses concurrency groups to prevent parallel runs on the same branch. If a `workflow_dispatch` run starts while a `pull_request` run is in-flight, the `pull_request` run gets cancelled. The `ci` gate treats `cancelled` as failure. **PR status checks only track `pull_request`-event runs**, so a successful `workflow_dispatch` run won't clear the red status. Fix: push a new commit to the PR branch to trigger a fresh `pull_request` CI run, or use `gh run rerun <run-id>` on the original `pull_request`-triggered run (not `gh workflow run`).
 
 ## iOS CI — Xcode Version Pinning
 
@@ -103,3 +103,9 @@ Dependabot is configured (`.github/dependabot.yml`) for weekly updates.
 - Needs rebase -> use `@dependabot rebase` comment, then merge if CI passes
 - Breaking changes -> close PR (large version jumps, CI compilation errors, critical infrastructure changes)
 - PRs that modify `.github/workflows/` files cannot be merged via CLI (GitHub security restriction) -> manual merge via web UI
+
+## CI Debugging
+
+- `ci-trigger-auto-prs.yml` fires on ANY `auto-generate.yml` completion (not just success) — individual jobs may succeed independently.
+- CI gate checks both `failure` AND `cancelled` statuses — timed-out jobs properly fail CI.
+- Path filter negation patterns (`!pattern`) don't work as exclusions in `dorny/paths-filter` — they match everything that ISN'T the pattern. Use explicit subdirectory patterns instead (e.g., `server/app/**` not `server/**` with `!server/*.md`).
