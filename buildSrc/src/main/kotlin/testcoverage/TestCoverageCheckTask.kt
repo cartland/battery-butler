@@ -58,6 +58,12 @@ open class TestCoverageCheckTask : DefaultTask() {
                 sourceSets = listOf("commonMain", "androidMain"),
                 testSourceSets = listOf("commonTest"),
             ),
+            ModuleRule(
+                module = "presentation-feature",
+                classPatterns = listOf(Regex("""\w*Content""")),
+                sourceSets = listOf("commonMain"),
+                testSourceSets = listOf("commonTest"),
+            ),
             // Experimental modules — teaching reference, must maintain full coverage
             ModuleRule(
                 module = "experimental/usecase",
