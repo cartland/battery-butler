@@ -23,14 +23,8 @@ echo "--- 3. Lint ---"
 echo "--- 3b. Detekt ---"
 ./gradlew detekt --stacktrace
 
-echo "--- 3c. Architecture Check ---"
-./gradlew checkArchitecture
-
-echo "--- 3d. Test Coverage Check ---"
-./gradlew checkTestCoverage
-
-echo "--- 3e. Naming Convention Check ---"
-./gradlew checkNamingConventions
+echo "--- 3c. Custom Checks (Architecture, Theme, Coverage, Naming) ---"
+./gradlew checkArchitecture checkThemeLayer checkTestCoverage checkNamingConventions
 
 echo "--- 4. Tests (Unit & Instrumented) ---"
 ./scripts/test.sh
@@ -54,6 +48,7 @@ echo "--- 7b. Verify Jib Container Build ---"
 # iOS checks - Only run on macOS
 if [[ "$OSTYPE" == "darwin"* ]]; then
     echo "--- 8. iOS Checks (macOS detected) ---"
+    ./gradlew --stop  # Reclaim heap before memory-intensive iOS builds
 
     # Compile iOS Kotlin modules (catches import/dependency errors early)
     echo "Compiling iOS Kotlin modules..."
