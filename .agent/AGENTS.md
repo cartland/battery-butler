@@ -103,6 +103,8 @@ Keeping the build and tests healthy is a top priority. When you identify or fix 
   - `&&`, `||`, `;`, and `|` (pipes) are allowed for simple chaining.
   - **Example**: Instead of `for f in *.kt; do echo $f; done`, make separate bash tool calls.
   - The `.claude/hooks/git-guardrails.sh` hook warns (but does not block) on shell control flow.
+  - `grep -qE '--flag'` treats `--flag` as a grep option — use `grep -qF -- '--flag'` instead.
+  - `jq` with `!=` can be unreliable — use `select(.conclusion == "")` instead.
 
 - **Git**:
   - **Always** use non-interactive flags for commands that might open an editor (e.g., `git cherry-pick --continue --no-edit`). This prevents the shell from getting stuck waiting for user input.
@@ -112,6 +114,12 @@ Keeping the build and tests healthy is a top priority. When you identify or fix 
     - Commit: `Write` to `.tmp/commit-msg.txt`, then `Bash(git commit -F .tmp/commit-msg.txt)`
     - PR: `Write` to `.tmp/pr-body.txt`, then `Bash(gh pr create --title "..." --body-file .tmp/pr-body.txt)`
   - This ensures each Bash call starts with an allowed prefix (`git commit`, `gh pr create`) with no chaining.
+  - **`.tmp/` files persist across sessions** — always `Read` the file first (even if it might not exist) before `Write`, otherwise Write will fail with "File has not been read yet".
+  - After PR merge deletes a remote branch, don't force-push — it re-creates the branch as an orphan. Check PR state first.
+  - After a sibling PR merges, check remaining open PRs for merge conflicts (`gh pr view <N> --json mergeable`) and rebase if needed.
+  - Worktree agents can fail silently (no push) — always verify remote branches exist after agent completion.
+  - `gh pr create` has no `--auto` flag — create the PR first, then run `gh pr merge <N> --auto --squash`.
+  - Heredoc stripping must run BEFORE quote stripping in hooks, otherwise `<<'EOF'` markers get consumed.
 
 - **Pull Requests**:
   - **Always** ensure the Pull Request title and description accurately reflect the final changes. If the scope of a branch evolves, update the PR description before merging.
@@ -134,6 +142,7 @@ Keeping the build and tests healthy is a top priority. When you identify or fix 
   - **Always** run `./scripts/spotless-apply.sh` and fix errors before pushing to main.
   - **Every plan must include `./scripts/validate.sh` as a verification step.** If a plan lists abbreviated checks (e.g. `compileDebugSources + spotless + test`), replace or append `./scripts/validate.sh` — it covers all of those and more (detekt, lint, architecture). Never let a plan leave out the full validation step.
   - **Avoid** `clean` steps in scripts and CI if possible, relying on Gradle's incremental build and caching for speed.
+  - Stale Gradle daemons cause Kotlin version mismatch errors in lint — run `./gradlew --stop` then re-validate.
 
 - **Linter & Architecture Enforcement**:
   - **Prefer automated enforcement over prose rules.** When you discover a rule that should always hold (naming convention, dependency direction, forbidden API usage), first check if an existing linter can enforce it. If not, propose adding a new check. A lint that fails the build is worth more than a paragraph in docs.
