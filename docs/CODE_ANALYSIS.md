@@ -3,36 +3,37 @@
 # Code Analysis
 
 This document provides a breakdown of the codebase by application layer and module.
-Total Lines of Code: 42770
+Total Lines of Code: 43090
 
 ## Application Breakdown
-* Shared Code: 27,569 lines (64.5%)
-* iOS Swift App: 6,199 lines (14.5%)
-* Other: 3,811 lines (8.9%)
-* CMP Android, iOS, Desktop: 2,484 lines (5.8%)
-* Server: 1,528 lines (3.6%)
-* Android Screenshot Tests: 1,179 lines (2.8%)
+* Shared Code: 27,622 lines (64.1%)
+* iOS Swift App: 6,199 lines (14.4%)
+* Other: 4,028 lines (9.3%)
+* CMP Android, iOS, Desktop: 2,534 lines (5.9%)
+* Server: 1,528 lines (3.5%)
+* Android Screenshot Tests: 1,179 lines (2.7%)
 
 ## Module Breakdown
-* `:iosAppSwiftUI.xcodeproj`: 6,199 lines (14.5%)
-* `:presentation-feature`: 6,110 lines (14.3%)
-* `:viewmodel`: 5,142 lines (12.0%)
-* `:usecase`: 4,262 lines (10.0%)
-* `:data-network`: 2,429 lines (5.7%)
+* `:iosAppSwiftUI.xcodeproj`: 6,199 lines (14.4%)
+* `:presentation-feature`: 6,110 lines (14.2%)
+* `:viewmodel`: 5,142 lines (11.9%)
+* `:usecase`: 4,262 lines (9.9%)
+* `:data-network`: 2,429 lines (5.6%)
 * `:domain`: 2,284 lines (5.3%)
 * `:presentation-core`: 2,281 lines (5.3%)
-* `:compose-app`: 2,217 lines (5.2%)
-* `:buildSrc`: 1,940 lines (4.5%)
+* `:compose-app`: 2,267 lines (5.3%)
+* `:buildSrc`: 2,157 lines (5.0%)
 * `:data`: 1,832 lines (4.3%)
 * `:server:app`: 1,342 lines (3.1%)
-* `:android-screenshot-tests`: 1,179 lines (2.8%)
+* `:android-screenshot-tests`: 1,179 lines (2.7%)
 * `:data-local`: 1,059 lines (2.5%)
-* `:experimental:data-local`: 652 lines (1.5%)
 * `:test-common`: 620 lines (1.4%)
-* `:ai`: 493 lines (1.2%)
-* `:experimental:viewmodel`: 385 lines (0.9%)
-* `:presentation-model`: 323 lines (0.8%)
-* `:experimental:usecase`: 275 lines (0.6%)
+* `:ai`: 493 lines (1.1%)
+* `:experimental:viewmodel`: 394 lines (0.9%)
+* `:experimental:data`: 354 lines (0.8%)
+* `:presentation-model`: 323 lines (0.7%)
+* `:experimental:usecase`: 316 lines (0.7%)
+* `:experimental:data-local`: 301 lines (0.7%)
 * `:e2e-tests`: 271 lines (0.6%)
 * `:experimental:compose-app`: 267 lines (0.6%)
 * `:experimental:presentation-core`: 241 lines (0.6%)
@@ -46,8 +47,8 @@ Total Lines of Code: 42770
 * `:iosAppComposeUI.xcodeproj`: 31 lines (0.1%)
 
 ## Language Breakdown
-* Kotlin (.kt): 36,305 lines (84.9%)
-* Swift (.swift): 6,465 lines (15.1%)
+* Kotlin (.kt): 36,625 lines (85.0%)
+* Swift (.swift): 6,465 lines (15.0%)
 
 ## Code Distribution
 
@@ -65,10 +66,10 @@ config:
 %% GENERATED FILE - DO NOT EDIT
 sankey-beta
 
-Codebase,Shared Code,27569
+Codebase,Shared Code,27622
 Codebase,iOS Swift App,6199
-Codebase,Other,3811
-Codebase,CMP Apps,2484
+Codebase,Other,4028
+Codebase,CMP Apps,2534
 Codebase,Server,1528
 Codebase,Screenshot Tests,1179
 
@@ -80,17 +81,18 @@ Shared Code,domain,2284
 Shared Code,presentation-core,2281
 Shared Code,data,1832
 Shared Code,data-local,1059
-Shared Code,experimental:data-local,652
 Shared Code,ai,493
-Shared Code,experimental:viewmodel,385
-Shared Code,experimental:usecase,275
+Shared Code,experimental:viewmodel,394
+Shared Code,experimental:data,354
+Shared Code,experimental:usecase,316
+Shared Code,experimental:data-local,301
 Shared Code,experimental:presentation-core,241
 Shared Code,compose-resources,70
 Shared Code,experimental:domain,54
 
 iOS Swift App,iosAppSwiftUI,6199
 
-Other,buildSrc,1940
+Other,buildSrc,2157
 Other,test-common,620
 Other,presentation-model,323
 Other,e2e-tests,271
@@ -99,7 +101,7 @@ Other,fixtures,209
 Other,ios-swift-di,182
 Other,iosAppComposeUI,31
 
-CMP Apps,compose-app,2217
+CMP Apps,compose-app,2267
 CMP Apps,experimental:compose-app,267
 
 Server,server:app,1342
@@ -115,18 +117,19 @@ usecase,Kotlin,4262
 data-network,Kotlin,2429
 domain,Kotlin,2284
 presentation-core,Kotlin,2281
-compose-app,Kotlin,2217
-buildSrc,Kotlin,1940
+compose-app,Kotlin,2267
+buildSrc,Kotlin,2157
 data,Kotlin,1832
 server:app,Kotlin,1342
 android-screenshot-tests,Kotlin,1179
 data-local,Kotlin,1059
-experimental:data-local,Kotlin,652
 test-common,Kotlin,620
 ai,Kotlin,493
-experimental:viewmodel,Kotlin,385
+experimental:viewmodel,Kotlin,394
+experimental:data,Kotlin,354
 presentation-model,Kotlin,323
-experimental:usecase,Kotlin,275
+experimental:usecase,Kotlin,316
+experimental:data-local,Kotlin,301
 e2e-tests,Kotlin,271
 experimental:compose-app,Kotlin,267
 experimental:presentation-core,Kotlin,241
