@@ -225,6 +225,8 @@ android {
 
     lint {
         disable += "NullSafeMutableLiveData"
+        // IconLauncherShape creates large BufferedImage objects that cause OOM on CI runners.
+        disable += "IconLauncherShape"
     }
     testOptions {
         managedDevices {
