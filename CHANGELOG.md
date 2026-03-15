@@ -31,6 +31,14 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ---
 
+## 2026-03-15
+
+### CI/CD
+
+- **Architecture CI job**: Restored `validation_architecture` as a dedicated CI job so `checkArchitecture` violations are caught even without running `validate.sh` locally. ([#1031](https://github.com/cartland/battery-butler/pull/1031))
+- **Import boundary check**: New `ImportBoundaryCheckTask` Gradle plugin that scans source files in `presentation-feature`, `presentation-core`, `usecase`, and `domain` for forbidden cross-layer imports. Supports `// @ImportBoundaryExempt:` inline exemptions. Added CI job `validation_import_boundary`. ([#1033](https://github.com/cartland/battery-butler/pull/1033))
+- **Theme layer scope expansion**: Extended `ThemeLayerCheckTask` to also scan `compose-app/src`, preventing raw `Color(0x...)` literals and `isSystemInDarkTheme()` calls in the app shell/navigation layer. ([#1032](https://github.com/cartland/battery-butler/pull/1032))
+
 ## 2026-03-14
 
 ### Refactoring

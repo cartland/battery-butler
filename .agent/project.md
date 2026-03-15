@@ -30,6 +30,13 @@ Architecture is enforced by `buildSrc/.../ArchitectureCheckTask.kt`. Key rules:
 - `:usecase` contains `SendChatMessageUseCase` (augments AI messages with time + user context) and `BuildAiContextUseCase` (builds user inventory summary from DeviceRepository)
 - `:data` provides implementations of domain interfaces
 
+Import-level boundaries are enforced by `ImportBoundaryCheckTask` (in `validate.sh` and CI):
+- `:presentation-feature` cannot import `.domain.repository.*`, `.usecase.*`, `.data.*`, `.ai.*` — must go through ViewModel
+- `:presentation-core` cannot import `.data.*`, `.usecase.*`, `.viewmodel.*` — lower UI layer
+- `:usecase` cannot import `.data.*`, `.viewmodel.*` — domain interfaces only
+- `:domain` cannot import `.data.*`, `.presentation.*` — innermost layer
+- Exempt individual lines with `// @ImportBoundaryExempt: <reason>`
+
 ### DI Wiring (kotlin-inject)
 
 - `AppComponent` constructor parameters are the DI roots — ALL platform creation sites must be updated when parameters change:
