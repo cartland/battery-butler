@@ -32,5 +32,9 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
+        jvmTest.dependencies {
+            implementation(libs.kotlin.test)
+            implementation(kotlin("reflect"))
+        }
     }
 }
