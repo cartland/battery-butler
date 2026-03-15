@@ -8,7 +8,7 @@ CI modes, path filtering, auto-generated content, and workflow details.
 
 CI operates in one of two modes, controlled by `.github/ci-mode.txt`:
 
-- **`development`** (default): Only fast checks (spotless, lint, detekt, unit tests, architecture, theme layer) are required on PRs. Slow jobs (instrumented tests, iOS builds, desktop builds, Android build, server build) are skipped on PRs but always run post-merge on `main`. This speeds up the PR cycle during active development.
+- **`development`** (default): Only fast checks (spotless, lint, detekt, unit tests, architecture, theme layer, import boundary, test coverage, naming convention) are required on PRs. Slow jobs (instrumented tests, iOS builds, desktop builds, Android build, server build) are skipped on PRs but always run post-merge on `main`. This speeds up the PR cycle during active development.
 - **`release`**: All jobs are required on PRs. Use this before cutting a release to ensure full coverage.
 
 **Switching modes:**
