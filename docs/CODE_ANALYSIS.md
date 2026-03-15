@@ -3,12 +3,12 @@
 # Code Analysis
 
 This document provides a breakdown of the codebase by application layer and module.
-Total Lines of Code: 42665
+Total Lines of Code: 42770
 
 ## Application Breakdown
-* Shared Code: 27,569 lines (64.6%)
+* Shared Code: 27,569 lines (64.5%)
 * iOS Swift App: 6,199 lines (14.5%)
-* Other: 3,706 lines (8.7%)
+* Other: 3,811 lines (8.9%)
 * CMP Android, iOS, Desktop: 2,484 lines (5.8%)
 * Server: 1,528 lines (3.6%)
 * Android Screenshot Tests: 1,179 lines (2.8%)
@@ -16,10 +16,10 @@ Total Lines of Code: 42665
 ## Module Breakdown
 * `:iosAppSwiftUI.xcodeproj`: 6,199 lines (14.5%)
 * `:presentation-feature`: 6,110 lines (14.3%)
-* `:viewmodel`: 5,142 lines (12.1%)
+* `:viewmodel`: 5,142 lines (12.0%)
 * `:usecase`: 4,262 lines (10.0%)
 * `:data-network`: 2,429 lines (5.7%)
-* `:domain`: 2,284 lines (5.4%)
+* `:domain`: 2,284 lines (5.3%)
 * `:presentation-core`: 2,281 lines (5.3%)
 * `:compose-app`: 2,217 lines (5.2%)
 * `:buildSrc`: 1,940 lines (4.5%)
@@ -28,15 +28,15 @@ Total Lines of Code: 42665
 * `:android-screenshot-tests`: 1,179 lines (2.8%)
 * `:data-local`: 1,059 lines (2.5%)
 * `:experimental:data-local`: 652 lines (1.5%)
-* `:test-common`: 620 lines (1.5%)
+* `:test-common`: 620 lines (1.4%)
 * `:ai`: 493 lines (1.2%)
 * `:experimental:viewmodel`: 385 lines (0.9%)
+* `:presentation-model`: 323 lines (0.8%)
 * `:experimental:usecase`: 275 lines (0.6%)
 * `:e2e-tests`: 271 lines (0.6%)
 * `:experimental:compose-app`: 267 lines (0.6%)
 * `:experimental:presentation-core`: 241 lines (0.6%)
-* `:ExperimentalApp.xcodeproj`: 235 lines (0.6%)
-* `:presentation-model`: 218 lines (0.5%)
+* `:ExperimentalApp.xcodeproj`: 235 lines (0.5%)
 * `:fixtures`: 209 lines (0.5%)
 * `:ios-swift-di`: 182 lines (0.4%)
 * `:server:data`: 152 lines (0.4%)
@@ -46,8 +46,8 @@ Total Lines of Code: 42665
 * `:iosAppComposeUI.xcodeproj`: 31 lines (0.1%)
 
 ## Language Breakdown
-* Kotlin (.kt): 36,200 lines (84.8%)
-* Swift (.swift): 6,465 lines (15.2%)
+* Kotlin (.kt): 36,305 lines (84.9%)
+* Swift (.swift): 6,465 lines (15.1%)
 
 ## Code Distribution
 
@@ -67,7 +67,7 @@ sankey-beta
 
 Codebase,Shared Code,27569
 Codebase,iOS Swift App,6199
-Codebase,Other,3706
+Codebase,Other,3811
 Codebase,CMP Apps,2484
 Codebase,Server,1528
 Codebase,Screenshot Tests,1179
@@ -92,9 +92,9 @@ iOS Swift App,iosAppSwiftUI,6199
 
 Other,buildSrc,1940
 Other,test-common,620
+Other,presentation-model,323
 Other,e2e-tests,271
 Other,ExperimentalApp,235
-Other,presentation-model,218
 Other,fixtures,209
 Other,ios-swift-di,182
 Other,iosAppComposeUI,31
@@ -125,12 +125,12 @@ experimental:data-local,Kotlin,652
 test-common,Kotlin,620
 ai,Kotlin,493
 experimental:viewmodel,Kotlin,385
+presentation-model,Kotlin,323
 experimental:usecase,Kotlin,275
 e2e-tests,Kotlin,271
 experimental:compose-app,Kotlin,267
 experimental:presentation-core,Kotlin,241
 ExperimentalApp,Swift,235
-presentation-model,Kotlin,218
 fixtures,Kotlin,209
 ios-swift-di,Kotlin,182
 server:data,Kotlin,152
