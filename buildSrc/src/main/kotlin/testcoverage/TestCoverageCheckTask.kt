@@ -11,6 +11,7 @@ open class TestCoverageCheckTask : DefaultTask() {
         val classPatterns: List<Regex>,
         val sourceSets: List<String>,
         val testSourceSets: List<String>,
+        val scanFunctions: Boolean = false,
     )
 
     private data class ClassInfo(
@@ -63,6 +64,7 @@ open class TestCoverageCheckTask : DefaultTask() {
                 classPatterns = listOf(Regex("""\w*Content""")),
                 sourceSets = listOf("commonMain"),
                 testSourceSets = listOf("commonTest"),
+                scanFunctions = true,
             ),
             // Experimental modules — teaching reference, must maintain full coverage
             ModuleRule(
@@ -98,6 +100,7 @@ open class TestCoverageCheckTask : DefaultTask() {
         val classRegex = Regex(
             """(?:data|abstract|open|internal|sealed|value|private)?\s*class\s+(\w+)""",
         )
+        val funRegex = Regex("""fun\s+(\w+)\s*\(""")
 
         val excludedDirs = setOf("di", "provider")
         val excludedSuffixes = listOf("Factory", "Component")
@@ -172,6 +175,57 @@ open class TestCoverageCheckTask : DefaultTask() {
                                 coveredClasses.add(classInfo)
                             } else {
                                 uncoveredClasses.add(classInfo)
+                            }
+                        }
+
+                        // Scan top-level functions (e.g. composables)
+                        if (rule.scanFunctions) {
+                            funRegex.findAll(text).forEach funMatch@{ match ->
+                                val funName = match.groupValues[1]
+
+                                if (!rule.classPatterns.any { it.matches(funName) }) return@funMatch
+                                if (funName in excludedNames) return@funMatch
+                                if (excludedSuffixes.any { funName.endsWith(it) }) return@funMatch
+
+                                val lineNumber =
+                                    text.substring(0, match.range.first).count { it == '\n' } + 1
+                                val relPath = file.relativeTo(rootDir).path
+
+                                val funInfo = ClassInfo(
+                                    name = funName,
+                                    relativePath = relPath,
+                                    lineNumber = lineNumber,
+                                    module = rule.module,
+                                )
+                                allClasses.add(funInfo)
+
+                                if (hasInlineSuppression(lines, lineNumber - 1)) {
+                                    val reason = extractSuppressionReason(lines, lineNumber - 1)
+                                    exemptedClasses.add(funInfo to reason)
+                                    return@funMatch
+                                }
+
+                                val exemption = findExemption(funName, exemptions)
+                                if (exemption != null) {
+                                    exemptedClasses.add(funInfo to exemption.reason)
+                                    return@funMatch
+                                }
+
+                                val hasTest = rule.testSourceSets.any { testSourceSet ->
+                                    val testDir =
+                                        File(rootDir, "${rule.module}/src/$testSourceSet/kotlin")
+                                    testDir.exists() &&
+                                        testDir.walk().any { testFile ->
+                                            testFile.isFile &&
+                                                testFile.nameWithoutExtension == "${funName}Test"
+                                        }
+                                }
+
+                                if (hasTest) {
+                                    coveredClasses.add(funInfo)
+                                } else {
+                                    uncoveredClasses.add(funInfo)
+                                }
                             }
                         }
                     }
