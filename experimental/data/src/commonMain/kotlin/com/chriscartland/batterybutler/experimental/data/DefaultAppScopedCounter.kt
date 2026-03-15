@@ -1,9 +1,9 @@
-package com.chriscartland.batterybutler.experimental.datalocal
+package com.chriscartland.batterybutler.experimental.data
 
 import com.chriscartland.batterybutler.domain.model.DispatcherProvider
 import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.experimental.domain.repository.CounterRepository
-import com.chriscartland.batterybutler.experimental.domain.service.AppCounterService
+import com.chriscartland.batterybutler.experimental.domain.service.AppScopedCounter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -14,11 +14,11 @@ import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 
 @Inject
-class DefaultAppCounterService(
+class DefaultAppScopedCounter(
     private val appScope: CoroutineScope,
     private val counterRepository: CounterRepository,
     private val dispatcherProvider: DispatcherProvider,
-) : AppCounterService {
+) : AppScopedCounter {
     private var job: Job? = null
     private val _isRunning = MutableStateFlow(false)
     override val isRunning: StateFlow<Boolean> = _isRunning.asStateFlow()

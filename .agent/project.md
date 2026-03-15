@@ -129,10 +129,10 @@ Classes should have one reason to change. See `docs/architecture/adr-004-single-
 
 The `experimental/` directory is a reference architecture for KMP apps. See `experimental/EXPERIMENTAL.md` for full documentation. Key facts for agents:
 
-- **7 modules**: `domain` ← `usecase` ← `viewmodel` ← `presentation-core` ← `compose-app`, plus `data-local` and `ios-app`
-- **DI**: kotlin-inject with `ExperimentalAppComponent` root; `ExperimentalDataComponent` + `ExperimentalDataModule` for data bindings
-- **Use cases**: `GetCounterUseCase`, `IncrementCounterUseCase`, `RunCounterUseCase`, `ObserveCounterUseCase` — all `@Inject`, all return `Result<T, CounterError>`
-- **Testing**: Fakes (`FakeLocalCounterDataSource`, `FakeAppCounterService`) live in `data-local/src/commonMain/` so all modules can use them
+- **8 modules**: `domain` ← `usecase` ← `viewmodel` ← `presentation-core` ← `compose-app`, plus `data-local` ← `data` and `ios-app`
+- **DI**: kotlin-inject with `ExperimentalAppComponent` root; `ExperimentalDataComponent` (in `data`) + `ExperimentalDataModule` for data bindings
+- **Use cases**: `GetCounterUseCase`, `IncrementCounterUseCase`, `RunCounterUseCase`, `ObserveCounterUseCase`, `StartAppScopedCounterUseCase`, `StopAppScopedCounterUseCase`, `ObserveAppScopedCounterRunningUseCase` — all `@Inject`
+- **Testing**: `FakeLocalCounterDataSource` in `data-local/src/commonMain/`, `FakeAppScopedCounter` in `data/src/commonMain/`
 - **iOS bridge**: `CounterViewModelWrapper` polls KMP `StateFlow` via 60Hz Timer (no SKIE)
 
 ### UI Theme Constants

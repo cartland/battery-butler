@@ -1,7 +1,7 @@
 package com.chriscartland.batterybutler.experimental.usecase
 
 import com.chriscartland.batterybutler.domain.model.Result
-import com.chriscartland.batterybutler.experimental.datalocal.DefaultCounterRepository
+import com.chriscartland.batterybutler.experimental.data.DefaultCounterRepository
 import com.chriscartland.batterybutler.experimental.datalocal.FakeLocalCounterDataSource
 import com.chriscartland.batterybutler.experimental.domain.model.CounterError
 import kotlinx.coroutines.ExperimentalCoroutinesApi

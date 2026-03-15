@@ -1,16 +1,16 @@
-package com.chriscartland.batterybutler.experimental.datalocal
+package com.chriscartland.batterybutler.experimental.data
 
-import com.chriscartland.batterybutler.experimental.domain.service.AppCounterService
+import com.chriscartland.batterybutler.experimental.domain.service.AppScopedCounter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 /**
- * Test double for [AppCounterService]. Lives in commonMain (not commonTest) because
+ * Test double for [AppScopedCounter]. Lives in commonMain (not commonTest) because
  * it is consumed by tests in other modules (experimental:viewmodel).
  * This follows the same pattern as [FakeLocalCounterDataSource].
  */
-class FakeAppCounterService : AppCounterService {
+class FakeAppScopedCounter : AppScopedCounter {
     private val _isRunning = MutableStateFlow(false)
     override val isRunning: StateFlow<Boolean> = _isRunning.asStateFlow()
 

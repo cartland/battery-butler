@@ -22,6 +22,9 @@ Each use case has a single responsibility and a single `operator fun invoke()`:
 - `IncrementCounterUseCase` — single increment, returns `Result<Long, CounterError>`
 - `RunCounterUseCase` — infinite loop with 1s delay, returns `Result<Nothing, CounterError>` on failure
 - `ObserveCounterUseCase` — returns `Flow<Long>`
+- `StartAppScopedCounterUseCase` — starts the app-scoped counter
+- `StopAppScopedCounterUseCase` — stops the app-scoped counter
+- `ObserveAppScopedCounterRunningUseCase` — returns `StateFlow<Boolean>`
 
 ### Data access isolation via Repository pattern
 
@@ -42,13 +45,14 @@ Each use case has a single responsibility and a single `operator fun invoke()`:
 The counter has two identical 1-second increment loops running in different scopes to demonstrate lifecycle differences:
 
 - **VM Counter** (`startCounter`/`stopCounter`) — runs `RunCounterUseCase` in `viewModelScope`. Automatically cancelled when the ViewModel is cleared (e.g., navigating away, closing the screen). Tied to UI lifecycle.
-- **App Counter** (`startAppCounter`/`stopAppCounter`) — delegates to `DefaultAppCounterService`, which runs in `appScope` (`SupervisorJob + Dispatchers.Default`). Survives ViewModel destruction. Keeps incrementing until explicitly stopped or the app process dies.
+- **App Counter** (`startAppCounter`/`stopAppCounter`) — delegates to `DefaultAppScopedCounter` via use cases (`StartAppScopedCounterUseCase`, `StopAppScopedCounterUseCase`), which runs in `appScope` (`SupervisorJob + Dispatchers.Default`). Survives ViewModel destruction. Keeps incrementing until explicitly stopped or the app process dies.
 
 Both write to the same `CounterRepository`, so `ObserveCounterUseCase` sees increments from both. This makes the lifecycle difference visible: stop the VM counter by navigating away, and the app counter keeps going.
 
 Other lifecycle patterns:
 - `Job` references for explicit cancellation (`stopCounter()`, `stopObserving()`)
-- `DefaultAppCounterService` manages its own `Job` internally, independent of any ViewModel
+- `DefaultAppScopedCounter` manages its own `Job` internally, independent of any ViewModel
+- ViewModel only calls use cases — never services directly
 
 ### Dispatcher management via DispatcherProvider
 
@@ -56,9 +60,10 @@ Other lifecycle patterns:
 
 ### Test usefulness and ease
 
-All logic is testable with `FakeLocalCounterDataSource` and `FakeAppCounterService` — no platform mocks, no Android instrumentation. Fakes live in `commonMain` (not `commonTest`) so every module can use them. Tests cover:
+All logic is testable with `FakeLocalCounterDataSource` and `FakeAppScopedCounter` — no platform mocks, no Android instrumentation. Fakes live in `commonMain` (not `commonTest`) so every module can use them. Tests cover:
 
-- **data-local** (5 files) — repository error wrapping, service timing, idempotent start/stop
+- **data-local** (3 files) — data source implementations and fakes
+- **data** (2 files) — repository error wrapping, service timing, idempotent start/stop
 - **usecase** (4 files) — use case logic, coroutine timing, error propagation
 - **viewmodel** (1 file, 20+ tests) — state management, feature independence, combined scenarios
 
@@ -84,17 +89,20 @@ All logic is testable with `FakeLocalCounterDataSource` and `FakeAppCounterServi
 ```
 domain  <-  usecase  <-  viewmodel  <-  presentation-core  <-  compose-app
                                                                 ios-app
+
+data-local  <-  data  (Repository + Service impls + DI)
 ```
 
-`domain` depends on nothing. Each layer only depends on the layer to its left. `compose-app` and `ios-app` are leaf modules that wire everything together.
+`domain` depends on nothing. Each layer only depends on the layer to its left. `data-local` holds DataSource interfaces and implementations. `data` holds Repository and Service implementations plus DI bindings. `compose-app` and `ios-app` are leaf modules that wire everything together.
 
 ### Module map
 
 | Module | Purpose | Key files |
 |---|---|---|
-| `domain` | Interfaces + models | `CounterRepository`, `AppCounterService`, `CounterState`, `CounterError` |
-| `data-local` | Implementations + fakes | `DefaultCounterRepository`, `InMemoryLocalCounterDataSource`, `DataStoreCounterDataSource`, `DefaultAppCounterService`, `FakeLocalCounterDataSource` |
-| `usecase` | Single-responsibility operations | `GetCounterUseCase`, `IncrementCounterUseCase`, `RunCounterUseCase`, `ObserveCounterUseCase` |
+| `domain` | Interfaces + models | `CounterRepository`, `AppScopedCounter`, `CounterState`, `CounterError` |
+| `data-local` | DataSource interfaces + impls + fakes | `LocalCounterDataSource`, `InMemoryLocalCounterDataSource`, `DataStoreCounterDataSource`, `FakeLocalCounterDataSource` |
+| `data` | Repository + service impls + DI | `DefaultCounterRepository`, `DefaultAppScopedCounter`, `FakeAppScopedCounter`, `ExperimentalDataComponent` |
+| `usecase` | Single-responsibility operations | `GetCounterUseCase`, `IncrementCounterUseCase`, `RunCounterUseCase`, `ObserveCounterUseCase`, `StartAppScopedCounterUseCase`, `StopAppScopedCounterUseCase`, `ObserveAppScopedCounterRunningUseCase` |
 | `viewmodel` | State management | `CounterViewModel` |
 | `presentation-core` | Shared Compose UI | `CounterContent` |
 | `compose-app` | Android/Desktop entry + DI | `ExperimentalAppComponent`, `ExperimentalApp`, `ExperimentalActivity` |
@@ -107,7 +115,8 @@ domain  <-  usecase  <-  viewmodel  <-  presentation-core  <-  compose-app
 ### Testing pattern
 
 ```
-Test  ->  UseCase/ViewModel  ->  FakeLocalCounterDataSource (in commonMain)
+Test  ->  UseCase/ViewModel  ->  FakeLocalCounterDataSource (in data-local commonMain)
+                                 FakeAppScopedCounter (in data commonMain)
 ```
 
 No platform mocks. No Android test runners. Pure Kotlin `commonTest` for everything except `DataStoreCounterDataSource` (which uses `desktopTest` for filesystem access).

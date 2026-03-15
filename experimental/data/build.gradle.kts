@@ -6,7 +6,7 @@ plugins {
 
 kotlin {
     androidLibrary {
-        namespace = "com.chriscartland.batterybutler.experimental.usecase"
+        namespace = "com.chriscartland.batterybutler.experimental.data"
         compileSdk = libs.versions.android.compileSdk
             .get()
             .toInt()
@@ -24,6 +24,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            implementation(project(":experimental:data-local"))
             implementation(project(":experimental:domain"))
             implementation(project(":domain"))
             implementation(libs.kotlinx.coroutines.core)
@@ -32,7 +33,6 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.test)
-            implementation(project(":experimental:data"))
             implementation(project(":experimental:data-local"))
         }
         val desktopTest by getting {

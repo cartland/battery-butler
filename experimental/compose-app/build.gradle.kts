@@ -49,6 +49,7 @@ kotlin {
             api(project(":experimental:viewmodel"))
             api(project(":experimental:domain"))
             implementation(project(":experimental:usecase"))
+            implementation(project(":experimental:data"))
             implementation(project(":experimental:data-local"))
             implementation(project(":data-local"))
             implementation(project(":domain"))

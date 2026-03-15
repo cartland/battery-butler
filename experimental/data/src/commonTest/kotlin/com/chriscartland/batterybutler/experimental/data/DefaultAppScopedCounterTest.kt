@@ -1,6 +1,7 @@
-package com.chriscartland.batterybutler.experimental.datalocal
+package com.chriscartland.batterybutler.experimental.data
 
 import com.chriscartland.batterybutler.domain.model.DispatcherProvider
+import com.chriscartland.batterybutler.experimental.datalocal.FakeLocalCounterDataSource
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -15,7 +16,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class DefaultAppCounterServiceTest {
+class DefaultAppScopedCounterTest {
     private val testDispatcher = StandardTestDispatcher()
     private val testDispatcherProvider = object : DispatcherProvider {
         override val default: CoroutineDispatcher = testDispatcher
@@ -24,13 +25,13 @@ class DefaultAppCounterServiceTest {
     }
     private lateinit var fakeDataSource: FakeLocalCounterDataSource
     private lateinit var repository: DefaultCounterRepository
-    private lateinit var service: DefaultAppCounterService
+    private lateinit var service: DefaultAppScopedCounter
 
     @BeforeTest
     fun setUp() {
         fakeDataSource = FakeLocalCounterDataSource()
         repository = DefaultCounterRepository(fakeDataSource)
-        service = DefaultAppCounterService(
+        service = DefaultAppScopedCounter(
             appScope = CoroutineScope(SupervisorJob() + testDispatcher),
             counterRepository = repository,
             dispatcherProvider = testDispatcherProvider,
