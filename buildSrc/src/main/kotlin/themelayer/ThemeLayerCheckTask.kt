@@ -45,7 +45,7 @@ open class ThemeLayerCheckTask : DefaultTask() {
 
     private val scanDirs = listOf(
         "presentation-feature/src",
-        "experimental/presentation-core/src",
+        "compose-app/src",
     )
 
     @TaskAction
