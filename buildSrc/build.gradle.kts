@@ -47,5 +47,9 @@ gradlePlugin {
             id = "naming.convention.check"
             implementationClass = "namingconvention.NamingConventionPlugin"
         }
+        create("importBoundaryCheck") {
+            id = "import.boundary.check"
+            implementationClass = "importboundary.ImportBoundaryPlugin"
+        }
     }
 }

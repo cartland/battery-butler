@@ -50,6 +50,7 @@ plugins {
     id("theme.layer.check")
     id("test.coverage.check")
     id("naming.convention.check")
+    id("import.boundary.check")
 }
 
 allprojects {
