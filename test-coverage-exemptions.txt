@@ -32,3 +32,21 @@ DynamicAiEngine | Android-specific: requires on-device ML runtime
 AndroidAiEngine | Android-specific: requires Gemini Nano runtime
 OnDeviceAiEngine | Android-specific: requires on-device ML runtime
 # AiConfig is an interface, not enforced
+
+# Presentation-feature Content composables (covered by screenshot tests)
+LoginContent | Covered by screenshot tests in android-screenshot-tests
+AddBatteryEventContent | Covered by screenshot tests in android-screenshot-tests
+AddDeviceContent | Covered by screenshot tests in android-screenshot-tests
+AddDeviceTypeContent | Covered by screenshot tests in android-screenshot-tests
+AiChatContent | Covered by screenshot tests in android-screenshot-tests
+AiTabContent | Covered by screenshot tests in android-screenshot-tests
+DeviceDetailContent | Covered by screenshot tests in android-screenshot-tests
+DeviceTypeDetailContent | Covered by screenshot tests in android-screenshot-tests
+DeviceTypeListContent | Covered by screenshot tests in android-screenshot-tests
+EditDeviceTypeContent | Covered by screenshot tests in android-screenshot-tests
+EditDeviceContent | Covered by screenshot tests in android-screenshot-tests
+EditBatteryEventContent | Covered by screenshot tests in android-screenshot-tests
+EventDetailContent | Covered by screenshot tests in android-screenshot-tests
+HistoryListContent | Covered by screenshot tests in android-screenshot-tests
+HomeScreenContent | Covered by screenshot tests in android-screenshot-tests
+SettingsContent | Covered by screenshot tests in android-screenshot-tests
