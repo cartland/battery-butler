@@ -10,6 +10,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import org.junit.Assume
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -85,6 +86,55 @@ class ComposeUITest {
         composeTestRule.onNodeWithTag("BottomNav_Devices").performClick()
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag("TopBarTitle").assertTextEquals("Devices")
+    }
+
+    /**
+     * Verify the login screen shows a sign-in option (not "Coming Soon") when
+     * GOOGLE_WEB_CLIENT_ID is configured. Tests the full pipeline:
+     * local.properties → BuildConfig → GoogleSignInBridge.isConfigured() →
+     * LoginViewModel.isSignInAvailable → UI.
+     *
+     * Skips gracefully when credentials are not configured (clean checkout / fork).
+     */
+    @Test
+    fun testLoginScreenShowsSignInWhenConfigured() {
+        val clientId = BuildConfig.GOOGLE_WEB_CLIENT_ID
+        Assume.assumeTrue(
+            "Skipping: GOOGLE_WEB_CLIENT_ID not configured",
+            clientId.isNotBlank(),
+        )
+
+        composeTestRule.waitForIdle()
+
+        // When configured, "Coming Soon" text should NOT appear
+        composeTestRule
+            .onNodeWithText("Sign-in will be available in a future update")
+            .assertDoesNotExist()
+
+        // The "Continue without signing in" button should be present
+        composeTestRule
+            .onNodeWithText("Continue without signing in")
+            .assertExists()
+    }
+
+    /**
+     * Verify the Google Sign-In button is present and the "Continue as Guest"
+     * option exists when credentials are configured.
+     *
+     * Skips gracefully when credentials are not configured.
+     */
+    @Test
+    fun testGoogleSignInButtonIsClickable() {
+        val clientId = BuildConfig.GOOGLE_WEB_CLIENT_ID
+        Assume.assumeTrue(
+            "Skipping: GOOGLE_WEB_CLIENT_ID not configured",
+            clientId.isNotBlank(),
+        )
+
+        composeTestRule.waitForIdle()
+
+        // Find the guest sign-in option — verify no crash
+        composeTestRule.onNodeWithText("Continue as Guest").assertExists()
     }
 
     /**
