@@ -10,7 +10,7 @@ import platform.Foundation.NSFileManager
 import platform.Foundation.NSUserDomainMask
 
 actual class DataStoreFactory {
-    private val instance: DataStore<Preferences> by lazy(LazyThreadSafetyMode.PUBLICATION) {
+    private val instance: DataStore<Preferences> by lazy {
         PreferenceDataStoreFactory.createWithPath(
             produceFile = {
                 "${documentDirectory()}/$PREFERENCES_FILE_NAME".toPath()

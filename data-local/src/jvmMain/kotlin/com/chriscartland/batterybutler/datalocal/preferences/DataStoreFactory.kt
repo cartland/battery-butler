@@ -7,7 +7,7 @@ import okio.Path.Companion.toPath
 import java.io.File
 
 actual class DataStoreFactory {
-    private val instance: DataStore<Preferences> by lazy(LazyThreadSafetyMode.PUBLICATION) {
+    private val instance: DataStore<Preferences> by lazy {
         PreferenceDataStoreFactory.createWithPath(
             produceFile = {
                 File(System.getProperty("java.io.tmpdir"), PREFERENCES_FILE_NAME)
