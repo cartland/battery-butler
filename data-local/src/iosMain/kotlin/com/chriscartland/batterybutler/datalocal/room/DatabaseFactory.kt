@@ -2,29 +2,36 @@ package com.chriscartland.batterybutler.datalocal.room
 
 import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
-import com.chriscartland.batterybutler.datalocal.room.AppDatabase
-import com.chriscartland.batterybutler.datalocal.room.AppDatabaseConstructor
-import com.chriscartland.batterybutler.datalocal.room.MIGRATION_3_4
-import com.chriscartland.batterybutler.datalocal.room.MIGRATION_4_5
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
+import platform.Foundation.NSRecursiveLock
 import platform.Foundation.NSUserDomainMask
 
 actual class DatabaseFactory {
-    private val defaultInstance: AppDatabase by lazy {
-        createNewDatabase(DatabaseConstants.PRODUCTION_DATABASE_NAME)
+    private val lock = NSRecursiveLock()
+    private val instances = mutableMapOf<DatabaseOption, AppDatabase>()
+
+    actual fun createDatabase(option: DatabaseOption): AppDatabase {
+        lock.lock()
+        try {
+            return instances.getOrPut(option) { createNewDatabase(option) }
+        } finally {
+            lock.unlock()
+        }
     }
 
-    actual fun createDatabase(name: String): AppDatabase =
-        if (name == DatabaseConstants.PRODUCTION_DATABASE_NAME) {
-            defaultInstance
-        } else {
-            createNewDatabase(name)
+    actual fun evict(option: DatabaseOption) {
+        lock.lock()
+        try {
+            instances.remove(option)
+        } finally {
+            lock.unlock()
         }
+    }
 
-    private fun createNewDatabase(name: String): AppDatabase {
-        val dbFile = "${fileDirectory()}/$name"
+    private fun createNewDatabase(option: DatabaseOption): AppDatabase {
+        val dbFile = "${fileDirectory()}/${option.fileName}"
         return Room
             .databaseBuilder<AppDatabase>(
                 name = dbFile,
