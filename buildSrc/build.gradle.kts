@@ -18,7 +18,7 @@ dependencies {
     implementation("com.android.tools.build:gradle:8.9.1")
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:2.3.0")
     implementation("org.jetbrains.kotlin:kotlin-serialization:2.3.0")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.11.0")
+    testImplementation("org.junit.jupiter:junit-jupiter:6.0.3")
 }
 
 tasks.test {
