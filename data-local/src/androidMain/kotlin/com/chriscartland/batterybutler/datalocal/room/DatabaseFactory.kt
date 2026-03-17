@@ -11,7 +11,18 @@ import com.chriscartland.batterybutler.datalocal.room.MIGRATION_4_5
 actual class DatabaseFactory(
     private val context: Context,
 ) {
-    actual fun createDatabase(name: String): AppDatabase {
+    private val defaultInstance: AppDatabase by lazy {
+        createNewDatabase(DatabaseConstants.PRODUCTION_DATABASE_NAME)
+    }
+
+    actual fun createDatabase(name: String): AppDatabase =
+        if (name == DatabaseConstants.PRODUCTION_DATABASE_NAME) {
+            defaultInstance
+        } else {
+            createNewDatabase(name)
+        }
+
+    private fun createNewDatabase(name: String): AppDatabase {
         val dbFile = context.getDatabasePath(name)
         return Room
             .databaseBuilder<AppDatabase>(

@@ -12,7 +12,18 @@ import platform.Foundation.NSFileManager
 import platform.Foundation.NSUserDomainMask
 
 actual class DatabaseFactory {
-    actual fun createDatabase(name: String): AppDatabase {
+    private val defaultInstance: AppDatabase by lazy {
+        createNewDatabase(DatabaseConstants.PRODUCTION_DATABASE_NAME)
+    }
+
+    actual fun createDatabase(name: String): AppDatabase =
+        if (name == DatabaseConstants.PRODUCTION_DATABASE_NAME) {
+            defaultInstance
+        } else {
+            createNewDatabase(name)
+        }
+
+    private fun createNewDatabase(name: String): AppDatabase {
         val dbFile = "${fileDirectory()}/$name"
         return Room
             .databaseBuilder<AppDatabase>(

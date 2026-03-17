@@ -9,7 +9,18 @@ import com.chriscartland.batterybutler.datalocal.room.MIGRATION_4_5
 import java.io.File
 
 actual class DatabaseFactory {
-    actual fun createDatabase(name: String): AppDatabase {
+    private val defaultInstance: AppDatabase by lazy {
+        createNewDatabase(DatabaseConstants.PRODUCTION_DATABASE_NAME)
+    }
+
+    actual fun createDatabase(name: String): AppDatabase =
+        if (name == DatabaseConstants.PRODUCTION_DATABASE_NAME) {
+            defaultInstance
+        } else {
+            createNewDatabase(name)
+        }
+
+    private fun createNewDatabase(name: String): AppDatabase {
         val dbFile = File(System.getProperty("java.io.tmpdir"), name)
         return Room
             .databaseBuilder<AppDatabase>(
