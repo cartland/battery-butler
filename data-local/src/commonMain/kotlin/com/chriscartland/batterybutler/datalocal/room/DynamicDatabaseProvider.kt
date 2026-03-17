@@ -24,20 +24,19 @@ class DynamicDatabaseProvider(
     private val scope: CoroutineScope,
 ) {
     private val switchMutex = Mutex()
-    private var currentOption: DatabaseOption = DatabaseOption.Production
-    private val _database = MutableStateFlow(factory.createDatabase(DatabaseOption.Production))
+    private var currentOption: DatabaseOption = DatabaseOption.None
+    private val _database = MutableStateFlow(factory.createDatabase(DatabaseOption.None))
     val database: StateFlow<AppDatabase> = _database.asStateFlow()
 
     init {
         scope.launch {
             networkModeRepository.networkMode.collect { mode ->
                 val targetOption = when (mode) {
-                    NetworkMode.Mock -> DatabaseOption.Development
-                    is NetworkMode.GrpcLocal,
-                    is NetworkMode.GrpcAws,
-                    is NetworkMode.GrpcDev,
-                    NetworkMode.None,
-                    -> DatabaseOption.Production
+                    NetworkMode.None -> DatabaseOption.None
+                    NetworkMode.Mock -> DatabaseOption.Mock
+                    is NetworkMode.GrpcLocal -> DatabaseOption.GrpcLocal
+                    is NetworkMode.GrpcAws -> DatabaseOption.GrpcAws
+                    is NetworkMode.GrpcDev -> DatabaseOption.GrpcDev
                 }
 
                 switchMutex.withLock {
