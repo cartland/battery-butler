@@ -223,9 +223,9 @@ config:
 %% GENERATED FILE - DO NOT EDIT
 sankey-beta
 
-Codebase,Shared Code,27622
+Codebase,Shared Code,27723
 Codebase,iOS Swift App,6199
-Codebase,Other,4028
+Codebase,Other,4156
 Codebase,CMP Apps,2534
 Codebase,Server,1528
 Codebase,Screenshot Tests,1179
@@ -237,8 +237,8 @@ Shared Code,data-network,2429
 Shared Code,domain,2284
 Shared Code,presentation-core,2281
 Shared Code,data,1832
-Shared Code,data-local,1059
-Shared Code,ai,493
+Shared Code,data-local,1159
+Shared Code,ai,494
 Shared Code,experimental:viewmodel,394
 Shared Code,experimental:data,354
 Shared Code,experimental:usecase,316
@@ -249,7 +249,7 @@ Shared Code,experimental:domain,54
 
 iOS Swift App,iosAppSwiftUI,6199
 
-Other,buildSrc,2157
+Other,buildSrc,2285
 Other,test-common,620
 Other,presentation-model,323
 Other,e2e-tests,271
@@ -272,16 +272,16 @@ presentation-feature,Kotlin,6110
 viewmodel,Kotlin,5142
 usecase,Kotlin,4262
 data-network,Kotlin,2429
+buildSrc,Kotlin,2285
 domain,Kotlin,2284
 presentation-core,Kotlin,2281
 compose-app,Kotlin,2267
-buildSrc,Kotlin,2157
 data,Kotlin,1832
 server:app,Kotlin,1342
 android-screenshot-tests,Kotlin,1179
-data-local,Kotlin,1059
+data-local,Kotlin,1159
 test-common,Kotlin,620
-ai,Kotlin,493
+ai,Kotlin,494
 experimental:viewmodel,Kotlin,394
 experimental:data,Kotlin,354
 presentation-model,Kotlin,323
