@@ -24,32 +24,32 @@ class DynamicDatabaseProvider(
     private val scope: CoroutineScope,
 ) {
     private val switchMutex = Mutex()
-    private var currentDbName: String = DatabaseConstants.PRODUCTION_DATABASE_NAME
-    private val _database = MutableStateFlow(factory.createDatabase(DatabaseConstants.PRODUCTION_DATABASE_NAME))
+    private var currentOption: DatabaseOption = DatabaseOption.None
+    private val _database = MutableStateFlow(factory.createDatabase(DatabaseOption.None))
     val database: StateFlow<AppDatabase> = _database.asStateFlow()
 
     init {
         scope.launch {
             networkModeRepository.networkMode.collect { mode ->
-                val targetName = when (mode) {
-                    NetworkMode.Mock -> DatabaseConstants.DEVELOPMENT_DATABASE_NAME
-                    is NetworkMode.GrpcLocal,
-                    is NetworkMode.GrpcAws,
-                    is NetworkMode.GrpcDev,
-                    NetworkMode.None,
-                    -> DatabaseConstants.PRODUCTION_DATABASE_NAME
+                val targetOption = when (mode) {
+                    NetworkMode.None -> DatabaseOption.None
+                    NetworkMode.Mock -> DatabaseOption.Mock
+                    is NetworkMode.GrpcLocal -> DatabaseOption.GrpcLocal
+                    is NetworkMode.GrpcAws -> DatabaseOption.GrpcAws
+                    is NetworkMode.GrpcDev -> DatabaseOption.GrpcDev
                 }
 
                 switchMutex.withLock {
-                    if (targetName != currentDbName) {
+                    if (targetOption != currentOption) {
                         // Create new database BEFORE closing old one to minimize
                         // window where no valid database is available
-                        val newDb = factory.createDatabase(targetName)
+                        val newDb = factory.createDatabase(targetOption)
                         val oldDb = _database.value
+                        val previousOption = currentOption
 
-                        // Update state atomically: new database first, then name
+                        // Update state atomically: new database first, then option
                         _database.value = newDb
-                        currentDbName = targetName
+                        currentOption = targetOption
 
                         // Close old database AFTER switching to prevent
                         // external code from accessing closed database
@@ -61,6 +61,10 @@ class DynamicDatabaseProvider(
                                 "Failed to close old database: ${e.message}"
                             }
                         }
+
+                        // Evict the closed instance from the cache so a fresh
+                        // instance is created if this option is requested again
+                        factory.evict(previousOption)
                     }
                 }
             }

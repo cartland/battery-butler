@@ -10,12 +10,15 @@ import platform.Foundation.NSFileManager
 import platform.Foundation.NSUserDomainMask
 
 actual class DataStoreFactory {
-    actual fun createPreferencesDataStore(): DataStore<Preferences> =
+    private val instance: DataStore<Preferences> by lazy {
         PreferenceDataStoreFactory.createWithPath(
             produceFile = {
                 "${documentDirectory()}/$PREFERENCES_FILE_NAME".toPath()
             },
         )
+    }
+
+    actual fun createPreferencesDataStore(): DataStore<Preferences> = instance
 
     @OptIn(ExperimentalForeignApi::class)
     private fun documentDirectory(): String {

@@ -51,5 +51,9 @@ gradlePlugin {
             id = "import.boundary.check"
             implementationClass = "importboundary.ImportBoundaryPlugin"
         }
+        create("dataStoreSingletonCheck") {
+            id = "datastore.singleton.check"
+            implementationClass = "datastoreguard.DataStoreSingletonPlugin"
+        }
     }
 }

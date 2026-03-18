@@ -23,8 +23,8 @@ echo "--- 3. Lint ---"
 echo "--- 3b. Detekt ---"
 ./gradlew detekt --stacktrace
 
-echo "--- 3c. Custom Checks (Architecture, Theme, Coverage, Naming) ---"
-./gradlew checkArchitecture checkThemeLayer checkTestCoverage checkNamingConventions
+echo "--- 3c. Custom Checks (Architecture, Theme, Coverage, Naming, DataStore) ---"
+./gradlew checkArchitecture checkThemeLayer checkTestCoverage checkNamingConventions checkDataStoreSingleton
 
 echo "--- 3g. Import Boundary Check ---"
 ./gradlew checkImportBoundary

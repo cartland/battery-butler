@@ -2,15 +2,21 @@ package com.chriscartland.batterybutler.datalocal.room
 
 import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
-import com.chriscartland.batterybutler.datalocal.room.AppDatabase
-import com.chriscartland.batterybutler.datalocal.room.AppDatabaseConstructor
-import com.chriscartland.batterybutler.datalocal.room.MIGRATION_3_4
-import com.chriscartland.batterybutler.datalocal.room.MIGRATION_4_5
 import java.io.File
 
 actual class DatabaseFactory {
-    actual fun createDatabase(name: String): AppDatabase {
-        val dbFile = File(System.getProperty("java.io.tmpdir"), name)
+    private val instances = mutableMapOf<DatabaseOption, AppDatabase>()
+
+    @Synchronized
+    actual fun createDatabase(option: DatabaseOption): AppDatabase = instances.getOrPut(option) { createNewDatabase(option) }
+
+    @Synchronized
+    actual fun evict(option: DatabaseOption) {
+        instances.remove(option)
+    }
+
+    private fun createNewDatabase(option: DatabaseOption): AppDatabase {
+        val dbFile = File(System.getProperty("java.io.tmpdir"), option.fileName)
         return Room
             .databaseBuilder<AppDatabase>(
                 name = dbFile.absolutePath,

@@ -9,7 +9,7 @@ import okio.Path.Companion.toPath
 actual class DataStoreFactory(
     private val context: Context,
 ) {
-    actual fun createPreferencesDataStore(): DataStore<Preferences> =
+    private val instance: DataStore<Preferences> by lazy {
         PreferenceDataStoreFactory.createWithPath(
             produceFile = {
                 context.filesDir
@@ -18,4 +18,7 @@ actual class DataStoreFactory(
                     .toPath()
             },
         )
+    }
+
+    actual fun createPreferencesDataStore(): DataStore<Preferences> = instance
 }
