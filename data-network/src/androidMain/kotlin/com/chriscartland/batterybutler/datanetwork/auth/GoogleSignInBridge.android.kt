@@ -58,7 +58,7 @@ actual class GoogleSignInBridge {
             this.credentialManager = CredentialManager.create(activityProvider())
             Log.i(TAG, "CredentialManager initialized successfully")
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to create CredentialManager: ${e.message}")
+            Log.e(TAG, "Failed to create CredentialManager: ${e.message ?: "Unknown error"}")
         }
     }
 
@@ -83,7 +83,7 @@ actual class GoogleSignInBridge {
             Log.w(TAG, "│      ./gradlew signingReport")
             Log.w(TAG, "└─────────────────────────────────────────────────────────────")
         } else {
-            Log.i(TAG, "Google Sign-In: Configured with client ID ...${webClientId?.takeLast(15)}")
+            Log.i(TAG, "Google Sign-In: Configured with client ID ...${webClientId.orEmpty().takeLast(15)}")
         }
     }
 

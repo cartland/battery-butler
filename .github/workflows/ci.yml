@@ -127,7 +127,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-java-gradle
       - name: Run Detekt
-        run: ./gradlew detekt --stacktrace
+        run: ./gradlew detekt detektAndroidMain --stacktrace
 
   validation_test:
     needs: changes

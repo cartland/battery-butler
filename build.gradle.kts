@@ -99,6 +99,12 @@ allprojects {
         source.setFrom(files("src"))
     }
 
+    // Exclude generated code from type-resolution detekt tasks (e.g. detektAndroidMain).
+    // These tasks use compilation source sets which include build/generated/ files.
+    tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+        exclude { it.file.absolutePath.contains("/build/") }
+    }
+
     dependencies {
         val libs = rootProject.extensions.getByType<VersionCatalogsExtension>().named("libs")
         add("detektPlugins", libs.findLibrary("detekt-compose").get())

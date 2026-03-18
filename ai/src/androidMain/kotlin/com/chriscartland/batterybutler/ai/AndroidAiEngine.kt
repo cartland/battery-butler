@@ -223,9 +223,10 @@ class AndroidAiEngine(
                 emit(AiMessage("resp_${System.currentTimeMillis()}", AiRole.MODEL, text ?: "No text response", false))
             } catch (e: Exception) {
                 if (e is CancellationException) throw e
+                val errorMsg = e.message ?: "Unknown error"
                 co.touchlab.kermit.Logger
-                    .e("AndroidAiEngine") { "Error generating response: ${e.message}" }
-                emit(AiMessage("error", AiRole.MODEL, "Error: ${e.message}", false))
+                    .e("AndroidAiEngine") { "Error generating response: $errorMsg" }
+                emit(AiMessage("error", AiRole.MODEL, "Error: $errorMsg", false))
             }
         }
 }

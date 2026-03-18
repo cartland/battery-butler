@@ -94,7 +94,7 @@ class OnDeviceAiEngine(
                     AiMessage(
                         id = UUID.randomUUID().toString(),
                         role = AiRole.MODEL,
-                        text = "On-Device AI Error: ${e.message}",
+                        text = "On-Device AI Error: ${e.message ?: "Unknown error"}",
                         isPartial = false,
                     ),
                 )
@@ -112,6 +112,10 @@ class OnDeviceAiEngine(
         return try {
             val json = Json { ignoreUnknownKeys = true }
             val element = json.parseToJsonElement(cleanText).jsonObject
+            // Type-resolution detekt flags lines inside this if-block as unreachable
+            // because containsKey implies non-null, but JsonObject.get() still returns
+            // JsonElement? so the elvis returns are valid safety checks.
+            @Suppress("UnreachableCode")
             if (element.containsKey("tool") && element.containsKey("args")) {
                 val toolName = element["tool"]?.jsonPrimitive?.content ?: return null
                 val argsElement = element["args"]?.jsonObject ?: return null

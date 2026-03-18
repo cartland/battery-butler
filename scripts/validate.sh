@@ -21,7 +21,7 @@ echo "--- 3. Lint ---"
 ./gradlew lint --stacktrace
 
 echo "--- 3b. Detekt ---"
-./gradlew detekt --stacktrace
+./gradlew detekt detektAndroidMain --stacktrace
 
 echo "--- 3c. Custom Checks (Architecture, Theme, Coverage, Naming, DataStore) ---"
 ./gradlew checkArchitecture checkThemeLayer checkTestCoverage checkNamingConventions checkDataStoreSingleton

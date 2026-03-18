@@ -148,7 +148,9 @@ naming:
   NoNameShadowing:
     active: true
   NonBooleanPropertyPrefixedWithIs:
-    active: true
+    # Disabled: Flow<Boolean>/StateFlow<Boolean> properties like isAvailable, isLoading
+    # are idiomatic Kotlin and flagged as false positives by this rule with type resolution.
+    active: false
   ObjectPropertyNaming:
     active: true
     constantPattern: '[A-Za-z][_A-Za-z0-9]*'
