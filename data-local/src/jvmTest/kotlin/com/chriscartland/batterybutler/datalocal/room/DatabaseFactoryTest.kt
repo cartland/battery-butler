@@ -8,15 +8,15 @@ class DatabaseFactoryTest {
     @Test
     fun `createDatabase returns same instance for same option on repeated calls`() {
         val factory = DatabaseFactory()
-        val first = factory.createDatabase(DatabaseOption.None)
-        val second = factory.createDatabase(DatabaseOption.None)
+        val first = factory.createDatabase(DatabaseOption.Offline)
+        val second = factory.createDatabase(DatabaseOption.Offline)
         assertSame(first, second, "DatabaseFactory must return the same instance for the same option")
     }
 
     @Test
     fun `createDatabase returns different instances for different options`() {
         val factory = DatabaseFactory()
-        val none = factory.createDatabase(DatabaseOption.None)
+        val none = factory.createDatabase(DatabaseOption.Offline)
         val mock = factory.createDatabase(DatabaseOption.Mock)
         assertNotSame(none, mock, "DatabaseFactory must return different instances for different options")
     }
@@ -24,9 +24,9 @@ class DatabaseFactoryTest {
     @Test
     fun `evict causes next createDatabase to return a new instance`() {
         val factory = DatabaseFactory()
-        val first = factory.createDatabase(DatabaseOption.None)
-        factory.evict(DatabaseOption.None)
-        val second = factory.createDatabase(DatabaseOption.None)
+        val first = factory.createDatabase(DatabaseOption.Offline)
+        factory.evict(DatabaseOption.Offline)
+        val second = factory.createDatabase(DatabaseOption.Offline)
         assertNotSame(first, second, "After evict, createDatabase must return a new instance")
     }
 
