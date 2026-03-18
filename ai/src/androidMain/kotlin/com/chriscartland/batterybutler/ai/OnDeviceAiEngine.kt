@@ -94,7 +94,7 @@ class OnDeviceAiEngine(
                     AiMessage(
                         id = UUID.randomUUID().toString(),
                         role = AiRole.MODEL,
-                        text = "On-Device AI Error: ${e.message}",
+                        text = "On-Device AI Error: ${e.message ?: "Unknown error"}",
                         isPartial = false,
                     ),
                 )
@@ -113,8 +113,8 @@ class OnDeviceAiEngine(
             val json = Json { ignoreUnknownKeys = true }
             val element = json.parseToJsonElement(cleanText).jsonObject
             if (element.containsKey("tool") && element.containsKey("args")) {
-                val toolName = element["tool"]?.jsonPrimitive?.content ?: return null
-                val argsElement = element["args"]?.jsonObject ?: return null
+                val toolName = element.getValue("tool").jsonPrimitive.content
+                val argsElement = element.getValue("args").jsonObject
                 val argsMap = argsElement.entries.associate { (k, v) -> k to v.jsonPrimitive.content }
                 toolName to argsMap
             } else {

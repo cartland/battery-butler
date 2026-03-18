@@ -200,7 +200,13 @@ Keeping the build and tests healthy is a top priority. When you identify or fix 
 - **Exhaustive `when` on Sealed/Enum Types** (`ElseCaseInsteadOfExhaustiveWhen` rule in `detekt.yml`):
   - **Prefer listing all cases explicitly** over `else ->` when the `when` subject is a sealed class, enum, or boolean. This ensures the compiler catches unhandled variants when new subtypes are added.
   - When `else ->` is intentionally used as a catch-all default (e.g., many Screen subtypes mapping to a single default), add `@Suppress("ElseCaseInsteadOfExhaustiveWhen")` with a comment explaining why.
-  - **Note**: This rule requires type resolution, which the plain `detekt` Gradle task does not provide. It is enforced in IDEs with the detekt plugin and will be enforced in CI when type-resolution detekt is enabled.
+  - **Note**: This rule requires type resolution. It is enforced in CI via the `detektAndroidMain` task (see below) and in IDEs with the detekt plugin.
+
+- **Detekt Type-Resolution Analysis** (`detektAndroidMain` task):
+  - CI runs **both** `detekt` (syntax-only) and `detektAndroidMain` (with Kotlin compiler type information). Type resolution enables rules like `NullableToStringCall`, `UnreachableCode`, and `ElseCaseInsteadOfExhaustiveWhen`.
+  - Generated code (`build/` directories from Room KSP, Compose resources) is excluded via a file-path filter in `build.gradle.kts`.
+  - `NonBooleanPropertyPrefixedWithIs` is disabled in `detekt.yml` — it produces false positives on `Flow<Boolean>` properties like `isAvailable`.
+  - Performance overhead is ~1 second at current project scale.
 
 - **CI Workflow Synchronization**:
   - **When changing JDK version**: Update ALL workflow files in `.github/workflows/` that use `setup-java`.
