@@ -571,6 +571,16 @@ style:
     excludeImports:
       - 'java.util.*'
 
+StringResources:
+  HardcodedComposeText:
+    active: true
+    excludes:
+      - '**/experimental/**'
+  HardcodedContentDescription:
+    active: true
+    excludes:
+      - '**/experimental/**'
+
 Compose:
   PreviewPublic:
     active: false

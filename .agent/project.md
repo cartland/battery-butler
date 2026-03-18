@@ -157,11 +157,15 @@ Enforced by `checkNamingConventions` Gradle task (in `validate.sh` and CI):
 
 ### String Resource Convention
 
-Enforced by `checkHardcodedStrings` Gradle task (in `validate.sh` and CI):
+Enforced by two parallel mechanisms:
+1. **`checkHardcodedStrings` Gradle task** (regex-based, in `validate.sh` and CI)
+2. **Custom Detekt rules** in `detekt-rules/` (AST-level, runs with `detekt`/`detektAndroidMain`)
+
+Both enforce the same rules — the Detekt rules provide IDE integration and AST-level precision:
 
 - All user-visible strings in Compose UI must use `composeStringResource(Res.string.xxx)` instead of hardcoded string literals.
-- **`no-hardcoded-text`**: `Text("literal")` and `Text(text = "literal")` are forbidden — use `Text(composeStringResource(Res.string.xxx))`.
-- **`no-hardcoded-content-description`**: `contentDescription = "literal"` is forbidden — use `contentDescription = composeStringResource(Res.string.xxx)`.
+- **`no-hardcoded-text` / `HardcodedComposeText`**: `Text("literal")` and `Text(text = "literal")` are forbidden — use `Text(composeStringResource(Res.string.xxx))`.
+- **`no-hardcoded-content-description` / `HardcodedContentDescription`**: `contentDescription = "literal"` is forbidden — use `contentDescription = composeStringResource(Res.string.xxx)`.
 - String resources live in `compose-resources/src/commonMain/composeResources/values/strings.xml`.
 - **Inline suppression**: Add `// @StringResourceExempt` on the line if a hardcoded string is intentional.
 - `@Preview` functions are automatically exempt (no suppression needed).

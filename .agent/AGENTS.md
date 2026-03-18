@@ -151,6 +151,7 @@ Keeping the build and tests healthy is a top priority. When you identify or fix 
     | Mechanism | Location | Best For | Error Reporting |
     |-----------|----------|----------|-----------------|
     | **Detekt rules** (`detekt.yml`) | Config-only | Kotlin code patterns, naming, complexity, forbidden methods | Built-in detekt format |
+    | **Detekt custom rules** (`detekt-rules/`) | `detekt-rules/src/main/kotlin/` | AST-level Compose checks: hardcoded strings in `Text()`, `contentDescription` | Built-in detekt format |
     | **Detekt Compose plugin** | `detekt.yml` Compose section | Compose-specific: modifier naming, parameter order, CompositionLocal allowlist | Built-in detekt format |
     | **Custom Gradle tasks** (`buildSrc/`) | `buildSrc/src/main/kotlin/` | Cross-file rules, dependency graphs, theme layer boundaries, coverage gaps | Custom `GradleException` |
     | **Convention tests** (test source sets) | `*Test.kt` in `jvmTest`/`desktopTest` | Runtime reflection checks: "every X has a Y", API shape enforcement | JUnit assertion messages |
