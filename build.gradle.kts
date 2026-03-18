@@ -52,6 +52,7 @@ plugins {
     id("naming.convention.check")
     id("import.boundary.check")
     id("datastore.singleton.check")
+    id("hardcoded.string.check")
 }
 
 allprojects {

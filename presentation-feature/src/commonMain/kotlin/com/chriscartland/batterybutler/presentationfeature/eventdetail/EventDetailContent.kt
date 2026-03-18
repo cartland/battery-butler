@@ -46,6 +46,7 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.acti
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_delete
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_delete_event
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_edit
+import com.chriscartland.batterybutler.composeresources.generated.resources.content_desc_device_icon
 import com.chriscartland.batterybutler.composeresources.generated.resources.dialog_delete_event_text
 import com.chriscartland.batterybutler.composeresources.generated.resources.dialog_delete_event_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.error_event_not_found
@@ -162,7 +163,7 @@ private fun EventDetailBody(
         ) {
             Icon(
                 imageVector = DeviceIconMapper.getIcon(iconName),
-                contentDescription = "Device icon",
+                contentDescription = composeStringResource(Res.string.content_desc_device_icon),
                 modifier = Modifier.size(48.dp),
                 tint = MaterialTheme.colorScheme.onPrimaryContainer,
             )

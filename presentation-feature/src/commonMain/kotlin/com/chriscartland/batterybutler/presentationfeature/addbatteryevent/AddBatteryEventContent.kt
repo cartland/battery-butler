@@ -43,14 +43,20 @@ import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.composeresources.composeStringResource
 import com.chriscartland.batterybutler.composeresources.generated.resources.Res
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_add_event
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_add_new_device
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_batch_import_ai
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_hide_details
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_more_details
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_process_ai
 import com.chriscartland.batterybutler.composeresources.generated.resources.add_event_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.label_ai_output
 import com.chriscartland.batterybutler.composeresources.generated.resources.label_battery_type_optional
+import com.chriscartland.batterybutler.composeresources.generated.resources.label_date_format
+import com.chriscartland.batterybutler.composeresources.generated.resources.label_device
 import com.chriscartland.batterybutler.composeresources.generated.resources.label_manual_entry
 import com.chriscartland.batterybutler.composeresources.generated.resources.label_notes_optional
+import com.chriscartland.batterybutler.composeresources.generated.resources.label_select_device
+import com.chriscartland.batterybutler.composeresources.generated.resources.placeholder_battery_event_ai
 import com.chriscartland.batterybutler.domain.model.BatchOperationResult
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
@@ -119,7 +125,7 @@ fun AddBatteryEventContent(
                         value = aiInput,
                         onValueChange = { aiInput = it },
                         modifier = Modifier.weight(1f),
-                        placeholder = { Text("E.g. Replaced remote battery today") },
+                        placeholder = { Text(composeStringResource(Res.string.placeholder_battery_event_ai)) },
                         maxLines = 3,
                     )
                     IconButton(
@@ -131,7 +137,7 @@ fun AddBatteryEventContent(
                         },
                         enabled = aiInput.isNotBlank(),
                     ) {
-                        Icon(Icons.Default.AutoAwesome, contentDescription = "Process with AI")
+                        Icon(Icons.Default.AutoAwesome, contentDescription = composeStringResource(Res.string.action_process_ai))
                     }
                 }
 
@@ -185,10 +191,10 @@ fun AddBatteryEventContent(
                 onExpandedChange = { expanded = !expanded },
             ) {
                 OutlinedTextField(
-                    value = selectedDevice?.name ?: "Select Device",
+                    value = selectedDevice?.name ?: composeStringResource(Res.string.label_select_device),
                     onValueChange = {}, // ReadOnly
                     readOnly = true,
-                    label = { Text("Device") },
+                    label = { Text(composeStringResource(Res.string.label_device)) },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                     modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable, true).fillMaxWidth(),
                 )
@@ -207,7 +213,7 @@ fun AddBatteryEventContent(
                     }
                     HorizontalDivider()
                     DropdownMenuItem(
-                        text = { Text("Add New Device...", fontWeight = FontWeight.Bold) },
+                        text = { Text(composeStringResource(Res.string.action_add_new_device), fontWeight = FontWeight.Bold) },
                         onClick = {
                             onAddDeviceClick()
                             expanded = false
@@ -219,7 +225,7 @@ fun AddBatteryEventContent(
             OutlinedTextField(
                 value = dateInput,
                 onValueChange = { dateInput = it },
-                label = { Text("Date (YYYY-MM-DD)") },
+                label = { Text(composeStringResource(Res.string.label_date_format)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),

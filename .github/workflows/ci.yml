@@ -253,6 +253,17 @@ jobs:
       - name: Check Naming Conventions
         run: ./gradlew checkNamingConventions
 
+  validation_hardcoded_strings:
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup-java-gradle
+      - name: Check Hardcoded Strings
+        run: ./gradlew checkHardcodedStrings
+
   validation_architecture:
     needs: changes
     if: needs.changes.outputs.code == 'true'
@@ -497,6 +508,7 @@ jobs:
       - validation_theme_layer
       - validation_test_coverage
       - validation_naming_convention
+      - validation_hardcoded_strings
       - validation_architecture
       - validation_import_boundary
       - build_android
@@ -532,6 +544,7 @@ jobs:
             "${{ needs.validation_theme_layer.result }}" \
             "${{ needs.validation_test_coverage.result }}" \
             "${{ needs.validation_naming_convention.result }}" \
+            "${{ needs.validation_hardcoded_strings.result }}" \
             "${{ needs.validation_architecture.result }}" \
             "${{ needs.validation_import_boundary.result }}"; do
             if [[ "$result" == "failure" || "$result" == "cancelled" ]]; then

@@ -48,15 +48,19 @@ import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.composeresources.composeStringResource
 import com.chriscartland.batterybutler.composeresources.generated.resources.Res
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_cancel
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_decrease
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_delete
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_delete_device_type
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_increase
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_save
 import com.chriscartland.batterybutler.composeresources.generated.resources.dialog_delete_device_type_text
 import com.chriscartland.batterybutler.composeresources.generated.resources.dialog_delete_device_type_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.edit_device_type_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.error_device_type_not_found
+import com.chriscartland.batterybutler.composeresources.generated.resources.label_battery_type_hint
 import com.chriscartland.batterybutler.composeresources.generated.resources.label_icon
 import com.chriscartland.batterybutler.composeresources.generated.resources.label_quantity
+import com.chriscartland.batterybutler.composeresources.generated.resources.label_type_name
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.DeviceTypeInput
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
@@ -128,7 +132,7 @@ fun EditDeviceTypeContent(
                         OutlinedTextField(
                             value = name,
                             onValueChange = { name = it },
-                            label = { Text("Type Name") },
+                            label = { Text(composeStringResource(Res.string.label_type_name)) },
                             modifier = Modifier.fillMaxWidth(),
                             singleLine = true,
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
@@ -138,7 +142,7 @@ fun EditDeviceTypeContent(
                         OutlinedTextField(
                             value = batteryType,
                             onValueChange = { batteryType = it },
-                            label = { Text("Battery Type (e.g., AA)") },
+                            label = { Text(composeStringResource(Res.string.label_battery_type_hint)) },
                             modifier = Modifier.fillMaxWidth(),
                             singleLine = true,
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
@@ -150,7 +154,7 @@ fun EditDeviceTypeContent(
                             Text(composeStringResource(Res.string.label_quantity), style = MaterialTheme.typography.bodyLarge)
                             Spacer(Modifier.weight(1f))
                             IconButton(onClick = { if (batteryQuantity > 1) batteryQuantity-- }) {
-                                Icon(Icons.Default.Remove, contentDescription = "Decrease")
+                                Icon(Icons.Default.Remove, contentDescription = composeStringResource(Res.string.action_decrease))
                             }
                             Text(
                                 batteryQuantity.toString(),
@@ -158,7 +162,7 @@ fun EditDeviceTypeContent(
                                 modifier = Modifier.padding(horizontal = 8.dp),
                             )
                             IconButton(onClick = { batteryQuantity++ }) {
-                                Icon(Icons.Default.Add, contentDescription = "Increase")
+                                Icon(Icons.Default.Add, contentDescription = composeStringResource(Res.string.action_increase))
                             }
                         }
 

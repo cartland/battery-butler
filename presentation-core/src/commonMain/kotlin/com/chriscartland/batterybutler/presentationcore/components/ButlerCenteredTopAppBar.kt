@@ -13,6 +13,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
+import com.chriscartland.batterybutler.composeresources.composeStringResource
+import com.chriscartland.batterybutler.composeresources.generated.resources.Res
+import com.chriscartland.batterybutler.composeresources.generated.resources.content_desc_back
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -33,7 +36,7 @@ fun ButlerCenteredTopAppBar(
                 IconButton(onClick = onBack) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
+                        contentDescription = composeStringResource(Res.string.content_desc_back),
                     )
                 }
             }

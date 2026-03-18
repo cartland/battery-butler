@@ -55,5 +55,9 @@ gradlePlugin {
             id = "datastore.singleton.check"
             implementationClass = "datastoreguard.DataStoreSingletonPlugin"
         }
+        create("hardcodedStringCheck") {
+            id = "hardcoded.string.check"
+            implementationClass = "stringresource.HardcodedStringPlugin"
+        }
     }
 }
