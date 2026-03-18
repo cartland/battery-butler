@@ -112,13 +112,9 @@ class OnDeviceAiEngine(
         return try {
             val json = Json { ignoreUnknownKeys = true }
             val element = json.parseToJsonElement(cleanText).jsonObject
-            // Type-resolution detekt flags lines inside this if-block as unreachable
-            // because containsKey implies non-null, but JsonObject.get() still returns
-            // JsonElement? so the elvis returns are valid safety checks.
-            @Suppress("UnreachableCode")
             if (element.containsKey("tool") && element.containsKey("args")) {
-                val toolName = element["tool"]?.jsonPrimitive?.content ?: return null
-                val argsElement = element["args"]?.jsonObject ?: return null
+                val toolName = element.getValue("tool").jsonPrimitive.content
+                val argsElement = element.getValue("args").jsonObject
                 val argsMap = argsElement.entries.associate { (k, v) -> k to v.jsonPrimitive.content }
                 toolName to argsMap
             } else {
