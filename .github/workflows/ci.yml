@@ -38,7 +38,7 @@ jobs:
           MODE="${MODE:-release}"
           echo "ci_mode=$MODE" >> "$GITHUB_OUTPUT"
           echo "CI mode: $MODE"
-      - uses: dorny/paths-filter@v3
+      - uses: dorny/paths-filter@v4
         id: filter
         with:
           filters: |
