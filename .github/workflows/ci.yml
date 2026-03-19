@@ -262,18 +262,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-java-gradle
       - name: Check Architecture
-        run: ./gradlew checkArchitecture
-
-  validation_preview_time:
-    needs: changes
-    if: needs.changes.outputs.code == 'true'
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v6
-      - uses: ./.github/actions/setup-java-gradle
-      - name: Check Preview Time
-        run: ./gradlew checkPreviewTime
+        run: ./gradlew checkArchitecture checkPreviewTime
 
   validation_import_boundary:
     needs: changes
@@ -509,7 +498,6 @@ jobs:
       - validation_test_coverage
       - validation_naming_convention
       - validation_architecture
-      - validation_preview_time
       - validation_import_boundary
       - build_android
       - build_ios_compose
@@ -545,7 +533,6 @@ jobs:
             "${{ needs.validation_test_coverage.result }}" \
             "${{ needs.validation_naming_convention.result }}" \
             "${{ needs.validation_architecture.result }}" \
-            "${{ needs.validation_preview_time.result }}" \
             "${{ needs.validation_import_boundary.result }}"; do
             if [[ "$result" == "failure" || "$result" == "cancelled" ]]; then
               FAILED=true
