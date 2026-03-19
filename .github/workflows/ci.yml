@@ -87,12 +87,13 @@ jobs:
               - 'LICENSE'
               - '.gitignore'
               - '.gitattributes'
-            # Files that need spotless (code + markdown)
+            # Files that need spotless (code + markdown + version catalog)
             needs_spotless:
               - '**/*.kt'
               - '**/*.java'
               - '**/*.md'
               - '**/*.gradle.kts'
+              - 'gradle/libs.versions.toml'
 
   validation_spotless:
     needs: changes
