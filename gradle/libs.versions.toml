@@ -23,7 +23,7 @@ kotlinx-coroutines = "1.10.2"
 ktor = "3.4.1"
 
 logback = "1.5.32"
-spotless = "7.0.4"
+spotless = "8.3.0"
 runner = "1.7.0"
 core = "1.7.0"
 androidx-room = "2.7.0-alpha12"
