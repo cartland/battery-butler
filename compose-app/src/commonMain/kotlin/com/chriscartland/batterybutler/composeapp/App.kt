@@ -216,7 +216,10 @@ fun App(
                                     backStack.lastOrNull() is Screen.Login
                                 when {
                                     isLoginOnly -> { /* no-op */ }
-                                    else -> backStack.removeLastOrNull()
+
+                                    else -> {
+                                        backStack.removeLastOrNull()
+                                    }
                                 }
                             },
                             entryDecorators = listOf(

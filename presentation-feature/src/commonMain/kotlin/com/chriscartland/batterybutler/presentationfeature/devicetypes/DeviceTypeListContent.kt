@@ -72,6 +72,7 @@ fun DeviceTypeListContent(
             DeviceTypeListScreenState.Loading -> {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
+
             is DeviceTypeListScreenState.Error -> {
                 EmptyStateContent(
                     icon = Icons.Default.Warning,
@@ -80,6 +81,7 @@ fun DeviceTypeListContent(
                     modifier = Modifier.padding(contentPadding),
                 )
             }
+
             is DeviceTypeListScreenState.Success -> {
                 val allTypes = state.groupedTypes.values.flatten()
                 if (allTypes.isEmpty()) {

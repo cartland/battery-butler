@@ -98,9 +98,11 @@ fun DeviceDetailContent(
                 DeviceDetailScreenState.Loading -> {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
+
                 DeviceDetailScreenState.NotFound -> {
                     Text(composeStringResource(Res.string.error_device_not_found), modifier = Modifier.align(Alignment.Center))
                 }
+
                 is DeviceDetailScreenState.Success -> {
                     DeviceDetailBody(
                         state = state,

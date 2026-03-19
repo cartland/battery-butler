@@ -32,8 +32,14 @@ class DelegatingRemoteDataSource(
         networkModeRepository.networkMode
             .flatMapLatest { mode ->
                 when (mode) {
-                    NetworkMode.None -> kotlinx.coroutines.flow.flowOf(RemoteDataSourceState.NotStarted)
-                    NetworkMode.Mock -> mockDataSource.state
+                    NetworkMode.None -> {
+                        kotlinx.coroutines.flow.flowOf(RemoteDataSourceState.NotStarted)
+                    }
+
+                    NetworkMode.Mock -> {
+                        mockDataSource.state
+                    }
+
                     is NetworkMode.GrpcLocal, is NetworkMode.GrpcAws, is NetworkMode.GrpcDev -> {
                         delegatingGrpcClient.clientState.map { clientState ->
                             when (clientState) {
@@ -50,14 +56,21 @@ class DelegatingRemoteDataSource(
     override fun subscribe(): Flow<RemoteUpdate> =
         networkModeRepository.networkMode.flatMapLatest { mode ->
             when (mode) {
-                NetworkMode.None -> kotlinx.coroutines.flow.emptyFlow()
-                NetworkMode.Mock -> mockDataSource.subscribe()
+                NetworkMode.None -> {
+                    kotlinx.coroutines.flow.emptyFlow()
+                }
+
+                NetworkMode.Mock -> {
+                    mockDataSource.subscribe()
+                }
+
                 is NetworkMode.GrpcLocal -> {
                     // Wait for the client to be ready
                     delegatingGrpcClient.clientState
                         .mapNotNull { (it as? GrpcClientState.Ready)?.client }
                         .flatMapLatest<GrpcClient, RemoteUpdate> { grpcDataSource.subscribe() }
                 }
+
                 is NetworkMode.GrpcAws, is NetworkMode.GrpcDev -> {
                     // Wait for the client to be ready
                     delegatingGrpcClient.clientState
@@ -75,10 +88,12 @@ class DelegatingRemoteDataSource(
                 Logger.d("DelegatingRemoteDS") { "Pushing to None (no-op)" }
                 true
             }
+
             NetworkMode.Mock -> {
                 Logger.d("DelegatingRemoteDS") { "Pushing to Mock (no-op)" }
                 mockDataSource.push(update)
             }
+
             is NetworkMode.GrpcLocal, is NetworkMode.GrpcAws, is NetworkMode.GrpcDev -> {
                 // Wait for the client to be ready before pushing
                 Logger.d("DelegatingRemoteDS") { "Waiting for gRPC client to be ready..." }

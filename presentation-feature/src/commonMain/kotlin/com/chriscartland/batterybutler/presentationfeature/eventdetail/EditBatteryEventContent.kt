@@ -127,9 +127,11 @@ fun EditBatteryEventContent(
                 EditBatteryEventScreenState.Loading -> {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
+
                 EditBatteryEventScreenState.NotFound -> {
                     Text(composeStringResource(Res.string.error_event_not_found), modifier = Modifier.align(Alignment.Center))
                 }
+
                 is EditBatteryEventScreenState.Success -> {
                     val event = uiState.event
                     LaunchedEffect(event) {

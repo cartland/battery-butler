@@ -92,6 +92,7 @@ fun LoginContent(
                     // Loading while checking stored credentials
                     CircularProgressIndicator()
                 }
+
                 is AuthState.Authenticating -> {
                     // Sign-in in progress
                     LoginForm(
@@ -101,6 +102,7 @@ fun LoginContent(
                         onSkipLogin = onSkipLogin,
                     )
                 }
+
                 is AuthState.Unauthenticated -> {
                     LoginForm(
                         isSignInAvailable = isSignInAvailable,
@@ -109,11 +111,13 @@ fun LoginContent(
                         onSkipLogin = onSkipLogin,
                     )
                 }
+
                 is AuthState.Authenticated -> {
                     // This state is handled by navigation (navigate to main screen)
                     // Show nothing or a brief loading indicator
                     CircularProgressIndicator()
                 }
+
                 is AuthState.Failed -> {
                     // Show login form with error dialog
                     LoginForm(
@@ -280,30 +284,37 @@ private fun getErrorText(error: AuthError): Pair<String, String> =
             composeStringResource(Res.string.auth_error_title_coming_soon),
             composeStringResource(Res.string.auth_error_message_coming_soon),
         )
+
         is AuthError.Configuration.ServerUnavailable -> Pair(
             composeStringResource(Res.string.auth_error_title_cant_connect),
             composeStringResource(Res.string.auth_error_message_cant_connect),
         )
+
         is AuthError.SignIn.Cancelled -> Pair(
             composeStringResource(Res.string.auth_error_title_cancelled),
             composeStringResource(Res.string.auth_error_message_cancelled),
         )
+
         is AuthError.SignIn.NetworkError -> Pair(
             composeStringResource(Res.string.auth_error_title_connection),
             composeStringResource(Res.string.auth_error_message_connection),
         )
+
         is AuthError.SignIn.Failed -> Pair(
             composeStringResource(Res.string.auth_error_title_failed),
             error.cause ?: composeStringResource(Res.string.auth_error_message_safe_data),
         )
+
         is AuthError.Token.Invalid -> Pair(
             composeStringResource(Res.string.auth_error_title_session),
             composeStringResource(Res.string.auth_error_message_sign_in_again),
         )
+
         is AuthError.Token.Expired -> Pair(
             composeStringResource(Res.string.auth_error_title_expired),
             composeStringResource(Res.string.auth_error_message_expired),
         )
+
         is AuthError.Unknown -> Pair(
             composeStringResource(Res.string.auth_error_title_unknown),
             composeStringResource(Res.string.auth_error_message_safe_data),

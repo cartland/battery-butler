@@ -181,13 +181,17 @@ fun SettingsContent(
                 optionLabel = { mode ->
                     when (mode) {
                         is NetworkMode.None -> composeStringResource(Res.string.network_mode_none)
+
                         is NetworkMode.Mock -> composeStringResource(Res.string.network_mode_mock)
+
                         is NetworkMode.GrpcLocal -> composeStringResource(
                             Res.string.network_mode_grpc_local,
                         )
+
                         is NetworkMode.GrpcAws -> composeStringResource(
                             Res.string.network_mode_grpc_aws,
                         )
+
                         is NetworkMode.GrpcDev -> composeStringResource(
                             Res.string.network_mode_grpc_dev,
                         )

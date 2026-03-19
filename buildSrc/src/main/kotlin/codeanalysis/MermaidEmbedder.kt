@@ -23,11 +23,15 @@ object MermaidEmbedder {
                     output.appendLine("```")
                     skipping = true
                 }
+
                 line == endMarker -> {
                     skipping = false
                     output.appendLine(line)
                 }
-                !skipping -> output.appendLine(line)
+
+                !skipping -> {
+                    output.appendLine(line)
+                }
             }
         }
 

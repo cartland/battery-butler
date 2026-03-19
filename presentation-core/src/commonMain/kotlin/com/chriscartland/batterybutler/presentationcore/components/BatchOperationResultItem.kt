@@ -22,12 +22,17 @@ fun BatchOperationResultItem(
     modifier: Modifier = Modifier,
 ) {
     val (text, color) = when (result) {
-        is BatchOperationResult.Progress ->
+        is BatchOperationResult.Progress -> {
             "🤖 ${result.message}" to MaterialTheme.colorScheme.onSurface
-        is BatchOperationResult.Success ->
+        }
+
+        is BatchOperationResult.Success -> {
             "✅ ${result.message}" to MaterialTheme.colorScheme.primary
-        is BatchOperationResult.Error ->
+        }
+
+        is BatchOperationResult.Error -> {
             "❌ ${result.error.message}" to MaterialTheme.colorScheme.error
+        }
     }
 
     Text(
