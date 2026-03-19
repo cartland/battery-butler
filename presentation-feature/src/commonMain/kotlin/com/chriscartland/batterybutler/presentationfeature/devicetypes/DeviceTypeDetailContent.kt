@@ -236,6 +236,7 @@ fun DeviceTypeDetailLoadingPreview() {
             onBack = {},
             onEdit = {},
             onDeviceClick = {},
+            nowInstant = Instant.parse("2026-01-18T17:00:00Z"),
         )
     }
 }
@@ -249,6 +250,7 @@ fun DeviceTypeDetailNotFoundPreview() {
             onBack = {},
             onEdit = {},
             onDeviceClick = {},
+            nowInstant = Instant.parse("2026-01-18T17:00:00Z"),
         )
     }
 }

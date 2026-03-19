@@ -55,5 +55,9 @@ gradlePlugin {
             id = "datastore.singleton.check"
             implementationClass = "datastoreguard.DataStoreSingletonPlugin"
         }
+        create("previewTimeCheck") {
+            id = "preview.time.check"
+            implementationClass = "previewtime.PreviewTimePlugin"
+        }
     }
 }
