@@ -100,7 +100,10 @@ class DeviceTypeListViewModel(
         viewModelScope.launch {
             when (val result = preloadCommonTypesUseCase()) {
                 is Result.Success -> { /* success */ }
-                is Result.Error -> _actionError.value = result.error.message
+
+                is Result.Error -> {
+                    _actionError.value = result.error.message
+                }
             }
         }
     }

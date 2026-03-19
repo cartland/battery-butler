@@ -60,7 +60,10 @@ class BatchAddBatteryEventsUseCase(
                             is Result.Error -> "Error recording battery replacement: ${result.error.message}"
                         }
                     }
-                    else -> "Error: This tool is not supported in this context. Use '${AiToolNames.RECORD_BATTERY_REPLACEMENT}' only."
+
+                    else -> {
+                        "Error: This tool is not supported in this context. Use '${AiToolNames.RECORD_BATTERY_REPLACEMENT}' only."
+                    }
                 }
             }
 
@@ -81,6 +84,7 @@ class BatchAddBatteryEventsUseCase(
                     }
                     send(BatchOperationResult.Success("Batch operation completed."))
                 }
+
                 is Result.Error -> {
                     send(BatchOperationResult.Error(result.error))
                 }

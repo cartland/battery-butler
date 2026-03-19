@@ -340,27 +340,42 @@ fun HomeScreenList(
 @Composable
 fun getSyncErrorMessage(error: DataError): String =
     when (error) {
-        is DataError.Network.ConnectionFailed ->
+        is DataError.Network.ConnectionFailed -> {
             composeStringResource(Res.string.sync_error_network)
-        is DataError.Network.Timeout ->
+        }
+
+        is DataError.Network.Timeout -> {
             composeStringResource(Res.string.sync_error_timeout)
-        is DataError.Network.ServerError ->
+        }
+
+        is DataError.Network.ServerError -> {
             composeStringResource(Res.string.sync_error_server)
-        is DataError.Network.NotReady ->
+        }
+
+        is DataError.Network.NotReady -> {
             composeStringResource(Res.string.sync_error_not_ready)
-        is DataError.Network.PushFailed ->
+        }
+
+        is DataError.Network.PushFailed -> {
             composeStringResource(Res.string.sync_error_sync_failed)
+        }
+
         is DataError.Database.ReadFailed,
         is DataError.Database.WriteFailed,
         is DataError.Database.ConstraintViolation,
-        ->
+        -> {
             composeStringResource(Res.string.sync_error_data)
+        }
+
         is DataError.Ai.ApiError,
         is DataError.Ai.ParsingError,
-        ->
+        -> {
             composeStringResource(Res.string.sync_error_ai)
-        is DataError.Unknown ->
+        }
+
+        is DataError.Unknown -> {
             composeStringResource(Res.string.sync_error_unknown)
+        }
     }
 
 @Preview(showBackground = true)

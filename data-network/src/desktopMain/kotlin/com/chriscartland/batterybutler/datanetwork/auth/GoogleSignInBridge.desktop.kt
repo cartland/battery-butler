@@ -149,9 +149,11 @@ actual class GoogleSignInBridge {
 
                 when {
                     code != null -> continuation.resume(code to redirectUri)
+
                     error != null -> continuation.resume(
                         throw Exception("Google Sign-In cancelled: $error"),
                     )
+
                     else -> continuation.resume(
                         throw Exception("No authorization code received"),
                     )

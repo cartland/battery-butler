@@ -101,9 +101,11 @@ fun EventDetailContent(
                 EventDetailScreenState.Loading -> {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
+
                 EventDetailScreenState.NotFound -> {
                     Text(composeStringResource(Res.string.error_event_not_found), modifier = Modifier.align(Alignment.Center))
                 }
+
                 is EventDetailScreenState.Success -> {
                     EventDetailBody(
                         state = uiState,

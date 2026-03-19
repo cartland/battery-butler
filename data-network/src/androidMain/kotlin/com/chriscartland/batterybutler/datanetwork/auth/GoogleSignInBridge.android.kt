@@ -193,6 +193,7 @@ actual class GoogleSignInBridge {
                     ),
                 )
             }
+
             else -> {
                 Result.Error(
                     AuthError.SignIn.Failed(

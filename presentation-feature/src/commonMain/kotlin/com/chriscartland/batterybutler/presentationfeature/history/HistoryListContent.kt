@@ -48,6 +48,7 @@ fun HistoryListContent(
             HistoryListScreenState.Loading -> {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
+
             is HistoryListScreenState.Error -> {
                 EmptyStateContent(
                     icon = Icons.Default.Warning,
@@ -56,6 +57,7 @@ fun HistoryListContent(
                     modifier = Modifier.padding(contentPadding),
                 )
             }
+
             is HistoryListScreenState.Success -> {
                 if (state.items.isEmpty()) {
                     EmptyStateContent(

@@ -82,9 +82,11 @@ fun DeviceTypeDetailContent(
                 DeviceTypeDetailScreenState.Loading -> {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
+
                 DeviceTypeDetailScreenState.NotFound -> {
                     Text("Device type not found", modifier = Modifier.align(Alignment.Center))
                 }
+
                 is DeviceTypeDetailScreenState.Success -> {
                     DeviceTypeDetailBody(
                         state = state,

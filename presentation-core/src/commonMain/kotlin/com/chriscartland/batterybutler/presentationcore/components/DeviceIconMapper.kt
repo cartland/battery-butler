@@ -111,18 +111,22 @@ data object DeviceIconMapper {
                 container = scheme.primaryContainer,
                 content = scheme.onPrimaryContainer,
             )
+
             IconColorRole.Secondary -> ResolvedIconAccent(
                 container = scheme.secondaryContainer,
                 content = scheme.onSecondaryContainer,
             )
+
             IconColorRole.Tertiary -> ResolvedIconAccent(
                 container = scheme.tertiaryContainer,
                 content = scheme.onTertiaryContainer,
             )
+
             IconColorRole.Error -> ResolvedIconAccent(
                 container = scheme.errorContainer,
                 content = scheme.onErrorContainer,
             )
+
             IconColorRole.Surface -> ResolvedIconAccent(
                 container = scheme.surfaceVariant,
                 content = scheme.onSurfaceVariant,
@@ -134,49 +138,89 @@ data object DeviceIconMapper {
         when (iconName) {
             // Shapes
             "star" -> Icons.Default.Star
+
             "circle" -> Icons.Default.Circle
+
             "square" -> Icons.Default.Square
+
             "favorite" -> Icons.Default.Favorite
+
             "diamond" -> Icons.Default.Diamond
+
             "hexagon" -> Icons.Default.Hexagon
+
             // Electronics
             "smartphone" -> Icons.Default.Smartphone
+
             "tablet" -> Icons.Default.TabletMac
+
             "laptop" -> Icons.Default.Laptop
+
             "watch" -> Icons.Default.Watch
+
             "headphones" -> Icons.Default.Headphones
+
             "camera" -> Icons.Default.CameraAlt
+
             "speaker" -> Icons.Default.Speaker
+
             "videogame_asset" -> Icons.Default.VideogameAsset
+
             "game_controller" -> Icons.Default.SportsEsports
+
             "tv" -> Icons.Default.Tv
+
             "router" -> Icons.Default.Router
+
             "power" -> Icons.Default.Power
+
             "smart_button" -> Icons.Default.SmartButton
+
             "settings_remote" -> Icons.Default.SettingsRemote
+
             "mouse" -> Icons.Default.Mouse
+
             "keyboard" -> Icons.Default.Keyboard
+
             // Home
             "lightbulb" -> Icons.Default.Lightbulb
+
             "detector_smoke" -> Icons.Default.Propane
+
             "thermostat" -> Icons.Default.Thermostat
+
             "sensors" -> Icons.Default.Sensors
+
             "lock" -> Icons.Default.Lock
+
             "garage_home" -> Icons.Default.Garage
+
             // Tools/Utility
             "flashlight_on" -> Icons.Default.Highlight
+
             "drill" -> Icons.Default.Build
+
             "brush" -> Icons.Default.Brush
+
             "scale" -> Icons.Default.Scale
+
             "straighten" -> Icons.Default.Straighten
+
             "water_drop" -> Icons.Default.WaterDrop
+
             // Other
             "car" -> Icons.Default.DirectionsCar
+
             "bike" -> Icons.Default.PedalBike
+
             "schedule" -> Icons.Default.Schedule
+
             "location_on" -> Icons.Default.LocationOn
+
             "account_balance_wallet" -> Icons.Default.AccountBalanceWallet
+
             "toys" -> Icons.Default.Toys
+
             else -> Icons.Default.DevicesOther
         }
 }

@@ -53,6 +53,7 @@ class DelegatingGrpcClient(
                             }
                         }
                     }
+
                     is NetworkMode.GrpcAws, is NetworkMode.GrpcDev -> {
                         @Suppress("ElseCaseInsteadOfExhaustiveWhen")
                         val url = when (mode) {
@@ -72,7 +73,10 @@ class DelegatingGrpcClient(
                             }
                         }
                     }
-                    NetworkMode.Mock, NetworkMode.None -> GrpcClientState.Uninitialized // Mock and None don't use GrpcClient
+
+                    NetworkMode.Mock, NetworkMode.None -> {
+                        GrpcClientState.Uninitialized
+                    } // Mock and None don't use GrpcClient
                 }
                 currentDelegate.value = newClient
             }

@@ -64,7 +64,10 @@ class BatchAddDeviceTypesUseCase(
                             }
                         }
                     }
-                    else -> "Error: This tool is not supported in this context. Use '${AiToolNames.ADD_DEVICE_TYPE}' only."
+
+                    else -> {
+                        "Error: This tool is not supported in this context. Use '${AiToolNames.ADD_DEVICE_TYPE}' only."
+                    }
                 }
             }
 
@@ -85,6 +88,7 @@ class BatchAddDeviceTypesUseCase(
                     }
                     send(BatchOperationResult.Success("Batch operation completed."))
                 }
+
                 is Result.Error -> {
                     send(BatchOperationResult.Error(result.error))
                 }
