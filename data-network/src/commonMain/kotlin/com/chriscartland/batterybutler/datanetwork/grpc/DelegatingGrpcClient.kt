@@ -74,9 +74,10 @@ class DelegatingGrpcClient(
                         }
                     }
 
+                    // Mock and None don't use GrpcClient
                     NetworkMode.Mock, NetworkMode.None -> {
                         GrpcClientState.Uninitialized
-                    } // Mock and None don't use GrpcClient
+                    }
                 }
                 currentDelegate.value = newClient
             }

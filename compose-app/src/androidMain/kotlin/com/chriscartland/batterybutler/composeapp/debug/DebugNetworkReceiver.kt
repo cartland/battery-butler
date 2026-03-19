@@ -29,9 +29,9 @@ class DebugNetworkReceiver(
             Logger.d(TAG) { "Broadcast received. Mode: $modeString" }
 
             val mode = when (modeString) {
+                // Hardcoded Android Emulator Localhost
                 "GRPC_LOCAL" -> NetworkMode.GrpcLocal("http://10.0.2.2:50051")
 
-                // Hardcoded Android Emulator Localhost
                 "GRPC_AWS" -> NetworkMode.GrpcAws(BuildConfig.PRODUCTION_SERVER_URL)
 
                 "GRPC_DEV" -> NetworkMode.GrpcDev(BuildConfig.DEV_SERVER_URL)
