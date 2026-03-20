@@ -62,10 +62,11 @@ import com.chriscartland.batterybutler.presentationcore.theme.Padding
 import com.chriscartland.batterybutler.presentationmodel.eventdetail.EventDetailScreenState
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
 @Composable
 fun EventDetailContent(
     uiState: EventDetailScreenState,
@@ -74,6 +75,7 @@ fun EventDetailContent(
     onDelete: () -> Unit,
     onDeviceClick: (String) -> Unit,
     modifier: Modifier = Modifier,
+    nowInstant: Instant = Clock.System.now(),
 ) {
     var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
 
@@ -100,14 +102,17 @@ fun EventDetailContent(
                 EventDetailScreenState.Loading -> {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
+
                 EventDetailScreenState.NotFound -> {
                     Text(composeStringResource(Res.string.error_event_not_found), modifier = Modifier.align(Alignment.Center))
                 }
+
                 is EventDetailScreenState.Success -> {
                     EventDetailBody(
                         state = uiState,
                         onDeviceClick = onDeviceClick,
                         onDeleteClick = { showDeleteDialog = true },
+                        nowInstant = nowInstant,
                     )
                 }
             }
@@ -139,6 +144,7 @@ private fun EventDetailBody(
     state: EventDetailScreenState.Success,
     onDeviceClick: (String) -> Unit,
     onDeleteClick: () -> Unit,
+    nowInstant: Instant = Clock.System.now(),
 ) {
     val event = state.event
     val date = event.date.toLocalDateTime(TimeZone.currentSystemDefault())
@@ -216,6 +222,7 @@ private fun EventDetailBody(
                 device = device,
                 deviceType = state.deviceType,
                 onClick = { onDeviceClick(device.id) },
+                nowInstant = nowInstant,
             )
         }
 
@@ -289,6 +296,7 @@ fun EventDetailContentPreview() {
             onEdit = {},
             onDelete = {},
             onDeviceClick = {},
+            nowInstant = now,
         )
     }
 }
@@ -311,10 +319,12 @@ fun EventDetailContentDeletedDevicePreview() {
             onEdit = {},
             onDelete = {},
             onDeviceClick = {},
+            nowInstant = now,
         )
     }
 }
 
+@OptIn(ExperimentalTime::class)
 @Preview(showBackground = true)
 @Composable
 fun EventDetailLoadingPreview() {
@@ -325,10 +335,12 @@ fun EventDetailLoadingPreview() {
             onEdit = {},
             onDelete = {},
             onDeviceClick = {},
+            nowInstant = Instant.parse("2026-01-18T17:00:00Z"),
         )
     }
 }
 
+@OptIn(ExperimentalTime::class)
 @Preview(showBackground = true)
 @Composable
 fun EventDetailContentNotFoundPreview() {
@@ -339,6 +351,7 @@ fun EventDetailContentNotFoundPreview() {
             onEdit = {},
             onDelete = {},
             onDeviceClick = {},
+            nowInstant = Instant.parse("2026-01-18T17:00:00Z"),
         )
     }
 }

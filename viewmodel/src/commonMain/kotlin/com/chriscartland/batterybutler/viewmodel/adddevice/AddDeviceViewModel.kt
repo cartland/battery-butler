@@ -76,7 +76,10 @@ class AddDeviceViewModel(
             )
             when (val result = addDeviceUseCase(newDevice)) {
                 is Result.Success -> { /* success */ }
-                is Result.Error -> _actionError.value = result.error.message
+
+                is Result.Error -> {
+                    _actionError.value = result.error.message
+                }
             }
             _isLoading.value = false
         }

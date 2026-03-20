@@ -121,9 +121,11 @@ fun EditDeviceContent(
                 EditDeviceScreenState.Loading -> {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
+
                 EditDeviceScreenState.NotFound -> {
                     Text(composeStringResource(Res.string.error_device_not_found), modifier = Modifier.align(Alignment.Center))
                 }
+
                 is EditDeviceScreenState.Success -> {
                     // Initialize fields once
                     LaunchedEffect(state) {

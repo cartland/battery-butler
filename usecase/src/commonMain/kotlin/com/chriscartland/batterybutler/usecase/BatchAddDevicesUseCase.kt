@@ -56,7 +56,10 @@ class BatchAddDevicesUseCase(
                             is Result.Error -> "Error adding device: ${result.error.message}"
                         }
                     }
-                    else -> "Error: This tool is not supported in this context. Use '${AiToolNames.ADD_DEVICE}' only."
+
+                    else -> {
+                        "Error: This tool is not supported in this context. Use '${AiToolNames.ADD_DEVICE}' only."
+                    }
                 }
             }
 
@@ -77,6 +80,7 @@ class BatchAddDevicesUseCase(
                     }
                     send(BatchOperationResult.Success("Batch operation completed."))
                 }
+
                 is Result.Error -> {
                     send(BatchOperationResult.Error(result.error))
                 }

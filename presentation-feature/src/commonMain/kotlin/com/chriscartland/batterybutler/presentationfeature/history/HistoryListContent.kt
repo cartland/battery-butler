@@ -48,6 +48,7 @@ fun HistoryListContent(
             HistoryListScreenState.Loading -> {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
+
             is HistoryListScreenState.Error -> {
                 EmptyStateContent(
                     icon = Icons.Default.Warning,
@@ -56,6 +57,7 @@ fun HistoryListContent(
                     modifier = Modifier.padding(contentPadding),
                 )
             }
+
             is HistoryListScreenState.Success -> {
                 if (state.items.isEmpty()) {
                     EmptyStateContent(
@@ -114,6 +116,7 @@ fun HistoryListContentLoadingPreview() {
             state = HistoryListScreenState.Loading,
             onEventClick = { _, _ -> },
             onAddEventClick = {},
+            nowInstant = Instant.parse("2026-01-18T17:00:00Z"),
         )
     }
 }
@@ -126,6 +129,7 @@ fun HistoryListContentErrorPreview() {
             state = HistoryListScreenState.Error("Failed to load history"),
             onEventClick = { _, _ -> },
             onAddEventClick = {},
+            nowInstant = Instant.parse("2026-01-18T17:00:00Z"),
         )
     }
 }

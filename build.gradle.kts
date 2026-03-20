@@ -53,6 +53,7 @@ plugins {
     id("import.boundary.check")
     id("datastore.singleton.check")
     id("hardcoded.string.check")
+    id("preview.time.check")
 }
 
 allprojects {

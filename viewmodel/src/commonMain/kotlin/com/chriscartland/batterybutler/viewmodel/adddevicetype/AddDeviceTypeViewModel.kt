@@ -90,6 +90,7 @@ class AddDeviceTypeViewModel(
                             suggestedIconFlow.value = icon
                         }
                     }
+
                     is Result.Error -> {
                         _actionError.value = result.error.message
                     }
@@ -117,7 +118,10 @@ class AddDeviceTypeViewModel(
             )
             when (val result = addDeviceTypeUseCase(newType)) {
                 is Result.Success -> { /* success */ }
-                is Result.Error -> _actionError.value = result.error.message
+
+                is Result.Error -> {
+                    _actionError.value = result.error.message
+                }
             }
         }
     }

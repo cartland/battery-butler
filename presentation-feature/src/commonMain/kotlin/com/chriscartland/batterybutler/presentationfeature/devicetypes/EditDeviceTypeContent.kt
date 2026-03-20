@@ -110,8 +110,14 @@ fun EditDeviceTypeContent(
     ) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
             when (uiState) {
-                EditDeviceTypeScreenState.Loading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                EditDeviceTypeScreenState.NotFound -> Text(composeStringResource(Res.string.error_device_type_not_found), modifier = Modifier.align(Alignment.Center))
+                EditDeviceTypeScreenState.Loading -> {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                }
+
+                EditDeviceTypeScreenState.NotFound -> {
+                    Text(composeStringResource(Res.string.error_device_type_not_found), modifier = Modifier.align(Alignment.Center))
+                }
+
                 is EditDeviceTypeScreenState.Success -> {
                     val original = uiState.deviceType
                     LaunchedEffect(original) {

@@ -59,5 +59,9 @@ gradlePlugin {
             id = "hardcoded.string.check"
             implementationClass = "stringresource.HardcodedStringPlugin"
         }
+        create("previewTimeCheck") {
+            id = "preview.time.check"
+            implementationClass = "previewtime.PreviewTimePlugin"
+        }
     }
 }

@@ -111,6 +111,7 @@ class DefaultAuthRepository(
 
                 verifyWithServer(googleToken.idToken, googleToken.email, googleToken.displayName, googleToken.photoUrl)
             }
+
             is Result.Error -> {
                 log.w { "Google Sign-In failed: ${result.error.message}" }
                 _authState.value = AuthState.Failed(result.error)

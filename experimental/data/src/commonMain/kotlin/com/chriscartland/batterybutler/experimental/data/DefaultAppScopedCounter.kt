@@ -29,7 +29,10 @@ class DefaultAppScopedCounter(
         job = appScope.launch(dispatcherProvider.default) {
             while (true) {
                 when (counterRepository.increment()) {
-                    is Result.Success -> delay(DELAY_MS)
+                    is Result.Success -> {
+                        delay(DELAY_MS)
+                    }
+
                     is Result.Error -> {
                         _isRunning.value = false
                         break

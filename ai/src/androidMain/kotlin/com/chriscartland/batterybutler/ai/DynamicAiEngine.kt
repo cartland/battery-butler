@@ -49,7 +49,9 @@ class DynamicAiEngine(
         val type = aiPreferencesRepository.aiEngineType.first()
         return when (type) {
             AiEngineType.Cloud -> cloudEngine.generateResponse(prompt, toolHandler)
+
             AiEngineType.OnDevice -> onDeviceEngine.generateResponse(prompt, toolHandler)
+
             AiEngineType.NoOp -> flowOf(
                 AiMessage(
                     id = "noop",

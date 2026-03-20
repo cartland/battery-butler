@@ -141,15 +141,18 @@ private fun CounterValueDisplay(state: CounterState) {
                 style = MaterialTheme.typography.displayLarge,
             )
         }
+
         is CounterState.Loading -> {
             CircularProgressIndicator()
         }
+
         is CounterState.Active -> {
             Text(
                 text = "${state.value}",
                 style = MaterialTheme.typography.displayLarge,
             )
         }
+
         is CounterState.Error -> {
             Text(
                 text = state.message,

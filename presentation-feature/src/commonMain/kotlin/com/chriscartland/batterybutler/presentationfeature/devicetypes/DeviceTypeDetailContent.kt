@@ -86,9 +86,11 @@ fun DeviceTypeDetailContent(
                 DeviceTypeDetailScreenState.Loading -> {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
+
                 DeviceTypeDetailScreenState.NotFound -> {
                     Text(composeStringResource(Res.string.error_device_type_not_found), modifier = Modifier.align(Alignment.Center))
                 }
+
                 is DeviceTypeDetailScreenState.Success -> {
                     DeviceTypeDetailBody(
                         state = state,
@@ -240,6 +242,7 @@ fun DeviceTypeDetailLoadingPreview() {
             onBack = {},
             onEdit = {},
             onDeviceClick = {},
+            nowInstant = Instant.parse("2026-01-18T17:00:00Z"),
         )
     }
 }
@@ -253,6 +256,7 @@ fun DeviceTypeDetailNotFoundPreview() {
             onBack = {},
             onEdit = {},
             onDeviceClick = {},
+            nowInstant = Instant.parse("2026-01-18T17:00:00Z"),
         )
     }
 }
