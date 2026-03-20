@@ -17,6 +17,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.chriscartland.batterybutler.composeresources.composeStringResource
+import com.chriscartland.batterybutler.composeresources.generated.resources.Res
+import com.chriscartland.batterybutler.composeresources.generated.resources.content_desc_battery_replacement
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import kotlinx.datetime.TimeZone
@@ -73,7 +76,7 @@ fun HistoryListItem(
             ) {
                 Icon(
                     imageVector = Icons.Default.BatteryFull,
-                    contentDescription = "Battery replacement",
+                    contentDescription = composeStringResource(Res.string.content_desc_battery_replacement),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Text(

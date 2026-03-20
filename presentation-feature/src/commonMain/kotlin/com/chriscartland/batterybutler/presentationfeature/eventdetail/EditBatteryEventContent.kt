@@ -57,6 +57,8 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.acti
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_delete_event
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_ok
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_save
+import com.chriscartland.batterybutler.composeresources.generated.resources.content_desc_calendar
+import com.chriscartland.batterybutler.composeresources.generated.resources.content_desc_device_icon
 import com.chriscartland.batterybutler.composeresources.generated.resources.dialog_delete_event_text
 import com.chriscartland.batterybutler.composeresources.generated.resources.dialog_delete_event_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.edit_event_title
@@ -200,7 +202,7 @@ fun EditBatteryEventContent(
                             ) {
                                 Icon(
                                     imageVector = DeviceIconMapper.getIcon(iconName),
-                                    contentDescription = "Device icon",
+                                    contentDescription = composeStringResource(Res.string.content_desc_device_icon),
                                     modifier = Modifier.size(28.dp),
                                     tint = MaterialTheme.colorScheme.onPrimaryContainer,
                                 )
@@ -231,7 +233,7 @@ fun EditBatteryEventContent(
                             horizontalArrangement = Arrangement.SpaceBetween,
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                                Icon(Icons.Default.CalendarToday, contentDescription = "Calendar", tint = MaterialTheme.colorScheme.primary)
+                                Icon(Icons.Default.CalendarToday, contentDescription = composeStringResource(Res.string.content_desc_calendar), tint = MaterialTheme.colorScheme.primary)
                                 Text(composeStringResource(Res.string.label_replacement_date), fontWeight = FontWeight.Medium)
                             }
                             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {

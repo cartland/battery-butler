@@ -277,7 +277,7 @@ fun EditDeviceContent(
                 },
                 dismissButton = {
                     TextButton(onClick = { showDeleteDialog = false }) {
-                        Text("Cancel")
+                        Text(composeStringResource(Res.string.action_cancel))
                     }
                 },
             )

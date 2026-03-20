@@ -52,6 +52,7 @@ plugins {
     id("naming.convention.check")
     id("import.boundary.check")
     id("datastore.singleton.check")
+    id("hardcoded.string.check")
     id("preview.time.check")
 }
 
@@ -92,23 +93,27 @@ allprojects {
         }
     }
 
-    apply(plugin = "io.gitlab.arturbosch.detekt")
-    configure<io.gitlab.arturbosch.detekt.extensions.DetektExtension> {
-        config.setFrom(files("$rootDir/detekt.yml"))
-        buildUponDefaultConfig = true
-        // KMP source compatibility
-        source.setFrom(files("src"))
-    }
+    // Skip detekt for :detekt-rules to avoid circular dependency (it can't load itself as a plugin).
+    if (project.path != ":detekt-rules") {
+        apply(plugin = "io.gitlab.arturbosch.detekt")
+        configure<io.gitlab.arturbosch.detekt.extensions.DetektExtension> {
+            config.setFrom(files("$rootDir/detekt.yml"))
+            buildUponDefaultConfig = true
+            // KMP source compatibility
+            source.setFrom(files("src"))
+        }
 
-    // Exclude generated code from type-resolution detekt tasks (e.g. detektAndroidMain).
-    // These tasks use compilation source sets which include build/generated/ files.
-    tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
-        exclude { it.file.absolutePath.contains("/build/") }
-    }
+        // Exclude generated code from type-resolution detekt tasks (e.g. detektAndroidMain).
+        // These tasks use compilation source sets which include build/generated/ files.
+        tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+            exclude { it.file.absolutePath.contains("/build/") }
+        }
 
-    dependencies {
-        val libs = rootProject.extensions.getByType<VersionCatalogsExtension>().named("libs")
-        add("detektPlugins", libs.findLibrary("detekt-compose").get())
+        dependencies {
+            val libs = rootProject.extensions.getByType<VersionCatalogsExtension>().named("libs")
+            add("detektPlugins", libs.findLibrary("detekt-compose").get())
+            add("detektPlugins", project(":detekt-rules"))
+        }
     }
 }
 

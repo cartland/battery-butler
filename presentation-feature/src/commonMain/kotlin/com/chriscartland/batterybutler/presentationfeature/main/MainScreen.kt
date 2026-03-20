@@ -66,6 +66,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.composeresources.composeStringResource
 import com.chriscartland.batterybutler.composeresources.generated.resources.Res
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_clear_chat
+import com.chriscartland.batterybutler.composeresources.generated.resources.content_desc_collapse_ai_chat
+import com.chriscartland.batterybutler.composeresources.generated.resources.content_desc_expand_ai_chat
+import com.chriscartland.batterybutler.composeresources.generated.resources.content_desc_send_message
+import com.chriscartland.batterybutler.composeresources.generated.resources.content_desc_settings
 import com.chriscartland.batterybutler.composeresources.generated.resources.placeholder_ask_ai
 import com.chriscartland.batterybutler.composeresources.generated.resources.tab_ai_chat
 import com.chriscartland.batterybutler.composeresources.generated.resources.tab_devices
@@ -164,7 +169,7 @@ fun MainScreenShell(
                         IconButton(onClick = onSettingsClick) {
                             Icon(
                                 imageVector = Icons.Default.Settings,
-                                contentDescription = "Settings",
+                                contentDescription = composeStringResource(Res.string.content_desc_settings),
                             )
                         }
                     },
@@ -213,7 +218,7 @@ fun MainScreenShell(
                                     ) {
                                         Icon(
                                             imageVector = Icons.AutoMirrored.Filled.Send,
-                                            contentDescription = "Send message",
+                                            contentDescription = composeStringResource(Res.string.content_desc_send_message),
                                             tint = if (inputText.isNotBlank()) {
                                                 MaterialTheme.colorScheme.primary
                                             } else {
@@ -227,7 +232,7 @@ fun MainScreenShell(
                                     IconButton(onClick = { onAiExpandedChange(true) }) {
                                         Icon(
                                             imageVector = Icons.Default.KeyboardArrowUp,
-                                            contentDescription = "Expand AI chat",
+                                            contentDescription = composeStringResource(Res.string.content_desc_expand_ai_chat),
                                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                         )
                                     }
@@ -348,7 +353,7 @@ fun MainScreenShell(
                                         IconButton(onClick = onClearAiChat) {
                                             Icon(
                                                 imageVector = Icons.Default.Delete,
-                                                contentDescription = "Clear chat",
+                                                contentDescription = composeStringResource(Res.string.action_clear_chat),
                                             )
                                         }
                                     }
@@ -357,7 +362,7 @@ fun MainScreenShell(
                                     ) {
                                         Icon(
                                             imageVector = Icons.Default.KeyboardArrowDown,
-                                            contentDescription = "Collapse AI chat",
+                                            contentDescription = composeStringResource(Res.string.content_desc_collapse_ai_chat),
                                         )
                                     }
                                 }

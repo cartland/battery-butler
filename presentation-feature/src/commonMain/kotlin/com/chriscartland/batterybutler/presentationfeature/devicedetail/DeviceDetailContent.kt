@@ -45,6 +45,9 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.acti
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_record_replacement
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_record_replacement_description
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_view_all
+import com.chriscartland.batterybutler.composeresources.generated.resources.content_desc_device_icon
+import com.chriscartland.batterybutler.composeresources.generated.resources.content_desc_device_type
+import com.chriscartland.batterybutler.composeresources.generated.resources.content_desc_location
 import com.chriscartland.batterybutler.composeresources.generated.resources.device_detail_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.error_device_not_found
 import com.chriscartland.batterybutler.composeresources.generated.resources.label_quantity
@@ -156,7 +159,7 @@ fun DeviceDetailBody(
                     ) {
                         Icon(
                             imageVector = DeviceIconMapper.getIcon(iconName),
-                            contentDescription = "Device icon",
+                            contentDescription = composeStringResource(Res.string.content_desc_device_icon),
                             modifier = Modifier.size(64.dp),
                             tint = MaterialTheme.colorScheme.onPrimaryContainer,
                         )
@@ -175,7 +178,7 @@ fun DeviceDetailBody(
                 ) {
                     Icon(
                         Icons.Default.DevicesOther,
-                        contentDescription = "Device type",
+                        contentDescription = composeStringResource(Res.string.content_desc_device_type),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(16.dp),
                     )
@@ -195,7 +198,7 @@ fun DeviceDetailBody(
                     ) {
                         Icon(
                             Icons.Default.LocationOn,
-                            contentDescription = "Location",
+                            contentDescription = composeStringResource(Res.string.content_desc_location),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(16.dp),
                         )

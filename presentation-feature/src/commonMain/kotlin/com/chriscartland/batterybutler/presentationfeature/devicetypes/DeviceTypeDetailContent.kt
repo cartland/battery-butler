@@ -34,6 +34,10 @@ import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.composeresources.composeStringResource
 import com.chriscartland.batterybutler.composeresources.generated.resources.Res
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_edit
+import com.chriscartland.batterybutler.composeresources.generated.resources.content_desc_device_type_icon
+import com.chriscartland.batterybutler.composeresources.generated.resources.error_device_type_not_found
+import com.chriscartland.batterybutler.composeresources.generated.resources.label_device_type_detail
+import com.chriscartland.batterybutler.composeresources.generated.resources.label_devices
 import com.chriscartland.batterybutler.composeresources.generated.resources.label_quantity
 import com.chriscartland.batterybutler.composeresources.generated.resources.label_type
 import com.chriscartland.batterybutler.domain.model.Device
@@ -63,7 +67,7 @@ fun DeviceTypeDetailContent(
         modifier = modifier,
         topBar = {
             ButlerCenteredTopAppBar(
-                title = "Device Type",
+                title = composeStringResource(Res.string.label_device_type_detail),
                 onBack = onBack,
                 actions = {
                     TextButton(onClick = onEdit) {
@@ -84,7 +88,7 @@ fun DeviceTypeDetailContent(
                 }
 
                 DeviceTypeDetailScreenState.NotFound -> {
-                    Text("Device type not found", modifier = Modifier.align(Alignment.Center))
+                    Text(composeStringResource(Res.string.error_device_type_not_found), modifier = Modifier.align(Alignment.Center))
                 }
 
                 is DeviceTypeDetailScreenState.Success -> {
@@ -132,7 +136,7 @@ private fun DeviceTypeDetailBody(
                     ) {
                         Icon(
                             imageVector = DeviceIconMapper.getIcon(iconName),
-                            contentDescription = "Device type icon",
+                            contentDescription = composeStringResource(Res.string.content_desc_device_type_icon),
                             modifier = Modifier.size(64.dp),
                             tint = MaterialTheme.colorScheme.onPrimaryContainer,
                         )
@@ -179,7 +183,7 @@ private fun DeviceTypeDetailBody(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    "Devices",
+                    composeStringResource(Res.string.label_devices),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                 )

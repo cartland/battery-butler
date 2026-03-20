@@ -62,8 +62,9 @@ open class ArchitectureCheckTask : DefaultTask() {
             if (allowed?.contains("*") == true) return@forEach // Allow all
 
             subproject.configurations.forEach { config ->
-                // We only care about implementation/api dependencies, not test or ksp
-                if (config.name.lowercase().contains("test") || config.name.lowercase().contains("ksp")) return@forEach
+                // We only care about implementation/api dependencies, not test, ksp, or detekt
+                val configLower = config.name.lowercase()
+                if (configLower.contains("test") || configLower.contains("ksp") || configLower.contains("detekt")) return@forEach
 
                 // This is a rough check. Resolving configurations might differ.
                 // Detailed check: Inspect declared dependencies

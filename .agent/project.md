@@ -155,6 +155,22 @@ Enforced by `checkNamingConventions` Gradle task (in `validate.sh` and CI):
 - **No "View" in class names** (`no-view-in-class-name`): Ambiguous between Android View system and Compose. Exception: `ViewModel` is allowed (standard Jetpack term).
 - **Inline suppression**: Add `// @NamingExempt: <reason>` on the declaration line if a name must break convention.
 
+### String Resource Convention
+
+Enforced by two parallel mechanisms:
+1. **`checkHardcodedStrings` Gradle task** (regex-based, in `validate.sh` and CI)
+2. **Custom Detekt rules** in `detekt-rules/` (AST-level, runs with `detekt`/`detektAndroidMain`)
+
+Both enforce the same rules — the Detekt rules provide IDE integration and AST-level precision:
+
+- All user-visible strings in Compose UI must use `composeStringResource(Res.string.xxx)` instead of hardcoded string literals.
+- **`no-hardcoded-text` / `HardcodedComposeText`**: `Text("literal")` and `Text(text = "literal")` are forbidden — use `Text(composeStringResource(Res.string.xxx))`.
+- **`no-hardcoded-content-description` / `HardcodedContentDescription`**: `contentDescription = "literal"` is forbidden — use `contentDescription = composeStringResource(Res.string.xxx)`.
+- String resources live in `compose-resources/src/commonMain/composeResources/values/strings.xml`.
+- **Inline suppression**: Add `// @StringResourceExempt` on the line if a hardcoded string is intentional.
+- `@Preview` functions are automatically exempt (no suppression needed).
+- The `experimental/` directory is exempt (simple demo apps).
+
 ### Data View/Edit Pattern
 
 All data types follow a consistent **List → Detail (read-only) → Edit** architecture:

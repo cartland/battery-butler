@@ -7,6 +7,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import com.chriscartland.batterybutler.composeresources.composeStringResource
+import com.chriscartland.batterybutler.composeresources.generated.resources.Res
+import com.chriscartland.batterybutler.composeresources.generated.resources.content_desc_device_type_icon
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 
@@ -23,7 +26,7 @@ fun DeviceTypeListItem(
             val accent = DeviceIconMapper.getResolvedIconAccent(deviceType.defaultIcon)
             ButlerIconBox(
                 icon = DeviceIconMapper.getIcon(deviceType.defaultIcon),
-                contentDescription = "Device type icon",
+                contentDescription = composeStringResource(Res.string.content_desc_device_type_icon),
                 containerColor = accent.container,
                 contentColor = accent.content,
             )
