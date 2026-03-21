@@ -137,6 +137,13 @@
     <string name="settings_check_updates_description">Open Google Play Store</string>
     <string name="settings_copied_to_clipboard">Copied to clipboard</string>
     <string name="settings_app_version">App version</string>
+    <string name="settings_database_title">Database</string>
+    <string name="settings_database_file">File: %1$s</string>
+    <string name="settings_database_version">Version: %1$s</string>
+    <string name="settings_database_legacy_found">Previous data found (%1$s)</string>
+    <string name="settings_database_restore">Restore Previous Data</string>
+    <string name="settings_database_restore_complete">Data restored successfully</string>
+    <string name="settings_database_restoring">Restoring…</string>
 
     <!-- Home / Sync Errors -->
     <string name="status_syncing">Syncing...</string>

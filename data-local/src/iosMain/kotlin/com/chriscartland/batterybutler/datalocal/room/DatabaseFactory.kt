@@ -30,6 +30,25 @@ actual class DatabaseFactory {
         }
     }
 
+    actual fun databaseFileExists(fileName: String): Boolean {
+        val path = "${fileDirectory()}/$fileName"
+        return NSFileManager.defaultManager.fileExistsAtPath(path)
+    }
+
+    actual fun copyDatabaseFile(
+        sourceFileName: String,
+        destFileName: String,
+    ) {
+        val dir = fileDirectory()
+        val source = "$dir/$sourceFileName"
+        val dest = "$dir/$destFileName"
+        val fileManager = NSFileManager.defaultManager
+        if (fileManager.fileExistsAtPath(dest)) {
+            fileManager.removeItemAtPath(dest, null)
+        }
+        fileManager.copyItemAtPath(source, toPath = dest, error = null)
+    }
+
     private fun createNewDatabase(option: DatabaseOption): AppDatabase {
         val dbFile = "${fileDirectory()}/${option.fileName}"
         return Room

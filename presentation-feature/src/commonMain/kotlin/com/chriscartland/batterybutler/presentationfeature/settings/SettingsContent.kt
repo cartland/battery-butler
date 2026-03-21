@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -28,8 +29,10 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
@@ -54,10 +57,18 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.sett
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_check_updates_description
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_check_updates_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_copied_to_clipboard
+import com.chriscartland.batterybutler.composeresources.generated.resources.settings_database_file
+import com.chriscartland.batterybutler.composeresources.generated.resources.settings_database_legacy_found
+import com.chriscartland.batterybutler.composeresources.generated.resources.settings_database_restore
+import com.chriscartland.batterybutler.composeresources.generated.resources.settings_database_restore_complete
+import com.chriscartland.batterybutler.composeresources.generated.resources.settings_database_restoring
+import com.chriscartland.batterybutler.composeresources.generated.resources.settings_database_title
+import com.chriscartland.batterybutler.composeresources.generated.resources.settings_database_version
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_export_data_description
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_export_data_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_title
 import com.chriscartland.batterybutler.domain.model.AppVersion
+import com.chriscartland.batterybutler.domain.model.LegacyDatabaseInfo
 import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.model.User
 import com.chriscartland.batterybutler.domain.model.ai.AiEngineType
@@ -83,12 +94,27 @@ fun SettingsContent(
     onSignOut: () -> Unit,
     modifier: Modifier = Modifier,
     initiallyExpandedNetworkModes: Boolean = false,
+    currentDatabaseFileName: String = "",
+    legacyDatabaseInfo: LegacyDatabaseInfo? = null,
+    onRestoreLegacyDatabase: () -> Unit = {},
+    restoreInProgress: Boolean = false,
+    restoreComplete: Boolean = false,
+    onRestoreCompleteAcknowledged: () -> Unit = {},
 ) {
     val uriHandler = LocalUriHandler.current
     val clipboardManager = LocalClipboardManager.current
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val copiedMessage = composeStringResource(Res.string.settings_copied_to_clipboard)
+    val restoreCompleteMessage = composeStringResource(Res.string.settings_database_restore_complete)
+    val currentOnRestoreCompleteAcknowledged = rememberUpdatedState(onRestoreCompleteAcknowledged)
+
+    LaunchedEffect(restoreComplete) {
+        if (restoreComplete) {
+            snackbarHostState.showSnackbar(restoreCompleteMessage)
+            currentOnRestoreCompleteAcknowledged.value()
+        }
+    }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -253,6 +279,91 @@ fun SettingsContent(
                 }
             }
 
+            // Database Card
+            val appVersionText = when (appVersion) {
+                is AppVersion.Android -> "${appVersion.versionName}-${appVersion.versionCode}"
+                is AppVersion.Ios -> "${appVersion.versionName}-${appVersion.buildNumber}"
+                is AppVersion.Desktop -> appVersion.versionName
+                is AppVersion.Unavailable -> "Unavailable"
+            }
+            if (currentDatabaseFileName.isNotEmpty()) {
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    ),
+                    shape = MaterialTheme.shapes.medium,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(Padding.standard),
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(Padding.standard),
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Storage,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                            )
+                            Column {
+                                Text(
+                                    text = composeStringResource(Res.string.settings_database_title),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                                Text(
+                                    text = composeStringResource(
+                                        Res.string.settings_database_file,
+                                        currentDatabaseFileName,
+                                    ),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                                )
+                                Text(
+                                    text = composeStringResource(
+                                        Res.string.settings_database_version,
+                                        appVersionText,
+                                    ),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                                )
+                            }
+                        }
+                        if (legacyDatabaseInfo?.exists == true) {
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Text(
+                                text = composeStringResource(
+                                    Res.string.settings_database_legacy_found,
+                                    legacyDatabaseInfo.legacyFileName,
+                                ),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Button(
+                                onClick = onRestoreLegacyDatabase,
+                                enabled = !restoreInProgress,
+                                modifier = Modifier.fillMaxWidth(),
+                            ) {
+                                if (restoreInProgress) {
+                                    Text(
+                                        composeStringResource(Res.string.settings_database_restoring),
+                                    )
+                                } else {
+                                    Text(
+                                        composeStringResource(Res.string.settings_database_restore),
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             // Check for Updates Card
             Card(
                 onClick = {
@@ -296,15 +407,9 @@ fun SettingsContent(
             }
 
             // App Version Card
-            val versionText = when (appVersion) {
-                is AppVersion.Android -> "${appVersion.versionName}-${appVersion.versionCode}"
-                is AppVersion.Ios -> "${appVersion.versionName}-${appVersion.buildNumber}"
-                is AppVersion.Desktop -> appVersion.versionName
-                is AppVersion.Unavailable -> "Unavailable"
-            }
             Card(
                 onClick = {
-                    clipboardManager.setText(AnnotatedString(versionText))
+                    clipboardManager.setText(AnnotatedString(appVersionText))
                     scope.launch {
                         snackbarHostState.showSnackbar(copiedMessage)
                     }
@@ -335,7 +440,7 @@ fun SettingsContent(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         Text(
-                            text = versionText,
+                            text = appVersionText,
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                         )

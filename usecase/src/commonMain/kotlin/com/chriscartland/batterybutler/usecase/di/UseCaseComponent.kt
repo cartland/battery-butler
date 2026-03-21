@@ -19,8 +19,10 @@ import com.chriscartland.batterybutler.usecase.GetDeviceTypeDetailUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.GetDevicesUseCase
 import com.chriscartland.batterybutler.usecase.GetEventDetailUseCase
+import com.chriscartland.batterybutler.usecase.GetLegacyDatabaseInfoUseCase
 import com.chriscartland.batterybutler.usecase.GetSyncStatusUseCase
 import com.chriscartland.batterybutler.usecase.PreloadCommonTypesUseCase
+import com.chriscartland.batterybutler.usecase.RestoreLegacyDatabaseUseCase
 import com.chriscartland.batterybutler.usecase.SendChatMessageUseCase
 import com.chriscartland.batterybutler.usecase.SetNetworkModeUseCase
 import com.chriscartland.batterybutler.usecase.SuggestDeviceIconUseCase
@@ -77,4 +79,8 @@ abstract class UseCaseComponent {
     // AI chat
     abstract val deviceToolHandler: DeviceToolHandler
     abstract val sendChatMessageUseCase: SendChatMessageUseCase
+
+    // Legacy database recovery
+    abstract val getLegacyDatabaseInfoUseCase: GetLegacyDatabaseInfoUseCase
+    abstract val restoreLegacyDatabaseUseCase: RestoreLegacyDatabaseUseCase
 }

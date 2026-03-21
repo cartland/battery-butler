@@ -15,6 +15,17 @@ actual class DatabaseFactory {
         instances.remove(option)
     }
 
+    actual fun databaseFileExists(fileName: String): Boolean = File(System.getProperty("java.io.tmpdir"), fileName).exists()
+
+    actual fun copyDatabaseFile(
+        sourceFileName: String,
+        destFileName: String,
+    ) {
+        val source = File(System.getProperty("java.io.tmpdir"), sourceFileName)
+        val dest = File(System.getProperty("java.io.tmpdir"), destFileName)
+        source.copyTo(dest, overwrite = true)
+    }
+
     private fun createNewDatabase(option: DatabaseOption): AppDatabase {
         val dbFile = File(System.getProperty("java.io.tmpdir"), option.fileName)
         return Room
