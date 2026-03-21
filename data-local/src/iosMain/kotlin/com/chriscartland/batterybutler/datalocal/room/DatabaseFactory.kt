@@ -35,6 +35,7 @@ actual class DatabaseFactory {
         return NSFileManager.defaultManager.fileExistsAtPath(path)
     }
 
+    @OptIn(ExperimentalForeignApi::class)
     actual fun copyDatabaseFile(
         sourceFileName: String,
         destFileName: String,
