@@ -19,7 +19,7 @@ apply(plugin = "com.google.cloud.tools.jib")
 configurations.all {
     resolutionStrategy {
         force("org.apache.commons:commons-compress:1.21")
-        force("commons-codec:commons-codec:1.16.1")
+        force("commons-codec:commons-codec:1.21.0")
     }
 }
 
