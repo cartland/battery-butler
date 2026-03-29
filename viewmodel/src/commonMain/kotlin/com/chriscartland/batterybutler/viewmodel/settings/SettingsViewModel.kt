@@ -5,15 +5,19 @@ import androidx.lifecycle.viewModelScope
 import com.chriscartland.batterybutler.domain.model.AppVersion
 import com.chriscartland.batterybutler.domain.model.AuthState
 import com.chriscartland.batterybutler.domain.model.DevServerUrl
+import com.chriscartland.batterybutler.domain.model.LegacyDatabaseInfo
 import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.model.ProductionServerUrl
 import com.chriscartland.batterybutler.domain.model.User
 import com.chriscartland.batterybutler.domain.model.ai.AiEngineType
 import com.chriscartland.batterybutler.domain.repository.AiPreferencesRepository
 import com.chriscartland.batterybutler.domain.repository.AuthRepository
+import com.chriscartland.batterybutler.domain.repository.LegacyDatabaseRepository
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
 import com.chriscartland.batterybutler.usecase.ExportDataUseCase
 import com.chriscartland.batterybutler.usecase.GetAppVersionUseCase
+import com.chriscartland.batterybutler.usecase.GetLegacyDatabaseInfoUseCase
+import com.chriscartland.batterybutler.usecase.RestoreLegacyDatabaseUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
 import com.chriscartland.batterybutler.viewmodel.safeStateIn
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,6 +35,9 @@ class SettingsViewModel(
     private val getAppVersionUseCase: GetAppVersionUseCase,
     private val authRepository: AuthRepository,
     private val aiPreferencesRepository: AiPreferencesRepository,
+    private val getLegacyDatabaseInfoUseCase: GetLegacyDatabaseInfoUseCase,
+    private val restoreLegacyDatabaseUseCase: RestoreLegacyDatabaseUseCase,
+    private val legacyDatabaseRepository: LegacyDatabaseRepository,
     productionServerUrl: ProductionServerUrl,
     devServerUrl: DevServerUrl,
 ) : ViewModel() {
@@ -107,5 +114,39 @@ class SettingsViewModel(
 
     fun onExportDataConsumed() {
         _exportData.value = null
+    }
+
+    // Database info for Settings display
+    val currentDatabaseFileName: StateFlow<String> = networkMode
+        .map { mode ->
+            legacyDatabaseRepository.getCurrentDatabaseFileName(mode)
+        }.safeStateIn(viewModelScope, defaultWhileSubscribed(), "")
+
+    val legacyDatabaseInfo: StateFlow<LegacyDatabaseInfo?> = networkMode
+        .map { mode ->
+            getLegacyDatabaseInfoUseCase(mode)
+        }.safeStateIn(viewModelScope, defaultWhileSubscribed(), null)
+
+    private val _restoreInProgress = MutableStateFlow(false)
+    val restoreInProgress: StateFlow<Boolean> = _restoreInProgress.asStateFlow()
+
+    private val _restoreComplete = MutableStateFlow(false)
+    val restoreComplete: StateFlow<Boolean> = _restoreComplete.asStateFlow()
+
+    fun onRestoreLegacyDatabase() {
+        val info = legacyDatabaseInfo.value ?: return
+        viewModelScope.launch {
+            _restoreInProgress.value = true
+            try {
+                restoreLegacyDatabaseUseCase(info.legacyFileName)
+                _restoreComplete.value = true
+            } finally {
+                _restoreInProgress.value = false
+            }
+        }
+    }
+
+    fun onRestoreCompleteAcknowledged() {
+        _restoreComplete.value = false
     }
 }

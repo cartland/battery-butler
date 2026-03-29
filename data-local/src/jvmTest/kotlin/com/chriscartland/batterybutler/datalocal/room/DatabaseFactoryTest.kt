@@ -1,8 +1,10 @@
 package com.chriscartland.batterybutler.datalocal.room
 
+import com.chriscartland.batterybutler.domain.model.NetworkMode
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotSame
+import kotlin.test.assertNull
 import kotlin.test.assertSame
 
 class DatabaseFactoryTest {
@@ -66,6 +68,38 @@ class DatabaseFactoryTest {
         factory.evict(DatabaseOption.Offline)
         val second = factory.createDatabase(DatabaseOption.Offline)
         assertNotSame(first, second, "After evict, createDatabase must return a new instance")
+    }
+
+    @Test
+    fun `legacy file names must not change without migration`() {
+        assertEquals("battery-butler.db", DatabaseOption.legacyFileNames[DatabaseOption.Offline])
+        assertEquals("battery-butler-dev.db", DatabaseOption.legacyFileNames[DatabaseOption.Mock])
+    }
+
+    @Test
+    fun `only Offline and Mock have legacy file names`() {
+        assertEquals(2, DatabaseOption.legacyFileNames.size)
+        assertNull(DatabaseOption.legacyFileNames[DatabaseOption.LocalServer])
+        assertNull(DatabaseOption.legacyFileNames[DatabaseOption.ProductionServer])
+        assertNull(DatabaseOption.legacyFileNames[DatabaseOption.DevServer])
+    }
+
+    @Test
+    fun `fromNetworkMode maps all NetworkMode variants correctly`() {
+        assertEquals(DatabaseOption.Offline, DatabaseOption.fromNetworkMode(NetworkMode.None))
+        assertEquals(DatabaseOption.Mock, DatabaseOption.fromNetworkMode(NetworkMode.Mock))
+        assertEquals(
+            DatabaseOption.LocalServer,
+            DatabaseOption.fromNetworkMode(NetworkMode.GrpcLocal("http://localhost:50051")),
+        )
+        assertEquals(
+            DatabaseOption.ProductionServer,
+            DatabaseOption.fromNetworkMode(NetworkMode.GrpcAws("http://prod:443")),
+        )
+        assertEquals(
+            DatabaseOption.DevServer,
+            DatabaseOption.fromNetworkMode(NetworkMode.GrpcDev("http://dev:443")),
+        )
     }
 
     @Test

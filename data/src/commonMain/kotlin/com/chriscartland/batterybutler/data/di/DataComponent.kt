@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import com.chriscartland.batterybutler.data.provider.DefaultDispatcherProvider
 import com.chriscartland.batterybutler.data.repository.DataStoreNetworkModeRepository
 import com.chriscartland.batterybutler.data.repository.DefaultDeviceRepository
+import com.chriscartland.batterybutler.data.repository.DefaultLegacyDatabaseRepository
 import com.chriscartland.batterybutler.data.repository.DefaultSyncManager
 import com.chriscartland.batterybutler.data.repository.SyncManager
 import com.chriscartland.batterybutler.data.repository.auth.DefaultAuthRepository
@@ -25,6 +26,7 @@ import com.chriscartland.batterybutler.domain.model.DispatcherProvider
 import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.repository.AuthRepository
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
+import com.chriscartland.batterybutler.domain.repository.LegacyDatabaseRepository
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
 import com.chriscartland.batterybutler.proto.AuthServiceClient
 import com.chriscartland.batterybutler.proto.GrpcAuthServiceClient
@@ -92,4 +94,7 @@ interface DataComponent {
 
     @Provides
     fun provideDispatcherProvider(impl: DefaultDispatcherProvider): DispatcherProvider = impl
+
+    @Provides
+    fun provideLegacyDatabaseRepository(repo: DefaultLegacyDatabaseRepository): LegacyDatabaseRepository = repo
 }

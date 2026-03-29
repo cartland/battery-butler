@@ -1,6 +1,5 @@
 package com.chriscartland.batterybutler.datalocal.room
 
-import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,13 +30,7 @@ class DynamicDatabaseProvider(
     init {
         scope.launch {
             networkModeRepository.networkMode.collect { mode ->
-                val targetOption = when (mode) {
-                    NetworkMode.None -> DatabaseOption.Offline
-                    NetworkMode.Mock -> DatabaseOption.Mock
-                    is NetworkMode.GrpcLocal -> DatabaseOption.LocalServer
-                    is NetworkMode.GrpcAws -> DatabaseOption.ProductionServer
-                    is NetworkMode.GrpcDev -> DatabaseOption.DevServer
-                }
+                val targetOption = DatabaseOption.fromNetworkMode(mode)
 
                 switchMutex.withLock {
                     if (targetOption != currentOption) {
@@ -68,6 +61,31 @@ class DynamicDatabaseProvider(
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * Restores the current database option from its legacy (tag 27) file.
+     * Closes the current DB, copies legacy file over current file, then reopens.
+     */
+    suspend fun restoreFromLegacy(legacyFileName: String) {
+        switchMutex.withLock {
+            val oldDb = _database.value
+            val option = currentOption
+
+            // Close current database so file is not locked
+            try {
+                oldDb.close()
+            } catch (_: Exception) {
+            }
+            factory.evict(option)
+
+            // Copy legacy file over current file
+            factory.copyDatabaseFile(legacyFileName, option.fileName)
+
+            // Reopen database from the restored file
+            val newDb = factory.createDatabase(option)
+            _database.value = newDb
         }
     }
 }

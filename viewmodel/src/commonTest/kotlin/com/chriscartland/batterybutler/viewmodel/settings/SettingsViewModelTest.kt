@@ -4,6 +4,7 @@ import com.chriscartland.batterybutler.domain.model.AppVersion
 import com.chriscartland.batterybutler.domain.model.AuthState
 import com.chriscartland.batterybutler.domain.model.DevServerUrl
 import com.chriscartland.batterybutler.domain.model.DispatcherProvider
+import com.chriscartland.batterybutler.domain.model.LegacyDatabaseInfo
 import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.model.ProductionServerUrl
 import com.chriscartland.batterybutler.domain.model.User
@@ -13,9 +14,12 @@ import com.chriscartland.batterybutler.domain.repository.AppInfoRepository
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
 import com.chriscartland.batterybutler.testcommon.FakeAuthRepository
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
+import com.chriscartland.batterybutler.testcommon.FakeLegacyDatabaseRepository
 import com.chriscartland.batterybutler.testcommon.TestDevices
 import com.chriscartland.batterybutler.usecase.ExportDataUseCase
 import com.chriscartland.batterybutler.usecase.GetAppVersionUseCase
+import com.chriscartland.batterybutler.usecase.GetLegacyDatabaseInfoUseCase
+import com.chriscartland.batterybutler.usecase.RestoreLegacyDatabaseUseCase
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -307,12 +311,140 @@ class SettingsViewModelTest {
 
     // endregion
 
+    // region Database recovery tests
+
+    @Test
+    fun `currentDatabaseFileName reflects network mode`() =
+        runTest {
+            val legacyRepo = FakeLegacyDatabaseRepository()
+            legacyRepo.fileNameByMode[NetworkMode.None] = "battery-butler-offline.db"
+            val viewModel = createViewModel(legacyDatabaseRepository = legacyRepo)
+            advanceUntilIdle()
+
+            val fileName = viewModel.currentDatabaseFileName.first { it.isNotEmpty() }
+
+            assertEquals("battery-butler-offline.db", fileName)
+        }
+
+    @Test
+    fun `legacyDatabaseInfo is null for modes without legacy files`() =
+        runTest {
+            val networkRepo = FakeNetworkModeRepository()
+            networkRepo.setCurrentMode(NetworkMode.GrpcLocal("http://localhost:50051"))
+            val legacyRepo = FakeLegacyDatabaseRepository()
+            val viewModel = createViewModel(
+                networkModeRepository = networkRepo,
+                legacyDatabaseRepository = legacyRepo,
+            )
+            advanceUntilIdle()
+
+            val info = viewModel.legacyDatabaseInfo.value
+
+            assertNull(info)
+        }
+
+    @Test
+    fun `legacyDatabaseInfo shows existing legacy file`() =
+        runTest {
+            val legacyRepo = FakeLegacyDatabaseRepository()
+            legacyRepo.legacyInfoByMode[NetworkMode.None] = LegacyDatabaseInfo(
+                legacyFileName = "battery-butler.db",
+                exists = true,
+            )
+            val viewModel = createViewModel(legacyDatabaseRepository = legacyRepo)
+            advanceUntilIdle()
+
+            val info = viewModel.legacyDatabaseInfo.first { it != null }
+
+            assertNotNull(info)
+            assertEquals("battery-butler.db", info.legacyFileName)
+            assertTrue(info.exists)
+        }
+
+    @Test
+    fun `onRestoreLegacyDatabase calls use case with legacy file name`() =
+        runTest {
+            val legacyRepo = FakeLegacyDatabaseRepository()
+            legacyRepo.legacyInfoByMode[NetworkMode.None] = LegacyDatabaseInfo(
+                legacyFileName = "battery-butler.db",
+                exists = true,
+            )
+            val viewModel = createViewModel(legacyDatabaseRepository = legacyRepo)
+            advanceUntilIdle()
+            // Wait for legacyDatabaseInfo to be populated
+            viewModel.legacyDatabaseInfo.first { it != null }
+
+            viewModel.onRestoreLegacyDatabase()
+            advanceUntilIdle()
+
+            assertEquals(1, legacyRepo.restoreCallCount)
+            assertEquals("battery-butler.db", legacyRepo.lastRestoredFileName)
+        }
+
+    @Test
+    fun `onRestoreLegacyDatabase sets restoreComplete on success`() =
+        runTest {
+            val legacyRepo = FakeLegacyDatabaseRepository()
+            legacyRepo.legacyInfoByMode[NetworkMode.None] = LegacyDatabaseInfo(
+                legacyFileName = "battery-butler.db",
+                exists = true,
+            )
+            val viewModel = createViewModel(legacyDatabaseRepository = legacyRepo)
+            advanceUntilIdle()
+            viewModel.legacyDatabaseInfo.first { it != null }
+
+            viewModel.onRestoreLegacyDatabase()
+            advanceUntilIdle()
+
+            assertTrue(viewModel.restoreComplete.value)
+            assertFalse(viewModel.restoreInProgress.value)
+        }
+
+    @Test
+    fun `onRestoreLegacyDatabase does nothing when no legacy info`() =
+        runTest {
+            val legacyRepo = FakeLegacyDatabaseRepository()
+            // No legacy info configured — legacyDatabaseInfo will be null
+            val viewModel = createViewModel(legacyDatabaseRepository = legacyRepo)
+            advanceUntilIdle()
+
+            viewModel.onRestoreLegacyDatabase()
+            advanceUntilIdle()
+
+            assertEquals(0, legacyRepo.restoreCallCount)
+            assertFalse(viewModel.restoreComplete.value)
+        }
+
+    @Test
+    fun `onRestoreCompleteAcknowledged resets restoreComplete`() =
+        runTest {
+            val legacyRepo = FakeLegacyDatabaseRepository()
+            legacyRepo.legacyInfoByMode[NetworkMode.None] = LegacyDatabaseInfo(
+                legacyFileName = "battery-butler.db",
+                exists = true,
+            )
+            val viewModel = createViewModel(legacyDatabaseRepository = legacyRepo)
+            advanceUntilIdle()
+            viewModel.legacyDatabaseInfo.first { it != null }
+
+            viewModel.onRestoreLegacyDatabase()
+            advanceUntilIdle()
+            assertTrue(viewModel.restoreComplete.value)
+
+            viewModel.onRestoreCompleteAcknowledged()
+
+            assertFalse(viewModel.restoreComplete.value)
+        }
+
+    // endregion
+
     private fun createViewModel(
         deviceRepository: FakeDeviceRepository = FakeDeviceRepository(),
         networkModeRepository: FakeNetworkModeRepository = FakeNetworkModeRepository(),
         appInfoRepository: AppInfoRepository = FakeAppInfoRepository(),
         authRepository: FakeAuthRepository = FakeAuthRepository(),
         aiPreferencesRepository: FakeAiPreferencesRepository = FakeAiPreferencesRepository(),
+        legacyDatabaseRepository: FakeLegacyDatabaseRepository = FakeLegacyDatabaseRepository(),
     ): SettingsViewModel =
         SettingsViewModel(
             exportDataUseCase = ExportDataUseCase(deviceRepository, testDispatcherProvider),
@@ -320,6 +452,9 @@ class SettingsViewModelTest {
             getAppVersionUseCase = GetAppVersionUseCase(appInfoRepository),
             authRepository = authRepository,
             aiPreferencesRepository = aiPreferencesRepository,
+            getLegacyDatabaseInfoUseCase = GetLegacyDatabaseInfoUseCase(legacyDatabaseRepository),
+            restoreLegacyDatabaseUseCase = RestoreLegacyDatabaseUseCase(legacyDatabaseRepository),
+            legacyDatabaseRepository = legacyDatabaseRepository,
             productionServerUrl = ProductionServerUrl("http://test-server:80"),
             devServerUrl = DevServerUrl("http://test-dev-server:80"),
         )

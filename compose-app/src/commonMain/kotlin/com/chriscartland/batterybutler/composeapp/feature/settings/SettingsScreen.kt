@@ -35,6 +35,10 @@ fun SettingsScreen(
     }
     val networkMode by viewModel.networkMode.collectAsStateWithLifecycle()
     val aiEngineType by viewModel.aiEngineType.collectAsStateWithLifecycle()
+    val currentDatabaseFileName by viewModel.currentDatabaseFileName.collectAsStateWithLifecycle()
+    val legacyDatabaseInfo by viewModel.legacyDatabaseInfo.collectAsStateWithLifecycle()
+    val restoreInProgress by viewModel.restoreInProgress.collectAsStateWithLifecycle()
+    val restoreComplete by viewModel.restoreComplete.collectAsStateWithLifecycle()
     SettingsContent(
         networkMode = networkMode,
         availableNetworkModes = viewModel.availableNetworkModes,
@@ -48,5 +52,11 @@ fun SettingsScreen(
         currentUser = currentUser,
         onSignOut = viewModel::signOut,
         modifier = modifier,
+        currentDatabaseFileName = currentDatabaseFileName,
+        legacyDatabaseInfo = legacyDatabaseInfo,
+        onRestoreLegacyDatabase = viewModel::onRestoreLegacyDatabase,
+        restoreInProgress = restoreInProgress,
+        restoreComplete = restoreComplete,
+        onRestoreCompleteAcknowledged = viewModel::onRestoreCompleteAcknowledged,
     )
 }
