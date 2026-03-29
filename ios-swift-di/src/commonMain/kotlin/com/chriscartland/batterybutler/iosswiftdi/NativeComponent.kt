@@ -7,6 +7,7 @@ import com.chriscartland.batterybutler.data.provider.DefaultDispatcherProvider
 import com.chriscartland.batterybutler.data.repository.DataStoreNetworkModeRepository
 import com.chriscartland.batterybutler.data.repository.DefaultDeviceRepository
 import com.chriscartland.batterybutler.data.repository.DefaultFeatureFlagProvider
+import com.chriscartland.batterybutler.data.repository.DefaultLegacyDatabaseRepository
 import com.chriscartland.batterybutler.data.repository.DefaultSyncManager
 import com.chriscartland.batterybutler.data.repository.InMemoryAiPreferencesRepository
 import com.chriscartland.batterybutler.data.repository.SyncManager
@@ -29,6 +30,7 @@ import com.chriscartland.batterybutler.domain.repository.AiPreferencesRepository
 import com.chriscartland.batterybutler.domain.repository.AuthRepository
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.domain.repository.FeatureFlagProvider
+import com.chriscartland.batterybutler.domain.repository.LegacyDatabaseRepository
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
 import com.chriscartland.batterybutler.viewmodel.addbatteryevent.AddBatteryEventViewModel
 import com.chriscartland.batterybutler.viewmodel.adddevice.AddDeviceViewModel
@@ -157,4 +159,8 @@ abstract class NativeComponent(
     @Provides
     @SharedSingleton
     fun provideAiPreferencesRepository(): AiPreferencesRepository = InMemoryAiPreferencesRepository()
+
+    @Provides
+    @SharedSingleton
+    fun provideLegacyDatabaseRepository(repo: DefaultLegacyDatabaseRepository): LegacyDatabaseRepository = repo
 }
