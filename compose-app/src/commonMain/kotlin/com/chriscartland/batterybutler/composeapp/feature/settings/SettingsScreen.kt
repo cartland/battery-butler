@@ -5,6 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.chriscartland.batterybutler.presentationcore.util.LocalFileLoader
 import com.chriscartland.batterybutler.presentationcore.util.LocalFileSaver
 import com.chriscartland.batterybutler.presentationcore.util.generateFileTimestamp
 import com.chriscartland.batterybutler.presentationfeature.settings.SettingsContent
@@ -23,6 +24,7 @@ fun SettingsScreen(
     val appVersion by viewModel.appVersion.collectAsStateWithLifecycle()
     val currentUser by viewModel.currentUser.collectAsStateWithLifecycle()
     val fileSaver = LocalFileSaver.current
+    val fileLoader = LocalFileLoader.current
 
     LaunchedEffect(exportData) {
         exportData?.let { data ->
@@ -39,6 +41,9 @@ fun SettingsScreen(
     val legacyDatabaseInfo by viewModel.legacyDatabaseInfo.collectAsStateWithLifecycle()
     val restoreInProgress by viewModel.restoreInProgress.collectAsStateWithLifecycle()
     val restoreComplete by viewModel.restoreComplete.collectAsStateWithLifecycle()
+    val importResult by viewModel.importResult.collectAsStateWithLifecycle()
+    val importError by viewModel.importError.collectAsStateWithLifecycle()
+    val importInProgress by viewModel.importInProgress.collectAsStateWithLifecycle()
     SettingsContent(
         networkMode = networkMode,
         availableNetworkModes = viewModel.availableNetworkModes,
@@ -47,6 +52,15 @@ fun SettingsScreen(
         availableAiEngines = viewModel.availableAiEngines,
         onAiEngineSelected = viewModel::onAiEngineSelected,
         onExportData = viewModel::onExportData,
+        onImportData = {
+            fileLoader.loadFile { bytes ->
+                bytes?.let { viewModel.onImportData(String(it)) }
+            }
+        },
+        importResult = importResult,
+        importError = importError,
+        importInProgress = importInProgress,
+        onImportResultConsumed = viewModel::onImportResultConsumed,
         onBack = onBack,
         appVersion = appVersion,
         currentUser = currentUser,
