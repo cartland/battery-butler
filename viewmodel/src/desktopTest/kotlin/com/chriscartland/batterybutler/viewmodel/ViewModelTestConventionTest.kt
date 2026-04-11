@@ -76,7 +76,9 @@ class ViewModelTestConventionTest {
 
         val resources = classLoader.getResources(packagePath)
         while (resources.hasMoreElements()) {
-            val dir = File(resources.nextElement().toURI())
+            val url = resources.nextElement()
+            if (url.protocol != "file") continue // Skip JAR entries
+            val dir = File(url.toURI())
             if (!dir.isDirectory) continue
 
             dir
