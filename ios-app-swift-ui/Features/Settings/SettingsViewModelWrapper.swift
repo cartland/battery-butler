@@ -4,6 +4,9 @@ import Combine
 
 class SettingsViewModelWrapper: ObservableObject {
     @Published var exportData: String? = nil
+    @Published var importResult: ImportResult? = nil
+    @Published var importError: String? = nil
+    @Published var importInProgress: Bool = false
     @Published var appVersion: String = "Version"
     @Published var networkMode: NetworkMode = NetworkModeNone()
     @Published var currentUser: User? = nil
@@ -23,6 +26,9 @@ class SettingsViewModelWrapper: ObservableObject {
     private let viewModel: SettingsViewModel
     private let viewModelStore = KmpViewModelStore()
     private var exportTask: Task<Void, Never>?
+    private var importResultTask: Task<Void, Never>?
+    private var importErrorTask: Task<Void, Never>?
+    private var importInProgressTask: Task<Void, Never>?
     private var versionTask: Task<Void, Never>?
     private var networkModeTask: Task<Void, Never>?
     private var userTask: Task<Void, Never>?
@@ -36,6 +42,24 @@ class SettingsViewModelWrapper: ObservableObject {
         self.exportTask = Task { @MainActor [weak self] in
             for await data in viewModel.exportData {
                 self?.exportData = data
+            }
+        }
+
+        self.importResultTask = Task { @MainActor [weak self] in
+            for await result in viewModel.importResult {
+                self?.importResult = result as? ImportResult
+            }
+        }
+
+        self.importErrorTask = Task { @MainActor [weak self] in
+            for await error in viewModel.importError {
+                self?.importError = error as? String
+            }
+        }
+
+        self.importInProgressTask = Task { @MainActor [weak self] in
+            for await inProgress in viewModel.importInProgress {
+                self?.importInProgress = inProgress as! Bool
             }
         }
 
@@ -76,6 +100,9 @@ class SettingsViewModelWrapper: ObservableObject {
 
     deinit {
         exportTask?.cancel()
+        importResultTask?.cancel()
+        importErrorTask?.cancel()
+        importInProgressTask?.cancel()
         versionTask?.cancel()
         networkModeTask?.cancel()
         userTask?.cancel()
@@ -90,6 +117,14 @@ class SettingsViewModelWrapper: ObservableObject {
 
     func onExportDataConsumed() {
         viewModel.onExportDataConsumed()
+    }
+
+    func onImportData(_ jsonString: String) {
+        viewModel.onImportData(jsonString: jsonString)
+    }
+
+    func onImportResultConsumed() {
+        viewModel.onImportResultConsumed()
     }
 
     func onNetworkModeSelected(_ mode: NetworkMode) {

@@ -133,6 +133,10 @@
     <string name="action_sign_out">Sign Out</string>
     <string name="settings_export_data_title">Export Data</string>
     <string name="settings_export_data_description">Save all data as a .json file</string>
+    <string name="settings_import_data_title">Import Data</string>
+    <string name="settings_import_data_description">Restore data from a .json backup file</string>
+    <string name="settings_import_success">Imported %1$d devices, %2$d types, %3$d events</string>
+    <string name="settings_import_error">Import failed: %1$s</string>
     <string name="settings_check_updates_title">Check for updates</string>
     <string name="settings_check_updates_description">Open Google Play Store</string>
     <string name="settings_copied_to_clipboard">Copied to clipboard</string>
