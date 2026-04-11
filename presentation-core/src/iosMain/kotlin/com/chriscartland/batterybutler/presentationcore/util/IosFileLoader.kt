@@ -1,11 +1,9 @@
 package com.chriscartland.batterybutler.presentationcore.util
 
-import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.cinterop.addressOf
-import kotlinx.cinterop.usePinned
-import platform.Foundation.NSData
+import platform.Foundation.NSString
 import platform.Foundation.NSURL
-import platform.Foundation.create
+import platform.Foundation.NSUTF8StringEncoding
+import platform.Foundation.stringWithContentsOfURL
 import platform.UIKit.UIApplication
 import platform.UIKit.UIDocumentPickerDelegateProtocol
 import platform.UIKit.UIDocumentPickerViewController
@@ -45,19 +43,15 @@ class IosFileLoader : FileLoader {
         callback?.invoke(null)
     }
 
-    @OptIn(ExperimentalForeignApi::class)
     private fun readFileData(url: NSURL): ByteArray? {
-        // Start accessing security-scoped resource.
         val accessing = url.startAccessingSecurityScopedResource()
         try {
-            val data = NSData.create(contentsOfURL = url) ?: return null
-            val length = data.length.toInt()
-            if (length == 0) return ByteArray(0)
-            val bytes = ByteArray(length)
-            bytes.usePinned { pinned ->
-                data.getBytes(pinned.addressOf(0), length.toULong())
-            }
-            return bytes
+            val content = NSString.stringWithContentsOfURL(
+                url = url,
+                encoding = NSUTF8StringEncoding,
+                error = null,
+            ) ?: return null
+            return content.toString().encodeToByteArray()
         } finally {
             if (accessing) {
                 url.stopAccessingSecurityScopedResource()
