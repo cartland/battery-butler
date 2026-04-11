@@ -21,6 +21,7 @@ import com.chriscartland.batterybutler.usecase.GetDevicesUseCase
 import com.chriscartland.batterybutler.usecase.GetEventDetailUseCase
 import com.chriscartland.batterybutler.usecase.GetLegacyDatabaseInfoUseCase
 import com.chriscartland.batterybutler.usecase.GetSyncStatusUseCase
+import com.chriscartland.batterybutler.usecase.ImportDataUseCase
 import com.chriscartland.batterybutler.usecase.PreloadCommonTypesUseCase
 import com.chriscartland.batterybutler.usecase.RestoreLegacyDatabaseUseCase
 import com.chriscartland.batterybutler.usecase.SendChatMessageUseCase
@@ -74,6 +75,7 @@ abstract class UseCaseComponent {
     // App info and utilities
     abstract val getAppVersionUseCase: GetAppVersionUseCase
     abstract val exportDataUseCase: ExportDataUseCase
+    abstract val importDataUseCase: ImportDataUseCase
     abstract val suggestDeviceIconUseCase: SuggestDeviceIconUseCase
 
     // AI chat

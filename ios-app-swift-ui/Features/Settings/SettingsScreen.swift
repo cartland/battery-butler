@@ -1,10 +1,13 @@
 import SwiftUI
 import Foundation
+import UniformTypeIdentifiers
 import shared
 
 struct SettingsScreen: View {
     @StateObject private var wrapper: SettingsViewModelWrapper
     @State private var isShareSheetPresented = false
+    @State private var isFileImporterPresented = false
+    @State private var importSnackbarMessage: String? = nil
 
     init(viewModel: SettingsViewModel) {
         _wrapper = StateObject(wrappedValue: SettingsViewModelWrapper(viewModel))
@@ -28,12 +31,59 @@ struct SettingsScreen: View {
             isShareSheetPresented: $isShareSheetPresented,
             onExportData: { wrapper.onExportData() },
             onExportDataConsumed: { wrapper.onExportDataConsumed() },
+            // Import
+            onImportData: { isFileImporterPresented = true },
+            importInProgress: wrapper.importInProgress,
             // Version
             appVersion: wrapper.appVersion
         )
         .onChange(of: wrapper.exportData) { _, newData in
             if newData != nil {
                 isShareSheetPresented = true
+            }
+        }
+        .onChange(of: wrapper.importResult) { _, result in
+            if let result = result {
+                importSnackbarMessage = "Imported \(result.devicesImported) devices, \(result.deviceTypesImported) types, \(result.eventsImported) events"
+                wrapper.onImportResultConsumed()
+            }
+        }
+        .onChange(of: wrapper.importError) { _, error in
+            if let error = error {
+                importSnackbarMessage = "Import failed: \(error)"
+                wrapper.onImportResultConsumed()
+            }
+        }
+        .fileImporter(
+            isPresented: $isFileImporterPresented,
+            allowedContentTypes: [UTType.json],
+            allowsMultipleSelection: false
+        ) { result in
+            switch result {
+            case .success(let urls):
+                guard let url = urls.first else { return }
+                guard url.startAccessingSecurityScopedResource() else { return }
+                defer { url.stopAccessingSecurityScopedResource() }
+                if let data = try? Data(contentsOf: url),
+                   let jsonString = String(data: data, encoding: .utf8) {
+                    wrapper.onImportData(jsonString)
+                }
+            case .failure:
+                break
+            }
+        }
+        .overlay(alignment: .bottom) {
+            if let message = importSnackbarMessage {
+                Text(message)
+                    .padding()
+                    .background(Color(.systemGray5))
+                    .cornerRadius(8)
+                    .padding(.bottom, 20)
+                    .onAppear {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                            importSnackbarMessage = nil
+                        }
+                    }
             }
         }
     }
@@ -56,6 +106,9 @@ struct SettingsContentView: View {
     @Binding var isShareSheetPresented: Bool
     let onExportData: () -> Void
     let onExportDataConsumed: () -> Void
+    // Import
+    let onImportData: () -> Void
+    let importInProgress: Bool
     // Version
     let appVersion: String
 
@@ -172,6 +225,17 @@ struct SettingsContentView: View {
                 Button("settings.button.export") {
                     onExportData()
                 }
+                Button {
+                    onImportData()
+                } label: {
+                    HStack(spacing: ButlerSpacing.medium) {
+                        Image(systemName: "square.and.arrow.down")
+                            .foregroundStyle(Color.butlerPrimary)
+                        Text("settings.button.import")
+                            .foregroundStyle(Color.butlerOnSurface)
+                    }
+                }
+                .disabled(importInProgress)
             } header: {
                 Text("settings.section.data")
             }

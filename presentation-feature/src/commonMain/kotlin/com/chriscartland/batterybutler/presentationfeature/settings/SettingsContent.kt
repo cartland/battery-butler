@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Storage
+import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -66,8 +67,11 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.sett
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_database_version
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_export_data_description
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_export_data_title
+import com.chriscartland.batterybutler.composeresources.generated.resources.settings_import_data_description
+import com.chriscartland.batterybutler.composeresources.generated.resources.settings_import_data_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_title
 import com.chriscartland.batterybutler.domain.model.AppVersion
+import com.chriscartland.batterybutler.domain.model.ImportResult
 import com.chriscartland.batterybutler.domain.model.LegacyDatabaseInfo
 import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.model.User
@@ -88,6 +92,11 @@ fun SettingsContent(
     availableAiEngines: List<AiEngineType>,
     onAiEngineSelected: (AiEngineType) -> Unit,
     onExportData: () -> Unit,
+    onImportData: () -> Unit,
+    importResult: ImportResult?,
+    importError: String?,
+    importInProgress: Boolean,
+    onImportResultConsumed: () -> Unit,
     onBack: () -> Unit,
     appVersion: AppVersion,
     currentUser: User?,
@@ -109,10 +118,28 @@ fun SettingsContent(
     val restoreCompleteMessage = composeStringResource(Res.string.settings_database_restore_complete)
     val currentOnRestoreCompleteAcknowledged = rememberUpdatedState(onRestoreCompleteAcknowledged)
 
+    val currentOnImportResultConsumed = rememberUpdatedState(onImportResultConsumed)
+
     LaunchedEffect(restoreComplete) {
         if (restoreComplete) {
             snackbarHostState.showSnackbar(restoreCompleteMessage)
             currentOnRestoreCompleteAcknowledged.value()
+        }
+    }
+
+    LaunchedEffect(importResult) {
+        importResult?.let { result ->
+            val message = "Imported ${result.devicesImported} devices, " +
+                "${result.deviceTypesImported} types, ${result.eventsImported} events"
+            snackbarHostState.showSnackbar(message)
+            currentOnImportResultConsumed.value()
+        }
+    }
+
+    LaunchedEffect(importError) {
+        importError?.let { error ->
+            snackbarHostState.showSnackbar("Import failed: $error")
+            currentOnImportResultConsumed.value()
         }
     }
 
@@ -272,6 +299,45 @@ fun SettingsContent(
                         )
                         Text(
                             text = composeStringResource(Res.string.settings_export_data_description),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                        )
+                    }
+                }
+            }
+
+            // Import Data Card
+            Card(
+                onClick = onImportData,
+                enabled = !importInProgress,
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                ),
+                shape = MaterialTheme.shapes.medium,
+                modifier = Modifier
+                    .fillMaxWidth(),
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(Padding.standard),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(Padding.standard),
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Upload,
+                        contentDescription = composeStringResource(Res.string.settings_import_data_title),
+                        tint = MaterialTheme.colorScheme.primary,
+                    )
+                    Column {
+                        Text(
+                            text = composeStringResource(Res.string.settings_import_data_title),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        Text(
+                            text = composeStringResource(Res.string.settings_import_data_description),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                         )
@@ -463,6 +529,11 @@ fun SettingsContentPreview() {
             availableAiEngines = AiEngineType.entries,
             onAiEngineSelected = {},
             onExportData = {},
+            onImportData = {},
+            importResult = null,
+            importError = null,
+            importInProgress = false,
+            onImportResultConsumed = {},
             onBack = {},
             appVersion = AppVersion.Android("1.0.0", 123),
             currentUser = User(
@@ -494,6 +565,11 @@ fun SettingsContentAllNetworkModesPreview() {
             availableAiEngines = AiEngineType.entries,
             onAiEngineSelected = {},
             onExportData = {},
+            onImportData = {},
+            importResult = null,
+            importError = null,
+            importInProgress = false,
+            onImportResultConsumed = {},
             onBack = {},
             appVersion = AppVersion.Android("1.0.0", 123),
             currentUser = null,
