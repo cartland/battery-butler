@@ -18,6 +18,7 @@ androidx-testExt = "1.2.1"
 composeHotReload = "1.1.0-beta01"
 composeMultiplatform = "1.10.0"
 junit = "4.13.2"
+# Kotlin 2.3.20 blocked: SKIE 0.10.9 does not support it. Requires upstream SKIE release.
 kotlin = "2.3.0"
 kotlinx-coroutines = "1.10.2"
 ktor = "3.4.1"
@@ -38,8 +39,11 @@ mediapipe-genai = "0.10.29"
 localagents-fc = "0.1.0"
 mlkit-genai-prompt = "1.0.0-beta1"
 protobufVersion = "4.34.1"
+# gRPC 1.79+ blocked: generated stubs use removed APIs (BlockingClientCall, blockingV2*Call).
+# Requires regenerating protos with matching codegen plugin version.
 grpcJava = "1.63.0"
 grpc-kotlin = "1.4.1"
+# Wire 6.0+ blocked: bundled with gRPC group upgrade above.
 wire = "5.0.0"
 screenshot = "0.0.1-alpha12"
 skie = "0.10.9"
@@ -54,6 +58,8 @@ protobufPlugin = "0.9.4"
 awsSdk = "2.42.4"
 postgres = "42.7.10"
 hikari = "7.0.2"
+# Exposed 1.x blocked: major API migration (DSL moved to new packages, transaction API changed).
+# See https://github.com/JetBrains/Exposed/wiki/Migrating-from-0.x-to-1.0
 exposed = "0.50.1"
 composeRules = "0.4.12"
 leakcanary = "2.14"
