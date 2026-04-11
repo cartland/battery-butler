@@ -4,8 +4,8 @@ import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
 import platform.Foundation.NSData
-import platform.Foundation.NSFileManager
 import platform.Foundation.NSURL
+import platform.Foundation.create
 import platform.UIKit.UIApplication
 import platform.UIKit.UIDocumentPickerDelegateProtocol
 import platform.UIKit.UIDocumentPickerViewController
@@ -50,7 +50,7 @@ class IosFileLoader : FileLoader {
         // Start accessing security-scoped resource.
         val accessing = url.startAccessingSecurityScopedResource()
         try {
-            val data = NSData.dataWithContentsOfURL(url) ?: return null
+            val data = NSData.create(contentsOfURL = url) ?: return null
             val length = data.length.toInt()
             if (length == 0) return ByteArray(0)
             val bytes = ByteArray(length)
