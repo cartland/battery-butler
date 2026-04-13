@@ -20,7 +20,7 @@ composeMultiplatform = "1.10.0"
 junit = "4.13.2"
 kotlin = "2.3.0"
 kotlinx-coroutines = "1.10.2"
-ktor = "3.4.1"
+ktor = "3.4.2"
 
 logback = "1.5.32"
 spotless = "8.3.0"
