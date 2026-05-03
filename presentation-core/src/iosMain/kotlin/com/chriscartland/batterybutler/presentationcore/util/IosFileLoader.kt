@@ -1,5 +1,6 @@
 package com.chriscartland.batterybutler.presentationcore.util
 
+import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSString
 import platform.Foundation.NSURL
 import platform.Foundation.NSUTF8StringEncoding
@@ -43,6 +44,7 @@ class IosFileLoader : FileLoader {
         callback?.invoke(null)
     }
 
+    @OptIn(ExperimentalForeignApi::class)
     private fun readFileData(url: NSURL): ByteArray? {
         val accessing = url.startAccessingSecurityScopedResource()
         try {
