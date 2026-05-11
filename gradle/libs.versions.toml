@@ -56,7 +56,7 @@ googleApiClient = "2.2.0"
 googleHttpClientGson = "1.43.3"
 serializationJson = "1.10.0"
 protobufPlugin = "0.9.4"
-awsSdk = "2.42.4"
+awsSdk = "2.42.33"
 postgres = "42.7.10"
 hikari = "7.0.2"
 # Exposed 1.x blocked: major API migration (DSL moved to new packages, transaction API changed).
