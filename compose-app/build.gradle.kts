@@ -37,6 +37,7 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.androidx.core.splashscreen)
             implementation(libs.generativeai)
             implementation(libs.kotlinx.coroutines.play.services)
             implementation(libs.multiplatform.settings)
