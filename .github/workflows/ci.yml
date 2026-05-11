@@ -94,6 +94,39 @@ jobs:
               - '**/*.md'
               - '**/*.gradle.kts'
 
+  # On PRs, fail if there is any open issue tagged "ci-failure" + "blocking".
+  # These are filed by .github/workflows/ci-post-merge-issue.yml when CI fails
+  # on a push to main. While one is open, new auto-merges are paused so we
+  # fix-forward instead of piling on top of broken main. The issue auto-closes
+  # on the next green push-to-main CI run.
+  validation_no_blocking_issues:
+    needs: changes
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      issues: read
+    steps:
+      - name: Check for blocking ci-failure issues
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BLOCKING_ISSUES=$(gh issue list \
+            --repo "$GITHUB_REPOSITORY" \
+            --label ci-failure \
+            --label blocking \
+            --state open \
+            --json number,title,url \
+            --jq '.')
+
+          COUNT=$(echo "$BLOCKING_ISSUES" | jq 'length')
+          if [[ "$COUNT" -gt 0 ]]; then
+            echo "::error::$COUNT blocking ci-failure issue(s) open on main. Fix forward before merging new PRs."
+            echo "$BLOCKING_ISSUES" | jq -r '.[] | "  - #\(.number) \(.title) — \(.url)"'
+            exit 1
+          fi
+          echo "No blocking ci-failure issues. PR allowed to proceed."
+
   validation_spotless:
     needs: changes
     if: needs.changes.outputs.needs_spotless == 'true'
@@ -498,6 +531,7 @@ jobs:
   ci:
     needs:
       - changes
+      - validation_no_blocking_issues
       - validation_spotless
       - validation_lint
       - validation_detekt
@@ -536,6 +570,7 @@ jobs:
           FAILED=false
           echo "Checking fast jobs..."
           for result in \
+            "${{ needs.validation_no_blocking_issues.result }}" \
             "${{ needs.validation_spotless.result }}" \
             "${{ needs.validation_lint.result }}" \
             "${{ needs.validation_detekt.result }}" \
