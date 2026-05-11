@@ -186,7 +186,7 @@ fun EditDeviceTypeContent(
                             verticalArrangement = Arrangement.spacedBy(12.dp),
                             modifier = Modifier.weight(1f).padding(vertical = 8.dp),
                         ) {
-                            items(icons) { iconName ->
+                            items(icons, key = { it }) { iconName ->
                                 val isSelected = defaultIcon == iconName
                                 DeviceTypeIconItem(
                                     iconName = iconName,

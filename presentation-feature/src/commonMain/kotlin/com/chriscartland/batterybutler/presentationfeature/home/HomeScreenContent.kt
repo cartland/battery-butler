@@ -271,7 +271,7 @@ fun HomeScreenList(
     modifier: Modifier = Modifier,
     nowInstant: Instant = Clock.System.now(),
 ) {
-    val allDevices = state.groupedDevices.values.flatten()
+    val allDevices = remember(state.groupedDevices) { state.groupedDevices.values.flatten() }
 
     val errorMessage = state.error
     if (errorMessage != null && allDevices.isEmpty()) {

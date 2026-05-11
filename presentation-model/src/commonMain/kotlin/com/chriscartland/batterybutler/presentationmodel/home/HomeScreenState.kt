@@ -5,8 +5,6 @@ import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.SyncStatus
 
 data class HomeScreenState(
-    val groups: Map<String, List<Device>> = emptyMap(),
-    val devices: Map<String, Device> = emptyMap(), // For lookup if needed
     val groupedDevices: Map<String, List<Device>> = emptyMap(),
     val deviceTypes: Map<String, DeviceType> = emptyMap(),
     val isSortAscending: Boolean = true,
