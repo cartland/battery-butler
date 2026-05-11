@@ -40,6 +40,8 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.acti
 import com.chriscartland.batterybutler.composeresources.generated.resources.empty_types_message
 import com.chriscartland.batterybutler.composeresources.generated.resources.empty_types_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.error_something_went_wrong
+import com.chriscartland.batterybutler.composeresources.generated.resources.filter_group_label
+import com.chriscartland.batterybutler.composeresources.generated.resources.filter_sort_label
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationcore.components.AddItemCard
 import com.chriscartland.batterybutler.presentationcore.components.ButlerDropdownMenu
@@ -173,7 +175,10 @@ fun DeviceTypeFilterRow(
             // Sort Button (First)
             Box {
                 CompositeControl(
-                    label = "Sort: ${composeStringResource(state.sortOption.labelRes())}",
+                    label = composeStringResource(
+                        Res.string.filter_sort_label,
+                        composeStringResource(state.sortOption.labelRes()),
+                    ),
                     isActive = true, // Sort is always active
                     isAscending = state.isSortAscending,
                     onClicked = { sortExpanded = true },
@@ -198,7 +203,10 @@ fun DeviceTypeFilterRow(
             // Group Button (Second)
             Box {
                 CompositeControl(
-                    label = "Group: ${composeStringResource(state.groupOption.labelRes())}",
+                    label = composeStringResource(
+                        Res.string.filter_group_label,
+                        composeStringResource(state.groupOption.labelRes()),
+                    ),
                     isActive = state.groupOption != DeviceTypeGroupOption.NONE,
                     isAscending = state.isGroupAscending,
                     onClicked = { groupExpanded = true },
