@@ -54,7 +54,7 @@ fun SettingsScreen(
         onExportData = viewModel::onExportData,
         onImportData = {
             fileLoader.loadFile { bytes ->
-                bytes?.let { viewModel.onImportData(String(it)) }
+                bytes?.let { viewModel.onImportData(it.decodeToString()) }
             }
         },
         importResult = importResult,
