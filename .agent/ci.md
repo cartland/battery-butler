@@ -126,3 +126,18 @@ Run `/review-annotations` periodically (per release branch is typical) to audit 
 When >5 PRs queue up on auto-merge and `validation_ios_ui` (16.5 min) is the bottleneck, the supported recipe is to **temporarily flip `.github/ci-mode.txt` from `release` to `development`** in its own one-line PR. The aggregator at `ci.yml:530` skips slow jobs on PRs in development mode (push-to-main still runs the full suite, so this is *not* a relaxation of what hits main — only of what gates a PR before merge). Open a follow-up PR to flip back to `release` once the queue is drained.
 
 For PRs that share files (e.g. `strings.xml`, list-screen content): disable auto-merge on the cluster duplicates via the GraphQL `disablePullRequestAutoMerge` mutation (the local `gh pr merge --disable-auto` is blocked by `.claude/hooks/git-guardrails.sh`), let the leader merge, then rebase the duplicates and re-enable. This prevents cascading rebases. Recipe details: see `workflow_pr_drain_strategy.md` in agent memory.
+
+## Post-Merge Auto-Issue Safety Net
+
+`ci-post-merge-issue.yml` listens for every `Battery Butler CI` run that completes on a push to `main`:
+
+- **On failure**: lists failing jobs via the Actions API and, for each, either opens an issue titled `CI failure on main: <job-name>` (labels: `ci-failure`, `blocking`) or comments on the existing open issue with that exact title. One issue per failing job, deduped by title.
+- **On success**: closes every open `ci-failure` issue with a "resolved on green" comment.
+
+This is what makes development-mode CI safe as the steady state: PRs only run fast checks, slow checks run post-merge on `main`, and any post-merge regression surfaces as a tracked issue instead of silent red.
+
+**Companion gate**: `validation_no_blocking_issues` in `ci.yml` runs on every PR and fails if any open `ci-failure` issue carries the `blocking` label. This pauses new auto-merges until the regression is fixed forward.
+
+**Companion ritual**: run `/check-ci-issues` at session start, before picking up new feature work. The skill at `.claude/skills/check-ci-issues/SKILL.md` documents the triage flow. The fix is a normal PR off `origin/main`; the next green push-to-main auto-closes the issue.
+
+**Implementation**: `scripts/file-ci-failure-issue.sh` (called by the workflow). Labels are created on demand the first time a failure occurs.
