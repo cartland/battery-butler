@@ -54,6 +54,8 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.even
 import com.chriscartland.batterybutler.composeresources.generated.resources.label_battery_type
 import com.chriscartland.batterybutler.composeresources.generated.resources.label_notes
 import com.chriscartland.batterybutler.composeresources.generated.resources.label_replaced_on
+import com.chriscartland.batterybutler.composeresources.generated.resources.unknown_device
+import com.chriscartland.batterybutler.composeresources.generated.resources.unknown_type
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
@@ -179,12 +181,12 @@ private fun EventDetailBody(
         }
 
         Text(
-            text = state.device?.name ?: "Unknown Device",
+            text = state.device?.name ?: composeStringResource(Res.string.unknown_device),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
         )
         Text(
-            text = state.deviceType?.name ?: "Unknown",
+            text = state.deviceType?.name ?: composeStringResource(Res.string.unknown_type),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

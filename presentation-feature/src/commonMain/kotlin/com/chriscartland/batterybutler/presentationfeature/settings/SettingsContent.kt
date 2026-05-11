@@ -56,6 +56,7 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.netw
 import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_none
 import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_app_version
+import com.chriscartland.batterybutler.composeresources.generated.resources.settings_app_version_unavailable
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_check_updates_description
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_check_updates_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_copied_to_clipboard
@@ -73,6 +74,7 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.sett
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_import_failed_message
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_import_success_message
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_title
+import com.chriscartland.batterybutler.composeresources.generated.resources.settings_user_signed_in
 import com.chriscartland.batterybutler.domain.model.AppVersion
 import com.chriscartland.batterybutler.domain.model.ImportResult
 import com.chriscartland.batterybutler.domain.model.LegacyDatabaseInfo
@@ -205,7 +207,7 @@ fun SettingsContent(
                             )
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
-                                    text = currentUser.displayName ?: "Signed In",
+                                    text = currentUser.displayName ?: composeStringResource(Res.string.settings_user_signed_in),
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -366,7 +368,7 @@ fun SettingsContent(
                 is AppVersion.Android -> "${appVersion.versionName}-${appVersion.versionCode}"
                 is AppVersion.Ios -> "${appVersion.versionName}-${appVersion.buildNumber}"
                 is AppVersion.Desktop -> appVersion.versionName
-                is AppVersion.Unavailable -> "Unavailable"
+                is AppVersion.Unavailable -> composeStringResource(Res.string.settings_app_version_unavailable)
             }
             if (currentDatabaseFileName.isNotEmpty()) {
                 Card(

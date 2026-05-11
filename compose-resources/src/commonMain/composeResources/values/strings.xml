@@ -64,6 +64,7 @@
     <string name="device_detail_title">Device Details</string>
     <string name="action_edit">Edit</string>
     <string name="error_device_not_found">Device not found</string>
+    <string name="unknown_device">Unknown Device</string>
     <string name="unknown_type">Unknown Type</string>
     <string name="label_type">Type</string>
     <string name="label_quantity">Quantity</string>
@@ -135,6 +136,8 @@
 
     <!-- Settings -->
     <string name="settings_title">Settings</string>
+    <string name="settings_user_signed_in">Signed In</string>
+    <string name="settings_app_version_unavailable">Unavailable</string>
     <string name="action_sign_out">Sign Out</string>
     <string name="settings_export_data_title">Export Data</string>
     <string name="settings_export_data_description">Save all data as a .json file</string>
