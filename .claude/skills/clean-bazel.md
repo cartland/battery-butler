@@ -1,3 +1,9 @@
+---
+description: Clean Bazel caches, generated artifacts, and symlinks.
+allowed-tools: Bash(*)
+user-invocable: true
+---
+
 # Clean Bazel
 
 Clean up Bazel generated artifacts and symlinks.

@@ -1,3 +1,9 @@
+---
+description: Build the shared Kotlin/Native framework for iOS (consumed by both iOS apps).
+allowed-tools: Bash(*)
+user-invocable: true
+---
+
 # Build iOS Framework
 
 Build the Kotlin Multiplatform framework for iOS (needed by both iOS apps).

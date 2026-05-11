@@ -1,3 +1,9 @@
+---
+description: Run Spotless to format all code according to project style.
+allowed-tools: Bash(*)
+user-invocable: true
+---
+
 # Format Code
 
 Run Spotless to format all code according to project style guidelines.

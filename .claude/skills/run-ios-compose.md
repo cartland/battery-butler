@@ -1,3 +1,9 @@
+---
+description: Build and run the iOS Compose Multiplatform app on the simulator.
+allowed-tools: Bash(*)
+user-invocable: true
+---
+
 # Run iOS Compose
 
 Build and run the iOS Compose Multiplatform app.
