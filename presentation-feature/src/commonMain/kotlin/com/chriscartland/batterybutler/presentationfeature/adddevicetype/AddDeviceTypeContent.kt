@@ -16,7 +16,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -209,7 +208,7 @@ fun AddDeviceTypeContent(
                         onValueChange = { name = it },
                         placeholder = { Text(composeStringResource(Res.string.placeholder_device_name)) },
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
+                        shape = MaterialTheme.shapes.medium,
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                         keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Next) }),
                         trailingIcon = {
@@ -245,7 +244,7 @@ fun AddDeviceTypeContent(
                         label = { Text(composeStringResource(Res.string.label_battery_type_hint)) },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
-                        shape = RoundedCornerShape(12.dp),
+                        shape = MaterialTheme.shapes.medium,
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                         keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
                     )
@@ -261,8 +260,8 @@ fun AddDeviceTypeContent(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(64.dp)
-                            .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(12.dp))
-                            .padding(horizontal = 16.dp),
+                            .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.medium)
+                            .padding(horizontal = Padding.standard),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
@@ -270,7 +269,7 @@ fun AddDeviceTypeContent(
                             Box(
                                 modifier = Modifier
                                     .size(40.dp)
-                                    .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(8.dp)),
+                                    .background(MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.shapes.small),
                                 contentAlignment = Alignment.Center,
                             ) {
                                 Icon(
@@ -288,7 +287,7 @@ fun AddDeviceTypeContent(
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                             IconButton(
                                 onClick = { if (batteryQuantity > 1) batteryQuantity-- },
-                                modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(8.dp)),
+                                modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.shapes.small),
                             ) {
                                 Icon(Icons.Default.Remove, contentDescription = composeStringResource(Res.string.action_decrease))
                             }
@@ -302,7 +301,7 @@ fun AddDeviceTypeContent(
                                     } else {
                                         MaterialTheme.colorScheme.primary.copy(alpha = 0.38f)
                                     },
-                                    RoundedCornerShape(8.dp),
+                                    MaterialTheme.shapes.small,
                                 ),
                             ) {
                                 Icon(

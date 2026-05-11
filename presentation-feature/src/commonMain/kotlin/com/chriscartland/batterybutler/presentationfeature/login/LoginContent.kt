@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BatteryChargingFull
 import androidx.compose.material3.AlertDialog
@@ -188,7 +187,7 @@ private fun LoginForm(
                 onClick = onGoogleSignIn,
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !isLoading,
-                shape = RoundedCornerShape(12.dp),
+                shape = MaterialTheme.shapes.medium,
             ) {
                 if (isLoading) {
                     CircularProgressIndicator(
@@ -205,7 +204,7 @@ private fun LoginForm(
                     onClick = onSkipLogin,
                     modifier = Modifier.fillMaxWidth(),
                     enabled = true,
-                    shape = RoundedCornerShape(12.dp),
+                    shape = MaterialTheme.shapes.medium,
                 ) {
                     Text(composeStringResource(Res.string.action_continue_guest))
                 }
@@ -228,7 +227,7 @@ private fun LoginForm(
             onClick = onSkipLogin,
             modifier = Modifier.fillMaxWidth(),
             enabled = !isLoading,
-            shape = RoundedCornerShape(12.dp),
+            shape = MaterialTheme.shapes.medium,
         ) {
             Text(composeStringResource(Res.string.action_continue_no_sign_in))
         }

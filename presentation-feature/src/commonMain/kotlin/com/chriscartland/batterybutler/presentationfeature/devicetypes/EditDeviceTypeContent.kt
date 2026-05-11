@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -166,7 +165,7 @@ fun EditDeviceTypeContent(
                             Text(
                                 batteryQuantity.toString(),
                                 style = MaterialTheme.typography.titleMedium,
-                                modifier = Modifier.padding(horizontal = 8.dp),
+                                modifier = Modifier.padding(horizontal = Padding.small),
                             )
                             IconButton(onClick = { batteryQuantity++ }) {
                                 Icon(Icons.Default.Add, contentDescription = composeStringResource(Res.string.action_increase))
@@ -184,7 +183,7 @@ fun EditDeviceTypeContent(
                             columns = GridCells.Fixed(4),
                             horizontalArrangement = Arrangement.spacedBy(12.dp),
                             verticalArrangement = Arrangement.spacedBy(12.dp),
-                            modifier = Modifier.weight(1f).padding(vertical = 8.dp),
+                            modifier = Modifier.weight(1f).padding(vertical = Padding.small),
                         ) {
                             items(icons, key = { it }) { iconName ->
                                 val isSelected = defaultIcon == iconName
@@ -205,7 +204,7 @@ fun EditDeviceTypeContent(
                                 contentColor = MaterialTheme.colorScheme.error,
                             ),
                             modifier = Modifier.fillMaxWidth().height(56.dp),
-                            shape = RoundedCornerShape(12.dp),
+                            shape = MaterialTheme.shapes.medium,
                         ) {
                             Text(composeStringResource(Res.string.action_delete_device_type), fontWeight = FontWeight.SemiBold)
                         }
