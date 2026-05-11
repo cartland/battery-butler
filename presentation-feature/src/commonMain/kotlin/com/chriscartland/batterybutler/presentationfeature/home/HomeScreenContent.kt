@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.composeresources.composeStringResource
 import com.chriscartland.batterybutler.composeresources.generated.resources.Res
 import com.chriscartland.batterybutler.composeresources.generated.resources.add_device_title
+import com.chriscartland.batterybutler.composeresources.generated.resources.add_item_card_device
 import com.chriscartland.batterybutler.composeresources.generated.resources.empty_devices_message
 import com.chriscartland.batterybutler.composeresources.generated.resources.empty_devices_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.error_something_went_wrong
@@ -308,7 +309,7 @@ fun HomeScreenList(
                 )
             }
             item {
-                AddItemCard("Add a device", onAddDeviceClick)
+                AddItemCard(composeStringResource(Res.string.add_item_card_device), onAddDeviceClick)
             }
             state.groupedDevices.forEach { (groupName, devices) ->
                 if (state.groupOption != GroupOption.NONE) {

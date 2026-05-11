@@ -18,6 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.composeresources.composeStringResource
 import com.chriscartland.batterybutler.composeresources.generated.resources.Res
+import com.chriscartland.batterybutler.composeresources.generated.resources.add_item_card_battery_event
 import com.chriscartland.batterybutler.composeresources.generated.resources.empty_history_message
 import com.chriscartland.batterybutler.composeresources.generated.resources.empty_history_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.error_something_went_wrong
@@ -73,7 +74,7 @@ fun HistoryListContent(
                         verticalArrangement = Arrangement.spacedBy(Padding.medium),
                     ) {
                         item {
-                            AddItemCard("Add a battery event", onAddEventClick)
+                            AddItemCard(composeStringResource(Res.string.add_item_card_battery_event), onAddEventClick)
                         }
                         items(state.items, key = { it.event.id }) { item ->
                             HistoryListItem(

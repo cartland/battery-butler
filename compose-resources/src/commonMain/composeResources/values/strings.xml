@@ -198,6 +198,11 @@
     <string name="dialog_delete_device_type_title">Delete Device Type</string>
     <string name="dialog_delete_device_type_text">Are you sure you want to delete this device type?</string>
 
+    <!-- AddItemCard labels (long-form CTAs shown at the top of each list) -->
+    <string name="add_item_card_device">Add a device</string>
+    <string name="add_item_card_device_type">Add a device type</string>
+    <string name="add_item_card_battery_event">Add a battery event</string>
+
     <!-- Hardcoded String Fixes -->
     <string name="label_type_name">Type Name</string>
     <string name="placeholder_battery_event_ai">E.g. Replaced remote battery today</string>
