@@ -91,7 +91,7 @@ fun DeviceTypeListContent(
             }
 
             is DeviceTypeListScreenState.Success -> {
-                val allTypes = state.groupedTypes.values.flatten()
+                val allTypes = remember(state.groupedTypes) { state.groupedTypes.values.flatten() }
                 if (allTypes.isEmpty()) {
                     EmptyStateContent(
                         icon = Icons.AutoMirrored.Filled.List,

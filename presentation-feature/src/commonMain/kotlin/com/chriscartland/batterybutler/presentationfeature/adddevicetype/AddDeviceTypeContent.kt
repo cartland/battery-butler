@@ -182,7 +182,7 @@ fun AddDeviceTypeContent(
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                     modifier = Modifier.height(160.dp),
                 ) {
-                    items(icons) { iconName ->
+                    items(icons, key = { it }) { iconName ->
                         val isSelected = selectedIcon == iconName
                         DeviceTypeIconItem(
                             iconName = iconName,
