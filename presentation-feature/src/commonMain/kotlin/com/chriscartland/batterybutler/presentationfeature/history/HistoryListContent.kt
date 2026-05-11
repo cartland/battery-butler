@@ -10,7 +10,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,6 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.composeresources.composeStringResource
 import com.chriscartland.batterybutler.composeresources.generated.resources.Res
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_try_again
 import com.chriscartland.batterybutler.composeresources.generated.resources.add_item_card_battery_event
 import com.chriscartland.batterybutler.composeresources.generated.resources.empty_history_message
 import com.chriscartland.batterybutler.composeresources.generated.resources.empty_history_title
@@ -42,6 +45,7 @@ fun HistoryListContent(
     state: HistoryListScreenState,
     onEventClick: (String, String) -> Unit,
     onAddEventClick: () -> Unit,
+    onRetry: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     nowInstant: Instant = Clock.System.now(),
@@ -61,6 +65,11 @@ fun HistoryListContent(
                     title = composeStringResource(Res.string.error_load_history),
                     message = state.message,
                     modifier = Modifier.padding(contentPadding),
+                    action = {
+                        Button(onClick = onRetry) {
+                            Text(composeStringResource(Res.string.action_try_again))
+                        }
+                    },
                 )
             }
 
@@ -109,6 +118,7 @@ fun HistoryListContentEmptyPreview() {
             state = HistoryListScreenState.Success(items = emptyList()),
             onEventClick = { _, _ -> },
             onAddEventClick = {},
+            onRetry = {},
             nowInstant = Instant.parse("2026-01-18T17:00:00Z"),
         )
     }
@@ -122,6 +132,7 @@ fun HistoryListContentLoadingPreview() {
             state = HistoryListScreenState.Loading,
             onEventClick = { _, _ -> },
             onAddEventClick = {},
+            onRetry = {},
             nowInstant = Instant.parse("2026-01-18T17:00:00Z"),
         )
     }
@@ -135,6 +146,7 @@ fun HistoryListContentErrorPreview() {
             state = HistoryListScreenState.Error("Failed to load history"),
             onEventClick = { _, _ -> },
             onAddEventClick = {},
+            onRetry = {},
             nowInstant = Instant.parse("2026-01-18T17:00:00Z"),
         )
     }
@@ -157,6 +169,7 @@ fun HistoryListContentPreview() {
             state = state,
             onEventClick = { _, _ -> },
             onAddEventClick = {},
+            onRetry = {},
             nowInstant = nowInstant,
         )
     }

@@ -44,6 +44,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.composeresources.composeStringResource
 import com.chriscartland.batterybutler.composeresources.generated.resources.Res
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_try_again
 import com.chriscartland.batterybutler.composeresources.generated.resources.add_device_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.add_item_card_device
 import com.chriscartland.batterybutler.composeresources.generated.resources.empty_devices_message
@@ -89,6 +90,7 @@ fun HomeScreenContent(
     onSortOptionSelected: (SortOption) -> Unit,
     onDeviceClick: (Device) -> Unit,
     onAddDeviceClick: () -> Unit,
+    onRetry: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     nowInstant: Instant = Clock.System.now(),
@@ -139,6 +141,7 @@ fun HomeScreenContent(
                 onSortOptionSelected = onSortOptionSelected,
                 onDeviceClick = onDeviceClick,
                 onAddDeviceClick = onAddDeviceClick,
+                onRetry = onRetry,
                 contentPadding = mergedPadding,
                 nowInstant = nowInstant,
             )
@@ -267,6 +270,7 @@ fun HomeScreenList(
     onSortOptionSelected: (SortOption) -> Unit,
     onDeviceClick: (Device) -> Unit,
     onAddDeviceClick: () -> Unit,
+    onRetry: () -> Unit,
     contentPadding: androidx.compose.foundation.layout.PaddingValues,
     modifier: Modifier = Modifier,
     nowInstant: Instant = Clock.System.now(),
@@ -280,6 +284,11 @@ fun HomeScreenList(
             title = composeStringResource(Res.string.error_load_devices),
             message = errorMessage,
             modifier = Modifier.padding(contentPadding),
+            action = {
+                androidx.compose.material3.Button(onClick = onRetry) {
+                    Text(composeStringResource(Res.string.action_try_again))
+                }
+            },
         )
     } else if (allDevices.isEmpty()) {
         EmptyStateContent(
@@ -408,6 +417,7 @@ fun HomeScreenPreview() {
             onSortOptionSelected = {},
             onDeviceClick = {},
             onAddDeviceClick = {},
+            onRetry = {},
             nowInstant = nowInstant,
         )
     }
@@ -426,6 +436,7 @@ fun HomeScreenErrorPreview() {
             onSortOptionSelected = {},
             onDeviceClick = {},
             onAddDeviceClick = {},
+            onRetry = {},
             nowInstant = Instant.parse("2026-01-18T17:00:00Z"),
         )
     }
@@ -444,6 +455,7 @@ fun HomeScreenEmptyPreview() {
             onSortOptionSelected = {},
             onDeviceClick = {},
             onAddDeviceClick = {},
+            onRetry = {},
             nowInstant = Instant.parse("2026-01-18T17:00:00Z"),
         )
     }
@@ -487,6 +499,7 @@ fun HomeScreenListPreview() {
             onSortOptionSelected = {},
             onDeviceClick = {},
             onAddDeviceClick = {},
+            onRetry = {},
             contentPadding = androidx.compose.foundation.layout
                 .PaddingValues(16.dp),
             nowInstant = nowInstant,
