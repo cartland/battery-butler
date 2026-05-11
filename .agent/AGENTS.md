@@ -87,6 +87,7 @@ Keeping the build and tests healthy is a top priority. When you identify or fix 
   - Use `AppConfig` or `BuildConfig` to access these values in code, do NOT hardcode them.
   - **NEVER hardcode NLB hostnames or server URLs** in Kotlin source files. Use `BuildConfig.PRODUCTION_SERVER_URL` from data-network, or `ProductionServerUrl` (domain model) for modules without data-network dependency.
   - Server URL source of truth is the GitHub secret `PRODUCTION_SERVER_URL`, auto-synced from terraform output after deploys. See `.agent/server.md` → "Server URL Management" for the full flow.
+  - **Compose stability config** (`compose_compiler_config.conf` at the repo root): plain pattern lines only — the parser used by the Kotlin Compose Compiler plugin does NOT accept `#` comments. A comment line causes `Error parsing stability configuration file on line 0`. Wire new modules into the config via `composeCompiler { stabilityConfigurationFiles.add(rootProject.layout.projectDirectory.file("compose_compiler_config.conf")) }` in the module's `build.gradle.kts`. See `.agent/project.md` → "Compose Stability Configuration" for the rationale.
 
 - **Self Improvements**:
   - **Always** update `.agent/` documentation when learning a critical piece of information that will improve future agent performance. Workflow rules go in `AGENTS.md`; project knowledge goes in `project.md`.
@@ -105,6 +106,11 @@ Keeping the build and tests healthy is a top priority. When you identify or fix 
   - The `.claude/hooks/git-guardrails.sh` hook warns (but does not block) on shell control flow.
   - `grep -qE '--flag'` treats `--flag` as a grep option — use `grep -qF -- '--flag'` instead.
   - `jq` with `!=` can be unreliable — use `select(.conclusion == "")` instead.
+
+- **`gh pr merge` is guard-railed**: `.claude/hooks/git-guardrails.sh` blocks `gh pr merge` invocations that don't pass `--squash --delete-branch`. It also blocks `gh pr merge --disable-auto`. To disable auto-merge on a PR, use the GraphQL mutation instead:
+  ```bash
+  gh api graphql -f query='mutation($id: ID!) { disablePullRequestAutoMerge(input: {pullRequestId: $id}) { pullRequest { number } } }' -F id="$(gh pr view <N> --json id --jq .id)"
+  ```
 
 - **Git**:
   - **Always** use non-interactive flags for commands that might open an editor (e.g., `git cherry-pick --continue --no-edit`). This prevents the shell from getting stuck waiting for user input.

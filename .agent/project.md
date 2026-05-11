@@ -49,6 +49,24 @@ Import-level boundaries are enforced by `ImportBoundaryCheckTask` (in `validate.
 - Modules using `@Inject` need BOTH `kotlin-inject-runtime` (commonMain) AND `kotlin-inject-compiler` (KSP)
 - `multiplatform-settings` is `implementation` in `:data` — not transitive. Add directly to modules using platform-specific Settings classes (e.g. `SharedPreferencesSettings`)
 
+### Compose Stability Configuration
+
+Cross-module types passed into composables are inferred unstable by the Compose compiler unless told otherwise (the compiler can't see implementations across module boundaries). `compose_compiler_config.conf` at the repo root tells the Compose Compiler plugin to treat the following packages/types as **stable** without forcing those modules to depend on `androidx.compose.runtime`:
+
+- `com.chriscartland.batterybutler.presentationmodel.**` — all ScreenState data classes and sealed-interface variants
+- `com.chriscartland.batterybutler.domain.model.**` — Device, BatteryEvent, DeviceType, AppVersion, User, etc.
+- `kotlinx.collections.immutable.**` — when used
+- `kotlin.time.Instant`, `kotlin.time.Duration`
+- `kotlinx.datetime.LocalDate`, `LocalDateTime`, `TimeZone`
+
+The file is wired into all 7 Compose-using modules via a `composeCompiler { stabilityConfigurationFiles.add(...) }` block in each module's `build.gradle.kts`.
+
+**Conf-file format gotcha**: the parser used by the current Kotlin Compose Compiler plugin does **not** accept `#` comments. Keep `compose_compiler_config.conf` to plain pattern lines only — a comment causes `Error parsing stability configuration file on line 0`.
+
+**Verifying stability**: temporarily add `metricsDestination` / `reportsDestination` to a module's `composeCompiler { }` block, run `./gradlew :<module>:compileKotlinJvm --rerun-tasks`, and inspect `<module>-composables.txt` for `stable` / `unstable` annotations on parameters. Revert the temp edits when done. (See the agent-memory note on Compose metrics for the full procedure.)
+
+**`List<T>` is still unstable** even when `T` is stable — Kotlin's stdlib `List<T>` interface allows mutability. Switching hot-path collection fields to `kotlinx.collections.immutable.ImmutableList<T>` is a follow-up that would make recomposition more skippable.
+
 ### Coroutine Dispatching
 
 Use `DispatcherProvider` (in `:domain:model`) instead of hardcoding `Dispatchers.Default/IO/Main`:
@@ -147,6 +165,10 @@ Icon colors use the **`IconColorRole` enum** (`presentation-core/.../theme/IconC
 
 **Standard dropdown component**: Use `ButlerDropdownMenu` (`presentation-core/.../components/ButlerDropdownMenu.kt`) instead of `DropdownMenu` directly. Note: CMP 1.10.0 `DropdownMenu` does NOT support `enter`/`exit` animation params (Jetpack Compose only).
 
+**Loading state with label**: Use `LoadingWithLabel` (`presentation-core/.../components/LoadingWithLabel.kt`) for top-level "screen is loading" states — a centered `CircularProgressIndicator` plus a status `Text` underneath. Pair with a screen-specific status string (`status_loading_devices`, `status_loading_device_types`, etc.) so the label tells the user *what* is loading. Bare `CircularProgressIndicator` is reserved for inline cases (e.g. the sync overlay in `HomeScreenContent`).
+
+**Material icons — prefer AutoMirrored**: For glyphs that have an `Icons.AutoMirrored.Filled.*` variant (`Notes`, `OpenInNew`, `Logout`, `List`, etc.), use the AutoMirrored variant. They flip in RTL locales, which is the recommended behavior; the non-AutoMirrored versions emit deprecation warnings.
+
 ### KMP-Friendly Class Naming Convention
 
 Enforced by `checkNamingConventions` Gradle task (in `validate.sh` and CI):
@@ -190,6 +212,26 @@ All data types follow a consistent **List → Detail (read-only) → Edit** arch
 For a detailed breakdown of how the shared Compose Multiplatform UI maps to the native SwiftUI implementation (and why they intuitively differ structurally), see `docs/UI_SCREENS_MAPPING.md`.
 
 When implementing a new Compose UI feature, check if a corresponding iOS SwiftUI implementation is needed. If so, create a bead for the iOS gap and reference it in `docs/UI_SCREENS_MAPPING.md`.
+
+### Data Export / Import
+
+Exporting and importing data uses a versioned JSON envelope. Key pieces:
+
+- **`BackupDto`** (`usecase/.../BackupDto.kt`) — shared DTOs for `Device`, `DeviceType`, `BatteryEvent`. Format version is stored at the envelope level so future readers can branch on it.
+- **`ExportDataUseCase`** — serializes the current local state into the envelope. Called from `SettingsViewModel.onExportData()`.
+- **`ImportDataUseCase`** — envelope-first version parsing; returns `Result<ImportResult, DataError>`. Skips malformed records with reporting (does not abort the whole import on one bad row). Tested with 16 cases in `ImportDataUseCaseTest` (happy path, format versioning, malformed JSON/dates, idempotency, upsert).
+- **`FileLoader`** (`presentation-core/.../util/FileLoader.kt`) — `expect/actual` abstraction for reading a file. Android uses `ContentResolver` via `AndroidFileLoader`; iOS uses `NSString.create(contentsOfURL:)` (NSData K/N interop has issues — see `IosFileLoader`); Desktop uses `java.io.File`.
+- **`LocalFileLoader`** — CompositionLocal that provides the `FileLoader` instance. Add to `detekt.yml` `CompositionLocalAllowlist`.
+- **iOS K/N gotcha**: do not use `String(bytes: ByteArray)` — only `String(chars: CharArray)` exists on K/N, and even then it's deprecated. Use `byteArray.decodeToString()` (UTF-8) for cross-platform safety.
+
+### Android Splash Screen
+
+The app uses `androidx.core:core-splashscreen` (added in PR #1109) for cold-start:
+
+- `compose-app/src/androidMain/res/values/themes.xml` defines `Theme.BatteryButler.Starting` (parent `Theme.SplashScreen`) with `windowSplashScreenAnimatedIcon = @mipmap/ic_launcher_round` and `postSplashScreenTheme = @android:style/Theme.Material.Light.NoActionBar`.
+- `AndroidManifest.xml` sets `android:theme="@style/Theme.BatteryButler.Starting"` on the application.
+- `MainActivity.onCreate()` calls `installSplashScreen()` **before** `enableEdgeToEdge()` and `super.onCreate()`.
+- `compose-app/src/androidMain/res/values/colors.xml` defines `splash_background` (currently `#FFFFFF`; could be promoted to a Material role later).
 
 ### AI Architecture
 

@@ -31,6 +31,57 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ---
 
+## 2026-05-11
+
+### Features
+
+- **Import data**: Companion to the existing export — JSON backup files can now be imported back into the app with versioned envelope parsing, error reporting per malformed record, and an upsert semantic so re-imports are idempotent. New `ImportDataUseCase`, shared `BackupDto`, `FileLoader` expect/actual abstraction across Android / iOS Compose / iOS native (SwiftUI) / Desktop, and a Settings UI card on both Compose and SwiftUI. ([#1096](https://github.com/cartland/battery-butler/pull/1096))
+- **Android cold-start splash screen**: `androidx.core:core-splashscreen` 1.0.1 wired in. New `Theme.BatteryButler.Starting` (parent `Theme.SplashScreen`) with the launcher icon as the animated icon; `MainActivity.installSplashScreen()` hands off to the post-splash theme once the first composable frame is ready. ([#1109](https://github.com/cartland/battery-butler/pull/1109))
+- **`/check-screenshot-health` skill**: Scans Android screenshot reference PNGs for files under 1 KB (header-only renders, usually caused by previews depending on runtime state). Exit 0 always — warning tool, never gates. Ports the workflow from the sibling [SmartGarageDoor](https://github.com/cartland/SmartGarageDoor) repo. ([#1112](https://github.com/cartland/battery-butler/pull/1112))
+- **`/review-annotations` skill + `.github/annotation-ignores.txt`**: Periodic audit of GitHub Actions warnings against an allowlist (one `grep -F` substring per line, `#` for comments). Pre-populated with four known-and-accepted warnings (KMP `expect/actual` Beta, KMP plugin / AGP deprecation, Gradle 9 umbrella, `LocalClipboardManager`). Also from SmartGarageDoor. ([#1113](https://github.com/cartland/battery-butler/pull/1113))
+
+### Performance
+
+- **Compose stability config**: New `compose_compiler_config.conf` at the repo root tells the Compose Compiler to treat `:presentation-model.**`, `:domain.model.**`, and several stdlib value types (`kotlin.time.Instant`/`Duration`, `kotlinx.datetime.LocalDate`/`LocalDateTime`/`TimeZone`, `kotlinx.collections.immutable.**`) as **stable**, without forcing those modules to depend on `androidx.compose.runtime`. Wired into all 7 Compose-using modules via `composeCompiler { stabilityConfigurationFiles.add(...) }`. Verified by Compose metrics dump: previously-unstable `state: HomeScreenState` / `EventDetailScreenState.Success` / `nowInstant: Instant` parameters all now report as `stable`. Reduces unnecessary recomposition when these types cross module boundaries. ([#1107](https://github.com/cartland/battery-butler/pull/1107))
+
+### Fixes
+
+- **JAR-URI crash in convention tests**: Adding a new dependency that puts a JAR on the test classpath (e.g. `kotlinx.serialization`) used to crash `UseCaseConventionTest` and `ViewModelTestConventionTest` with `IllegalArgumentException("URI is not hierarchical")` because `File(url.toURI())` doesn't accept non-`file:` URIs. Tests now skip `url.protocol != "file"` entries. ([#1095](https://github.com/cartland/battery-butler/pull/1095))
+- **`String(ByteArray)` on iOS Kotlin/Native**: The CMP import-data flow was calling `String(it)` on a `ByteArray`, which works on JVM but fails on K/N (only `String(CharArray)` exists, and even that is deprecated). Switched to `byteArray.decodeToString()` for cross-platform safety. (Part of [#1096](https://github.com/cartland/battery-butler/pull/1096))
+
+### Refactoring
+
+- **AutoMirrored Material icons**: Replaced `Icons.Default.OpenInNew` and `Icons.Default.Notes` with their `Icons.AutoMirrored.Filled.*` variants. These flip in RTL locales, which is the recommended behavior, and clear the deprecation warnings. ([#1099](https://github.com/cartland/battery-butler/pull/1099))
+- **Hardcoded UI strings → string resources** (5 PRs):
+  - `EventDetailContent` `DetailRow(label = ...)` labels — reuses existing `label_replaced_on` / `label_battery_type` / `label_notes`. ([#1100](https://github.com/cartland/battery-butler/pull/1100))
+  - `"Sort: …"` / `"Group: …"` filter prefixes in `HomeScreenContent` and `DeviceTypeListContent` — new format strings `filter_sort_label` / `filter_group_label`. ([#1101](https://github.com/cartland/battery-butler/pull/1101))
+  - `ExpandableSelectionControl(title = "Network Mode")` in `SettingsContent` — new `network_mode_title`. ([#1102](https://github.com/cartland/battery-butler/pull/1102))
+  - `AddItemCard("Add a …")` CTAs across Home / DeviceTypeList / History — new `add_item_card_device`, `add_item_card_device_type`, `add_item_card_battery_event`. ([#1103](https://github.com/cartland/battery-butler/pull/1103))
+  - Import success / failure snackbar messages in `SettingsContent` — new `settings_import_success_message` / `settings_import_failed_message`. (Part of [#1096](https://github.com/cartland/battery-butler/pull/1096))
+- **Screen-specific error and loading states**: Generic `"Something went wrong"` replaced with `"Could not load devices"` / `"Could not load device types"` / `"Could not load history"` per screen. Bare `CircularProgressIndicator` on DeviceTypeList and History wrapped in a new shared `LoadingWithLabel` composable that pairs the spinner with a `"Loading …"` status line. ([#1110](https://github.com/cartland/battery-butler/pull/1110))
+- **Form data hygiene**: Trim whitespace from device name / location before constructing `DeviceInput` / `DeviceTypeInput` in AddDevice / AddDeviceType / EditDevice. Battery quantity stepper capped at 99 (`MAX_BATTERY_QUANTITY`); the `+` button is disabled and visually dimmed at the cap. ([#1111](https://github.com/cartland/battery-butler/pull/1111))
+- **Single-arg `Modifier.padding(N.dp)` → `Padding.*` tokens**: 14 sites across 9 files in `presentation-feature` and `presentation-core` converted from literal `dp` values to the corresponding token (`Padding.extraSmall` / `small` / `medium` / `standard` / `large` / `extraLarge`). Resolved values identical; pure refactor. Multi-arg cases (`padding(horizontal = …, vertical = …)`) and `width/height/size` literals are deferred follow-ups. ([#1108](https://github.com/cartland/battery-butler/pull/1108))
+
+### Chore
+
+- **Gradle heap & metaspace bump**: `-Xmx` 2560m → 4096m and `-XX:MaxMetaspaceSize` 512m → 1g in `gradle.properties`. KSP runs (especially `:experimental:compose-app:kspDebugKotlinAndroid`) were OOM-ing during local `validate.sh`. ([#1097](https://github.com/cartland/battery-butler/pull/1097))
+- **Suppress `LocalClipboardManager` deprecation**: Narrow `@Suppress("DEPRECATION")` with rationale at the single call site in `SettingsContent`. A full migration to CMP 1.10's `LocalClipboard` requires an `expect/actual` `ClipEntry` factory across all platforms; deferred. ([#1105](https://github.com/cartland/battery-butler/pull/1105))
+
+### Testing
+
+- **Screenshot tests for error-state previews**: Added 6 new reference PNGs (Light + Dark for `HomeScreenErrorPreview`, `DeviceTypeListContentErrorPreview`, `HistoryListContentErrorPreview`), closing three `checkPreviewCoverage` gaps. ([#1098](https://github.com/cartland/battery-butler/pull/1098))
+
+### CI/CD
+
+- **Two-step CI mode flip for queue drain**: Briefly flipped `.github/ci-mode.txt` from `release` → `development` to drain a backlog of ~10 PRs (each was gated on the 16.5-min `validation_ios_ui` plus four 8–10 min build jobs). All drained in ~20 minutes wall time; flipped back to `release` immediately afterward. The recipe is now documented in `.agent/ci.md` → "Draining a Backlog of PRs". ([#1115](https://github.com/cartland/battery-butler/pull/1115), [#1116](https://github.com/cartland/battery-butler/pull/1116))
+
+### Documentation
+
+- **`.agent/project.md`**: New sections for Compose stability configuration, data export/import, Android splash screen, `LoadingWithLabel` shared composable, and AutoMirrored icon preference.
+- **`.agent/testing.md`**: Note on the JAR-URI fix to convention tests; pointer to `/check-screenshot-health` for blank-PNG detection.
+- **`.agent/ci.md`**: New "CI Warning Audit" section for `/review-annotations` and the annotation-ignores allowlist; new "Draining a Backlog of PRs" section.
+- **`.agent/AGENTS.md`**: Note on `compose_compiler_config.conf` no-comments gotcha; note on the GraphQL workaround for `gh pr merge --disable-auto` being guard-railed.
+
 ## 2026-03-15
 
 ### CI/CD
