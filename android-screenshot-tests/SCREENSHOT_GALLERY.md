@@ -2,7 +2,7 @@
 
 # Screenshot Gallery
 
-Generated on Wed Mar 18 07:21:49 UTC 2026
+Generated on Mon May 11 07:24:36 UTC 2026
 
 ## Table of Contents
 - [AddDeviceScreenshotTestKt](#adddevicescreenshottestkt)
@@ -449,6 +449,12 @@ Generated on Wed Mar 18 07:21:49 UTC 2026
 ### DeviceTypeListEmptyScreenPreviewTest_Light_fc5b723e_0
 <img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/DeviceTypeListEmptyScreenPreviewTest_Light_fc5b723e_0.png" width="300" />
 
+### DeviceTypeListErrorPreviewTest_Dark_77106447_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/DeviceTypeListErrorPreviewTest_Dark_77106447_0.png" width="300" />
+
+### DeviceTypeListErrorPreviewTest_Light_fc5b723e_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/DeviceTypeListErrorPreviewTest_Light_fc5b723e_0.png" width="300" />
+
 ### EditDeviceScreenPreviewTest_Dark_77106447_0
 <img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/EditDeviceScreenPreviewTest_Dark_77106447_0.png" width="300" />
 
@@ -467,6 +473,12 @@ Generated on Wed Mar 18 07:21:49 UTC 2026
 ### HistoryListEmptyScreenPreviewTest_Light_fc5b723e_0
 <img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/HistoryListEmptyScreenPreviewTest_Light_fc5b723e_0.png" width="300" />
 
+### HistoryListErrorPreviewTest_Dark_77106447_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/HistoryListErrorPreviewTest_Dark_77106447_0.png" width="300" />
+
+### HistoryListErrorPreviewTest_Light_fc5b723e_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/HistoryListErrorPreviewTest_Light_fc5b723e_0.png" width="300" />
+
 ### HistoryListLoadingPreviewTest_Dark_77106447_0
 <img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/HistoryListLoadingPreviewTest_Dark_77106447_0.png" width="300" />
 
@@ -478,6 +490,12 @@ Generated on Wed Mar 18 07:21:49 UTC 2026
 
 ### HomeScreenEmptyPreviewTest_Light_fc5b723e_0
 <img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/HomeScreenEmptyPreviewTest_Light_fc5b723e_0.png" width="300" />
+
+### HomeScreenErrorPreviewTest_Dark_77106447_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/HomeScreenErrorPreviewTest_Dark_77106447_0.png" width="300" />
+
+### HomeScreenErrorPreviewTest_Light_fc5b723e_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/HomeScreenErrorPreviewTest_Light_fc5b723e_0.png" width="300" />
 
 ## TopAppBarScreenshotTestKt
 
