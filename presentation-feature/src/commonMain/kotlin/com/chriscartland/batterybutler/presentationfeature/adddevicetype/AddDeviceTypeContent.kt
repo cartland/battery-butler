@@ -57,6 +57,8 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.acti
 import com.chriscartland.batterybutler.composeresources.generated.resources.add_device_type_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.content_desc_batteries_needed
 import com.chriscartland.batterybutler.composeresources.generated.resources.content_desc_suggest_icon
+import com.chriscartland.batterybutler.composeresources.generated.resources.form_error_battery_type_required
+import com.chriscartland.batterybutler.composeresources.generated.resources.form_error_type_name_required
 import com.chriscartland.batterybutler.composeresources.generated.resources.label_battery_quantity
 import com.chriscartland.batterybutler.composeresources.generated.resources.label_battery_type
 import com.chriscartland.batterybutler.composeresources.generated.resources.label_battery_type_hint
@@ -97,7 +99,19 @@ fun AddDeviceTypeContent(
     var selectedIcon by rememberSaveable { mutableStateOf<String?>("videogame_asset") }
     var batteryType by rememberSaveable { mutableStateOf("AA") }
     var batteryQuantity by rememberSaveable { mutableIntStateOf(1) }
+    var hasAttemptedSubmit by rememberSaveable { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
+
+    val nameError = if (hasAttemptedSubmit && name.trim().isEmpty()) {
+        composeStringResource(Res.string.form_error_type_name_required)
+    } else {
+        null
+    }
+    val batteryTypeError = if (hasAttemptedSubmit && batteryType.trim().isEmpty()) {
+        composeStringResource(Res.string.form_error_battery_type_required)
+    } else {
+        null
+    }
 
     val currentOnConsumeSuggestedIcon by androidx.compose.runtime.rememberUpdatedState(onConsumeSuggestedIcon)
 
@@ -128,6 +142,7 @@ fun AddDeviceTypeContent(
                     val trimmedBatteryType = batteryType.trim()
                     val isValid = trimmedName.isNotEmpty() && trimmedBatteryType.isNotEmpty()
                     TextButton(onClick = {
+                        hasAttemptedSubmit = true
                         if (isValid) {
                             onDeviceTypeAdded(
                                 DeviceTypeInput(
@@ -209,6 +224,8 @@ fun AddDeviceTypeContent(
                         placeholder = { Text(composeStringResource(Res.string.placeholder_device_name)) },
                         modifier = Modifier.fillMaxWidth(),
                         shape = MaterialTheme.shapes.medium,
+                        isError = nameError != null,
+                        supportingText = nameError?.let { msg -> { Text(msg) } },
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                         keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Next) }),
                         trailingIcon = {
@@ -245,6 +262,8 @@ fun AddDeviceTypeContent(
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
                         shape = MaterialTheme.shapes.medium,
+                        isError = batteryTypeError != null,
+                        supportingText = batteryTypeError?.let { msg -> { Text(msg) } },
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                         keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
                     )

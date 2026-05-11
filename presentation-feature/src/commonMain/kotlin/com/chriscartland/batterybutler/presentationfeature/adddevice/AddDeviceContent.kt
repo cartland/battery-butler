@@ -45,6 +45,8 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.acti
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_save
 import com.chriscartland.batterybutler.composeresources.generated.resources.add_device_manual_entry
 import com.chriscartland.batterybutler.composeresources.generated.resources.add_device_title
+import com.chriscartland.batterybutler.composeresources.generated.resources.form_error_device_name_required
+import com.chriscartland.batterybutler.composeresources.generated.resources.form_error_device_type_required
 import com.chriscartland.batterybutler.composeresources.generated.resources.label_device_name
 import com.chriscartland.batterybutler.composeresources.generated.resources.label_device_type
 import com.chriscartland.batterybutler.composeresources.generated.resources.label_location
@@ -78,7 +80,7 @@ fun AddDeviceContent(
     var name by rememberSaveable { mutableStateOf(initialName) }
     var location by rememberSaveable { mutableStateOf(initialLocation) }
     var selectedType by remember { mutableStateOf<DeviceType?>(null) }
-    var expanded by remember { mutableStateOf(false) }
+    var hasAttemptedSubmit by rememberSaveable { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
 
     Scaffold(
@@ -98,6 +100,7 @@ fun AddDeviceContent(
                     val isValid = trimmedName.isNotEmpty() && selectedType != null
                     TextButton(
                         onClick = {
+                            hasAttemptedSubmit = true
                             selectedType?.let { type ->
                                 if (trimmedName.isNotEmpty()) {
                                     onAddDevice(
@@ -110,7 +113,7 @@ fun AddDeviceContent(
                                 }
                             }
                         },
-                        enabled = !isLoading && isValid,
+                        enabled = !isLoading,
                     ) {
                         if (isLoading) {
                             CircularProgressIndicator(
@@ -157,6 +160,7 @@ fun AddDeviceContent(
                 onTypeSelected = { selectedType = it },
                 onAddDeviceTypeClick = onAddDeviceTypeClick,
                 isLoading = isLoading,
+                hasAttemptedSubmit = hasAttemptedSubmit,
             )
         }
     }
@@ -186,9 +190,21 @@ fun AddDeviceManualSection(
     onTypeSelected: (DeviceType) -> Unit,
     onAddDeviceTypeClick: () -> Unit,
     isLoading: Boolean = false,
+    hasAttemptedSubmit: Boolean = false,
 ) {
     var expanded by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
+
+    val nameError = if (hasAttemptedSubmit && name.trim().isEmpty()) {
+        composeStringResource(Res.string.form_error_device_name_required)
+    } else {
+        null
+    }
+    val typeError = if (hasAttemptedSubmit && selectedType == null) {
+        composeStringResource(Res.string.form_error_device_type_required)
+    } else {
+        null
+    }
 
     // Manual Section
     Column(
@@ -205,6 +221,8 @@ fun AddDeviceManualSection(
             onValueChange = onNameChange,
             label = { Text(composeStringResource(Res.string.label_device_name)) },
             enabled = !isLoading,
+            isError = nameError != null,
+            supportingText = nameError?.let { msg -> { Text(msg) } },
             modifier = Modifier.fillMaxWidth(),
             shape = MaterialTheme.shapes.medium,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
@@ -249,6 +267,8 @@ fun AddDeviceManualSection(
                 },
                 readOnly = true,
                 enabled = !isLoading,
+                isError = typeError != null,
+                supportingText = typeError?.let { msg -> { Text(msg) } },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                 modifier = Modifier
                     .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)

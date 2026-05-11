@@ -135,6 +135,10 @@
     <string name="action_add_new_device_type">Add New Device Type...</string>
 
     <!-- Settings -->
+    <string name="form_error_device_name_required">Device name is required</string>
+    <string name="form_error_device_type_required">Device type is required</string>
+    <string name="form_error_battery_type_required">Battery type is required</string>
+    <string name="form_error_type_name_required">Type name is required</string>
     <string name="settings_title">Settings</string>
     <string name="settings_user_signed_in">Signed In</string>
     <string name="settings_app_version_unavailable">Unavailable</string>
