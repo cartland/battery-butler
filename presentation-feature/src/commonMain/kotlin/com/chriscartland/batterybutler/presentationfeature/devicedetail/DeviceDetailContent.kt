@@ -149,7 +149,7 @@ fun DeviceDetailBody(
             Spacer(modifier = Modifier.height(8.dp))
             // Profile Header
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Box(modifier = Modifier.padding(bottom = 16.dp)) {
+                Box(modifier = Modifier.padding(bottom = Padding.standard)) {
                     Box(
                         modifier = Modifier
                             .size(112.dp)
@@ -174,7 +174,7 @@ fun DeviceDetailBody(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    modifier = Modifier.padding(top = 4.dp),
+                    modifier = Modifier.padding(top = Padding.extraSmall),
                 ) {
                     Icon(
                         Icons.Default.DevicesOther,
@@ -194,7 +194,7 @@ fun DeviceDetailBody(
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
-                        modifier = Modifier.padding(top = 4.dp),
+                        modifier = Modifier.padding(top = Padding.extraSmall),
                     ) {
                         Icon(
                             Icons.Default.LocationOn,
@@ -246,8 +246,8 @@ fun DeviceDetailBody(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(80.dp)
-                    .shadow(8.dp, RoundedCornerShape(16.dp)),
-                shape = RoundedCornerShape(16.dp),
+                    .shadow(8.dp, MaterialTheme.shapes.large),
+                shape = MaterialTheme.shapes.large,
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
             ) {
                 Row(
@@ -261,7 +261,7 @@ fun DeviceDetailBody(
                                 .size(40.dp)
                                 .background(
                                     MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f),
-                                    RoundedCornerShape(8.dp),
+                                    MaterialTheme.shapes.small,
                                 ),
                             contentAlignment = Alignment.Center,
                         ) {
@@ -295,7 +295,7 @@ fun DeviceDetailBody(
         // History Section
         item {
             Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = Padding.extraSmall),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -338,8 +338,8 @@ fun StatCard(
 ) {
     Column(
         modifier = modifier
-            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
-            .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f), RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.surface, MaterialTheme.shapes.large)
+            .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f), MaterialTheme.shapes.large)
             .padding(Padding.standard),
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
