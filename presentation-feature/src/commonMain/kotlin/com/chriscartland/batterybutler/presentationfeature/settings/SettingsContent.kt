@@ -53,6 +53,7 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.netw
 import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_grpc_local
 import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_mock
 import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_none
+import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_app_version
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_check_updates_description
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_check_updates_title
@@ -198,7 +199,7 @@ fun SettingsContent(
 
             // Network Mode Card
             ExpandableSelectionControl(
-                title = "Network Mode",
+                title = composeStringResource(Res.string.network_mode_title),
                 currentSelection = networkMode,
                 options = availableNetworkModes,
                 onOptionSelected = onNetworkModeSelected,
