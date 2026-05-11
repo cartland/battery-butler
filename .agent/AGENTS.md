@@ -96,6 +96,7 @@ Keeping the build and tests healthy is a top priority. When you identify or fix 
 
 - **Session Start**:
   - Run `bd ready` to see current tasks. Run `bd list` for all open issues.
+  - Run `/check-ci-issues` (or `gh issue list --label ci-failure --state open`) — if any `ci-failure` + `blocking` issue is open, **fixing main is priority zero** and PR auto-merges are paused until it closes. See `.agent/ci.md` → "Post-Merge Auto-Issue Safety Net".
   - Run `./scripts/deploy-status.sh` to check server deployment state and drift.
   - For team sessions, use Claude's TaskCreate/TaskList for coordination — not `bd`.
 
