@@ -38,6 +38,10 @@ kotlin {
     }
 }
 
+composeCompiler {
+    stabilityConfigurationFiles.add(rootProject.layout.projectDirectory.file("compose_compiler_config.conf"))
+}
+
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     compilerOptions.freeCompilerArgs.add("-opt-in=kotlin.time.ExperimentalTime")
 }

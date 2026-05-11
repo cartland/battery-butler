@@ -98,3 +98,7 @@ dependencies {
     add("kspIosSimulatorArm64", libs.kotlin.inject.compiler)
     add("kspDesktop", libs.kotlin.inject.compiler)
 }
+
+composeCompiler {
+    stabilityConfigurationFiles.add(rootProject.layout.projectDirectory.file("compose_compiler_config.conf"))
+}

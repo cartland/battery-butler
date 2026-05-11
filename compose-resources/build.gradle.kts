@@ -51,3 +51,7 @@ compose.resources {
     publicResClass = true
     packageOfResClass = "com.chriscartland.batterybutler.composeresources.generated.resources"
 }
+
+composeCompiler {
+    stabilityConfigurationFiles.add(rootProject.layout.projectDirectory.file("compose_compiler_config.conf"))
+}

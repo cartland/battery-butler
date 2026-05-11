@@ -58,6 +58,10 @@ kotlin {
     }
 }
 
+composeCompiler {
+    stabilityConfigurationFiles.add(rootProject.layout.projectDirectory.file("compose_compiler_config.conf"))
+}
+
 tasks.register("printCompilations") {
     doLast {
         println("--- Kotlin Android Target Compilations ---")
