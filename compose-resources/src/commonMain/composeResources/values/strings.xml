@@ -14,6 +14,10 @@
     <string name="sort_battery_type">Battery Type</string>
     <string name="group_battery_type">Battery Type</string>
 
+    <!-- Sort/Group filter labels -->
+    <string name="filter_sort_label">Sort: %1$s</string>
+    <string name="filter_group_label">Group: %1$s</string>
+
     <!-- Main Tabs -->
     <string name="tab_devices">Devices</string>
     <string name="tab_types">Types</string>

@@ -48,6 +48,8 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.add_
 import com.chriscartland.batterybutler.composeresources.generated.resources.empty_devices_message
 import com.chriscartland.batterybutler.composeresources.generated.resources.empty_devices_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.error_something_went_wrong
+import com.chriscartland.batterybutler.composeresources.generated.resources.filter_group_label
+import com.chriscartland.batterybutler.composeresources.generated.resources.filter_sort_label
 import com.chriscartland.batterybutler.composeresources.generated.resources.status_syncing
 import com.chriscartland.batterybutler.composeresources.generated.resources.sync_error_ai
 import com.chriscartland.batterybutler.composeresources.generated.resources.sync_error_data
@@ -198,7 +200,10 @@ fun HomeScreenFilterRow(
             // Sort Button (First)
             Box {
                 CompositeControl(
-                    label = "Sort: ${composeStringResource(state.sortOption.labelRes())}",
+                    label = composeStringResource(
+                        Res.string.filter_sort_label,
+                        composeStringResource(state.sortOption.labelRes()),
+                    ),
                     isActive = true, // Sort is always active
                     isAscending = state.isSortAscending,
                     onClicked = { sortExpanded = true },
@@ -223,7 +228,10 @@ fun HomeScreenFilterRow(
             // Group Button (Second)
             Box {
                 CompositeControl(
-                    label = "Group: ${composeStringResource(state.groupOption.labelRes())}",
+                    label = composeStringResource(
+                        Res.string.filter_group_label,
+                        composeStringResource(state.groupOption.labelRes()),
+                    ),
                     isActive = state.groupOption != GroupOption.NONE,
                     isAscending = state.isGroupAscending,
                     onClicked = { groupExpanded = true },
