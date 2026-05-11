@@ -67,6 +67,7 @@ import com.chriscartland.batterybutler.presentationcore.components.ButlerCentere
 import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMapper
 import com.chriscartland.batterybutler.presentationcore.components.DeviceTypeIconItem
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import com.chriscartland.batterybutler.presentationcore.theme.Padding
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.EditDeviceTypeScreenState
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -133,7 +134,7 @@ fun EditDeviceTypeContent(
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(16.dp),
+                            .padding(Padding.standard),
                     ) {
                         OutlinedTextField(
                             value = name,

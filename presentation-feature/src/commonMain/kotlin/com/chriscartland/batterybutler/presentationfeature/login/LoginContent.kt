@@ -55,6 +55,7 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.logi
 import com.chriscartland.batterybutler.domain.model.AuthError
 import com.chriscartland.batterybutler.domain.model.AuthState
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import com.chriscartland.batterybutler.presentationcore.theme.Padding
 
 /**
  * Login screen content.
@@ -148,7 +149,7 @@ private fun LoginForm(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(32.dp),
+            .padding(Padding.extraLarge),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
@@ -216,7 +217,7 @@ private fun LoginForm(
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier.padding(Padding.standard),
             )
         }
 

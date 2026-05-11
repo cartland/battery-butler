@@ -28,6 +28,7 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.acti
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_process_ai
 import com.chriscartland.batterybutler.composeresources.generated.resources.label_ai_output
 import com.chriscartland.batterybutler.domain.model.BatchOperationResult
+import com.chriscartland.batterybutler.presentationcore.theme.Padding
 import org.jetbrains.compose.resources.StringResource
 
 /**
@@ -94,7 +95,7 @@ fun AiBatchImportSection(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(150.dp)
-                    .padding(8.dp),
+                    .padding(Padding.small),
             ) {
                 items(aiMessages) { result ->
                     BatchOperationResultItem(result = result)

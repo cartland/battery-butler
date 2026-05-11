@@ -51,6 +51,7 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.cont
 import com.chriscartland.batterybutler.composeresources.generated.resources.placeholder_type_message
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import com.chriscartland.batterybutler.presentationcore.theme.Padding
 
 @Composable
 fun AiChatContent(
@@ -123,7 +124,7 @@ fun AiChatContent(
                     text = composeStringResource(Res.string.ai_chat_empty_message),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(32.dp),
+                    modifier = Modifier.padding(Padding.extraLarge),
                 )
             }
         } else {
@@ -143,7 +144,7 @@ fun AiChatContent(
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(8.dp),
+                                .padding(Padding.small),
                         ) {
                             CircularProgressIndicator(
                                 modifier = Modifier.size(24.dp),
@@ -191,7 +192,7 @@ private fun ChatBubble(
                 text = message.text,
                 style = MaterialTheme.typography.bodyMedium,
                 color = textColor,
-                modifier = Modifier.padding(12.dp),
+                modifier = Modifier.padding(Padding.medium),
             )
         }
     }
