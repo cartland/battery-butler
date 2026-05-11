@@ -76,6 +76,11 @@ import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationcore.theme.Padding
 import com.chriscartland.batterybutler.presentationmodel.adddevicetype.AddDeviceTypeScreenState
 
+/** Upper bound on the battery-quantity stepper. 99 is the documented cap; the
+ *  spinner uses a 2-character display, and devices with more than ~12 batteries
+ *  are vanishingly rare in practice. */
+private const val MAX_BATTERY_QUANTITY = 99
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddDeviceTypeContent(
@@ -120,14 +125,16 @@ fun AddDeviceTypeContent(
                     }
                 },
                 actions = {
-                    val isValid = name.isNotBlank() && batteryType.isNotBlank()
+                    val trimmedName = name.trim()
+                    val trimmedBatteryType = batteryType.trim()
+                    val isValid = trimmedName.isNotEmpty() && trimmedBatteryType.isNotEmpty()
                     TextButton(onClick = {
                         if (isValid) {
                             onDeviceTypeAdded(
                                 DeviceTypeInput(
-                                    name = name,
+                                    name = trimmedName,
                                     defaultIcon = selectedIcon,
-                                    batteryType = batteryType,
+                                    batteryType = trimmedBatteryType,
                                     batteryQuantity = batteryQuantity,
                                 ),
                             )
@@ -287,8 +294,16 @@ fun AddDeviceTypeContent(
                             }
                             Text(batteryQuantity.toString(), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                             IconButton(
-                                onClick = { batteryQuantity++ },
-                                modifier = Modifier.background(MaterialTheme.colorScheme.primary, RoundedCornerShape(8.dp)),
+                                onClick = { if (batteryQuantity < MAX_BATTERY_QUANTITY) batteryQuantity++ },
+                                enabled = batteryQuantity < MAX_BATTERY_QUANTITY,
+                                modifier = Modifier.background(
+                                    if (batteryQuantity < MAX_BATTERY_QUANTITY) {
+                                        MaterialTheme.colorScheme.primary
+                                    } else {
+                                        MaterialTheme.colorScheme.primary.copy(alpha = 0.38f)
+                                    },
+                                    RoundedCornerShape(8.dp),
+                                ),
                             ) {
                                 Icon(
                                     Icons.Default.Add,
