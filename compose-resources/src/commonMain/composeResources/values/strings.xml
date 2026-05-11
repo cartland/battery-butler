@@ -159,6 +159,11 @@
     <!-- Home / Sync Errors -->
     <string name="status_syncing">Syncing...</string>
     <string name="error_something_went_wrong">Something went wrong</string>
+    <string name="error_load_devices">Could not load devices</string>
+    <string name="error_load_device_types">Could not load device types</string>
+    <string name="error_load_history">Could not load history</string>
+    <string name="status_loading_device_types">Loading device types…</string>
+    <string name="status_loading_history">Loading history…</string>
     <string name="sync_error_network">Can\'t connect to server. Your changes are saved locally.</string>
     <string name="sync_error_timeout">Connection timed out. Try again when you have a better signal.</string>
     <string name="sync_error_server">Server is having issues. Your data is safe on this device.</string>

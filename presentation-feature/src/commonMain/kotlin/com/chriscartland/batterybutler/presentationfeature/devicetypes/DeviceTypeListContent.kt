@@ -40,15 +40,17 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.acti
 import com.chriscartland.batterybutler.composeresources.generated.resources.add_item_card_device_type
 import com.chriscartland.batterybutler.composeresources.generated.resources.empty_types_message
 import com.chriscartland.batterybutler.composeresources.generated.resources.empty_types_title
-import com.chriscartland.batterybutler.composeresources.generated.resources.error_something_went_wrong
+import com.chriscartland.batterybutler.composeresources.generated.resources.error_load_device_types
 import com.chriscartland.batterybutler.composeresources.generated.resources.filter_group_label
 import com.chriscartland.batterybutler.composeresources.generated.resources.filter_sort_label
+import com.chriscartland.batterybutler.composeresources.generated.resources.status_loading_device_types
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationcore.components.AddItemCard
 import com.chriscartland.batterybutler.presentationcore.components.ButlerDropdownMenu
 import com.chriscartland.batterybutler.presentationcore.components.CompositeControl
 import com.chriscartland.batterybutler.presentationcore.components.DeviceTypeListItem
 import com.chriscartland.batterybutler.presentationcore.components.EmptyStateContent
+import com.chriscartland.batterybutler.presentationcore.components.LoadingWithLabel
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationcore.theme.Padding
 import com.chriscartland.batterybutler.presentationfeature.util.labelRes
@@ -73,13 +75,16 @@ fun DeviceTypeListContent(
     Box(modifier = modifier.fillMaxSize()) {
         when (state) {
             DeviceTypeListScreenState.Loading -> {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                LoadingWithLabel(
+                    label = composeStringResource(Res.string.status_loading_device_types),
+                    modifier = Modifier.align(Alignment.Center),
+                )
             }
 
             is DeviceTypeListScreenState.Error -> {
                 EmptyStateContent(
                     icon = Icons.Default.Warning,
-                    title = composeStringResource(Res.string.error_something_went_wrong),
+                    title = composeStringResource(Res.string.error_load_device_types),
                     message = state.message,
                     modifier = Modifier.padding(contentPadding),
                 )

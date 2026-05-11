@@ -48,7 +48,7 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.add_
 import com.chriscartland.batterybutler.composeresources.generated.resources.add_item_card_device
 import com.chriscartland.batterybutler.composeresources.generated.resources.empty_devices_message
 import com.chriscartland.batterybutler.composeresources.generated.resources.empty_devices_title
-import com.chriscartland.batterybutler.composeresources.generated.resources.error_something_went_wrong
+import com.chriscartland.batterybutler.composeresources.generated.resources.error_load_devices
 import com.chriscartland.batterybutler.composeresources.generated.resources.filter_group_label
 import com.chriscartland.batterybutler.composeresources.generated.resources.filter_sort_label
 import com.chriscartland.batterybutler.composeresources.generated.resources.status_syncing
@@ -277,7 +277,7 @@ fun HomeScreenList(
     if (errorMessage != null && allDevices.isEmpty()) {
         EmptyStateContent(
             icon = Icons.Default.Warning,
-            title = composeStringResource(Res.string.error_something_went_wrong),
+            title = composeStringResource(Res.string.error_load_devices),
             message = errorMessage,
             modifier = Modifier.padding(contentPadding),
         )
