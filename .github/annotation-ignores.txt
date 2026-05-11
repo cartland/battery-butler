@@ -1,0 +1,25 @@
+# Annotations to ignore in /review-annotations.
+# One pattern per line (grep -F string match against annotation message).
+# Lines starting with # are comments. Keep patterns short and uniquely specific.
+#
+# When you add a new entry: include a comment with the reason and, if applicable,
+# a tracking link (bead ID, upstream issue, dep upgrade PR).
+
+# Kotlin Multiplatform expect/actual classes are in Beta. We use them in
+# data-network and ios-swift-di for platform bridges. The warning will go
+# away when KT-61573 graduates expect/actual classes to stable.
+'expect'/'actual' classes (including interfaces, objects, annotations, enums, and 'actual' typealiases) are in Beta
+
+# AGP / KMP plugin compatibility deprecation. Migration is tracked separately
+# (kotl.in/kmp-project-structure-migration); the warning fires per module on
+# every build.
+The 'org.jetbrains.kotlin.multiplatform' plugin deprecated compatibility with Android Gradle plugin
+
+# Gradle 9 deprecation umbrella warning. Aggregated message, not a specific
+# code-site issue.
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+# LocalClipboardManager deprecation is intentionally suppressed at the call
+# site (PR #1105). CMP 1.10's LocalClipboard requires an expect/actual
+# ClipEntry factory; the migration is deferred until that abstraction lands.
+LocalClipboardManager
