@@ -53,6 +53,8 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.dial
 import com.chriscartland.batterybutler.composeresources.generated.resources.dialog_delete_device_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.edit_device_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.error_device_not_found
+import com.chriscartland.batterybutler.composeresources.generated.resources.form_error_device_name_required
+import com.chriscartland.batterybutler.composeresources.generated.resources.form_error_device_type_required
 import com.chriscartland.batterybutler.composeresources.generated.resources.label_device_name
 import com.chriscartland.batterybutler.composeresources.generated.resources.label_device_type
 import com.chriscartland.batterybutler.composeresources.generated.resources.label_location
@@ -84,7 +86,19 @@ fun EditDeviceContent(
     var selectedTypeId by rememberSaveable { mutableStateOf("") }
     var isInitialized by rememberSaveable { mutableStateOf(false) }
     var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
+    var hasAttemptedSubmit by rememberSaveable { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
+
+    val nameError = if (hasAttemptedSubmit && name.trim().isEmpty()) {
+        composeStringResource(Res.string.form_error_device_name_required)
+    } else {
+        null
+    }
+    val typeError = if (hasAttemptedSubmit && selectedTypeId.isBlank()) {
+        composeStringResource(Res.string.form_error_device_type_required)
+    } else {
+        null
+    }
 
     Scaffold(
         modifier = modifier,
@@ -100,17 +114,20 @@ fun EditDeviceContent(
                 actions = {
                     val trimmedName = name.trim()
                     val trimmedLocation = location.trim()
+                    val isValid = trimmedName.isNotEmpty() && selectedTypeId.isNotBlank()
                     TextButton(
                         onClick = {
-                            onSave(
-                                DeviceInput(
-                                    name = trimmedName,
-                                    location = trimmedLocation.takeIf { it.isNotEmpty() },
-                                    typeId = selectedTypeId,
-                                ),
-                            )
+                            hasAttemptedSubmit = true
+                            if (isValid) {
+                                onSave(
+                                    DeviceInput(
+                                        name = trimmedName,
+                                        location = trimmedLocation.takeIf { it.isNotEmpty() },
+                                        typeId = selectedTypeId,
+                                    ),
+                                )
+                            }
                         },
-                        enabled = trimmedName.isNotEmpty() && selectedTypeId.isNotBlank(),
                     ) {
                         Text(composeStringResource(Res.string.action_save_bold), fontWeight = FontWeight.Bold)
                     }
@@ -152,6 +169,8 @@ fun EditDeviceContent(
                             label = { Text(composeStringResource(Res.string.label_device_name)) },
                             modifier = Modifier.fillMaxWidth(),
                             singleLine = true,
+                            isError = nameError != null,
+                            supportingText = nameError?.let { msg -> { Text(msg) } },
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                             keyboardActions = KeyboardActions(
                                 onNext = { focusManager.moveFocus(FocusDirection.Next) },
@@ -204,6 +223,8 @@ fun EditDeviceContent(
                                 } else {
                                     null
                                 },
+                                isError = typeError != null,
+                                supportingText = typeError?.let { msg -> { Text(msg) } },
                                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                                 colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
                             )
