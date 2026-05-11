@@ -102,6 +102,10 @@ fun SettingsContent(
     onRestoreCompleteAcknowledged: () -> Unit = {},
 ) {
     val uriHandler = LocalUriHandler.current
+
+    // LocalClipboardManager remains in use because CMP 1.10's LocalClipboard requires an
+    // expect/actual ClipEntry factory (the constructor takes a platform-specific native object).
+    @Suppress("DEPRECATION")
     val clipboardManager = LocalClipboardManager.current
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
