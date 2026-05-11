@@ -21,11 +21,13 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.Res
 import com.chriscartland.batterybutler.composeresources.generated.resources.add_item_card_battery_event
 import com.chriscartland.batterybutler.composeresources.generated.resources.empty_history_message
 import com.chriscartland.batterybutler.composeresources.generated.resources.empty_history_title
-import com.chriscartland.batterybutler.composeresources.generated.resources.error_something_went_wrong
+import com.chriscartland.batterybutler.composeresources.generated.resources.error_load_history
+import com.chriscartland.batterybutler.composeresources.generated.resources.status_loading_history
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.presentationcore.components.AddItemCard
 import com.chriscartland.batterybutler.presentationcore.components.EmptyStateContent
 import com.chriscartland.batterybutler.presentationcore.components.HistoryListItem
+import com.chriscartland.batterybutler.presentationcore.components.LoadingWithLabel
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationcore.theme.Padding
 import com.chriscartland.batterybutler.presentationmodel.history.HistoryItemModel
@@ -47,13 +49,16 @@ fun HistoryListContent(
     Box(modifier = modifier.fillMaxSize()) {
         when (state) {
             HistoryListScreenState.Loading -> {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                LoadingWithLabel(
+                    label = composeStringResource(Res.string.status_loading_history),
+                    modifier = Modifier.align(Alignment.Center),
+                )
             }
 
             is HistoryListScreenState.Error -> {
                 EmptyStateContent(
                     icon = Icons.Default.Warning,
-                    title = composeStringResource(Res.string.error_something_went_wrong),
+                    title = composeStringResource(Res.string.error_load_history),
                     message = state.message,
                     modifier = Modifier.padding(contentPadding),
                 )
