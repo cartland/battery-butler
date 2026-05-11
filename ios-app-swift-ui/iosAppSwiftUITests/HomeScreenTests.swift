@@ -26,8 +26,6 @@ final class HomeScreenTests: XCTestCase {
             "Kitchen": [TestData.device2]
         ]
         let state = HomeScreenState(
-            groups: [:],
-            devices: [:],
             groupedDevices: groupedDevices,
             deviceTypes: [:],
             isSortAscending: true,
@@ -51,8 +49,6 @@ final class HomeScreenTests: XCTestCase {
 
     func testHomeContentView_Empty() {
         let state = HomeScreenState(
-            groups: [:],
-            devices: [:],
             groupedDevices: [:],
             deviceTypes: [:],
             isSortAscending: true,
@@ -79,8 +75,6 @@ final class HomeScreenTests: XCTestCase {
             "Living Room": [TestData.device]
         ]
         let state = HomeScreenState(
-            groups: [:],
-            devices: [:],
             groupedDevices: groupedDevices,
             deviceTypes: [:],
             isSortAscending: true,

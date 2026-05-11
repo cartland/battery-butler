@@ -118,8 +118,6 @@ final class KmpInteropTests: XCTestCase {
     func testHomeScreenStateConstruction() {
         // HomeScreenState has all-default params in Kotlin; Swift requires full-param init
         let state = HomeScreenState(
-            groups: [:],
-            devices: [:],
             groupedDevices: [:],
             deviceTypes: [:],
             isSortAscending: true,
