@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.content.ContextCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.chriscartland.batterybutler.BatteryButlerApplication
 import com.chriscartland.batterybutler.composeapp.debug.DebugNetworkReceiver
 import com.chriscartland.batterybutler.presentationcore.util.AndroidFileSaver
@@ -15,6 +16,7 @@ class MainActivity : ComponentActivity() {
     private var debugNetworkReceiver: DebugNetworkReceiver? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
