@@ -13,6 +13,7 @@ import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
 import com.chriscartland.batterybutler.datanetwork.auth.GoogleSignInBridge
 import com.chriscartland.batterybutler.datanetwork.grpc.NetworkComponent
 import com.chriscartland.batterybutler.domain.model.AppVersion
+import com.chriscartland.batterybutler.presentationcore.util.DesktopFileLoader
 import com.chriscartland.batterybutler.presentationcore.util.DesktopFileSaver
 import com.chriscartland.batterybutler.presentationcore.util.DesktopShareHandler
 
@@ -50,7 +51,8 @@ fun main() =
             }
             val shareHandler = DesktopShareHandler()
             val fileSaver = DesktopFileSaver()
+            val fileLoader = DesktopFileLoader()
 
-            App(component, shareHandler, fileSaver)
+            App(component, shareHandler, fileSaver, fileLoader)
         }
     }

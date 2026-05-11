@@ -4,6 +4,7 @@ import com.chriscartland.batterybutler.composeapp.di.IosComponentHelper
 import com.chriscartland.batterybutler.datalocal.preferences.DataStoreFactory
 import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
 import com.chriscartland.batterybutler.domain.model.AppVersion
+import com.chriscartland.batterybutler.presentationcore.util.IosFileLoader
 import com.chriscartland.batterybutler.presentationcore.util.IosFileSaver
 import com.chriscartland.batterybutler.presentationcore.util.IosShareHandler
 
@@ -24,5 +25,6 @@ fun MainViewController() =
 
         val shareHandler = IosShareHandler()
         val fileSaver = IosFileSaver()
-        App(component, shareHandler, fileSaver)
+        val fileLoader = IosFileLoader()
+        App(component, shareHandler, fileSaver, fileLoader)
     }

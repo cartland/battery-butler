@@ -19,6 +19,8 @@ final class SettingsScreenTests: XCTestCase {
             isShareSheetPresented: .constant(false),
             onExportData: {},
             onExportDataConsumed: {},
+            onImportData: {},
+            importInProgress: false,
             appVersion: "1.0.0-42"
         )
 
@@ -45,6 +47,8 @@ final class SettingsScreenTests: XCTestCase {
             isShareSheetPresented: .constant(false),
             onExportData: {},
             onExportDataConsumed: {},
+            onImportData: {},
+            importInProgress: false,
             appVersion: "1.0.0-42"
         )
 

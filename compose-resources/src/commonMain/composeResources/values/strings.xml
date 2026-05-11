@@ -138,6 +138,10 @@
     <string name="action_sign_out">Sign Out</string>
     <string name="settings_export_data_title">Export Data</string>
     <string name="settings_export_data_description">Save all data as a .json file</string>
+    <string name="settings_import_data_title">Import Data</string>
+    <string name="settings_import_data_description">Restore data from a .json backup file</string>
+    <string name="settings_import_success">Imported %1$d devices, %2$d types, %3$d events</string>
+    <string name="settings_import_error">Import failed: %1$s</string>
     <string name="settings_check_updates_title">Check for updates</string>
     <string name="settings_check_updates_description">Open Google Play Store</string>
     <string name="settings_copied_to_clipboard">Copied to clipboard</string>
@@ -149,6 +153,8 @@
     <string name="settings_database_restore">Restore Previous Data</string>
     <string name="settings_database_restore_complete">Data restored successfully</string>
     <string name="settings_database_restoring">Restoring…</string>
+    <string name="settings_import_success_message">Imported %1$s devices, %2$s types, %3$s events</string>
+    <string name="settings_import_failed_message">Import failed: %1$s</string>
 
     <!-- Home / Sync Errors -->
     <string name="status_syncing">Syncing...</string>

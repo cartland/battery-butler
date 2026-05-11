@@ -5,9 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.chriscartland.batterybutler.domain.model.AppVersion
 import com.chriscartland.batterybutler.domain.model.AuthState
 import com.chriscartland.batterybutler.domain.model.DevServerUrl
+import com.chriscartland.batterybutler.domain.model.ImportResult
 import com.chriscartland.batterybutler.domain.model.LegacyDatabaseInfo
 import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.model.ProductionServerUrl
+import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.model.User
 import com.chriscartland.batterybutler.domain.model.ai.AiEngineType
 import com.chriscartland.batterybutler.domain.repository.AiPreferencesRepository
@@ -17,6 +19,7 @@ import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
 import com.chriscartland.batterybutler.usecase.ExportDataUseCase
 import com.chriscartland.batterybutler.usecase.GetAppVersionUseCase
 import com.chriscartland.batterybutler.usecase.GetLegacyDatabaseInfoUseCase
+import com.chriscartland.batterybutler.usecase.ImportDataUseCase
 import com.chriscartland.batterybutler.usecase.RestoreLegacyDatabaseUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
 import com.chriscartland.batterybutler.viewmodel.safeStateIn
@@ -31,6 +34,7 @@ import me.tatarka.inject.annotations.Inject
 @Inject
 class SettingsViewModel(
     private val exportDataUseCase: ExportDataUseCase,
+    private val importDataUseCase: ImportDataUseCase,
     private val networkModeRepository: NetworkModeRepository,
     private val getAppVersionUseCase: GetAppVersionUseCase,
     private val authRepository: AuthRepository,
@@ -148,5 +152,35 @@ class SettingsViewModel(
 
     fun onRestoreCompleteAcknowledged() {
         _restoreComplete.value = false
+    }
+
+    // Import data
+    private val _importResult = MutableStateFlow<ImportResult?>(null)
+    val importResult: StateFlow<ImportResult?> = _importResult.asStateFlow()
+
+    private val _importError = MutableStateFlow<String?>(null)
+    val importError: StateFlow<String?> = _importError.asStateFlow()
+
+    private val _importInProgress = MutableStateFlow(false)
+    val importInProgress: StateFlow<Boolean> = _importInProgress.asStateFlow()
+
+    fun onImportData(jsonString: String) {
+        if (_importInProgress.value) return
+        viewModelScope.launch {
+            _importInProgress.value = true
+            try {
+                when (val result = importDataUseCase(jsonString)) {
+                    is Result.Success -> _importResult.value = result.data
+                    is Result.Error -> _importError.value = result.error.message
+                }
+            } finally {
+                _importInProgress.value = false
+            }
+        }
+    }
+
+    fun onImportResultConsumed() {
+        _importResult.value = null
+        _importError.value = null
     }
 }

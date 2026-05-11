@@ -51,7 +51,9 @@ import com.chriscartland.batterybutler.domain.model.ai.AiRole
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationcore.theme.LocalAiAction
 import com.chriscartland.batterybutler.presentationcore.theme.LocalAiAvailable
+import com.chriscartland.batterybutler.presentationcore.util.FileLoader
 import com.chriscartland.batterybutler.presentationcore.util.FileSaver
+import com.chriscartland.batterybutler.presentationcore.util.LocalFileLoader
 import com.chriscartland.batterybutler.presentationcore.util.LocalFileSaver
 import com.chriscartland.batterybutler.presentationcore.util.LocalShareHandler
 import com.chriscartland.batterybutler.presentationcore.util.ShareHandler
@@ -98,11 +100,13 @@ fun App(
     component: AppComponent,
     shareHandler: ShareHandler,
     fileSaver: FileSaver,
+    fileLoader: FileLoader,
 ) {
     BatteryButlerTheme {
         CompositionLocalProvider(
             LocalShareHandler provides shareHandler,
             LocalFileSaver provides fileSaver,
+            LocalFileLoader provides fileLoader,
             LocalAppStrings provides ComposeAppStrings(),
         ) {
             // Unified back stack: Login on top of Devices at launch.
