@@ -1,3 +1,9 @@
+---
+description: Run local validation, then commit and push current changes (managing branches and PRs).
+allowed-tools: Bash(*)
+user-invocable: true
+---
+
 # Prepare Commit Then Push
 
 Run validation scripts, commit changes, and push to remote (managing Branches and PRs intelligently).

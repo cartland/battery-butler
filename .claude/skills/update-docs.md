@@ -1,3 +1,9 @@
+---
+description: Regenerate architecture diagrams and code analysis docs.
+allowed-tools: Bash(*)
+user-invocable: true
+---
+
 # Update Docs
 
 Update all generated documentation (architecture diagrams and code analysis).

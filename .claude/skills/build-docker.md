@@ -1,3 +1,9 @@
+---
+description: Build the server Docker container locally via Jib.
+allowed-tools: Bash(*)
+user-invocable: true
+---
+
 # Build Docker
 
 Build the Docker container locally using Jib.

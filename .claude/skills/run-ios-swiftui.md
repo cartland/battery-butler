@@ -1,3 +1,9 @@
+---
+description: Build and run the iOS native SwiftUI app on the simulator.
+allowed-tools: Bash(*)
+user-invocable: true
+---
+
 # Run iOS SwiftUI
 
 Build and run the iOS native SwiftUI app.

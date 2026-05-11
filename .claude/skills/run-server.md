@@ -1,3 +1,9 @@
+---
+description: Build and run the Ktor gRPC server locally.
+allowed-tools: Bash(*)
+user-invocable: true
+---
+
 # Run Server
 
 Run the gRPC server locally.

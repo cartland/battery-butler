@@ -1,3 +1,9 @@
+---
+description: Build and run the Compose Multiplatform Desktop (JVM) app.
+allowed-tools: Bash(*)
+user-invocable: true
+---
+
 # Run Desktop
 
 Run the Desktop (JVM) application.

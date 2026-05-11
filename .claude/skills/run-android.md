@@ -1,3 +1,9 @@
+---
+description: Build and run the Compose Multiplatform Android app on an emulator or connected device.
+allowed-tools: Bash(*)
+user-invocable: true
+---
+
 # Run Android
 
 Build and run the Compose Multiplatform Android app.
