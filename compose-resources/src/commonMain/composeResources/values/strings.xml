@@ -148,6 +148,8 @@
     <string name="settings_database_restore">Restore Previous Data</string>
     <string name="settings_database_restore_complete">Data restored successfully</string>
     <string name="settings_database_restoring">Restoring…</string>
+    <string name="settings_import_success_message">Imported %1$s devices, %2$s types, %3$s events</string>
+    <string name="settings_import_failed_message">Import failed: %1$s</string>
 
     <!-- Home / Sync Errors -->
     <string name="status_syncing">Syncing...</string>

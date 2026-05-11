@@ -69,6 +69,8 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.sett
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_export_data_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_import_data_description
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_import_data_title
+import com.chriscartland.batterybutler.composeresources.generated.resources.settings_import_failed_message
+import com.chriscartland.batterybutler.composeresources.generated.resources.settings_import_success_message
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_title
 import com.chriscartland.batterybutler.domain.model.AppVersion
 import com.chriscartland.batterybutler.domain.model.ImportResult
@@ -127,18 +129,27 @@ fun SettingsContent(
         }
     }
 
+    val importSuccessMessage = composeStringResource(
+        Res.string.settings_import_success_message,
+        importResult?.devicesImported?.toString().orEmpty(),
+        importResult?.deviceTypesImported?.toString().orEmpty(),
+        importResult?.eventsImported?.toString().orEmpty(),
+    )
+    val importFailedMessage = composeStringResource(
+        Res.string.settings_import_failed_message,
+        importError.orEmpty(),
+    )
+
     LaunchedEffect(importResult) {
-        importResult?.let { result ->
-            val message = "Imported ${result.devicesImported} devices, " +
-                "${result.deviceTypesImported} types, ${result.eventsImported} events"
-            snackbarHostState.showSnackbar(message)
+        if (importResult != null) {
+            snackbarHostState.showSnackbar(importSuccessMessage)
             currentOnImportResultConsumed.value()
         }
     }
 
     LaunchedEffect(importError) {
-        importError?.let { error ->
-            snackbarHostState.showSnackbar("Import failed: $error")
+        if (importError != null) {
+            snackbarHostState.showSnackbar(importFailedMessage)
             currentOnImportResultConsumed.value()
         }
     }
