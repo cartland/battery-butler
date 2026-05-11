@@ -51,6 +51,9 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.dial
 import com.chriscartland.batterybutler.composeresources.generated.resources.dialog_delete_event_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.error_event_not_found
 import com.chriscartland.batterybutler.composeresources.generated.resources.event_detail_title
+import com.chriscartland.batterybutler.composeresources.generated.resources.label_battery_type
+import com.chriscartland.batterybutler.composeresources.generated.resources.label_notes
+import com.chriscartland.batterybutler.composeresources.generated.resources.label_replaced_on
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
@@ -191,7 +194,7 @@ private fun EventDetailBody(
         // Date Row (read-only)
         DetailRow(
             icon = Icons.Default.CalendarToday,
-            label = "Replaced On",
+            label = composeStringResource(Res.string.label_replaced_on),
             value = friendlyDate,
         )
 
@@ -200,7 +203,7 @@ private fun EventDetailBody(
             Spacer(modifier = Modifier.height(12.dp))
             DetailRow(
                 icon = Icons.Default.BatteryFull,
-                label = "Battery Type",
+                label = composeStringResource(Res.string.label_battery_type),
                 value = type,
             )
         }
@@ -210,7 +213,7 @@ private fun EventDetailBody(
             Spacer(modifier = Modifier.height(12.dp))
             DetailRow(
                 icon = Icons.Default.Notes,
-                label = "Notes",
+                label = composeStringResource(Res.string.label_notes),
                 value = notes,
             )
         }
