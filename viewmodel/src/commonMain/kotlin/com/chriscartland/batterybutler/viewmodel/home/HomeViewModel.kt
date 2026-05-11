@@ -13,13 +13,14 @@ import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.GetDevicesUseCase
 import com.chriscartland.batterybutler.usecase.GetSyncStatusUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
-import com.chriscartland.batterybutler.viewmodel.safeStateIn
+import com.chriscartland.batterybutler.viewmodel.retryableStateIn
 import com.chriscartland.batterybutler.viewmodel.util.sortAndGroup
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 
@@ -57,59 +58,69 @@ class HomeViewModel(
         }
     }
 
-    val uiState: StateFlow<HomeScreenState> = combine(
-        combine(
-            sortOptionFlow,
-            groupOptionFlow,
-            isSortAscendingFlow,
-            isGroupAscendingFlow,
-            exportDataFlow,
-        ) { sort, group, isSortAscending, isGroupAscending, exportData ->
-            SortConfig(sort, group, isSortAscending, isGroupAscending, exportData)
-        },
-        getDevicesUseCase(),
-        getDeviceTypesUseCase(),
-        getSyncStatusUseCase(),
-    ) { config, devices, types, syncStatus ->
-        val typeMap = types.associateBy { it.id }
+    private val retryTrigger = MutableStateFlow(0)
 
-        val sortComparator = when (config.sort) {
-            SortOption.NAME -> compareBy<Device> { it.name }
-            SortOption.LOCATION -> compareBy<Device> { it.location ?: "" }.thenBy { it.name }
-            SortOption.BATTERY_AGE -> compareBy { it.batteryLastReplaced }
-            SortOption.TYPE -> compareBy { typeMap[it.typeId]?.name ?: "" }
-        }
+    fun retry() {
+        retryTrigger.update { it + 1 }
+    }
 
-        val groupKeySelector = when (config.group) {
-            GroupOption.NONE -> null
-            GroupOption.TYPE -> { device: Device -> typeMap[device.typeId]?.name ?: "Unknown" }
-            GroupOption.LOCATION -> { device: Device -> device.location ?: "Unknown Location" }
-        }
-
-        val finalGroupedDevices = sortAndGroup(
-            items = devices,
-            sortComparator = sortComparator,
-            isSortAscending = config.isSortAscending,
-            groupKeySelector = groupKeySelector,
-            defaultGroupName = "All Devices",
-            isGroupAscending = config.isGroupAscending,
-        )
-
-        HomeScreenState(
-            groupedDevices = finalGroupedDevices,
-            deviceTypes = typeMap,
-            sortOption = config.sort,
-            groupOption = config.group,
-            isSortAscending = config.isSortAscending,
-            isGroupAscending = config.isGroupAscending,
-            exportData = config.exportData,
-            syncStatus = syncStatus,
-        )
-    }.safeStateIn(
+    val uiState: StateFlow<HomeScreenState> = retryableStateIn(
         scope = viewModelScope,
+        retryTrigger = retryTrigger,
         started = defaultWhileSubscribed(),
         initialValue = HomeScreenState(),
         onError = { HomeScreenState(error = it.message ?: "Failed to load devices") },
+        source = {
+            combine(
+                combine(
+                    sortOptionFlow,
+                    groupOptionFlow,
+                    isSortAscendingFlow,
+                    isGroupAscendingFlow,
+                    exportDataFlow,
+                ) { sort, group, isSortAscending, isGroupAscending, exportData ->
+                    SortConfig(sort, group, isSortAscending, isGroupAscending, exportData)
+                },
+                getDevicesUseCase(),
+                getDeviceTypesUseCase(),
+                getSyncStatusUseCase(),
+            ) { config, devices, types, syncStatus ->
+                val typeMap = types.associateBy { it.id }
+
+                val sortComparator = when (config.sort) {
+                    SortOption.NAME -> compareBy<Device> { it.name }
+                    SortOption.LOCATION -> compareBy<Device> { it.location ?: "" }.thenBy { it.name }
+                    SortOption.BATTERY_AGE -> compareBy { it.batteryLastReplaced }
+                    SortOption.TYPE -> compareBy { typeMap[it.typeId]?.name ?: "" }
+                }
+
+                val groupKeySelector = when (config.group) {
+                    GroupOption.NONE -> null
+                    GroupOption.TYPE -> { device: Device -> typeMap[device.typeId]?.name ?: "Unknown" }
+                    GroupOption.LOCATION -> { device: Device -> device.location ?: "Unknown Location" }
+                }
+
+                val finalGroupedDevices = sortAndGroup(
+                    items = devices,
+                    sortComparator = sortComparator,
+                    isSortAscending = config.isSortAscending,
+                    groupKeySelector = groupKeySelector,
+                    defaultGroupName = "All Devices",
+                    isGroupAscending = config.isGroupAscending,
+                )
+
+                HomeScreenState(
+                    groupedDevices = finalGroupedDevices,
+                    deviceTypes = typeMap,
+                    sortOption = config.sort,
+                    groupOption = config.group,
+                    isSortAscending = config.isSortAscending,
+                    isGroupAscending = config.isGroupAscending,
+                    exportData = config.exportData,
+                    syncStatus = syncStatus,
+                )
+            }
+        },
     )
 
     fun onSortOptionSelected(option: SortOption) {

@@ -1,10 +1,12 @@
 package com.chriscartland.batterybutler.viewmodel
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 
 /**
@@ -47,4 +49,48 @@ fun <T> Flow<T>.safeStateIn(
             if (errorValue != null) {
                 emit(errorValue)
             }
+        }.stateIn(scope, started, initialValue)
+
+/**
+ * StateFlow with retry support. Like [safeStateIn] but re-subscribes to the source flow
+ * every time [retryTrigger] emits, which resets any prior error state. Use this for
+ * screens that surface a user-visible "retry" button when their data fails to load.
+ *
+ * The [source] factory is invoked on every retry, so subscribers get a fresh chain
+ * (combine, map, etc.) and the [catch] inside resets too. Errors are caught and
+ * converted to a state value via [onError]; subsequent retries can recover from them.
+ *
+ * Typical wiring:
+ * ```
+ * private val retryTrigger = MutableStateFlow(0)
+ *
+ * val uiState: StateFlow<MyScreenState> = retryableStateIn(
+ *     scope = viewModelScope,
+ *     retryTrigger = retryTrigger,
+ *     started = defaultWhileSubscribed(),
+ *     initialValue = MyScreenState.Loading,
+ *     onError = { MyScreenState.Error(it.message ?: "Failed to load") },
+ *     source = { combine(flowA(), flowB()) { a, b -> MyScreenState.Success(a, b) } },
+ * )
+ *
+ * fun retry() { retryTrigger.update { it + 1 } }
+ * ```
+ */
+@OptIn(ExperimentalCoroutinesApi::class)
+fun <T> retryableStateIn(
+    scope: CoroutineScope,
+    retryTrigger: Flow<*>,
+    started: SharingStarted,
+    initialValue: T,
+    onError: (Throwable) -> T,
+    source: () -> Flow<T>,
+): StateFlow<T> =
+    retryTrigger
+        .flatMapLatest {
+            source()
+                .catch { e ->
+                    println("ViewModel retryableStateIn caught: ${e.message}")
+                    e.printStackTrace()
+                    emit(onError(e))
+                }
         }.stateIn(scope, started, initialValue)

@@ -37,6 +37,7 @@ import com.chriscartland.batterybutler.composeresources.composeStringResource
 import com.chriscartland.batterybutler.composeresources.generated.resources.Res
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_add_type
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_load_common_types
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_try_again
 import com.chriscartland.batterybutler.composeresources.generated.resources.add_item_card_device_type
 import com.chriscartland.batterybutler.composeresources.generated.resources.empty_types_message
 import com.chriscartland.batterybutler.composeresources.generated.resources.empty_types_title
@@ -69,6 +70,7 @@ fun DeviceTypeListContent(
     onGroupOptionSelected: (DeviceTypeGroupOption) -> Unit,
     onSortDirectionToggle: () -> Unit,
     onGroupDirectionToggle: () -> Unit,
+    onRetry: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
@@ -87,6 +89,11 @@ fun DeviceTypeListContent(
                     title = composeStringResource(Res.string.error_load_device_types),
                     message = state.message,
                     modifier = Modifier.padding(contentPadding),
+                    action = {
+                        Button(onClick = onRetry) {
+                            Text(composeStringResource(Res.string.action_try_again))
+                        }
+                    },
                 )
             }
 
@@ -250,6 +257,7 @@ fun DeviceTypeListContentEmptyPreview() {
             onGroupOptionSelected = {},
             onSortDirectionToggle = {},
             onGroupDirectionToggle = {},
+            onRetry = {},
         )
     }
 }
@@ -267,6 +275,7 @@ fun DeviceTypeListContentLoadingPreview() {
             onGroupOptionSelected = {},
             onSortDirectionToggle = {},
             onGroupDirectionToggle = {},
+            onRetry = {},
         )
     }
 }
@@ -284,6 +293,7 @@ fun DeviceTypeListContentErrorPreview() {
             onGroupOptionSelected = {},
             onSortDirectionToggle = {},
             onGroupDirectionToggle = {},
+            onRetry = {},
         )
     }
 }
@@ -308,6 +318,7 @@ fun DeviceTypeListContentPreview() {
             onGroupOptionSelected = {},
             onSortDirectionToggle = {},
             onGroupDirectionToggle = {},
+            onRetry = {},
         )
     }
 }

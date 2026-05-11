@@ -48,6 +48,7 @@ fun DevicesScreenRoot(
         onSortOptionSelected = { viewModel.onSortOptionSelected(it) },
         onDeviceClick = { onDeviceClick(it.id) },
         onAddDeviceClick = onAddDeviceClick,
+        onRetry = { viewModel.retry() },
         modifier = modifier,
         contentPadding = contentPadding,
     )
@@ -72,6 +73,7 @@ fun TypesScreenRoot(
         onGroupOptionSelected = { viewModel.onGroupOptionSelected(it) },
         onSortDirectionToggle = { viewModel.toggleSortDirection() },
         onGroupDirectionToggle = { viewModel.toggleGroupDirection() },
+        onRetry = { viewModel.retry() },
         modifier = modifier,
         contentPadding = contentPadding,
     )
@@ -91,6 +93,7 @@ fun HistoryScreenRoot(
         state = state,
         onEventClick = onEventClick,
         onAddEventClick = onAddEventClick,
+        onRetry = { viewModel.retry() },
         modifier = modifier,
         contentPadding = contentPadding,
     )
