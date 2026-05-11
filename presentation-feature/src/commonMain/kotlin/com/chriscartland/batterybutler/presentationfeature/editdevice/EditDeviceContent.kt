@@ -99,17 +99,19 @@ fun EditDeviceContent(
                     }
                 },
                 actions = {
+                    val trimmedName = name.trim()
+                    val trimmedLocation = location.trim()
                     TextButton(
                         onClick = {
                             onSave(
                                 DeviceInput(
-                                    name = name,
-                                    location = location.takeIf { it.isNotBlank() },
+                                    name = trimmedName,
+                                    location = trimmedLocation.takeIf { it.isNotEmpty() },
                                     typeId = selectedTypeId,
                                 ),
                             )
                         },
-                        enabled = name.isNotBlank() && selectedTypeId.isNotBlank(),
+                        enabled = trimmedName.isNotEmpty() && selectedTypeId.isNotBlank(),
                     ) {
                         Text(composeStringResource(Res.string.action_save_bold), fontWeight = FontWeight.Bold)
                     }

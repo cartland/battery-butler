@@ -94,21 +94,24 @@ fun AddDeviceContent(
                     }
                 },
                 actions = {
+                    val trimmedName = name.trim()
+                    val trimmedLocation = location.trim()
+                    val isValid = trimmedName.isNotEmpty() && selectedType != null
                     TextButton(
                         onClick = {
                             selectedType?.let { type ->
-                                if (name.isNotBlank()) {
+                                if (trimmedName.isNotEmpty()) {
                                     onAddDevice(
                                         DeviceInput(
-                                            name = name,
-                                            location = location.takeIf { it.isNotBlank() },
+                                            name = trimmedName,
+                                            location = trimmedLocation.takeIf { it.isNotEmpty() },
                                             typeId = type.id,
                                         ),
                                     )
                                 }
                             }
                         },
-                        enabled = !isLoading && name.isNotBlank() && selectedType != null,
+                        enabled = !isLoading && isValid,
                     ) {
                         if (isLoading) {
                             CircularProgressIndicator(
@@ -119,7 +122,7 @@ fun AddDeviceContent(
                         } else {
                             Text(
                                 composeStringResource(Res.string.action_save),
-                                color = if (name.isNotBlank() && selectedType != null) {
+                                color = if (isValid) {
                                     MaterialTheme.colorScheme.primary
                                 } else {
                                     MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
