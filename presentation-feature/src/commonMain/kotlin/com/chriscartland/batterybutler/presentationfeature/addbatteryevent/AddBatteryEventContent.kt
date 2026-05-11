@@ -147,7 +147,7 @@ fun AddBatteryEventContent(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(200.dp) // Limited height
-                            .padding(8.dp),
+                            .padding(Padding.small),
                     ) {
                         items(aiMessages) { msg ->
                             val text = when (msg) {

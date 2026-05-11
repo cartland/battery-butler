@@ -62,6 +62,7 @@ import com.chriscartland.batterybutler.domain.model.DeviceIcons
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationcore.theme.IconColorRole
+import com.chriscartland.batterybutler.presentationcore.theme.Padding
 import com.chriscartland.batterybutler.presentationcore.theme.ResolvedIconAccent
 
 data object DeviceIconMapper {
@@ -241,7 +242,7 @@ fun DeviceIconsPreview() {
                     val accent = DeviceIconMapper.getResolvedIconAccent(iconName)
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(8.dp),
+                        modifier = Modifier.padding(Padding.small),
                     ) {
                         ButlerIconBox(
                             icon = DeviceIconMapper.getIcon(iconName),

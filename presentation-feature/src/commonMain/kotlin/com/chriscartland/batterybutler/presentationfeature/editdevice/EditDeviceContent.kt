@@ -64,6 +64,7 @@ import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMapper
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import com.chriscartland.batterybutler.presentationcore.theme.Padding
 import com.chriscartland.batterybutler.presentationmodel.editdevice.EditDeviceScreenState
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -141,7 +142,7 @@ fun EditDeviceContent(
                         modifier = Modifier
                             .fillMaxSize()
                             .verticalScroll(rememberScrollState())
-                            .padding(16.dp),
+                            .padding(Padding.standard),
                     ) {
                         // Name Input
                         OutlinedTextField(

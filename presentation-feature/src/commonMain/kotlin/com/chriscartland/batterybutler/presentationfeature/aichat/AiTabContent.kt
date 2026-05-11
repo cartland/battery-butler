@@ -46,6 +46,7 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.ai_c
 import com.chriscartland.batterybutler.composeresources.generated.resources.content_desc_send_message
 import com.chriscartland.batterybutler.composeresources.generated.resources.placeholder_type_message
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import com.chriscartland.batterybutler.presentationcore.theme.Padding
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 
@@ -95,7 +96,7 @@ fun AiTabContent(
                         text = composeStringResource(Res.string.ai_chat_empty_message),
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(32.dp),
+                        modifier = Modifier.padding(Padding.extraLarge),
                     )
                 }
             } else {
@@ -118,7 +119,7 @@ fun AiTabContent(
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(8.dp),
+                                    .padding(Padding.small),
                             ) {
                                 CircularProgressIndicator(
                                     modifier = Modifier.size(24.dp),
@@ -211,7 +212,7 @@ private fun TabChatBubble(
                 text = message.text,
                 style = MaterialTheme.typography.bodyMedium,
                 color = textColor,
-                modifier = Modifier.padding(12.dp),
+                modifier = Modifier.padding(Padding.medium),
             )
         }
     }
