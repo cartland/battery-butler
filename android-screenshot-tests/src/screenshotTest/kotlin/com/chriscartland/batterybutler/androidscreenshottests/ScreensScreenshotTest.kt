@@ -9,11 +9,14 @@ import com.chriscartland.batterybutler.presentationfeature.adddevicetype.AddDevi
 import com.chriscartland.batterybutler.presentationfeature.aichat.AiChatContentEmptyPreview
 import com.chriscartland.batterybutler.presentationfeature.aichat.AiChatContentPreview
 import com.chriscartland.batterybutler.presentationfeature.devicetypes.DeviceTypeListContentEmptyPreview
+import com.chriscartland.batterybutler.presentationfeature.devicetypes.DeviceTypeListContentErrorPreview
 import com.chriscartland.batterybutler.presentationfeature.devicetypes.EditDeviceTypeContentPreview
 import com.chriscartland.batterybutler.presentationfeature.editdevice.EditDeviceContentPreview
 import com.chriscartland.batterybutler.presentationfeature.history.HistoryListContentEmptyPreview
+import com.chriscartland.batterybutler.presentationfeature.history.HistoryListContentErrorPreview
 import com.chriscartland.batterybutler.presentationfeature.history.HistoryListContentLoadingPreview
 import com.chriscartland.batterybutler.presentationfeature.home.HomeScreenEmptyPreview
+import com.chriscartland.batterybutler.presentationfeature.home.HomeScreenErrorPreview
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
@@ -115,5 +118,36 @@ fun AiChatContentEmptyPreviewTest() {
 fun HistoryListLoadingPreviewTest() {
     ScreenshotTestTheme {
         HistoryListContentLoadingPreview()
+    }
+}
+
+@OptIn(ExperimentalTime::class)
+@PreviewTest
+@Preview(showBackground = true, name = "Light")
+@Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun HomeScreenErrorPreviewTest() {
+    ScreenshotTestTheme {
+        HomeScreenErrorPreview()
+    }
+}
+
+@PreviewTest
+@Preview(showBackground = true, name = "Light")
+@Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun DeviceTypeListErrorPreviewTest() {
+    ScreenshotTestTheme {
+        DeviceTypeListContentErrorPreview()
+    }
+}
+
+@PreviewTest
+@Preview(showBackground = true, name = "Light")
+@Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun HistoryListErrorPreviewTest() {
+    ScreenshotTestTheme {
+        HistoryListContentErrorPreview()
     }
 }
