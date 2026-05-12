@@ -155,7 +155,16 @@ The `experimental/` directory is a reference architecture for KMP apps. See `exp
 
 ### UI Theme Constants
 
-Padding constants live in `presentation-core/.../theme/Padding.kt`. Use `Padding.standard` (16.dp), `Padding.small` (8.dp), `Padding.large` (24.dp), etc. instead of hardcoded dp values.
+Padding constants live in `presentation-core/.../theme/Padding.kt`. Use `Padding.standard` (16.dp), `Padding.small` (8.dp), `Padding.large` (24.dp), etc. instead of hardcoded dp values. Also `Padding.extraSmall` (4.dp), `Padding.medium` (12.dp), `Padding.extraLarge` (32.dp). PR #1108 swept single-arg `padding(N.dp)` sites; PR #1125 swept multi-arg `padding(horizontal = N.dp, ...)` sites in the three bd-named feature files (AddDeviceType, EditDeviceType, DeviceDetail). Multi-arg padding in other feature files is a deferred follow-up.
+
+Shape tokens live in `presentation-core/.../theme/Shapes.kt` as `BatteryButlerShapes`, exposed via Material3 `MaterialTheme.shapes.*`:
+- `shapes.extraSmall` = `RoundedCornerShape(4.dp)`
+- `shapes.small` = `RoundedCornerShape(8.dp)`
+- `shapes.medium` = `RoundedCornerShape(12.dp)`
+- `shapes.large` = `RoundedCornerShape(16.dp)`
+- `shapes.extraLarge` = `RoundedCornerShape(28.dp)`
+
+PR #1125 swept 25 `RoundedCornerShape(N.dp)` literals across 8 files to `MaterialTheme.shapes.*`. Use the tokens for any rounded surface, button, card, or TextField shape. One-off sizes (e.g. 6.dp, 10.dp, 24.dp) that don't map to a token stay as literals.
 
 Icon sizes live in `presentation-core/.../theme/IconSize.kt`.
 
@@ -168,6 +177,40 @@ Icon colors use the **`IconColorRole` enum** (`presentation-core/.../theme/IconC
 **Loading state with label**: Use `LoadingWithLabel` (`presentation-core/.../components/LoadingWithLabel.kt`) for top-level "screen is loading" states — a centered `CircularProgressIndicator` plus a status `Text` underneath. Pair with a screen-specific status string (`status_loading_devices`, `status_loading_device_types`, etc.) so the label tells the user *what* is loading. Bare `CircularProgressIndicator` is reserved for inline cases (e.g. the sync overlay in `HomeScreenContent`).
 
 **Material icons — prefer AutoMirrored**: For glyphs that have an `Icons.AutoMirrored.Filled.*` variant (`Notes`, `OpenInNew`, `Logout`, `List`, etc.), use the AutoMirrored variant. They flip in RTL locales, which is the recommended behavior; the non-AutoMirrored versions emit deprecation warnings.
+
+### Form Validation UX
+
+For forms with required fields (AddDeviceContent, AddDeviceTypeContent, EditDeviceContent — set in PR #1135), the convention is:
+
+1. `var hasAttemptedSubmit by rememberSaveable { mutableStateOf(false) }` owned by the screen-level composable.
+2. Per required-field error string starts as `null` and turns to a `composeStringResource(Res.string.form_error_X_required)` once `hasAttemptedSubmit == true` AND the field is empty. Errors clear live as the user types.
+3. Save action **stays enabled** (`enabled = !isLoading`). The onClick sets `hasAttemptedSubmit = true` and only proceeds with `onSave(...)` if all fields are valid. Clicking a disabled button gives no feedback about *why* — keeping it enabled and surfacing the error is the more informative pattern.
+4. Pass the error string to `OutlinedTextField` via `isError = nameError != null` + `supportingText = nameError?.let { msg -> { Text(msg) } }`.
+
+String resources for form errors: `form_error_device_name_required`, `form_error_device_type_required`, `form_error_battery_type_required`, `form_error_type_name_required` (extend as new required fields are added).
+
+### Retry With Fresh Subscription (ViewModel pattern)
+
+`retryableStateIn(...)` in `viewmodel/.../ViewModelExtensions.kt` (added in PR #1136) wraps a source flow factory in `retryTrigger.flatMapLatest { source().catch { onError } }`. Emitting a new value to the trigger cancels the prior inner subscription (including any errored `.catch`) and starts fresh. The `.catch` is INSIDE the `flatMapLatest` so it re-arms on every retry — outside, the downstream chain would be permanently dead after the first error.
+
+ViewModels that surface a user-visible retry button (HomeViewModel, DeviceTypeListViewModel, HistoryListViewModel — set in PR #1136) declare:
+```kotlin
+private val retryTrigger = MutableStateFlow(0)
+fun retry() { retryTrigger.update { it + 1 } }
+
+val uiState = retryableStateIn(
+    scope = viewModelScope,
+    retryTrigger = retryTrigger,
+    started = defaultWhileSubscribed(),
+    initialValue = ...,
+    onError = { ScreenState.Error(it.message ...) },
+    source = { combine(...) { ... } },
+)
+```
+
+Other ViewModels keep the older `combine(...).safeStateIn(...)` form. Switch a ViewModel to `retryableStateIn` only when the screen exposes a Retry button.
+
+Content composables that pair with these ViewModels take an `onRetry: () -> Unit` parameter and render `Button(onClick = onRetry) { Text(Res.string.action_try_again) }` as the `action` slot of the error `EmptyStateContent`. Wiring happens in `MainTabsScreens.kt` (`onRetry = { viewModel.retry() }`).
 
 ### KMP-Friendly Class Naming Convention
 

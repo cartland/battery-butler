@@ -104,6 +104,11 @@ Dependabot is configured (`.github/dependabot.yml`) for weekly updates.
 - Breaking changes -> close PR (large version jumps, CI compilation errors, critical infrastructure changes)
 - PRs that modify `.github/workflows/` files cannot be merged via CLI (GitHub security restriction) -> manual merge via web UI
 
+**Ignored dependencies** (`.github/dependabot.yml` → `ignore:`):
+- `com.google.cloud.tools:jib-gradle-plugin` — pinned to 3.4.1. Jib 3.5.x bytecode calls a `putArchiveEntry(TarArchiveEntry)` overload that only exists in commons-compress 1.26+, but the build forces commons-compress 1.21 for Ktor compat. PR #1133 bumped past this and broke `build_server` on main; reverted in PR #1146 and added to the ignore list. See `build.gradle.kts` lines 7-13 + 17-22 for the resolution-strategy forces and the upstream issue [jib#4235](https://github.com/GoogleContainerTools/jib/issues/4235).
+
+**General rule for pinned dependencies**: if `build.gradle.kts` or `libs.versions.toml` has a `// Pinned to X` / `// Do not bump` comment, also add that dep to the dependabot ignore list — otherwise dependabot will propose the bump weekly and a slip-through is only a matter of time (especially in dev-mode CI where slow jobs are skipped on PRs).
+
 ## CI Debugging
 
 - `ci-trigger-auto-prs.yml` fires on ANY `auto-generate.yml` completion (not just success) — individual jobs may succeed independently.
@@ -141,3 +146,7 @@ This is what makes development-mode CI safe as the steady state: PRs only run fa
 **Companion ritual**: run `/check-ci-issues` at session start, before picking up new feature work. The skill at `.claude/skills/check-ci-issues/SKILL.md` documents the triage flow. The fix is a normal PR off `origin/main`; the next green push-to-main auto-closes the issue.
 
 **Implementation**: `scripts/file-ci-failure-issue.sh` (called by the workflow). Labels are created on demand the first time a failure occurs.
+
+**Chicken-and-egg unblock**: a fix-forward PR is itself blocked by `validation_no_blocking_issues` while the issue it fixes is open. Manually close the tracking issue(s) with a comment referencing the fix PR (e.g. `gh issue close N --comment "Fix in flight via PR #M"`), then `gh run rerun <run-id> --failed` on the PR's failed `validation_no_blocking_issues` check. Once the fix merges and a green push-to-main runs, the auto-issue workflow re-closes any stragglers. Two examples this session: PR #1137 (closed #1128/#1129), PR #1146 (closed #1144/#1145).
+
+**Known limitation — docs-only success false-close**: if a code-level failure files an issue and the next push to `main` is a docs/beads/auto-generate-only commit, that commit's CI returns `ci: success` because the path filter skips every real job. The auto-issue workflow's success path then closes the issue, even though the underlying code break still lives in `main`. This was observed in this session between PR #1133 (jib bump break, filed #1144/#1145) and PR #1143 (docs-only epic close, success). The race-condition variant is benign (the failure run completed *after* the docs success, so #1144/#1145 were correctly re-filed), but the general pattern is real and would matter if a docs-only commit landed *after* the failure CI completed. Worth fixing: gate the close-on-success path on "at least one real job actually ran," not just "ci aggregator succeeded."
