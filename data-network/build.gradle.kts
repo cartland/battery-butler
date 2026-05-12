@@ -35,14 +35,18 @@ kotlin {
     }
 
     // Generate BuildConfig.kt for commonMain
+    val serverUrlProvider = providers.gradleProperty("PRODUCTION_SERVER_URL")
+    val devServerUrlProvider = providers.gradleProperty("DEV_SERVER_URL")
     val generateBuildConfig = tasks.register("generateBuildConfig") {
         val buildConfigDir = layout.buildDirectory.dir("generated/buildConfig/commonMain")
 
+        inputs.property("serverUrl", serverUrlProvider.orElse(""))
+        inputs.property("devServerUrl", devServerUrlProvider.orElse(""))
         outputs.dir(buildConfigDir)
 
         doLast {
-            val serverUrl = (project.findProperty("PRODUCTION_SERVER_URL") as? String)
-            val devServerUrl = (project.findProperty("DEV_SERVER_URL") as? String)
+            val serverUrl = serverUrlProvider.orNull
+            val devServerUrl = devServerUrlProvider.orNull
 
             val file = buildConfigDir.get().file("com/chriscartland/batterybutler/datanetwork/BuildConfig.kt").asFile
             file.parentFile.mkdirs()
