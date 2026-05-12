@@ -19,6 +19,7 @@ kotlin {
         it.binaries.framework {
             baseName = "ExperimentalShared"
             isStatic = true
+            binaryOption("bundleId", "com.chriscartland.batterybutler.experimental.shared")
             export(project(":experimental:viewmodel"))
             export(project(":experimental:domain"))
             export(libs.androidx.lifecycle.viewmodel)
