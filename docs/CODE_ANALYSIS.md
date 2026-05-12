@@ -3,10 +3,10 @@
 # Code Analysis
 
 This document provides a breakdown of the codebase by application layer and module.
-Total Lines of Code: 46929
+Total Lines of Code: 46932
 
 ## Application Breakdown
-* Shared Code: 30,192 lines (64.3%)
+* Shared Code: 30,195 lines (64.3%)
 * iOS Swift App: 6,261 lines (13.3%)
 * Other: 5,143 lines (11.0%)
 * CMP Android, iOS, Desktop: 2,590 lines (5.5%)
@@ -19,10 +19,10 @@ Total Lines of Code: 46929
 * `:viewmodel`: 5,445 lines (11.6%)
 * `:usecase`: 5,405 lines (11.5%)
 * `:buildSrc`: 2,810 lines (6.0%)
-* `:presentation-core`: 2,524 lines (5.4%)
+* `:presentation-core`: 2,527 lines (5.4%)
 * `:data-network`: 2,452 lines (5.2%)
 * `:domain`: 2,332 lines (5.0%)
-* `:compose-app`: 2,323 lines (5.0%)
+* `:compose-app`: 2,323 lines (4.9%)
 * `:data`: 1,920 lines (4.1%)
 * `:server:app`: 1,344 lines (2.9%)
 * `:data-local`: 1,318 lines (2.8%)
@@ -48,7 +48,7 @@ Total Lines of Code: 46929
 * `:iosAppComposeUI.xcodeproj`: 31 lines (0.1%)
 
 ## Language Breakdown
-* Kotlin (.kt): 40,402 lines (86.1%)
+* Kotlin (.kt): 40,405 lines (86.1%)
 * Swift (.swift): 6,527 lines (13.9%)
 
 ## Code Distribution
@@ -67,7 +67,7 @@ config:
 %% GENERATED FILE - DO NOT EDIT
 sankey-beta
 
-Codebase,Shared Code,30192
+Codebase,Shared Code,30195
 Codebase,iOS Swift App,6261
 Codebase,Other,5143
 Codebase,CMP Apps,2590
@@ -77,7 +77,7 @@ Codebase,Screenshot Tests,1213
 Shared Code,presentation-feature,6564
 Shared Code,viewmodel,5445
 Shared Code,usecase,5405
-Shared Code,presentation-core,2524
+Shared Code,presentation-core,2527
 Shared Code,data-network,2452
 Shared Code,domain,2332
 Shared Code,data,1920
@@ -117,7 +117,7 @@ iosAppSwiftUI,Swift,6261
 viewmodel,Kotlin,5445
 usecase,Kotlin,5405
 buildSrc,Kotlin,2810
-presentation-core,Kotlin,2524
+presentation-core,Kotlin,2527
 data-network,Kotlin,2452
 domain,Kotlin,2332
 compose-app,Kotlin,2323
