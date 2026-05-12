@@ -44,8 +44,40 @@ ensure_label "$BLOCKING_LABEL" "B60205" "Must resolve before new auto-merges pro
 
 # -----------------------------------------------------------------------------
 # Success path: close all open ci-failure issues.
+#
+# Caveat: path-filtered runs (docs-only, beads-only, auto-generate-only) mark
+# every real validation job as SKIPPED while the `ci` aggregator still
+# returns success because nothing real ran. That false success must NOT
+# auto-close a ci-failure issue that was filed by a prior real-code run —
+# the underlying break is still on main. See bb-2r4g.
 # -----------------------------------------------------------------------------
 if [[ "$RUN_CONCLUSION" == "success" ]]; then
+  # Count jobs that succeeded and aren't control-flow gates. `changes`,
+  # `ci`, and `validation_no_blocking_issues` always run (they're gates,
+  # not validations of the code itself), so they don't count as evidence
+  # that anything real was checked.
+  real_success_count=$(
+    gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID/jobs?per_page=100" \
+      --paginate \
+      --jq '[.jobs[]
+              | select(.conclusion == "success")
+              | select(.name != "changes"
+                       and .name != "ci"
+                       and .name != "validation_no_blocking_issues")]
+            | length'
+  )
+
+  if [[ "$real_success_count" -eq 0 ]]; then
+    echo "Run succeeded but no real validation jobs ran — every non-gate"
+    echo "job was SKIPPED (path-filtered docs/beads/auto-generate run)."
+    echo "Skipping auto-close: open ci-failure issues may still reflect a"
+    echo "real break on main."
+    exit 0
+  fi
+
+  echo "Real validation jobs that succeeded: $real_success_count. Proceeding"
+  echo "with close-on-success."
+
   open_issues=$(gh issue list --label "$LABEL" --state open \
     --json number,title --jq '.[]')
   if [[ -z "$open_issues" ]]; then
