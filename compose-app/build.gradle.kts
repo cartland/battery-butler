@@ -280,17 +280,11 @@ tasks.register("verifyIosFrameworkLinkage") {
 
     dependsOn("linkDebugFrameworkIosSimulatorArm64")
 
-    // Configure task to fail on linker issues (similar to script flags)
-    // Note: Project properties like -Pkotlin.native.binary.partialLinkage=disable are passed via command line
-    // or can be set programmatically if possible, but dependsOn just invokes the task.
-    // To strictly enforce flags, we might need an Exec task or doFirst configuration.
-    // However, for a simple alias, this is a start. The script used:
-    // -Pkotlin.native.binary.partialLinkage=disable --info
-
+    // Partial linkage is always-on in Kotlin 2.x — there's no opt-out flag any more.
+    // The previous `-Pkotlin.native.binary.partialLinkage=disable` invocation now
+    // produces a "w: Unknown binary option" warning and has no effect.
     doFirst {
-        println(
-            "Note: For stricter verification, run with: ./gradlew verifyIosFrameworkLinkage -Pkotlin.native.binary.partialLinkage=disable",
-        )
+        println("Verifying iOS framework linkage (partial linkage is always enabled in Kotlin 2.x).")
     }
 }
 

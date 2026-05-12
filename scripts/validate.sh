@@ -60,7 +60,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     # Check for Xcode and xcodebuild
     if command -v xcodebuild >/dev/null 2>&1; then
         echo "Strict Linkage Verification..."
-        ./gradlew :compose-app:verifyIosFrameworkLinkage -Pkotlin.native.binary.partialLinkage=disable
+        ./gradlew :compose-app:verifyIosFrameworkLinkage
 
         echo "Building iOS App (Compose UI)..."
         xcodebuild -project ios-app-compose-ui/iosAppComposeUI.xcodeproj \
