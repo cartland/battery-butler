@@ -61,7 +61,6 @@
 		A74A111ED72A22540285B044 /* DeviceTypeDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62EEFBA1150A1B5BB4BE34E7 /* DeviceTypeDetailScreen.swift */; };
 		A7AC0D97ABD8C337F08EB02B /* SortGroupControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D81DF9117CEBD961876923F5 /* SortGroupControlView.swift */; };
 		AE530C71EB0F1899C36F2C0D /* ButlerCornerRadius.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63736EB2CA3F58B280FBFA96 /* ButlerCornerRadius.swift */; };
-		AG1000000000000000000002 /* Generated in Sources */ = {isa = PBXBuildFile; fileRef = AG1000000000000000000001 /* Generated */; };
 		B2E94A4898D213A80796E832 /* SettingsScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F369A0F48183F2527CD88B41 /* SettingsScreenTests.swift */; };
 		B675B24ABC559905E825F17A /* DeviceRowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72E31482FD860FC114F618F9 /* DeviceRowTests.swift */; };
 		B98DBAFBE2DC0C16669CB684 /* TestData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EBF127BDE68EF62BDAFA150 /* TestData.swift */; };
@@ -675,7 +674,6 @@
 				246295AD2F14EEF40047C600 /* HomeScreen.swift in Sources */,
 				246295AE2F14EEF40047C600 /* SettingsScreen.swift in Sources */,
 				246295AF2F14EEF40047C600 /* DeviceDetailViewModelWrapper.swift in Sources */,
-				AG1000000000000000000002 /* Generated in Sources */,
 				9E310559114A9C3509F5106D /* LoginScreen.swift in Sources */,
 				9EC6A2E16CEA57929E345F5C /* LoginViewModelWrapper.swift in Sources */,
 				7B995C9514A7E13CDD597E53 /* EventDetailScreen.swift in Sources */,
