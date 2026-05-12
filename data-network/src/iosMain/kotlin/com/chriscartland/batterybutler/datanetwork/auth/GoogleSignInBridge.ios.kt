@@ -10,6 +10,7 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.Parameters
 import io.ktor.http.isSuccess
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.ObjCSignatureOverride
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.convert
 import kotlinx.cinterop.usePinned
@@ -313,10 +314,10 @@ actual class GoogleSignInBridge {
 /**
  * Provides the presentation context (window) for ASWebAuthenticationSession.
  */
-@Suppress("CONFLICTING_OVERLOADS")
 private class DefaultPresentationContextProvider :
     platform.darwin.NSObject(),
     ASWebAuthenticationPresentationContextProvidingProtocol {
+    @ObjCSignatureOverride
     override fun presentationAnchorForWebAuthenticationSession(
         session: ASWebAuthenticationSession,
     ): UIWindow {
