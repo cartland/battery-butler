@@ -159,7 +159,6 @@ struct DeviceTypeFilterRow: View {
         switch option {
         case .name: return String(localized: "sort.name")
         case .batteryType: return String(localized: "sort.battery_type")
-        default: return String(localized: "common.unknown")
         }
     }
 
@@ -167,7 +166,6 @@ struct DeviceTypeFilterRow: View {
         switch option {
         case .none: return String(localized: "group.none")
         case .batteryType: return String(localized: "group.battery_type")
-        default: return String(localized: "common.unknown")
         }
     }
 }

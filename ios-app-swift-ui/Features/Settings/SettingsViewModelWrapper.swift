@@ -47,13 +47,13 @@ class SettingsViewModelWrapper: ObservableObject {
 
         self.importResultTask = Task { @MainActor [weak self] in
             for await result in viewModel.importResult {
-                self?.importResult = result as? ImportResult
+                self?.importResult = result
             }
         }
 
         self.importErrorTask = Task { @MainActor [weak self] in
             for await error in viewModel.importError {
-                self?.importError = error as? String
+                self?.importError = error
             }
         }
 
@@ -75,13 +75,13 @@ class SettingsViewModelWrapper: ObservableObject {
 
         self.networkModeTask = Task { @MainActor [weak self] in
             for await mode in viewModel.networkMode {
-                self?.networkMode = mode as! NetworkMode
+                self?.networkMode = mode
             }
         }
 
         self.userTask = Task { @MainActor [weak self] in
             for await user in viewModel.currentUser {
-                self?.currentUser = user as? User
+                self?.currentUser = user
             }
         }
 
@@ -93,7 +93,7 @@ class SettingsViewModelWrapper: ObservableObject {
 
         self.aiEngineTask = Task { @MainActor [weak self] in
             for await engine in viewModel.aiEngineType {
-                self?.aiEngineType = engine as! AiEngineType
+                self?.aiEngineType = engine
             }
         }
     }
@@ -166,8 +166,6 @@ class SettingsViewModelWrapper: ObservableObject {
             return String(localized: "settings.ai_engine.on_device")
         case .noOp:
             return String(localized: "settings.ai_engine.noop")
-        default:
-            return String(localized: "common.unknown")
         }
     }
 }

@@ -47,7 +47,7 @@ class EditDeviceTypeViewModelWrapper: ObservableObject {
         } else if let success = newState as? EditDeviceTypeScreenStateSuccess {
             state.isLoading = false
             state.isNotFound = false
-            state.usedIcons = success.usedIcons as? [String] ?? []
+            state.usedIcons = success.usedIcons
             // Only update fields on initial load to avoid overwriting user edits
             if state.originalId != success.deviceType.id {
                 state.originalId = success.deviceType.id

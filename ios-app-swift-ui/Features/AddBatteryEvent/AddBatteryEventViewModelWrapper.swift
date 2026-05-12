@@ -17,19 +17,19 @@ class AddBatteryEventViewModelWrapper: ObservableObject {
         self.viewModel = viewModel
         viewModelStore.put(key: "vm", viewModel: viewModel)
         
-        self.devices = viewModel.devices.value as? [shared.Device] ?? []
-        self.aiMessages = viewModel.aiMessages.value as? [BatchOperationResult] ?? []
+        self.devices = viewModel.devices.value
+        self.aiMessages = viewModel.aiMessages.value
         self.isAiBatchImportEnabled = (viewModel.isAiBatchImportEnabled.value as? Bool) ?? false
-        
+
         self.devicesTask = Task { @MainActor [weak self] in
             for await items in viewModel.devices {
-                self?.devices = items as? [shared.Device] ?? []
+                self?.devices = items
             }
         }
-        
+
         self.aiMessagesTask = Task { @MainActor [weak self] in
             for await msgs in viewModel.aiMessages {
-                self?.aiMessages = msgs as? [BatchOperationResult] ?? []
+                self?.aiMessages = msgs
             }
         }
         
