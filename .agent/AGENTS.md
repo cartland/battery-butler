@@ -99,6 +99,7 @@ Keeping the build and tests healthy is a top priority. When you identify or fix 
 - **Session Start**:
   - Run `bd ready` to see current tasks. Run `bd list` for all open issues.
   - Run `/check-ci-issues` (or `gh issue list --label ci-failure --state open`) — if any `ci-failure` + `blocking` issue is open, **fixing main is priority zero** and PR auto-merges are paused until it closes. See `.agent/ci.md` → "Post-Merge Auto-Issue Safety Net".
+  - **"0 open ci-failure issues" is necessary but not sufficient** for "main is healthy." The auto-issue workflow only fires after a full push-to-main CI completes (~22 min for `validation_ios_ui` alone). If the latest push-to-main run is still in progress, the safety net hasn't had a chance to file. Verify with `gh run list --branch main --workflow "Battery Butler CI" --event push --limit 1 --json conclusion,status` — only trust `conclusion: success` AND `status: completed` for the actual HEAD commit. Observed this session: reported "Issues: 0 open" in `/repo-check`, then 7 min later the workflow filed #1144 + #1145 for an in-progress failure I missed.
   - Run `./scripts/deploy-status.sh` to check server deployment state and drift.
   - For team sessions, use Claude's TaskCreate/TaskList for coordination — not `bd`.
 
