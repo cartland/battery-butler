@@ -53,7 +53,7 @@ class IosFileLoader : FileLoader {
                 encoding = NSUTF8StringEncoding,
                 error = null,
             ) ?: return null
-            return content.toString().encodeToByteArray()
+            return content.encodeToByteArray()
         } finally {
             if (accessing) {
                 url.stopAccessingSecurityScopedResource()

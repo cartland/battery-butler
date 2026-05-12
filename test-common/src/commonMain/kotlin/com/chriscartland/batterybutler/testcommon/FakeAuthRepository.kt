@@ -76,7 +76,7 @@ class FakeAuthRepository : AuthRepository {
             }
 
             is Result.Error -> {
-                _authState.value = AuthState.Failed(result.error as AuthError)
+                _authState.value = AuthState.Failed(result.error)
                 result
             }
         }

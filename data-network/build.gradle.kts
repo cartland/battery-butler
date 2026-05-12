@@ -15,6 +15,9 @@ kotlin {
             .toInt()
     }
     jvmToolchain(21)
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
 
     jvm("desktop")
 

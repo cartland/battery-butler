@@ -48,23 +48,22 @@ open class ArchitectureCheckTask : DefaultTask() {
 
     @TaskAction
     fun check() {
-        val rootDir = project.rootDir
         val violations = mutableListOf<String>()
 
-        project.subprojects.forEach { subproject ->
+        project.subprojects.forEach subprojects@{ subproject ->
             val moduleName = ":" + subproject.path.removePrefix(":") // normalize to :module
             val allowed = allowedDependencies[moduleName]
 
             if (!shouldCheckDependencies(moduleName, allowed)) {
-                return@forEach
+                return@subprojects
             }
 
-            if (allowed?.contains("*") == true) return@forEach // Allow all
+            if (allowed?.contains("*") == true) return@subprojects // Allow all
 
-            subproject.configurations.forEach { config ->
+            subproject.configurations.forEach configurations@{ config ->
                 // We only care about implementation/api dependencies, not test, ksp, or detekt
                 val configLower = config.name.lowercase()
-                if (configLower.contains("test") || configLower.contains("ksp") || configLower.contains("detekt")) return@forEach
+                if (configLower.contains("test") || configLower.contains("ksp") || configLower.contains("detekt")) return@configurations
 
                 // This is a rough check. Resolving configurations might differ.
                 // Detailed check: Inspect declared dependencies

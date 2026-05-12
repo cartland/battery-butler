@@ -15,6 +15,10 @@ kotlin {
     androidTarget {
     }
 
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
+
     // Force downgrade of dependencies that require AGP 8.9.1+
     // Removed as we are migrating to Nav2 which is compatible with stable AGP.
 
