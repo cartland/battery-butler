@@ -253,7 +253,7 @@ fun DeviceIconsPreview() {
                         Text(
                             text = iconName,
                             style = MaterialTheme.typography.bodySmall,
-                            modifier = Modifier.padding(top = 4.dp),
+                            modifier = Modifier.padding(top = Padding.extraSmall),
                             maxLines = 1,
                         )
                     }

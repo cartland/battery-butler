@@ -141,7 +141,7 @@ fun AiTabContent(
                         WindowInsets.safeDrawing
                             .only(WindowInsetsSides.Horizontal)
                             .union(WindowInsets.ime),
-                    ).padding(horizontal = 16.dp, vertical = 8.dp),
+                    ).padding(horizontal = Padding.standard, vertical = Padding.small),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {

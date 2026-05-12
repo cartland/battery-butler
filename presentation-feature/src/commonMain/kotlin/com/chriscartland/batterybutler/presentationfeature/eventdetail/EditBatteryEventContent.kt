@@ -190,7 +190,7 @@ fun EditBatteryEventContent(
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(12.dp),
-                            modifier = Modifier.padding(bottom = 24.dp),
+                            modifier = Modifier.padding(bottom = Padding.large),
                         ) {
                             Box(
                                 modifier = Modifier

@@ -54,7 +54,7 @@ fun AiBatchImportSection(
             composeStringResource(Res.string.action_batch_import_ai),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(bottom = 8.dp),
+            modifier = Modifier.padding(bottom = Padding.small),
         )
 
         var aiInput by rememberSaveable { mutableStateOf("") }
@@ -89,7 +89,7 @@ fun AiBatchImportSection(
             Text(
                 composeStringResource(Res.string.label_ai_output),
                 style = MaterialTheme.typography.labelMedium,
-                modifier = Modifier.padding(top = 8.dp),
+                modifier = Modifier.padding(top = Padding.small),
             )
             LazyColumn(
                 modifier = Modifier

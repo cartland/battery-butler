@@ -165,7 +165,7 @@ private fun EventDetailBody(
         val iconName = state.deviceType?.defaultIcon ?: "devices_other"
         Box(
             modifier = Modifier
-                .padding(vertical = 24.dp)
+                .padding(vertical = Padding.large)
                 .size(96.dp)
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.primaryContainer),
