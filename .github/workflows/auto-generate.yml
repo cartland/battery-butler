@@ -113,12 +113,16 @@ jobs:
         if: steps.create-pr-diagrams.outputs.pull-request-number
         env:
           GH_TOKEN: ${{ secrets.BOT_PAT }}
+        continue-on-error: true
         run: |
           PR_NUM="${{ steps.create-pr-diagrams.outputs.pull-request-number }}"
           echo "Triggering CI on PR #$PR_NUM by closing and reopening..."
-          gh pr close "$PR_NUM" || true
-          gh pr reopen "$PR_NUM" || true
-          echo "CI should now be triggered on PR #$PR_NUM"
+          if ! gh pr close "$PR_NUM" 2>&1; then
+            echo "::error::Failed to close PR #$PR_NUM via BOT_PAT — likely HTTP 401 Bad credentials (token expired/invalid). The PR was created but Battery Butler CI will NOT fire on it automatically. Workaround: 'gh pr close $PR_NUM && gh pr reopen $PR_NUM' from a session whose token is valid. Permanent fix: rotate the BOT_PAT secret in repo Settings → Secrets and variables → Actions (needs fine-grained Pull requests + Workflows read/write, or classic 'repo' + 'workflow' scopes). See bd issue bb-16u1."
+            exit 1
+          fi
+          gh pr reopen "$PR_NUM"
+          echo "CI now triggered on PR #$PR_NUM"
 
   # ===========================================================================
   # Job 2: Android Screenshot Baselines
@@ -183,12 +187,16 @@ jobs:
         if: steps.create-pr-screenshots.outputs.pull-request-number
         env:
           GH_TOKEN: ${{ secrets.BOT_PAT }}
+        continue-on-error: true
         run: |
           PR_NUM="${{ steps.create-pr-screenshots.outputs.pull-request-number }}"
           echo "Triggering CI on PR #$PR_NUM by closing and reopening..."
-          gh pr close "$PR_NUM" || true
-          gh pr reopen "$PR_NUM" || true
-          echo "CI should now be triggered on PR #$PR_NUM"
+          if ! gh pr close "$PR_NUM" 2>&1; then
+            echo "::error::Failed to close PR #$PR_NUM via BOT_PAT — likely HTTP 401 Bad credentials (token expired/invalid). The PR was created but Battery Butler CI will NOT fire on it automatically. Workaround: 'gh pr close $PR_NUM && gh pr reopen $PR_NUM' from a session whose token is valid. Permanent fix: rotate the BOT_PAT secret in repo Settings → Secrets and variables → Actions (needs fine-grained Pull requests + Workflows read/write, or classic 'repo' + 'workflow' scopes). See bd issue bb-16u1."
+            exit 1
+          fi
+          gh pr reopen "$PR_NUM"
+          echo "CI now triggered on PR #$PR_NUM"
 
   # ===========================================================================
   # Job 3: iOS Snapshots (Record + Gallery)
@@ -266,9 +274,13 @@ jobs:
         if: steps.create-pr-ios.outputs.pull-request-number
         env:
           GH_TOKEN: ${{ secrets.BOT_PAT }}
+        continue-on-error: true
         run: |
           PR_NUM="${{ steps.create-pr-ios.outputs.pull-request-number }}"
           echo "Triggering CI on PR #$PR_NUM by closing and reopening..."
-          gh pr close "$PR_NUM" || true
-          gh pr reopen "$PR_NUM" || true
-          echo "CI should now be triggered on PR #$PR_NUM"
+          if ! gh pr close "$PR_NUM" 2>&1; then
+            echo "::error::Failed to close PR #$PR_NUM via BOT_PAT — likely HTTP 401 Bad credentials (token expired/invalid). The PR was created but Battery Butler CI will NOT fire on it automatically. Workaround: 'gh pr close $PR_NUM && gh pr reopen $PR_NUM' from a session whose token is valid. Permanent fix: rotate the BOT_PAT secret in repo Settings → Secrets and variables → Actions (needs fine-grained Pull requests + Workflows read/write, or classic 'repo' + 'workflow' scopes). See bd issue bb-16u1."
+            exit 1
+          fi
+          gh pr reopen "$PR_NUM"
+          echo "CI now triggered on PR #$PR_NUM"
