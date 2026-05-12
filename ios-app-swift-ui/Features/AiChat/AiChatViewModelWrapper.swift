@@ -16,12 +16,12 @@ class AiChatViewModelWrapper: ObservableObject {
         self.viewModel = viewModel
         viewModelStore.put(key: "vm", viewModel: viewModel)
         
-        self.messages = viewModel.messages.value as? [AiMessage] ?? []
+        self.messages = viewModel.messages.value
         self.isProcessing = (viewModel.isProcessing.value as? Bool) ?? false
-        
+
         self.messagesTask = Task { @MainActor [weak self] in
             for await msgs in viewModel.messages {
-                self?.messages = msgs as? [AiMessage] ?? []
+                self?.messages = msgs
             }
         }
         

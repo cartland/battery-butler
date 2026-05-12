@@ -11,17 +11,12 @@ class DeviceTypeListViewModelWrapper: ObservableObject {
 
     init(_ viewModel: DeviceTypeListViewModel) {
         self.viewModel = viewModel
-        guard let initialState = viewModel.uiState.value as? DeviceTypeListScreenState else {
-            fatalError("Expected DeviceTypeListScreenState but got \(type(of: viewModel.uiState.value))")
-        }
-        self.state = initialState
+        self.state = viewModel.uiState.value
         viewModelStore.put(key: "vm", viewModel: viewModel)
 
         self.task = Task { @MainActor [weak self] in
             for await newState in viewModel.uiState {
-                if let state = newState as? DeviceTypeListScreenState {
-                    self?.state = state
-                }
+                self?.state = newState
             }
         }
     }

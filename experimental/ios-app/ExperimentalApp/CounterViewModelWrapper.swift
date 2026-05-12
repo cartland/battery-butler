@@ -23,8 +23,8 @@ class CounterViewModelWrapper: ObservableObject {
                 guard let self else { return }
                 self.counterRunning = viewModel.counterRunning.value as! Bool
                 self.appCounterRunning = viewModel.appCounterRunning.value as! Bool
-                self.observeState = viewModel.observeState.value as! CounterState
-                self.getState = viewModel.getState.value as! CounterState
+                self.observeState = viewModel.observeState.value
+                self.getState = viewModel.getState.value
             }
     }
 

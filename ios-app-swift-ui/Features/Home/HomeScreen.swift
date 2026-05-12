@@ -219,7 +219,6 @@ struct HomeFilterRow: View {
         case .location: return String(localized: "sort.location")
         case .batteryAge: return String(localized: "sort.battery_age")
         case .type: return String(localized: "sort.type")
-        default: return String(localized: "common.unknown")
         }
     }
 
@@ -228,7 +227,6 @@ struct HomeFilterRow: View {
         case .none: return String(localized: "group.none")
         case .type: return String(localized: "group.type")
         case .location: return String(localized: "group.location")
-        default: return String(localized: "common.unknown")
         }
     }
 }

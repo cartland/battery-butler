@@ -123,7 +123,7 @@ private struct DeviceDetailSuccessView<Destination: View>: View {
             }
 
             // Location
-            if let location = success.device.location as? String,
+            if let location = success.device.location,
                !location.isEmpty {
                 HStack(spacing: ButlerSpacing.extraSmall) {
                     Image(systemName: "location.fill")

@@ -19,11 +19,11 @@ class LoginViewModelWrapper: ObservableObject {
         viewModelStore.put(key: "vm", viewModel: viewModel)
 
         self.isSignInAvailable = viewModel.isSignInAvailable
-        self.authState = viewModel.authState.value as? AuthState
+        self.authState = viewModel.authState.value
 
         self.authTask = Task { @MainActor [weak self] in
             for await state in viewModel.authState {
-                self?.authState = state as? AuthState
+                self?.authState = state
                 if let failed = state as? AuthStateFailed {
                     let (title, message, retry) = Self.errorInfo(for: failed.error)
                     self?.errorTitle = title

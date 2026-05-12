@@ -10,15 +10,16 @@ class EventDetailViewModelWrapper: ObservableObject {
 
     init(eventId: String, component: NativeComponent) {
         let factory = component.eventDetailViewModelFactory
-        self.viewModel = factory.create(eventId: eventId)
+        let viewModel = factory.create(eventId: eventId)
+        self.viewModel = viewModel
         viewModelStore.put(key: "vm", viewModel: viewModel)
 
         // Ensure initial state is captured from StateFlow's value if available
-        self.state = viewModel.uiState.value as? EventDetailScreenState
+        self.state = viewModel.uiState.value
 
         self.stateTask = Task { @MainActor [weak self] in
             for await st in viewModel.uiState {
-                self?.state = st as? EventDetailScreenState
+                self?.state = st
             }
         }
     }
