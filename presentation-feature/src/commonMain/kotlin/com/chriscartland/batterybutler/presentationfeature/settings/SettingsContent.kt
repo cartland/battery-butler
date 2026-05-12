@@ -233,7 +233,7 @@ fun SettingsContent(
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.Logout,
                                 contentDescription = null,
-                                modifier = Modifier.padding(end = 8.dp),
+                                modifier = Modifier.padding(end = Padding.small),
                             )
                             Text(composeStringResource(Res.string.action_sign_out))
                         }

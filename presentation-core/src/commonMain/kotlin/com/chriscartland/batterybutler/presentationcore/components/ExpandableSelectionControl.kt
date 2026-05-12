@@ -33,6 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
+import com.chriscartland.batterybutler.presentationcore.theme.Padding
 
 @Composable
 fun <T> ExpandableSelectionControl(
@@ -59,8 +60,8 @@ fun <T> ExpandableSelectionControl(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .padding(top = 16.dp, bottom = if (expanded) 8.dp else 16.dp),
+                .padding(horizontal = Padding.standard)
+                .padding(top = Padding.standard, bottom = if (expanded) Padding.small else Padding.standard),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
@@ -107,7 +108,7 @@ fun <T> ExpandableSelectionControl(
                             .clickable {
                                 onOptionSelected(option)
                                 expanded = false
-                            }.padding(horizontal = 16.dp, vertical = 8.dp),
+                            }.padding(horizontal = Padding.standard, vertical = Padding.small),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         RadioButton(
@@ -121,7 +122,7 @@ fun <T> ExpandableSelectionControl(
                             text = optionLabel(option),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(start = 8.dp),
+                            modifier = Modifier.padding(start = Padding.small),
                         )
                     }
                 }

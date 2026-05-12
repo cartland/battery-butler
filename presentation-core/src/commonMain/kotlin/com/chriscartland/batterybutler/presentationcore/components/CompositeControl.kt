@@ -27,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationcore.theme.IconSize
+import com.chriscartland.batterybutler.presentationcore.theme.Padding
 
 @Composable
 fun CompositeControl(
@@ -81,7 +82,7 @@ fun CompositeControl(
                 modifier = Modifier
                     .fillMaxHeight()
                     .clickable { onClicked() }
-                    .padding(horizontal = 12.dp),
+                    .padding(horizontal = Padding.medium),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
@@ -93,7 +94,7 @@ fun CompositeControl(
                     imageVector = Icons.Default.ArrowDropDown,
                     contentDescription = null,
                     tint = contentColor,
-                    modifier = Modifier.padding(start = 4.dp).size(IconSize.Small),
+                    modifier = Modifier.padding(start = Padding.extraSmall).size(IconSize.Small),
                 )
             }
         }

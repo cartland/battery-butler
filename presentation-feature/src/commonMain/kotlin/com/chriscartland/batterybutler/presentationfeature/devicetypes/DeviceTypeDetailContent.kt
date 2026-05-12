@@ -126,7 +126,7 @@ private fun DeviceTypeDetailBody(
             Spacer(modifier = Modifier.height(8.dp))
             // Profile Header
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Box(modifier = Modifier.padding(bottom = 16.dp)) {
+                Box(modifier = Modifier.padding(bottom = Padding.standard)) {
                     Box(
                         modifier = Modifier
                             .size(112.dp)
@@ -178,7 +178,7 @@ private fun DeviceTypeDetailBody(
         // Devices Section
         item {
             Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = Padding.extraSmall),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {

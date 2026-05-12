@@ -163,7 +163,7 @@ fun HomeScreenContent(
                 ) {
                     Row(
                         modifier = Modifier
-                            .padding(horizontal = 12.dp, vertical = 8.dp),
+                            .padding(horizontal = Padding.medium, vertical = Padding.small),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {

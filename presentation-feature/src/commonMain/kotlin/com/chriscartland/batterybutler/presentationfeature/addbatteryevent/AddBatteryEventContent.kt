@@ -164,7 +164,7 @@ fun AddBatteryEventContent(
                                 text = text,
                                 style = MaterialTheme.typography.bodySmall,
                                 color = color,
-                                modifier = Modifier.padding(vertical = 4.dp),
+                                modifier = Modifier.padding(vertical = Padding.extraSmall),
                             )
                         }
                     }

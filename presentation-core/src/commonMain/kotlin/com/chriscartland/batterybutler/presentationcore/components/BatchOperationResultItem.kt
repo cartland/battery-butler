@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.domain.model.BatchOperationResult
+import com.chriscartland.batterybutler.presentationcore.theme.Padding
 
 /**
  * Displays a single batch operation result with appropriate styling.
@@ -39,6 +40,6 @@ fun BatchOperationResultItem(
         text = text,
         style = MaterialTheme.typography.bodySmall,
         color = color,
-        modifier = modifier.padding(vertical = 4.dp),
+        modifier = modifier.padding(vertical = Padding.extraSmall),
     )
 }
