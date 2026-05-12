@@ -31,6 +31,49 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ---
 
+## 2026-05-12
+
+### Features
+
+- **Inline form-validation UX**: AddDeviceContent, AddDeviceTypeContent, and EditDeviceContent now show Material 3 `isError` + `supportingText` on required fields after the user attempts to submit. Pattern: `hasAttemptedSubmit` rememberSaveable + per-field error strings that turn live as the user types. Save button stays enabled (instead of the prior `enabled = isValid` pattern) so clicking surfaces *why* it's invalid. Closes bd-bo2.2.5. ([#1135](https://github.com/cartland/battery-butler/pull/1135))
+- **Retry button on error states**: Home, Device-Types, and History screens show a "Try Again" button in their error state. New `retryableStateIn(...)` helper in `ViewModelExtensions.kt` wraps the source flow in `retryTrigger.flatMapLatest { source().catch { onError } }` so emitting a new trigger value cancels any errored subscription and starts fresh. Three ViewModels migrated; others keep the older `safeStateIn` form. Closes bd-bo2.2.6. ([#1136](https://github.com/cartland/battery-butler/pull/1136))
+- **Android release `android/29`**: signed AAB uploaded to Play Console internal testing.
+
+### Performance
+
+- **Memoize `.flatten()` + key icon grids**: `HomeScreenContent.kt:274` and `DeviceTypeListContent.kt:94` wrap `state.groupedDevices.values.flatten()` in `remember(state.groupedDevices) { ... }` so the work only repeats when the source map changes. `AddDeviceTypeContent.kt:185` and `EditDeviceTypeContent.kt:189` add `key = { it }` to LazyGrid `items()` so the grid can reuse composables across reorders. Closes bd-bo2.2.4. ([#1122](https://github.com/cartland/battery-butler/pull/1122))
+
+### Fixes
+
+- **Revert jib-gradle-plugin 3.5.3 → 3.4.1, add dependabot ignore**: PR #1133 bumped jib past its documented pin (3.4.1, see `build.gradle.kts` lines 7-13 + 17-22 and [jib#4235](https://github.com/GoogleContainerTools/jib/issues/4235)). Jib 3.5.x bytecode calls `putArchiveEntry(TarArchiveEntry)` which only exists in commons-compress 1.26+, but the build forces commons-compress 1.21 for Ktor compat. Broke `build_server` post-merge — caught by the auto-issue safety net (#1144 / #1145). Reverted to 3.4.1 and added to `.github/dependabot.yml` → `ignore:` so the same bump doesn't keep getting proposed. ([#1146](https://github.com/cartland/battery-butler/pull/1146))
+- **iOS Swift K/N interop after `HomeScreenState` field removal**: PR #1122 removed unused `groups` and `devices` fields from `HomeScreenState`. The Kotlin commonMain compile was green but 4 Swift test sites in `iosAppSwiftUITests/` were passing those fields by name to the full-param init, breaking `validation_ios_ui` on push-to-main. Caught by the post-merge auto-issue safety net (#1128 / #1129); fixed by removing the dead field references. ([#1137](https://github.com/cartland/battery-butler/pull/1137))
+
+### Refactoring
+
+- **Remaining hardcoded fallback strings → string resources**: 4 fallback strings on null-coalescing display paths (`SettingsContent` "Signed In" / "Unavailable", `EventDetailContent` "Unknown Device" / "Unknown") moved to `compose-resources`. Reuses existing `unknown_type` for the device-type fallback. Closes bd-bo2.2.1 (the long tail; bulk extraction happened in #1100-#1103 + #1110 + the import flow). ([#1123](https://github.com/cartland/battery-butler/pull/1123))
+- **RoundedCornerShape literals → MaterialTheme.shapes; multi-arg padding sweep**: 25 `RoundedCornerShape(N.dp)` sites across 8 files converted to `MaterialTheme.shapes.{small|medium|large}` (BatteryButlerShapes already maps 4/8/12/16/28dp to the standard tokens, so the visual result is identical). One-off sizes (6dp, 10dp, 24dp) skipped intentionally. Multi-arg `padding(horizontal = N.dp, ...)` in the 3 bd-named feature files (AddDeviceType, EditDeviceType, DeviceDetail) also converted to `Padding.*` tokens. Closes bd-bo2.2.3. ([#1125](https://github.com/cartland/battery-butler/pull/1125))
+
+### CI/CD
+
+- **Auto-issue safety net workflow**: Backports the CI failure tracking from the session-start fix in #1118 — see 2026-05-11 entry. (Continues to mature in this session: chicken-and-egg unblock pattern documented in `.agent/ci.md`, observed bugs noted.)
+- **Flip default CI mode to `development`**: `.github/ci-mode.txt` flipped from `release` to `development`. Pairs with the auto-issue safety net (#1118). PRs run only fast checks (~5-10 min) instead of the full suite (~80 min); slow jobs run post-merge on `main` and any regression files a tracked issue. Use `release` mode in a one-line PR before cutting a release if full-suite gating on PRs is needed. ([#1119](https://github.com/cartland/battery-butler/pull/1119))
+- **Block PR auto-merge while `ci-failure` issues are open**: New `validation_no_blocking_issues` job in `ci.yml` fails on every PR if any open issue carries both `ci-failure` and `blocking` labels. Pauses new auto-merges so fix-forward happens before piling on top of broken `main`. Skipped on push-to-main (main can't block itself). ([#1120](https://github.com/cartland/battery-butler/pull/1120))
+- **Expose 11 action skills as slash commands; port repo-check to dir form**: Added `description` + `allowed-tools` + `user-invocable: true` frontmatter to 11 single-file skills (`/run-android`, `/run-desktop`, `/run-ios-compose`, `/run-ios-swiftui`, `/run-server`, `/build-docker`, `/build-ios-framework`, `/clean-bazel`, `/format-code`, `/prepare-commit-then-push`, `/update-docs`) so they show up as slash commands. Ported `repo-check.md` → `repo-check/SKILL.md` with deeper content modeled on the SmartGarageDoor pattern (PR failing-check drill-down with bb-specific failure signatures, CI health pulling open `ci-failure` issues, bd-tasks step, release tags, unpushed-commit check). ([#1121](https://github.com/cartland/battery-butler/pull/1121))
+
+### Chore
+
+- **bd cleanup**: Closed bd-bo2.2.1, bd-bo2.2.3, bd-bo2.2.4, bd-bo2.2.5, bd-bo2.2.6, bd-bo2.2.7 (all Phase 2 sub-tasks). Closed bd-bo2.2, bd-bo2.4, bd-bo2.5, bd-bo2 (Phase 2 done; Phase 4 and Phase 5 epics had zero child tasks in 3 months — closed as aspirational rather than leaving empty containers in `bd ready`). `bd ready` is now empty, which honestly reflects "no scoped backlog" rather than misleadingly showing 4 ready epics with nothing under them. ([#1127](https://github.com/cartland/battery-butler/pull/1127), [#1138](https://github.com/cartland/battery-butler/pull/1138), [#1143](https://github.com/cartland/battery-butler/pull/1143))
+- **Dependabot patches merged**: ktor 3.4.1 → 3.4.2 (#1086), awsSdk 2.42.4 → 2.42.33 (#1087), compose hot-reload 1.1.0-beta01 → 1.1.0-rc01 (#1084, #1131), jib-gradle-plugin minor (#1133 — later reverted, see Fixes).
+- **Dependabot PRs closed** (real compile breaks from large group bumps, dependabot will reopen at smaller increments): kotlin group 12-package bump (#1114, #1130), grpc group 9-package bump (#1085, #1132), exposed 0.50→1.2 major (#1134), actions/github-script v9 (#1088).
+
+### Documentation
+
+- **`.agent/project.md`**: New "Form Validation UX" section (pattern from #1135), new "Retry With Fresh Subscription (ViewModel pattern)" section (from #1136), shape tokens documented in "UI Theme Constants" (`MaterialTheme.shapes.*` mapping for the design-token sweep).
+- **`.agent/ci.md`**: Auto-issue safety net section gained "Chicken-and-egg unblock" + "Known limitation — docs-only success false-close" subsections. Dependabot section gained an "Ignored dependencies" entry and a general rule for pinned deps.
+- **`.agent/AGENTS.md`**: Added two new rules under Configuration — Kotlin data-class field removal needing Swift updates (with #1122/#1137 as the example), and pinned dependencies needing dependabot ignore entries (with #1133/#1146 as the example).
+
+---
+
 ## 2026-05-11
 
 ### Features
