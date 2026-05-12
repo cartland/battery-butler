@@ -16,7 +16,7 @@ import io.ktor.client.request.preparePost
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsChannel
-import io.ktor.client.statement.readBytes
+import io.ktor.client.statement.readRawBytes
 import io.ktor.utils.io.readFully
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -94,7 +94,7 @@ class IosGrpcCall<S : Any, R : Any>(
             throw IOException("gRPC request failed with status: ${response.status}")
         }
 
-        val bytes = response.readBytes()
+        val bytes = response.readRawBytes()
         val buffer = Buffer().write(bytes)
 
         if (bytes.size >= 5) {
@@ -158,6 +158,7 @@ class IosGrpcStreamingCall<S : Any, R : Any>(
      * Executes the streaming call with an internally managed scope.
      * Note: Prefer [executeIn] with a caller-provided scope for proper lifecycle management.
      */
+    @Suppress("OVERRIDE_DEPRECATION") // Wire deprecated this no-arg overload; keep override to satisfy abstract member.
     override fun execute(): Pair<SendChannel<S>, ReceiveChannel<R>> {
         // Use SupervisorJob to manage the internal scope lifecycle
         val scope = CoroutineScope(SupervisorJob() + dispatcherProvider.default)
@@ -219,7 +220,7 @@ class IosGrpcStreamingCall<S : Any, R : Any>(
                                 val msg = method.responseAdapter.decode(emptyBuffer)
                                 receiveChannel.send(msg)
                             }
-                        } catch (_: io.ktor.utils.io.errors.IOException) {
+                        } catch (_: kotlinx.io.IOException) {
                             break
                         } catch (e: Exception) {
                             if (e is CancellationException) throw e
