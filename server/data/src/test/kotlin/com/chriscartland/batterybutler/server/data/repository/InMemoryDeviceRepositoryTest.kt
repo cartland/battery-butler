@@ -10,7 +10,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlin.time.Instant
 
-@OptIn(kotlin.time.ExperimentalTime::class)
+@OptIn(kotlin.time.ExperimentalTime::class, kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 class InMemoryDeviceRepositoryTest {
     @Test
     fun `addDevice broadcasts update`() =

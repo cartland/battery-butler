@@ -23,6 +23,7 @@ class NavigationSaversTest {
         )
 
         // Save
+        @Suppress("UNCHECKED_CAST")
         val saved = with(ScreenListSaver) {
             dummySaverScope.save(originalList)
         } as List<String>

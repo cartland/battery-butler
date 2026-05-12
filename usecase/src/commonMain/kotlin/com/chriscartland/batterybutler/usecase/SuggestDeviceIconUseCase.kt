@@ -37,7 +37,7 @@ class SuggestDeviceIconUseCase(
             val icon = aiEngine
                 .generateResponse(prompt, null)
                 .map { it.text }
-                .firstOrNull { it?.isNotBlank() == true }
+                .firstOrNull { it.isNotBlank() }
                 ?.trim()
                 ?.filter { !it.isWhitespace() }
 

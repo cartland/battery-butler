@@ -14,6 +14,8 @@ import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueReques
 
 private const val TAG = "DatabaseFactory"
 
+private val dbCredentialsJson = Json { ignoreUnknownKeys = true }
+
 object DatabaseFactory {
     fun init() {
         val config = if (System.getenv("SERVER_LABEL") == "AWS Cloud") {
@@ -50,7 +52,7 @@ object DatabaseFactory {
             .build()
 
         val secretValue = client.getSecretValue(getSecretValueRequest).secretString()
-        val credentials = Json { ignoreUnknownKeys = true }.decodeFromString<DbCredentials>(secretValue)
+        val credentials = dbCredentialsJson.decodeFromString<DbCredentials>(secretValue)
 
         return HikariConfig().apply {
             jdbcUrl = "jdbc:postgresql://${credentials.host}:${credentials.port}/${credentials.dbname}"

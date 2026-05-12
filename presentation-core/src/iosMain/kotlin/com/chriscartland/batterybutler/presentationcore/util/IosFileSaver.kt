@@ -49,18 +49,18 @@ class FileActivityItemSource(
     @ObjCSignatureOverride
     override fun activityViewController(
         activityViewController: UIActivityViewController,
-        itemForActivityType: UIActivityType?,
+        itemForActivityType: UIActivityType,
     ): Any? = fileUrl
 
     @ObjCSignatureOverride
     override fun activityViewController(
         activityViewController: UIActivityViewController,
-        subjectForActivityType: UIActivityType?,
+        subjectForActivityType: UIActivityType,
     ): String = fileUrl.lastPathComponent ?: "Export"
 
     @ObjCSignatureOverride
     override fun activityViewController(
         activityViewController: UIActivityViewController,
-        dataTypeIdentifierForActivityType: UIActivityType?,
+        dataTypeIdentifierForActivityType: UIActivityType,
     ): String = "public.json"
 }
