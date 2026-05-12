@@ -13,6 +13,7 @@ kotlin {
     ).forEach {
         it.binaries.framework {
             baseName = "shared"
+            binaryOption("bundleId", "com.chriscartland.batterybutler.shared")
             export(project(":domain"))
             export(project(":viewmodel"))
             export(project(":presentation-model"))
