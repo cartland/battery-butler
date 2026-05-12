@@ -8,7 +8,7 @@ buildscript {
         // See: https://github.com/GoogleContainerTools/jib/issues/4235
         // Jib 3.5.2 bytecode calls putArchiveEntry(TarArchiveEntry) which requires commons-compress 1.21
         // Downgrade to Jib 3.4.1 which is the last version properly compatible with 1.21
-        classpath("com.google.cloud.tools:jib-gradle-plugin:3.5.3")
+        classpath("com.google.cloud.tools:jib-gradle-plugin:3.4.1")
         classpath("org.apache.commons:commons-compress:1.21")
         classpath("commons-codec:commons-codec:1.21.0")
     }
@@ -17,7 +17,7 @@ buildscript {
             // Force consistent versions for Jib compatibility
             // Jib 3.5.2 bytecode requires commons-compress 1.21 API (putArchiveEntry(TarArchiveEntry))
             // Ktor plugin pulls in newer jib which declares 1.26.0 but was compiled against 1.21
-            force("com.google.cloud.tools:jib-gradle-plugin:3.5.3")
+            force("com.google.cloud.tools:jib-gradle-plugin:3.4.1")
             force("org.apache.commons:commons-compress:1.21")
             force("commons-codec:commons-codec:1.21.0")
         }
@@ -29,7 +29,7 @@ subprojects {
     buildscript {
         configurations.all {
             resolutionStrategy {
-                force("com.google.cloud.tools:jib-gradle-plugin:3.5.3")
+                force("com.google.cloud.tools:jib-gradle-plugin:3.4.1")
                 force("org.apache.commons:commons-compress:1.21")
                 force("commons-codec:commons-codec:1.21.0")
             }
