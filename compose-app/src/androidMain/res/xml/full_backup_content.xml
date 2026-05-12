@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Pre-Android 12 full-backup policy.
+    Mirrors android:allowBackup="false" and the dataExtractionRules used on
+    Android 12+: no files are eligible for backup.
+-->
+<full-backup-content>
+    <exclude domain="root" path="." />
+</full-backup-content>
