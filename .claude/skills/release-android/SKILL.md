@@ -1,70 +1,111 @@
 ---
-description: Release the Android app to Play Store internal testing by creating a release tag.
+description: Release the Android app to Play Store internal track via tag-based deployment.
 allowed-tools: Bash(*), Read, Glob, Grep
 ---
 
 # Release Android
-
-Release the Android app to Play Store internal testing by creating a release tag.
 
 > [!CAUTION]
 > **Agent Rule:** NEVER create tags or push them without explicit user permission.
 > Tags trigger production releases and cannot be easily undone.
 > Always confirm the release details and get user approval before proceeding.
 
-## Prerequisites
+This skill is the agent-facing operational shortcut. `./scripts/release-android.sh --check` is the source of truth for which command to paste next — read its output, copy the recommended command, do not retype flag combinations from memory.
 
-- On `main` branch with a clean working tree
-- All CI checks passing on the commit being released
-- Keystore and Play Store credentials configured in GitHub secrets
+## The flow
 
-## Steps
+```bash
+# 1. Clean state
+git checkout main && git pull --ff-only && git status   # working tree must be clean
 
-1. Check current state:
-   ```bash
-   git fetch origin --tags
-   git branch --show-current
-   git tag -l 'android/*' --format='%(refname:short) %(objectname:short) %(creatordate:short)' | sort -t/ -k2 -n | tail -5
-   ```
+# 2. Read the next-step command from --check
+./scripts/release-android.sh --check
+```
 
-   **Branch check:** If not on `main`, warn the user that releasing from a non-main branch is unusual and may not be intended. Ask for explicit confirmation before proceeding. If the user confirms, pass `--confirm-hash $(git rev-parse HEAD)` to the release script in step 2.
+`--check` prints:
+- Latest tag and its commit SHA
+- Next tag that will be created
+- Target commit (HEAD or --confirm-hash)
+- Branch / worktree state
+- Per-sentinel-job CI conclusion on the target commit (the 6 jobs that the server-side `verify-ci` also enforces)
+- Whether this is a rollback (target commit on an older tag)
+- A copy-paste-ready command for the right scenario
 
-2. Run the release script:
-   ```bash
-   # On main (replace <tag> with the next computed tag, e.g., android/19):
-   ./scripts/release-android.sh --confirm-tag <tag>
+```bash
+# 3. Paste the command --check printed. The common scenarios:
+./scripts/release-android.sh --confirm-tag android/N                  # normal
+./scripts/release-android.sh --confirm-tag android/N \
+    --confirm-skipped-jobs <target-sha>                                # CI was path-filtered or dev-mode
+./scripts/release-android.sh --confirm-tag android/N \
+    --confirm-hash <target-sha> \
+    --confirm-rollback-from <current-latest-tag-sha>                   # rollback
 
-   # On a non-main branch (only after user confirms):
-   ./scripts/release-android.sh --confirm-tag <tag> --confirm-hash $(git rev-parse HEAD)
-   ```
+# 4. Watch the deploy
+gh run list --workflow=release-android.yml --limit 1
+gh run watch <run-id>
+```
 
-   The `--confirm-tag` argument is a **safety confirmation only** — it cannot change which
-   tag is created. The script always computes the next tag as the highest existing + 1.
-   If the argument doesn't match, the script errors out.
+## What `--check` will tell you
 
-   The script will:
-   - Find the highest existing `android/N` tag
-   - Create `android/N+1` on the current commit (must match `--confirm-tag`)
-   - Push the tag to trigger the `release-android.yml` workflow
+| Scenario detected | What `--check` does |
+|---|---|
+| All sentinels green, on main, clean tree | Prints the simple `--confirm-tag` command |
+| Dirty working tree | Refuses; asks you to commit/stash and re-run `--check` |
+| Not on main | Prints command with `--confirm-hash <HEAD-sha>` |
+| No CI on commit yet | Prints `gh workflow run "Battery Butler CI" --ref main` recovery |
+| One or more sentinel jobs not success | Prints both the recovery flow (rerun CI in release mode) and the emergency override |
+| Target commit on an older tag | Prints the full rollback command with both SHAs filled in |
 
-   > **Note:** Do NOT use `--allow-duplicate-tag` for normal releases. That flag is only for rollback scenarios where you intentionally re-tag an older commit. Without the flag, the script will warn and prompt if the commit already has a tag — which is the desired safety check.
+## Sentinel jobs (must succeed before release)
 
-3. Monitor the release workflow:
-   ```bash
-   gh run list --workflow=release-android.yml --limit 1
-   ```
+These are the jobs that BOTH the local script AND server-side `verify-ci` check on the tagged commit. Path-filter false-greens (docs-only changes that skip every real job but produce a `success` `ci` aggregator) and dev-mode false-greens (jobs that only run on `push` events or when `ci-mode = release`) are caught here:
 
-## What the Workflow Does
+- `validation_ios_ui`
+- `validation_instrumented`
+- `build_android`
+- `build_ios_compose`
+- `build_ios_native`
+- `build_server`
 
-The `release-android.yml` workflow (triggered by `android/*` tags):
-1. Builds the release APK/AAB with signing
-2. Validates server connectivity (`PRODUCTION_SERVER_URL`)
-3. Uploads to Play Store internal testing track
-4. Creates a GitHub Release with the APK attached
+If any of these is not `success` on the target commit, the gate refuses. The fix is almost always: ensure `.github/ci-mode.txt = release` on `main`, dispatch CI manually (`gh workflow run "Battery Butler CI" --ref main`), wait for all sentinels green, then re-run `--check`.
 
-## Notes
+This is why android/30 and android/31 used a 4-PR pre-flight: flip ci-mode → release, dispatch CI, watch all jobs go green, then push the tag. `--check` makes that flow explicit so you don't have to remember it.
 
-- Tags are sequential integers: `android/1`, `android/2`, `android/3`, etc.
-- The script refuses to run with uncommitted changes
-- If the commit already has an `android/*` tag, the script warns before creating a duplicate
-- Release notes for Play Store are generated separately via `/generate-mobile-release-notes`
+## Rollback (two steps, by design)
+
+```bash
+git checkout android/M           # move HEAD to the older commit you want to re-release
+./scripts/release-android.sh --check   # prints the rollback command with the right SHAs
+```
+
+The rollback command requires both SHAs (target + previous-latest). You can only produce them by running `--check` on the rollback target — this forces deliberate HEAD movement.
+
+## Optional: verify the release after push
+
+Strictly optional. The server-side `verify-ci` gate (release-android.yml) already enforces the same sentinel check on the tagged commit before building, so a failed release is loud. But if you want explicit confirmation the upload succeeded:
+
+```bash
+# 1. Watch the workflow finish
+gh run list --workflow=release-android.yml --limit 1
+gh run watch <run-id>
+
+# 2. Check Play Console internal track
+# Open: https://play.google.com/console/u/0/developers/<dev-id>/app/<app-id>/tracks/internal-testing
+# The newly uploaded versionCode should appear within a few minutes of the workflow completing.
+```
+
+Do not block on this step unless something looked wrong during the run. The workflow itself is the source of truth.
+
+## What you should NOT do
+
+- **Don't retype flag combinations from memory.** `--check` prints the right command with the right SHAs filled in. Copy-paste prevents wrong-SHA accidents.
+- **Don't `git tag` directly.** The script enforces gates that `git tag` would bypass.
+- **Don't deploy to production.** This script only deploys to the Play Store internal track. Promotion is manual in Play Console.
+- **Don't reach for `--confirm-skipped-jobs` reflexively.** If `--check` flags skipped sentinels, the right move is almost always to re-run CI in `release` mode on the commit. Only override when you have manually verified the build (e.g., ran the relevant CI jobs locally) AND there's a real reason CI couldn't pass cleanly.
+- **Don't use `--allow-duplicate-tag` for normal releases.** That flag is for the rollback flow only; `--confirm-rollback-from` is the right way to re-tag an older commit.
+
+## See also
+
+- `scripts/release-android.sh` — the truth of which flags do what (run with `--help`)
+- `.github/workflows/release-android.yml` — the CI that the tag triggers, including the server-side `verify-ci` sentinel gate (bb-nmqn)
+- `.agent/ci.md` § Pre-Release CI Gate — the path-filter + dev-mode false-green pattern this gate exists to prevent
