@@ -224,7 +224,7 @@ config:
 %% GENERATED FILE - DO NOT EDIT
 sankey-beta
 
-Codebase,Shared Code,30195
+Codebase,Shared Code,30355
 Codebase,iOS Swift App,6261
 Codebase,Other,5143
 Codebase,CMP Apps,2590
@@ -238,7 +238,7 @@ Shared Code,presentation-core,2527
 Shared Code,data-network,2452
 Shared Code,domain,2332
 Shared Code,data,1920
-Shared Code,data-local,1318
+Shared Code,data-local,1478
 Shared Code,ai,496
 Shared Code,experimental:viewmodel,394
 Shared Code,experimental:data,357
@@ -279,8 +279,8 @@ data-network,Kotlin,2452
 domain,Kotlin,2332
 compose-app,Kotlin,2323
 data,Kotlin,1920
+data-local,Kotlin,1478
 server:app,Kotlin,1344
-data-local,Kotlin,1318
 android-screenshot-tests,Kotlin,1213
 test-common,Kotlin,665
 ai,Kotlin,496
