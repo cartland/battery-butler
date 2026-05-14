@@ -3,18 +3,18 @@
 # Code Analysis
 
 This document provides a breakdown of the codebase by application layer and module.
-Total Lines of Code: 46932
+Total Lines of Code: 47092
 
 ## Application Breakdown
-* Shared Code: 30,195 lines (64.3%)
+* Shared Code: 30,355 lines (64.5%)
 * iOS Swift App: 6,261 lines (13.3%)
-* Other: 5,143 lines (11.0%)
+* Other: 5,143 lines (10.9%)
 * CMP Android, iOS, Desktop: 2,590 lines (5.5%)
-* Server: 1,530 lines (3.3%)
+* Server: 1,530 lines (3.2%)
 * Android Screenshot Tests: 1,213 lines (2.6%)
 
 ## Module Breakdown
-* `:presentation-feature`: 6,564 lines (14.0%)
+* `:presentation-feature`: 6,564 lines (13.9%)
 * `:iosAppSwiftUI.xcodeproj`: 6,261 lines (13.3%)
 * `:viewmodel`: 5,445 lines (11.6%)
 * `:usecase`: 5,405 lines (11.5%)
@@ -24,8 +24,8 @@ Total Lines of Code: 46932
 * `:domain`: 2,332 lines (5.0%)
 * `:compose-app`: 2,323 lines (4.9%)
 * `:data`: 1,920 lines (4.1%)
+* `:data-local`: 1,478 lines (3.1%)
 * `:server:app`: 1,344 lines (2.9%)
-* `:data-local`: 1,318 lines (2.8%)
 * `:android-screenshot-tests`: 1,213 lines (2.6%)
 * `:test-common`: 665 lines (1.4%)
 * `:ai`: 496 lines (1.1%)
@@ -48,7 +48,7 @@ Total Lines of Code: 46932
 * `:iosAppComposeUI.xcodeproj`: 31 lines (0.1%)
 
 ## Language Breakdown
-* Kotlin (.kt): 40,405 lines (86.1%)
+* Kotlin (.kt): 40,565 lines (86.1%)
 * Swift (.swift): 6,527 lines (13.9%)
 
 ## Code Distribution
@@ -67,7 +67,7 @@ config:
 %% GENERATED FILE - DO NOT EDIT
 sankey-beta
 
-Codebase,Shared Code,30195
+Codebase,Shared Code,30355
 Codebase,iOS Swift App,6261
 Codebase,Other,5143
 Codebase,CMP Apps,2590
@@ -81,7 +81,7 @@ Shared Code,presentation-core,2527
 Shared Code,data-network,2452
 Shared Code,domain,2332
 Shared Code,data,1920
-Shared Code,data-local,1318
+Shared Code,data-local,1478
 Shared Code,ai,496
 Shared Code,experimental:viewmodel,394
 Shared Code,experimental:data,357
@@ -122,8 +122,8 @@ data-network,Kotlin,2452
 domain,Kotlin,2332
 compose-app,Kotlin,2323
 data,Kotlin,1920
+data-local,Kotlin,1478
 server:app,Kotlin,1344
-data-local,Kotlin,1318
 android-screenshot-tests,Kotlin,1213
 test-common,Kotlin,665
 ai,Kotlin,496
