@@ -80,6 +80,14 @@ git checkout android/M           # move HEAD to the older commit you want to re-
 
 The rollback command requires both SHAs (target + previous-latest). You can only produce them by running `--check` on the rollback target — this forces deliberate HEAD movement.
 
+## Smoke-test internal track (before promotion)
+
+Once the Play Store internal-track upload completes, install the new build on a real device and walk the critical-path checklist in `docs/android-smoke-test-queue.md`. Append a new `## android/N` section to the queue and record pass/fail per item.
+
+This step is **advisory**, not a gate — you can still promote internal → production without it. But every recent regression we've shipped (e.g. bb-lg42, the post-restore Loading bug in android/30) would have been caught by walking the checklist on a real device for 5 minutes. The queue file makes the practice durable and discoverable; an unchecked release stays visibly unchecked.
+
+Do this before promoting internal → production in Play Console.
+
 ## Optional: verify the release after push
 
 Strictly optional. The server-side `verify-ci` gate (release-android.yml) already enforces the same sentinel check on the tagged commit before building, so a failed release is loud. But if you want explicit confirmation the upload succeeded:
@@ -109,3 +117,4 @@ Do not block on this step unless something looked wrong during the run. The work
 - `scripts/release-android.sh` — the truth of which flags do what (run with `--help`)
 - `.github/workflows/release-android.yml` — the CI that the tag triggers, including the server-side `verify-ci` sentinel gate (bb-nmqn)
 - `.agent/ci.md` § Pre-Release CI Gate — the path-filter + dev-mode false-green pattern this gate exists to prevent
+- `docs/android-smoke-test-queue.md` — the smoke-test checklist and per-release pass/fail record
