@@ -42,17 +42,89 @@ jobs:
       - name: Verify CI passed on tagged commit
         run: |
           TAG_SHA="${{ steps.get-sha.outputs.sha }}"
-          echo "Checking CI status for commit $TAG_SHA..."
+          TAG="${GITHUB_REF#refs/tags/}"
+          echo "Checking CI status for commit $TAG_SHA (tag $TAG)..."
 
-          # Use '| last' to handle multiple check-runs from re-runs
-          CI_CONCLUSION=$(gh api "repos/${{ github.repository }}/commits/$TAG_SHA/check-runs" \
-            --jq '[.check_runs[] | select(.name == "ci")] | last | .conclusion')
+          # The 'ci' aggregator alone is INSUFFICIENT as a release gate.
+          # Two failure modes produce a false-green 'ci':
+          #   1. Path-filter (dorny/paths-filter) skips all real
+          #      validation_* and build_* jobs on docs-only commits, but
+          #      'ci' still aggregates to success because nothing ran.
+          #   2. Dev-mode CI (`.github/ci-mode.txt = development`) plus a
+          #      non-push event (workflow_dispatch, pull_request) skips
+          #      slow jobs per ci.yml's
+          #      `github.event_name == 'push' || ci_mode != 'development'`
+          #      condition — same false-green path.
+          #
+          # Both look identical from the check_runs API: real jobs report
+          # conclusion="skipped" while 'ci' reports "success". Fetching the
+          # whole check-runs list and verifying a SENTINEL SET of real jobs
+          # is the only way to tell the difference.
+          #
+          # See bd issue bb-nmqn.
+
+          SENTINEL_JOBS=(
+            "validation_ios_ui"
+            "validation_instrumented"
+            "build_android"
+            "build_ios_compose"
+            "build_ios_native"
+            "build_server"
+          )
+
+          # Paginate and flatten all check_runs across pages into one array.
+          CHECK_RUNS=$(gh api --paginate \
+            "repos/${{ github.repository }}/commits/$TAG_SHA/check-runs?per_page=100" \
+            --jq '.check_runs[]' | jq -s '.')
+
+          # Also keep the legacy 'ci' aggregator check — if it failed,
+          # the sentinel set probably also did, but a clear message helps.
+          #
+          # NOTE on `sort_by(.completed_at) | last`: the GitHub check_runs
+          # API returns runs in DESCENDING `started_at` order by default,
+          # so the original code's bare `| last` was picking the OLDEST
+          # run (often a skipped path-filtered run on the same SHA),
+          # masking the actual latest rerun result. We explicitly filter
+          # to completed runs and pick the most recent by completed_at.
+          CI_CONCLUSION=$(echo "$CHECK_RUNS" | jq -r '
+            [.[] | select(.name == "ci") | select(.status == "completed")]
+              | sort_by(.completed_at) | last | .conclusion // "no_completed_run"
+          ')
           if [ "$CI_CONCLUSION" != "success" ]; then
-            echo "::error::CI check on $TAG_SHA concluded '$CI_CONCLUSION', expected 'success'"
+            echo "::error::'ci' aggregator on $TAG_SHA concluded '$CI_CONCLUSION', expected 'success'"
             exit 1
           fi
 
-          echo "CI check passed on commit $TAG_SHA"
+          FAILED=0
+          for JOB in "${SENTINEL_JOBS[@]}"; do
+            # Take the LATEST COMPLETED check_run with this name. See the
+            # NOTE above about API ordering — bare `| last` is buggy.
+            CONCLUSION=$(echo "$CHECK_RUNS" | jq -r --arg job "$JOB" '
+              [.[] | select(.name == $job) | select(.status == "completed")]
+                | sort_by(.completed_at) | last | .conclusion // "no_completed_run"
+            ')
+            if [ "$CONCLUSION" != "success" ]; then
+              echo "::error::sentinel job '$JOB' on $TAG_SHA: conclusion='$CONCLUSION' (expected 'success')"
+              FAILED=1
+            else
+              echo "  ✓ $JOB: success"
+            fi
+          done
+
+          if [ "$FAILED" -eq 1 ]; then
+            echo "::error::"
+            echo "::error::One or more sentinel jobs were not run with conclusion=success on $TAG_SHA."
+            echo "::error::Either the tagged commit was path-filter-skipped (docs-only) or its CI"
+            echo "::error::ran in development mode without slow jobs. Tag rejected."
+            echo "::error::"
+            echo "::error::Recovery: ensure .github/ci-mode.txt = 'release' on main, then run"
+            echo "::error::  gh workflow run \"Battery Butler CI\" --ref main"
+            echo "::error::Wait for it to complete with all sentinel jobs success, then re-run this"
+            echo "::error::release workflow (Actions → Run workflow → select tag $TAG)."
+            exit 1
+          fi
+
+          echo "All sentinel jobs passed on $TAG_SHA"
         env:
           GH_TOKEN: ${{ github.token }}
 
