@@ -105,6 +105,11 @@ Keeping the build and tests healthy is a top priority. When you identify or fix 
   - Run `./scripts/deploy-status.sh` to check server deployment state and drift.
   - For team sessions, use Claude's TaskCreate/TaskList for coordination — not `bd`.
 
+- **bd CLI**:
+  - `bd close <id> -r "<reason>"` — `-r` not `--note`.
+  - `bd update <id> --body-file <file>` — updates the description from a file (useful for long bodies).
+  - **`bd` auto-flushes `.beads/issues.jsonl` and may rewrite field order non-deterministically**. After running any `bd` mutation, expect `git status` to show modified `.beads/issues.jsonl` even on subsequent reads. When committing an unrelated change, ALWAYS run `git restore .beads/issues.jsonl` (and re-stage only the file you intended) before `git add`. Observed on 2026-05-12 / 2026-05-14: 1-line YAML changes accidentally bundled with ~290 lines of JSONL field reordering. See bd issue bb-4ctv.
+
 - **Bash Commands**:
   - **Avoid** shell control flow keywords (`for`, `while`, `until`, `if`/`then`/`else`/`fi`, `do`/`done`) in a single bash command. Prefer separate Bash tool calls instead.
   - `&&`, `||`, `;`, and `|` (pipes) are allowed for simple chaining.
@@ -158,6 +163,12 @@ Keeping the build and tests healthy is a top priority. When you identify or fix 
   - **Every plan must include `./scripts/validate.sh` as a verification step.** If a plan lists abbreviated checks (e.g. `compileDebugSources + spotless + test`), replace or append `./scripts/validate.sh` — it covers all of those and more (detekt, lint, architecture). Never let a plan leave out the full validation step.
   - **Avoid** `clean` steps in scripts and CI if possible, relying on Gradle's incremental build and caching for speed.
   - Stale Gradle daemons cause Kotlin version mismatch errors in lint — run `./gradlew --stop` then re-validate.
+
+- **Testing Room `@Query` Flows**:
+  - **`runTest` + `StandardTestDispatcher` does NOT work for Room `@Query` Flow integration tests.** Room executes its query observers on internal dispatchers that aren't part of `TestScheduler`, so `advanceUntilIdle()` cannot push Room's I/O and the flow never emits its initial value in the test harness. Symptoms: `kotlinx.coroutines.test.UncompletedCoroutinesError` after the 1-minute default timeout, OR an `assertTrue(emissions.isNotEmpty())` that fails on a fresh subscription that should have emitted immediately.
+  - **`runBlocking` + `Dispatchers.Default` doesn't reliably fix it** either: races with raw file copies (e.g. `restoreFromLegacy`), and SQLite WAL/shm sidecar files may not match the just-copied main file. Don't spend hours fighting it.
+  - **What works:** (a) contract-level signal/state tests against the `MutableSharedFlow` / `MutableStateFlow` directly (no Room involvement) — see `DynamicDatabaseProviderTest.rebindSignal emits when restoreFromLegacy succeeds`; (b) on-device instrumented tests (`androidDeviceTest`) for true end-to-end Flow re-emission validation. Don't try to do (b) on JVM.
+  - Verified pattern: PR #1190 (bb-lg42 fix) lands a contract test + relies on the existing 5/5 `pixel5api34DebugAndroidTest` instrumented suite for end-to-end coverage.
 
 - **Linter & Architecture Enforcement**:
   - **Prefer automated enforcement over prose rules.** When you discover a rule that should always hold (naming convention, dependency direction, forbidden API usage), first check if an existing linter can enforce it. If not, propose adding a new check. A lint that fails the build is worth more than a paragraph in docs.
