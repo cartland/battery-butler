@@ -69,22 +69,58 @@ Push-to-main CI runs use SHA-based concurrency groups so rapid merges don't canc
 
 `release-build-on-green.yml` builds a signed release AAB after every green CI on main. This proves the release pipeline (signing, bundling, Gradle config) works without deploying. Uses `VERSION_CODE=1` (must be >= 1 for Android Gradle Plugin). Artifacts uploaded for 30 days. Skips docs-only changes.
 
-## Pre-Release CI Gate (PR #854)
+## Pre-Release CI Gate (PRs #854, #1197, #1200)
 
-`release-android.yml` has a `verify-ci` job that checks CI passed on the tagged commit before building. Uses `[.check_runs[] | select(.name == "ci")] | last | .conclusion` to handle multiple check-runs from CI re-runs. `release-android.sh` also checks CI status locally before creating tags.
+`release-android.yml`'s `verify-ci` job AND the local `scripts/release-android.sh` both check that CI passed on the target commit before allowing a release. They use the **sentinel-set** pattern — observed-job-outcomes is the only correct ground truth, because the `ci` aggregator alone can be a false-green.
 
-**Path-filter gotcha for pre-release validation.** The CI workflow's path filter (dorny/paths-filter) applies to `push` events but NOT `workflow_dispatch`. If the commit you want to release was the result of a docs-only / beads-only / config-only path-filtered run, then `ci` is technically `success` but every real `validation_*` and `build_*` job is `skipped` — `verify-ci` will pass even though nothing was actually validated. To force a full release-mode validation on `main` without pushing a fake code commit:
+**Why the aggregator was insufficient (the false-green path)**: A successful `ci` aggregator means nothing when:
+- The commit was docs-only / beads-only / config-only and dorny/paths-filter skipped every real `validation_*` and `build_*` job (`ci` aggregates skipped+skipped+... = success).
+- The commit's CI ran in `development` mode on a `workflow_dispatch` / `pull_request` event — slow jobs skip via `ci.yml`'s `github.event_name == 'push' || ci_mode != 'development'` condition.
+
+Both let a tag pass the old gate even though the commit was never validated.
+
+**The fix (sentinel-set check)**: Both gates now require every job in this set to have a completed `success` conclusion on the target commit:
+
+```
+validation_ios_ui
+validation_instrumented
+build_android
+build_ios_compose
+build_ios_native
+build_server
+```
+
+If any sentinel is not `success`, the gate refuses. This catches path-filter skip AND dev-mode skip AND any future skip condition without modeling them explicitly. Both gates use the same set — if you want to add or remove a job, update **both files together** to keep them in sync.
+
+**Bonus jq fix**: The original `[.check_runs[] | select(.name == "ci")] | last | .conclusion` was buggy for re-runs. GitHub's `check_runs` API returns runs in DESCENDING `started_at`, so `| last` picked the OLDEST run (often a path-filtered skipped run, on commits that had both a skipped push + a real workflow_dispatch rerun). New pattern is in both files:
+
+```jq
+[.[] | select(.name == $job) | select(.status == "completed")]
+    | sort_by(.completed_at) | last | .conclusion // "no_completed_run"
+```
+
+**Local `--check` mode is the canonical entry point** (PR #1200). It prints the per-sentinel-job conclusion plus a copy-paste-ready next command:
 
 ```bash
-# Ensure CI mode is "release" (flip via a small PR if needed — see "CI Mode")
-gh workflow run "Battery Butler CI" --ref main
+./scripts/release-android.sh --check
+```
 
+**Path-filter / dev-mode recovery**. If sentinels are skipped on the commit you want to release, ensure `.github/ci-mode.txt = release` on main, then dispatch CI manually:
+
+```bash
+gh workflow run "Battery Butler CI" --ref main
 # Watch progress; full release-mode suite takes ~25 min for validation_ios_ui alone
 gh run list --workflow "Battery Butler CI" --event workflow_dispatch --limit 1 \
   --json conclusion,status,databaseId,headSha
 ```
 
-The dispatched run's `ci` check_run appears on the commit. `release-android.yml`'s `verify-ci` uses `| last |` against `check_runs`, so the dispatched run's `ci` is the latest and qualifies for the gate. Verified on the android/30 release (commit `f50cc0d`, dispatched run `25773057059` → all 22 jobs green → tag pushed → `verify-ci` passed → Play Store upload succeeded).
+The dispatched run's check_runs appear on the commit. Once all sentinels are `success`, re-run `--check` and the gate will pass. Verified end-to-end on android/30 (`f50cc0d`, dispatched run `25773057059`) and android/31 (`c7419d5`, dispatched run `25859603708`).
+
+**SHA-typed emergency overrides** (PR #1200) — both require a value from `--check` output, so accidental usage is hard:
+
+- `--confirm-skipped-jobs <target-sha>` — release with sentinels not `success` (use only when build is independently validated)
+- `--confirm-rollback-from <latest-tag-sha>` — required when target commit is on an older tag
+- `--confirm-hash <target-sha>` — release a non-HEAD commit
 
 **After release, flip CI back to development** in a second small PR. Leaving CI in release mode makes every PR run validation_ios_ui (~25 min) which slows the dev loop.
 
