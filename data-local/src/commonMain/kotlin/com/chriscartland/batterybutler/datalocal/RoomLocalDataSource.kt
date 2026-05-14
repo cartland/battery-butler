@@ -1,5 +1,6 @@
 package com.chriscartland.batterybutler.datalocal
 
+import com.chriscartland.batterybutler.datalocal.room.AppDatabase
 import com.chriscartland.batterybutler.datalocal.room.DynamicDatabaseProvider
 import com.chriscartland.batterybutler.datalocal.room.entity.toDomain
 import com.chriscartland.batterybutler.datalocal.room.entity.toEntity
@@ -8,8 +9,10 @@ import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import me.tatarka.inject.annotations.Inject
 
 @Inject
@@ -19,17 +22,29 @@ class RoomLocalDataSource(
     // Helper to get current DAO for suspend functions
     private val dao get() = databaseProvider.database.value.deviceDao()
 
+    /**
+     * Builds a Flow that re-subscribes to [query] whenever the active database
+     * swaps OR the rebind signal ticks (currently emitted by
+     * [DynamicDatabaseProvider.restoreFromLegacy]). Without observing the rebind
+     * signal, Room `@Query` Flows can stay stuck on their initial value after a
+     * file-level database restore — see bd issue bb-lg42.
+     */
     @OptIn(ExperimentalCoroutinesApi::class)
+    private fun <T> bound(query: (AppDatabase) -> Flow<T>): Flow<T> =
+        combine(
+            databaseProvider.database,
+            databaseProvider.rebindSignal.onStart { emit(0L) },
+        ) { db, _ -> db }.flatMapLatest(query)
+
     override fun getAllDevices(): Flow<List<Device>> =
-        databaseProvider.database.flatMapLatest { db ->
+        bound { db ->
             db.deviceDao().getAllDevices().map { entities ->
                 entities.map { it.toDomain() }
             }
         }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override fun getDeviceById(id: String): Flow<Device?> =
-        databaseProvider.database.flatMapLatest { db ->
+        bound { db ->
             db.deviceDao().getDeviceById(id).map { it?.toDomain() }
         }
 
@@ -49,17 +64,15 @@ class RoomLocalDataSource(
         dao.deleteDevice(id)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override fun getAllDeviceTypes(): Flow<List<DeviceType>> =
-        databaseProvider.database.flatMapLatest { db ->
+        bound { db ->
             db.deviceDao().getAllDeviceTypes().map { entities ->
                 entities.map { it.toDomain() }
             }
         }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override fun getDeviceTypeById(id: String): Flow<DeviceType?> =
-        databaseProvider.database.flatMapLatest { db ->
+        bound { db ->
             db.deviceDao().getDeviceTypeById(id).map { it?.toDomain() }
         }
 
@@ -79,25 +92,22 @@ class RoomLocalDataSource(
         dao.deleteDeviceType(id)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override fun getEventsForDevice(deviceId: String): Flow<List<BatteryEvent>> =
-        databaseProvider.database.flatMapLatest { db ->
+        bound { db ->
             db.deviceDao().getEventsForDevice(deviceId).map { entities ->
                 entities.map { it.toDomain() }
             }
         }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override fun getAllEvents(): Flow<List<BatteryEvent>> =
-        databaseProvider.database.flatMapLatest { db ->
+        bound { db ->
             db.deviceDao().getAllEvents().map { entities ->
                 entities.map { it.toDomain() }
             }
         }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override fun getEventById(id: String): Flow<BatteryEvent?> =
-        databaseProvider.database.flatMapLatest { db ->
+        bound { db ->
             db.deviceDao().getEventById(id).map { it?.toDomain() }
         }
 
