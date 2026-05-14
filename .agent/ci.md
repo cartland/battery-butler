@@ -73,6 +73,21 @@ Push-to-main CI runs use SHA-based concurrency groups so rapid merges don't canc
 
 `release-android.yml` has a `verify-ci` job that checks CI passed on the tagged commit before building. Uses `[.check_runs[] | select(.name == "ci")] | last | .conclusion` to handle multiple check-runs from CI re-runs. `release-android.sh` also checks CI status locally before creating tags.
 
+**Path-filter gotcha for pre-release validation.** The CI workflow's path filter (dorny/paths-filter) applies to `push` events but NOT `workflow_dispatch`. If the commit you want to release was the result of a docs-only / beads-only / config-only path-filtered run, then `ci` is technically `success` but every real `validation_*` and `build_*` job is `skipped` — `verify-ci` will pass even though nothing was actually validated. To force a full release-mode validation on `main` without pushing a fake code commit:
+
+```bash
+# Ensure CI mode is "release" (flip via a small PR if needed — see "CI Mode")
+gh workflow run "Battery Butler CI" --ref main
+
+# Watch progress; full release-mode suite takes ~25 min for validation_ios_ui alone
+gh run list --workflow "Battery Butler CI" --event workflow_dispatch --limit 1 \
+  --json conclusion,status,databaseId,headSha
+```
+
+The dispatched run's `ci` check_run appears on the commit. `release-android.yml`'s `verify-ci` uses `| last |` against `check_runs`, so the dispatched run's `ci` is the latest and qualifies for the gate. Verified on the android/30 release (commit `f50cc0d`, dispatched run `25773057059` → all 22 jobs green → tag pushed → `verify-ci` passed → Play Store upload succeeded).
+
+**After release, flip CI back to development** in a second small PR. Leaving CI in release mode makes every PR run validation_ios_ui (~25 min) which slows the dev loop.
+
 ## GitHub CLI Workflow Scope
 
 Merging PRs that modify `.github/workflows/` files requires the `workflow` OAuth scope. If `gh pr merge` fails with "base branch policy prohibits the merge" and the PR touches workflow files, run `gh auth refresh -s workflow` to add the scope (requires browser-based device code flow).
