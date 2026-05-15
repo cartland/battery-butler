@@ -41,6 +41,7 @@ fun SettingsScreen(
     val legacyDatabaseInfo by viewModel.legacyDatabaseInfo.collectAsStateWithLifecycle()
     val restoreInProgress by viewModel.restoreInProgress.collectAsStateWithLifecycle()
     val restoreComplete by viewModel.restoreComplete.collectAsStateWithLifecycle()
+    val restoreResult by viewModel.restoreResult.collectAsStateWithLifecycle()
     val importResult by viewModel.importResult.collectAsStateWithLifecycle()
     val importError by viewModel.importError.collectAsStateWithLifecycle()
     val importInProgress by viewModel.importInProgress.collectAsStateWithLifecycle()
@@ -71,6 +72,7 @@ fun SettingsScreen(
         onRestoreLegacyDatabase = viewModel::onRestoreLegacyDatabase,
         restoreInProgress = restoreInProgress,
         restoreComplete = restoreComplete,
+        restoreResult = restoreResult,
         onRestoreCompleteAcknowledged = viewModel::onRestoreCompleteAcknowledged,
     )
 }
