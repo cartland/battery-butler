@@ -5,6 +5,7 @@ import com.chriscartland.batterybutler.datalocal.room.DatabaseOption
 import com.chriscartland.batterybutler.datalocal.room.DynamicDatabaseProvider
 import com.chriscartland.batterybutler.domain.model.LegacyDatabaseInfo
 import com.chriscartland.batterybutler.domain.model.NetworkMode
+import com.chriscartland.batterybutler.domain.model.RestoreResult
 import com.chriscartland.batterybutler.domain.repository.LegacyDatabaseRepository
 import me.tatarka.inject.annotations.Inject
 
@@ -24,7 +25,5 @@ class DefaultLegacyDatabaseRepository(
 
     override fun getCurrentDatabaseFileName(networkMode: NetworkMode): String = DatabaseOption.fromNetworkMode(networkMode).fileName
 
-    override suspend fun restoreLegacyDatabase(legacyFileName: String) {
-        dynamicDatabaseProvider.restoreFromLegacy(legacyFileName)
-    }
+    override suspend fun restoreLegacyDatabase(legacyFileName: String): RestoreResult = dynamicDatabaseProvider.restoreFromLegacy(legacyFileName)
 }

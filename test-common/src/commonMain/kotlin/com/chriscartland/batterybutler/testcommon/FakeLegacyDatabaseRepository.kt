@@ -2,6 +2,7 @@ package com.chriscartland.batterybutler.testcommon
 
 import com.chriscartland.batterybutler.domain.model.LegacyDatabaseInfo
 import com.chriscartland.batterybutler.domain.model.NetworkMode
+import com.chriscartland.batterybutler.domain.model.RestoreResult
 import com.chriscartland.batterybutler.domain.repository.LegacyDatabaseRepository
 
 /**
@@ -33,12 +34,16 @@ class FakeLegacyDatabaseRepository : LegacyDatabaseRepository {
     var lastRestoredFileName: String? = null
         private set
 
+    /** Result to return from [restoreLegacyDatabase]. Defaults to Success. */
+    var restoreResult: RestoreResult = RestoreResult.Success
+
     override fun getLegacyDatabaseInfo(networkMode: NetworkMode): LegacyDatabaseInfo? = legacyInfoByMode[networkMode]
 
     override fun getCurrentDatabaseFileName(networkMode: NetworkMode): String = fileNameByMode[networkMode] ?: "unknown.db"
 
-    override suspend fun restoreLegacyDatabase(legacyFileName: String) {
+    override suspend fun restoreLegacyDatabase(legacyFileName: String): RestoreResult {
         restoreCallCount++
         lastRestoredFileName = legacyFileName
+        return restoreResult
     }
 }

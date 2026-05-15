@@ -9,6 +9,7 @@ import com.chriscartland.batterybutler.domain.model.ImportResult
 import com.chriscartland.batterybutler.domain.model.LegacyDatabaseInfo
 import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.model.ProductionServerUrl
+import com.chriscartland.batterybutler.domain.model.RestoreResult
 import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.model.User
 import com.chriscartland.batterybutler.domain.model.ai.AiEngineType
@@ -137,13 +138,26 @@ class SettingsViewModel(
     private val _restoreComplete = MutableStateFlow(false)
     val restoreComplete: StateFlow<Boolean> = _restoreComplete.asStateFlow()
 
+    /**
+     * Detailed outcome of the last restore attempt. Null until a restore has run.
+     * UI surfaces a snackbar from this when it transitions to non-null. Cleared by
+     * [onRestoreCompleteAcknowledged] alongside the boolean.
+     */
+    private val _restoreResult = MutableStateFlow<RestoreResult?>(null)
+    val restoreResult: StateFlow<RestoreResult?> = _restoreResult.asStateFlow()
+
     fun onRestoreLegacyDatabase() {
         val info = legacyDatabaseInfo.value ?: return
         viewModelScope.launch {
             _restoreInProgress.value = true
             try {
-                restoreLegacyDatabaseUseCase(info.legacyFileName)
-                _restoreComplete.value = true
+                val result = restoreLegacyDatabaseUseCase(info.legacyFileName)
+                _restoreResult.value = result
+                // Preserve the prior "restore completed" signal so existing UI
+                // dialogs that only check the boolean still work; the new
+                // restoreResult carries the detailed outcome for UI that wants it.
+                _restoreComplete.value = result is RestoreResult.Success ||
+                    result is RestoreResult.DestructiveFallback
             } finally {
                 _restoreInProgress.value = false
             }
@@ -152,6 +166,7 @@ class SettingsViewModel(
 
     fun onRestoreCompleteAcknowledged() {
         _restoreComplete.value = false
+        _restoreResult.value = null
     }
 
     // Import data
