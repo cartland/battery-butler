@@ -64,6 +64,9 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.sett
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_database_legacy_found
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_database_restore
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_database_restore_complete
+import com.chriscartland.batterybutler.composeresources.generated.resources.settings_database_restore_destructive
+import com.chriscartland.batterybutler.composeresources.generated.resources.settings_database_restore_failed
+import com.chriscartland.batterybutler.composeresources.generated.resources.settings_database_restore_unavailable
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_database_restoring
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_database_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_database_version
@@ -79,6 +82,7 @@ import com.chriscartland.batterybutler.domain.model.AppVersion
 import com.chriscartland.batterybutler.domain.model.ImportResult
 import com.chriscartland.batterybutler.domain.model.LegacyDatabaseInfo
 import com.chriscartland.batterybutler.domain.model.NetworkMode
+import com.chriscartland.batterybutler.domain.model.RestoreResult
 import com.chriscartland.batterybutler.domain.model.User
 import com.chriscartland.batterybutler.domain.model.ai.AiEngineType
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
@@ -113,6 +117,7 @@ fun SettingsContent(
     onRestoreLegacyDatabase: () -> Unit = {},
     restoreInProgress: Boolean = false,
     restoreComplete: Boolean = false,
+    restoreResult: RestoreResult? = null,
     onRestoreCompleteAcknowledged: () -> Unit = {},
 ) {
     val uriHandler = LocalUriHandler.current
@@ -125,13 +130,48 @@ fun SettingsContent(
     val scope = rememberCoroutineScope()
     val copiedMessage = composeStringResource(Res.string.settings_copied_to_clipboard)
     val restoreCompleteMessage = composeStringResource(Res.string.settings_database_restore_complete)
+    val restoreDestructiveMessage = when (restoreResult) {
+        is RestoreResult.DestructiveFallback -> composeStringResource(
+            Res.string.settings_database_restore_destructive,
+            restoreResult.fromVersion.toString(),
+        )
+
+        else -> ""
+    }
+    val restoreFailedMessage = when (restoreResult) {
+        is RestoreResult.Failure -> composeStringResource(
+            Res.string.settings_database_restore_failed,
+            restoreResult.errorMessage,
+        )
+
+        else -> ""
+    }
+    val restoreUnavailableMessage = when (restoreResult) {
+        is RestoreResult.LegacyFileUnavailable -> composeStringResource(
+            Res.string.settings_database_restore_unavailable,
+            restoreResult.reason,
+        )
+
+        else -> ""
+    }
     val currentOnRestoreCompleteAcknowledged = rememberUpdatedState(onRestoreCompleteAcknowledged)
 
     val currentOnImportResultConsumed = rememberUpdatedState(onImportResultConsumed)
 
-    LaunchedEffect(restoreComplete) {
-        if (restoreComplete) {
-            snackbarHostState.showSnackbar(restoreCompleteMessage)
+    // Drive snackbar from restoreResult (richer signal). The boolean restoreComplete
+    // remains in the API for callers that only want the success-or-fallback path,
+    // but the snackbar messaging differentiates Success / DestructiveFallback /
+    // Failure / LegacyFileUnavailable.
+    LaunchedEffect(restoreResult) {
+        val message = when (restoreResult) {
+            is RestoreResult.Success -> restoreCompleteMessage
+            is RestoreResult.DestructiveFallback -> restoreDestructiveMessage
+            is RestoreResult.Failure -> restoreFailedMessage
+            is RestoreResult.LegacyFileUnavailable -> restoreUnavailableMessage
+            null -> null
+        }
+        if (message != null) {
+            snackbarHostState.showSnackbar(message)
             currentOnRestoreCompleteAcknowledged.value()
         }
     }
