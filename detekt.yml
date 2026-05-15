@@ -593,6 +593,7 @@ Compose:
     allowedCompositionLocals:
       - 'LocalAiAvailable'
       - 'LocalAiAction'
+      - 'LocalAppRestarter'
       - 'LocalAppStrings'
       - 'LocalButlerColors'
       - 'LocalFileLoader'

@@ -10,6 +10,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.chriscartland.batterybutler.BatteryButlerApplication
 import com.chriscartland.batterybutler.composeapp.debug.DebugNetworkReceiver
+import com.chriscartland.batterybutler.presentationcore.util.AndroidAppRestarter
 import com.chriscartland.batterybutler.presentationcore.util.AndroidFileLoader
 import com.chriscartland.batterybutler.presentationcore.util.AndroidFileSaver
 import com.chriscartland.batterybutler.presentationcore.util.AndroidShareHandler
@@ -39,9 +40,10 @@ class MainActivity : ComponentActivity() {
         val shareHandler = AndroidShareHandler(this)
         val fileSaver = AndroidFileSaver(this)
         fileLoader = AndroidFileLoader(this, openDocumentLauncher)
+        val appRestarter = AndroidAppRestarter(this)
 
         setContent {
-            App(component, shareHandler, fileSaver, fileLoader)
+            App(component, shareHandler, fileSaver, fileLoader, appRestarter)
         }
 
         // DEBUG: Register receiver for ADB control
