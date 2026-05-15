@@ -7,6 +7,7 @@ import com.chriscartland.batterybutler.domain.model.DispatcherProvider
 import com.chriscartland.batterybutler.domain.model.LegacyDatabaseInfo
 import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.model.ProductionServerUrl
+import com.chriscartland.batterybutler.domain.model.RestoreResult
 import com.chriscartland.batterybutler.domain.model.User
 import com.chriscartland.batterybutler.domain.model.ai.AiEngineType
 import com.chriscartland.batterybutler.domain.repository.AiPreferencesRepository
@@ -434,6 +435,83 @@ class SettingsViewModelTest {
 
             viewModel.onRestoreCompleteAcknowledged()
 
+            assertFalse(viewModel.restoreComplete.value)
+            assertEquals(null, viewModel.restoreResult.value)
+        }
+
+    @Test
+    fun `onRestoreLegacyDatabase exposes Success via restoreResult`() =
+        runTest {
+            val legacyRepo = FakeLegacyDatabaseRepository()
+            legacyRepo.legacyInfoByMode[NetworkMode.None] = LegacyDatabaseInfo("battery-butler.db", true)
+            legacyRepo.restoreResult = RestoreResult.Success
+            val viewModel = createViewModel(legacyDatabaseRepository = legacyRepo)
+            advanceUntilIdle()
+            viewModel.legacyDatabaseInfo.first { it != null }
+
+            viewModel.onRestoreLegacyDatabase()
+            advanceUntilIdle()
+
+            assertEquals(RestoreResult.Success, viewModel.restoreResult.value)
+            assertTrue(viewModel.restoreComplete.value)
+        }
+
+    @Test
+    fun `onRestoreLegacyDatabase exposes DestructiveFallback and still flags complete`() =
+        runTest {
+            val legacyRepo = FakeLegacyDatabaseRepository()
+            legacyRepo.legacyInfoByMode[NetworkMode.None] = LegacyDatabaseInfo("battery-butler.db", true)
+            legacyRepo.restoreResult = RestoreResult.DestructiveFallback(fromVersion = 0)
+            val viewModel = createViewModel(legacyDatabaseRepository = legacyRepo)
+            advanceUntilIdle()
+            viewModel.legacyDatabaseInfo.first { it != null }
+
+            viewModel.onRestoreLegacyDatabase()
+            advanceUntilIdle()
+
+            val result = viewModel.restoreResult.value
+            assertTrue(result is RestoreResult.DestructiveFallback, "expected DestructiveFallback, got $result")
+            // Restore "completed" (DB is usable) — UI still dismisses the dialog,
+            // but the snackbar should warn about data loss via restoreResult.
+            assertTrue(viewModel.restoreComplete.value)
+        }
+
+    @Test
+    fun `onRestoreLegacyDatabase exposes Failure without flagging complete`() =
+        runTest {
+            val legacyRepo = FakeLegacyDatabaseRepository()
+            legacyRepo.legacyInfoByMode[NetworkMode.None] = LegacyDatabaseInfo("battery-butler.db", true)
+            legacyRepo.restoreResult = RestoreResult.Failure(
+                errorMessage = "copy failed",
+                throwableClassName = "IOException",
+            )
+            val viewModel = createViewModel(legacyDatabaseRepository = legacyRepo)
+            advanceUntilIdle()
+            viewModel.legacyDatabaseInfo.first { it != null }
+
+            viewModel.onRestoreLegacyDatabase()
+            advanceUntilIdle()
+
+            val result = viewModel.restoreResult.value
+            assertTrue(result is RestoreResult.Failure)
+            assertFalse(viewModel.restoreComplete.value, "Failure must not flag restoreComplete")
+        }
+
+    @Test
+    fun `onRestoreLegacyDatabase exposes LegacyFileUnavailable without flagging complete`() =
+        runTest {
+            val legacyRepo = FakeLegacyDatabaseRepository()
+            legacyRepo.legacyInfoByMode[NetworkMode.None] = LegacyDatabaseInfo("battery-butler.db", true)
+            legacyRepo.restoreResult = RestoreResult.LegacyFileUnavailable(reason = "file not found")
+            val viewModel = createViewModel(legacyDatabaseRepository = legacyRepo)
+            advanceUntilIdle()
+            viewModel.legacyDatabaseInfo.first { it != null }
+
+            viewModel.onRestoreLegacyDatabase()
+            advanceUntilIdle()
+
+            val result = viewModel.restoreResult.value
+            assertTrue(result is RestoreResult.LegacyFileUnavailable)
             assertFalse(viewModel.restoreComplete.value)
         }
 
