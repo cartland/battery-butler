@@ -17,6 +17,7 @@ import com.chriscartland.batterybutler.domain.repository.AiPreferencesRepository
 import com.chriscartland.batterybutler.domain.repository.AuthRepository
 import com.chriscartland.batterybutler.domain.repository.LegacyDatabaseRepository
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
+import com.chriscartland.batterybutler.domain.repository.RestartCoordinator
 import com.chriscartland.batterybutler.usecase.ExportDataUseCase
 import com.chriscartland.batterybutler.usecase.GetAppVersionUseCase
 import com.chriscartland.batterybutler.usecase.GetLegacyDatabaseInfoUseCase
@@ -43,6 +44,7 @@ class SettingsViewModel(
     private val getLegacyDatabaseInfoUseCase: GetLegacyDatabaseInfoUseCase,
     private val restoreLegacyDatabaseUseCase: RestoreLegacyDatabaseUseCase,
     private val legacyDatabaseRepository: LegacyDatabaseRepository,
+    private val restartCoordinator: RestartCoordinator,
     productionServerUrl: ProductionServerUrl,
     devServerUrl: DevServerUrl,
 ) : ViewModel() {
@@ -158,6 +160,14 @@ class SettingsViewModel(
                 // restoreResult carries the detailed outcome for UI that wants it.
                 _restoreComplete.value = result is RestoreResult.Success ||
                     result is RestoreResult.DestructiveFallback
+                // Request a process restart for outcomes that require fresh
+                // DI / fresh AppDatabase to see restored data (bb-lg42). The
+                // emission is buffered on the long-lived AppComponent-scoped
+                // RestartCoordinator, so the app-root collector handles it
+                // even if the user has already navigated away from Settings.
+                if (result is RestoreResult.Success || result is RestoreResult.DestructiveFallback) {
+                    restartCoordinator.requestRestart()
+                }
             } finally {
                 _restoreInProgress.value = false
             }

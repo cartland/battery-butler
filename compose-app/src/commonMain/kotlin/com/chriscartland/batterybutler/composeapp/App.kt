@@ -14,9 +14,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -63,8 +65,15 @@ import com.chriscartland.batterybutler.presentationfeature.aichat.ChatMessage
 import com.chriscartland.batterybutler.presentationfeature.main.MainScreenShell
 import com.chriscartland.batterybutler.presentationfeature.main.MainTab
 import com.chriscartland.batterybutler.viewmodel.aichat.AiChatViewModel
+import kotlinx.coroutines.delay
 
 private const val NAV_ANIM_DURATION = 300
+
+/**
+ * Time the snackbar gets to render before the post-restore restart fires.
+ * Matches the previous android/33 behaviour for snackbar visibility.
+ */
+private const val POST_RESTORE_RESTART_DELAY_MS = 2000L
 
 /** Reusable tween with FastOutSlowIn easing for all nav animations. */
 private inline fun <reified T> navTween() = tween<T>(NAV_ANIM_DURATION, easing = FastOutSlowInEasing)
@@ -113,6 +122,22 @@ fun App(
             LocalAppRestarter provides appRestarter,
             LocalAppStrings provides ComposeAppStrings(),
         ) {
+            // Root-level restart observer. The RestartCoordinator on the
+            // AppComponent is a long-lived SharedFlow; this collector lives
+            // for the lifetime of the App composable (i.e., the host
+            // Activity), so the restart fires regardless of whether the
+            // user has navigated away from the screen that requested it
+            // (bb-lg42 / android/33 failure mode: in-Settings LaunchedEffect
+            // was cancelled when the user tapped Devices before the delay
+            // completed).
+            val currentAppRestarter = rememberUpdatedState(appRestarter)
+            LaunchedEffect(Unit) {
+                component.restartCoordinator.events.collect {
+                    delay(POST_RESTORE_RESTART_DELAY_MS)
+                    currentAppRestarter.value.restart()
+                }
+            }
+
             // Unified back stack: Login on top of Devices at launch.
             // Login shows first (full-screen, no chrome). After login,
             // Login is removed and Devices is revealed with shell.
