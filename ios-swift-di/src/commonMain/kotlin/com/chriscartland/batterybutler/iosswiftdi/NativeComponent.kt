@@ -32,6 +32,7 @@ import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.domain.repository.FeatureFlagProvider
 import com.chriscartland.batterybutler.domain.repository.LegacyDatabaseRepository
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
+import com.chriscartland.batterybutler.domain.repository.RestartCoordinator
 import com.chriscartland.batterybutler.viewmodel.addbatteryevent.AddBatteryEventViewModel
 import com.chriscartland.batterybutler.viewmodel.adddevice.AddDeviceViewModel
 import com.chriscartland.batterybutler.viewmodel.adddevicetype.AddDeviceTypeViewModel
@@ -163,4 +164,8 @@ abstract class NativeComponent(
     @Provides
     @SharedSingleton
     fun provideLegacyDatabaseRepository(repo: DefaultLegacyDatabaseRepository): LegacyDatabaseRepository = repo
+
+    @Provides
+    @SharedSingleton
+    fun provideRestartCoordinator(): RestartCoordinator = RestartCoordinator()
 }
