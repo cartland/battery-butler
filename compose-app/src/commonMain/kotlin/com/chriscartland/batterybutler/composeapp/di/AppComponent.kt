@@ -21,6 +21,7 @@ import com.chriscartland.batterybutler.domain.repository.AppInfoRepository
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.domain.repository.FeatureFlagProvider
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
+import com.chriscartland.batterybutler.domain.repository.RestartCoordinator
 import com.chriscartland.batterybutler.usecase.di.UseCaseComponent
 import com.chriscartland.batterybutler.viewmodel.addbatteryevent.AddBatteryEventViewModel
 import com.chriscartland.batterybutler.viewmodel.adddevice.AddDeviceViewModel
@@ -76,6 +77,7 @@ abstract class AppComponent(
     abstract val settingsViewModel: SettingsViewModel
     abstract val featureFlagProvider: FeatureFlagProvider
     abstract val networkModeRepository: NetworkModeRepository
+    abstract val restartCoordinator: RestartCoordinator
     abstract override val appScope: CoroutineScope
 
     @Provides
@@ -107,6 +109,10 @@ abstract class AppComponent(
     @Provides
     @Singleton
     fun provideAppScope(dispatcherProvider: DispatcherProvider): CoroutineScope = CoroutineScope(SupervisorJob() + dispatcherProvider.default)
+
+    @Provides
+    @Singleton
+    fun provideRestartCoordinator(): RestartCoordinator = RestartCoordinator()
 
     @Provides
     fun provideDatabaseFactory(): DatabaseFactory = databaseFactory

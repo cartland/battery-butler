@@ -13,6 +13,7 @@ import com.chriscartland.batterybutler.domain.model.ai.AiEngineType
 import com.chriscartland.batterybutler.domain.repository.AiPreferencesRepository
 import com.chriscartland.batterybutler.domain.repository.AppInfoRepository
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
+import com.chriscartland.batterybutler.domain.repository.RestartCoordinator
 import com.chriscartland.batterybutler.testcommon.FakeAuthRepository
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
 import com.chriscartland.batterybutler.testcommon.FakeLegacyDatabaseRepository
@@ -28,6 +29,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -515,6 +517,81 @@ class SettingsViewModelTest {
             assertFalse(viewModel.restoreComplete.value)
         }
 
+    @Test
+    fun `onRestoreLegacyDatabase requests restart on Success`() =
+        runTest {
+            val legacyRepo = FakeLegacyDatabaseRepository()
+            legacyRepo.legacyInfoByMode[NetworkMode.None] = LegacyDatabaseInfo("battery-butler.db", true)
+            legacyRepo.restoreResult = RestoreResult.Success
+            val coordinator = RestartCoordinator()
+            val events = mutableListOf<Unit>()
+            val collector = launch(testDispatcher) {
+                coordinator.events.collect { events.add(it) }
+            }
+            val viewModel = createViewModel(
+                legacyDatabaseRepository = legacyRepo,
+                restartCoordinator = coordinator,
+            )
+            advanceUntilIdle()
+            viewModel.legacyDatabaseInfo.first { it != null }
+
+            viewModel.onRestoreLegacyDatabase()
+            advanceUntilIdle()
+
+            assertEquals(1, events.size, "expected exactly one restart request for Success")
+            collector.cancel()
+        }
+
+    @Test
+    fun `onRestoreLegacyDatabase requests restart on DestructiveFallback`() =
+        runTest {
+            val legacyRepo = FakeLegacyDatabaseRepository()
+            legacyRepo.legacyInfoByMode[NetworkMode.None] = LegacyDatabaseInfo("battery-butler.db", true)
+            legacyRepo.restoreResult = RestoreResult.DestructiveFallback(fromVersion = 0)
+            val coordinator = RestartCoordinator()
+            val events = mutableListOf<Unit>()
+            val collector = launch(testDispatcher) {
+                coordinator.events.collect { events.add(it) }
+            }
+            val viewModel = createViewModel(
+                legacyDatabaseRepository = legacyRepo,
+                restartCoordinator = coordinator,
+            )
+            advanceUntilIdle()
+            viewModel.legacyDatabaseInfo.first { it != null }
+
+            viewModel.onRestoreLegacyDatabase()
+            advanceUntilIdle()
+
+            assertEquals(1, events.size, "expected exactly one restart request for DestructiveFallback")
+            collector.cancel()
+        }
+
+    @Test
+    fun `onRestoreLegacyDatabase does NOT request restart on Failure`() =
+        runTest {
+            val legacyRepo = FakeLegacyDatabaseRepository()
+            legacyRepo.legacyInfoByMode[NetworkMode.None] = LegacyDatabaseInfo("battery-butler.db", true)
+            legacyRepo.restoreResult = RestoreResult.Failure("copy failed", "IOException")
+            val coordinator = RestartCoordinator()
+            val events = mutableListOf<Unit>()
+            val collector = launch(testDispatcher) {
+                coordinator.events.collect { events.add(it) }
+            }
+            val viewModel = createViewModel(
+                legacyDatabaseRepository = legacyRepo,
+                restartCoordinator = coordinator,
+            )
+            advanceUntilIdle()
+            viewModel.legacyDatabaseInfo.first { it != null }
+
+            viewModel.onRestoreLegacyDatabase()
+            advanceUntilIdle()
+
+            assertEquals(0, events.size, "Failure must not request restart")
+            collector.cancel()
+        }
+
     // endregion
 
     private fun createViewModel(
@@ -524,6 +601,7 @@ class SettingsViewModelTest {
         authRepository: FakeAuthRepository = FakeAuthRepository(),
         aiPreferencesRepository: FakeAiPreferencesRepository = FakeAiPreferencesRepository(),
         legacyDatabaseRepository: FakeLegacyDatabaseRepository = FakeLegacyDatabaseRepository(),
+        restartCoordinator: RestartCoordinator = RestartCoordinator(),
     ): SettingsViewModel =
         SettingsViewModel(
             exportDataUseCase = ExportDataUseCase(deviceRepository, testDispatcherProvider),
@@ -535,6 +613,7 @@ class SettingsViewModelTest {
             getLegacyDatabaseInfoUseCase = GetLegacyDatabaseInfoUseCase(legacyDatabaseRepository),
             restoreLegacyDatabaseUseCase = RestoreLegacyDatabaseUseCase(legacyDatabaseRepository),
             legacyDatabaseRepository = legacyDatabaseRepository,
+            restartCoordinator = restartCoordinator,
             productionServerUrl = ProductionServerUrl("http://test-server:80"),
             devServerUrl = DevServerUrl("http://test-dev-server:80"),
         )
