@@ -61,7 +61,7 @@ jobs:
           # whole check-runs list and verifying a SENTINEL SET of real jobs
           # is the only way to tell the difference.
           #
-          # See bd issue bb-nmqn.
+          # See the sentinel-set rationale in .agent/ci.md.
 
           SENTINEL_JOBS=(
             "validation_ios_ui"

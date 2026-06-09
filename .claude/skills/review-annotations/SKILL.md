@@ -30,7 +30,7 @@ gh api "repos/cartland/battery-butler/check-runs/<CHECK_RUN_ID>/annotations" \
 
 ### 3. For each new annotation, recommend one of
 
-- **Fix** — actionable now (e.g., bump a deprecated dep, migrate a deprecated API). When a deferred fix already has a corresponding PR or bead, link it instead of re-opening the discussion.
+- **Fix** — actionable now (e.g., bump a deprecated dep, migrate a deprecated API). When a deferred fix already has a corresponding PR or `TODO.md` task, link it instead of re-opening the discussion.
 - **Ignore** — add a one-line pattern to `.github/annotation-ignores.txt` with a `#` comment explaining the reason (incident link, upstream tracking issue, deliberate trade-off).
 - **Defer** — note it but don't act (e.g., waiting for upstream fix or a planned migration).
 

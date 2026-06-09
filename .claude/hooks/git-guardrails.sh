@@ -58,18 +58,18 @@ if echo "$STRIPPED" | grep -qE '\bgit\s+push\b'; then
     fi
   fi
 
-  # 1. Block push without validation (skip for docs/beads-only changes)
+  # 1. Block push without validation (skip for docs-only changes)
   if [ -n "$REPO_ROOT" ]; then
     MARKER="$REPO_ROOT/.claude/.validation-passed"
     VALIDATED_HASH=$(cat "$MARKER" 2>/dev/null)
     CURRENT_HEAD=$(git rev-parse HEAD 2>/dev/null)
     if [ "$VALIDATED_HASH" != "$CURRENT_HEAD" ]; then
-      # Check if all changed files (vs origin/main) are docs/beads-only
+      # Check if all changed files (vs origin/main) are docs-only
       CHANGED_FILES=$(git diff --name-only origin/main...HEAD 2>/dev/null)
       DOCS_ONLY=true
       for f in $CHANGED_FILES; do
         case "$f" in
-          .beads/*|.agent/*|CLAUDE.md|GEMINI.md|ANTIGRAVITY.md|AGENTS.md|*.md|.claude/*) ;;
+          .agent/*|CLAUDE.md|GEMINI.md|ANTIGRAVITY.md|AGENTS.md|*.md|.claude/*) ;;
           *) DOCS_ONLY=false; break ;;
         esac
       done

@@ -38,7 +38,7 @@ xcodebuild test -project ios-app-swift-ui/iosAppSwiftUI.xcodeproj -scheme iosApp
 
 ## iOS SwiftUI Feature Parity
 
-Screen parity is 15/15 (all screens exist including DeviceTypeDetail from PR #911) but feature-level parity is ~50%. PR #873 added the design system (icons, colors, battery age), lifting History from MINIMAL to PARTIAL. Remaining gaps are mostly sort/group controls, error states, and interactive features. See `docs/FEATURE_PARITY_MAPPING.md` for per-screen gap tables. All gap tracking beads are parented to epic `bb-rrs4`.
+Screen parity is 15/15 (all screens exist including DeviceTypeDetail from PR #911) but feature-level parity is ~50%. PR #873 added the design system (icons, colors, battery age), lifting History from MINIMAL to PARTIAL. Remaining gaps are mostly sort/group controls, error states, and interactive features. See `docs/FEATURE_PARITY_MAPPING.md` for per-screen gap tables.
 
 Key systemic gaps:
 - No split-screen AI overlay or persistent input bar (AI is a standalone tab)

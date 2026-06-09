@@ -31,6 +31,12 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ---
 
+## 2026-06-09
+
+### Tooling
+
+- **Removed Beads (`bd`) task tracking; migrated to a plain `TODO.md`**: Deleted the `.beads/` database and the `bd`-driven workflow. Open tasks (the 10 still-open beads) were exported to a new root-level `TODO.md` — a plain markdown checklist grouped by priority, with the original `bb-xxxx` IDs preserved as stable cross-reference anchors (one obsolete bead about `bd`'s own JSONL flushing, bb-4ctv, was dropped). Removed the `protect-beads-files.sh` pre-tool-use hook, the `.beads/**` CI path-filter entries (`TODO.md` is still covered by the `*.md` docs filter), and scrubbed `bd`/beads references from the agent docs (`.agent/**`), skills (`repo-check`, `dump-context`), workflow comments, and `git-guardrails.sh`. Task tracking is now "edit `TODO.md` directly."
+
 ## 2026-05-12
 
 ### Features

@@ -39,8 +39,7 @@ git commit -m "chore: Switch CI to development mode"
 ## Path Filtering
 
 CI uses `dorny/paths-filter` to skip expensive builds for non-code changes:
-- **Beads-only changes** (`.beads/**`): Skip all builds, only run `ci` gate
-- **Docs-only changes** (`*.md`, `.agent/**`): Skip all builds
+- **Docs-only changes** (`*.md`, `.agent/**`): Skip all builds (includes `TODO.md`)
 - **Non-code server files** (`server/*.json`, `server/*.md`): Skip all builds
 - **Code changes**: Run full build matrix (Android, iOS, Desktop, Server)
 
@@ -73,7 +72,7 @@ Push-to-main CI runs use SHA-based concurrency groups so rapid merges don't canc
 
 `release-android.yml` has a `verify-ci` job that checks CI passed on the tagged commit before building. Uses `[.check_runs[] | select(.name == "ci")] | last | .conclusion` to handle multiple check-runs from CI re-runs. `release-android.sh` also checks CI status locally before creating tags.
 
-**Path-filter gotcha for pre-release validation.** The CI workflow's path filter (dorny/paths-filter) applies to `push` events but NOT `workflow_dispatch`. If the commit you want to release was the result of a docs-only / beads-only / config-only path-filtered run, then `ci` is technically `success` but every real `validation_*` and `build_*` job is `skipped` — `verify-ci` will pass even though nothing was actually validated. To force a full release-mode validation on `main` without pushing a fake code commit:
+**Path-filter gotcha for pre-release validation.** The CI workflow's path filter (dorny/paths-filter) applies to `push` events but NOT `workflow_dispatch`. If the commit you want to release was the result of a docs-only / config-only path-filtered run, then `ci` is technically `success` but every real `validation_*` and `build_*` job is `skipped` — `verify-ci` will pass even though nothing was actually validated. To force a full release-mode validation on `main` without pushing a fake code commit:
 
 ```bash
 # Ensure CI mode is "release" (flip via a small PR if needed — see "CI Mode")
@@ -164,4 +163,4 @@ This is what makes development-mode CI safe as the steady state: PRs only run fa
 
 **Chicken-and-egg unblock**: a fix-forward PR is itself blocked by `validation_no_blocking_issues` while the issue it fixes is open. Manually close the tracking issue(s) with a comment referencing the fix PR (e.g. `gh issue close N --comment "Fix in flight via PR #M"`), then `gh run rerun <run-id> --failed` on the PR's failed `validation_no_blocking_issues` check. Once the fix merges and a green push-to-main runs, the auto-issue workflow re-closes any stragglers. Two examples this session: PR #1137 (closed #1128/#1129), PR #1146 (closed #1144/#1145).
 
-**Known limitation — docs-only success false-close**: if a code-level failure files an issue and the next push to `main` is a docs/beads/auto-generate-only commit, that commit's CI returns `ci: success` because the path filter skips every real job. The auto-issue workflow's success path then closes the issue, even though the underlying code break still lives in `main`. This was observed in this session between PR #1133 (jib bump break, filed #1144/#1145) and PR #1143 (docs-only epic close, success). The race-condition variant is benign (the failure run completed *after* the docs success, so #1144/#1145 were correctly re-filed), but the general pattern is real and would matter if a docs-only commit landed *after* the failure CI completed. Worth fixing: gate the close-on-success path on "at least one real job actually ran," not just "ci aggregator succeeded."
+**Known limitation — docs-only success false-close**: if a code-level failure files an issue and the next push to `main` is a docs/auto-generate-only commit, that commit's CI returns `ci: success` because the path filter skips every real job. The auto-issue workflow's success path then closes the issue, even though the underlying code break still lives in `main`. This was observed in this session between PR #1133 (jib bump break, filed #1144/#1145) and PR #1143 (docs-only epic close, success). The race-condition variant is benign (the failure run completed *after* the docs success, so #1144/#1145 were correctly re-filed), but the general pattern is real and would matter if a docs-only commit landed *after* the failure CI completed. Worth fixing: gate the close-on-success path on "at least one real job actually ran," not just "ci aggregator succeeded."

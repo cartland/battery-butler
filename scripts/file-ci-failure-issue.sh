@@ -45,7 +45,7 @@ ensure_label "$BLOCKING_LABEL" "B60205" "Must resolve before new auto-merges pro
 # -----------------------------------------------------------------------------
 # Success path: close all open ci-failure issues.
 #
-# Caveat: path-filtered runs (docs-only, beads-only, auto-generate-only) mark
+# Caveat: path-filtered runs (docs-only, auto-generate-only) mark
 # every real validation job as SKIPPED while the `ci` aggregator still
 # returns success because nothing real ran. That false success must NOT
 # auto-close a ci-failure issue that was filed by a prior real-code run —
@@ -69,7 +69,7 @@ if [[ "$RUN_CONCLUSION" == "success" ]]; then
 
   if [[ "$real_success_count" -eq 0 ]]; then
     echo "Run succeeded but no real validation jobs ran — every non-gate"
-    echo "job was SKIPPED (path-filtered docs/beads/auto-generate run)."
+    echo "job was SKIPPED (path-filtered docs/auto-generate run)."
     echo "Skipping auto-close: open ci-failure issues may still reflect a"
     echo "real break on main."
     exit 0

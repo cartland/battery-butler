@@ -11,18 +11,18 @@ Detailed PR merge workflow, batch merging, integration branches, and merge seque
 | Priority | Condition | Action |
 |----------|-----------|--------|
 | **P0** | `main` is broken (CI failing) | Stop everything. Fix immediately. |
-| **P0.5** | Instruction/Beads PRs (see below) | Auto-merge (`--auto --squash`). Shared context for all agents. |
+| **P0.5** | Instruction PRs (see below) | Auto-merge (`--auto --squash`). Shared context for all agents. |
 | **P1** | PRs approved and CI green | Merge sequentially, monitor after each. |
 | **P2** | PRs pending CI or review | Wait. Work on other tasks. |
 | **P3** | New feature work | Only if P0-P2 queue is empty. |
 
-### Instruction/Beads PRs (P0.5 Priority)
+### Instruction PRs (P0.5 Priority)
 
 PRs that **only** modify the following files are **highest priority after broken builds**:
 
 - `.agent/` - Agent instructions and workflows
 - `CLAUDE.md`, `GEMINI.md`, `ANTIGRAVITY.md`, `AGENTS.md` - Agent entry points
-- `.beads/` - Task tracking data
+- `TODO.md` - Project task tracking
 
 **Why P0.5?** These PRs establish shared understanding across all agents:
 - Task assignments and status changes
@@ -37,10 +37,10 @@ PRs that **only** modify the following files are **highest priority after broken
 
 **Quick merge:**
 ```bash
-# Check if PR only modifies instruction/beads files
+# Check if PR only modifies instruction files
 gh pr view <number> --json files | jq '.files[].path'
 
-# If only .agent/, CLAUDE.md, or .beads/ → auto-merge when CI passes
+# If only .agent/, CLAUDE.md, or TODO.md → auto-merge when CI passes
 gh pr merge <number> --auto --squash --delete-branch
 ```
 
@@ -66,7 +66,7 @@ When multiple PRs are ready to merge:
 
 1. **Merge ONE at a time**
 2. **Wait for main CI** after each merge (check with `gh run list --branch main`)
-3. **Check remaining open PRs for merge conflicts** after each merge (`gh pr view <N> --json mergeable`). PRs touching shared files (`.beads/issues.jsonl`, `.agent/project.md`, `CHANGELOG.md`) are especially prone to conflicts. Rebase immediately if conflicting.
+3. **Check remaining open PRs for merge conflicts** after each merge (`gh pr view <N> --json mergeable`). PRs touching shared files (`TODO.md`, `.agent/project.md`, `CHANGELOG.md`) are especially prone to conflicts. Rebase immediately if conflicting.
 4. **If CI fails**, stop merging and fix immediately
 5. **Decide: Rebase or Direct Merge** (see below)
 
@@ -122,10 +122,7 @@ gh run list --branch main --limit 10 --json conclusion | grep -c failure
 **Immediate actions:**
 
 1. **Stop all PR merges** - Do not merge anything else
-2. **Create P0 fix task**:
-   ```bash
-   bd create --type task --priority P0 --title "Fix broken main: <failure description>"
-   ```
+2. **Add a P0 fix task** to the `## P0`/top of `TODO.md`: `Fix broken main: <failure description>`
 3. **Identify the breaking commit**:
    ```bash
    gh run list --branch main --limit 5
@@ -135,44 +132,14 @@ gh run list --branch main --limit 10 --json conclusion | grep -c failure
    - Quick fix forward (new PR to fix the issue)
    - Revert the breaking commit if fix is complex
 
-### Task Tracking with bd
+### Task Tracking
 
-#### PR Lifecycle Tasks
-
-When creating PRs, track them:
-
-```bash
-# Create task for PR
-bd create --type task --title "PR #123: <title>" --label pr-pending
-
-# When CI passes and approved
-bd update <id> --label pr-ready
-
-# After merge, monitor main CI
-bd update <id> --label pr-merged-monitoring
-
-# After main CI passes
-bd close <id>
-```
-
-#### Broken Build Tasks
-
-```bash
-# Create P0 task immediately
-bd create --type task --priority P0 --title "BROKEN BUILD: <description>"
-
-# This automatically blocks other work via priority
-```
-
-#### Recommended Labels
-
-| Label | Meaning |
-|-------|---------|
-| `pr-pending` | PR created, waiting for CI/review |
-| `pr-ready` | CI green, approved, ready to merge |
-| `pr-merged-monitoring` | Merged, watching main CI |
-| `build-broken` | Main CI is failing |
-| `blocked-by-build` | Waiting for main to be green |
+Track multi-session work in `TODO.md` (repo root). Within-session PR juggling
+(which PR is pending CI, which is ready, which is merged-but-monitoring) is
+ephemeral state — keep it in your head or in Claude's TaskCreate/TaskList during a
+team session, not in `TODO.md`. Only durable, cross-session items (bugs, follow-ups,
+a broken-main fix that outlives the session) belong in `TODO.md`, under the
+appropriate priority heading.
 
 ### Parallel PR Strategy
 
@@ -232,7 +199,7 @@ Waiting for full CI (15-20 min) after each PR merge creates a bottleneck. With 1
 
 | Risk Level | PR Type | Strategy |
 |------------|---------|----------|
-| **P0.5 (Immediate)** | `.agent/`, `CLAUDE.md`, `.beads/*` | Auto-merge (`--auto --squash --delete-branch`) |
+| **P0.5 (Immediate)** | `.agent/`, `CLAUDE.md`, `TODO.md` | Auto-merge (`--auto --squash --delete-branch`) |
 | **Low** | Docs-only, README, comments | Auto-merge, batch up to 5 at once |
 | **Medium** | Single-file code changes, test fixes | Merge 2-3, wait for CI |
 | **High** | Multi-file refactors, CI changes, shared code | Serial merge, wait for CI |
@@ -254,14 +221,14 @@ Before merging any code PR, run local validation:
 
 #### Batch Merge Protocol
 
-**For P0.5 PRs (instruction/beads - highest priority):**
+**For P0.5 PRs (instruction - highest priority):**
 
 ```bash
 # These establish shared context - auto-merge when CI passes
 # Do NOT batch these - each provides immediate value to all agents
 
-# 1. Identify instruction/beads PRs
-gh pr list --json number,title,files | jq '.[] | select(.files | all(.path | test("^(\\.agent/|CLAUDE\\.md|\\.beads/)"))'
+# 1. Identify instruction PRs
+gh pr list --json number,title,files | jq '.[] | select(.files | all(.path | test("^(\\.agent/|CLAUDE\\.md|TODO\\.md)"))'
 
 # 2. Set auto-merge (merges automatically when CI passes)
 gh pr merge <number> --auto --squash --delete-branch

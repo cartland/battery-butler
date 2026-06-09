@@ -118,7 +118,7 @@ jobs:
           PR_NUM="${{ steps.create-pr-diagrams.outputs.pull-request-number }}"
           echo "Triggering CI on PR #$PR_NUM by closing and reopening..."
           if ! gh pr close "$PR_NUM" 2>&1; then
-            echo "::error::Failed to close PR #$PR_NUM via BOT_PAT — likely HTTP 401 Bad credentials (token expired/invalid). The PR was created but Battery Butler CI will NOT fire on it automatically. Workaround: 'gh pr close $PR_NUM && gh pr reopen $PR_NUM' from a session whose token is valid. Permanent fix: rotate the BOT_PAT secret in repo Settings → Secrets and variables → Actions (needs fine-grained Pull requests + Workflows read/write, or classic 'repo' + 'workflow' scopes). See bd issue bb-16u1."
+            echo "::error::Failed to close PR #$PR_NUM via BOT_PAT — likely HTTP 401 Bad credentials (token expired/invalid). The PR was created but Battery Butler CI will NOT fire on it automatically. Workaround: 'gh pr close $PR_NUM && gh pr reopen $PR_NUM' from a session whose token is valid. Permanent fix: rotate the BOT_PAT secret in repo Settings → Secrets and variables → Actions (needs fine-grained Pull requests + Workflows read/write, or classic 'repo' + 'workflow' scopes). See the bb-16u1 task in TODO.md."
             exit 1
           fi
           gh pr reopen "$PR_NUM"
@@ -192,7 +192,7 @@ jobs:
           PR_NUM="${{ steps.create-pr-screenshots.outputs.pull-request-number }}"
           echo "Triggering CI on PR #$PR_NUM by closing and reopening..."
           if ! gh pr close "$PR_NUM" 2>&1; then
-            echo "::error::Failed to close PR #$PR_NUM via BOT_PAT — likely HTTP 401 Bad credentials (token expired/invalid). The PR was created but Battery Butler CI will NOT fire on it automatically. Workaround: 'gh pr close $PR_NUM && gh pr reopen $PR_NUM' from a session whose token is valid. Permanent fix: rotate the BOT_PAT secret in repo Settings → Secrets and variables → Actions (needs fine-grained Pull requests + Workflows read/write, or classic 'repo' + 'workflow' scopes). See bd issue bb-16u1."
+            echo "::error::Failed to close PR #$PR_NUM via BOT_PAT — likely HTTP 401 Bad credentials (token expired/invalid). The PR was created but Battery Butler CI will NOT fire on it automatically. Workaround: 'gh pr close $PR_NUM && gh pr reopen $PR_NUM' from a session whose token is valid. Permanent fix: rotate the BOT_PAT secret in repo Settings → Secrets and variables → Actions (needs fine-grained Pull requests + Workflows read/write, or classic 'repo' + 'workflow' scopes). See the bb-16u1 task in TODO.md."
             exit 1
           fi
           gh pr reopen "$PR_NUM"
@@ -279,7 +279,7 @@ jobs:
           PR_NUM="${{ steps.create-pr-ios.outputs.pull-request-number }}"
           echo "Triggering CI on PR #$PR_NUM by closing and reopening..."
           if ! gh pr close "$PR_NUM" 2>&1; then
-            echo "::error::Failed to close PR #$PR_NUM via BOT_PAT — likely HTTP 401 Bad credentials (token expired/invalid). The PR was created but Battery Butler CI will NOT fire on it automatically. Workaround: 'gh pr close $PR_NUM && gh pr reopen $PR_NUM' from a session whose token is valid. Permanent fix: rotate the BOT_PAT secret in repo Settings → Secrets and variables → Actions (needs fine-grained Pull requests + Workflows read/write, or classic 'repo' + 'workflow' scopes). See bd issue bb-16u1."
+            echo "::error::Failed to close PR #$PR_NUM via BOT_PAT — likely HTTP 401 Bad credentials (token expired/invalid). The PR was created but Battery Butler CI will NOT fire on it automatically. Workaround: 'gh pr close $PR_NUM && gh pr reopen $PR_NUM' from a session whose token is valid. Permanent fix: rotate the BOT_PAT secret in repo Settings → Secrets and variables → Actions (needs fine-grained Pull requests + Workflows read/write, or classic 'repo' + 'workflow' scopes). See the bb-16u1 task in TODO.md."
             exit 1
           fi
           gh pr reopen "$PR_NUM"
