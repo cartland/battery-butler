@@ -48,7 +48,6 @@
       "Bash(./scripts/sync-ios-project.sh)",
       "Bash(./scripts/restart_server.sh)",
       "Bash(./scripts/analyze-* *)",
-      "Bash(bd *)",
       "Bash(./gradlew *)",
       "Bash(docker *)",
       "Bash(terraform *)",
