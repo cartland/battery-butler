@@ -14,7 +14,7 @@ androidx-espresso = "3.6.1"
 androidx-lifecycle = "2.8.4" # Stable base
 androidx-lifecycle-jb = "2.8.4" # JetBrains fork often matches or is slightly different, but try stable first OR utilize the alpha from recipe if needed. 
 # Recipe used 2.10.0-alpha05. Let's try that to be safe for Nav3.
-androidx-lifecycle-alpha = "2.10.0-beta01" # 2.11.0-beta01 dropped the iosX64 target → broke iOS K/N builds (reverted #1225; see TODO bb-revert-lifecycle)
+androidx-lifecycle-alpha = "2.10.0-beta01" # Do not bump: 2.11.0-beta01 dropped the iosX64 target → broke iOS K/N builds (reverted #1225 in #1239). Pinned via dependabot ignore; see .agent/ci.md "Ignored dependencies".
 androidx-testExt = "1.2.1"
 composeHotReload = "1.1.1"
 composeMultiplatform = "1.10.0"
