@@ -1,5 +1,5 @@
 ---
-description: Quick health check of the repo — open PRs, CI status, recent releases, open issues, bd tasks, and local state.
+description: Quick health check of the repo — open PRs, CI status, recent releases, open issues, TODO.md tasks, and local state.
 allowed-tools: Bash(*), Read, Glob, Grep
 user-invocable: true
 ---
@@ -94,17 +94,10 @@ gh issue list --state open --json number,title,labels \
 
 Flag any with the `ci-failure` or `blocking` labels — those gate the queue.
 
-### 5. bd Tasks
+### 5. TODO Tasks
 
-```bash
-bd ready
-```
-
-Lists tasks ready to start (not blocked, no owner). If anything is in-progress, surface it too:
-
-```bash
-bd list --status in_progress
-```
+Read `TODO.md` (repo root) and report the count of open tasks per priority heading
+(`## P2`, `## P3`, `## P4`). Surface anything marked ⚠️ / USER ACTION REQUIRED.
 
 ### 6. Local State
 
@@ -125,7 +118,7 @@ PRs:        N open (N conflicts, N auto-merge, N failing checks)
             [name each PR with failing checks: "#NNN fail: <job-name>"]
 CI (main):  passing/failing (last run: YYYY-MM-DD)
 Issues:     N open [if any ci-failure, name the commit SHA per issue]
-bd:         N ready [+ N in_progress]
+TODO:       N open (P2:N P3:N P4:N) [flag any USER ACTION REQUIRED]
 Releases:   android/N, server/N
 Local:      <branch>, clean | <branch>, dirty (list changed files)
 ```

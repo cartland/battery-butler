@@ -56,8 +56,7 @@ Auto PRs merged (safe, loop-proof)
 ## CI Path Filtering
 
 CI uses `dorny/paths-filter` to skip expensive builds for non-code changes:
-- **Beads-only changes** (`.beads/**`): Skip all builds, only run `ci` gate
-- **Docs-only changes** (`*.md`, `.agent/**`): Skip all builds
+- **Docs-only changes** (`*.md`, `.agent/**`): Skip all builds (includes `TODO.md`)
 - **Non-code server files** (`server/*.json`, `server/*.md`): Skip all builds
 - **Code changes**: Run full build matrix
 

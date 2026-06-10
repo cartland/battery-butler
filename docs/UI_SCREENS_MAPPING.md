@@ -33,7 +33,7 @@ The goal is to achieve feature parity between these two UI implementations by co
 
 ## Feature Parity Matrix
 
-The following table tracks specific feature gaps between the Compose Multiplatform UI and the native SwiftUI UI. Each gap references a bead ID for tracking.
+The following table tracks specific feature gaps between the Compose Multiplatform UI and the native SwiftUI UI. Each gap references a task ID for tracking.
 
 | Feature | Compose | iOS SwiftUI | Gap |
 |---------|---------|-------------|-----|

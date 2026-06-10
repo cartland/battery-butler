@@ -32,7 +32,7 @@ Most SwiftUI screens are minimal implementations that render basic data but lack
 
 ## Tracking
 
-Beads tracking gap implementation are parented to epic `bb-rrs4` (iOS SwiftUI Feature Parity).
+iOS SwiftUI feature-parity gaps are tracked in `TODO.md` (repo root).
 
 ## Cross-Cutting Gaps
 
@@ -291,9 +291,12 @@ These issues affect all SwiftUI screens, not just individual ones:
 
 ---
 
-## Bead Tracking Summary
+## Task Tracking Summary
 
-| Bead | Area | Priority | Status |
+> Historical record. These IDs were tracked in Beads (now removed); most are
+> closed (see PR links). Live parity work, if any, is in `TODO.md`.
+
+| Task | Area | Priority | Status |
 |------|------|----------|--------|
 | `bb-rrs4` | Epic: iOS Feature Parity | P2 | Open |
 | `bb-57ln` | EditBatteryEvent + DeviceTypeDetail | P2 | Closed (EditBatteryEvent done PR #907; DeviceTypeDetail → `bb-tgd6`) |

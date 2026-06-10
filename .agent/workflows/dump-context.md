@@ -1,5 +1,5 @@
 ---
-description: Capture session knowledge (tasks, decisions, workarounds) into beads and docs before session ends.
+description: Capture session knowledge (tasks, decisions, workarounds) into TODO.md and docs before session ends.
 ---
 
 # Dump Context
@@ -26,24 +26,26 @@ Review the entire conversation and categorize knowledge into four buckets:
 
 Write a brief summary of findings before proceeding.
 
-### Phase 2: Create Beads (Highest Priority)
+### Phase 2: Update TODO.md (Highest Priority)
 
-For each actionable item identified in Phase 1, create a bead:
+For each actionable item identified in Phase 1, add a task to `TODO.md` (repo root)
+under the appropriate priority heading (`## P2` / `## P3` / `## P4`):
 
-```bash
-bd create "<title>" \
-  --type task|bug|feature|chore \
-  --priority P0|P1|P2|P3|P4 \
-  --description "<self-contained description>"
+```markdown
+### bb-xxxx — <title>
+
+<self-contained description>
 ```
 
 Rules:
-- One `bd create` per actionable item
+- One `### ` task subsection per actionable item
+- Mint a new short unique `bb-xxxx` id (any unused slug); IDs are stable anchors
+  other docs/workflow comments may reference
 - Descriptions must be **self-contained** — assume no conversation context
 - Include enough detail for a fresh session to pick up the work
-- Set appropriate `--type` and `--priority`
-- Set up dependencies with `bd dep add` if items are related
-- Skip items that already have beads (check with `bd search`)
+- Place under the right `## P2`/`## P3`/`## P4` heading by priority
+- Skip items that already have a task (search `TODO.md` first); if an existing task
+  gained new evidence/status, append it in place rather than duplicating
 
 ### Phase 3: Update Documentation
 
@@ -73,14 +75,14 @@ Add if applicable:
 
 1. Stage all changes:
    ```bash
-   git add .beads/ .agent/
+   git add TODO.md .agent/
    # Add any other updated docs
    ```
 
 2. Create branch and commit:
    ```bash
    git checkout -b agent/dump-context-YYYY-MM-DD origin/main
-   git commit -m "chore: Dump session context — beads and docs update"
+   git commit -m "chore: Dump session context — TODO.md and docs update"
    ```
 
 3. Push and create PR:
@@ -88,11 +90,11 @@ Add if applicable:
    git push -u origin agent/dump-context-YYYY-MM-DD
    gh pr create --title "chore: Dump session context" --body "$(cat <<'EOF'
    ## Summary
-   - Created X new beads for tracked tasks
+   - Added X new tasks to TODO.md
    - Updated session resume points
    - [List other doc updates]
 
-   ## Beads Created
+   ## Tasks Added
    - `bb-xxx`: <title>
    - `bb-yyy`: <title>
 
@@ -103,12 +105,12 @@ Add if applicable:
    )"
    ```
 
-This is a P0.5 priority PR (instruction/beads only) — merge immediately when CI passes.
+This is a P0.5 priority PR (instruction/docs only) — merge immediately when CI passes.
 
 ## Tips
 
-- Phase 2 (beads) is the most important — tasks lost in conversation are tasks forgotten
-- Be aggressive about creating beads — it's better to have a bead you close as "not needed" than to lose a task
-- Don't put session-specific state in docs — use `bd` for tasks and let `bd ready` be the resume point
+- Phase 2 (TODO.md) is the most important — tasks lost in conversation are tasks forgotten
+- Be aggressive about adding tasks — it's better to have a task you later delete as "not needed" than to lose one
+- Don't put session-specific state in docs — use `TODO.md` for tasks and let it be the resume point
 - Don't update docs with speculative information — only document things confirmed during the session
 - If the conversation was short or trivial, skip phases that don't apply (not every session needs all 5 phases)

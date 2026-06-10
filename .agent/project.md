@@ -11,7 +11,7 @@ Shared project-specific knowledge for all AI agents. This supplements the workfl
 - **Database**: Room (local), RDS PostgreSQL (server)
 - **Build**: Gradle (app), Bazel (iOS protos), Terraform (infrastructure)
 - **CI**: GitHub Actions
-- **Task tracking**: `bd` (Beads CLI)
+- **Task tracking**: `TODO.md` (plain markdown checklist at repo root)
 
 ### Offline-First Sync
 
@@ -155,7 +155,7 @@ The `experimental/` directory is a reference architecture for KMP apps. See `exp
 
 ### UI Theme Constants
 
-Padding constants live in `presentation-core/.../theme/Padding.kt`. Use `Padding.standard` (16.dp), `Padding.small` (8.dp), `Padding.large` (24.dp), etc. instead of hardcoded dp values. Also `Padding.extraSmall` (4.dp), `Padding.medium` (12.dp), `Padding.extraLarge` (32.dp). PR #1108 swept single-arg `padding(N.dp)` sites; PR #1125 swept multi-arg `padding(horizontal = N.dp, ...)` sites in the three bd-named feature files (AddDeviceType, EditDeviceType, DeviceDetail). Multi-arg padding in other feature files is a deferred follow-up.
+Padding constants live in `presentation-core/.../theme/Padding.kt`. Use `Padding.standard` (16.dp), `Padding.small` (8.dp), `Padding.large` (24.dp), etc. instead of hardcoded dp values. Also `Padding.extraSmall` (4.dp), `Padding.medium` (12.dp), `Padding.extraLarge` (32.dp). PR #1108 swept single-arg `padding(N.dp)` sites; PR #1125 swept multi-arg `padding(horizontal = N.dp, ...)` sites in three feature files (AddDeviceType, EditDeviceType, DeviceDetail). Multi-arg padding in other feature files is a deferred follow-up.
 
 Shape tokens live in `presentation-core/.../theme/Shapes.kt` as `BatteryButlerShapes`, exposed via Material3 `MaterialTheme.shapes.*`:
 - `shapes.extraSmall` = `RoundedCornerShape(4.dp)`
@@ -254,7 +254,7 @@ All data types follow a consistent **List → Detail (read-only) → Edit** arch
 
 For a detailed breakdown of how the shared Compose Multiplatform UI maps to the native SwiftUI implementation (and why they intuitively differ structurally), see `docs/UI_SCREENS_MAPPING.md`.
 
-When implementing a new Compose UI feature, check if a corresponding iOS SwiftUI implementation is needed. If so, create a bead for the iOS gap and reference it in `docs/UI_SCREENS_MAPPING.md`.
+When implementing a new Compose UI feature, check if a corresponding iOS SwiftUI implementation is needed. If so, add a task to `TODO.md` for the iOS gap and reference it in `docs/UI_SCREENS_MAPPING.md`.
 
 ### Data Export / Import
 
@@ -364,45 +364,26 @@ Release scripts check for existing tags, increment correctly, provide confirmati
 
 ### Two Task Systems
 
-- **`bd` (beads)** — Cross-session project tracking. Persists in git. Use for epics, bugs, features that span multiple sessions.
+- **`TODO.md`** (repo root) — Cross-session project tracking. Plain markdown,
+  committed to git. Use for epics, bugs, features that span multiple sessions.
 - **Claude's TaskCreate/TaskList** — Within-session team coordination. Ephemeral. Use for breaking work into subtasks during a team session.
 
 **Rules:**
-- Teammates in a Claude Code team use TaskCreate/TaskList for coordination (never `bd`)
-- Use `bd` at session start (`bd ready`) and session end (`bd close`) for project-level items
-- Don't duplicate: if it's a single-session task, it doesn't need a bead
+- Teammates in a Claude Code team use TaskCreate/TaskList for coordination (never `TODO.md`)
+- Read `TODO.md` at session start and update it at session end for project-level items
+- Don't duplicate: if it's a single-session task, it doesn't need a `TODO.md` entry
 
-### `bd` Quick Reference
+### `TODO.md` Conventions
 
-Use `bd` CLI for all task/issue management. **Never modify `.beads/issues.jsonl` directly.** Run `bd help` for full command list.
+`TODO.md` is a plain markdown file — edit it directly, no special tooling.
 
-```bash
-# Session workflow
-bd list              # List all open issues
-bd ready             # Show tasks ready to work on (no blockers)
-bd show <id>         # View full task details
-bd create "Title" --type task --priority P2  # Create a task
-bd close <id> --reason "Fixed in PR #123"    # Mark complete
-bd search "login"    # Search by text
-```
-
-### Committing Beads Changes
-
-Beads files should be committed to git like any other code:
-
-```bash
-# Include with code changes (recommended)
-git add src/... .beads/issues.jsonl
-git commit -m "feat: Add feature X (closes bb-123)"
-
-# Standalone beads update (when no code changes)
-git add .beads/
-git commit -m "chore(beads): Update task tracking"
-```
-
-**What gets committed:** `.beads/issues.jsonl`, `.beads/interactions.jsonl`, `.beads/config.yaml`, `.beads/metadata.json`
-
-**What stays local (gitignored):** `*.db*`, `daemon.*`, `bd.sock`
+- Tasks are grouped under `## P2` / `## P3` / `## P4` priority headings, each task
+  a `### bb-xxxx — <title>` subsection. The `bb-xxxx` IDs are stable anchors that
+  other docs/workflow comments cross-reference — preserve them; mint new ones as
+  needed (any short unique slug is fine).
+- Add a new task under the right priority heading with a self-contained description.
+- When a task is done, move it to the `## Done` section with a one-line outcome, or
+  delete it. Commit the change like any other doc edit.
 
 ## Claude Code Hooks
 
@@ -428,7 +409,7 @@ Registered in `.claude/settings.json` under `hooks.PreToolUse`.
 - **NEVER use `sleep` commands** - Don't wait for CI. Find productive work instead.
 - **Always iterate locally** - Run local validation while CI runs remotely.
 - **Check CI status without waiting** - Use `gh pr view` or `gh run list` without `--watch`.
-- **Work in parallel** - While one PR's CI runs, work on other tasks from `bd ready`.
+- **Work in parallel** - While one PR's CI runs, work on other tasks from `TODO.md`.
 
 ## File Index
 

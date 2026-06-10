@@ -6,24 +6,6 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": ".claude/hooks/protect-beads-files.sh"
-          }
-        ]
-      },
-      {
-        "matcher": "Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": ".claude/hooks/protect-beads-files.sh"
-          }
-        ]
-      },
-      {
         "matcher": "Bash",
         "hooks": [
           {
@@ -33,10 +15,6 @@
           {
             "type": "command",
             "command": ".claude/hooks/git-guardrails.sh"
-          },
-          {
-            "type": "command",
-            "command": ".claude/hooks/protect-beads-files.sh"
           }
         ]
       }
@@ -70,7 +48,6 @@
       "Bash(./scripts/sync-ios-project.sh)",
       "Bash(./scripts/restart_server.sh)",
       "Bash(./scripts/analyze-* *)",
-      "Bash(bd *)",
       "Bash(./gradlew *)",
       "Bash(docker *)",
       "Bash(terraform *)",
