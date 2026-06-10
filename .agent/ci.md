@@ -68,22 +68,58 @@ Push-to-main CI runs use SHA-based concurrency groups so rapid merges don't canc
 
 `release-build-on-green.yml` builds a signed release AAB after every green CI on main. This proves the release pipeline (signing, bundling, Gradle config) works without deploying. Uses `VERSION_CODE=1` (must be >= 1 for Android Gradle Plugin). Artifacts uploaded for 30 days. Skips docs-only changes.
 
-## Pre-Release CI Gate (PR #854)
+## Pre-Release CI Gate (PRs #854, #1197, #1200)
 
-`release-android.yml` has a `verify-ci` job that checks CI passed on the tagged commit before building. Uses `[.check_runs[] | select(.name == "ci")] | last | .conclusion` to handle multiple check-runs from CI re-runs. `release-android.sh` also checks CI status locally before creating tags.
+`release-android.yml`'s `verify-ci` job AND the local `scripts/release-android.sh` both check that CI passed on the target commit before allowing a release. They use the **sentinel-set** pattern — observed-job-outcomes is the only correct ground truth, because the `ci` aggregator alone can be a false-green.
 
-**Path-filter gotcha for pre-release validation.** The CI workflow's path filter (dorny/paths-filter) applies to `push` events but NOT `workflow_dispatch`. If the commit you want to release was the result of a docs-only / config-only path-filtered run, then `ci` is technically `success` but every real `validation_*` and `build_*` job is `skipped` — `verify-ci` will pass even though nothing was actually validated. To force a full release-mode validation on `main` without pushing a fake code commit:
+**Why the aggregator was insufficient (the false-green path)**: A successful `ci` aggregator means nothing when:
+- The commit was docs-only / config-only and dorny/paths-filter skipped every real `validation_*` and `build_*` job (`ci` aggregates skipped+skipped+... = success).
+- The commit's CI ran in `development` mode on a `workflow_dispatch` / `pull_request` event — slow jobs skip via `ci.yml`'s `github.event_name == 'push' || ci_mode != 'development'` condition.
+
+Both let a tag pass the old gate even though the commit was never validated.
+
+**The fix (sentinel-set check)**: Both gates now require every job in this set to have a completed `success` conclusion on the target commit:
+
+```
+validation_ios_ui
+validation_instrumented
+build_android
+build_ios_compose
+build_ios_native
+build_server
+```
+
+If any sentinel is not `success`, the gate refuses. This catches path-filter skip AND dev-mode skip AND any future skip condition without modeling them explicitly. Both gates use the same set — if you want to add or remove a job, update **both files together** to keep them in sync.
+
+**Bonus jq fix**: The original `[.check_runs[] | select(.name == "ci")] | last | .conclusion` was buggy for re-runs. GitHub's `check_runs` API returns runs in DESCENDING `started_at`, so `| last` picked the OLDEST run (often a path-filtered skipped run, on commits that had both a skipped push + a real workflow_dispatch rerun). New pattern is in both files:
+
+```jq
+[.[] | select(.name == $job) | select(.status == "completed")]
+    | sort_by(.completed_at) | last | .conclusion // "no_completed_run"
+```
+
+**Local `--check` mode is the canonical entry point** (PR #1200). It prints the per-sentinel-job conclusion plus a copy-paste-ready next command:
 
 ```bash
-# Ensure CI mode is "release" (flip via a small PR if needed — see "CI Mode")
-gh workflow run "Battery Butler CI" --ref main
+./scripts/release-android.sh --check
+```
 
+**Path-filter / dev-mode recovery**. If sentinels are skipped on the commit you want to release, ensure `.github/ci-mode.txt = release` on main, then dispatch CI manually:
+
+```bash
+gh workflow run "Battery Butler CI" --ref main
 # Watch progress; full release-mode suite takes ~25 min for validation_ios_ui alone
 gh run list --workflow "Battery Butler CI" --event workflow_dispatch --limit 1 \
   --json conclusion,status,databaseId,headSha
 ```
 
-The dispatched run's `ci` check_run appears on the commit. `release-android.yml`'s `verify-ci` uses `| last |` against `check_runs`, so the dispatched run's `ci` is the latest and qualifies for the gate. Verified on the android/30 release (commit `f50cc0d`, dispatched run `25773057059` → all 22 jobs green → tag pushed → `verify-ci` passed → Play Store upload succeeded).
+The dispatched run's check_runs appear on the commit. Once all sentinels are `success`, re-run `--check` and the gate will pass. Verified end-to-end on android/30 (`f50cc0d`, dispatched run `25773057059`) and android/31 (`c7419d5`, dispatched run `25859603708`).
+
+**SHA-typed emergency overrides** (PR #1200) — both require a value from `--check` output, so accidental usage is hard:
+
+- `--confirm-skipped-jobs <target-sha>` — release with sentinels not `success` (use only when build is independently validated)
+- `--confirm-rollback-from <latest-tag-sha>` — required when target commit is on an older tag
+- `--confirm-hash <target-sha>` — release a non-HEAD commit
 
 **After release, flip CI back to development** in a second small PR. Leaving CI in release mode makes every PR run validation_ios_ui (~25 min) which slows the dev loop.
 
@@ -155,6 +191,10 @@ For PRs that share files (e.g. `strings.xml`, list-screen content): disable auto
 
 This is what makes development-mode CI safe as the steady state: PRs only run fast checks, slow checks run post-merge on `main`, and any post-merge regression surfaces as a tracked issue instead of silent red.
 
+**Scope caveat — only watches `Battery Butler CI`**: the workflow's trigger gates on `workflow_run.name == "Battery Butler CI"` AND `event == 'push'` AND `head_branch == 'main'`. Failures in the *automation pipeline* (`Auto-Generate Content`, `CI for Auto PRs`) are NOT covered — they never file a `ci-failure` issue no matter how often they fail, and so they never gate the merge queue. They only surface via a manual `/repo-check`. (Observed 2026-06-08: weekly `CI for Auto PRs` → `trigger-ci` "Bad credentials" failures from the expired BOT_PAT, bb-16u1, were invisible to this net.)
+
+**Verified working (2026-06-08)**: open / comment-dedup / close-on-green have all fired correctly in production history. Concrete examples — open: #1216–1218; comment-dedup: #1180 (3× "Job failed again." on the same `ci` issue instead of duplicates); auto-close-on-green: #1199/#1198/#1192/#1184/#1168/#1164/#1140/#1139. Note the most *recent* closures (the 05-16 batch) were closed *manually* by the developer who fixed `main`, ahead of the auto-close — that's expected, not a regression.
+
 **Companion gate**: `validation_no_blocking_issues` in `ci.yml` runs on every PR and fails if any open `ci-failure` issue carries the `blocking` label. This pauses new auto-merges until the regression is fixed forward.
 
 **Companion ritual**: run `/check-ci-issues` at session start, before picking up new feature work. The skill at `.claude/skills/check-ci-issues/SKILL.md` documents the triage flow. The fix is a normal PR off `origin/main`; the next green push-to-main auto-closes the issue.
@@ -163,4 +203,4 @@ This is what makes development-mode CI safe as the steady state: PRs only run fa
 
 **Chicken-and-egg unblock**: a fix-forward PR is itself blocked by `validation_no_blocking_issues` while the issue it fixes is open. Manually close the tracking issue(s) with a comment referencing the fix PR (e.g. `gh issue close N --comment "Fix in flight via PR #M"`), then `gh run rerun <run-id> --failed` on the PR's failed `validation_no_blocking_issues` check. Once the fix merges and a green push-to-main runs, the auto-issue workflow re-closes any stragglers. Two examples this session: PR #1137 (closed #1128/#1129), PR #1146 (closed #1144/#1145).
 
-**Known limitation — docs-only success false-close**: if a code-level failure files an issue and the next push to `main` is a docs/auto-generate-only commit, that commit's CI returns `ci: success` because the path filter skips every real job. The auto-issue workflow's success path then closes the issue, even though the underlying code break still lives in `main`. This was observed in this session between PR #1133 (jib bump break, filed #1144/#1145) and PR #1143 (docs-only epic close, success). The race-condition variant is benign (the failure run completed *after* the docs success, so #1144/#1145 were correctly re-filed), but the general pattern is real and would matter if a docs-only commit landed *after* the failure CI completed. Worth fixing: gate the close-on-success path on "at least one real job actually ran," not just "ci aggregator succeeded."
+**Former limitation — docs-only success false-close (NOW FIXED, bb-2r4g)**: if a code-level failure files an issue and the next push to `main` is a docs/auto-generate-only commit, that commit's CI returns `ci: success` because the path filter skips every real job — so the success path would close the issue even though the code break still lives in `main`. Originally observed between PR #1133 (jib bump break, filed #1144/#1145) and PR #1143 (docs-only epic close, success). **This is now guarded**: `scripts/file-ci-failure-issue.sh` computes `real_success_count` (jobs that succeeded excluding the control-flow gates `changes`, `ci`, `validation_no_blocking_issues`) and `exit 0`s without closing anything when it's `0` — i.e. a path-filtered run where every real job was SKIPPED no longer auto-closes a real-failure issue. Verified in the script source 2026-06-08.
