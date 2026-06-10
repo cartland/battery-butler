@@ -9,34 +9,6 @@ Project task tracking for Battery Butler.
 
 ## P2
 
-### bb-16u1 — Auto-generate inline CI trigger fails: expired `BOT_PAT` (USER ACTION REQUIRED)
-
-> ⚠️ Still unfixed as of 2026-06-08, ~4 weeks after first report. The
-> `BOT_PAT`-authenticated inline CI trigger in `auto-generate.yml` (and the
-> `ci-trigger-auto-prs.yml` fallback) returns `HTTP 401: Bad credentials` on
-> every run, so auto-generated PRs (diagrams, screenshots) get no CI until a
-> human kicks them. Recurs weekly — observed `CI for Auto PRs` → `trigger-ci`
-> failures on 2026-06-01 and 2026-06-08.
-
-**Root cause:** `secrets.BOT_PAT` is expired/invalid. The `gh pr close || true` /
-`gh pr reopen || true` trigger step swallows the failure, so the workflow goes
-green while the trigger does nothing. The `secrets.BOT_PAT || secrets.GITHUB_TOKEN`
-fallback in `ci-trigger-auto-prs.yml` doesn't help — `GITHUB_TOKEN` can't trigger
-other workflows by design.
-
-**Fix required (user action — an agent cannot edit repo secrets via CLI):**
-1. Generate a new fine-grained PAT for `cartland/battery-butler` with
-   `Pull requests: Read and write` + `Workflows: Read and write` (or a classic
-   PAT with `repo` + `workflow` scopes).
-2. Update the `BOT_PAT` secret in Settings → Secrets and variables → Actions.
-3. Verify: `gh workflow run "Auto-Generate Content"` and confirm the resulting
-   auto-PR gets full CI checks (not just GitGuardian) within ~1 min.
-
-**Agent-doable follow-up:** remove `|| true` from the trigger step so the failure
-becomes visible, or `continue-on-error: true` + a step that posts a PR comment on
-failure. Manual workaround meanwhile: `gh pr close <N> && gh pr reopen <N>` from a
-session whose token is valid.
-
 ### bb-lg42 — DB restore: ViewModel Flows don't re-emit after `restoreFromLegacy` until app restart
 
 **Symptom (android/30 → still present android/31):** after Settings → Restore
@@ -193,5 +165,13 @@ priority — user-visible fix is in; this is understanding/documentation work.
 Closes when a written explanation lands in `AGENTS.md` or a workflow doc.
 
 ## Done
+
+### bb-16u1 — Auto-generate inline CI trigger fails: expired `BOT_PAT` — RESOLVED 2026-06-10
+`BOT_PAT` rotated by the maintainer and verified working: a manually dispatched
+`Auto-Generate Content` run created auto-PR #1237, which picked up `Battery Butler
+CI` with no `401 Bad credentials` (the inline close/reopen trigger fired). The
+loud-failure follow-up is already in `auto-generate.yml` (`if ! gh pr close ...; then
+… exit 1`, no `|| true`). Anchor kept here because `auto-generate.yml` error messages
+reference bb-16u1. Related cleanup still open: [bb-j6td](#p3) (`GITHUB_TOKEN` fallback).
 
 _(Move completed tasks here with a one-line outcome, or delete them.)_
