@@ -39,7 +39,7 @@ uuid = "0.8.4"
 mediapipe-genai = "0.10.29"
 localagents-fc = "0.1.0"
 mlkit-genai-prompt = "1.0.0-beta1"
-protobufVersion = "4.34.1"
+protobufVersion = "4.35.0"
 # gRPC 1.79+ blocked: generated stubs use removed APIs (BlockingClientCall, blockingV2*Call).
 # Requires regenerating protos with matching codegen plugin version.
 grpcJava = "1.63.0"
