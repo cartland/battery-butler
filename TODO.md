@@ -132,6 +132,36 @@ boundary (ViewModels where state is constructed). Medium effort.
 > release-mode CI or local `xcodebuild` verification. (See
 > `feedback_bb_bpbw_kn_interop_risk` memory.)
 
+### bb-k4sk — Unblock & re-enable Kotlin 2.4.0+ when SKIE adds support
+
+Dependabot's kotlin group bump to 2.4.0 (PR #1222) was closed 2026-06-15 because
+SKIE 0.10.9 hard-fails the build: `Error: SKIE 0.10.9 does not support Kotlin
+2.4.0. Supported versions are: [..., 2.3.0].` A version-scoped ignore
+(`org.jetbrains.kotlin:* >= 2.3.20`; `kotlinx-*` deliberately left free) was added
+in PR #1243.
+
+**When a SKIE release supports the target Kotlin** (check Touchlab SKIE releases vs
+the `skie` pin in `libs.versions.toml`, currently `0.10.9`): (1) bump `skie`,
+(2) delete the kotlin block in `.github/dependabot.yml` → `ignore:`, (3) remove the
+`# Kotlin 2.3.20 blocked: SKIE …` comment in `libs.versions.toml` and bump
+`kotlin` (and let Dependabot re-propose / bump `kotlinx-coroutines` etc.).
+External-dependency-gated; closes when Kotlin is bumped past 2.3.0 with green CI.
+
+### bb-gr79 — Unblock & re-enable gRPC 1.79+ / Wire 6.0+ (regenerate protos)
+
+Dependabot's grpc group bump (grpcJava 1.63→1.81, grpc-kotlin 1.4.1→1.5.0, wire
+5.0→6.4; PR #1223) was closed 2026-06-15: gRPC ≥1.79 removed the codegen APIs the
+generated stubs call (`BlockingClientCall`, `blockingV2UnaryCall`, …), producing 5
+compile errors in `server/app` (generated `*Grpc.java`). Version-scoped ignores
+(`io.grpc:* >= 1.79.0`, `com.squareup.wire:* >= 6.0.0`) were added in PR #1243.
+
+**To unblock:** regenerate the protos with a codegen plugin version matching the new
+gRPC (`protobufPlugin` / gRPC codegen in `server/app/build.gradle.kts`), confirm
+`server/app` compiles, then delete the grpc/wire block in `.github/dependabot.yml`
+→ `ignore:`, remove the `# gRPC 1.79+ blocked` / `# Wire 6.0+ blocked` comments in
+`libs.versions.toml`, and bump `grpcJava` / `grpc-kotlin` / `wire`. Verify
+`validation_compile_tests` + `build_server` (release-mode) before merge.
+
 ## P4
 
 ### bb-fa11 — Evaluate adding `validation_lint` to the release sentinel-set gate
@@ -163,6 +193,20 @@ before vs after restore with `WhileSubscribed` timeout; read Room's `@Query` Flo
 behavior on subscribe shortly after close+reopen of a raw-file-copied DB. Low
 priority — user-visible fix is in; this is understanding/documentation work.
 Closes when a written explanation lands in `AGENTS.md` or a workflow doc.
+
+### bb-gac9 — Investigate google-api-client 2.9.0 transitive `NoClassDefFoundError`
+
+Dependabot bump google-api-client 2.2.0 → 2.9.0 (PR #1226) was closed 2026-06-15:
+it broke `LocalGrpcValidationTest` (`server/app`) with `NoClassDefFoundError` /
+`ClassNotFoundException` (a transitive dependency the 2.9.0 line pulls conflicts
+with the gRPC test stack). It was also ~1 month stale. **No** dependabot ignore was
+added (the block isn't structural), so Dependabot will re-propose on a future
+version.
+
+**If/when we want this upgrade:** diff `./gradlew :server:app:dependencies` across
+2.2.0 → 2.9.x to find the conflicting transitive (likely a guava / protobuf /
+grpc-context clash), align/force it, then bump `googleApiClient` in
+`libs.versions.toml`. Low priority — current 2.2.0 works fine.
 
 ## Done
 
