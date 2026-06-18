@@ -20,6 +20,9 @@ kotlin {
             export(project(":experimental:viewmodel"))
             export(project(":experimental:domain"))
             export(libs.androidx.lifecycle.viewmodel)
+            // bb-ovm1 spike: export KMP-ObservableViewModel core so its ViewModel base +
+            // KMPObservableViewModelCoreObjC cinterop are visible to the Swift SPM package.
+            export(libs.kmp.observableviewmodel.core)
         }
     }
 
@@ -33,6 +36,8 @@ kotlin {
             api(project(":viewmodel"))
             api(project(":presentation-model"))
             api(project(":experimental:viewmodel"))
+            // bb-ovm1 spike: required as api so the framework can export() it (above).
+            api(libs.kmp.observableviewmodel.core)
             implementation(project(":experimental:usecase"))
             implementation(project(":experimental:data-local"))
 

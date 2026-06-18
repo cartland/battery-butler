@@ -1,5 +1,6 @@
 package com.chriscartland.batterybutler.viewmodel
 
+import com.rickclephas.kmp.observableviewmodel.ViewModelScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -8,6 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
+import com.rickclephas.kmp.observableviewmodel.stateIn as observableStateIn
 
 /**
  * Default timeout (in milliseconds) for [SharingStarted.WhileSubscribed] in ViewModels.
@@ -50,6 +52,34 @@ fun <T> Flow<T>.safeStateIn(
                 emit(errorValue)
             }
         }.stateIn(scope, started, initialValue)
+
+/**
+ * Observable variant of [safeStateIn] for KMP-ObservableViewModel (bb-ovm1 spike).
+ *
+ * Identical iOS-safe `.catch` behavior, but routes the flow through
+ * KMP-ObservableViewModel's [stateIn][observableStateIn] (which takes the ViewModel's
+ * [ViewModelScope]). The resulting StateFlow is an `ObservableStateFlow` registered with
+ * the ViewModel's SwiftUI change publisher, so SwiftUI `@StateViewModel`/`@ObservedViewModel`
+ * re-render automatically on emission — no manual `Task { for await }` bridge needed.
+ *
+ * Use this overload (passing `viewModelScope` directly) for ViewModels consumed by the
+ * native SwiftUI app; the [CoroutineScope] overload remains for Compose-only paths.
+ */
+fun <T> Flow<T>.safeStateIn(
+    viewModelScope: ViewModelScope,
+    started: SharingStarted,
+    initialValue: T,
+    onError: ((Throwable) -> T)? = null,
+): StateFlow<T> =
+    this
+        .catch { e ->
+            println("ViewModel safeStateIn caught unhandled exception: ${e.message}")
+            e.printStackTrace()
+            val errorValue = onError?.invoke(e)
+            if (errorValue != null) {
+                emit(errorValue)
+            }
+        }.observableStateIn(viewModelScope, started, initialValue)
 
 /**
  * StateFlow with retry support. Like [safeStateIn] but re-subscribes to the source flow

@@ -1,6 +1,15 @@
 {
-  "originHash" : "b9159aa27a422399912f35454325024ddea3ad5d70382a9d9575206085ec7373",
+  "originHash" : "b2cfae99f833e37442ce23372831f04204f583362d9636c1fdd8bafa17bb20aa",
   "pins" : [
+    {
+      "identity" : "kmp-observableviewmodel",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/rickclephas/KMP-ObservableViewModel.git",
+      "state" : {
+        "revision" : "4439d3df550aa34e91fb751e6ce77e405db7a20e",
+        "version" : "1.0.1"
+      }
+    },
     {
       "identity" : "swift-custom-dump",
       "kind" : "remoteSourceControl",

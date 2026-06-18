@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		021096729B70AC411F4755E8 /* ObservableViewModelBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = B941B47D8EBCDA63EAB43AEA /* ObservableViewModelBridge.swift */; };
 		09C4C7A3A37AEC0AE2AB8837 /* ButlerIconSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = E745DFA94763AF92797AF9B0 /* ButlerIconSize.swift */; };
 		0B8A00C05740714CA09EA3DF /* AiChatViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9127CC9BB55BC761853552F0 /* AiChatViewModelWrapper.swift */; };
 		1211B65CDB19EBD3475155ED /* AddBatteryEventViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348ECD40844BC056AA8019FF /* AddBatteryEventViewModelWrapper.swift */; };
@@ -26,7 +27,6 @@
 		246295AC2F14EEF40047C600 /* AddDeviceViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 246295902F14EEF40047C600 /* AddDeviceViewModelWrapper.swift */; };
 		246295AD2F14EEF40047C600 /* HomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 246295992F14EEF40047C600 /* HomeScreen.swift */; };
 		246295AE2F14EEF40047C600 /* SettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2462959E2F14EEF40047C600 /* SettingsScreen.swift */; };
-		246295AF2F14EEF40047C600 /* DeviceDetailViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 246295932F14EEF40047C600 /* DeviceDetailViewModelWrapper.swift */; };
 		24ABD5782F1CEC230036E1DD /* EditDeviceTypeViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24ABD5762F1CEC230036E1DD /* EditDeviceTypeViewModelWrapper.swift */; };
 		24ABD5792F1CEC230036E1DD /* DeviceTypeListViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24ABD5732F1CEC230036E1DD /* DeviceTypeListViewModelWrapper.swift */; };
 		24ABD57A2F1CEC230036E1DD /* EditDeviceTypeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24ABD5752F1CEC230036E1DD /* EditDeviceTypeScreen.swift */; };
@@ -35,6 +35,7 @@
 		24ABD57D2F1CEC230036E1DD /* AddDeviceTypeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24ABD5702F1CEC230036E1DD /* AddDeviceTypeScreen.swift */; };
 		24ABD57E2F1CEC230036E1DD /* DeviceTypeRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24ABD5742F1CEC230036E1DD /* DeviceTypeRow.swift */; };
 		2855F56B7B730259E73A04CD /* EditDeviceViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28903408708ECF67A8991592 /* EditDeviceViewModelWrapper.swift */; };
+		2BE2152C1E6DCD3ED9ED38F3 /* KMPObservableViewModelCore in Frameworks */ = {isa = PBXBuildFile; productRef = E8EF5DFF4E63F26AE2DB5883 /* KMPObservableViewModelCore */; };
 		2FA78B928A0A3E325BA1D464 /* EditDeviceScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C424550B976EA19E32F00C2 /* EditDeviceScreenTests.swift */; };
 		34B076CFB1DCC5E0A5B30622 /* KmpInteropTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BD21B88039A180BE432D829 /* KmpInteropTests.swift */; };
 		3817672E5800D02B74BBCAE6 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 171E07C13F4D360A2E8F8F1B /* Foundation.framework */; };
@@ -56,6 +57,7 @@
 		9C2D5FB0AF0B031138E5AEC3 /* DeviceTypeListScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FDAA129CFA4B9C38F69243C /* DeviceTypeListScreenTests.swift */; };
 		9E310559114A9C3509F5106D /* LoginScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05276AAFBE18E0BD342E186F /* LoginScreen.swift */; };
 		9EC6A2E16CEA57929E345F5C /* LoginViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D976428F6B0003DDB354405 /* LoginViewModelWrapper.swift */; };
+		A3D59277CA82A9B06F9809DD /* KMPObservableViewModelSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = C589F3E9CB7A949154618B61 /* KMPObservableViewModelSwiftUI */; };
 		A5644892EF1C2D5A7D2BB56B /* LoginErrorInfoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9F7F52DF807E4C730427A2 /* LoginErrorInfoTests.swift */; };
 		A57202E629408A9C8F778165 /* EventDetailScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEFA05173F04BE4075FBABA5 /* EventDetailScreenTests.swift */; };
 		A74A111ED72A22540285B044 /* DeviceTypeDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62EEFBA1150A1B5BB4BE34E7 /* DeviceTypeDetailScreen.swift */; };
@@ -100,7 +102,6 @@
 		2462958F2F14EEF40047C600 /* AddDeviceScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDeviceScreen.swift; sourceTree = "<group>"; };
 		246295902F14EEF40047C600 /* AddDeviceViewModelWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDeviceViewModelWrapper.swift; sourceTree = "<group>"; };
 		246295922F14EEF40047C600 /* DeviceDetailScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceDetailScreen.swift; sourceTree = "<group>"; };
-		246295932F14EEF40047C600 /* DeviceDetailViewModelWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceDetailViewModelWrapper.swift; sourceTree = "<group>"; };
 		246295952F14EEF40047C600 /* HistoryListScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryListScreen.swift; sourceTree = "<group>"; };
 		246295962F14EEF40047C600 /* HistoryListViewModelWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryListViewModelWrapper.swift; sourceTree = "<group>"; };
 		246295982F14EEF40047C600 /* DeviceRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceRow.swift; sourceTree = "<group>"; };
@@ -143,6 +144,7 @@
 		AG1000000000000000000001 /* Generated */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Generated; sourceTree = "<group>"; };
 		B3170F3330B0DB17C06BD2DC /* EditBatteryEventScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EditBatteryEventScreenTests.swift; sourceTree = "<group>"; };
 		B50A0F9CABC4E39A5F7BCAAB /* ButlerColors.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ButlerColors.swift; sourceTree = "<group>"; };
+		B941B47D8EBCDA63EAB43AEA /* ObservableViewModelBridge.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ObservableViewModelBridge.swift; sourceTree = "<group>"; };
 		B9DA97B12DC1472C00A4DA20 /* BatteryButler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BatteryButler.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C2E97FAF9E58B3B6789E5657 /* ButlerIconBox.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ButlerIconBox.swift; sourceTree = "<group>"; };
 		C46977DF8A1474A6D23CE03F /* EditBatteryEventViewModelWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EditBatteryEventViewModelWrapper.swift; sourceTree = "<group>"; };
@@ -204,6 +206,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2BE2152C1E6DCD3ED9ED38F3 /* KMPObservableViewModelCore in Frameworks */,
+				A3D59277CA82A9B06F9809DD /* KMPObservableViewModelSwiftUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -228,6 +232,7 @@
 				2462958D2F14EEF40047C600 /* ViewModelWrapper.swift */,
 				020286E928CECF6CEDD014D7 /* Components */,
 				8D13C339397E3C383B55A55E /* Theme */,
+				B941B47D8EBCDA63EAB43AEA /* ObservableViewModelBridge.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -245,7 +250,6 @@
 			isa = PBXGroup;
 			children = (
 				246295922F14EEF40047C600 /* DeviceDetailScreen.swift */,
-				246295932F14EEF40047C600 /* DeviceDetailViewModelWrapper.swift */,
 			);
 			path = DeviceDetail;
 			sourceTree = "<group>";
@@ -518,6 +522,10 @@
 				B9DA97B32DC1472C00A4DA20 /* iosApp */,
 			);
 			name = iosAppSwiftUI;
+			packageProductDependencies = (
+				E8EF5DFF4E63F26AE2DB5883 /* KMPObservableViewModelCore */,
+				C589F3E9CB7A949154618B61 /* KMPObservableViewModelSwiftUI */,
+			);
 			productName = iosAppSwiftUI;
 			productReference = B9DA97B12DC1472C00A4DA20 /* BatteryButler.app */;
 			productType = "com.apple.product-type.application";
@@ -548,6 +556,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				9FC905494E2733CEC62F9D48 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */,
+				0CFF739480806A3D91736123 /* XCRemoteSwiftPackageReference "KMP-ObservableViewModel" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = B9DA97B22DC1472C00A4DA20 /* Products */;
@@ -673,7 +682,6 @@
 				246295AC2F14EEF40047C600 /* AddDeviceViewModelWrapper.swift in Sources */,
 				246295AD2F14EEF40047C600 /* HomeScreen.swift in Sources */,
 				246295AE2F14EEF40047C600 /* SettingsScreen.swift in Sources */,
-				246295AF2F14EEF40047C600 /* DeviceDetailViewModelWrapper.swift in Sources */,
 				9E310559114A9C3509F5106D /* LoginScreen.swift in Sources */,
 				9EC6A2E16CEA57929E345F5C /* LoginViewModelWrapper.swift in Sources */,
 				7B995C9514A7E13CDD597E53 /* EventDetailScreen.swift in Sources */,
@@ -698,6 +706,7 @@
 				A7AC0D97ABD8C337F08EB02B /* SortGroupControlView.swift in Sources */,
 				74012BF787CA36D76C6DBC9B /* CounterScreen.swift in Sources */,
 				CF70BCF7D6F55A9990A41AB3 /* CounterViewModelWrapper.swift in Sources */,
+				021096729B70AC411F4755E8 /* ObservableViewModelBridge.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -962,6 +971,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		0CFF739480806A3D91736123 /* XCRemoteSwiftPackageReference "KMP-ObservableViewModel" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/rickclephas/KMP-ObservableViewModel.git";
+			requirement = {
+				kind = exactVersion;
+				version = 1.0.1;
+			};
+		};
 		9FC905494E2733CEC62F9D48 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/pointfreeco/swift-snapshot-testing.git";
@@ -977,6 +994,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 9FC905494E2733CEC62F9D48 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */;
 			productName = SnapshotTesting;
+		};
+		C589F3E9CB7A949154618B61 /* KMPObservableViewModelSwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0CFF739480806A3D91736123 /* XCRemoteSwiftPackageReference "KMP-ObservableViewModel" */;
+			productName = KMPObservableViewModelSwiftUI;
+		};
+		E8EF5DFF4E63F26AE2DB5883 /* KMPObservableViewModelCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0CFF739480806A3D91736123 /* XCRemoteSwiftPackageReference "KMP-ObservableViewModel" */;
+			productName = KMPObservableViewModelCore;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
