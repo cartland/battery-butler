@@ -2,56 +2,58 @@ import SwiftUI
 import Foundation
 import UniformTypeIdentifiers
 import shared
+import KMPObservableViewModelSwiftUI
 
 struct SettingsScreen: View {
-    @StateObject private var wrapper: SettingsViewModelWrapper
+    // bb-ovm1: @StateViewModel replaces SettingsViewModelWrapper.
+    @StateViewModel private var viewModel: SettingsViewModel
     @State private var isShareSheetPresented = false
     @State private var isFileImporterPresented = false
     @State private var importSnackbarMessage: String? = nil
 
     init(viewModel: SettingsViewModel) {
-        _wrapper = StateObject(wrappedValue: SettingsViewModelWrapper(viewModel))
+        _viewModel = StateViewModel(wrappedValue: viewModel)
     }
 
     var body: some View {
         SettingsContentView(
             // Account
-            currentUser: wrapper.currentUser,
-            onSignOut: { wrapper.signOut() },
+            currentUser: viewModel.currentUserValue,
+            onSignOut: { viewModel.signOut() },
             // Network mode
-            networkMode: wrapper.networkMode,
-            availableNetworkModes: wrapper.availableNetworkModes,
-            onNetworkModeSelected: { mode in wrapper.onNetworkModeSelected(mode) },
+            networkMode: viewModel.networkModeValue,
+            availableNetworkModes: viewModel.availableNetworkModes,
+            onNetworkModeSelected: { mode in viewModel.onNetworkModeSelected(mode: mode) },
             // AI engine
-            aiEngineType: wrapper.aiEngineType,
-            availableAiEngines: wrapper.availableAiEngines,
-            onAiEngineSelected: { type in wrapper.onAiEngineSelected(type) },
+            aiEngineType: viewModel.aiEngineTypeValue,
+            availableAiEngines: viewModel.availableAiEngines,
+            onAiEngineSelected: { type in viewModel.onAiEngineSelected(type: type) },
             // Export
-            exportData: wrapper.exportData,
+            exportData: viewModel.exportDataValue,
             isShareSheetPresented: $isShareSheetPresented,
-            onExportData: { wrapper.onExportData() },
-            onExportDataConsumed: { wrapper.onExportDataConsumed() },
+            onExportData: { viewModel.onExportData() },
+            onExportDataConsumed: { viewModel.onExportDataConsumed() },
             // Import
             onImportData: { isFileImporterPresented = true },
-            importInProgress: wrapper.importInProgress,
+            importInProgress: viewModel.importInProgressValue,
             // Version
-            appVersion: wrapper.appVersion
+            appVersion: viewModel.appVersionDisplay
         )
-        .onChange(of: wrapper.exportData) { _, newData in
+        .onChange(of: viewModel.exportDataValue) { _, newData in
             if newData != nil {
                 isShareSheetPresented = true
             }
         }
-        .onChange(of: wrapper.importResult) { _, result in
+        .onChange(of: viewModel.importResultValue) { _, result in
             if let result = result {
                 importSnackbarMessage = "Imported \(result.devicesImported) devices, \(result.deviceTypesImported) types, \(result.eventsImported) events"
-                wrapper.onImportResultConsumed()
+                viewModel.onImportResultConsumed()
             }
         }
-        .onChange(of: wrapper.importError) { _, error in
+        .onChange(of: viewModel.importErrorValue) { _, error in
             if let error = error {
                 importSnackbarMessage = "Import failed: \(error)"
-                wrapper.onImportResultConsumed()
+                viewModel.onImportResultConsumed()
             }
         }
         .fileImporter(
@@ -66,7 +68,7 @@ struct SettingsScreen: View {
                 defer { url.stopAccessingSecurityScopedResource() }
                 if let data = try? Data(contentsOf: url),
                    let jsonString = String(data: data, encoding: .utf8) {
-                    wrapper.onImportData(jsonString)
+                    viewModel.onImportData(jsonString: jsonString)
                 }
             case .failure:
                 break
@@ -86,6 +88,23 @@ struct SettingsScreen: View {
                     }
             }
         }
+    }
+}
+
+// bb-ovm1: Option A manual state accessors (no NativeCoroutines).
+extension SettingsViewModel {
+    var currentUserValue: User? { currentUser.value }
+    var networkModeValue: NetworkMode { networkMode.value }
+    var aiEngineTypeValue: AiEngineType { aiEngineType.value }
+    var exportDataValue: String? { exportData.value }
+    var importResultValue: ImportResult? { importResult.value }
+    var importErrorValue: String? { importError.value }
+    var importInProgressValue: Bool { (importInProgress.value as? Bool) ?? false }
+    var appVersionDisplay: String {
+        if let ios = appVersion.value as? AppVersionIos {
+            return "\(ios.versionName)-\(ios.buildNumber)"
+        }
+        return "Version"
     }
 }
 
@@ -157,7 +176,7 @@ struct SettingsContentView: View {
                             isNetworkModeExpanded = false
                         } label: {
                             HStack {
-                                Text(SettingsViewModelWrapper.networkModeDisplayName(mode))
+                                Text(SettingsDisplay.networkModeDisplayName(mode))
                                     .foregroundStyle(Color.butlerOnSurface)
                                 Spacer()
                                 if networkModesEqual(networkMode, mode) {
@@ -174,7 +193,7 @@ struct SettingsContentView: View {
                         VStack(alignment: .leading, spacing: ButlerSpacing.extraSmall) {
                             Text("settings.network_mode.title")
                                 .foregroundStyle(Color.butlerOnSurface)
-                            Text(SettingsViewModelWrapper.networkModeDisplayName(networkMode))
+                            Text(SettingsDisplay.networkModeDisplayName(networkMode))
                                 .font(.caption)
                                 .foregroundStyle(Color.butlerOnSurfaceVariant)
                         }
@@ -193,7 +212,7 @@ struct SettingsContentView: View {
                             isAiEngineExpanded = false
                         } label: {
                             HStack {
-                                Text(SettingsViewModelWrapper.aiEngineDisplayName(engine))
+                                Text(SettingsDisplay.aiEngineDisplayName(engine))
                                     .foregroundStyle(Color.butlerOnSurface)
                                 Spacer()
                                 if aiEngineType == engine {
@@ -210,7 +229,7 @@ struct SettingsContentView: View {
                         VStack(alignment: .leading, spacing: ButlerSpacing.extraSmall) {
                             Text("settings.ai_engine.title")
                                 .foregroundStyle(Color.butlerOnSurface)
-                            Text(SettingsViewModelWrapper.aiEngineDisplayName(aiEngineType))
+                            Text(SettingsDisplay.aiEngineDisplayName(aiEngineType))
                                 .font(.caption)
                                 .foregroundStyle(Color.butlerOnSurfaceVariant)
                         }

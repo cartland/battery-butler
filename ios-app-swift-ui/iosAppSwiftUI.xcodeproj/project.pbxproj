@@ -10,6 +10,7 @@
 		021096729B70AC411F4755E8 /* ObservableViewModelBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = B941B47D8EBCDA63EAB43AEA /* ObservableViewModelBridge.swift */; };
 		09C4C7A3A37AEC0AE2AB8837 /* ButlerIconSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = E745DFA94763AF92797AF9B0 /* ButlerIconSize.swift */; };
 		17583375029A96F5152F5B92 /* AddDeviceScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7FFABCF0C5C31A595C3F1CF /* AddDeviceScreenTests.swift */; };
+		191BDBC1F7869D7813000980 /* SettingsDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 747E4F4C040220B60CAA4DD2 /* SettingsDisplay.swift */; };
 		1B738E7DBF7242EC0DB27A36 /* HistoryListScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B969CDAC29B255B6A99F0A8 /* HistoryListScreenTests.swift */; };
 		1C334F3F015C1D39485934F7 /* BatteryAgeHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36C882E51E3C5A80D0CEDBDA /* BatteryAgeHelper.swift */; };
 		246295A22F14EEF40047C600 /* AddDeviceScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2462958F2F14EEF40047C600 /* AddDeviceScreen.swift */; };
@@ -17,7 +18,6 @@
 		246295A42F14EEF40047C600 /* MainScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2462959B2F14EEF40047C600 /* MainScreen.swift */; };
 		246295A62F14EEF40047C600 /* DeviceRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 246295982F14EEF40047C600 /* DeviceRow.swift */; };
 		246295A72F14EEF40047C600 /* HistoryListScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 246295952F14EEF40047C600 /* HistoryListScreen.swift */; };
-		246295A92F14EEF40047C600 /* SettingsViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2462959F2F14EEF40047C600 /* SettingsViewModelWrapper.swift */; };
 		246295AA2F14EEF40047C600 /* DeviceDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 246295922F14EEF40047C600 /* DeviceDetailScreen.swift */; };
 		246295AD2F14EEF40047C600 /* HomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 246295992F14EEF40047C600 /* HomeScreen.swift */; };
 		246295AE2F14EEF40047C600 /* SettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2462959E2F14EEF40047C600 /* SettingsScreen.swift */; };
@@ -96,7 +96,6 @@
 		2462959B2F14EEF40047C600 /* MainScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainScreen.swift; sourceTree = "<group>"; };
 		2462959C2F14EEF40047C600 /* MainTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTab.swift; sourceTree = "<group>"; };
 		2462959E2F14EEF40047C600 /* SettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScreen.swift; sourceTree = "<group>"; };
-		2462959F2F14EEF40047C600 /* SettingsViewModelWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModelWrapper.swift; sourceTree = "<group>"; };
 		24ABD5702F1CEC230036E1DD /* AddDeviceTypeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDeviceTypeScreen.swift; sourceTree = "<group>"; };
 		24ABD5712F1CEC230036E1DD /* AddDeviceTypeViewModelWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDeviceTypeViewModelWrapper.swift; sourceTree = "<group>"; };
 		24ABD5722F1CEC230036E1DD /* DeviceTypeListScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceTypeListScreen.swift; sourceTree = "<group>"; };
@@ -118,6 +117,7 @@
 		63736EB2CA3F58B280FBFA96 /* ButlerCornerRadius.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ButlerCornerRadius.swift; sourceTree = "<group>"; };
 		6C424550B976EA19E32F00C2 /* EditDeviceScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EditDeviceScreenTests.swift; sourceTree = "<group>"; };
 		72E31482FD860FC114F618F9 /* DeviceRowTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DeviceRowTests.swift; sourceTree = "<group>"; };
+		747E4F4C040220B60CAA4DD2 /* SettingsDisplay.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SettingsDisplay.swift; sourceTree = "<group>"; };
 		7BD21B88039A180BE432D829 /* KmpInteropTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KmpInteropTests.swift; sourceTree = "<group>"; };
 		8E1208E16A51185B6A4ACCF1 /* SFSymbolMapperTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SFSymbolMapperTests.swift; sourceTree = "<group>"; };
 		8EBF127BDE68EF62BDAFA150 /* TestData.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TestData.swift; sourceTree = "<group>"; };
@@ -262,7 +262,7 @@
 			isa = PBXGroup;
 			children = (
 				2462959E2F14EEF40047C600 /* SettingsScreen.swift */,
-				2462959F2F14EEF40047C600 /* SettingsViewModelWrapper.swift */,
+				747E4F4C040220B60CAA4DD2 /* SettingsDisplay.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -644,7 +644,6 @@
 				246295A42F14EEF40047C600 /* MainScreen.swift in Sources */,
 				246295A62F14EEF40047C600 /* DeviceRow.swift in Sources */,
 				246295A72F14EEF40047C600 /* HistoryListScreen.swift in Sources */,
-				246295A92F14EEF40047C600 /* SettingsViewModelWrapper.swift in Sources */,
 				246295AA2F14EEF40047C600 /* DeviceDetailScreen.swift in Sources */,
 				246295AD2F14EEF40047C600 /* HomeScreen.swift in Sources */,
 				246295AE2F14EEF40047C600 /* SettingsScreen.swift in Sources */,
@@ -667,6 +666,7 @@
 				CF70BCF7D6F55A9990A41AB3 /* CounterViewModelWrapper.swift in Sources */,
 				021096729B70AC411F4755E8 /* ObservableViewModelBridge.swift in Sources */,
 				2CAE7B0459274003713070EB /* LoginErrorInfo.swift in Sources */,
+				191BDBC1F7869D7813000980 /* SettingsDisplay.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
