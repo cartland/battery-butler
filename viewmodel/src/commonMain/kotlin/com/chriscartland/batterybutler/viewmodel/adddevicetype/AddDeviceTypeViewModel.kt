@@ -1,7 +1,5 @@
 package com.chriscartland.batterybutler.viewmodel.adddevicetype
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.chriscartland.batterybutler.domain.model.BatchOperationResult
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.DeviceTypeInput
@@ -14,6 +12,8 @@ import com.chriscartland.batterybutler.usecase.BatchAddDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.SuggestDeviceIconUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
 import com.chriscartland.batterybutler.viewmodel.safeStateIn
+import com.rickclephas.kmp.observableviewmodel.ViewModel
+import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -66,7 +66,7 @@ class AddDeviceTypeViewModel(
             isSuggestingIcon = isSuggestingIcon,
         )
     }.safeStateIn(
-        scope = viewModelScope,
+        viewModelScope = viewModelScope,
         started = defaultWhileSubscribed(),
         initialValue = AddDeviceTypeScreenState(),
         onError = { e ->
@@ -77,7 +77,7 @@ class AddDeviceTypeViewModel(
 
     fun suggestIcon(name: String) {
         if (name.isBlank()) return
-        viewModelScope.launch {
+        viewModelScope.coroutineScope.launch {
             // Use tryLock to atomically check-and-acquire, preventing race conditions
             // If already suggesting (mutex held), skip this request
             if (!suggestIconMutex.tryLock()) return@launch
@@ -108,7 +108,7 @@ class AddDeviceTypeViewModel(
 
     @OptIn(ExperimentalUuidApi::class)
     fun addDeviceType(input: DeviceTypeInput) {
-        viewModelScope.launch {
+        viewModelScope.coroutineScope.launch {
             val newType = DeviceType(
                 id = Uuid.random().toString(),
                 name = input.name,
@@ -127,7 +127,7 @@ class AddDeviceTypeViewModel(
     }
 
     fun batchAddDeviceTypes(input: String) {
-        viewModelScope.launch {
+        viewModelScope.coroutineScope.launch {
             batchAddDeviceTypesUseCase(input).collect { message ->
                 aiMessagesFlow.update { it + message }
             }
