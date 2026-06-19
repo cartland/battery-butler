@@ -1,7 +1,5 @@
 package com.chriscartland.batterybutler.viewmodel.devicetypes
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeGroupOption
@@ -12,6 +10,8 @@ import com.chriscartland.batterybutler.usecase.PreloadCommonTypesUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
 import com.chriscartland.batterybutler.viewmodel.retryableStateIn
 import com.chriscartland.batterybutler.viewmodel.util.sortAndGroup
+import com.rickclephas.kmp.observableviewmodel.ViewModel
+import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -43,7 +43,7 @@ class DeviceTypeListViewModel(
     }
 
     val uiState: StateFlow<DeviceTypeListScreenState> = retryableStateIn(
-        scope = viewModelScope,
+        viewModelScope = viewModelScope,
         retryTrigger = retryTrigger,
         started = defaultWhileSubscribed(),
         initialValue = DeviceTypeListScreenState.Success(emptyMap()),
@@ -107,7 +107,7 @@ class DeviceTypeListViewModel(
     }
 
     fun preloadCommonTypes() {
-        viewModelScope.launch {
+        viewModelScope.coroutineScope.launch {
             when (val result = preloadCommonTypesUseCase()) {
                 is Result.Success -> { /* success */ }
 
