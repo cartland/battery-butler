@@ -1,19 +1,21 @@
 import SwiftUI
 import shared
+import KMPObservableViewModelSwiftUI
 
 struct HistoryListScreen: View {
-    @StateObject var wrapper: HistoryListViewModelWrapper
+    // bb-ovm1: @StateViewModel replaces HistoryListViewModelWrapper.
+    @StateViewModel var viewModel: HistoryListViewModel
     private let component: NativeComponent
     @State private var isAddEventPresented = false
 
     init(component: NativeComponent) {
         self.component = component
-        _wrapper = StateObject(wrappedValue: HistoryListViewModelWrapper(component.historyListViewModel))
+        _viewModel = StateViewModel(wrappedValue: component.historyListViewModel)
     }
 
     var body: some View {
         HistoryListContentView(
-            state: wrapper.state,
+            state: viewModel.uiStateValue,
             onAddEventTapped: { isAddEventPresented = true },
             onEventTapped: { _, _ in },
             eventDestination: { eventId in
@@ -37,6 +39,11 @@ private let historyDayFormatter: DateFormatter = {
     f.dateFormat = "d"
     return f
 }()
+
+// bb-ovm1: Option A manual state accessor (no NativeCoroutines).
+extension HistoryListViewModel {
+    var uiStateValue: HistoryListScreenState { uiState.value }
+}
 
 struct HistoryListContentView<EventDestination: View>: View {
     let state: HistoryListScreenState

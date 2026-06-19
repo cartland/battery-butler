@@ -1,7 +1,5 @@
 package com.chriscartland.batterybutler.viewmodel.history
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.chriscartland.batterybutler.presentationmodel.history.HistoryItemModel
 import com.chriscartland.batterybutler.presentationmodel.history.HistoryListScreenState
 import com.chriscartland.batterybutler.usecase.GetBatteryEventsUseCase
@@ -9,6 +7,7 @@ import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.GetDevicesUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
 import com.chriscartland.batterybutler.viewmodel.retryableStateIn
+import com.rickclephas.kmp.observableviewmodel.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -29,7 +28,7 @@ class HistoryListViewModel(
     }
 
     val uiState: StateFlow<HistoryListScreenState> = retryableStateIn(
-        scope = viewModelScope,
+        viewModelScope = viewModelScope,
         retryTrigger = retryTrigger,
         started = defaultWhileSubscribed(),
         initialValue = HistoryListScreenState.Loading,

@@ -124,3 +124,29 @@ fun <T> retryableStateIn(
                     emit(onError(e))
                 }
         }.stateIn(scope, started, initialValue)
+
+/**
+ * Observable variant of [retryableStateIn] for KMP-ObservableViewModel (bb-ovm1).
+ *
+ * Same retry semantics, but routes the result through KMP-ObservableViewModel's observable
+ * [stateIn][observableStateIn] so the exposed StateFlow drives the SwiftUI change publisher
+ * (`@StateViewModel`/`@ObservedViewModel` auto-update). Pass the ViewModel's [ViewModelScope].
+ */
+@OptIn(ExperimentalCoroutinesApi::class)
+fun <T> retryableStateIn(
+    viewModelScope: ViewModelScope,
+    retryTrigger: Flow<*>,
+    started: SharingStarted,
+    initialValue: T,
+    onError: (Throwable) -> T,
+    source: () -> Flow<T>,
+): StateFlow<T> =
+    retryTrigger
+        .flatMapLatest {
+            source()
+                .catch { e ->
+                    println("ViewModel retryableStateIn caught: ${e.message}")
+                    e.printStackTrace()
+                    emit(onError(e))
+                }
+        }.observableStateIn(viewModelScope, started, initialValue)
