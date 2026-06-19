@@ -11,7 +11,6 @@
 		09C4C7A3A37AEC0AE2AB8837 /* ButlerIconSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = E745DFA94763AF92797AF9B0 /* ButlerIconSize.swift */; };
 		0B8A00C05740714CA09EA3DF /* AiChatViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9127CC9BB55BC761853552F0 /* AiChatViewModelWrapper.swift */; };
 		1211B65CDB19EBD3475155ED /* AddBatteryEventViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348ECD40844BC056AA8019FF /* AddBatteryEventViewModelWrapper.swift */; };
-		14C9539A085FC4157ED6ECCB /* EventDetailViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 484371A677F858AB3865E844 /* EventDetailViewModelWrapper.swift */; };
 		17583375029A96F5152F5B92 /* AddDeviceScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7FFABCF0C5C31A595C3F1CF /* AddDeviceScreenTests.swift */; };
 		1B738E7DBF7242EC0DB27A36 /* HistoryListScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B969CDAC29B255B6A99F0A8 /* HistoryListScreenTests.swift */; };
 		1C334F3F015C1D39485934F7 /* BatteryAgeHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36C882E51E3C5A80D0CEDBDA /* BatteryAgeHelper.swift */; };
@@ -124,7 +123,6 @@
 		3FDAA129CFA4B9C38F69243C /* DeviceTypeListScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DeviceTypeListScreenTests.swift; sourceTree = "<group>"; };
 		417E5F5994DD57326CBFBB02 /* DeviceDetailScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DeviceDetailScreenTests.swift; sourceTree = "<group>"; };
 		4217F0EB61A27BAB5D26D37A /* EditDeviceScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EditDeviceScreen.swift; sourceTree = "<group>"; };
-		484371A677F858AB3865E844 /* EventDetailViewModelWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EventDetailViewModelWrapper.swift; sourceTree = "<group>"; };
 		4D976428F6B0003DDB354405 /* LoginViewModelWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LoginViewModelWrapper.swift; sourceTree = "<group>"; };
 		4E844014BE2F02549004580F /* SFSymbolMapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SFSymbolMapper.swift; sourceTree = "<group>"; };
 		5B969CDAC29B255B6A99F0A8 /* HistoryListScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HistoryListScreenTests.swift; sourceTree = "<group>"; };
@@ -420,7 +418,6 @@
 			isa = PBXGroup;
 			children = (
 				EBB2BC212BA886F9EA0057B5 /* EventDetailScreen.swift */,
-				484371A677F858AB3865E844 /* EventDetailViewModelWrapper.swift */,
 			);
 			name = EventDetail;
 			path = EventDetail;
@@ -682,7 +679,6 @@
 				9E310559114A9C3509F5106D /* LoginScreen.swift in Sources */,
 				9EC6A2E16CEA57929E345F5C /* LoginViewModelWrapper.swift in Sources */,
 				7B995C9514A7E13CDD597E53 /* EventDetailScreen.swift in Sources */,
-				14C9539A085FC4157ED6ECCB /* EventDetailViewModelWrapper.swift in Sources */,
 				F6F9C4B2E592FAFBFA1FD460 /* AddBatteryEventScreen.swift in Sources */,
 				1211B65CDB19EBD3475155ED /* AddBatteryEventViewModelWrapper.swift in Sources */,
 				77177175D5AE0F2363AB6DDA /* AiChatScreen.swift in Sources */,
