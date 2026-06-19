@@ -1,12 +1,11 @@
 package com.chriscartland.batterybutler.viewmodel.devicetypes
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeDetailScreenState
 import com.chriscartland.batterybutler.usecase.GetDeviceTypeDetailUseCase
 import com.chriscartland.batterybutler.usecase.GetDevicesUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
 import com.chriscartland.batterybutler.viewmodel.safeStateIn
+import com.rickclephas.kmp.observableviewmodel.ViewModel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import me.tatarka.inject.annotations.Inject
@@ -43,7 +42,7 @@ class DeviceTypeDetailViewModel(
             )
         }
     }.safeStateIn(
-        scope = viewModelScope,
+        viewModelScope = viewModelScope,
         started = defaultWhileSubscribed(),
         initialValue = DeviceTypeDetailScreenState.Loading,
     )
