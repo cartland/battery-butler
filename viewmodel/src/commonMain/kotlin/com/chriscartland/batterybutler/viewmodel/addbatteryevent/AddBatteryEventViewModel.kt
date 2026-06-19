@@ -1,7 +1,5 @@
 package com.chriscartland.batterybutler.viewmodel.addbatteryevent
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.benasher44.uuid.uuid4
 import com.chriscartland.batterybutler.domain.model.BatchOperationResult
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
@@ -14,7 +12,9 @@ import com.chriscartland.batterybutler.usecase.GetDevicesUseCase
 import com.chriscartland.batterybutler.usecase.UpdateDeviceUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
 import com.chriscartland.batterybutler.viewmodel.safeStateIn
-import kotlinx.coroutines.flow.MutableStateFlow
+import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
+import com.rickclephas.kmp.observableviewmodel.ViewModel
+import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
@@ -35,16 +35,16 @@ class AddBatteryEventViewModel(
         featureFlagProvider
             .observeEnabled(FeatureFlag.AI_BATCH_IMPORT)
             .safeStateIn(
-                scope = viewModelScope,
+                viewModelScope = viewModelScope,
                 started = defaultWhileSubscribed(),
                 initialValue = featureFlagProvider.isEnabled(FeatureFlag.AI_BATCH_IMPORT),
             )
 
-    private val _aiMessages = MutableStateFlow<List<BatchOperationResult>>(emptyList())
+    private val _aiMessages = MutableStateFlow<List<BatchOperationResult>>(viewModelScope, emptyList())
     val aiMessages: StateFlow<List<BatchOperationResult>> = _aiMessages
 
     val devices = getDevicesUseCase().safeStateIn(
-        scope = viewModelScope,
+        viewModelScope = viewModelScope,
         started = defaultWhileSubscribed(),
         initialValue = emptyList(),
     )
@@ -55,7 +55,7 @@ class AddBatteryEventViewModel(
         batteryType: String?,
         notes: String?,
     ) {
-        viewModelScope.launch {
+        viewModelScope.coroutineScope.launch {
             addBatteryEventUseCase(
                 BatteryEvent(
                     id = uuid4().toString(),
@@ -76,7 +76,7 @@ class AddBatteryEventViewModel(
     }
 
     fun batchAddEvents(input: String) {
-        viewModelScope.launch {
+        viewModelScope.coroutineScope.launch {
             batchAddBatteryEventsUseCase(input).collect { message ->
                 _aiMessages.update { it + message }
             }
