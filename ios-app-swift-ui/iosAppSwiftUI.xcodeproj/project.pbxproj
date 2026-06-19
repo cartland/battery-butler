@@ -28,6 +28,7 @@
 		24ABD57D2F1CEC230036E1DD /* AddDeviceTypeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24ABD5702F1CEC230036E1DD /* AddDeviceTypeScreen.swift */; };
 		24ABD57E2F1CEC230036E1DD /* DeviceTypeRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24ABD5742F1CEC230036E1DD /* DeviceTypeRow.swift */; };
 		2BE2152C1E6DCD3ED9ED38F3 /* KMPObservableViewModelCore in Frameworks */ = {isa = PBXBuildFile; productRef = E8EF5DFF4E63F26AE2DB5883 /* KMPObservableViewModelCore */; };
+		2CAE7B0459274003713070EB /* LoginErrorInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41E7BA28256D4BF468D4B6CF /* LoginErrorInfo.swift */; };
 		2FA78B928A0A3E325BA1D464 /* EditDeviceScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C424550B976EA19E32F00C2 /* EditDeviceScreenTests.swift */; };
 		34B076CFB1DCC5E0A5B30622 /* KmpInteropTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BD21B88039A180BE432D829 /* KmpInteropTests.swift */; };
 		3817672E5800D02B74BBCAE6 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 171E07C13F4D360A2E8F8F1B /* Foundation.framework */; };
@@ -47,7 +48,6 @@
 		998E133AD56CF4D0A133506A /* EditDeviceScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4217F0EB61A27BAB5D26D37A /* EditDeviceScreen.swift */; };
 		9C2D5FB0AF0B031138E5AEC3 /* DeviceTypeListScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FDAA129CFA4B9C38F69243C /* DeviceTypeListScreenTests.swift */; };
 		9E310559114A9C3509F5106D /* LoginScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05276AAFBE18E0BD342E186F /* LoginScreen.swift */; };
-		9EC6A2E16CEA57929E345F5C /* LoginViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D976428F6B0003DDB354405 /* LoginViewModelWrapper.swift */; };
 		A3D59277CA82A9B06F9809DD /* KMPObservableViewModelSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = C589F3E9CB7A949154618B61 /* KMPObservableViewModelSwiftUI */; };
 		A5644892EF1C2D5A7D2BB56B /* LoginErrorInfoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E9F7F52DF807E4C730427A2 /* LoginErrorInfoTests.swift */; };
 		A57202E629408A9C8F778165 /* EventDetailScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEFA05173F04BE4075FBABA5 /* EventDetailScreenTests.swift */; };
@@ -108,8 +108,8 @@
 		3C97AD8F27356E0133B28ADE /* AddDeviceTypeScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddDeviceTypeScreenTests.swift; sourceTree = "<group>"; };
 		3FDAA129CFA4B9C38F69243C /* DeviceTypeListScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DeviceTypeListScreenTests.swift; sourceTree = "<group>"; };
 		417E5F5994DD57326CBFBB02 /* DeviceDetailScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DeviceDetailScreenTests.swift; sourceTree = "<group>"; };
+		41E7BA28256D4BF468D4B6CF /* LoginErrorInfo.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LoginErrorInfo.swift; sourceTree = "<group>"; };
 		4217F0EB61A27BAB5D26D37A /* EditDeviceScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EditDeviceScreen.swift; sourceTree = "<group>"; };
-		4D976428F6B0003DDB354405 /* LoginViewModelWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LoginViewModelWrapper.swift; sourceTree = "<group>"; };
 		4E844014BE2F02549004580F /* SFSymbolMapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SFSymbolMapper.swift; sourceTree = "<group>"; };
 		5B969CDAC29B255B6A99F0A8 /* HistoryListScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HistoryListScreenTests.swift; sourceTree = "<group>"; };
 		5E9F7F52DF807E4C730427A2 /* LoginErrorInfoTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LoginErrorInfoTests.swift; sourceTree = "<group>"; };
@@ -426,7 +426,7 @@
 			isa = PBXGroup;
 			children = (
 				05276AAFBE18E0BD342E186F /* LoginScreen.swift */,
-				4D976428F6B0003DDB354405 /* LoginViewModelWrapper.swift */,
+				41E7BA28256D4BF468D4B6CF /* LoginErrorInfo.swift */,
 			);
 			name = Login;
 			path = Login;
@@ -649,7 +649,6 @@
 				246295AD2F14EEF40047C600 /* HomeScreen.swift in Sources */,
 				246295AE2F14EEF40047C600 /* SettingsScreen.swift in Sources */,
 				9E310559114A9C3509F5106D /* LoginScreen.swift in Sources */,
-				9EC6A2E16CEA57929E345F5C /* LoginViewModelWrapper.swift in Sources */,
 				7B995C9514A7E13CDD597E53 /* EventDetailScreen.swift in Sources */,
 				F6F9C4B2E592FAFBFA1FD460 /* AddBatteryEventScreen.swift in Sources */,
 				77177175D5AE0F2363AB6DDA /* AiChatScreen.swift in Sources */,
@@ -667,6 +666,7 @@
 				74012BF787CA36D76C6DBC9B /* CounterScreen.swift in Sources */,
 				CF70BCF7D6F55A9990A41AB3 /* CounterViewModelWrapper.swift in Sources */,
 				021096729B70AC411F4755E8 /* ObservableViewModelBridge.swift in Sources */,
+				2CAE7B0459274003713070EB /* LoginErrorInfo.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

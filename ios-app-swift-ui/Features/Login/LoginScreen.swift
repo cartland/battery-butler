@@ -1,48 +1,59 @@
 import SwiftUI
 import shared
+import KMPObservableViewModelSwiftUI
 
 struct LoginScreen: View {
-    @StateObject private var wrapper: LoginViewModelWrapper
+    // bb-ovm1: @StateViewModel replaces LoginViewModelWrapper. Error fields are derived
+    // from authState via the relocated LoginErrorInfo helper.
+    @StateViewModel private var viewModel: LoginViewModel
 
     let onLoginSuccess: () -> Void
     let onSkipLogin: () -> Void
 
     init(viewModel: LoginViewModel, onLoginSuccess: @escaping () -> Void, onSkipLogin: @escaping () -> Void) {
-        _wrapper = StateObject(wrappedValue: LoginViewModelWrapper(viewModel))
+        _viewModel = StateViewModel(wrappedValue: viewModel)
         self.onLoginSuccess = onLoginSuccess
         self.onSkipLogin = onSkipLogin
     }
 
     var body: some View {
-        LoginContentView(
-            authState: wrapper.authState,
-            isSignInAvailable: wrapper.isSignInAvailable,
-            errorTitle: wrapper.errorTitle,
-            errorMessage: wrapper.errorMessage,
-            showRetryButton: wrapper.showRetryButton,
+        let authState = viewModel.authStateValue
+        let errorInfo = (authState as? AuthStateFailed).map { LoginErrorInfo.errorInfo(for: $0.error) }
+
+        return LoginContentView(
+            authState: authState,
+            isSignInAvailable: viewModel.isSignInAvailable,
+            errorTitle: errorInfo?.0 ?? "",
+            errorMessage: errorInfo?.1 ?? "",
+            showRetryButton: errorInfo?.2 ?? true,
             showError: Binding(
-                get: { wrapper.authState is AuthStateFailed },
-                set: { _ in wrapper.dismissError() }
+                get: { authState is AuthStateFailed },
+                set: { _ in viewModel.dismissError() }
             ),
-            onSignIn: { wrapper.signInWithGoogle() },
+            onSignIn: { viewModel.signInWithGoogle() },
             onSkipLogin: onSkipLogin,
             onRetry: {
-                wrapper.dismissError()
-                wrapper.signInWithGoogle()
+                viewModel.dismissError()
+                viewModel.signInWithGoogle()
             },
-            onDismissError: { wrapper.dismissError() }
+            onDismissError: { viewModel.dismissError() }
         )
         .onAppear {
-            if wrapper.authState is AuthStateAuthenticated {
+            if authState is AuthStateAuthenticated {
                 onLoginSuccess()
             }
         }
-        .onReceive(wrapper.$authState) { newState in
-            if newState is AuthStateAuthenticated {
+        .onChange(of: authState is AuthStateAuthenticated) { _, isAuthenticated in
+            if isAuthenticated {
                 onLoginSuccess()
             }
         }
     }
+}
+
+// bb-ovm1: Option A manual state accessor (no NativeCoroutines).
+extension LoginViewModel {
+    var authStateValue: AuthState { authState.value }
 }
 
 struct LoginContentView: View {
