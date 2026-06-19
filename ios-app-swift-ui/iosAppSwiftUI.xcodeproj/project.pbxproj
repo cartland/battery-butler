@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		021096729B70AC411F4755E8 /* ObservableViewModelBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = B941B47D8EBCDA63EAB43AEA /* ObservableViewModelBridge.swift */; };
 		09C4C7A3A37AEC0AE2AB8837 /* ButlerIconSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = E745DFA94763AF92797AF9B0 /* ButlerIconSize.swift */; };
-		0B8A00C05740714CA09EA3DF /* AiChatViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9127CC9BB55BC761853552F0 /* AiChatViewModelWrapper.swift */; };
 		1211B65CDB19EBD3475155ED /* AddBatteryEventViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348ECD40844BC056AA8019FF /* AddBatteryEventViewModelWrapper.swift */; };
 		17583375029A96F5152F5B92 /* AddDeviceScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7FFABCF0C5C31A595C3F1CF /* AddDeviceScreenTests.swift */; };
 		1B738E7DBF7242EC0DB27A36 /* HistoryListScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B969CDAC29B255B6A99F0A8 /* HistoryListScreenTests.swift */; };
@@ -126,7 +125,6 @@
 		7BD21B88039A180BE432D829 /* KmpInteropTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KmpInteropTests.swift; sourceTree = "<group>"; };
 		8E1208E16A51185B6A4ACCF1 /* SFSymbolMapperTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SFSymbolMapperTests.swift; sourceTree = "<group>"; };
 		8EBF127BDE68EF62BDAFA150 /* TestData.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TestData.swift; sourceTree = "<group>"; };
-		9127CC9BB55BC761853552F0 /* AiChatViewModelWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AiChatViewModelWrapper.swift; sourceTree = "<group>"; };
 		9C6AF38EDA50AE221A59AC4B /* AiChatScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AiChatScreenTests.swift; sourceTree = "<group>"; };
 		AG1000000000000000000001 /* Generated */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Generated; sourceTree = "<group>"; };
 		B3170F3330B0DB17C06BD2DC /* EditBatteryEventScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EditBatteryEventScreenTests.swift; sourceTree = "<group>"; };
@@ -364,7 +362,6 @@
 			isa = PBXGroup;
 			children = (
 				18BC9C9B9E6E29A48DCAC5C2 /* AiChatScreen.swift */,
-				9127CC9BB55BC761853552F0 /* AiChatViewModelWrapper.swift */,
 			);
 			name = AiChat;
 			path = AiChat;
@@ -664,7 +661,6 @@
 				F6F9C4B2E592FAFBFA1FD460 /* AddBatteryEventScreen.swift in Sources */,
 				1211B65CDB19EBD3475155ED /* AddBatteryEventViewModelWrapper.swift in Sources */,
 				77177175D5AE0F2363AB6DDA /* AiChatScreen.swift in Sources */,
-				0B8A00C05740714CA09EA3DF /* AiChatViewModelWrapper.swift in Sources */,
 				998E133AD56CF4D0A133506A /* EditDeviceScreen.swift in Sources */,
 				1C334F3F015C1D39485934F7 /* BatteryAgeHelper.swift in Sources */,
 				785C51ADA7A324EE132F276A /* ButlerIconBox.swift in Sources */,
