@@ -1,7 +1,5 @@
 package com.chriscartland.batterybutler.viewmodel.adddevice
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.chriscartland.batterybutler.domain.model.BatchOperationResult
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceInput
@@ -14,7 +12,9 @@ import com.chriscartland.batterybutler.usecase.BatchAddDevicesUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
 import com.chriscartland.batterybutler.viewmodel.safeStateIn
-import kotlinx.coroutines.flow.MutableStateFlow
+import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
+import com.rickclephas.kmp.observableviewmodel.ViewModel
+import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -35,14 +35,14 @@ class AddDeviceViewModel(
         featureFlagProvider
             .observeEnabled(FeatureFlag.AI_BATCH_IMPORT)
             .safeStateIn(
-                scope = viewModelScope,
+                viewModelScope = viewModelScope,
                 started = defaultWhileSubscribed(),
                 initialValue = featureFlagProvider.isEnabled(FeatureFlag.AI_BATCH_IMPORT),
             )
 
     val deviceTypes: StateFlow<List<DeviceType>> = getDeviceTypesUseCase()
         .safeStateIn(
-            scope = viewModelScope,
+            viewModelScope = viewModelScope,
             started = defaultWhileSubscribed(),
             initialValue = emptyList(),
             onError = { e ->
@@ -51,10 +51,10 @@ class AddDeviceViewModel(
             },
         )
 
-    private val _isLoading = MutableStateFlow(false)
+    private val _isLoading = MutableStateFlow(viewModelScope, false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
-    private val _actionError = MutableStateFlow<String?>(null)
+    private val _actionError = MutableStateFlow<String?>(viewModelScope, null)
     val actionError: StateFlow<String?> = _actionError
 
     fun dismissActionError() {
@@ -63,7 +63,7 @@ class AddDeviceViewModel(
 
     @OptIn(ExperimentalUuidApi::class)
     fun addDevice(input: DeviceInput) {
-        viewModelScope.launch {
+        viewModelScope.coroutineScope.launch {
             _isLoading.value = true
             val newDevice = Device(
                 id = Uuid.random().toString(),
@@ -85,11 +85,11 @@ class AddDeviceViewModel(
         }
     }
 
-    private val _aiMessages = MutableStateFlow<List<BatchOperationResult>>(emptyList())
+    private val _aiMessages = MutableStateFlow<List<BatchOperationResult>>(viewModelScope, emptyList())
     val aiMessages: StateFlow<List<BatchOperationResult>> = _aiMessages
 
     fun batchAddDevices(input: String) {
-        viewModelScope.launch {
+        viewModelScope.coroutineScope.launch {
             batchAddDevicesUseCase(input).collect { message ->
                 _aiMessages.update { it + message }
             }

@@ -1,8 +1,10 @@
 import SwiftUI
 import shared
+import KMPObservableViewModelSwiftUI
 
 struct AddDeviceScreen: View {
-    @StateObject private var wrapper: AddDeviceViewModelWrapper
+    // bb-ovm1: @StateViewModel replaces AddDeviceViewModelWrapper.
+    @StateViewModel private var viewModel: AddDeviceViewModel
     @Environment(\.dismiss) private var dismiss
 
     @State private var name: String = ""
@@ -10,7 +12,7 @@ struct AddDeviceScreen: View {
     @State private var selectedTypeId: String = ""
 
     init(viewModel: AddDeviceViewModel) {
-        _wrapper = StateObject(wrappedValue: AddDeviceViewModelWrapper(viewModel))
+        _viewModel = StateViewModel(wrappedValue: viewModel)
     }
 
     var body: some View {
@@ -18,10 +20,15 @@ struct AddDeviceScreen: View {
             name: $name,
             location: $location,
             selectedTypeId: $selectedTypeId,
-            deviceTypes: wrapper.deviceTypes,
-            isLoading: wrapper.isLoading,
+            deviceTypes: viewModel.deviceTypesValue,
+            isLoading: viewModel.isLoadingValue,
             onAdd: {
-                wrapper.addDevice(name: name, location: location, typeId: selectedTypeId)
+                viewModel.addDevice(input: DeviceInput(
+                    name: name,
+                    location: location.isEmpty ? nil : location,
+                    typeId: selectedTypeId,
+                    imagePath: nil
+                ))
                 dismiss()
             },
             onCancel: {
@@ -29,6 +36,12 @@ struct AddDeviceScreen: View {
             }
         )
     }
+}
+
+// bb-ovm1: Option A manual state accessors (no NativeCoroutines).
+extension AddDeviceViewModel {
+    var deviceTypesValue: [DeviceType] { deviceTypes.value }
+    var isLoadingValue: Bool { (isLoading.value as? Bool) ?? false }
 }
 
 struct AddDeviceContentView: View {
