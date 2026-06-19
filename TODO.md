@@ -254,7 +254,27 @@ Empirically verified:
   an Xcode update → `bazel shutdown` re-resolves; then `xcodebuild` clean.
 **Net:** wrapper boilerplate (Task/for-await/deinit/KmpViewModelStore) gone on one screen,
 proven end-to-end. ObservableViewModel is Kotlin-pinned → bump in lockstep with Kotlin
-(bb-k4sk); builds exist 2.3.0→2.4.0. **Next:** roll out to the other 15 wrappers (mechanical).
+(bb-k4sk); builds exist 2.3.0→2.4.0.
+
+**Full rollout 2026-06-19 — ALL 16 wrappers migrated (one commit each, PR #1250):**
+DeviceDetail, DeviceTypeDetail, EventDetail, EditDevice, EditBatteryEvent, HistoryList,
+DeviceTypeList, Home, AiChat, AddDevice, AddBatteryEvent, Login, Settings, Counter,
+AddDeviceType, EditDeviceType. Every `*ViewModelWrapper.swift` deleted; screens use
+`@StateViewModel` + manual `xxxValue` accessors. Patterns established:
+- Uniform Kotlin recipe: base class → rickclephas `ViewModel`; named `safeStateIn(scope=…)`
+  → `safeStateIn(viewModelScope=…)` (positional auto-resolves); `viewModelScope.launch` →
+  `viewModelScope.coroutineScope.launch`; exposed raw `MutableStateFlow(x)` → observable
+  `MutableStateFlow(viewModelScope, x)`; observable `retryableStateIn(viewModelScope,…)` added.
+- Static helpers relocated out of deleted wrappers: `LoginErrorInfo` (tests updated),
+  `SettingsDisplay`. Form controllers (Add/EditDeviceType) moved form state into screen `@State`.
+- Gotchas hit: indent-anchored `launch` replace_all misses 8- vs 12-space siblings (fixed);
+  experimental `:viewmodel` needed the dep + ForeignApi opt-in; Counter `appCounterRunning`
+  kept direct-forwarded (observable `stateIn(WhileSubscribed)` broke a synchronous-`.value` test).
+- Verified: every commit Kotlin-compiles; full `xcodebuild` green at each batch + final;
+  targeted CI checks (spotless/detekt/architecture/naming/strings/import-boundary) +
+  `:viewmodel`/`:experimental:viewmodel` desktopTest all pass.
+**Follow-ups:** `KmpViewModelStore.kt` (Kotlin) is now unused by Swift — candidate for deletion
+if no Compose path uses it. iOS still needs release-mode CI / pixel verification (bb-bpbw).
 
 ## P4
 
