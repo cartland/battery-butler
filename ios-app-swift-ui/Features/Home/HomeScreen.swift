@@ -1,26 +1,28 @@
 import SwiftUI
 import shared
+import KMPObservableViewModelSwiftUI
 
 struct HomeScreen: View {
-    @StateObject var viewModelWrapper: HomeViewModelWrapper
+    // bb-ovm1: @StateViewModel replaces HomeViewModelWrapper.
+    @StateViewModel var viewModel: HomeViewModel
     private let component: NativeComponent // Using Component to access other VMs
     @State private var isAddDevicePresented = false
     @State private var isAddEventPresented = false
 
     init(component: NativeComponent) {
         self.component = component
-        _viewModelWrapper = StateObject(wrappedValue: HomeViewModelWrapper(component.homeViewModel))
+        _viewModel = StateViewModel(wrappedValue: component.homeViewModel)
     }
 
     var body: some View {
         HomeContentView(
-            state: viewModelWrapper.state,
+            state: viewModel.uiStateValue,
             onAddDeviceTapped: { isAddDevicePresented = true },
             onAddEventTapped: { isAddEventPresented = true },
-            onSortOptionSelected: { viewModelWrapper.onSortOptionSelected($0) },
-            onGroupOptionSelected: { viewModelWrapper.onGroupOptionSelected($0) },
-            onSortDirectionToggle: { viewModelWrapper.toggleSortDirection() },
-            onGroupDirectionToggle: { viewModelWrapper.toggleGroupDirection() },
+            onSortOptionSelected: { viewModel.onSortOptionSelected(option: $0) },
+            onGroupOptionSelected: { viewModel.onGroupOptionSelected(option: $0) },
+            onSortDirectionToggle: { viewModel.toggleSortDirection() },
+            onGroupDirectionToggle: { viewModel.toggleGroupDirection() },
             deviceDestination: { deviceId in
                 DeviceDetailScreen(component: component, deviceId: deviceId)
             },
@@ -38,6 +40,11 @@ struct HomeScreen: View {
             AddBatteryEventScreen(viewModel: component.addBatteryEventViewModel)
         }
     }
+}
+
+// bb-ovm1: Option A manual state accessor (no NativeCoroutines).
+extension HomeViewModel {
+    var uiStateValue: HomeScreenState { uiState.value }
 }
 
 struct HomeContentView<DeviceDestination: View, SettingsDestination: View, AiDestination: View>: View {
