@@ -12,9 +12,7 @@ import com.chriscartland.batterybutler.experimental.usecase.StopAppScopedCounter
 import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
 import com.rickclephas.kmp.observableviewmodel.ViewModel
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
-import com.rickclephas.kmp.observableviewmodel.stateIn
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -33,9 +31,10 @@ class CounterViewModel(
     private val _counterRunning = MutableStateFlow(viewModelScope, false)
     val counterRunning: StateFlow<Boolean> = _counterRunning.asStateFlow()
 
-    val appCounterRunning: StateFlow<Boolean> =
-        observeAppScopedCounterRunningUseCase()
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+    // Forwarded directly (not observable-wrapped) to preserve the synchronous `.value`
+    // semantics CounterViewModelTest relies on. Trade-off: SwiftUI won't auto-refresh on
+    // app-counter changes alone — acceptable for this experimental demo screen. (bb-ovm1)
+    val appCounterRunning: StateFlow<Boolean> = observeAppScopedCounterRunningUseCase()
 
     private val _observeState = MutableStateFlow<CounterState>(viewModelScope, CounterState.Idle)
     val observeState: StateFlow<CounterState> = _observeState.asStateFlow()
