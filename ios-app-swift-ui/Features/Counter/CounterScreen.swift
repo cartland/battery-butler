@@ -1,28 +1,38 @@
 import SwiftUI
 import shared
+import KMPObservableViewModelSwiftUI
 
 struct CounterScreen: View {
-    @StateObject private var wrapper: CounterViewModelWrapper
+    // bb-ovm1: @StateViewModel replaces CounterViewModelWrapper.
+    @StateViewModel private var viewModel: CounterViewModel
 
     init(viewModel: CounterViewModel) {
-        _wrapper = StateObject(wrappedValue: CounterViewModelWrapper(viewModel))
+        _viewModel = StateViewModel(wrappedValue: viewModel)
     }
 
     var body: some View {
         CounterContentView(
-            counterRunning: wrapper.counterRunning,
-            appCounterRunning: wrapper.appCounterRunning,
-            observeState: wrapper.observeState,
-            getState: wrapper.getState,
-            onStartCounter: { wrapper.startCounter() },
-            onStopCounter: { wrapper.stopCounter() },
-            onStartAppCounter: { wrapper.startAppCounter() },
-            onStopAppCounter: { wrapper.stopAppCounter() },
-            onStartObserving: { wrapper.startObserving() },
-            onStopObserving: { wrapper.stopObserving() },
-            onGetOnce: { wrapper.getOnce() }
+            counterRunning: viewModel.counterRunningValue,
+            appCounterRunning: viewModel.appCounterRunningValue,
+            observeState: viewModel.observeStateValue,
+            getState: viewModel.getStateValue,
+            onStartCounter: { viewModel.startCounter() },
+            onStopCounter: { viewModel.stopCounter() },
+            onStartAppCounter: { viewModel.startAppCounter() },
+            onStopAppCounter: { viewModel.stopAppCounter() },
+            onStartObserving: { viewModel.startObserving() },
+            onStopObserving: { viewModel.stopObserving() },
+            onGetOnce: { viewModel.getOnce() }
         )
     }
+}
+
+// bb-ovm1: Option A manual state accessors (no NativeCoroutines).
+extension CounterViewModel {
+    var counterRunningValue: Bool { (counterRunning.value as? Bool) ?? false }
+    var appCounterRunningValue: Bool { (appCounterRunning.value as? Bool) ?? false }
+    var observeStateValue: CounterState { observeState.value }
+    var getStateValue: CounterState { getState.value }
 }
 
 struct CounterContentView: View {

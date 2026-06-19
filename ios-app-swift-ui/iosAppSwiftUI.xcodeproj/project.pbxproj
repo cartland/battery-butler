@@ -58,7 +58,6 @@
 		B675B24ABC559905E825F17A /* DeviceRowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72E31482FD860FC114F618F9 /* DeviceRowTests.swift */; };
 		B98DBAFBE2DC0C16669CB684 /* TestData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EBF127BDE68EF62BDAFA150 /* TestData.swift */; };
 		C10C30F6B2130F078F2BDA75 /* EditDeviceTypeScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F33A7778DFBA813603E9B307 /* EditDeviceTypeScreenTests.swift */; };
-		CF70BCF7D6F55A9990A41AB3 /* CounterViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = D11FBA2FDBB2E80893058024 /* CounterViewModelWrapper.swift */; };
 		E0A8DE9231A158420BA314E6 /* EditBatteryEventScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFE633CDE982339D210E430D /* EditBatteryEventScreen.swift */; };
 		E0C961C9A111BA287D620252 /* SFSymbolMapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E1208E16A51185B6A4ACCF1 /* SFSymbolMapperTests.swift */; };
 		E4372088B04337437E52E822 /* LoginScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02CE71A2E10346985C7A7006 /* LoginScreenTests.swift */; };
@@ -131,7 +130,6 @@
 		C64AF092C61D54E3E0BB972E /* MessageRowTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MessageRowTests.swift; sourceTree = "<group>"; };
 		C7FFABCF0C5C31A595C3F1CF /* AddDeviceScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddDeviceScreenTests.swift; sourceTree = "<group>"; };
 		CE7C8996ACEF6EABE0989D13 /* iosAppSwiftUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iosAppSwiftUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		D11FBA2FDBB2E80893058024 /* CounterViewModelWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CounterViewModelWrapper.swift; sourceTree = "<group>"; };
 		D81DF9117CEBD961876923F5 /* SortGroupControlView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SortGroupControlView.swift; sourceTree = "<group>"; };
 		D8F821268475E1398BE0B048 /* SimpleSnapshotTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SimpleSnapshotTests.swift; sourceTree = "<group>"; };
 		DFE633CDE982339D210E430D /* EditBatteryEventScreen.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EditBatteryEventScreen.swift; sourceTree = "<group>"; };
@@ -444,7 +442,6 @@
 			isa = PBXGroup;
 			children = (
 				16B8F198E1373AA05C9C1F76 /* CounterScreen.swift */,
-				D11FBA2FDBB2E80893058024 /* CounterViewModelWrapper.swift */,
 			);
 			name = Counter;
 			path = Counter;
@@ -663,7 +660,6 @@
 				A74A111ED72A22540285B044 /* DeviceTypeDetailScreen.swift in Sources */,
 				A7AC0D97ABD8C337F08EB02B /* SortGroupControlView.swift in Sources */,
 				74012BF787CA36D76C6DBC9B /* CounterScreen.swift in Sources */,
-				CF70BCF7D6F55A9990A41AB3 /* CounterViewModelWrapper.swift in Sources */,
 				021096729B70AC411F4755E8 /* ObservableViewModelBridge.swift in Sources */,
 				2CAE7B0459274003713070EB /* LoginErrorInfo.swift in Sources */,
 				191BDBC1F7869D7813000980 /* SettingsDisplay.swift in Sources */,

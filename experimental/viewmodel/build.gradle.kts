@@ -31,6 +31,8 @@ kotlin {
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlin.inject.runtime)
             api(libs.androidx.lifecycle.viewmodel)
+            // bb-ovm1 spike: KMP-ObservableViewModel for the experimental Counter VM.
+            api(libs.kmp.observableviewmodel.core)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -47,6 +49,8 @@ kotlin {
 
     sourceSets.all {
         languageSettings.optIn("kotlin.time.ExperimentalTime")
+        // bb-ovm1 spike: KMP-ObservableViewModel's Apple stateIn actual uses cinterop.
+        languageSettings.optIn("kotlinx.cinterop.ExperimentalForeignApi")
     }
 }
 
