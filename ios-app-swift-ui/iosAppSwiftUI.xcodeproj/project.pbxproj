@@ -33,7 +33,6 @@
 		24ABD57C2F1CEC230036E1DD /* DeviceTypeListScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24ABD5722F1CEC230036E1DD /* DeviceTypeListScreen.swift */; };
 		24ABD57D2F1CEC230036E1DD /* AddDeviceTypeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24ABD5702F1CEC230036E1DD /* AddDeviceTypeScreen.swift */; };
 		24ABD57E2F1CEC230036E1DD /* DeviceTypeRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24ABD5742F1CEC230036E1DD /* DeviceTypeRow.swift */; };
-		2855F56B7B730259E73A04CD /* EditDeviceViewModelWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28903408708ECF67A8991592 /* EditDeviceViewModelWrapper.swift */; };
 		2BE2152C1E6DCD3ED9ED38F3 /* KMPObservableViewModelCore in Frameworks */ = {isa = PBXBuildFile; productRef = E8EF5DFF4E63F26AE2DB5883 /* KMPObservableViewModelCore */; };
 		2FA78B928A0A3E325BA1D464 /* EditDeviceScreenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C424550B976EA19E32F00C2 /* EditDeviceScreenTests.swift */; };
 		34B076CFB1DCC5E0A5B30622 /* KmpInteropTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BD21B88039A180BE432D829 /* KmpInteropTests.swift */; };
@@ -115,7 +114,6 @@
 		24ABD5742F1CEC230036E1DD /* DeviceTypeRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceTypeRow.swift; sourceTree = "<group>"; };
 		24ABD5752F1CEC230036E1DD /* EditDeviceTypeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDeviceTypeScreen.swift; sourceTree = "<group>"; };
 		24ABD5762F1CEC230036E1DD /* EditDeviceTypeViewModelWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDeviceTypeViewModelWrapper.swift; sourceTree = "<group>"; };
-		28903408708ECF67A8991592 /* EditDeviceViewModelWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EditDeviceViewModelWrapper.swift; sourceTree = "<group>"; };
 		32F2E55509C388E5CC4D034F /* AddBatteryEventScreenTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddBatteryEventScreenTests.swift; sourceTree = "<group>"; };
 		348ECD40844BC056AA8019FF /* AddBatteryEventViewModelWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddBatteryEventViewModelWrapper.swift; sourceTree = "<group>"; };
 		36C882E51E3C5A80D0CEDBDA /* BatteryAgeHelper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BatteryAgeHelper.swift; sourceTree = "<group>"; };
@@ -358,7 +356,6 @@
 			isa = PBXGroup;
 			children = (
 				4217F0EB61A27BAB5D26D37A /* EditDeviceScreen.swift */,
-				28903408708ECF67A8991592 /* EditDeviceViewModelWrapper.swift */,
 			);
 			name = EditDevice;
 			path = EditDevice;
@@ -684,7 +681,6 @@
 				77177175D5AE0F2363AB6DDA /* AiChatScreen.swift in Sources */,
 				0B8A00C05740714CA09EA3DF /* AiChatViewModelWrapper.swift in Sources */,
 				998E133AD56CF4D0A133506A /* EditDeviceScreen.swift in Sources */,
-				2855F56B7B730259E73A04CD /* EditDeviceViewModelWrapper.swift in Sources */,
 				1C334F3F015C1D39485934F7 /* BatteryAgeHelper.swift in Sources */,
 				785C51ADA7A324EE132F276A /* ButlerIconBox.swift in Sources */,
 				69167925374428CD712E239D /* SFSymbolMapper.swift in Sources */,
