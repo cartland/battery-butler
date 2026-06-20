@@ -141,11 +141,18 @@ SKIE 0.10.9 hard-fails the build: `Error: SKIE 0.10.9 does not support Kotlin
 in PR #1243.
 
 **When a SKIE release supports the target Kotlin** (check Touchlab SKIE releases vs
-the `skie` pin in `libs.versions.toml`, currently `0.10.9`): (1) bump `skie`,
+the `skie` pin in `libs.versions.toml`, now `0.10.12`): (1) bump `skie`,
 (2) delete the kotlin block in `.github/dependabot.yml` → `ignore:`, (3) remove the
-`# Kotlin 2.3.20 blocked: SKIE …` comment in `libs.versions.toml` and bump
+`# Kotlin 2.3.20+ deferred …` comment in `libs.versions.toml` and bump
 `kotlin` (and let Dependabot re-propose / bump `kotlinx-coroutines` etc.).
 External-dependency-gated; closes when Kotlin is bumped past 2.3.0 with green CI.
+
+**2026-06-20 update (PR #1256):** SKIE was bumped `0.10.9` → `0.10.12`, which supports
+Kotlin up to **2.3.21** — so SKIE no longer blocks a Kotlin 2.3.x bump. The remaining
+gate is **KMP-ObservableViewModel** (`1.0.1` pins Kotlin 2.3.0; see `observableviewmodel`
+in `libs.versions.toml`) — bump it in lockstep. Note: Kotlin **2.4.0** still needs a
+newer SKIE (0.10.12 maxes at 2.3.21), so the dependabot `org.jetbrains.kotlin:* >= 2.3.20`
+ignore stays until BOTH SKIE and KMP-ObservableViewModel support the target Kotlin.
 
 ### bb-gr79 — Unblock & re-enable gRPC 1.79+ / Wire 6.0+ (regenerate protos)
 
@@ -207,6 +214,31 @@ version.
 2.2.0 → 2.9.x to find the conflicting transitive (likely a guava / protobuf /
 grpc-context clash), align/force it, then bump `googleApiClient` in
 `libs.versions.toml`. Low priority — current 2.2.0 works fine.
+
+### bb-ncst — (Deferred) Evaluate KMP-NativeCoroutines `@NativeCoroutinesState` to remove manual `xxxValue` accessors
+
+Option A (current) exposes KMP state to SwiftUI via KMP-ObservableViewModel + hand-written
+per-VM `xxxValue` extension accessors (`var uiStateValue: … { uiState.value }`).
+KMP-NativeCoroutines' `@NativeCoroutinesState` would KSP-generate those accessors instead,
+removing the boilerplate.
+
+**Deferred — adopt only if the manual accessors become a real maintenance drag**, because the
+investigation (2026-06-20) found:
+- It adds a **4th** Kotlin-version-pinned dependency (+ its KSP) — NOT already present
+  transitively (KMP-ObservableViewModel 1.0.1 depends only on stdlib / coroutines-core /
+  lifecycle-viewmodel; there are zero `nativecoroutines` refs in the build today).
+- It does **NOT** fix the silent-non-observable footgun — that's already closed by
+  `ExposedStateObservabilityConventionTest` in `:viewmodel:desktopTest` (PR #1255). So
+  NativeCoroutines is now pure ergonomic convenience, not a correctness fix.
+- It requires SKIE `FlowInterop` to be **disabled** (NativeCoroutines and SKIE flow interop
+  conflict), but `FlowInterop` is load-bearing here — it provides the strong Swift typing for
+  `StateFlow.value` that the current `.value` accessors rely on (PR #1256). So adoption is
+  all-or-nothing across every screen, not incremental.
+
+**If adopted:** wire the NativeCoroutines KSP, annotate exposed state with `@NativeCoroutinesState`,
+disable SKIE `FlowInterop`, regenerate, and verify `@StateViewModel` re-render still fires when
+Swift reads the generated `xValue` — with a local `./scripts/build-ios.sh` (dev-mode PR CI skips iOS).
+Related: bb-k4sk (Kotlin/SKIE version coupling), `.agent/ios.md` (Option A pattern).
 
 ## Done
 
