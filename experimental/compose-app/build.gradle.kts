@@ -1,3 +1,5 @@
+import co.touchlab.skie.configuration.SuspendInterop
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
@@ -71,6 +73,17 @@ kotlin {
         }
         androidMain.dependencies {
             implementation(libs.androidx.activity.compose)
+        }
+    }
+}
+
+skie {
+    features {
+        group {
+            // No Swift code awaits a Kotlin suspend function, so SuspendInterop is unused.
+            // FlowInterop stays enabled to keep `StateFlow.value` strongly typed in Swift for
+            // the KMP-ObservableViewModel `.value` accessors (see ios-swift-di/build.gradle.kts).
+            SuspendInterop.Enabled(false)
         }
     }
 }

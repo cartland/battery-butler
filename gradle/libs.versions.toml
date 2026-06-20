@@ -19,7 +19,8 @@ androidx-testExt = "1.2.1"
 composeHotReload = "1.1.1"
 composeMultiplatform = "1.10.0"
 junit = "4.13.2"
-# Kotlin 2.3.20 blocked: SKIE 0.10.9 does not support it. Requires upstream SKIE release.
+# Kotlin 2.3.20+ deferred: SKIE 0.10.12 supports up to Kotlin 2.3.21, but bumping Kotlin
+# also requires bumping KMP-ObservableViewModel (1.0.1 pins 2.3.0). See bb-k4sk in TODO.md.
 kotlin = "2.3.0"
 kotlinx-coroutines = "1.10.2"
 ktor = "3.5.0"
@@ -47,7 +48,7 @@ grpc-kotlin = "1.4.1"
 # Wire 6.0+ blocked: bundled with gRPC group upgrade above.
 wire = "5.0.0"
 screenshot = "0.0.1-alpha12"
-skie = "0.10.9"
+skie = "0.10.12"
 # bb-ovm1 spike: KMP-ObservableViewModel is Kotlin-version-pinned; 1.0.1 ↔ Kotlin 2.3.0.
 observableviewmodel = "1.0.1"
 kermit = "2.0.4"
