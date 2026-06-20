@@ -1,8 +1,12 @@
 import SwiftUI
 import shared
+import KMPObservableViewModelSwiftUI
 
 struct DeviceDetailScreen: View {
-    @StateObject private var wrapper: DeviceDetailViewModelWrapper
+    // bb-ovm1 spike: @StateViewModel owns + clears the KMP ViewModel (auto viewModelScope
+    // cancellation + onCleared), replacing the hand-written DeviceDetailViewModelWrapper,
+    // KmpViewModelStore, and `Task { for await }` / deinit boilerplate.
+    @StateViewModel private var viewModel: DeviceDetailViewModel
     private let component: NativeComponent
     private let deviceId: String
     @State private var showingEditDevice = false
@@ -10,15 +14,16 @@ struct DeviceDetailScreen: View {
     init(component: NativeComponent, deviceId: String) {
         self.deviceId = deviceId
         self.component = component
-        let viewModel = component.deviceDetailViewModelFactory.create(deviceId: deviceId)
-        _wrapper = StateObject(wrappedValue: DeviceDetailViewModelWrapper(viewModel))
+        _viewModel = StateViewModel(
+            wrappedValue: component.deviceDetailViewModelFactory.create(deviceId: deviceId)
+        )
     }
 
     var body: some View {
         DeviceDetailContentView(
-            state: wrapper.state,
+            state: viewModel.uiStateValue,
             onRecordReplacement: {
-                wrapper.recordReplacement()
+                viewModel.recordReplacement()
             },
             eventDestination: { eventId in
                 EventDetailScreen(eventId: eventId, component: component)

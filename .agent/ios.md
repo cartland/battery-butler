@@ -7,14 +7,29 @@ SwiftUI architecture, design system, xcodebuild patterns, and snapshot testing.
 ## iOS SwiftUI Architecture
 
 The iOS SwiftUI app follows a **two-layer pattern**:
-- **Screen** (e.g., `AddDeviceScreen`): Owns `@State` vars, creates `@StateObject` wrapper, composes the content view
-- **ContentView** (e.g., `AddDeviceContentView`): Stateless view with `@Binding` params, renders the UI
+- **Screen** (e.g., `AddDeviceScreen`): Owns `@State` form vars + the KMP ViewModel via `@StateViewModel`, composes the content view
+- **ContentView** (e.g., `AddDeviceContentView`): Stateless view with `@Binding`/value params, renders the UI
 
-**ViewModelWrapper** bridges KMP ViewModels to SwiftUI:
-- `@StateObject` in the Screen, wraps the KMP ViewModel
-- Uses `KmpViewModelStore` for lifecycle management
-- Subscribes to KMP `StateFlow` via async `for await` loops in `Task`s
-- Publishes state via `@Published` properties
+**KMP-ObservableViewModel** bridges KMP ViewModels to SwiftUI (migrated from hand-written
+wrappers in PR #1250 / bb-ovm1 — there is no longer a `*ViewModelWrapper` or `KmpViewModelStore`):
+- KMP ViewModels extend `com.rickclephas.kmp.observableviewmodel.ViewModel` (which is-a
+  `androidx.lifecycle.ViewModel` on every target we ship, so Compose-MP is unaffected).
+- The Screen holds the VM with `@StateViewModel` (owns + clears it, replacing the old
+  `@StateObject` wrapper + `Task { for await }` + `deinit`). `@ObservedViewModel` for non-owning.
+- State reaches SwiftUI via **observable** StateFlows — build them with
+  `safeStateIn(viewModelScope, …)` / `retryableStateIn(viewModelScope, …)` / observable
+  `MutableStateFlow(viewModelScope, …)` (in `:viewmodel` `ViewModelExtensions.kt`). `viewModelScope`
+  is the rickclephas type; use `viewModelScope.coroutineScope.launch { }` for coroutines.
+- The Screen reads current values via a small manual `xxxValue` extension accessor (Option A —
+  no KMP-NativeCoroutines; SKIE stays for sealed/enum/default-arg interop). `@StateViewModel`
+  re-renders when any observable StateFlow emits, so the accessor is re-read automatically.
+- One-time bridge: `Core/ObservableViewModelBridge.swift` =
+  `extension shared.ViewModel: @retroactive ViewModel {}`. The SPM package `KMP-ObservableViewModel`
+  (pinned `1.0.1` to match the Kotlin artifact for our Kotlin version) is on the app target;
+  `ios-swift-di` exports the observableviewmodel core. It's Kotlin-version-pinned — bump in
+  lockstep with Kotlin (see bb-k4sk).
+- VM actions: call the VM method directly with labels (`viewModel.onSortOptionSelected(option:)`);
+  build inputs (`DeviceInput`, `DeviceTypeInput`, `KotlinInstant`) inline in the Screen.
 
 **SKIE AuthError subtypes** in Swift:
 - `AuthErrorConfigurationNotConfigured`, `AuthErrorConfigurationServerUnavailable`
@@ -79,7 +94,9 @@ PR #873 implemented the full iOS design language from `docs/design/IOS_DESIGN_LA
 - `SFSymbolMapperTests` (7 tests) — nil/unknown/known icon mappings
 - `LoginErrorInfoTests` (8 tests) — all AuthError subtypes → title/message/showRetry
 
-`LoginViewModelWrapper.errorInfo(for:)` is `static` (internal) for direct testability.
+`LoginErrorInfo.errorInfo(for:)` is a standalone `static` helper for direct testability (relocated
+from the deleted `LoginViewModelWrapper` in bb-ovm1; `SettingsDisplay` similarly holds the
+network-mode / AI-engine display-name helpers).
 
 **KMP AuthError constructors in Swift**: All subtypes require full-param init including `message:` — the no-arg init is unavailable despite Kotlin defaults. Example: `AuthErrorSignInFailed(message: "Sign-in failed", cause: nil)`.
 
@@ -107,15 +124,13 @@ Kotlin nested types flatten to concatenated names:
 - `BatchOperationResult.Progress` → `BatchOperationResultProgress`
 - `DataError.Unknown` → `DataErrorUnknown`
 
-### StateFlow casting patterns in ViewModelWrappers
+### StateFlow value access in Screens (post-wrapper migration, bb-ovm1)
 
-Three patterns exist across the 14 wrappers (not yet standardized):
-
-1. **guard/fatalError** — `guard let state = flow.value as? ConcreteType else { fatalError() }`
-2. **Direct assignment** — `self.property = flow.value` (when types match directly)
-3. **as?/fallback** — `self.property = flow.value as? ConcreteType ?? defaultValue`
-
-Pattern #3 is safest (no crash on type mismatch). Standardization is a separate refactor.
+The hand-written ViewModelWrappers were removed. Screens read StateFlow values through a manual
+`xxxValue` extension accessor on the KMP ViewModel, e.g.
+`extension DeviceDetailViewModel { var uiStateValue: DeviceDetailScreenState { uiState.value } }`.
+Boolean StateFlows still box at the boundary — use `(flow.value as? Bool) ?? false`. Sealed-state
+matching uses the SKIE-flattened names (`DeviceDetailScreenStateSuccess`, etc.) with `is`/`as?`.
 
 ## iOS Snapshot Tests
 

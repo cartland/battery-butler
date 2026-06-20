@@ -1,52 +1,10 @@
-import SwiftUI
+import Foundation
 import shared
-import Combine
 
-class LoginViewModelWrapper: ObservableObject {
-    @Published var authState: AuthState? = nil
-    @Published var errorTitle: String = ""
-    @Published var errorMessage: String = ""
-    @Published var showRetryButton: Bool = true
-
-    let isSignInAvailable: Bool
-
-    private let viewModel: LoginViewModel
-    private let viewModelStore = KmpViewModelStore()
-    private var authTask: Task<Void, Never>?
-
-    init(_ viewModel: LoginViewModel) {
-        self.viewModel = viewModel
-        viewModelStore.put(key: "vm", viewModel: viewModel)
-
-        self.isSignInAvailable = viewModel.isSignInAvailable
-        self.authState = viewModel.authState.value
-
-        self.authTask = Task { @MainActor [weak self] in
-            for await state in viewModel.authState {
-                self?.authState = state
-                if let failed = state as? AuthStateFailed {
-                    let (title, message, retry) = Self.errorInfo(for: failed.error)
-                    self?.errorTitle = title
-                    self?.errorMessage = message
-                    self?.showRetryButton = retry
-                }
-            }
-        }
-    }
-
-    deinit {
-        authTask?.cancel()
-        viewModelStore.clear()
-    }
-
-    func signInWithGoogle() {
-        viewModel.signInWithGoogle()
-    }
-
-    func dismissError() {
-        viewModel.dismissError()
-    }
-
+// bb-ovm1: Relocated from LoginViewModelWrapper (deleted in the KMP-ObservableViewModel
+// migration). Pure mapping of AuthError → (title, message, showRetry), kept static for
+// direct unit testing (see LoginErrorInfoTests).
+enum LoginErrorInfo {
     static func errorInfo(for error: AuthError) -> (String, String, Bool) {
         switch error {
         case is AuthErrorConfigurationNotConfigured:

@@ -8,7 +8,7 @@ final class LoginErrorInfoTests: XCTestCase {
         let error: AuthError = AuthErrorConfigurationNotConfigured(
             message: "Sign-in not available", cause: nil
         )
-        let (title, message, showRetry) = LoginViewModelWrapper.errorInfo(for: error)
+        let (title, message, showRetry) = LoginErrorInfo.errorInfo(for: error)
         XCTAssertEqual(title, "Coming Soon")
         XCTAssertTrue(message.contains("not yet available"))
         XCTAssertFalse(showRetry)
@@ -18,7 +18,7 @@ final class LoginErrorInfoTests: XCTestCase {
         let error: AuthError = AuthErrorConfigurationServerUnavailable(
             message: "Server unavailable", cause: nil
         )
-        let (title, _, showRetry) = LoginViewModelWrapper.errorInfo(for: error)
+        let (title, _, showRetry) = LoginErrorInfo.errorInfo(for: error)
         XCTAssertEqual(title, "Can't Connect")
         XCTAssertTrue(showRetry)
     }
@@ -27,7 +27,7 @@ final class LoginErrorInfoTests: XCTestCase {
         let error: AuthError = AuthErrorSignInCancelled(
             message: "Sign-in cancelled", cause: nil
         )
-        let (title, message, showRetry) = LoginViewModelWrapper.errorInfo(for: error)
+        let (title, message, showRetry) = LoginErrorInfo.errorInfo(for: error)
         XCTAssertEqual(title, "Cancelled")
         XCTAssertTrue(message.contains("cancelled"))
         XCTAssertTrue(showRetry)
@@ -37,7 +37,7 @@ final class LoginErrorInfoTests: XCTestCase {
         let error: AuthError = AuthErrorSignInNetworkError(
             message: "Network error", cause: nil
         )
-        let (title, _, showRetry) = LoginViewModelWrapper.errorInfo(for: error)
+        let (title, _, showRetry) = LoginErrorInfo.errorInfo(for: error)
         XCTAssertEqual(title, "Connection Problem")
         XCTAssertTrue(showRetry)
     }
@@ -46,7 +46,7 @@ final class LoginErrorInfoTests: XCTestCase {
         let error: AuthError = AuthErrorSignInFailed(
             message: "Sign-in failed", cause: "OAuth token expired"
         )
-        let (title, message, showRetry) = LoginViewModelWrapper.errorInfo(for: error)
+        let (title, message, showRetry) = LoginErrorInfo.errorInfo(for: error)
         XCTAssertEqual(title, "Sign In Failed")
         XCTAssertEqual(message, "OAuth token expired")
         XCTAssertTrue(showRetry)
@@ -56,7 +56,7 @@ final class LoginErrorInfoTests: XCTestCase {
         let error: AuthError = AuthErrorSignInFailed(
             message: "Sign-in failed", cause: nil
         )
-        let (title, message, showRetry) = LoginViewModelWrapper.errorInfo(for: error)
+        let (title, message, showRetry) = LoginErrorInfo.errorInfo(for: error)
         XCTAssertEqual(title, "Sign In Failed")
         XCTAssertTrue(message.contains("try signing in again"))
         XCTAssertTrue(showRetry)
@@ -66,7 +66,7 @@ final class LoginErrorInfoTests: XCTestCase {
         let error: AuthError = AuthErrorTokenInvalid(
             message: "Invalid token", cause: nil
         )
-        let (title, _, showRetry) = LoginViewModelWrapper.errorInfo(for: error)
+        let (title, _, showRetry) = LoginErrorInfo.errorInfo(for: error)
         XCTAssertEqual(title, "Session Error")
         XCTAssertTrue(showRetry)
     }
@@ -75,7 +75,7 @@ final class LoginErrorInfoTests: XCTestCase {
         let error: AuthError = AuthErrorTokenExpired(
             message: "Session expired", cause: nil
         )
-        let (title, message, showRetry) = LoginViewModelWrapper.errorInfo(for: error)
+        let (title, message, showRetry) = LoginErrorInfo.errorInfo(for: error)
         XCTAssertEqual(title, "Session Expired")
         XCTAssertTrue(message.contains("expired"))
         XCTAssertTrue(showRetry)

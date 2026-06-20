@@ -1,8 +1,10 @@
 import SwiftUI
 import shared
+import KMPObservableViewModelSwiftUI
 
 struct EditBatteryEventScreen: View {
-    @StateObject private var wrapper: EditBatteryEventViewModelWrapper
+    // bb-ovm1: @StateViewModel replaces EditBatteryEventViewModelWrapper.
+    @StateViewModel private var viewModel: EditBatteryEventViewModel
     @Environment(\.dismiss) private var dismiss
 
     @State private var eventDate: Date = Date()
@@ -11,26 +13,30 @@ struct EditBatteryEventScreen: View {
     @State private var hasInitializedFields = false
 
     init(eventId: String, component: NativeComponent) {
-        _wrapper = StateObject(wrappedValue: EditBatteryEventViewModelWrapper(eventId: eventId, component: component))
+        _viewModel = StateViewModel(
+            wrappedValue: component.editBatteryEventViewModelFactory.create(eventId: eventId)
+        )
     }
 
     var body: some View {
         EditBatteryEventContentView(
-            state: wrapper.state,
+            state: viewModel.uiStateValue,
             eventDate: $eventDate,
             batteryType: $batteryType,
             notes: $notes,
             hasInitializedFields: $hasInitializedFields,
             onSave: {
-                wrapper.updateEvent(
-                    date: eventDate,
+                let epochMillis = Int64(eventDate.timeIntervalSince1970 * 1000)
+                let instant = KotlinInstant.Companion.shared.fromEpochMilliseconds(epochMilliseconds: epochMillis)
+                viewModel.updateEvent(
+                    date: instant,
                     batteryType: batteryType.isEmpty ? nil : batteryType,
                     notes: notes.isEmpty ? nil : notes
                 )
                 dismiss()
             },
             onDelete: {
-                wrapper.deleteEvent()
+                viewModel.deleteEvent()
                 dismiss()
             },
             onCancel: {
@@ -38,6 +44,11 @@ struct EditBatteryEventScreen: View {
             }
         )
     }
+}
+
+// bb-ovm1: Option A manual state accessor (no NativeCoroutines).
+extension EditBatteryEventViewModel {
+    var uiStateValue: EditBatteryEventScreenState { uiState.value }
 }
 
 struct EditBatteryEventContentView: View {

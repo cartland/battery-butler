@@ -1,7 +1,5 @@
 package com.chriscartland.batterybutler.viewmodel.editdevice
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.chriscartland.batterybutler.domain.model.DeviceInput
 import com.chriscartland.batterybutler.presentationmodel.editdevice.EditDeviceScreenState
 import com.chriscartland.batterybutler.usecase.DeleteDeviceUseCase
@@ -10,6 +8,8 @@ import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.UpdateDeviceUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
 import com.chriscartland.batterybutler.viewmodel.safeStateIn
+import com.rickclephas.kmp.observableviewmodel.ViewModel
+import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
@@ -53,7 +53,7 @@ class EditDeviceViewModel(
             )
         }
     }.safeStateIn(
-        scope = viewModelScope,
+        viewModelScope = viewModelScope,
         started = defaultWhileSubscribed(),
         initialValue = EditDeviceScreenState.Loading,
     )
@@ -61,7 +61,7 @@ class EditDeviceViewModel(
     fun updateDevice(input: DeviceInput) {
         val currentState = uiState.value
         if (currentState is EditDeviceScreenState.Success) {
-            viewModelScope.launch {
+            viewModelScope.coroutineScope.launch {
                 val updatedDevice = currentState.device.copy(
                     name = input.name,
                     location = input.location,
@@ -75,7 +75,7 @@ class EditDeviceViewModel(
     }
 
     fun deleteDevice() {
-        viewModelScope.launch {
+        viewModelScope.coroutineScope.launch {
             deleteDeviceUseCase(deviceId)
         }
     }

@@ -35,6 +35,8 @@ kotlin {
             implementation(libs.kotlin.stdlib)
             implementation(libs.kotlinx.coroutines.core)
             api(libs.androidx.lifecycle.viewmodel)
+            // bb-ovm1 spike: KMP-ObservableViewModel core (Option A — no NativeCoroutines yet).
+            api(libs.kmp.observableviewmodel.core)
             implementation(libs.kotlin.inject.runtime)
 
             api(project(":presentation-model"))
@@ -58,6 +60,8 @@ kotlin {
 
     sourceSets.all {
         languageSettings.optIn("kotlin.time.ExperimentalTime")
+        // bb-ovm1 spike: KMP-ObservableViewModel's Apple stateIn actual uses cinterop.
+        languageSettings.optIn("kotlinx.cinterop.ExperimentalForeignApi")
     }
 }
 

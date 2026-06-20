@@ -1,8 +1,10 @@
 import SwiftUI
 import shared
+import KMPObservableViewModelSwiftUI
 
 struct DeviceTypeDetailScreen: View {
-    @StateObject private var wrapper: DeviceTypeDetailViewModelWrapper
+    // bb-ovm1: @StateViewModel replaces DeviceTypeDetailViewModelWrapper (auto lifecycle).
+    @StateViewModel private var viewModel: DeviceTypeDetailViewModel
     private let component: NativeComponent
     private let typeId: String
     @State private var showingEditDeviceType = false
@@ -10,13 +12,14 @@ struct DeviceTypeDetailScreen: View {
     init(component: NativeComponent, typeId: String) {
         self.typeId = typeId
         self.component = component
-        let viewModel = component.deviceTypeDetailViewModelFactory.create(typeId: typeId)
-        _wrapper = StateObject(wrappedValue: DeviceTypeDetailViewModelWrapper(viewModel))
+        _viewModel = StateViewModel(
+            wrappedValue: component.deviceTypeDetailViewModelFactory.create(typeId: typeId)
+        )
     }
 
     var body: some View {
         DeviceTypeDetailContentView(
-            state: wrapper.state,
+            state: viewModel.uiStateValue,
             deviceDestination: { deviceId in
                 DeviceDetailScreen(component: component, deviceId: deviceId)
             }
@@ -36,6 +39,12 @@ struct DeviceTypeDetailScreen: View {
             )
         }
     }
+}
+
+// bb-ovm1: Option A manual state accessor (no NativeCoroutines). Read by @StateViewModel-
+// driven re-renders; uiState is observable via safeStateIn(viewModelScope, …).
+extension DeviceTypeDetailViewModel {
+    var uiStateValue: DeviceTypeDetailScreenState { uiState.value }
 }
 
 struct DeviceTypeDetailContentView<DeviceDestination: View>: View {

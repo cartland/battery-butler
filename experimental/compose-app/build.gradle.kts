@@ -59,6 +59,11 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.viewmodel.compose)
             implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+            // bb-ovm1: declare runtimeCompose explicitly. It was pulled in transitively before;
+            // adding kmp-observableviewmodel-core to :experimental:viewmodel shifted the
+            // androidx.lifecycle graph and evicted it (collectAsStateWithLifecycle). The main
+            // :compose-app already declares this directly.
+            implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.androidx.nav3.ui)
             implementation(libs.androidx.nav3.runtime)
             implementation(libs.kotlin.inject.runtime)

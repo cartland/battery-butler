@@ -104,7 +104,7 @@ open class TestCoverageCheckTask : DefaultTask() {
 
         val excludedDirs = setOf("di", "provider")
         val excludedSuffixes = listOf("Factory", "Component")
-        val excludedNames = setOf("KmpViewModelStore")
+        val excludedNames = emptySet<String>()
 
         for (rule in rules) {
             for (sourceSet in rule.sourceSets) {

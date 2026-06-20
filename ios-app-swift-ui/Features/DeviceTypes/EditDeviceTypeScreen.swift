@@ -1,35 +1,112 @@
 import SwiftUI
 import shared
+import KMPObservableViewModelSwiftUI
+
+// bb-ovm1: form-state struct relocated from EditDeviceTypeViewModelWrapper (deleted).
+struct EditDeviceTypeState {
+    var name: String = ""
+    var batteryType: String = ""
+    var selectedIcon: String = "videogame_asset"
+    var batteryQuantity: Int = 1
+    var usedIcons: [String] = []
+    var isSaving: Bool = false
+    var isSaved: Bool = false
+    var saveError: String? = nil
+    var isLoading: Bool = true
+    var isNotFound: Bool = false
+    var originalId: String = ""
+}
 
 struct EditDeviceTypeScreen: View {
-    @StateObject var viewModelWrapper: EditDeviceTypeViewModelWrapper
+    // bb-ovm1: @StateViewModel replaces EditDeviceTypeViewModelWrapper. Form fields are local
+    // @State, populated once from the loaded DeviceType; the rest comes from uiStateValue.
+    @StateViewModel private var viewModel: EditDeviceTypeViewModel
     @Environment(\.dismiss) private var dismiss
 
+    @State private var name = ""
+    @State private var batteryType = ""
+    @State private var selectedIcon = "videogame_asset"
+    @State private var batteryQuantity = 1
+    @State private var isSaving = false
+    @State private var loadedId = ""
+
     init(factory: EditDeviceTypeViewModelFactory, typeId: String) {
-        _viewModelWrapper = StateObject(wrappedValue: EditDeviceTypeViewModelWrapper(factory.create(typeId: typeId)))
+        _viewModel = StateViewModel(wrappedValue: factory.create(typeId: typeId))
+    }
+
+    private var state: EditDeviceTypeState {
+        var s = EditDeviceTypeState(
+            name: name,
+            batteryType: batteryType,
+            selectedIcon: selectedIcon,
+            batteryQuantity: batteryQuantity,
+            isSaving: isSaving,
+            originalId: loadedId
+        )
+        let ui = viewModel.uiStateValue
+        if let success = ui as? EditDeviceTypeScreenStateSuccess {
+            s.isLoading = false
+            s.usedIcons = success.usedIcons
+        } else if ui is EditDeviceTypeScreenStateNotFound {
+            s.isLoading = false
+            s.isNotFound = true
+        }
+        return s
     }
 
     var body: some View {
         EditDeviceTypeContentView(
-            state: viewModelWrapper.state,
-            onUpdateName: { viewModelWrapper.updateName(name: $0) },
-            onUpdateBatteryType: { viewModelWrapper.updateBatteryType(type: $0) },
-            onSelectIcon: { viewModelWrapper.selectIcon(icon: $0) },
-            onIncrementQuantity: { viewModelWrapper.incrementBatteryQuantity() },
-            onDecrementQuantity: { viewModelWrapper.decrementBatteryQuantity() },
-            onSave: { viewModelWrapper.save() },
+            state: state,
+            onUpdateName: { name = $0 },
+            onUpdateBatteryType: { batteryType = $0 },
+            onSelectIcon: { selectedIcon = $0 },
+            onIncrementQuantity: { batteryQuantity += 1 },
+            onDecrementQuantity: { if batteryQuantity > 1 { batteryQuantity -= 1 } },
+            onSave: { save() },
             onDelete: {
-                viewModelWrapper.delete()
+                viewModel.deleteDeviceType()
                 dismiss()
             }
         )
-        .onChange(of: viewModelWrapper.state.isSaved) { _, isSaved in
-            if isSaved {
-                viewModelWrapper.consumeSaveSuccess()
-                dismiss()
-            }
+        .onAppear { loadFieldsIfNeeded() }
+        .onChange(of: (viewModel.uiStateValue as? EditDeviceTypeScreenStateSuccess)?.deviceType.id) { _, _ in
+            loadFieldsIfNeeded()
         }
     }
+
+    // Populate the editable fields once, when the type first loads (mirrors the wrapper's
+    // originalId guard so user edits aren't overwritten by later emissions).
+    private func loadFieldsIfNeeded() {
+        guard let success = viewModel.uiStateValue as? EditDeviceTypeScreenStateSuccess else { return }
+        let type = success.deviceType
+        if loadedId != type.id {
+            loadedId = type.id
+            name = type.name
+            batteryType = type.batteryType
+            selectedIcon = type.defaultIcon ?? "videogame_asset"
+            batteryQuantity = Int(type.batteryQuantity)
+        }
+    }
+
+    private func save() {
+        isSaving = true
+        viewModel.updateDeviceType(input: DeviceTypeInput(
+            name: name,
+            defaultIcon: selectedIcon,
+            batteryType: batteryType,
+            batteryQuantity: Int32(batteryQuantity)
+        ))
+        // The VM doesn't expose a save-success signal; mirror the wrapper's simulated delay.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            isSaving = false
+            dismiss()
+        }
+    }
+}
+
+// bb-ovm1: Option A manual state accessor (no NativeCoroutines).
+extension EditDeviceTypeViewModel {
+    var uiStateValue: EditDeviceTypeScreenState { uiState.value }
 }
 
 struct EditDeviceTypeContentView: View {

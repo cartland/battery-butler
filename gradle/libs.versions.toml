@@ -48,6 +48,8 @@ grpc-kotlin = "1.4.1"
 wire = "5.0.0"
 screenshot = "0.0.1-alpha12"
 skie = "0.10.9"
+# bb-ovm1 spike: KMP-ObservableViewModel is Kotlin-version-pinned; 1.0.1 ↔ Kotlin 2.3.0.
+observableviewmodel = "1.0.1"
 kermit = "2.0.4"
 generativeai = "0.9.0"
 okhttp = "5.3.2"
@@ -84,6 +86,7 @@ androidx-lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:life
 androidx-lifecycle-viewmodel-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle-alpha" }
 androidx-lifecycle-viewmodel-navigation3 = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "androidx-lifecycle-alpha" }
 androidx-lifecycle-runtimeCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle-alpha" }
+kmp-observableviewmodel-core = { module = "com.rickclephas.kmp:kmp-observableviewmodel-core", version.ref = "observableviewmodel" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }

@@ -1,24 +1,26 @@
 import SwiftUI
 import shared
+import KMPObservableViewModelSwiftUI
 
 struct DeviceTypeListScreen: View {
-    @StateObject var viewModelWrapper: DeviceTypeListViewModelWrapper
+    // bb-ovm1: @StateViewModel replaces DeviceTypeListViewModelWrapper.
+    @StateViewModel var viewModel: DeviceTypeListViewModel
     private let component: NativeComponent
     @State private var isAddTypePresented = false
 
     init(component: NativeComponent) {
         self.component = component
-        _viewModelWrapper = StateObject(wrappedValue: DeviceTypeListViewModelWrapper(component.deviceTypeListViewModel))
+        _viewModel = StateViewModel(wrappedValue: component.deviceTypeListViewModel)
     }
 
     var body: some View {
         DeviceTypeListContentView(
-            state: viewModelWrapper.state,
+            state: viewModel.uiStateValue,
             onAddTypeTapped: { isAddTypePresented = true },
-            onSortOptionSelected: { viewModelWrapper.onSortOptionSelected($0) },
-            onGroupOptionSelected: { viewModelWrapper.onGroupOptionSelected($0) },
-            onSortDirectionToggle: { viewModelWrapper.toggleSortDirection() },
-            onGroupDirectionToggle: { viewModelWrapper.toggleGroupDirection() },
+            onSortOptionSelected: { viewModel.onSortOptionSelected(option: $0) },
+            onGroupOptionSelected: { viewModel.onGroupOptionSelected(option: $0) },
+            onSortDirectionToggle: { viewModel.toggleSortDirection() },
+            onGroupDirectionToggle: { viewModel.toggleGroupDirection() },
             detailDestination: { typeId in
                 DeviceTypeDetailScreen(component: component, typeId: typeId)
             }
@@ -27,6 +29,11 @@ struct DeviceTypeListScreen: View {
             AddDeviceTypeScreen(viewModel: component.addDeviceTypeViewModel)
         }
     }
+}
+
+// bb-ovm1: Option A manual state accessor (no NativeCoroutines).
+extension DeviceTypeListViewModel {
+    var uiStateValue: DeviceTypeListScreenState { uiState.value }
 }
 
 struct DeviceTypeListContentView<DetailDestination: View>: View {

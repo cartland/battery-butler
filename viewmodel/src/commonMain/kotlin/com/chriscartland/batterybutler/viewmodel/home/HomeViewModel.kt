@@ -1,7 +1,5 @@
 package com.chriscartland.batterybutler.viewmodel.home
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.SyncStatus
 import com.chriscartland.batterybutler.presentationmodel.home.GroupOption
@@ -15,6 +13,8 @@ import com.chriscartland.batterybutler.usecase.GetSyncStatusUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
 import com.chriscartland.batterybutler.viewmodel.retryableStateIn
 import com.chriscartland.batterybutler.viewmodel.util.sortAndGroup
+import com.rickclephas.kmp.observableviewmodel.ViewModel
+import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,11 +45,11 @@ class HomeViewModel(
 
     init {
         // Auto-dismiss Success status after a delay
-        viewModelScope.launch {
+        viewModelScope.coroutineScope.launch {
             getSyncStatusUseCase().collect { status ->
                 autoDismissJob?.cancel()
                 if (status is SyncStatus.Success) {
-                    autoDismissJob = viewModelScope.launch {
+                    autoDismissJob = viewModelScope.coroutineScope.launch {
                         delay(SYNC_SUCCESS_DISPLAY_DURATION_MS)
                         dismissSyncStatusUseCase()
                     }
@@ -65,7 +65,7 @@ class HomeViewModel(
     }
 
     val uiState: StateFlow<HomeScreenState> = retryableStateIn(
-        scope = viewModelScope,
+        viewModelScope = viewModelScope,
         retryTrigger = retryTrigger,
         started = defaultWhileSubscribed(),
         initialValue = HomeScreenState(),
@@ -140,7 +140,7 @@ class HomeViewModel(
     }
 
     fun onExportData() {
-        viewModelScope.launch {
+        viewModelScope.coroutineScope.launch {
             val json = exportDataUseCase()
             exportDataFlow.value = json
         }

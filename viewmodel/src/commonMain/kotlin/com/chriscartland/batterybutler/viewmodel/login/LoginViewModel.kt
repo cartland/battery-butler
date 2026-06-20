@@ -1,11 +1,11 @@
 package com.chriscartland.batterybutler.viewmodel.login
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.chriscartland.batterybutler.domain.model.AuthState
 import com.chriscartland.batterybutler.domain.repository.AuthRepository
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
 import com.chriscartland.batterybutler.viewmodel.safeStateIn
+import com.rickclephas.kmp.observableviewmodel.ViewModel
+import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
@@ -30,7 +30,7 @@ class LoginViewModel(
      */
     val authState: StateFlow<AuthState> = authRepository.authState
         .safeStateIn(
-            scope = viewModelScope,
+            viewModelScope = viewModelScope,
             started = defaultWhileSubscribed(),
             initialValue = AuthState.Unknown,
         )
@@ -45,7 +45,7 @@ class LoginViewModel(
      * Initiates Google Sign-In flow.
      */
     fun signInWithGoogle() {
-        viewModelScope.launch {
+        viewModelScope.coroutineScope.launch {
             authRepository.signInWithGoogle()
         }
     }

@@ -1,8 +1,10 @@
 import SwiftUI
 import shared
+import KMPObservableViewModelSwiftUI
 
 struct AddBatteryEventScreen: View {
-    @StateObject private var wrapper: AddBatteryEventViewModelWrapper
+    // bb-ovm1: @StateViewModel replaces AddBatteryEventViewModelWrapper.
+    @StateViewModel private var viewModel: AddBatteryEventViewModel
     @Environment(\.presentationMode) private var presentationMode
 
     @State private var selectedDeviceId: String?
@@ -14,25 +16,27 @@ struct AddBatteryEventScreen: View {
     @State private var batchInput: String = ""
 
     init(viewModel: AddBatteryEventViewModel) {
-        _wrapper = StateObject(wrappedValue: AddBatteryEventViewModelWrapper(viewModel))
+        _viewModel = StateViewModel(wrappedValue: viewModel)
     }
 
     var body: some View {
         AddBatteryEventContentView(
-            devices: wrapper.devices,
+            devices: viewModel.devicesValue,
             selectedDeviceId: $selectedDeviceId,
             eventDate: $eventDate,
             batteryType: $batteryType,
             notes: $notes,
             showMoreDetails: $showMoreDetails,
-            isAiBatchImportEnabled: wrapper.isAiBatchImportEnabled,
-            aiMessages: wrapper.aiMessages,
+            isAiBatchImportEnabled: viewModel.isAiBatchImportEnabledValue,
+            aiMessages: viewModel.aiMessagesValue,
             batchInput: $batchInput,
             onSaveEvent: {
                 if let deviceId = selectedDeviceId {
-                    wrapper.addEvent(
+                    let epochMillis = Int64(eventDate.timeIntervalSince1970 * 1000)
+                    let instant = KotlinInstant.Companion.shared.fromEpochMilliseconds(epochMilliseconds: epochMillis)
+                    viewModel.addEvent(
                         deviceId: deviceId,
-                        date: eventDate,
+                        date: instant,
                         batteryType: batteryType.isEmpty ? nil : batteryType,
                         notes: notes.isEmpty ? nil : notes
                     )
@@ -40,12 +44,19 @@ struct AddBatteryEventScreen: View {
                 }
             },
             onProcessBatch: {
-                wrapper.batchAddEvents(input: batchInput)
+                viewModel.batchAddEvents(input: batchInput)
                 batchInput = ""
             },
-            onClearAiMessages: { wrapper.clearAiMessages() }
+            onClearAiMessages: { viewModel.clearAiMessages() }
         )
     }
+}
+
+// bb-ovm1: Option A manual state accessors (no NativeCoroutines).
+extension AddBatteryEventViewModel {
+    var devicesValue: [Device] { devices.value }
+    var aiMessagesValue: [BatchOperationResult] { aiMessages.value }
+    var isAiBatchImportEnabledValue: Bool { (isAiBatchImportEnabled.value as? Bool) ?? false }
 }
 
 struct AddBatteryEventContentView: View {

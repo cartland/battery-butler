@@ -1,7 +1,5 @@
 package com.chriscartland.batterybutler.viewmodel.eventdetail
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.chriscartland.batterybutler.presentationmodel.eventdetail.EditBatteryEventScreenState
 import com.chriscartland.batterybutler.usecase.DeleteBatteryEventUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceDetailUseCase
@@ -10,6 +8,8 @@ import com.chriscartland.batterybutler.usecase.GetEventDetailUseCase
 import com.chriscartland.batterybutler.usecase.UpdateBatteryEventUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
 import com.chriscartland.batterybutler.viewmodel.safeStateIn
+import com.rickclephas.kmp.observableviewmodel.ViewModel
+import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
@@ -64,7 +64,7 @@ class EditBatteryEventViewModel(
                 }
             }
         }.safeStateIn(
-            scope = viewModelScope,
+            viewModelScope = viewModelScope,
             started = defaultWhileSubscribed(),
             initialValue = EditBatteryEventScreenState.Loading,
         )
@@ -76,7 +76,7 @@ class EditBatteryEventViewModel(
     ) {
         val currentState = uiState.value
         if (currentState is EditBatteryEventScreenState.Success) {
-            viewModelScope.launch {
+            viewModelScope.coroutineScope.launch {
                 updateBatteryEventUseCase(
                     currentState.event.copy(
                         date = date,
@@ -89,7 +89,7 @@ class EditBatteryEventViewModel(
     }
 
     fun deleteEvent() {
-        viewModelScope.launch {
+        viewModelScope.coroutineScope.launch {
             deleteBatteryEventUseCase(eventId)
         }
     }

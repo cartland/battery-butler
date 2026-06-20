@@ -1,32 +1,92 @@
 import SwiftUI
 import shared
+import KMPObservableViewModelSwiftUI
+
+// bb-ovm1: form-state struct relocated from AddDeviceTypeViewModelWrapper (deleted).
+struct AddDeviceTypeState {
+    var name: String = ""
+    var batteryType: String = ""
+    var selectedIcon: String = "videogame_asset"
+    var batteryQuantity: Int = 1
+    var isSaving: Bool = false
+    var isSaved: Bool = false
+    var saveError: String? = nil
+    var isSuggestingIcon: Bool = false
+    var suggestedIcon: String? = nil
+    var usedIcons: [String] = []
+}
 
 struct AddDeviceTypeScreen: View {
-    @StateObject var viewModelWrapper: AddDeviceTypeViewModelWrapper
+    // bb-ovm1: @StateViewModel replaces AddDeviceTypeViewModelWrapper. Form fields are local
+    // @State; VM-derived bits (isSuggestingIcon/usedIcons/suggestedIcon) come from uiStateValue.
+    @StateViewModel private var viewModel: AddDeviceTypeViewModel
     @Environment(\.dismiss) private var dismiss
 
+    @State private var name = ""
+    @State private var batteryType = ""
+    @State private var selectedIcon = "videogame_asset"
+    @State private var batteryQuantity = 1
+    @State private var isSaving = false
+
     init(viewModel: AddDeviceTypeViewModel) {
-        _viewModelWrapper = StateObject(wrappedValue: AddDeviceTypeViewModelWrapper(viewModel))
+        _viewModel = StateViewModel(wrappedValue: viewModel)
+    }
+
+    private var state: AddDeviceTypeState {
+        let ui = viewModel.uiStateValue
+        return AddDeviceTypeState(
+            name: name,
+            batteryType: batteryType,
+            selectedIcon: selectedIcon,
+            batteryQuantity: batteryQuantity,
+            isSaving: isSaving,
+            isSuggestingIcon: ui.isSuggestingIcon,
+            suggestedIcon: ui.suggestedIcon,
+            usedIcons: ui.usedIcons
+        )
     }
 
     var body: some View {
         AddDeviceTypeContentView(
-            state: viewModelWrapper.state,
-            onUpdateName: { viewModelWrapper.updateName(name: $0) },
-            onUpdateBatteryType: { viewModelWrapper.updateBatteryType(type: $0) },
-            onSelectIcon: { viewModelWrapper.selectIcon(icon: $0) },
-            onIncrementQuantity: { viewModelWrapper.incrementBatteryQuantity() },
-            onDecrementQuantity: { viewModelWrapper.decrementBatteryQuantity() },
-            onSave: { viewModelWrapper.save() },
+            state: state,
+            onUpdateName: { newName in
+                name = newName
+                viewModel.suggestIcon(name: newName)
+            },
+            onUpdateBatteryType: { batteryType = $0 },
+            onSelectIcon: { selectedIcon = $0 },
+            onIncrementQuantity: { batteryQuantity += 1 },
+            onDecrementQuantity: { if batteryQuantity > 1 { batteryQuantity -= 1 } },
+            onSave: { save() },
             onCancel: { dismiss() }
         )
-        .onChange(of: viewModelWrapper.state.isSaved) { _, isSaved in
-            if isSaved {
-                viewModelWrapper.consumeSaveSuccess()
-                dismiss()
+        .onChange(of: viewModel.uiStateValue.suggestedIcon) { _, icon in
+            if let icon = icon {
+                selectedIcon = icon
+                viewModel.consumeSuggestedIcon()
             }
         }
     }
+
+    private func save() {
+        isSaving = true
+        viewModel.addDeviceType(input: DeviceTypeInput(
+            name: name,
+            defaultIcon: selectedIcon,
+            batteryType: batteryType,
+            batteryQuantity: Int32(batteryQuantity)
+        ))
+        // The VM doesn't expose a save-success signal; mirror the wrapper's simulated delay.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            isSaving = false
+            dismiss()
+        }
+    }
+}
+
+// bb-ovm1: Option A manual state accessor (no NativeCoroutines).
+extension AddDeviceTypeViewModel {
+    var uiStateValue: AddDeviceTypeScreenState { uiState.value }
 }
 
 struct AddDeviceTypeContentView: View {

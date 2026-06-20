@@ -1,8 +1,10 @@
 import SwiftUI
 import shared
+import KMPObservableViewModelSwiftUI
 
 struct EventDetailScreen: View {
-    @StateObject private var wrapper: EventDetailViewModelWrapper
+    // bb-ovm1: @StateViewModel replaces EventDetailViewModelWrapper.
+    @StateViewModel private var viewModel: EventDetailViewModel
     @Environment(\.presentationMode) private var presentationMode
     private let eventId: String
     private let component: NativeComponent
@@ -11,11 +13,13 @@ struct EventDetailScreen: View {
     init(eventId: String, component: NativeComponent) {
         self.eventId = eventId
         self.component = component
-        _wrapper = StateObject(wrappedValue: EventDetailViewModelWrapper(eventId: eventId, component: component))
+        _viewModel = StateViewModel(
+            wrappedValue: component.eventDetailViewModelFactory.create(eventId: eventId)
+        )
     }
 
     var body: some View {
-        EventDetailContentView(state: wrapper.state, component: component)
+        EventDetailContentView(state: viewModel.uiStateValue, component: component)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("common.edit") {
@@ -27,6 +31,11 @@ struct EventDetailScreen: View {
                 EditBatteryEventScreen(eventId: eventId, component: component)
             }
     }
+}
+
+// bb-ovm1: Option A manual state accessor (no NativeCoroutines).
+extension EventDetailViewModel {
+    var uiStateValue: EventDetailScreenState { uiState.value }
 }
 
 struct EventDetailContentView: View {

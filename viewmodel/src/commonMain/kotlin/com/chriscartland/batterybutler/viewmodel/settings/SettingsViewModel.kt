@@ -1,7 +1,5 @@
 package com.chriscartland.batterybutler.viewmodel.settings
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.chriscartland.batterybutler.domain.model.AppVersion
 import com.chriscartland.batterybutler.domain.model.AuthState
 import com.chriscartland.batterybutler.domain.model.DevServerUrl
@@ -25,7 +23,9 @@ import com.chriscartland.batterybutler.usecase.ImportDataUseCase
 import com.chriscartland.batterybutler.usecase.RestoreLegacyDatabaseUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
 import com.chriscartland.batterybutler.viewmodel.safeStateIn
-import kotlinx.coroutines.flow.MutableStateFlow
+import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
+import com.rickclephas.kmp.observableviewmodel.ViewModel
+import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -72,12 +72,12 @@ class SettingsViewModel(
     val availableAiEngines = AiEngineType.entries
 
     fun onAiEngineSelected(type: AiEngineType) {
-        viewModelScope.launch {
+        viewModelScope.coroutineScope.launch {
             aiPreferencesRepository.setAiEngineType(type)
         }
     }
 
-    private val _appVersion = MutableStateFlow<AppVersion>(AppVersion.Unavailable)
+    private val _appVersion = MutableStateFlow<AppVersion>(viewModelScope, AppVersion.Unavailable)
     val appVersion: StateFlow<AppVersion> = _appVersion.asStateFlow()
 
     init {
@@ -85,7 +85,7 @@ class SettingsViewModel(
     }
 
     fun onNetworkModeSelected(mode: NetworkMode) {
-        viewModelScope.launch {
+        viewModelScope.coroutineScope.launch {
             networkModeRepository.setNetworkMode(mode)
         }
     }
@@ -104,16 +104,16 @@ class SettingsViewModel(
         .safeStateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
     fun signOut() {
-        viewModelScope.launch {
+        viewModelScope.coroutineScope.launch {
             authRepository.signOut()
         }
     }
 
-    private val _exportData = MutableStateFlow<String?>(null)
+    private val _exportData = MutableStateFlow<String?>(viewModelScope, null)
     val exportData: StateFlow<String?> = _exportData.asStateFlow()
 
     fun onExportData() {
-        viewModelScope.launch {
+        viewModelScope.coroutineScope.launch {
             val data = exportDataUseCase()
             _exportData.value = data
         }
@@ -134,10 +134,10 @@ class SettingsViewModel(
             getLegacyDatabaseInfoUseCase(mode)
         }.safeStateIn(viewModelScope, defaultWhileSubscribed(), null)
 
-    private val _restoreInProgress = MutableStateFlow(false)
+    private val _restoreInProgress = MutableStateFlow(viewModelScope, false)
     val restoreInProgress: StateFlow<Boolean> = _restoreInProgress.asStateFlow()
 
-    private val _restoreComplete = MutableStateFlow(false)
+    private val _restoreComplete = MutableStateFlow(viewModelScope, false)
     val restoreComplete: StateFlow<Boolean> = _restoreComplete.asStateFlow()
 
     /**
@@ -145,12 +145,12 @@ class SettingsViewModel(
      * UI surfaces a snackbar from this when it transitions to non-null. Cleared by
      * [onRestoreCompleteAcknowledged] alongside the boolean.
      */
-    private val _restoreResult = MutableStateFlow<RestoreResult?>(null)
+    private val _restoreResult = MutableStateFlow<RestoreResult?>(viewModelScope, null)
     val restoreResult: StateFlow<RestoreResult?> = _restoreResult.asStateFlow()
 
     fun onRestoreLegacyDatabase() {
         val info = legacyDatabaseInfo.value ?: return
-        viewModelScope.launch {
+        viewModelScope.coroutineScope.launch {
             _restoreInProgress.value = true
             try {
                 val result = restoreLegacyDatabaseUseCase(info.legacyFileName)
@@ -180,18 +180,18 @@ class SettingsViewModel(
     }
 
     // Import data
-    private val _importResult = MutableStateFlow<ImportResult?>(null)
+    private val _importResult = MutableStateFlow<ImportResult?>(viewModelScope, null)
     val importResult: StateFlow<ImportResult?> = _importResult.asStateFlow()
 
-    private val _importError = MutableStateFlow<String?>(null)
+    private val _importError = MutableStateFlow<String?>(viewModelScope, null)
     val importError: StateFlow<String?> = _importError.asStateFlow()
 
-    private val _importInProgress = MutableStateFlow(false)
+    private val _importInProgress = MutableStateFlow(viewModelScope, false)
     val importInProgress: StateFlow<Boolean> = _importInProgress.asStateFlow()
 
     fun onImportData(jsonString: String) {
         if (_importInProgress.value) return
-        viewModelScope.launch {
+        viewModelScope.coroutineScope.launch {
             _importInProgress.value = true
             try {
                 when (val result = importDataUseCase(jsonString)) {

@@ -1,12 +1,12 @@
 package com.chriscartland.batterybutler.viewmodel.aichat
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.chriscartland.batterybutler.domain.model.ai.AiMessage
 import com.chriscartland.batterybutler.domain.model.ai.AiRole
 import com.chriscartland.batterybutler.usecase.SendChatMessageUseCase
+import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
+import com.rickclephas.kmp.observableviewmodel.ViewModel
+import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -19,10 +19,10 @@ import kotlin.time.Clock
 class AiChatViewModel(
     private val sendChatMessageUseCase: SendChatMessageUseCase,
 ) : ViewModel() {
-    private val _messages = MutableStateFlow<List<AiMessage>>(emptyList())
+    private val _messages = MutableStateFlow<List<AiMessage>>(viewModelScope, emptyList())
     val messages: StateFlow<List<AiMessage>> = _messages.asStateFlow()
 
-    private val _isProcessing = MutableStateFlow(false)
+    private val _isProcessing = MutableStateFlow(viewModelScope, false)
     val isProcessing: StateFlow<Boolean> = _isProcessing.asStateFlow()
 
     private var currentJob: Job? = null
@@ -45,7 +45,7 @@ class AiChatViewModel(
         val hintLines = hints.entries.joinToString("\n") { "[${it.key}: ${it.value}]" }
         val augmentedText = if (hintLines.isNotEmpty()) "$hintLines\n\n$text" else text
 
-        currentJob = viewModelScope.launch {
+        currentJob = viewModelScope.coroutineScope.launch {
             try {
                 sendChatMessageUseCase(augmentedText).collect { aiMessage ->
                     // Replace partial messages with the final one

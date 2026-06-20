@@ -1,7 +1,5 @@
 package com.chriscartland.batterybutler.viewmodel.devicedetail
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.benasher44.uuid.uuid4
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.presentationmodel.devicedetail.DeviceDetailScreenState
@@ -12,6 +10,8 @@ import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.UpdateDeviceUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
 import com.chriscartland.batterybutler.viewmodel.safeStateIn
+import com.rickclephas.kmp.observableviewmodel.ViewModel
+import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
@@ -61,13 +61,13 @@ class DeviceDetailViewModel(
             )
         }
     }.safeStateIn(
-        scope = viewModelScope,
+        viewModelScope = viewModelScope,
         started = defaultWhileSubscribed(),
         initialValue = DeviceDetailScreenState.Loading,
     )
 
     fun recordReplacement() {
-        viewModelScope.launch {
+        viewModelScope.coroutineScope.launch {
             val event = BatteryEvent(
                 id = uuid4().toString(),
                 deviceId = deviceId,

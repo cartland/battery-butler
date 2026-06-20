@@ -1,28 +1,36 @@
 import SwiftUI
 import shared
+import KMPObservableViewModelSwiftUI
 
 struct AiChatScreen: View {
-    @StateObject private var wrapper: AiChatViewModelWrapper
+    // bb-ovm1: @StateViewModel replaces AiChatViewModelWrapper.
+    @StateViewModel private var viewModel: AiChatViewModel
     @State private var inputText: String = ""
 
     init(viewModel: AiChatViewModel) {
-        _wrapper = StateObject(wrappedValue: AiChatViewModelWrapper(viewModel))
+        _viewModel = StateViewModel(wrappedValue: viewModel)
     }
 
     var body: some View {
         AiChatContentView(
-            messages: wrapper.messages,
-            isProcessing: wrapper.isProcessing,
+            messages: viewModel.messagesValue,
+            isProcessing: viewModel.isProcessingValue,
             inputText: $inputText,
             onSend: {
                 let text = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
                 guard !text.isEmpty else { return }
-                wrapper.sendMessage(text: text)
+                viewModel.sendMessage(text: text, hints: [:])
                 inputText = ""
             },
-            onClear: { wrapper.clearChat() }
+            onClear: { viewModel.clearChat() }
         )
     }
+}
+
+// bb-ovm1: Option A manual state accessors (no NativeCoroutines).
+extension AiChatViewModel {
+    var messagesValue: [AiMessage] { messages.value }
+    var isProcessingValue: Bool { (isProcessing.value as? Bool) ?? false }
 }
 
 struct AiChatContentView: View {

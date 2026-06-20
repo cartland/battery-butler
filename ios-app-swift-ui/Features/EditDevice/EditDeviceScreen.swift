@@ -1,8 +1,10 @@
 import SwiftUI
 import shared
+import KMPObservableViewModelSwiftUI
 
 struct EditDeviceScreen: View {
-    @StateObject private var wrapper: EditDeviceViewModelWrapper
+    // bb-ovm1: @StateViewModel replaces EditDeviceViewModelWrapper.
+    @StateViewModel private var viewModel: EditDeviceViewModel
     @Environment(\.dismiss) private var dismiss
 
     @State private var name: String = ""
@@ -11,27 +13,29 @@ struct EditDeviceScreen: View {
     @State private var hasInitializedFields = false
 
     init(deviceId: String, component: NativeComponent) {
-        _wrapper = StateObject(wrappedValue: EditDeviceViewModelWrapper(deviceId: deviceId, component: component))
+        _viewModel = StateViewModel(
+            wrappedValue: component.editDeviceViewModelFactory.create(deviceId: deviceId)
+        )
     }
 
     var body: some View {
         EditDeviceContentView(
-            state: wrapper.state,
+            state: viewModel.uiStateValue,
             name: $name,
             location: $location,
             selectedTypeId: $selectedTypeId,
             hasInitializedFields: $hasInitializedFields,
             onSave: {
-                wrapper.updateDevice(
+                viewModel.updateDevice(input: DeviceInput(
                     name: name,
                     location: location.isEmpty ? nil : location,
                     typeId: selectedTypeId,
                     imagePath: nil
-                )
+                ))
                 dismiss()
             },
             onDelete: {
-                wrapper.deleteDevice()
+                viewModel.deleteDevice()
                 dismiss()
             },
             onCancel: {
@@ -39,6 +43,11 @@ struct EditDeviceScreen: View {
             }
         )
     }
+}
+
+// bb-ovm1: Option A manual state accessor (no NativeCoroutines).
+extension EditDeviceViewModel {
+    var uiStateValue: EditDeviceScreenState { uiState.value }
 }
 
 struct EditDeviceContentView: View {

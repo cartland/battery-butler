@@ -1,7 +1,5 @@
 package com.chriscartland.batterybutler.viewmodel.eventdetail
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.chriscartland.batterybutler.presentationmodel.eventdetail.EventDetailScreenState
 import com.chriscartland.batterybutler.usecase.DeleteBatteryEventUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceDetailUseCase
@@ -9,6 +7,8 @@ import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.GetEventDetailUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
 import com.chriscartland.batterybutler.viewmodel.safeStateIn
+import com.rickclephas.kmp.observableviewmodel.ViewModel
+import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
@@ -59,13 +59,13 @@ class EventDetailViewModel(
                 }
             }
         }.safeStateIn(
-            scope = viewModelScope,
+            viewModelScope = viewModelScope,
             started = defaultWhileSubscribed(),
             initialValue = EventDetailScreenState.Loading,
         )
 
     fun deleteEvent() {
-        viewModelScope.launch {
+        viewModelScope.coroutineScope.launch {
             deleteBatteryEventUseCase(eventId)
         }
     }

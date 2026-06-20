@@ -14,7 +14,6 @@ import kotlin.test.fail
  *
  * Excludes:
  * - Factory classes (*Factory)
- * - Infrastructure classes (KmpViewModelStore)
  * - Inner/anonymous classes (names containing '$')
  */
 class ViewModelTestConventionTest {
@@ -30,7 +29,6 @@ class ViewModelTestConventionTest {
                 .filterNot { klass ->
                     val name = klass.simpleName ?: ""
                     name.endsWith("Factory") ||
-                        name == "KmpViewModelStore" ||
                         name == "ViewModelTestConventionTest"
                 }
         }
