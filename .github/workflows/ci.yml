@@ -443,6 +443,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-xcode-native-
 
+      # The DerivedData cache above can be restored stale (e.g. from before an SPM
+      # package was added to the project), leaving xcodebuild unable to find a package
+      # module at build time ("Unable to find module dependency: 'KMPObservableViewModelCore'").
+      # Explicitly re-resolve packages into DerivedData so the build finds them. (The
+      # validation_ios_ui job avoids this by not caching DerivedData + using `clean build`.)
+      - name: Resolve Swift packages
+        run: |
+          cd ios-app-swift-ui
+          xcodebuild -resolvePackageDependencies -project iosAppSwiftUI.xcodeproj -scheme iosAppSwiftUI
+
       - name: Build iOS App (SwiftUI)
         run: |
           cd ios-app-swift-ui
