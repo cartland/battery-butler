@@ -48,4 +48,4 @@ xcodebuild test \
     CODE_SIGN_IDENTITY="" \
     CODE_SIGNING_REQUIRED=NO \
     CODE_SIGNING_ALLOWED=NO \
-    "${FILTER_ARGS[@]}"
+    ${FILTER_ARGS[@]+"${FILTER_ARGS[@]}"}
