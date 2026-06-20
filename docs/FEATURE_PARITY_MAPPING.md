@@ -6,7 +6,7 @@ This document tracks the feature parity between the **Compose Multiplatform (CMP
 
 The architecture shares ViewModels, UseCases, Repositories, and domain state across all platforms:
 - **Android CMP & iOS CMP** use shared `@Composable` UI code via `presentation-feature`.
-- **iOS SwiftUI** uses native SwiftUI views observing the same Kotlin ViewModels via SKIE and `ViewModelWrapper` classes.
+- **iOS SwiftUI** uses native SwiftUI views observing the same Kotlin ViewModels via SKIE plus KMP-ObservableViewModel (`@StateViewModel`); see bb-ovm1.
 
 Most SwiftUI screens are minimal implementations that render basic data but lack sorting, grouping, error handling, empty states, icons, and interactive features that Compose provides.
 

@@ -92,7 +92,7 @@ The following table tracks specific feature gaps between the Compose Multiplatfo
 
 ### 4. Details (Device Detail & Event Detail)
 - **Both:** Display read-only parameters and related lists (e.g., Device showing Battery History).
-- **SwiftUI:** Integrates `ViewModelWrappers` using parameter-based factories derived from `NativeComponent` instead of generic `koinViewModel()`/`inject()` navigation parameters. Examples include `DeviceDetailViewModelFactory` and `EventDetailViewModelFactory`.
+- **SwiftUI:** Creates ViewModels (held via `@StateViewModel`) using parameter-based factories derived from `NativeComponent` instead of generic `koinViewModel()`/`inject()` navigation parameters. Examples include `DeviceDetailViewModelFactory` and `EventDetailViewModelFactory`.
 
 > **Resolved Feature Gaps:**
 > - Device Detail: mapped icons via SFSymbolMapper, location field, stat cards with battery age colors (PR #970)
@@ -131,11 +131,18 @@ The following table tracks specific feature gaps between the Compose Multiplatfo
 > **Resolved:**
 > - Check-for-updates link (PR #984)
 
-## SKIE & ViewModel Wrapper Pattern
+## SKIE & KMP-ObservableViewModel
 
-A major distinction for the SwiftUI app is the **ViewModel Wrapper** pattern. Since Kotlin's `StateFlow` doesn't map directly to SwiftUI's reactive `@Published` variables, every screen in SwiftUI is accompanied by a `*ViewModelWrapper.swift`:
+The SwiftUI app binds Kotlin ViewModels with **KMP-ObservableViewModel** (migrated from
+hand-written `*ViewModelWrapper.swift` classes in bb-ovm1 / PR #1250):
 
-1.  **Bridging:** The wrapper acts as an `ObservableObject`.
-2.  **SKIE AsyncSequence:** Thanks to SKIE, Kotlin Coroutines and Flows are exposed natively to Swift as `AsyncSequence`.
-3.  **Observation:** The wrapper initializes a Swift `Task`, iterates `for await state in viewModel.flow`, and updates local `@Published` vars.
-4.  **Disposal:** Uses `KmpViewModelStore` to ensure proper ViewModel scoping until the wrapper is deallocated (`deinit`).
+1.  **Base class:** KMP ViewModels extend `com.rickclephas.kmp.observableviewmodel.ViewModel`
+    (still an `androidx.lifecycle.ViewModel`, so Compose-MP is unaffected).
+2.  **Binding:** The Screen holds the VM with `@StateViewModel`, which conforms it to
+    `ObservableObject` and owns its lifecycle (auto-cancels `viewModelScope` / calls `onCleared`).
+3.  **Observation:** State is exposed as an **observable** `StateFlow` (built with
+    `safeStateIn(viewModelScope, …)` etc.); when it emits, `@StateViewModel` re-renders the Screen,
+    which reads the current value via a small `xxxValue` extension accessor (Option A — no
+    KMP-NativeCoroutines; SKIE kept for sealed/enum/default-arg interop).
+4.  **No boilerplate:** No `ObservableObject` wrapper, `Task { for await }`, `@Published`, or
+    `KmpViewModelStore`/`deinit` — `@StateViewModel` handles it.
