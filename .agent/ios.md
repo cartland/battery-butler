@@ -132,6 +132,20 @@ The hand-written ViewModelWrappers were removed. Screens read StateFlow values t
 Boolean StateFlows still box at the boundary — use `(flow.value as? Bool) ?? false`. Sealed-state
 matching uses the SKIE-flattened names (`DeviceDetailScreenStateSuccess`, etc.) with `is`/`as?`.
 
+**SKIE `FlowInterop` is load-bearing — do not disable it.** These `.value` reads are strongly
+typed *only* because SKIE's `FlowInterop` is enabled: beyond exposing Flows as `AsyncSequence`, it
+types `StateFlow<T>.value` as `T` in Swift. Disabling `FlowInterop` degrades `.value` to `Any?` and
+breaks every accessor (e.g. `ObservableViewModelBridge.swift`: *"type 'Any' does not conform to
+'DeviceDetailScreenState'"*). `SuspendInterop` is disabled (no Swift code awaits a Kotlin `suspend`
+fn); `FlowInterop` + enum/sealed/default-arg interop stay on. Config lives in
+`ios-swift-di/build.gradle.kts` (PR #1256). Because dev-mode PR CI skips iOS, verify any
+`skie { }` / cinterop / framework-export change with a local `./scripts/build-ios.sh`.
+
+**Exposed state must be observable** — building exposed `(Mutable)StateFlow` with the plain `kotlinx`
+`MutableStateFlow` (instead of `MutableStateFlow(viewModelScope, …)` / `safeStateIn` / `retryableStateIn`)
+compiles but SwiftUI silently never re-renders. `ExposedStateObservabilityConventionTest`
+(`:viewmodel:desktopTest`) guards this on every PR; private funnel flows may stay plain.
+
 ## iOS Snapshot Tests
 
 All 15 screens follow the two-layer Screen/ContentView pattern. 46 snapshot test functions (92 PNGs — light + dark) cover all ContentViews across 19 test files. Reference images are tracked in git (`__Snapshots__/`). CI uses `build-for-testing` (compile-only, no pixel comparison). Snapshots are auto-recorded post-merge by `auto-generate.yml` on `macos-latest` and committed via follow-up PRs (like Android screenshots). Use `scripts/record-ios-snapshots.sh` to record locally.
