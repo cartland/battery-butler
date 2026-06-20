@@ -162,120 +162,6 @@ gRPC (`protobufPlugin` / gRPC codegen in `server/app/build.gradle.kts`), confirm
 `libs.versions.toml`, and bump `grpcJava` / `grpc-kotlin` / `wire`. Verify
 `validation_compile_tests` + `build_server` (release-mode) before merge.
 
-### bb-ovm1 — Spike: KMP-ObservableViewModel to kill the 16 Swift ViewModelWrapper boilerplate
-
-Evaluate adopting rickclephas **KMP-ObservableViewModel** to replace the ~16
-hand-written `ios-app-swift-ui/**/*ViewModelWrapper.swift` files (each mirrors a
-shared `StateFlow` into `@Published` via `Task { for await }` + manual
-`KmpViewModelStore`/`deinit`). 5-agent investigation 2026-06-17 — findings:
-
-- **Coexists with SKIE (HIGH confidence):** documented, regression-tested, shipped
-  in production (rickclephas/KMP-ObservableViewModel#93). KEEP SKIE — our **enum
-  interop is load-bearing** (compiler-exhaustive Swift `switch` w/ no `default` over
-  `SortOption`/`AiRole`/… in `HomeScreen.swift`, `DeviceTypeListScreen.swift`,
-  `SettingsViewModelWrapper.swift`); rickclephas provides no enum bridging, so full
-  SKIE removal is OFF the table (also keeps the bb-k4sk pin a separate concern).
-- **Pin impact NEUTRAL:** both rickclephas libs already support Kotlin 2.3.20+ and
-  ship faster than SKIE; SKIE (cap 2.3.10) stays the sole 2.3.20 blocker (bb-k4sk).
-- **Pure flow swap:** ZERO suspend funcs consumed from Swift; async surface = 32
-  `StateFlow` observations across the 16 wrappers.
-- **ObservableViewModel does NOT require KMP-NativeCoroutines** → two options:
-  - **Option A (recommended first):** ObservableViewModel + SKIE as-is (no
-    NativeCoroutines, no SKIE config change). Get `@StateViewModel` auto
-    lifecycle/`onCleared`/cancellation; expose state to Swift via hand-written iOS
-    extension properties.
-  - **Option B (graduate to if A's binding is clunky):** add NativeCoroutines for
-    `@NativeCoroutinesState` ergonomics, then scope-disable SKIE async on the VM
-    package only: `skie { features { group("…viewmodel") {
-    SuspendInterop.Enabled(false); FlowInterop.Enabled(false) } } }` — safe,
-    documented; leaves Sealed/Enum/DefaultArgument interop untouched.
-
-**Make-or-break unknown to resolve in the spike (DeviceDetail):** does
-`com.rickclephas.kmp.observableviewmodel.ViewModel` interoperate, on ALL KMP
-targets, with our existing usages — `KmpViewModelStore.put(key, vm:
-androidx.lifecycle.ViewModel)`, Compose `uiState.collectAsStateWithLifecycle()`
-(`DeviceDetailScreen.kt`), and `viewModelScope` (`safeStateIn(scope =
-viewModelScope)` + `viewModelScope.launch` in `DeviceDetailViewModel.kt`)? The
-shared VMs back the **Compose** UI on Android/Desktop/iOS-Compose, not just SwiftUI,
-so the base-class swap must not break Compose-MP. Also confirm a rickclephas release
-exists for our exact pinned Kotlin.
-
-**Spike steps (DeviceDetail only):** (1) add `com.rickclephas.kmp:kmp-observableviewmodel-core`
-to `:viewmodel` commonMain + `KMPObservableViewModelSwiftUI` SPM to the iOS app;
-(2) swap `DeviceDetailViewModel` base class + retarget `viewModelScope` to the
-rickclephas scope (`.coroutineScope` for `safeStateIn`/`launch`); (3) add the
-one-time `extension Kmp_observableviewmodel_coreViewModel: @retroactive ViewModel {}`
-file; replace `@StateObject DeviceDetailViewModelWrapper` with `@ObservedViewModel`
-over the DI-injected VM; delete the wrapper. **DoD:** Android `assembleDebug` +
-Desktop + iOS-Compose all build & DeviceDetail still renders/updates (proves
-Compose-MP intact) AND iOS SwiftUI DeviceDetail works via **release-mode local
-`xcodebuild`** (dev-mode PR CI skips iOS — see bb-bpbw / `feedback_bb_bpbw_kn_interop_risk`).
-**Kill if:** rickclephas VM can't satisfy KmpViewModelStore/Compose without
-per-platform forking, or no build exists for our pinned Kotlin. Then roll out
-across the other 15 wrappers (medium, mechanical).
-
-**Spike result 2026-06-17 (branch `spike/bb-ovm1-observableviewmodel`) — GATE PASSED, GO:**
-Wired `kmp-observableviewmodel-core:1.0.1` into `:viewmodel`, swapped
-`DeviceDetailViewModel` to extend `com.rickclephas.kmp.observableviewmodel.ViewModel`
-(`viewModelScope` → `viewModelScope.coroutineScope` for `safeStateIn`/`launch`).
-Empirically verified:
-- rickclephas's `androidx` hierarchy group covers Android + iOS + JVM/Desktop +
-  macOS (exactly our targets) → its `ViewModel` **extends `androidx.lifecycle.ViewModel`**
-  on every platform we ship; standalone `nonAndroidx` variant is only JS/wasm/
-  watchOS/tvOS (unused).
-- No duplicate-class clash between our JetBrains-fork lifecycle
-  (`org.jetbrains.androidx.lifecycle` 2.10.0-beta01) and rickclephas's
-  `androidx.lifecycle` — resolves/links on JVM **and** K/N.
-- Compiles: `:viewmodel` Desktop + iOS-SimArm64 + Android; `:compose-app` Desktop +
-  Android (Compose `collectAsStateWithLifecycle` intact). `DeviceDetailViewModelTest`
-  passes. **SKIE links `:ios-swift-di` debug framework** with the new ViewModel
-  surface — SKIE + ObservableViewModel coexist in our build.
-- Base-class swap is **backward-compatible**: existing Swift `*Wrapper` still
-  compiles (uiState still a SKIE-bridged StateFlow; VM still IS-A androidx ViewModel
-  so `KmpViewModelStore.put` accepts it) → can land the Kotlin base-class change
-  across all 16 VMs first (CI-verifiable), migrate Swift wrappers to `@ObservedViewModel`
-  incrementally after.
-**SwiftUI phase 2026-06-18 — VERIFIED, full `xcodebuild` BUILD SUCCEEDED (Option A):**
-- `uiState` routed through the new `safeStateIn(viewModelScope, …)` overload
-  (`ViewModelExtensions.kt`) → observable `ObservableStateFlow` that drives the SwiftUI
-  change publisher. This is what makes `@StateViewModel`/`@ObservedViewModel` auto-update
-  WITHOUT KMP-NativeCoroutines. (Needed `languageSettings.optIn("kotlinx.cinterop.ExperimentalForeignApi")`.)
-- iOS framework: `ios-swift-di` `export(libs.kmp.observableviewmodel.core)` (+ `api`).
-  Harmless `-Xexport-library` warning: the SPM package vendors its OWN
-  `KMPObservableViewModelCoreObjC` target, so the cinterop need not be re-exported.
-- Swift: added SPM package `KMP-ObservableViewModel` @ **1.0.1** (pinned to match the
-  Kotlin artifact) via `xcodeproj` gem (products `KMPObservableViewModelCore` +
-  `…SwiftUI` on the app target). `Core/ObservableViewModelBridge.swift` =
-  `extension shared.ViewModel: @retroactive KMPObservableViewModelCore.ViewModel {}`
-  (SKIE exports the base class as `shared.ViewModel`; conformance compiles — SKIE-type
-  alignment risk RESOLVED) + manual `uiStateValue` accessor. `DeviceDetailScreen` now
-  `@StateViewModel` (auto lifecycle/clear), **`DeviceDetailViewModelWrapper.swift` deleted**.
-- Build gotcha (env, not the spike): proto gen failed via stale Bazel Xcode config after
-  an Xcode update → `bazel shutdown` re-resolves; then `xcodebuild` clean.
-**Net:** wrapper boilerplate (Task/for-await/deinit/KmpViewModelStore) gone on one screen,
-proven end-to-end. ObservableViewModel is Kotlin-pinned → bump in lockstep with Kotlin
-(bb-k4sk); builds exist 2.3.0→2.4.0.
-
-**Full rollout 2026-06-19 — ALL 16 wrappers migrated (one commit each, PR #1250):**
-DeviceDetail, DeviceTypeDetail, EventDetail, EditDevice, EditBatteryEvent, HistoryList,
-DeviceTypeList, Home, AiChat, AddDevice, AddBatteryEvent, Login, Settings, Counter,
-AddDeviceType, EditDeviceType. Every `*ViewModelWrapper.swift` deleted; screens use
-`@StateViewModel` + manual `xxxValue` accessors. Patterns established:
-- Uniform Kotlin recipe: base class → rickclephas `ViewModel`; named `safeStateIn(scope=…)`
-  → `safeStateIn(viewModelScope=…)` (positional auto-resolves); `viewModelScope.launch` →
-  `viewModelScope.coroutineScope.launch`; exposed raw `MutableStateFlow(x)` → observable
-  `MutableStateFlow(viewModelScope, x)`; observable `retryableStateIn(viewModelScope,…)` added.
-- Static helpers relocated out of deleted wrappers: `LoginErrorInfo` (tests updated),
-  `SettingsDisplay`. Form controllers (Add/EditDeviceType) moved form state into screen `@State`.
-- Gotchas hit: indent-anchored `launch` replace_all misses 8- vs 12-space siblings (fixed);
-  experimental `:viewmodel` needed the dep + ForeignApi opt-in; Counter `appCounterRunning`
-  kept direct-forwarded (observable `stateIn(WhileSubscribed)` broke a synchronous-`.value` test).
-- Verified: every commit Kotlin-compiles; full `xcodebuild` green at each batch + final;
-  targeted CI checks (spotless/detekt/architecture/naming/strings/import-boundary) +
-  `:viewmodel`/`:experimental:viewmodel` desktopTest all pass.
-**Follow-ups:** `KmpViewModelStore.kt` (Kotlin) is now unused by Swift — candidate for deletion
-if no Compose path uses it. iOS still needs release-mode CI / pixel verification (bb-bpbw).
-
 ## P4
 
 ### bb-fa11 — Evaluate adding `validation_lint` to the release sentinel-set gate
@@ -323,6 +209,17 @@ grpc-context clash), align/force it, then bump `googleApiClient` in
 `libs.versions.toml`. Low priority — current 2.2.0 works fine.
 
 ## Done
+
+### bb-ovm1 — Migrate all 16 iOS ViewModels to KMP-ObservableViewModel — DONE 2026-06-20 (PR #1250)
+Replaced every hand-written Swift `*ViewModelWrapper` (Task/for-await/`KmpViewModelStore`/deinit)
+with KMP-ObservableViewModel `@StateViewModel`, keeping SKIE (Option A — no NativeCoroutines).
+KMP VMs extend `com.rickclephas.kmp.observableviewmodel.ViewModel`; state via observable
+`safeStateIn(viewModelScope,…)` / `retryableStateIn(…)` / `MutableStateFlow(viewModelScope,…)`;
+screens read `xxxValue` accessors. Deleted orphaned `KmpViewModelStore`; relocated
+`LoginErrorInfo`/`SettingsDisplay`; synced `.agent/ios.md`. ObservableViewModel is
+Kotlin-version-pinned → bump in lockstep with Kotlin (bb-k4sk). Counter `appCounterRunning` kept
+direct-forwarded (observable `stateIn` broke a synchronous-`.value` test). Pattern lives in
+`.agent/ios.md`; the dev-mode-CI pre-merge lesson is in `.agent/AGENTS.md`.
 
 ### bb-16u1 — Auto-generate inline CI trigger fails: expired `BOT_PAT` — RESOLVED 2026-06-10
 `BOT_PAT` rotated by the maintainer and verified working: a manually dispatched

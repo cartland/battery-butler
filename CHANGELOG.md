@@ -31,6 +31,17 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ---
 
+## 2026-06-20
+
+### Refactoring
+
+- **iOS ViewModels migrated to KMP-ObservableViewModel** ([#1250](https://github.com/cartland/battery-butler/pull/1250)): Replaced all 16 hand-written Swift `*ViewModelWrapper.swift` classes (each mirrored a Kotlin `StateFlow` into `@Published` via a `Task { for await }` loop + `KmpViewModelStore` + `deinit`) with [KMP-ObservableViewModel](https://github.com/rickclephas/KMP-ObservableViewModel) `@StateViewModel` — automatic `viewModelScope`/`onCleared`/cancellation, ~459 fewer lines. **SKIE is kept** for sealed-class/enum/default-arg interop (its enum interop is load-bearing — exhaustive Swift `switch`es with no `default`); this is "Option A" — no KMP-NativeCoroutines, no change to SKIE's config. Shared VMs now extend `com.rickclephas.kmp.observableviewmodel.ViewModel` (still an `androidx.lifecycle.ViewModel` on every target, so Compose-MP is unaffected) and expose **observable** StateFlows via `safeStateIn(viewModelScope, …)` / `retryableStateIn(…)` / `MutableStateFlow(viewModelScope, …)` so `@StateViewModel` re-renders on emission. Deleted the now-orphaned `KmpViewModelStore`; relocated the deleted wrappers' tested static helpers to `LoginErrorInfo`/`SettingsDisplay`. KMP-ObservableViewModel is Kotlin-version-pinned (`1.0.1` ↔ Kotlin 2.3.0) — bump in lockstep with Kotlin (bb-k4sk). See `.agent/ios.md` for the pattern.
+
+### Fixes
+
+- **`scripts/test-ios.sh` bash 3.2 empty-array crash**: running with no filter args expanded an empty array under `set -u`, which macOS bash 3.2 treats as an unbound variable. Guarded with `${arr[@]+…}` ([#1250](https://github.com/cartland/battery-butler/pull/1250)).
+- **`:experimental:compose-app` lifecycle-runtimeCompose eviction**: adding `kmp-observableviewmodel-core` to `:experimental:viewmodel` shifted the transitive `androidx.lifecycle` graph and evicted `lifecycle-runtime-compose`, breaking `collectAsStateWithLifecycle`. Declared it explicitly (matching the main `:compose-app`). Caught locally pre-merge — dev-mode PR CI skips these build jobs ([#1250](https://github.com/cartland/battery-butler/pull/1250)).
+
 ## 2026-06-09
 
 ### Tooling
