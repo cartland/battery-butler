@@ -1,3 +1,5 @@
+import co.touchlab.skie.configuration.SuspendInterop
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.ksp)
@@ -54,6 +56,22 @@ kotlin {
         }
         val iosX64Main by getting {
             kotlin.srcDir(iosShared)
+        }
+    }
+}
+
+skie {
+    features {
+        group {
+            // All ViewModel actions are fire-and-forget (viewModelScope.launch); no Swift code
+            // awaits a Kotlin suspend function, so SuspendInterop is unused and disabled.
+            //
+            // IMPORTANT: FlowInterop must stay ENABLED. Beyond exposing Flows as AsyncSequence,
+            // it provides the strong Swift typing for `StateFlow.value`. The KMP-ObservableViewModel
+            // `xxxValue` accessors read `flow.value`; with FlowInterop off, `.value` degrades to
+            // `Any?` and every accessor fails to compile (verified locally — dev-mode CI skips iOS).
+            // Enum/Sealed/DefaultArgument interop also stay enabled (load-bearing for Swift switches).
+            SuspendInterop.Enabled(false)
         }
     }
 }
