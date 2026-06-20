@@ -24,6 +24,7 @@ import kotlinx.coroutines.sync.Mutex
 import me.tatarka.inject.annotations.Inject
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
+import com.rickclephas.kmp.observableviewmodel.MutableStateFlow as ObservableMutableStateFlow
 
 @Inject
 class AddDeviceTypeViewModel(
@@ -36,7 +37,9 @@ class AddDeviceTypeViewModel(
     private val isAiBatchImportEnabledFlow =
         featureFlagProvider.observeEnabled(FeatureFlag.AI_BATCH_IMPORT)
 
-    private val _actionError = MutableStateFlow<String?>(null)
+    // Exposed to SwiftUI: must use the observable factory so @StateViewModel re-renders.
+    // (Private funnel flows below stay plain — they combine into the observable uiState.)
+    private val _actionError = ObservableMutableStateFlow<String?>(viewModelScope, null)
     val actionError: StateFlow<String?> = _actionError
 
     fun dismissActionError() {

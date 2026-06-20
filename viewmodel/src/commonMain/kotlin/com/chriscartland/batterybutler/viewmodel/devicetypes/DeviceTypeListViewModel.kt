@@ -18,13 +18,16 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
+import com.rickclephas.kmp.observableviewmodel.MutableStateFlow as ObservableMutableStateFlow
 
 @Inject
 class DeviceTypeListViewModel(
     private val getDeviceTypesUseCase: GetDeviceTypesUseCase,
     private val preloadCommonTypesUseCase: PreloadCommonTypesUseCase,
 ) : ViewModel() {
-    private val _actionError = MutableStateFlow<String?>(null)
+    // Exposed to SwiftUI: must use the observable factory so @StateViewModel re-renders.
+    // (Private funnel flows below stay plain — they combine into the observable uiState.)
+    private val _actionError = ObservableMutableStateFlow<String?>(viewModelScope, null)
     val actionError: StateFlow<String?> = _actionError
 
     fun dismissActionError() {
