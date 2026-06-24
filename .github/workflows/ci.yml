@@ -435,28 +435,19 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-bazel-
 
-      - name: Cache Xcode DerivedData
-        uses: actions/cache@v5
-        with:
-          path: ~/Library/Developer/Xcode/DerivedData
-          key: ${{ runner.os }}-xcode-native-${{ hashFiles('ios-app-swift-ui/**/*.swift', 'ios-app-swift-ui/**/*.xcodeproj/**') }}
-          restore-keys: |
-            ${{ runner.os }}-xcode-native-
-
-      # The DerivedData cache above can be restored stale (e.g. from before an SPM
-      # package was added to the project), leaving xcodebuild unable to find a package
-      # module at build time ("Unable to find module dependency: 'KMPObservableViewModelCore'").
-      # Explicitly re-resolve packages into DerivedData so the build finds them. (The
-      # validation_ios_ui job avoids this by not caching DerivedData + using `clean build`.)
-      - name: Resolve Swift packages
-        run: |
-          cd ios-app-swift-ui
-          xcodebuild -resolvePackageDependencies -project iosAppSwiftUI.xcodeproj -scheme iosAppSwiftUI
-
+      # No Xcode DerivedData cache here: a restored-stale DerivedData (e.g. from before the
+      # KMP-ObservableViewModel SPM package was added) keeps incompatible build intermediates
+      # that the incremental build reuses, leaving xcodebuild unable to find the package
+      # modules ("Unable to find module dependency: 'KMPObservableViewModelCore'"). A `clean
+      # build` on a fresh DerivedData re-resolves and rebuilds the packages — this mirrors the
+      # validation_ios_ui job, which builds the same app and passes. (An explicit
+      # -resolvePackageDependencies step did NOT fix it: packages resolved but the stale build
+      # products persisted; see #1260.) The Gradle/Bazel caches above still cover the slow
+      # Kotlin-framework + proto build, so the no-cache Swift rebuild stays within the timeout.
       - name: Build iOS App (SwiftUI)
         run: |
           cd ios-app-swift-ui
-          xcodebuild -project iosAppSwiftUI.xcodeproj -configuration Debug -scheme iosAppSwiftUI -destination 'generic/platform=iOS Simulator' build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO CONFIGURATION_BUILD_DIR=build/
+          xcodebuild -project iosAppSwiftUI.xcodeproj -configuration Debug -scheme iosAppSwiftUI -destination 'generic/platform=iOS Simulator' clean build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO CONFIGURATION_BUILD_DIR=build/
 
       - name: Upload iOS App (SwiftUI)
         uses: actions/upload-artifact@v7
