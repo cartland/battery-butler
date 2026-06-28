@@ -450,25 +450,24 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-bazel-
 
-      # No Xcode DerivedData cache here: a restored-stale DerivedData (e.g. from before the
-      # KMP-ObservableViewModel SPM package was added) keeps incompatible build intermediates
-      # that the incremental build reuses, leaving xcodebuild unable to find the package
-      # modules ("Unable to find module dependency: 'KMPObservableViewModelCore'"). A `clean
-      # build` on a fresh DerivedData re-resolves and rebuilds the packages — this mirrors the
-      # validation_ios_ui job, which builds the same app and passes. (An explicit
-      # -resolvePackageDependencies step did NOT fix it: packages resolved but the stale build
-      # products persisted; see #1260.) The Gradle/Bazel caches above still cover the slow
-      # Kotlin-framework + proto build, so the no-cache Swift rebuild stays within the timeout.
+      # Build into a local -derivedDataPath and do NOT set CONFIGURATION_BUILD_DIR. Overriding
+      # CONFIGURATION_BUILD_DIR makes SwiftPM package products land in a flat dir that the app's
+      # swiftc doesn't search, so the build fails with "Unable to find module dependency:
+      # 'KMPObservableViewModelCore'" (the KMP-ObservableViewModel SPM package added in #1250).
+      # Only iosAppSwiftUI consumes an SPM package, which is why the other iOS apps build fine
+      # WITH CONFIGURATION_BUILD_DIR. The passing validation_ios_ui job and ./scripts/build-ios.sh
+      # both avoid it. Reproduced + fixed locally before merge. (Earlier #1260/#1265 mis-blamed the
+      # DerivedData cache; the real cause was CONFIGURATION_BUILD_DIR — see bb-iosv.)
       - name: Build iOS App (SwiftUI)
         run: |
           cd ios-app-swift-ui
-          xcodebuild -project iosAppSwiftUI.xcodeproj -configuration Debug -scheme iosAppSwiftUI -destination 'generic/platform=iOS Simulator' clean build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO CONFIGURATION_BUILD_DIR=build/
+          xcodebuild -project iosAppSwiftUI.xcodeproj -configuration Debug -scheme iosAppSwiftUI -destination 'generic/platform=iOS Simulator' clean build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO -derivedDataPath build/ios-build
 
       - name: Upload iOS App (SwiftUI)
         uses: actions/upload-artifact@v7
         with:
           name: battery-butler-ios-swiftui-app
-          path: ios-app-swift-ui/build/
+          path: ios-app-swift-ui/build/ios-build/Build/Products/Debug-iphonesimulator/
           retention-days: 90
 
   build_desktop:
