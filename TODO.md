@@ -240,6 +240,37 @@ disable SKIE `FlowInterop`, regenerate, and verify `@StateViewModel` re-render s
 Swift reads the generated `xValue` — with a local `./scripts/build-ios.sh` (dev-mode PR CI skips iOS).
 Related: bb-k4sk (Kotlin/SKIE version coupling), `.agent/ios.md` (Option A pattern).
 
+### bb-iosv — Confirm `build_ios_native` is green on `main` after the clean-build fix (#1265)
+
+`build_ios_native` was red on `main` from the iOS-ViewModel migration (#1250) until the clean-build
+fix in PR #1265 (commit `1e7514ad`): the job cached `~/Library/Developer/Xcode/DerivedData` and built
+without `clean`, so a stale restored DerivedData left xcodebuild "Unable to find module dependency:
+'KMPObservableViewModelCore'". #1265 dropped the DerivedData cache and switched to `clean build`,
+making the `xcodebuild` invocation identical to the passing `validation_ios_ui` job (only the output
+dir differs) — so the fix is **validated by parity** but **not yet formally re-run on `main`**: the
+#1265 merge mysteriously triggered no push CI run (see the AGENTS.md rule about post-merge runs), and
+docs-only pushes skip the job.
+
+**Action:** on the next push-to-main that touches code (so `changes.code==true`), confirm
+`build_ios_native` passes. If it somehow still fails, diff the job against `validation_ios_ui`
+step-by-step (both build the same SwiftUI app). Low risk; tracked so a future code merge isn't
+surprised by a still-red job + a fresh blocking ci-failure issue. (Or force a run now via bb-cidsp.)
+
+### bb-cidsp — Add a ci-mode override input to `workflow_dispatch` in `.github/workflows/ci.yml`
+
+`ci.yml`'s slow/iOS jobs (`build_ios_native`, `validation_ios_ui`, `validation_instrumented`,
+`build_*`, …) are gated to `github.event_name == 'push' || needs.changes.outputs.ci_mode != 'development'`.
+`workflow_dispatch` currently has **no inputs**, so a manual run in development mode (the default in
+`.github/ci-mode.txt`) **skips** those jobs — there's no way to force a full verification run on `main`
+on demand. This bit us when PR #1265's merge produced no push run and `build_ios_native` couldn't be
+re-triggered (see bb-iosv).
+
+**Fix:** add `workflow_dispatch.inputs.ci_mode` (choice: development/release) and have the `changes`
+job's `Read CI mode` step prefer the dispatch input over the file (e.g. `MODE="${{ inputs.ci_mode }}"`,
+fall back to `cat .github/ci-mode.txt`, then default `release`). Then
+`gh workflow run "Battery Butler CI" --ref main -f ci_mode=release` runs the full suite on demand.
+Small, self-contained.
+
 ## Done
 
 ### bb-ovm1 — Migrate all 16 iOS ViewModels to KMP-ObservableViewModel — DONE 2026-06-20 (PR #1250)
