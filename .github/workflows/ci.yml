@@ -6,6 +6,14 @@ on:
   pull_request:
     branches: [ main ]
   workflow_dispatch:
+    inputs:
+      ci_mode:
+        description: 'CI mode override — "release" runs the full suite (iOS/instrumented/server/build_*) on demand; "development" skips the slow jobs.'
+        type: choice
+        options:
+          - development
+          - release
+        default: development
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name == 'push' && github.sha || github.ref }}
@@ -25,7 +33,10 @@ jobs:
   changes:
     runs-on: ubuntu-latest
     outputs:
-      code: ${{ steps.filter.outputs.code }}
+      # workflow_dispatch has no diff to path-filter, so treat a manual run as a code change.
+      # This lets `gh workflow run "Battery Butler CI" --ref main -f ci_mode=release` force the
+      # full suite (incl. build_ios_native / validation_ios_ui) on demand (bb-cidsp).
+      code: ${{ steps.filter.outputs.code == 'true' || github.event_name == 'workflow_dispatch' }}
       docs_only: ${{ steps.filter.outputs.docs_only }}
       needs_spotless: ${{ steps.filter.outputs.needs_spotless }}
       ci_mode: ${{ steps.read_mode.outputs.ci_mode }}
@@ -34,7 +45,11 @@ jobs:
       - name: Read CI mode
         id: read_mode
         run: |
-          MODE=$(cat .github/ci-mode.txt 2>/dev/null | tr -d '[:space:]')
+          # A workflow_dispatch input overrides the committed ci-mode.txt (bb-cidsp).
+          MODE="${{ github.event.inputs.ci_mode }}"
+          if [ -z "$MODE" ]; then
+            MODE=$(cat .github/ci-mode.txt 2>/dev/null | tr -d '[:space:]')
+          fi
           MODE="${MODE:-release}"
           echo "ci_mode=$MODE" >> "$GITHUB_OUTPUT"
           echo "CI mode: $MODE"
