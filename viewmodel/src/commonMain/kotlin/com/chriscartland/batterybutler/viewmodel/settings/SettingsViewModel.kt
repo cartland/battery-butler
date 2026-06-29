@@ -4,6 +4,8 @@ import com.chriscartland.batterybutler.domain.model.AppVersion
 import com.chriscartland.batterybutler.domain.model.AuthState
 import com.chriscartland.batterybutler.domain.model.DevServerUrl
 import com.chriscartland.batterybutler.domain.model.ImportResult
+import com.chriscartland.batterybutler.domain.model.LabsProdUrl
+import com.chriscartland.batterybutler.domain.model.LabsStagingUrl
 import com.chriscartland.batterybutler.domain.model.LegacyDatabaseInfo
 import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.model.ProductionServerUrl
@@ -47,6 +49,8 @@ class SettingsViewModel(
     private val restartCoordinator: RestartCoordinator,
     productionServerUrl: ProductionServerUrl,
     devServerUrl: DevServerUrl,
+    labsStagingUrl: LabsStagingUrl,
+    labsProdUrl: LabsProdUrl,
 ) : ViewModel() {
     val networkMode: StateFlow<NetworkMode> = networkModeRepository.networkMode
         .safeStateIn(
@@ -65,9 +69,9 @@ class SettingsViewModel(
         NetworkMode.GrpcDev(devServerUrl.url),
         NetworkMode.GrpcAws(productionServerUrl.url),
         // Labs REST backend (staging + prod). The host is injected from secret config
-        // (Workstream E); a null URL here renders the mode unavailable until configured.
-        NetworkMode.LabsStaging(null),
-        NetworkMode.LabsProd(null),
+        // (Workstream E); a blank URL maps to null, rendering the mode unavailable until configured.
+        NetworkMode.LabsStaging(labsStagingUrl.url.ifBlank { null }),
+        NetworkMode.LabsProd(labsProdUrl.url.ifBlank { null }),
     )
 
     val aiEngineType = aiPreferencesRepository.aiEngineType
