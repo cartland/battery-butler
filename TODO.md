@@ -83,6 +83,25 @@ conclusion (defensive companion to the bb-2r4g close-on-success guard).
 
 ## P3
 
+### bb-syncit — Live integration test for the Labs `/sync` wire contract (credential-gated)
+
+The REST sync contract (`data-network/.../rest/SyncDto.kt`, PR #1272) is pinned two
+ways today: per-side field tests (`SyncWireContractTest`) and a byte-shared golden
+fixture (`SyncGoldenFixtureTest`, mirrored by the Labs backend's
+`test/fixtures/battery-butler/` golden JSON). Together those catch a *transcription*
+mismatch — but NOT future cross-repo *drift*: the two repos hold separate copies of
+the fixture, and nothing fails CI if one is edited and the other isn't.
+
+The hard guard is a live integration test exercising the real round-trip: client
+builds a push → `POST /v1/battery-butler/sync` → `GET /sync` → assert the snapshot
+matches. Add it once the `RestRemoteDataSource` lands (the follow-up PR) AND the Labs
+auth credentials are set up (see the Labs backend's `BATTERY-BUTLER.md` → "Owner
+setup: desktop client auth"). Gated on both.
+
+Until then: **edit the golden fixtures in lockstep** across both repos on any contract
+change. (An emulator-backed producer test on the Labs side is a separate, no-creds
+option tracked there.)
+
 ### bb-j6td — Remove misleading `GITHUB_TOKEN` fallback in `ci-trigger-auto-prs.yml`
 
 Line 41 uses `github-token: ${{ secrets.BOT_PAT || secrets.GITHUB_TOKEN }}`. The
