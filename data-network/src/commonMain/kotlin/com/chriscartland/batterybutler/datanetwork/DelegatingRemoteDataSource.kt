@@ -3,8 +3,10 @@ package com.chriscartland.batterybutler.datanetwork
 import co.touchlab.kermit.Logger
 import com.chriscartland.batterybutler.datanetwork.grpc.DelegatingGrpcClient
 import com.chriscartland.batterybutler.datanetwork.grpc.GrpcClientState
+import com.chriscartland.batterybutler.datanetwork.rest.FirebaseIdTokenProvider
 import com.chriscartland.batterybutler.datanetwork.rest.RestRemoteDataSource
 import com.chriscartland.batterybutler.datanetwork.rest.createSyncHttpClient
+import com.chriscartland.batterybutler.domain.model.LabsFirebaseApiKey
 import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
 import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
@@ -28,20 +30,27 @@ class DelegatingRemoteDataSource(
     private val grpcDataSource: GrpcSyncDataSource,
     private val delegatingGrpcClient: DelegatingGrpcClient,
     private val networkModeRepository: NetworkModeRepository,
+    private val labsFirebaseApiKey: LabsFirebaseApiKey,
     private val scope: CoroutineScope,
 ) : RemoteDataSource {
     // Lazily created on first use of a Labs (REST) mode. createSyncHttpClient() is internal to
     // data-network, so no DI wiring is needed for it.
     private val syncHttpClient by lazy { createSyncHttpClient() }
 
-    // A REST data source for one Labs env URL. The token is a placeholder until Workstream D
-    // wires a per-user Firebase ID token; the URL is null until Workstream E injects the host —
-    // so a Labs mode is selectable but reports unavailable / unauthenticated until both land.
+    // Supplies the per-user Labs Firebase ID token for the Bearer header (Workstream D). Shared
+    // across sync calls; getIdToken() returns null until signInWithGoogle() runs (the interactive
+    // sign-in trigger is a follow-up) or when the api key is blank — so the caller sends no header.
+    private val firebaseIdTokenProvider by lazy {
+        FirebaseIdTokenProvider(httpClient = syncHttpClient, apiKey = labsFirebaseApiKey.apiKey)
+    }
+
+    // A REST data source for one Labs env URL. The URL is null until Workstream E injects the host
+    // (blank -> InvalidConfiguration); the token is null until the user signs in to Labs.
     private fun restDataSource(url: String?): RestRemoteDataSource =
         RestRemoteDataSource(
             httpClient = syncHttpClient,
             baseUrl = url.orEmpty(),
-            tokenProvider = { null },
+            tokenProvider = firebaseIdTokenProvider::getIdToken,
         )
 
     override val state: StateFlow<RemoteDataSourceState> =

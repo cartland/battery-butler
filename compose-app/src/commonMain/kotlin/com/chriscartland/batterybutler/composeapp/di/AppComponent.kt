@@ -14,6 +14,9 @@ import com.chriscartland.batterybutler.domain.model.AppVersion
 import com.chriscartland.batterybutler.domain.model.DevServerUrl
 import com.chriscartland.batterybutler.domain.model.DispatcherProvider
 import com.chriscartland.batterybutler.domain.model.FeatureFlag
+import com.chriscartland.batterybutler.domain.model.LabsFirebaseApiKey
+import com.chriscartland.batterybutler.domain.model.LabsProdUrl
+import com.chriscartland.batterybutler.domain.model.LabsStagingUrl
 import com.chriscartland.batterybutler.domain.model.ProductionServerUrl
 import com.chriscartland.batterybutler.domain.model.ai.AiEngine
 import com.chriscartland.batterybutler.domain.repository.AiPreferencesRepository
@@ -87,6 +90,18 @@ abstract class AppComponent(
     @Provides
     @Singleton
     fun provideDevServerUrl(): DevServerUrl = DevServerUrl(BuildConfig.DEV_SERVER_URL)
+
+    @Provides
+    @Singleton
+    fun provideLabsFirebaseApiKey(): LabsFirebaseApiKey = LabsFirebaseApiKey(BuildConfig.LABS_FIREBASE_API_KEY)
+
+    @Provides
+    @Singleton
+    fun provideLabsStagingUrl(): LabsStagingUrl = LabsStagingUrl(BuildConfig.LABS_STAGING_URL)
+
+    @Provides
+    @Singleton
+    fun provideLabsProdUrl(): LabsProdUrl = LabsProdUrl(BuildConfig.LABS_PROD_URL)
 
     @Provides
     @Singleton

@@ -38,16 +38,27 @@ kotlin {
     // Generate BuildConfig.kt for commonMain
     val serverUrlProvider = providers.gradleProperty("PRODUCTION_SERVER_URL")
     val devServerUrlProvider = providers.gradleProperty("DEV_SERVER_URL")
+    // Labs REST sync config (Workstream E). Blank when unset, so a Labs mode is selectable but
+    // unconfigured until the owner provides these (ORG_GRADLE_PROJECT_LABS_* / local.properties).
+    val labsFirebaseApiKeyProvider = providers.gradleProperty("LABS_FIREBASE_API_KEY")
+    val labsStagingUrlProvider = providers.gradleProperty("LABS_STAGING_URL")
+    val labsProdUrlProvider = providers.gradleProperty("LABS_PROD_URL")
     val generateBuildConfig = tasks.register("generateBuildConfig") {
         val buildConfigDir = layout.buildDirectory.dir("generated/buildConfig/commonMain")
 
         inputs.property("serverUrl", serverUrlProvider.orElse(""))
         inputs.property("devServerUrl", devServerUrlProvider.orElse(""))
+        inputs.property("labsFirebaseApiKey", labsFirebaseApiKeyProvider.orElse(""))
+        inputs.property("labsStagingUrl", labsStagingUrlProvider.orElse(""))
+        inputs.property("labsProdUrl", labsProdUrlProvider.orElse(""))
         outputs.dir(buildConfigDir)
 
         doLast {
             val serverUrl = serverUrlProvider.orNull
             val devServerUrl = devServerUrlProvider.orNull
+            val labsFirebaseApiKey = labsFirebaseApiKeyProvider.orElse("").get()
+            val labsStagingUrl = labsStagingUrlProvider.orElse("").get()
+            val labsProdUrl = labsProdUrlProvider.orElse("").get()
 
             val file = buildConfigDir.get().file("com/chriscartland/batterybutler/datanetwork/BuildConfig.kt").asFile
             file.parentFile.mkdirs()
@@ -58,6 +69,9 @@ kotlin {
                 object BuildConfig {
                     const val PRODUCTION_SERVER_URL = "$serverUrl"
                     const val DEV_SERVER_URL = "$devServerUrl"
+                    const val LABS_FIREBASE_API_KEY = "$labsFirebaseApiKey"
+                    const val LABS_STAGING_URL = "$labsStagingUrl"
+                    const val LABS_PROD_URL = "$labsProdUrl"
                 }
                 """.trimIndent(),
             )
