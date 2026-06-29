@@ -78,6 +78,9 @@ kotlin {
             api(libs.wire.grpc.client)
             implementation(libs.kotlin.inject.runtime)
             implementation(libs.kotlinx.serialization.json)
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.serialization.kotlinx.json)
         }
 
         androidMain.dependencies {
@@ -86,13 +89,21 @@ kotlin {
             implementation(libs.androidx.credentials.play.services.auth)
             implementation(libs.googleid)
             implementation(libs.kotlinx.coroutines.play.services)
+            implementation(libs.ktor.client.okhttp)
+        }
+        val desktopMain by getting {
+            dependencies {
+                implementation(libs.ktor.client.okhttp)
+            }
         }
         iosMain.dependencies {
-            implementation(libs.ktor.client.core)
+            // ktor-client-core comes from commonMain; iOS only needs its engine.
             implementation(libs.ktor.client.darwin)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+            implementation(libs.ktor.client.mock)
+            implementation(libs.kotlinx.coroutines.test)
         }
     }
 
