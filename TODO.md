@@ -83,6 +83,26 @@ conclusion (defensive companion to the bb-2r4g close-on-success guard).
 
 ## P3
 
+### bb-emult — `validate.sh` hangs on `pixel5api34DebugAndroidTest` when no emulator can boot
+
+`./scripts/validate.sh` step 4 runs `:compose-app:pixel5api34DebugAndroidTest`
+(Gradle Managed Device). In a headless / sandboxed environment where the GMD
+emulator can't boot (no KVM/hardware accel, missing system image), the task
+**hangs indefinitely** rather than failing fast — blocking the rest of local
+validation (steps 5–8 never run). Observed repeatedly while landing the REST sync
+work (PRs #1272 / #1275): each PR had to substitute a targeted gate set
+(`spotless` + `detekt detektAndroidMain` + `check{Architecture,NamingConventions,HardcodedStrings,ImportBoundary}`
++ cross-platform compile) for the full run.
+
+Dev-mode PR CI skips `validation_instrumented`, so this only bites **local**
+validation — but an indefinite hang is worse than a skip.
+
+**Options to evaluate:** (a) detect emulator/accel availability in `validate.sh`
+and skip-with-warning (or add a `--skip-instrumented` flag) instead of hanging;
+(b) add a timeout to the GMD task; (c) document the manual substitute-gate set for
+machines without a bootable emulator. Pick whichever keeps "validate before push"
+honest without an indefinite hang.
+
 ### bb-syncit — Live integration test for the Labs `/sync` wire contract (credential-gated)
 
 The REST sync contract (`data-network/.../rest/SyncDto.kt`, PR #1272) is pinned two
