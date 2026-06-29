@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.wire)
 }
 
@@ -76,6 +77,7 @@ kotlin {
             implementation(libs.wire.runtime)
             api(libs.wire.grpc.client)
             implementation(libs.kotlin.inject.runtime)
+            implementation(libs.kotlinx.serialization.json)
         }
 
         androidMain.dependencies {
@@ -84,11 +86,6 @@ kotlin {
             implementation(libs.androidx.credentials.play.services.auth)
             implementation(libs.googleid)
             implementation(libs.kotlinx.coroutines.play.services)
-        }
-        val desktopMain by getting {
-            dependencies {
-                implementation(libs.kotlinx.serialization.json)
-            }
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.core)
