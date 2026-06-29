@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.composeHotReload)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.googleServices)
 }
 
 kotlin {
@@ -43,7 +44,6 @@ kotlin {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.androidx.core.splashscreen)
-            implementation(libs.generativeai)
             implementation(libs.kotlinx.coroutines.play.services)
             implementation(libs.multiplatform.settings)
         }
@@ -98,32 +98,6 @@ kotlin {
 
     sourceSets.all {
         languageSettings.optIn("kotlin.time.ExperimentalTime")
-    }
-}
-
-// Align every Ktor artifact to the catalog version on every configuration of this app.
-//
-// com.google.ai.client.generativeai (androidMain, see libs.generativeai) transitively pulls
-// io.ktor:ktor-client-logging:2.3.2. The REST sync client in :data-network pulls Ktor 3.x, which
-// force-upgrades gen-ai's ktor-client-core/okhttp/etc. to 3.x — but nothing upgrades the stray
-// ktor-client-logging, so 2.3.2 stays on the Android runtime classpath. The 2.x Logging plugin
-// references the class io.ktor.client.plugins.HttpTimeout, which Ktor 3.x removed (it is now a
-// top-level plugin val, not a class), so the app crashes on-device with
-//   NoClassDefFoundError: Failed resolution of: Lio/ktor/client/plugins/HttpTimeout;
-// the moment gen-ai builds its HttpClient (which installs Logging). Aligning *up* to 3.x is the
-// ecosystem-validated fix (JetBrains KTOR-6965; firebase-android-sdk #6413 / #7062). :compose-app
-// is the only module where gen-ai (android-only) and our Ktor 3.x meet.
-//
-// Surfaced only on main: PR-tier CI runs in development mode and skips both :compose-app
-// assembleDebug and pixel5api34DebugAndroidTest, so no Android packaging/runtime is exercised on a
-// PR — the post-merge instrumented job is what caught (and verifies the fix for) this.
-val ktorVersion = libs.versions.ktor.get()
-configurations.configureEach {
-    resolutionStrategy.eachDependency {
-        if (requested.group == "io.ktor") {
-            useVersion(ktorVersion)
-            because("Align all Ktor artifacts to one version; gen-ai pulls ktor-client-logging:2.3.2 (KTOR-6965)")
-        }
     }
 }
 

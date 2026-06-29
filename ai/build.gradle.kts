@@ -37,7 +37,8 @@ kotlin {
             implementation(libs.kotlinx.coroutines.test)
         }
         androidMain.dependencies {
-            implementation(libs.generativeai)
+            implementation(project.dependencies.platform(libs.firebase.bom))
+            implementation(libs.firebase.ai)
             implementation(libs.mlkit.genai.prompt)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.coroutines.play.services)

@@ -48,7 +48,6 @@ kotlin {
         }
         androidMain.dependencies {
             implementation(libs.androidx.room.runtime)
-            implementation(libs.generativeai)
         }
         val androidDeviceTest by getting {
             dependencies {
