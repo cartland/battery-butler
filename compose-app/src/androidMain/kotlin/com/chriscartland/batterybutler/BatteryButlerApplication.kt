@@ -7,7 +7,6 @@ import com.chriscartland.batterybutler.ai.OnDeviceAiEngine
 import com.chriscartland.batterybutler.composeapp.BuildConfig
 import com.chriscartland.batterybutler.composeapp.di.AppComponent
 import com.chriscartland.batterybutler.composeapp.di.create
-import com.chriscartland.batterybutler.config.BuildConfigAiConfig
 import com.chriscartland.batterybutler.data.provider.DefaultDispatcherProvider
 import com.chriscartland.batterybutler.data.repository.AiPreferencesRepositoryImpl
 import com.chriscartland.batterybutler.datalocal.preferences.DataStoreFactory
@@ -22,12 +21,11 @@ class BatteryButlerApplication : Application() {
         val databaseFactory = DatabaseFactory(this)
         val dataStoreFactory = DataStoreFactory(this)
         val networkComponent = NetworkComponent(this)
-        val aiConfig = BuildConfigAiConfig()
 
         // AI Setup
         val settings = SharedPreferencesSettings(getSharedPreferences("ai_prefs", MODE_PRIVATE))
         val aiPreferencesRepository = AiPreferencesRepositoryImpl(settings)
-        val cloudAiEngine = AndroidAiEngine(aiConfig)
+        val cloudAiEngine = AndroidAiEngine()
         val onDeviceAiEngine = OnDeviceAiEngine(this)
 
         val aiEngine = DynamicAiEngine(

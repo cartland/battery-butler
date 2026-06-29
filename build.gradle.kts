@@ -45,6 +45,7 @@ plugins {
     alias(libs.plugins.composeCompiler) apply false
     alias(libs.plugins.spotless) apply false
     alias(libs.plugins.detekt) apply false
+    alias(libs.plugins.googleServices) apply false
     id("architecture.check")
     id("preview.coverage.check")
     id("theme.layer.check")

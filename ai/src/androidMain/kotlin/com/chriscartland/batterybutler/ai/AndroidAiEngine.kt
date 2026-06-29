@@ -8,171 +8,191 @@ import com.chriscartland.batterybutler.domain.model.ai.AiRole
 import com.chriscartland.batterybutler.domain.model.ai.AiToolNames
 import com.chriscartland.batterybutler.domain.model.ai.AiToolParams
 import com.chriscartland.batterybutler.domain.model.ai.ToolHandler
-import com.google.ai.client.generativeai.GenerativeModel
-import com.google.ai.client.generativeai.type.FunctionResponsePart
-import com.google.ai.client.generativeai.type.Schema
-import com.google.ai.client.generativeai.type.Tool
-import com.google.ai.client.generativeai.type.content
-import com.google.ai.client.generativeai.type.defineFunction
+import com.google.firebase.Firebase
+import com.google.firebase.FirebaseApp
+import com.google.firebase.ai.ai
+import com.google.firebase.ai.type.FunctionDeclaration
+import com.google.firebase.ai.type.FunctionResponsePart
+import com.google.firebase.ai.type.GenerativeBackend
+import com.google.firebase.ai.type.Schema
+import com.google.firebase.ai.type.Tool
+import com.google.firebase.ai.type.content
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flow
-import org.json.JSONObject
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.put
 import kotlin.coroutines.cancellation.CancellationException
 
 /**
- * Android implementation of [AiEngine] using the Gemini API.
+ * Android implementation of [AiEngine] using the Gemini API via **Firebase AI Logic**
+ * (`com.google.firebase:firebase-ai`, Gemini Developer API backend).
  *
- * @param config Configuration providing the API key and other settings.
- *               The API key is injected at runtime rather than embedded at compile time,
- *               allowing for more secure key management.
+ * Migrated from the deprecated standalone `com.google.ai.client.generativeai` SDK, which pinned
+ * Ktor 2.x. Once the app also used Ktor 3.x (the REST sync client in `:data-network`), the 2.x
+ * Logging plugin gen-ai installs referenced `io.ktor.client.plugins.HttpTimeout` — a class Ktor 3.x
+ * removed — and the app crashed on-device with `NoClassDefFoundError`. firebase-ai uses Ktor 3.x, so
+ * the conflict is gone at the source.
+ *
+ * The Gemini API key is configured in the Firebase project (`google-services.json`), not in code.
+ * Model construction is **lazy and guarded**: [isAvailable] reflects whether a default [FirebaseApp]
+ * is initialized, and the model is only built on first use, so the app starts cleanly even when
+ * Firebase is not yet configured (e.g. the placeholder `google-services.json`).
  */
-class AndroidAiEngine(
-    private val config: AiConfig,
-) : AiEngine {
-    // For Gemini API (Cloud), availability depends on having a valid API key configured.
-    private val _isAvailable = MutableStateFlow(config.apiKey.isNotBlank())
+class AndroidAiEngine : AiEngine {
+    // The default FirebaseApp auto-initializes from google-services.json via the google-services
+    // plugin; FirebaseApp.getInstance() throws if it is absent. Reading it here is cheap and does
+    // not construct the model, so app startup never fails on a missing/placeholder Firebase config.
+    private val _isAvailable = MutableStateFlow(runCatching { FirebaseApp.getInstance() }.isSuccess)
     override val isAvailable: Flow<Boolean> = _isAvailable.asStateFlow()
     override val compatibility: Flow<Boolean> = flow { emit(true) }
 
-    private val apiKey: String get() = config.apiKey
-
-    // Define Tools without execution blocks (manual execution)
-    private val addDeviceTool = defineFunction(
+    private val addDeviceTool = FunctionDeclaration(
         name = AiToolNames.ADD_DEVICE,
         description = "Add a new device to the inventory",
-        parameters = listOf(
-            Schema.str(AiToolParams.NAME, "Name of the device"),
-            Schema.str(AiToolParams.LOCATION, "Location of the device (optional)"),
-            // notes removed as per request
-            Schema.str(AiToolParams.TYPE, "Type of the device (optional)"),
+        parameters = mapOf(
+            AiToolParams.NAME to Schema.string("Name of the device"),
+            AiToolParams.LOCATION to Schema.string("Location of the device (optional)"),
+            AiToolParams.TYPE to Schema.string("Type of the device (optional)"),
         ),
+        optionalParameters = listOf(AiToolParams.LOCATION, AiToolParams.TYPE),
     )
 
-    private val addDeviceTypeTool = defineFunction(
+    private val addDeviceTypeTool = FunctionDeclaration(
         name = AiToolNames.ADD_DEVICE_TYPE,
         description = "Add a new device type category",
-        parameters = listOf(
-            Schema.str(AiToolParams.NAME, "Name of the device type"),
-            Schema.str(AiToolParams.BATTERY_TYPE, "Type of battery used (e.g. AA, CR2032)"),
-            Schema.int(AiToolParams.BATTERY_QUANTITY, "Number of batteries required"),
-            Schema.str(
-                AiToolParams.ICON,
+        parameters = mapOf(
+            AiToolParams.NAME to Schema.string("Name of the device type"),
+            AiToolParams.BATTERY_TYPE to Schema.string("Type of battery used (e.g. AA, CR2032)"),
+            AiToolParams.BATTERY_QUANTITY to Schema.integer("Number of batteries required"),
+            AiToolParams.ICON to Schema.string(
                 "Icon for the device type. Available icons: " +
-                    DeviceIcons.AvailableIcons
-                        .joinToString(", "),
+                    DeviceIcons.AvailableIcons.joinToString(", "),
             ),
         ),
     )
 
-    private val recordBatteryReplacementTool = defineFunction(
+    private val recordBatteryReplacementTool = FunctionDeclaration(
         name = AiToolNames.RECORD_BATTERY_REPLACEMENT,
         description = "Record a battery replacement event for a device. If the device does not exist, it will be created.",
-        parameters = listOf(
-            Schema.str(AiToolParams.DEVICE_NAME, "Name of the device"),
-            Schema.str(AiToolParams.DATE, "Date of replacement (YYYY-MM-DD)"),
-            Schema.str(AiToolParams.DEVICE_TYPE, "Type of the device (optional, used if creating new device)"),
-            Schema.str(AiToolParams.BATTERY_TYPE, "Type of battery used (optional)"),
-            Schema.str(AiToolParams.LOCATION, "Location of the device (optional)"),
+        parameters = mapOf(
+            AiToolParams.DEVICE_NAME to Schema.string("Name of the device"),
+            AiToolParams.DATE to Schema.string("Date of replacement (YYYY-MM-DD)"),
+            AiToolParams.DEVICE_TYPE to Schema.string("Type of the device (optional, used if creating new device)"),
+            AiToolParams.BATTERY_TYPE to Schema.string("Type of battery used (optional)"),
+            AiToolParams.LOCATION to Schema.string("Location of the device (optional)"),
         ),
+        optionalParameters = listOf(AiToolParams.DEVICE_TYPE, AiToolParams.BATTERY_TYPE, AiToolParams.LOCATION),
     )
 
-    private val updateDeviceTool = defineFunction(
+    private val updateDeviceTool = FunctionDeclaration(
         name = AiToolNames.UPDATE_DEVICE,
         description = "Update an existing device's properties",
-        parameters = listOf(
-            Schema.str(AiToolParams.ID, "Device ID from the inventory context"),
-            Schema.str(AiToolParams.NEW_NAME, "New name for the device (optional)"),
-            Schema.str(AiToolParams.NEW_LOCATION, "New location (optional)"),
-            Schema.str(AiToolParams.NEW_TYPE, "New device type name (optional)"),
+        parameters = mapOf(
+            AiToolParams.ID to Schema.string("Device ID from the inventory context"),
+            AiToolParams.NEW_NAME to Schema.string("New name for the device (optional)"),
+            AiToolParams.NEW_LOCATION to Schema.string("New location (optional)"),
+            AiToolParams.NEW_TYPE to Schema.string("New device type name (optional)"),
         ),
+        optionalParameters = listOf(AiToolParams.NEW_NAME, AiToolParams.NEW_LOCATION, AiToolParams.NEW_TYPE),
     )
 
-    private val deleteDeviceTool = defineFunction(
+    private val deleteDeviceTool = FunctionDeclaration(
         name = AiToolNames.DELETE_DEVICE,
         description = "Delete a device and all its battery events",
-        parameters = listOf(
-            Schema.str(AiToolParams.ID, "Device ID from the inventory context"),
+        parameters = mapOf(
+            AiToolParams.ID to Schema.string("Device ID from the inventory context"),
         ),
     )
 
-    private val updateDeviceTypeTool = defineFunction(
+    private val updateDeviceTypeTool = FunctionDeclaration(
         name = AiToolNames.UPDATE_DEVICE_TYPE,
         description = "Update an existing device type's properties",
-        parameters = listOf(
-            Schema.str(AiToolParams.ID, "Device type ID from the inventory context"),
-            Schema.str(AiToolParams.NEW_NAME, "New name for the device type (optional)"),
-            Schema.str(AiToolParams.NEW_BATTERY_TYPE, "New battery type (optional)"),
-            Schema.int(AiToolParams.NEW_BATTERY_QUANTITY, "New battery quantity (optional)"),
-            Schema.str(AiToolParams.NEW_ICON, "New icon (optional)"),
+        parameters = mapOf(
+            AiToolParams.ID to Schema.string("Device type ID from the inventory context"),
+            AiToolParams.NEW_NAME to Schema.string("New name for the device type (optional)"),
+            AiToolParams.NEW_BATTERY_TYPE to Schema.string("New battery type (optional)"),
+            AiToolParams.NEW_BATTERY_QUANTITY to Schema.integer("New battery quantity (optional)"),
+            AiToolParams.NEW_ICON to Schema.string("New icon (optional)"),
+        ),
+        optionalParameters = listOf(
+            AiToolParams.NEW_NAME,
+            AiToolParams.NEW_BATTERY_TYPE,
+            AiToolParams.NEW_BATTERY_QUANTITY,
+            AiToolParams.NEW_ICON,
         ),
     )
 
-    private val deleteDeviceTypeTool = defineFunction(
+    private val deleteDeviceTypeTool = FunctionDeclaration(
         name = AiToolNames.DELETE_DEVICE_TYPE,
         description = "Delete a device type. Fails if devices still use it.",
-        parameters = listOf(
-            Schema.str(AiToolParams.ID, "Device type ID from the inventory context"),
+        parameters = mapOf(
+            AiToolParams.ID to Schema.string("Device type ID from the inventory context"),
         ),
     )
 
-    private val updateBatteryEventTool = defineFunction(
+    private val updateBatteryEventTool = FunctionDeclaration(
         name = AiToolNames.UPDATE_BATTERY_EVENT,
         description = "Update a battery replacement event",
-        parameters = listOf(
-            Schema.str(AiToolParams.ID, "Battery event ID from the inventory context"),
-            Schema.str(AiToolParams.NEW_DATE, "New date (YYYY-MM-DD) (optional)"),
-            Schema.str(AiToolParams.NOTES, "Notes for the event (optional)"),
+        parameters = mapOf(
+            AiToolParams.ID to Schema.string("Battery event ID from the inventory context"),
+            AiToolParams.NEW_DATE to Schema.string("New date (YYYY-MM-DD) (optional)"),
+            AiToolParams.NOTES to Schema.string("Notes for the event (optional)"),
         ),
+        optionalParameters = listOf(AiToolParams.NEW_DATE, AiToolParams.NOTES),
     )
 
-    private val deleteBatteryEventTool = defineFunction(
+    private val deleteBatteryEventTool = FunctionDeclaration(
         name = AiToolNames.DELETE_BATTERY_EVENT,
         description = "Delete a battery replacement event",
-        parameters = listOf(
-            Schema.str(AiToolParams.ID, "Battery event ID from the inventory context"),
+        parameters = mapOf(
+            AiToolParams.ID to Schema.string("Battery event ID from the inventory context"),
         ),
     )
 
-    private val generativeModel = GenerativeModel(
-        modelName = AiConstants.GEMINI_MODEL_NAME,
-        apiKey = apiKey,
-        tools = listOf(
-            Tool(
-                listOf(
-                    addDeviceTool,
-                    addDeviceTypeTool,
-                    recordBatteryReplacementTool,
-                    updateDeviceTool,
-                    deleteDeviceTool,
-                    updateDeviceTypeTool,
-                    deleteDeviceTypeTool,
-                    updateBatteryEventTool,
-                    deleteBatteryEventTool,
+    private val generativeModel by lazy {
+        Firebase.ai(backend = GenerativeBackend.googleAI()).generativeModel(
+            modelName = AiConstants.GEMINI_MODEL_NAME,
+            tools = listOf(
+                Tool.functionDeclarations(
+                    listOf(
+                        addDeviceTool,
+                        addDeviceTypeTool,
+                        recordBatteryReplacementTool,
+                        updateDeviceTool,
+                        deleteDeviceTool,
+                        updateDeviceTypeTool,
+                        deleteDeviceTypeTool,
+                        updateBatteryEventTool,
+                        deleteBatteryEventTool,
+                    ),
                 ),
             ),
-        ),
-        systemInstruction = content {
-            text(
-                """
-                You are Battery Butler, a helpful home inventory assistant. You have access to the user's device inventory and battery history provided in the context of each message.
+            systemInstruction = content {
+                text(
+                    """
+                    You are Battery Butler, a helpful home inventory assistant. You have access to the user's device inventory and battery history provided in the context of each message.
 
-                Capabilities:
-                - ADD devices, device types, and battery replacement events.
-                - UPDATE existing devices, device types, and battery events by their ID from the inventory context.
-                - DELETE devices, device types, and battery events by their ID.
+                    Capabilities:
+                    - ADD devices, device types, and battery replacement events.
+                    - UPDATE existing devices, device types, and battery events by their ID from the inventory context.
+                    - DELETE devices, device types, and battery events by their ID.
 
-                Rules:
-                - Users refer to items by name or description. Match their description to the correct item ID from the inventory context, then use that ID in tool calls.
-                - BEFORE deleting anything, tell the user exactly what you will delete and ask for their explicit confirmation. Only call the delete tool after the user says yes.
-                - When updating, only change the fields the user asked to change. Preserve all other fields.
-                - If the user provides a date for a device, use recordBatteryReplacement to log it.
-                - When processing bulk data (like tables or CSVs), ignore header rows and only process lines containing valid data.
-                """.trimIndent(),
-            )
-        },
-    )
+                    Rules:
+                    - Users refer to items by name or description. Match their description to the correct item ID from the inventory context, then use that ID in tool calls.
+                    - BEFORE deleting anything, tell the user exactly what you will delete and ask for their explicit confirmation. Only call the delete tool after the user says yes.
+                    - When updating, only change the fields the user asked to change. Preserve all other fields.
+                    - If the user provides a date for a device, use recordBatteryReplacement to log it.
+                    - When processing bulk data (like tables or CSVs), ignore header rows and only process lines containing valid data.
+                    """.trimIndent(),
+                )
+            },
+        )
+    }
 
     private val chat by lazy { generativeModel.startChat() }
 
@@ -181,8 +201,15 @@ class AndroidAiEngine(
         toolHandler: ToolHandler?,
     ): Flow<AiMessage> =
         flow {
-            if (apiKey.isBlank()) {
-                emit(AiMessage("error", AiRole.MODEL, "Missing API Key. Please configure GEMINI_API_KEY in local.properties.", false))
+            if (!_isAvailable.value) {
+                emit(
+                    AiMessage(
+                        "error",
+                        AiRole.MODEL,
+                        "AI is unavailable: Firebase is not configured. Add a real google-services.json with the Gemini API enabled.",
+                        false,
+                    ),
+                )
                 return@flow
             }
 
@@ -191,22 +218,22 @@ class AndroidAiEngine(
 
                 // Loop while there are function calls
                 while (response.functionCalls.isNotEmpty()) {
-                    val functionCalls = response.functionCalls
                     val functionResponses = mutableListOf<FunctionResponsePart>()
 
-                    for (call in functionCalls) {
-                        val name = call.name
-                        val args = call.args
+                    for (call in response.functionCalls) {
+                        // firebase-ai exposes args as Map<String, JsonElement>; ToolHandler expects
+                        // Map<String, Any?>. Flatten each primitive to its string content (null-safe).
+                        val argsMap: Map<String, Any?> = call.args.mapValues { (_, element) ->
+                            (element as? JsonPrimitive)?.contentOrNull
+                        }
 
-                        // Convert args to Map<String, Any?> for ToolHandler
-                        val argsMap = args.entries.associate { (k, v) -> k to v }
-
-                        val resultJson = toolHandler?.execute(name, argsMap)
+                        val resultJson = toolHandler?.execute(call.name, argsMap)
                             ?: "{ \"status\": \"error\", \"message\": \"No tool handler\" }"
 
-                        // Create response part with JSONObject
-                        val resultSdk = JSONObject(mapOf("result" to resultJson))
-                        functionResponses.add(FunctionResponsePart(name, resultSdk))
+                        val responseJson: JsonObject = buildJsonObject { put("result", JsonPrimitive(resultJson)) }
+                        functionResponses.add(
+                            FunctionResponsePart(name = call.name, response = responseJson, id = call.id),
+                        )
                     }
 
                     // Send function responses back
