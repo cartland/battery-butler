@@ -31,6 +31,8 @@ class DataStoreNetworkModeRepository(
         private const val TYPE_GRPC_LOCAL = "grpc_local"
         private const val TYPE_GRPC_AWS = "grpc_aws"
         private const val TYPE_GRPC_DEV = "grpc_dev"
+        private const val TYPE_LABS_STAGING = "labs_staging"
+        private const val TYPE_LABS_PROD = "labs_prod"
         private const val SEPARATOR = ":"
 
         fun String.toNetworkMode(): NetworkMode {
@@ -44,6 +46,8 @@ class DataStoreNetworkModeRepository(
                 TYPE_GRPC_LOCAL -> NetworkMode.GrpcLocal(url)
                 TYPE_GRPC_AWS -> NetworkMode.GrpcAws(url)
                 TYPE_GRPC_DEV -> NetworkMode.GrpcDev(url)
+                TYPE_LABS_STAGING -> NetworkMode.LabsStaging(url)
+                TYPE_LABS_PROD -> NetworkMode.LabsProd(url)
                 else -> DEFAULT_MODE
             }
         }
@@ -55,6 +59,8 @@ class DataStoreNetworkModeRepository(
                 is NetworkMode.GrpcLocal -> "$TYPE_GRPC_LOCAL$SEPARATOR${url.orEmpty()}"
                 is NetworkMode.GrpcAws -> "$TYPE_GRPC_AWS$SEPARATOR${url.orEmpty()}"
                 is NetworkMode.GrpcDev -> "$TYPE_GRPC_DEV$SEPARATOR${url.orEmpty()}"
+                is NetworkMode.LabsStaging -> "$TYPE_LABS_STAGING$SEPARATOR${url.orEmpty()}"
+                is NetworkMode.LabsProd -> "$TYPE_LABS_PROD$SEPARATOR${url.orEmpty()}"
             }
     }
 }

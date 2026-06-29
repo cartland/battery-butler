@@ -10,6 +10,8 @@ enum class DatabaseOption(
     LocalServer("battery-butler-local-server.db"),
     ProductionServer("battery-butler-production-server.db"),
     DevServer("battery-butler-dev-server.db"),
+    LabsStaging("battery-butler-labs-staging.db"),
+    LabsProd("battery-butler-labs-prod.db"),
     ;
 
     companion object {
@@ -26,6 +28,8 @@ enum class DatabaseOption(
                 is NetworkMode.GrpcLocal -> LocalServer
                 is NetworkMode.GrpcAws -> ProductionServer
                 is NetworkMode.GrpcDev -> DevServer
+                is NetworkMode.LabsStaging -> LabsStaging
+                is NetworkMode.LabsProd -> LabsProd
             }
     }
 }

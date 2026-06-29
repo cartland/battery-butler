@@ -3,6 +3,8 @@ package com.chriscartland.batterybutler.datanetwork
 import co.touchlab.kermit.Logger
 import com.chriscartland.batterybutler.datanetwork.grpc.DelegatingGrpcClient
 import com.chriscartland.batterybutler.datanetwork.grpc.GrpcClientState
+import com.chriscartland.batterybutler.datanetwork.rest.RestRemoteDataSource
+import com.chriscartland.batterybutler.datanetwork.rest.createSyncHttpClient
 import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
 import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
@@ -28,6 +30,20 @@ class DelegatingRemoteDataSource(
     private val networkModeRepository: NetworkModeRepository,
     private val scope: CoroutineScope,
 ) : RemoteDataSource {
+    // Lazily created on first use of a Labs (REST) mode. createSyncHttpClient() is internal to
+    // data-network, so no DI wiring is needed for it.
+    private val syncHttpClient by lazy { createSyncHttpClient() }
+
+    // A REST data source for one Labs env URL. The token is a placeholder until Workstream D
+    // wires a per-user Firebase ID token; the URL is null until Workstream E injects the host —
+    // so a Labs mode is selectable but reports unavailable / unauthenticated until both land.
+    private fun restDataSource(url: String?): RestRemoteDataSource =
+        RestRemoteDataSource(
+            httpClient = syncHttpClient,
+            baseUrl = url.orEmpty(),
+            tokenProvider = { null },
+        )
+
     override val state: StateFlow<RemoteDataSourceState> =
         networkModeRepository.networkMode
             .flatMapLatest { mode ->
@@ -48,6 +64,14 @@ class DelegatingRemoteDataSource(
                                 is GrpcClientState.Ready -> RemoteDataSourceState.Subscribed
                             }
                         }
+                    }
+
+                    is NetworkMode.LabsStaging -> {
+                        restDataSource(mode.url).state
+                    }
+
+                    is NetworkMode.LabsProd -> {
+                        restDataSource(mode.url).state
                     }
                 }
             }.stateIn(scope, kotlinx.coroutines.flow.SharingStarted.Eagerly, RemoteDataSourceState.NotStarted)
@@ -77,6 +101,14 @@ class DelegatingRemoteDataSource(
                         .mapNotNull { (it as? GrpcClientState.Ready)?.client }
                         .flatMapLatest<GrpcClient, RemoteUpdate> { grpcDataSource.subscribe() }
                 }
+
+                is NetworkMode.LabsStaging -> {
+                    restDataSource(mode.url).subscribe()
+                }
+
+                is NetworkMode.LabsProd -> {
+                    restDataSource(mode.url).subscribe()
+                }
             }
         }
 
@@ -102,6 +134,14 @@ class DelegatingRemoteDataSource(
                 val success = grpcDataSource.push(update)
                 Logger.d("DelegatingRemoteDS") { "Push result: success=$success" }
                 success
+            }
+
+            is NetworkMode.LabsStaging -> {
+                restDataSource(mode.url).push(update)
+            }
+
+            is NetworkMode.LabsProd -> {
+                restDataSource(mode.url).push(update)
             }
         }
     }

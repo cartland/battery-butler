@@ -64,6 +64,10 @@ class SettingsViewModel(
         // AWS servers (hibernated — not currently running, kept for future re-enablement)
         NetworkMode.GrpcDev(devServerUrl.url),
         NetworkMode.GrpcAws(productionServerUrl.url),
+        // Labs REST backend (staging + prod). The host is injected from secret config
+        // (Workstream E); a null URL here renders the mode unavailable until configured.
+        NetworkMode.LabsStaging(null),
+        NetworkMode.LabsProd(null),
     )
 
     val aiEngineType = aiPreferencesRepository.aiEngineType

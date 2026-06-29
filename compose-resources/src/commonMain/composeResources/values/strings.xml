@@ -30,6 +30,8 @@
     <string name="network_mode_grpc_local">gRPC Local</string>
     <string name="network_mode_grpc_aws">Prod Server (disabled)</string>
     <string name="network_mode_grpc_dev">Dev Server (disabled)</string>
+    <string name="network_mode_labs_staging">Labs Staging</string>
+    <string name="network_mode_labs_prod">Labs Prod</string>
 
     <!-- AI Engine -->
     <string name="ai_engine_title">AI Engine</string>
