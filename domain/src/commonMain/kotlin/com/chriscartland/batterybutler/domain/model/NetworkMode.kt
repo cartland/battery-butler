@@ -41,4 +41,20 @@ sealed interface NetworkMode {
     data class GrpcDev(
         val url: String?,
     ) : NetworkMode
+
+    /**
+     * Labs backend, staging channel — REST over HTTPS.
+     * @param url Backend host, injected from secret config; null/blank = unavailable.
+     */
+    data class LabsStaging(
+        val url: String?,
+    ) : NetworkMode
+
+    /**
+     * Labs backend, production channel — REST over HTTPS.
+     * @param url Backend host, injected from secret config; null/blank = unavailable.
+     */
+    data class LabsProd(
+        val url: String?,
+    ) : NetworkMode
 }

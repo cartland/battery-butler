@@ -94,16 +94,28 @@ class NetworkModeTest {
     }
 
     @Test
+    fun `Labs modes store url and can be null`() {
+        assertEquals("https://staging.example", NetworkMode.LabsStaging("https://staging.example").url)
+        assertEquals("https://prod.example", NetworkMode.LabsProd("https://prod.example").url)
+        assertNull(NetworkMode.LabsStaging(null).url)
+        assertNull(NetworkMode.LabsProd(null).url)
+    }
+
+    @Test
     fun `sealed interface variants are distinguishable`() {
         val mock: NetworkMode = NetworkMode.Mock
         val local: NetworkMode = NetworkMode.GrpcLocal("http://localhost")
         val aws: NetworkMode = NetworkMode.GrpcAws("https://aws.example.com")
         val dev: NetworkMode = NetworkMode.GrpcDev("http://dev.example.com")
+        val labsStaging: NetworkMode = NetworkMode.LabsStaging("https://staging.example")
+        val labsProd: NetworkMode = NetworkMode.LabsProd("https://prod.example")
 
         assertIs<NetworkMode.Mock>(mock)
         assertIs<NetworkMode.GrpcLocal>(local)
         assertIs<NetworkMode.GrpcAws>(aws)
         assertIs<NetworkMode.GrpcDev>(dev)
+        assertIs<NetworkMode.LabsStaging>(labsStaging)
+        assertIs<NetworkMode.LabsProd>(labsProd)
     }
 
     @Test
@@ -114,6 +126,8 @@ class NetworkModeTest {
             NetworkMode.GrpcLocal("http://localhost"),
             NetworkMode.GrpcAws("https://aws.example.com"),
             NetworkMode.GrpcDev("http://dev.example.com"),
+            NetworkMode.LabsStaging("https://staging.example"),
+            NetworkMode.LabsProd("https://prod.example"),
         )
 
         for (mode in modes) {
@@ -123,6 +137,8 @@ class NetworkModeTest {
                 is NetworkMode.GrpcLocal -> "local"
                 is NetworkMode.GrpcAws -> "aws"
                 is NetworkMode.GrpcDev -> "dev"
+                is NetworkMode.LabsStaging -> "labs_staging"
+                is NetworkMode.LabsProd -> "labs_prod"
             }
             // If we get here without error, the when is exhaustive
             assertTrue(description.isNotEmpty())

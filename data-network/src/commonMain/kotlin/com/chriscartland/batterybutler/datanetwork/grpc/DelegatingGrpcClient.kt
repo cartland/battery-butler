@@ -72,8 +72,12 @@ class DelegatingGrpcClient(
                         }
                     }
 
-                    // Mock and None don't use GrpcClient
-                    NetworkMode.Mock, NetworkMode.None -> {
+                    // Mock, None, and the Labs (REST) modes don't use a GrpcClient.
+                    NetworkMode.Mock,
+                    NetworkMode.None,
+                    is NetworkMode.LabsStaging,
+                    is NetworkMode.LabsProd,
+                    -> {
                         GrpcClientState.Uninitialized
                     }
                 }
