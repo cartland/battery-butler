@@ -122,6 +122,35 @@ Until then: **edit the golden fixtures in lockstep** across both repos on any co
 change. (An emulator-backed producer test on the Labs side is a separate, no-creds
 option tracked there.)
 
+### bb-labs-signin — Trigger the Labs sign-in (FirebaseIdTokenProvider.signInWithGoogle) — credential-gated
+
+Workstreams D + E landed the Labs REST sync auth *structure*: PR #1285 (the `FirebaseIdTokenProvider`
+core — Google ID token → Labs Firebase ID token via REST IdP, refresh, MockEngine-tested) and PR
+#1286 (the wiring + config). `DelegatingRemoteDataSource` already uses `getIdToken` as the Bearer
+provider, but nothing yet calls `signInWithGoogle()`, so `getIdToken` returns null and a Labs sync
+runs unauthenticated (401). Follow-up: trigger the interactive Google→Labs exchange from a sign-in
+flow — the UX was deliberately deferred (e.g. auto-exchange on the app's existing Google sign-in, or
+an explicit "Connect to Labs" action in Settings when a Labs mode is selected). Functional only after
+bb-labs-owner.
+
+### bb-labs-owner — Owner setup: Labs OAuth client + Firebase Web API key + ORG_GRADLE_PROJECT_LABS_* secrets
+
+For Labs REST sync to authenticate, the owner must: (1) create the Labs OAuth client (or whitelist
+battery-butler's existing client) and obtain the Labs Firebase **Web API key** — see the Labs
+backend's `BATTERY-BUTLER.md` → "Owner setup: desktop client auth"; (2) set
+`ORG_GRADLE_PROJECT_LABS_FIREBASE_API_KEY` / `LABS_STAGING_URL` / `LABS_PROD_URL` (GitHub Actions
+secrets and/or `local.properties`), which data-network's `BuildConfig` consumes (#1286); (3) grant
+the user access on the Labs backend (`grant-access` by email). Unblocks bb-labs-signin and bb-syncit.
+
+### bb-fbai-setup — Owner setup: real Firebase project for the AI chat (firebase-ai)
+
+The cloud AI engine migrated from the deprecated `com.google.ai.client.generativeai` SDK to
+`firebase-ai` (PR #1284) to remove a Ktor 2.x/3.x conflict that crashed the app on launch.
+`compose-app/google-services.json` is currently a mock (`project_id: mock-project-id`), so the app
+launches fine but the cloud AI chat reports unavailable. To enable it: create a Firebase project
+with the **Gemini Developer API** enabled and add its real `google-services.json` (package
+`com.chriscartland.batterybutler`). The on-device mlkit engine is unaffected.
+
 ### bb-j6td — Remove misleading `GITHUB_TOKEN` fallback in `ci-trigger-auto-prs.yml`
 
 Line 41 uses `github-token: ${{ secrets.BOT_PAT || secrets.GITHUB_TOKEN }}`. The
