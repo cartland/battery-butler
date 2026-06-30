@@ -18,6 +18,7 @@ import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
 import com.chriscartland.batterybutler.domain.repository.RestartCoordinator
 import com.chriscartland.batterybutler.testcommon.FakeAuthRepository
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
+import com.chriscartland.batterybutler.testcommon.FakeLabsAuthRepository
 import com.chriscartland.batterybutler.testcommon.FakeLegacyDatabaseRepository
 import com.chriscartland.batterybutler.testcommon.TestDevices
 import com.chriscartland.batterybutler.usecase.ExportDataUseCase
@@ -144,6 +145,52 @@ class SettingsViewModelTest {
             assertNotNull(user)
             assertEquals("user-1", user.id)
             assertEquals("test@example.com", user.email)
+        }
+
+    @Test
+    fun `isLabsMode reflects the selected network mode`() =
+        runTest {
+            val viewModel = createViewModel()
+            advanceUntilIdle()
+            assertFalse(viewModel.isLabsMode.first())
+
+            viewModel.onNetworkModeSelected(NetworkMode.LabsStaging("https://staging.example"))
+            advanceUntilIdle()
+            assertTrue(viewModel.isLabsMode.first { it })
+        }
+
+    @Test
+    fun `onSignInToLabs signs in via the labs repository`() =
+        runTest {
+            val labsRepo = FakeLabsAuthRepository()
+            val viewModel = createViewModel(labsAuthRepository = labsRepo)
+            advanceUntilIdle()
+
+            viewModel.onSignInToLabs()
+            advanceUntilIdle()
+
+            assertEquals(1, labsRepo.signInCount)
+            assertTrue(viewModel.isLabsSignedIn.first { it })
+        }
+
+    @Test
+    fun `onSignOutLabs clears the labs session`() =
+        runTest {
+            val labsRepo = FakeLabsAuthRepository()
+            labsRepo.setLabsAuthState(
+                AuthState.Authenticated(
+                    User(id = "u", email = "labs@example.com", displayName = null, photoUrl = null),
+                ),
+            )
+            val viewModel = createViewModel(labsAuthRepository = labsRepo)
+            advanceUntilIdle()
+            assertTrue(viewModel.isLabsSignedIn.first { it })
+
+            viewModel.onSignOutLabs()
+            advanceUntilIdle()
+
+            assertEquals(1, labsRepo.signOutCount)
+            assertFalse(viewModel.isLabsSignedIn.first { !it })
         }
 
     @Test
@@ -601,6 +648,7 @@ class SettingsViewModelTest {
         networkModeRepository: FakeNetworkModeRepository = FakeNetworkModeRepository(),
         appInfoRepository: AppInfoRepository = FakeAppInfoRepository(),
         authRepository: FakeAuthRepository = FakeAuthRepository(),
+        labsAuthRepository: FakeLabsAuthRepository = FakeLabsAuthRepository(),
         aiPreferencesRepository: FakeAiPreferencesRepository = FakeAiPreferencesRepository(),
         legacyDatabaseRepository: FakeLegacyDatabaseRepository = FakeLegacyDatabaseRepository(),
         restartCoordinator: RestartCoordinator = RestartCoordinator(),
@@ -611,6 +659,7 @@ class SettingsViewModelTest {
             networkModeRepository = networkModeRepository,
             getAppVersionUseCase = GetAppVersionUseCase(appInfoRepository),
             authRepository = authRepository,
+            labsAuthRepository = labsAuthRepository,
             aiPreferencesRepository = aiPreferencesRepository,
             getLegacyDatabaseInfoUseCase = GetLegacyDatabaseInfoUseCase(legacyDatabaseRepository),
             restoreLegacyDatabaseUseCase = RestoreLegacyDatabaseUseCase(legacyDatabaseRepository),

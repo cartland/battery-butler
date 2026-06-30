@@ -32,8 +32,10 @@ import com.chriscartland.batterybutler.domain.repository.AiPreferencesRepository
 import com.chriscartland.batterybutler.domain.repository.AuthRepository
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.domain.repository.FeatureFlagProvider
+import com.chriscartland.batterybutler.domain.repository.LabsAuthRepository
 import com.chriscartland.batterybutler.domain.repository.LegacyDatabaseRepository
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
+import com.chriscartland.batterybutler.domain.repository.NoOpLabsAuthRepository
 import com.chriscartland.batterybutler.domain.repository.RestartCoordinator
 import com.chriscartland.batterybutler.viewmodel.addbatteryevent.AddBatteryEventViewModel
 import com.chriscartland.batterybutler.viewmodel.adddevice.AddDeviceViewModel
@@ -151,6 +153,12 @@ abstract class NativeComponent(
     @Provides
     @SharedSingleton
     fun provideLabsProdUrl(): LabsProdUrl = LabsProdUrl(BuildConfig.LABS_PROD_URL)
+
+    // Labs sign-in isn't supported on iOS (needs its own iOS OAuth client + URL scheme;
+    // desktop-first), so SettingsViewModel gets the no-op here rather than the real repository.
+    @Provides
+    @SharedSingleton
+    fun provideLabsAuthRepository(): LabsAuthRepository = NoOpLabsAuthRepository
 
     @Provides
     fun provideAppVersion(): com.chriscartland.batterybutler.domain.model.AppVersion {

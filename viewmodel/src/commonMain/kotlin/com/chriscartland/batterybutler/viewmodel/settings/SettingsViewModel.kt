@@ -15,6 +15,7 @@ import com.chriscartland.batterybutler.domain.model.User
 import com.chriscartland.batterybutler.domain.model.ai.AiEngineType
 import com.chriscartland.batterybutler.domain.repository.AiPreferencesRepository
 import com.chriscartland.batterybutler.domain.repository.AuthRepository
+import com.chriscartland.batterybutler.domain.repository.LabsAuthRepository
 import com.chriscartland.batterybutler.domain.repository.LegacyDatabaseRepository
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
 import com.chriscartland.batterybutler.domain.repository.RestartCoordinator
@@ -42,6 +43,7 @@ class SettingsViewModel(
     private val networkModeRepository: NetworkModeRepository,
     private val getAppVersionUseCase: GetAppVersionUseCase,
     private val authRepository: AuthRepository,
+    private val labsAuthRepository: LabsAuthRepository,
     private val aiPreferencesRepository: AiPreferencesRepository,
     private val getLegacyDatabaseInfoUseCase: GetLegacyDatabaseInfoUseCase,
     private val restoreLegacyDatabaseUseCase: RestoreLegacyDatabaseUseCase,
@@ -114,6 +116,47 @@ class SettingsViewModel(
     fun signOut() {
         viewModelScope.coroutineScope.launch {
             authRepository.signOut()
+        }
+    }
+
+    // --- Labs (REST backend) sign-in -------------------------------------------------------------
+    // Separate account from the own-backend auth above: a Labs network mode needs its own Google
+    // sign-in against the Labs OAuth client. The UI shows this only when a Labs mode is selected.
+
+    /** True when the selected network mode is a Labs (REST) mode — gates the Labs account UI. */
+    val isLabsMode: StateFlow<Boolean> = networkMode
+        .map { it is NetworkMode.LabsStaging || it is NetworkMode.LabsProd }
+        .safeStateIn(viewModelScope, defaultWhileSubscribed(), false)
+
+    val labsAuthState: StateFlow<AuthState> = labsAuthRepository.labsAuthState
+        .safeStateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AuthState.Unauthenticated)
+
+    @Suppress("ElseCaseInsteadOfExhaustiveWhen")
+    val labsUser: StateFlow<User?> = labsAuthRepository.labsAuthState
+        .map { state ->
+            when (state) {
+                is AuthState.Authenticated -> state.user
+                else -> null
+            }
+        }.safeStateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+    val isLabsSignedIn: StateFlow<Boolean> = labsAuthRepository.labsAuthState
+        .map { it is AuthState.Authenticated }
+        .safeStateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+
+    val isLabsSigningIn: StateFlow<Boolean> = labsAuthRepository.labsAuthState
+        .map { it is AuthState.Authenticating }
+        .safeStateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+
+    fun onSignInToLabs() {
+        viewModelScope.coroutineScope.launch {
+            labsAuthRepository.signInToLabs()
+        }
+    }
+
+    fun onSignOutLabs() {
+        viewModelScope.coroutineScope.launch {
+            labsAuthRepository.signOutLabs()
         }
     }
 

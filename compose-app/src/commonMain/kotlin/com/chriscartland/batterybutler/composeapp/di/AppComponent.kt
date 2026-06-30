@@ -3,6 +3,7 @@ package com.chriscartland.batterybutler.composeapp.di
 import com.chriscartland.batterybutler.ai.NoOpAiEngine
 import com.chriscartland.batterybutler.data.repository.DefaultFeatureFlagProvider
 import com.chriscartland.batterybutler.data.repository.StaticAppInfoRepository
+import com.chriscartland.batterybutler.data.repository.auth.DefaultLabsAuthRepository
 import com.chriscartland.batterybutler.datalocal.auth.AuthTokenStorage
 import com.chriscartland.batterybutler.datalocal.preferences.DataStoreFactory
 import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
@@ -17,7 +18,9 @@ import com.chriscartland.batterybutler.domain.model.DevServerUrl
 import com.chriscartland.batterybutler.domain.model.DispatcherProvider
 import com.chriscartland.batterybutler.domain.model.FeatureFlag
 import com.chriscartland.batterybutler.domain.model.LabsFirebaseApiKey
+import com.chriscartland.batterybutler.domain.model.LabsProdGoogleOAuthClient
 import com.chriscartland.batterybutler.domain.model.LabsProdUrl
+import com.chriscartland.batterybutler.domain.model.LabsStagingGoogleOAuthClient
 import com.chriscartland.batterybutler.domain.model.LabsStagingUrl
 import com.chriscartland.batterybutler.domain.model.ProductionServerUrl
 import com.chriscartland.batterybutler.domain.model.ai.AiEngine
@@ -25,6 +28,7 @@ import com.chriscartland.batterybutler.domain.repository.AiPreferencesRepository
 import com.chriscartland.batterybutler.domain.repository.AppInfoRepository
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.domain.repository.FeatureFlagProvider
+import com.chriscartland.batterybutler.domain.repository.LabsAuthRepository
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
 import com.chriscartland.batterybutler.domain.repository.RestartCoordinator
 import com.chriscartland.batterybutler.usecase.di.UseCaseComponent
@@ -106,10 +110,30 @@ abstract class AppComponent(
     fun provideLabsProdUrl(): LabsProdUrl = LabsProdUrl(BuildConfig.LABS_PROD_URL)
 
     // Singleton on purpose: it owns the single in-memory Labs session, shared between the
-    // (future) sign-in trigger and DelegatingRemoteDataSource's Bearer-token reads.
+    // sign-in trigger and DelegatingRemoteDataSource's Bearer-token reads.
     @Provides
     @Singleton
     fun provideLabsAuthGateway(impl: DefaultLabsAuthGateway): LabsAuthGateway = impl
+
+    @Provides
+    @Singleton
+    fun provideLabsStagingGoogleOAuthClient(): LabsStagingGoogleOAuthClient =
+        LabsStagingGoogleOAuthClient(
+            clientId = BuildConfig.LABS_STAGING_GOOGLE_OAUTH_CLIENT_ID,
+            clientSecret = BuildConfig.LABS_STAGING_GOOGLE_OAUTH_CLIENT_SECRET,
+        )
+
+    @Provides
+    @Singleton
+    fun provideLabsProdGoogleOAuthClient(): LabsProdGoogleOAuthClient =
+        LabsProdGoogleOAuthClient(
+            clientId = BuildConfig.LABS_PROD_GOOGLE_OAUTH_CLIENT_ID,
+            clientSecret = BuildConfig.LABS_PROD_GOOGLE_OAUTH_CLIENT_SECRET,
+        )
+
+    @Provides
+    @Singleton
+    fun provideLabsAuthRepository(impl: DefaultLabsAuthRepository): LabsAuthRepository = impl
 
     @Provides
     @Singleton

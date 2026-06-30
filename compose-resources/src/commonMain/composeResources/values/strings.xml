@@ -145,6 +145,13 @@
     <string name="settings_user_signed_in">Signed In</string>
     <string name="settings_app_version_unavailable">Unavailable</string>
     <string name="action_sign_out">Sign Out</string>
+    <string name="settings_labs_title">Labs Sign-In</string>
+    <string name="settings_labs_description">Sign in to sync with the Labs backend</string>
+    <string name="settings_labs_sign_in">Sign in to Labs</string>
+    <string name="settings_labs_signing_in">Signing in…</string>
+    <string name="settings_labs_sign_out">Sign out of Labs</string>
+    <string name="settings_labs_signed_in">Signed in to Labs</string>
+    <string name="settings_labs_sign_in_failed">Labs sign-in failed: %1$s</string>
     <string name="settings_export_data_title">Export Data</string>
     <string name="settings_export_data_description">Save all data as a .json file</string>
     <string name="settings_import_data_title">Import Data</string>
