@@ -24,6 +24,8 @@ import com.chriscartland.batterybutler.datanetwork.RemoteDataSource
 import com.chriscartland.batterybutler.domain.model.DevServerUrl
 import com.chriscartland.batterybutler.domain.model.DispatcherProvider
 import com.chriscartland.batterybutler.domain.model.FeatureFlag
+import com.chriscartland.batterybutler.domain.model.LabsProdUrl
+import com.chriscartland.batterybutler.domain.model.LabsStagingUrl
 import com.chriscartland.batterybutler.domain.model.ProductionServerUrl
 import com.chriscartland.batterybutler.domain.model.ai.AiEngine
 import com.chriscartland.batterybutler.domain.repository.AiPreferencesRepository
@@ -138,6 +140,17 @@ abstract class NativeComponent(
     @Provides
     @SharedSingleton
     fun provideDevServerUrl(): DevServerUrl = DevServerUrl(BuildConfig.DEV_SERVER_URL)
+
+    // SettingsViewModel takes these (Workstream E) to offer the Labs network modes; the iOS
+    // NativeComponent must provide them just like AppComponent does, or its kotlin-inject graph
+    // can't build SettingsViewModel. (#1286 added them to AppComponent but missed this component.)
+    @Provides
+    @SharedSingleton
+    fun provideLabsStagingUrl(): LabsStagingUrl = LabsStagingUrl(BuildConfig.LABS_STAGING_URL)
+
+    @Provides
+    @SharedSingleton
+    fun provideLabsProdUrl(): LabsProdUrl = LabsProdUrl(BuildConfig.LABS_PROD_URL)
 
     @Provides
     fun provideAppVersion(): com.chriscartland.batterybutler.domain.model.AppVersion {
