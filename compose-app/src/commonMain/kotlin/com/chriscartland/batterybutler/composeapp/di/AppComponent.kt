@@ -7,6 +7,8 @@ import com.chriscartland.batterybutler.datalocal.auth.AuthTokenStorage
 import com.chriscartland.batterybutler.datalocal.preferences.DataStoreFactory
 import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
 import com.chriscartland.batterybutler.datanetwork.BuildConfig
+import com.chriscartland.batterybutler.datanetwork.DefaultLabsAuthGateway
+import com.chriscartland.batterybutler.datanetwork.LabsAuthGateway
 import com.chriscartland.batterybutler.datanetwork.auth.GoogleSignInBridge
 import com.chriscartland.batterybutler.datanetwork.grpc.DelegatingGrpcClient
 import com.chriscartland.batterybutler.datanetwork.grpc.NetworkComponent
@@ -102,6 +104,12 @@ abstract class AppComponent(
     @Provides
     @Singleton
     fun provideLabsProdUrl(): LabsProdUrl = LabsProdUrl(BuildConfig.LABS_PROD_URL)
+
+    // Singleton on purpose: it owns the single in-memory Labs session, shared between the
+    // (future) sign-in trigger and DelegatingRemoteDataSource's Bearer-token reads.
+    @Provides
+    @Singleton
+    fun provideLabsAuthGateway(impl: DefaultLabsAuthGateway): LabsAuthGateway = impl
 
     @Provides
     @Singleton
