@@ -60,19 +60,45 @@ actual class GoogleSignInBridge {
                 ),
             )
         }
+        // The own-backend client is a Web client used PKCE-only (no secret).
+        return performSignIn(id, signInClientSecret = null)
+    }
 
-        return try {
+    actual suspend fun signInWithClient(
+        clientId: String,
+        clientSecret: String?,
+    ): Result<GoogleIdToken, AuthError.SignIn> {
+        if (clientId.isBlank()) {
+            return Result.Error(
+                AuthError.SignIn.Failed(
+                    message = "Google Sign-In not configured",
+                    cause = "Client ID is blank",
+                ),
+            )
+        }
+        return performSignIn(clientId, clientSecret)
+    }
+
+    /**
+     * Core PKCE loopback flow against [signInClientId]. [signInClientSecret], when present, is sent
+     * at token exchange — required for Google "Desktop app" clients (e.g. the Labs client).
+     */
+    private suspend fun performSignIn(
+        signInClientId: String,
+        signInClientSecret: String?,
+    ): Result<GoogleIdToken, AuthError.SignIn> =
+        try {
             val codeVerifier = generateCodeVerifier()
             val codeChallenge = generateCodeChallenge(codeVerifier)
 
             // Start local server and get auth code
             val (authCode, redirectUri) = withContext(dispatcherProvider?.io ?: Dispatchers.IO) {
-                awaitAuthCode(id, codeChallenge)
+                awaitAuthCode(signInClientId, codeChallenge)
             }
 
             // Exchange code for tokens
             val tokenResponse = withContext(dispatcherProvider?.io ?: Dispatchers.IO) {
-                exchangeCodeForTokens(authCode, id, codeVerifier, redirectUri)
+                exchangeCodeForTokens(authCode, signInClientId, codeVerifier, redirectUri, signInClientSecret)
             }
 
             val idToken = tokenResponse["id_token"]?.jsonPrimitive?.content
@@ -100,7 +126,6 @@ actual class GoogleSignInBridge {
                 ),
             )
         }
-    }
 
     actual suspend fun signOut() {
         // Desktop OAuth has no persistent session to clear beyond stored tokens
@@ -186,10 +211,16 @@ actual class GoogleSignInBridge {
         clientId: String,
         codeVerifier: String,
         redirectUri: String,
+        clientSecret: String?,
     ): JsonObject {
         val postData = buildString {
             append("code=${encode(code)}")
             append("&client_id=${encode(clientId)}")
+            // Google "Desktop app" clients (e.g. the Labs client) require the client_secret here even
+            // with PKCE; Web clients used PKCE-only omit it. The installed-app secret is not confidential.
+            if (!clientSecret.isNullOrBlank()) {
+                append("&client_secret=${encode(clientSecret)}")
+            }
             append("&redirect_uri=${encode(redirectUri)}")
             append("&grant_type=authorization_code")
             append("&code_verifier=${encode(codeVerifier)}")

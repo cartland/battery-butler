@@ -101,7 +101,30 @@ actual class GoogleSignInBridge {
                 ),
             )
         }
+        return performSignIn(clientId)
+    }
 
+    actual suspend fun signInWithClient(
+        clientId: String,
+        clientSecret: String?,
+    ): Result<GoogleIdToken, AuthError.SignIn> {
+        if (!clientSecret.isNullOrBlank()) {
+            // Credential Manager authenticates with the server client ID only; the OAuth client
+            // secret (used by desktop "Desktop app" clients at token exchange) has no role here.
+            Log.d(TAG, "signInWithClient: clientSecret provided but ignored on Android (Credential Manager)")
+        }
+        if (clientId.isBlank()) {
+            return Result.Error(
+                AuthError.SignIn.Failed(
+                    message = "Google Sign-In not configured",
+                    cause = "Client ID is blank",
+                ),
+            )
+        }
+        return performSignIn(clientId)
+    }
+
+    private suspend fun performSignIn(clientId: String): Result<GoogleIdToken, AuthError.SignIn> {
         val activity = activityProvider?.invoke()
         if (activity == null) {
             return Result.Error(
