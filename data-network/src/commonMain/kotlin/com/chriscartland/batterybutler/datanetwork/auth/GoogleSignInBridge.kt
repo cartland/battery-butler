@@ -36,6 +36,23 @@ expect class GoogleSignInBridge {
     suspend fun signIn(): Result<GoogleIdToken, AuthError.SignIn>
 
     /**
+     * Like [signIn], but signs in against an EXPLICIT OAuth client rather than the one passed to
+     * [initialize]. Used for Labs sign-in, which needs a Google ID token minted for the Labs OAuth
+     * client (whose audience the Labs Firebase project trusts).
+     *
+     * @param clientId the OAuth client ID to authenticate against.
+     * @param clientSecret the OAuth client secret. Google "Desktop app" clients require it at the
+     *   token-exchange step (it is not confidential for installed apps); platforms that don't use a
+     *   secret (Android Credential Manager, iOS) ignore it. Pass null when not applicable.
+     * @return [Result.Success] with [GoogleIdToken] on success,
+     *         [Result.Error] with [AuthError.SignIn] on failure.
+     */
+    suspend fun signInWithClient(
+        clientId: String,
+        clientSecret: String?,
+    ): Result<GoogleIdToken, AuthError.SignIn>
+
+    /**
      * Signs out the current Google account.
      */
     suspend fun signOut()

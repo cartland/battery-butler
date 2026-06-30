@@ -126,6 +126,24 @@ actual class GoogleSignInBridge {
         )
     }
 
+    actual suspend fun signInWithClient(
+        clientId: String,
+        clientSecret: String?,
+    ): Result<GoogleIdToken, AuthError.SignIn> {
+        // Desktop-first: a Labs sign-in on iOS needs its own iOS OAuth client plus a reversed-
+        // client-ID URL scheme registered in Info.plist, which isn't set up. Fail clearly rather
+        // than appear to work. (iOS clients carry no secret, so clientSecret is unused regardless.)
+        Logger.w(TAG) {
+            "Labs signInWithClient(...${clientId.takeLast(12)}, secret=${clientSecret != null}) is not supported on iOS yet"
+        }
+        return Result.Error(
+            AuthError.SignIn.Failed(
+                message = "Labs sign-in is not supported on iOS yet",
+                cause = "No iOS Labs OAuth client / URL scheme configured",
+            ),
+        )
+    }
+
     actual suspend fun signOut() {
         // OAuth PKCE flow is stateless on the client side.
         // The auth repository handles clearing stored tokens.
