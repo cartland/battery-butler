@@ -24,6 +24,7 @@ EditBatteryEventViewModel | New ViewModel, test coverage pending
 # Data layer implementations
 DefaultSyncManager | Complex integration, tested via instrumented tests
 DefaultAuthRepository | Platform-specific auth, tested via instrumented tests
+DefaultLabsAuthRepository | Platform-specific Labs auth via GoogleSignInBridge (expect class, unfakeable); trigger covered by SettingsViewModel tests
 DefaultFeatureFlagProvider | Thin wrapper around BuildConfig flags
 DefaultDispatcherProvider | Infrastructure: returns standard dispatchers
 
