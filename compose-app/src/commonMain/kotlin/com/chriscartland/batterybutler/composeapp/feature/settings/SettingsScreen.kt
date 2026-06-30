@@ -45,6 +45,8 @@ fun SettingsScreen(
     val importResult by viewModel.importResult.collectAsStateWithLifecycle()
     val importError by viewModel.importError.collectAsStateWithLifecycle()
     val importInProgress by viewModel.importInProgress.collectAsStateWithLifecycle()
+    val isLabsMode by viewModel.isLabsMode.collectAsStateWithLifecycle()
+    val labsAuthState by viewModel.labsAuthState.collectAsStateWithLifecycle()
 
     // Note: post-restore process restart is triggered at the App.kt root via
     // RestartCoordinator, NOT here. SettingsScreen would be unmounted (and the
@@ -81,5 +83,9 @@ fun SettingsScreen(
         restoreComplete = restoreComplete,
         restoreResult = restoreResult,
         onRestoreCompleteAcknowledged = viewModel::onRestoreCompleteAcknowledged,
+        isLabsMode = isLabsMode,
+        labsAuthState = labsAuthState,
+        onSignInToLabs = viewModel::onSignInToLabs,
+        onSignOutLabs = viewModel::onSignOutLabs,
     )
 }

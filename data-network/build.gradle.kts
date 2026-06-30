@@ -43,6 +43,13 @@ kotlin {
     val labsFirebaseApiKeyProvider = providers.gradleProperty("LABS_FIREBASE_API_KEY")
     val labsStagingUrlProvider = providers.gradleProperty("LABS_STAGING_URL")
     val labsProdUrlProvider = providers.gradleProperty("LABS_PROD_URL")
+    // Labs sign-in OAuth clients (Workstream E). Per-env because staging/prod are separate Firebase
+    // projects. The secret is sent at token exchange for Google "Desktop app" clients (not
+    // confidential for installed apps); blank when unconfigured.
+    val labsStagingOAuthClientIdProvider = providers.gradleProperty("LABS_STAGING_GOOGLE_OAUTH_CLIENT_ID")
+    val labsStagingOAuthClientSecretProvider = providers.gradleProperty("LABS_STAGING_GOOGLE_OAUTH_CLIENT_SECRET")
+    val labsProdOAuthClientIdProvider = providers.gradleProperty("LABS_PROD_GOOGLE_OAUTH_CLIENT_ID")
+    val labsProdOAuthClientSecretProvider = providers.gradleProperty("LABS_PROD_GOOGLE_OAUTH_CLIENT_SECRET")
     val generateBuildConfig = tasks.register("generateBuildConfig") {
         val buildConfigDir = layout.buildDirectory.dir("generated/buildConfig/commonMain")
 
@@ -51,6 +58,10 @@ kotlin {
         inputs.property("labsFirebaseApiKey", labsFirebaseApiKeyProvider.orElse(""))
         inputs.property("labsStagingUrl", labsStagingUrlProvider.orElse(""))
         inputs.property("labsProdUrl", labsProdUrlProvider.orElse(""))
+        inputs.property("labsStagingOAuthClientId", labsStagingOAuthClientIdProvider.orElse(""))
+        inputs.property("labsStagingOAuthClientSecret", labsStagingOAuthClientSecretProvider.orElse(""))
+        inputs.property("labsProdOAuthClientId", labsProdOAuthClientIdProvider.orElse(""))
+        inputs.property("labsProdOAuthClientSecret", labsProdOAuthClientSecretProvider.orElse(""))
         outputs.dir(buildConfigDir)
 
         doLast {
@@ -59,6 +70,10 @@ kotlin {
             val labsFirebaseApiKey = labsFirebaseApiKeyProvider.orElse("").get()
             val labsStagingUrl = labsStagingUrlProvider.orElse("").get()
             val labsProdUrl = labsProdUrlProvider.orElse("").get()
+            val labsStagingOAuthClientId = labsStagingOAuthClientIdProvider.orElse("").get()
+            val labsStagingOAuthClientSecret = labsStagingOAuthClientSecretProvider.orElse("").get()
+            val labsProdOAuthClientId = labsProdOAuthClientIdProvider.orElse("").get()
+            val labsProdOAuthClientSecret = labsProdOAuthClientSecretProvider.orElse("").get()
 
             val file = buildConfigDir.get().file("com/chriscartland/batterybutler/datanetwork/BuildConfig.kt").asFile
             file.parentFile.mkdirs()
@@ -72,6 +87,10 @@ kotlin {
                     const val LABS_FIREBASE_API_KEY = "$labsFirebaseApiKey"
                     const val LABS_STAGING_URL = "$labsStagingUrl"
                     const val LABS_PROD_URL = "$labsProdUrl"
+                    const val LABS_STAGING_GOOGLE_OAUTH_CLIENT_ID = "$labsStagingOAuthClientId"
+                    const val LABS_STAGING_GOOGLE_OAUTH_CLIENT_SECRET = "$labsStagingOAuthClientSecret"
+                    const val LABS_PROD_GOOGLE_OAUTH_CLIENT_ID = "$labsProdOAuthClientId"
+                    const val LABS_PROD_GOOGLE_OAUTH_CLIENT_SECRET = "$labsProdOAuthClientSecret"
                 }
                 """.trimIndent(),
             )

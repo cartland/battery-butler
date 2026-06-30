@@ -78,9 +78,17 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.sett
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_import_data_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_import_failed_message
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_import_success_message
+import com.chriscartland.batterybutler.composeresources.generated.resources.settings_labs_description
+import com.chriscartland.batterybutler.composeresources.generated.resources.settings_labs_sign_in
+import com.chriscartland.batterybutler.composeresources.generated.resources.settings_labs_sign_in_failed
+import com.chriscartland.batterybutler.composeresources.generated.resources.settings_labs_sign_out
+import com.chriscartland.batterybutler.composeresources.generated.resources.settings_labs_signed_in
+import com.chriscartland.batterybutler.composeresources.generated.resources.settings_labs_signing_in
+import com.chriscartland.batterybutler.composeresources.generated.resources.settings_labs_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_user_signed_in
 import com.chriscartland.batterybutler.domain.model.AppVersion
+import com.chriscartland.batterybutler.domain.model.AuthState
 import com.chriscartland.batterybutler.domain.model.ImportResult
 import com.chriscartland.batterybutler.domain.model.LegacyDatabaseInfo
 import com.chriscartland.batterybutler.domain.model.NetworkMode
@@ -121,6 +129,10 @@ fun SettingsContent(
     restoreComplete: Boolean = false,
     restoreResult: RestoreResult? = null,
     onRestoreCompleteAcknowledged: () -> Unit = {},
+    isLabsMode: Boolean = false,
+    labsAuthState: AuthState = AuthState.Unauthenticated,
+    onSignInToLabs: () -> Unit = {},
+    onSignOutLabs: () -> Unit = {},
 ) {
     val uriHandler = LocalUriHandler.current
 
@@ -319,6 +331,103 @@ fun SettingsContent(
                     }
                 },
             )
+
+            // Labs Sign-In Card — only when a Labs (REST) network mode is selected. The Labs
+            // backend needs its own Google sign-in (separate account from the gRPC backend above).
+            if (isLabsMode) {
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    ),
+                    shape = MaterialTheme.shapes.medium,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(Padding.standard),
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                            )
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = composeStringResource(Res.string.settings_labs_title),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                                val labsUser = (labsAuthState as? AuthState.Authenticated)?.user
+                                Text(
+                                    text = if (labsUser != null) {
+                                        labsUser.email ?: composeStringResource(Res.string.settings_labs_signed_in)
+                                    } else {
+                                        composeStringResource(Res.string.settings_labs_description)
+                                    },
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(12.dp))
+                        when (labsAuthState) {
+                            is AuthState.Authenticated -> {
+                                Button(
+                                    onClick = onSignOutLabs,
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.errorContainer,
+                                        contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                                    ),
+                                    modifier = Modifier.fillMaxWidth(),
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Filled.Logout,
+                                        contentDescription = null,
+                                        modifier = Modifier.padding(end = Padding.small),
+                                    )
+                                    Text(composeStringResource(Res.string.settings_labs_sign_out))
+                                }
+                            }
+
+                            AuthState.Authenticating -> {
+                                Button(
+                                    onClick = {},
+                                    enabled = false,
+                                    modifier = Modifier.fillMaxWidth(),
+                                ) {
+                                    Text(composeStringResource(Res.string.settings_labs_signing_in))
+                                }
+                            }
+
+                            AuthState.Unknown, AuthState.Unauthenticated, is AuthState.Failed -> {
+                                Button(
+                                    onClick = onSignInToLabs,
+                                    modifier = Modifier.fillMaxWidth(),
+                                ) {
+                                    Text(composeStringResource(Res.string.settings_labs_sign_in))
+                                }
+                            }
+                        }
+                        if (labsAuthState is AuthState.Failed) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = composeStringResource(
+                                    Res.string.settings_labs_sign_in_failed,
+                                    labsAuthState.error.message,
+                                ),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.error,
+                            )
+                        }
+                    }
+                }
+            }
 
             // AI Engine Card
             ExpandableSelectionControl(
