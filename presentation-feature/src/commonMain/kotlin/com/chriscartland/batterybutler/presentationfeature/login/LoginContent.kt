@@ -28,7 +28,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.composeresources.composeStringResource
 import com.chriscartland.batterybutler.composeresources.generated.resources.Res
-import com.chriscartland.batterybutler.composeresources.generated.resources.action_continue_guest
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_continue_no_sign_in
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_ok
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_try_again
@@ -48,9 +47,11 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.auth
 import com.chriscartland.batterybutler.composeresources.generated.resources.auth_error_title_failed
 import com.chriscartland.batterybutler.composeresources.generated.resources.auth_error_title_session
 import com.chriscartland.batterybutler.composeresources.generated.resources.auth_error_title_unknown
+import com.chriscartland.batterybutler.composeresources.generated.resources.login_action_sign_in_google
 import com.chriscartland.batterybutler.composeresources.generated.resources.login_error_sign_in_unavailable
 import com.chriscartland.batterybutler.composeresources.generated.resources.login_info_local_only
 import com.chriscartland.batterybutler.composeresources.generated.resources.login_tagline
+import com.chriscartland.batterybutler.composeresources.generated.resources.settings_labs_sign_in
 import com.chriscartland.batterybutler.domain.model.AuthError
 import com.chriscartland.batterybutler.domain.model.AuthState
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
@@ -66,8 +67,9 @@ import com.chriscartland.batterybutler.presentationcore.theme.Padding
  * - [AuthState.Failed]: Error dialog
  *
  * @param authState Current authentication state.
- * @param isSignInAvailable Whether Google Sign-In is configured.
- * @param onGoogleSignIn Callback when user taps Google Sign-In button.
+ * @param isSignInAvailable Whether sign-in is configured.
+ * @param isLabsMode Whether the selected backend is a Labs mode (labels the button "Sign in to Labs").
+ * @param onGoogleSignIn Callback when user taps the sign-in button.
  * @param onSkipLogin Callback when user taps Skip button.
  * @param onDismissError Callback when user dismisses error dialog.
  */
@@ -75,6 +77,7 @@ import com.chriscartland.batterybutler.presentationcore.theme.Padding
 fun LoginContent(
     authState: AuthState,
     isSignInAvailable: Boolean,
+    isLabsMode: Boolean,
     onGoogleSignIn: () -> Unit,
     onSkipLogin: () -> Unit,
     onDismissError: () -> Unit,
@@ -97,6 +100,7 @@ fun LoginContent(
                     // Sign-in in progress
                     LoginForm(
                         isSignInAvailable = isSignInAvailable,
+                        isLabsMode = isLabsMode,
                         isLoading = true,
                         onGoogleSignIn = onGoogleSignIn,
                         onSkipLogin = onSkipLogin,
@@ -106,6 +110,7 @@ fun LoginContent(
                 is AuthState.Unauthenticated -> {
                     LoginForm(
                         isSignInAvailable = isSignInAvailable,
+                        isLabsMode = isLabsMode,
                         isLoading = false,
                         onGoogleSignIn = onGoogleSignIn,
                         onSkipLogin = onSkipLogin,
@@ -122,6 +127,7 @@ fun LoginContent(
                     // Show login form with error dialog
                     LoginForm(
                         isSignInAvailable = isSignInAvailable,
+                        isLabsMode = isLabsMode,
                         isLoading = false,
                         onGoogleSignIn = onGoogleSignIn,
                         onSkipLogin = onSkipLogin,
@@ -140,6 +146,7 @@ fun LoginContent(
 @Composable
 private fun LoginForm(
     isSignInAvailable: Boolean,
+    isLabsMode: Boolean,
     isLoading: Boolean,
     onGoogleSignIn: () -> Unit,
     onSkipLogin: () -> Unit,
@@ -181,7 +188,8 @@ private fun LoginForm(
 
         Spacer(modifier = Modifier.height(48.dp))
 
-        // Google Sign-In button
+        // Prominent primary sign-in button. Labelled for the selected backend: "Sign in to Labs"
+        // in a Labs mode, otherwise "Sign in with Google".
         if (isSignInAvailable) {
             Button(
                 onClick = onGoogleSignIn,
@@ -195,18 +203,16 @@ private fun LoginForm(
                         color = MaterialTheme.colorScheme.onPrimary,
                         strokeWidth = 2.dp,
                     )
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Guest/Skip Option (Optional)
-                OutlinedButton(
-                    onClick = onSkipLogin,
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = true,
-                    shape = MaterialTheme.shapes.medium,
-                ) {
-                    Text(composeStringResource(Res.string.action_continue_guest))
+                } else {
+                    Text(
+                        text = composeStringResource(
+                            if (isLabsMode) {
+                                Res.string.settings_labs_sign_in
+                            } else {
+                                Res.string.login_action_sign_in_google
+                            },
+                        ),
+                    )
                 }
             }
         } else {
@@ -323,11 +329,27 @@ private fun getErrorText(error: AuthError): Pair<String, String> =
 
 @Preview(showBackground = true)
 @Composable
+fun LoginContentLabsPreview() {
+    BatteryButlerTheme {
+        LoginContent(
+            authState = AuthState.Unauthenticated,
+            isSignInAvailable = true,
+            isLabsMode = true,
+            onGoogleSignIn = {},
+            onSkipLogin = {},
+            onDismissError = {},
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
 fun LoginContentUnauthenticatedPreview() {
     BatteryButlerTheme {
         LoginContent(
             authState = AuthState.Unauthenticated,
             isSignInAvailable = true,
+            isLabsMode = false,
             onGoogleSignIn = {},
             onSkipLogin = {},
             onDismissError = {},
@@ -342,6 +364,7 @@ fun LoginContentAuthenticatingPreview() {
         LoginContent(
             authState = AuthState.Authenticating,
             isSignInAvailable = true,
+            isLabsMode = false,
             onGoogleSignIn = {},
             onSkipLogin = {},
             onDismissError = {},
@@ -356,6 +379,7 @@ fun LoginContentNotConfiguredPreview() {
         LoginContent(
             authState = AuthState.Unauthenticated,
             isSignInAvailable = false,
+            isLabsMode = false,
             onGoogleSignIn = {},
             onSkipLogin = {},
             onDismissError = {},
@@ -375,6 +399,7 @@ fun LoginContentErrorPreview() {
                 ),
             ),
             isSignInAvailable = true,
+            isLabsMode = false,
             onGoogleSignIn = {},
             onSkipLogin = {},
             onDismissError = {},
