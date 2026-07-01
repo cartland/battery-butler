@@ -1,6 +1,7 @@
 package com.chriscartland.batterybutler.data.repository
 
 import com.chriscartland.batterybutler.datalocal.preferences.PreferencesDataSource
+import com.chriscartland.batterybutler.domain.model.LabsStagingUrl
 import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
 import kotlinx.coroutines.flow.Flow
@@ -14,17 +15,29 @@ import me.tatarka.inject.annotations.Inject
 @Inject
 class DataStoreNetworkModeRepository(
     private val preferencesDataSource: PreferencesDataSource,
+    private val labsStagingUrl: LabsStagingUrl,
 ) : NetworkModeRepository {
+    /**
+     * Backend used on a fresh install (no stored selection yet). Defaults to **Labs staging** when
+     * its host is configured (the Workstream E secret) so the app is Labs-first — the front-door
+     * sign-in is the Labs sign-in on first launch. Falls back to local-only [NetworkMode.None] when
+     * the Labs host isn't configured (e.g. a secret-less build), so those builds stay safe/offline.
+     * (Will point at Labs prod once prod is set up.)
+     */
+    private val defaultMode: NetworkMode =
+        labsStagingUrl.url
+            .ifBlank { null }
+            ?.let { NetworkMode.LabsStaging(it) }
+            ?: NetworkMode.None
+
     override val networkMode: Flow<NetworkMode> = preferencesDataSource.networkModeValue
-        .map { value -> value?.toNetworkMode() ?: DEFAULT_MODE }
+        .map { value -> value?.toNetworkMode(defaultMode) ?: defaultMode }
 
     override suspend fun setNetworkMode(mode: NetworkMode) {
         preferencesDataSource.setNetworkModeValue(mode.toStorageValue())
     }
 
     private companion object {
-        val DEFAULT_MODE = NetworkMode.None
-
         // Storage format: "type:url" or "type" for types without URL
         private const val TYPE_MOCK = "mock"
         private const val TYPE_NONE = "none"
@@ -35,7 +48,7 @@ class DataStoreNetworkModeRepository(
         private const val TYPE_LABS_PROD = "labs_prod"
         private const val SEPARATOR = ":"
 
-        fun String.toNetworkMode(): NetworkMode {
+        fun String.toNetworkMode(default: NetworkMode): NetworkMode {
             val parts = split(SEPARATOR, limit = 2)
             val type = parts[0]
             val url = parts.getOrNull(1)?.takeIf { it.isNotEmpty() }
@@ -48,7 +61,7 @@ class DataStoreNetworkModeRepository(
                 TYPE_GRPC_DEV -> NetworkMode.GrpcDev(url)
                 TYPE_LABS_STAGING -> NetworkMode.LabsStaging(url)
                 TYPE_LABS_PROD -> NetworkMode.LabsProd(url)
-                else -> DEFAULT_MODE
+                else -> default
             }
         }
 

@@ -25,6 +25,7 @@ fun LoginScreen(
     modifier: Modifier = Modifier,
 ) {
     val authState by viewModel.authState.collectAsStateWithLifecycle()
+    val isLabsMode by viewModel.isLabsMode.collectAsStateWithLifecycle()
     val currentOnLoginSuccess by rememberUpdatedState(onLoginSuccess)
 
     // Navigate on successful authentication
@@ -37,6 +38,7 @@ fun LoginScreen(
     LoginContent(
         authState = authState,
         isSignInAvailable = viewModel.isSignInAvailable,
+        isLabsMode = isLabsMode,
         onGoogleSignIn = viewModel::signInWithGoogle,
         onSkipLogin = onSkipLogin,
         onDismissError = viewModel::dismissError,
