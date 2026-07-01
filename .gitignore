@@ -81,6 +81,10 @@ ios-app-swift-ui/Generated/
 *.jks
 keystore.properties
 keystore_base64.txt
+# Exception: the Labs debug keystore is a public-by-design debug identity, committed on purpose
+# so every clone signs Labs test builds with the same stable SHA-1 registered in the labs Firebase
+# project. Passwords are baked-in test values; the Labs backend authorizes per-account, not by key.
+!compose-app/labs-debug.keystore
 
 # Claude Code
 .claude/.validation-passed
