@@ -227,6 +227,36 @@ android {
                 logger.lifecycle("Signing: Release signing config has no storeFile. Skipping assignment (will use debug or unsigned).")
             }
         }
+
+        // Opt-in Labs signing: sign the DEBUG build with the committed Labs keystore, whose SHA-1
+        // (9D:48:9D:40:3E:89:03:6A:2D:F1:30:63:50:E8:86:34:B0:7B:38:4A) is registered as an Android
+        // OAuth client in the labs Firebase project. Credential Manager Google sign-in to the Labs
+        // backend needs this, because the *default* debug SHA-1 is globally claimed by battery-butler's
+        // own Firebase project. Kept OFF by default so an ordinary debug build still signs with the
+        // default debug key — that's what battery-butler's own Google sign-in verifies against.
+        //
+        // Enable with -PuseLabsSigning (the committed compose-app/labs-debug.keystore is used with
+        // no further config), or point -PLABS_ANDROID_KEYSTORE_PATH=<abs-path> at a different key.
+        // The committed key is a public-by-design debug identity: passwords are baked-in test values
+        // and the Labs backend authorizes per-account via its `access` allowlist, not by signing key.
+        // Never used for release/CI.
+        getByName("debug") {
+            val labsStorePath = findProperty("LABS_ANDROID_KEYSTORE_PATH") as? String
+            if (hasProperty("useLabsSigning") || labsStorePath != null) {
+                val labsStore = if (labsStorePath != null) file(labsStorePath) else file("labs-debug.keystore")
+                if (labsStore.exists()) {
+                    logger.lifecycle("Signing: debug build using Labs keystore at ${labsStore.absolutePath}")
+                    signingConfig = signingConfigs.create("labsDebug") {
+                        storeFile = labsStore
+                        storePassword = (findProperty("LABS_ANDROID_KEYSTORE_PASSWORD") as? String) ?: "labstest"
+                        keyAlias = (findProperty("LABS_ANDROID_KEY_ALIAS") as? String) ?: "labs"
+                        keyPassword = (findProperty("LABS_ANDROID_KEY_PASSWORD") as? String) ?: "labstest"
+                    }
+                } else {
+                    logger.warn("Signing: Labs signing requested but keystore not found at ${labsStore.absolutePath}")
+                }
+            }
+        }
     }
 
     lint {
