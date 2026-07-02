@@ -27,6 +27,7 @@ From tag `android/34` to `main` (14 mobile-relevant commits out of 41 total).
 
 | PR | Description |
 |----|-------------|
+| [#1303](https://github.com/cartland/battery-butler/pull/1303) | Default fresh installs to Labs **prod** when configured (prod-first) |
 | [#1301](https://github.com/cartland/battery-butler/pull/1301) | Per-env Labs Firebase Web API key (staging + prod) so prod sign-in mints a prod token |
 | [#1297](https://github.com/cartland/battery-butler/pull/1297) | Labs-first onboarding — default to Labs + front-door "Sign in to Labs" |
 | [#1295](https://github.com/cartland/battery-butler/pull/1295) | Commit the Labs debug keystore for reproducible Labs sign-in |
@@ -57,12 +58,12 @@ From tag `android/34` to `main` (14 mobile-relevant commits out of 41 total).
 | [#1231](https://github.com/cartland/battery-butler/pull/1231) | Remove Beads task tracking → plain TODO.md |
 | [#1220](https://github.com/cartland/battery-butler/pull/1220) | Switch CI back to development mode after android/34 |
 
-### ⚠️ Release configuration to confirm before tagging android/35
+### Release configuration
 
-As of #1297 a fresh install **defaults to Labs** *if* `LABS_STAGING_URL` is set in the
-build (else offline). For a public release you likely **don't** want real users defaulting
-to **staging** — confirm the release build's `LABS_*` config (leave unset → safe offline
-default, or point the default at gRPC / Labs **prod**). Remove this note once decided.
+The fresh-install default now **prefers prod** ([#1303](https://github.com/cartland/battery-butler/pull/1303)):
+**Labs prod** when `LABS_PROD_URL` is configured, else **Labs staging** when configured, else offline
+(`None`). So set the release build's prod config — `LABS_PROD_URL`, `LABS_PROD_FIREBASE_API_KEY`,
+`LABS_PROD_GOOGLE_OAUTH_CLIENT_ID` — and a release defaults real users to **prod** (never staging).
 
 ---
 
