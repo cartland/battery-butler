@@ -1,12 +1,28 @@
 package com.chriscartland.batterybutler.data.repository
 
 import com.chriscartland.batterybutler.datalocal.preferences.PreferencesDataSource
+import com.chriscartland.batterybutler.domain.model.LabsProdUrl
 import com.chriscartland.batterybutler.domain.model.LabsStagingUrl
 import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import me.tatarka.inject.annotations.Inject
+
+/**
+ * The backend a fresh install defaults to (no stored selection yet), given the configured Labs
+ * hosts. **Prefers prod**: Labs **prod** when its host is configured, else Labs **staging** when
+ * configured, else local-only [NetworkMode.None]. Prod-first so a configured release ships pointing
+ * at prod (not staging); a secret-less build stays safe/offline. Pure + [internal] so it's unit-
+ * tested directly (see `DefaultNetworkModeTest`).
+ */
+internal fun defaultNetworkMode(
+    prodUrl: String,
+    stagingUrl: String,
+): NetworkMode =
+    prodUrl.ifBlank { null }?.let { NetworkMode.LabsProd(it) }
+        ?: stagingUrl.ifBlank { null }?.let { NetworkMode.LabsStaging(it) }
+        ?: NetworkMode.None
 
 /**
  * DataStore-backed implementation of [NetworkModeRepository].
@@ -16,19 +32,11 @@ import me.tatarka.inject.annotations.Inject
 class DataStoreNetworkModeRepository(
     private val preferencesDataSource: PreferencesDataSource,
     private val labsStagingUrl: LabsStagingUrl,
+    private val labsProdUrl: LabsProdUrl,
 ) : NetworkModeRepository {
-    /**
-     * Backend used on a fresh install (no stored selection yet). Defaults to **Labs staging** when
-     * its host is configured (the Workstream E secret) so the app is Labs-first — the front-door
-     * sign-in is the Labs sign-in on first launch. Falls back to local-only [NetworkMode.None] when
-     * the Labs host isn't configured (e.g. a secret-less build), so those builds stay safe/offline.
-     * (Will point at Labs prod once prod is set up.)
-     */
-    private val defaultMode: NetworkMode =
-        labsStagingUrl.url
-            .ifBlank { null }
-            ?.let { NetworkMode.LabsStaging(it) }
-            ?: NetworkMode.None
+    // Fresh-install default: Labs prod when configured, else staging, else offline (see
+    // [defaultNetworkMode]). Prod-first so a configured release defaults real users to prod.
+    private val defaultMode: NetworkMode = defaultNetworkMode(labsProdUrl.url, labsStagingUrl.url)
 
     override val networkMode: Flow<NetworkMode> = preferencesDataSource.networkModeValue
         .map { value -> value?.toNetworkMode(defaultMode) ?: defaultMode }
