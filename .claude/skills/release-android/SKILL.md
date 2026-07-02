@@ -52,7 +52,7 @@ gh run watch <run-id>
 | All sentinels green, on main, clean tree | Prints the simple `--confirm-tag` command |
 | Dirty working tree | Refuses; asks you to commit/stash and re-run `--check` |
 | Not on main | Prints command with `--confirm-hash <HEAD-sha>` |
-| No CI on commit yet | Prints `gh workflow run "Battery Butler CI" --ref main` recovery |
+| No CI on commit yet | Prints `gh workflow run "Battery Butler CI" --ref main -f ci_mode=release` recovery |
 | One or more sentinel jobs not success | Prints both the recovery flow (rerun CI in release mode) and the emergency override |
 | Target commit on an older tag | Prints the full rollback command with both SHAs filled in |
 
@@ -67,7 +67,9 @@ These are the jobs that BOTH the local script AND server-side `verify-ci` check 
 - `build_ios_native`
 - `build_server`
 
-If any of these is not `success` on the target commit, the gate refuses. The fix is almost always: ensure `.github/ci-mode.txt = release` on `main`, dispatch CI manually (`gh workflow run "Battery Butler CI" --ref main`), wait for all sentinels green, then re-run `--check`.
+If any of these is not `success` on the target commit, the gate refuses. The fix is almost always: ensure `.github/ci-mode.txt = release` on `main`, dispatch CI manually (`gh workflow run "Battery Butler CI" --ref main -f ci_mode=release`), wait for all sentinels green, then re-run `--check`.
+
+> **Don't drop `-f ci_mode=release`.** The `ci_mode` workflow_dispatch input defaults to `development` and *overrides* the committed `ci-mode.txt`, so a bare `gh workflow run … --ref main` re-runs only the fast validations and **silently skips every build/instrumented/iOS sentinel** — the run still concludes `success`, and `--check` will still show those sentinels `skipped`. (Bit us on android/35, 2026-07-02.)
 
 This is why android/30 and android/31 used a 4-PR pre-flight: flip ci-mode → release, dispatch CI, watch all jobs go green, then push the tag. `--check` makes that flow explicit so you don't have to remember it.
 

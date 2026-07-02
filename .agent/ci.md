@@ -104,10 +104,10 @@ If any sentinel is not `success`, the gate refuses. This catches path-filter ski
 ./scripts/release-android.sh --check
 ```
 
-**Path-filter / dev-mode recovery**. If sentinels are skipped on the commit you want to release, ensure `.github/ci-mode.txt = release` on main, then dispatch CI manually:
+**Path-filter / dev-mode recovery**. If sentinels are skipped on the commit you want to release, ensure `.github/ci-mode.txt = release` on main, then dispatch CI manually. **You must pass `-f ci_mode=release`**: the `ci_mode` workflow_dispatch input defaults to `development` and *overrides* the committed `ci-mode.txt`, so a bare dispatch silently skips every build/instrumented/iOS sentinel (they show `skipped`, the run still concludes `success`).
 
 ```bash
-gh workflow run "Battery Butler CI" --ref main
+gh workflow run "Battery Butler CI" --ref main -f ci_mode=release
 # Watch progress; full release-mode suite takes ~25 min for validation_ios_ui alone
 gh run list --workflow "Battery Butler CI" --event workflow_dispatch --limit 1 \
   --json conclusion,status,databaseId,headSha
