@@ -99,7 +99,11 @@ abstract class AppComponent(
 
     @Provides
     @Singleton
-    fun provideLabsFirebaseApiKey(): LabsFirebaseApiKey = LabsFirebaseApiKey(BuildConfig.LABS_FIREBASE_API_KEY)
+    fun provideLabsFirebaseApiKey(): LabsFirebaseApiKey =
+        LabsFirebaseApiKey(
+            staging = BuildConfig.LABS_STAGING_FIREBASE_API_KEY,
+            prod = BuildConfig.LABS_PROD_FIREBASE_API_KEY,
+        )
 
     @Provides
     @Singleton

@@ -1,11 +1,15 @@
 package com.chriscartland.batterybutler.domain.model
 
 /**
- * Wraps the Labs Firebase **Web API key** so it can be injected without ambiguity.
+ * Wraps the Labs Firebase **Web API keys** so they can be injected without ambiguity.
  *
- * Used by the Labs REST sync auth ([FirebaseIdTokenProvider] in :data-network) to exchange a
- * Google ID token for a Labs Firebase ID token. Blank when unconfigured (owner setup pending).
+ * Per-env because staging (`cartland-labs-staging`) and prod (`cartland-labs`) are separate Firebase
+ * projects with separate (public) Web API keys. The Labs REST sync auth ([FirebaseIdTokenProvider]
+ * in :data-network) uses the key matching the current [NetworkMode] to exchange a Google ID token
+ * for a Labs Firebase ID token minted by that env's project. Either may be blank when unconfigured
+ * (owner setup pending).
  */
 data class LabsFirebaseApiKey(
-    val apiKey: String,
+    val staging: String,
+    val prod: String,
 )
