@@ -332,7 +332,7 @@ if [ "$MODE" = "check" ]; then
         echo -e "${YELLOW}CI has not produced check_runs for this commit yet.${RESET}"
         echo "Wait for CI to finish, or trigger it explicitly:"
         echo ""
-        echo "  gh workflow run \"Battery Butler CI\" --ref main"
+        echo "  gh workflow run \"Battery Butler CI\" --ref main -f ci_mode=release"
         echo "  ./scripts/release-android.sh --check"
         echo ""
     elif [ "$SENTINELS_ALL_SUCCESS" != "true" ]; then
@@ -342,7 +342,7 @@ if [ "$MODE" = "check" ]; then
         echo "Recommended: re-run CI in release mode on this commit:"
         echo ""
         echo "  # Confirm .github/ci-mode.txt = 'release' on main first."
-        echo "  gh workflow run \"Battery Butler CI\" --ref main"
+        echo "  gh workflow run \"Battery Butler CI\" --ref main -f ci_mode=release"
         echo "  ./scripts/release-android.sh --check"
         echo ""
         echo "Emergency override (use only if you have manually verified the build):"
@@ -441,7 +441,7 @@ if [ "$CI_FETCH_OK" != "true" ]; then
     else
         echo -e "${RED}Error: No CI check_runs found for target commit.${RESET}"
         echo "Wait for CI to finish, or trigger it explicitly:"
-        echo "  gh workflow run \"Battery Butler CI\" --ref main"
+        echo "  gh workflow run \"Battery Butler CI\" --ref main -f ci_mode=release"
         echo "Run --check to see the next step."
         exit 1
     fi
