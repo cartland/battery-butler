@@ -31,6 +31,21 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ---
 
+## 2026-07-01
+
+### Features
+
+- **Labs REST backend integration — device/battery sync via the shared labs-backend** ([#1272](https://github.com/cartland/battery-butler/pull/1272), [#1275](https://github.com/cartland/battery-butler/pull/1275), [#1277](https://github.com/cartland/battery-butler/pull/1277), [#1280](https://github.com/cartland/battery-butler/pull/1280), [#1285](https://github.com/cartland/battery-butler/pull/1285), [#1286](https://github.com/cartland/battery-butler/pull/1286), [#1292](https://github.com/cartland/battery-butler/pull/1292), [#1293](https://github.com/cartland/battery-butler/pull/1293), [#1294](https://github.com/cartland/battery-butler/pull/1294), [#1297](https://github.com/cartland/battery-butler/pull/1297), [#1301](https://github.com/cartland/battery-butler/pull/1301)): the app can now sync against the shared **Labs** REST backend (staging + prod), selectable in Settings → Network Mode (`NetworkMode.LabsStaging` / `LabsProd`). The stack: REST wire DTOs + cross-repo contract tests (#1272), `RestSyncMapper` (#1275) and `RestRemoteDataSource` over Ktor (#1277); auth via the Firebase REST IdP — `FirebaseIdTokenProvider` exchanges a Google ID token for a Labs Firebase ID token (#1285), wired through a shared-singleton `LabsAuthGateway` (#1292) and `GoogleSignInBridge.signInWithClient` against the Labs OAuth client (#1293), with config injected at build time (#1286). The app is now **Labs-first** (#1297): a fresh install defaults to the Labs backend and the launch screen is a prominent "Sign in to Labs" that follows the selected backend, rather than a login hard-wired to the gRPC account. The Labs debug keystore is committed for reproducible signing (#1295). The Firebase **Web API key is per-env** (#1301) — staging and prod are separate Firebase projects, and `signInWithIdp` mints the token from whichever project owns the key, so a single shared key can't serve both; `DefaultLabsAuthGateway.apiKeyForMode` selects staging vs prod. Proven end-to-end on Android against staging **and** prod (`cartland-labs`).
+
+### Fixes
+
+- **On-device crash — AI engine migrated to firebase-ai** ([#1284](https://github.com/cartland/battery-butler/pull/1284)): the deprecated generative-ai SDK crashed on device; migrated the AI engine to firebase-ai.
+- **Ktor artifact mismatch broke `main`** ([#1281](https://github.com/cartland/battery-butler/pull/1281)): aligned all Ktor artifacts to 3.x, fixing an `HttpTimeout NoClassDefFoundError`.
+
+### Testing
+
+- **Instrumented login test fixed for the Labs-first screen** ([#1301](https://github.com/cartland/battery-butler/pull/1301)): `ComposeUITest.testGoogleSignInButtonIsClickable` asserted the removed "Continue as Guest" button (dropped in #1297) — updated to the current "Continue without signing in" skip. This had turned `validation_instrumented` red on `main`.
+
 ## 2026-06-20
 
 ### Refactoring

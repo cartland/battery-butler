@@ -6,6 +6,66 @@ Each section covers one release tag range. "What's New" is user-facing language 
 
 ---
 
+## [android/35] — 2026-07-01 (draft; not yet tagged)
+
+From tag `android/34` to `main` (14 mobile-relevant commits out of 41 total).
+
+### What's New
+
+**Optional cloud sync via the new "Labs" backend**
+- A new **Labs** network mode (Settings → Network Mode) syncs your devices and battery
+  events with the Labs backend, across devices.
+- **Sign in with Google right from the launch screen** — a prominent "Sign in to Labs"
+  button; or tap "Continue without signing in" to keep everything on-device.
+- Supports both Labs environments (staging and production).
+
+**Fixes & stability**
+- Fixed an **on-device crash** by moving the AI engine to firebase-ai.
+- Fixed a networking-library mismatch (Ktor) that could break the app on launch.
+
+### Detailed Changes
+
+| PR | Description |
+|----|-------------|
+| [#1301](https://github.com/cartland/battery-butler/pull/1301) | Per-env Labs Firebase Web API key (staging + prod) so prod sign-in mints a prod token |
+| [#1297](https://github.com/cartland/battery-butler/pull/1297) | Labs-first onboarding — default to Labs + front-door "Sign in to Labs" |
+| [#1295](https://github.com/cartland/battery-butler/pull/1295) | Commit the Labs debug keystore for reproducible Labs sign-in |
+| [#1294](https://github.com/cartland/battery-butler/pull/1294) | Labs sign-in trigger + Settings UI |
+| [#1293](https://github.com/cartland/battery-butler/pull/1293) | GoogleSignInBridge.signInWithClient (Labs OAuth client + secret) |
+| [#1292](https://github.com/cartland/battery-butler/pull/1292) | LabsAuthGateway — shared singleton Labs session |
+| [#1286](https://github.com/cartland/battery-butler/pull/1286) | Wire Labs REST sync auth + config injection |
+| [#1285](https://github.com/cartland/battery-butler/pull/1285) | FirebaseIdTokenProvider — Labs Firebase ID-token auth via REST IdP |
+| [#1284](https://github.com/cartland/battery-butler/pull/1284) | Fix: migrate AI engine to firebase-ai (fixes on-device crash) |
+| [#1281](https://github.com/cartland/battery-butler/pull/1281) | Fix: align Ktor artifacts to 3.x (fixes HttpTimeout NoClassDefFoundError) |
+| [#1280](https://github.com/cartland/battery-butler/pull/1280) | Select the Labs REST backend in Settings (NetworkMode.LabsStaging/LabsProd) |
+| [#1277](https://github.com/cartland/battery-butler/pull/1277) | RestRemoteDataSource over Ktor (REST /sync) |
+| [#1275](https://github.com/cartland/battery-butler/pull/1275) | RestSyncMapper (REST wire ↔ domain) |
+| [#1272](https://github.com/cartland/battery-butler/pull/1272) | REST sync wire DTOs + cross-repo contract tests |
+
+### Dependencies & internal (non-mobile, but included in the release)
+
+| PR | Description |
+|----|-------------|
+| [#1250](https://github.com/cartland/battery-butler/pull/1250) | Migrate all 16 iOS ViewModels to KMP-ObservableViewModel |
+| [#1255](https://github.com/cartland/battery-butler/pull/1255) | Guard exposed-state observability + fix 2 silent SwiftUI bugs |
+| [#1256](https://github.com/cartland/battery-butler/pull/1256) | Bump SKIE 0.10.9→0.10.12, disable unused SuspendInterop |
+| [#1270](https://github.com/cartland/battery-butler/pull/1270) | CI: fix build_ios_native (CONFIGURATION_BUILD_DIR broke SwiftPM) |
+| [#1224](https://github.com/cartland/battery-butler/pull/1224) | Bump Ktor 3.4.3 → 3.5.0 |
+| [#1241](https://github.com/cartland/battery-butler/pull/1241) | Bump protobuf 4.34.1 → 4.35.0 |
+| [#1242](https://github.com/cartland/battery-butler/pull/1242) | Bump spotless 8.3.0 → 8.6.0 |
+| [#1239](https://github.com/cartland/battery-butler/pull/1239) / [#1240](https://github.com/cartland/battery-butler/pull/1240) | Pin androidx-lifecycle 2.10.0-beta01 (2.11 dropped iosX64) |
+| [#1231](https://github.com/cartland/battery-butler/pull/1231) | Remove Beads task tracking → plain TODO.md |
+| [#1220](https://github.com/cartland/battery-butler/pull/1220) | Switch CI back to development mode after android/34 |
+
+### ⚠️ Release configuration to confirm before tagging android/35
+
+As of #1297 a fresh install **defaults to Labs** *if* `LABS_STAGING_URL` is set in the
+build (else offline). For a public release you likely **don't** want real users defaulting
+to **staging** — confirm the release build's `LABS_*` config (leave unset → safe offline
+default, or point the default at gRPC / Labs **prod**). Remove this note once decided.
+
+---
+
 ## [android/26] — 2026-03-02
 
 From tag `android/25` to tag `android/26` (3 mobile-relevant commits out of 12 total)
