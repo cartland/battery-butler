@@ -41,7 +41,6 @@ import kotlin.random.Random
  */
 actual class GoogleSignInBridge {
     private var clientId: String? = null
-    private var redirectUri: String? = null
     private var dispatcherProvider: com.chriscartland.batterybutler.domain.model.DispatcherProvider? = null
 
     /**
@@ -60,9 +59,6 @@ actual class GoogleSignInBridge {
         if (clientId.isNullOrBlank()) {
             Logger.w(TAG) { "Google Sign-In (iOS): Not configured - set GOOGLE_IOS_CLIENT_ID" }
         } else {
-            // Google's iOS redirect URI uses the reversed client ID as a custom URL scheme
-            val reversedClientId = clientId.split(".").reversed().joinToString(".")
-            this.redirectUri = "$reversedClientId:/oauthredirect"
             Logger.i(TAG) { "Google Sign-In (iOS): Configured with client ID ...${clientId.takeLast(15)}" }
         }
     }
@@ -77,13 +73,39 @@ actual class GoogleSignInBridge {
                 ),
             )
         }
+        return performSignIn(id)
+    }
 
-        val redirect = redirectUri ?: return Result.Error(
-            AuthError.SignIn.Failed(
-                message = "Sign-in not configured",
-                cause = "Redirect URI not set",
-            ),
-        )
+    actual suspend fun signInWithClient(
+        clientId: String,
+        clientSecret: String?,
+    ): Result<GoogleIdToken, AuthError.SignIn> {
+        // iOS OAuth clients are "installed app" clients: they carry no secret and Google's token
+        // endpoint rejects one, so clientSecret is ignored (parity with Android's Credential Manager).
+        // The one iOS-specific prerequisite is that this client's reversed-client-ID custom scheme is
+        // registered in Info.plist (CFBundleURLTypes); without it the callback never reaches the app.
+        if (!clientSecret.isNullOrBlank()) {
+            Logger.d(TAG) { "signInWithClient: clientSecret provided but ignored on iOS (installed-app client)" }
+        }
+        if (clientId.isBlank()) {
+            return Result.Error(
+                AuthError.SignIn.Failed(
+                    message = "Labs sign-in not configured",
+                    cause = "No Labs iOS OAuth client ID for this environment (owner setup pending)",
+                ),
+            )
+        }
+        return performSignIn(clientId)
+    }
+
+    /**
+     * Core PKCE + [ASWebAuthenticationSession] flow against [signInClientId]. The redirect URI is the
+     * client's reversed-client-ID custom scheme (see [redirectUriFor]), which the app must declare in
+     * Info.plist (CFBundleURLTypes) for the callback to arrive. Shared by own-backend [signIn] and
+     * Labs [signInWithClient] — the only difference between them is which OAuth client is used.
+     */
+    private suspend fun performSignIn(signInClientId: String): Result<GoogleIdToken, AuthError.SignIn> {
+        val redirect = redirectUriFor(signInClientId)
 
         // Generate PKCE code verifier and challenge
         val codeVerifier = generateCodeVerifier()
@@ -91,7 +113,7 @@ actual class GoogleSignInBridge {
 
         // Build authorization URL
         val authUrl = buildAuthUrl(
-            clientId = id,
+            clientId = signInClientId,
             redirectUri = redirect,
             codeChallenge = codeChallenge,
         )
@@ -120,28 +142,16 @@ actual class GoogleSignInBridge {
         // Exchange code for tokens
         return exchangeCodeForToken(
             code = code,
-            clientId = id,
+            clientId = signInClientId,
             redirectUri = redirect,
             codeVerifier = codeVerifier,
         )
     }
 
-    actual suspend fun signInWithClient(
-        clientId: String,
-        clientSecret: String?,
-    ): Result<GoogleIdToken, AuthError.SignIn> {
-        // Desktop-first: a Labs sign-in on iOS needs its own iOS OAuth client plus a reversed-
-        // client-ID URL scheme registered in Info.plist, which isn't set up. Fail clearly rather
-        // than appear to work. (iOS clients carry no secret, so clientSecret is unused regardless.)
-        Logger.w(TAG) {
-            "Labs signInWithClient(...${clientId.takeLast(12)}, secret=${clientSecret != null}) is not supported on iOS yet"
-        }
-        return Result.Error(
-            AuthError.SignIn.Failed(
-                message = "Labs sign-in is not supported on iOS yet",
-                cause = "No iOS Labs OAuth client / URL scheme configured",
-            ),
-        )
+    /** Google's iOS redirect URI: the reversed client ID used as a custom URL scheme. */
+    private fun redirectUriFor(clientId: String): String {
+        val reversedClientId = clientId.split(".").reversed().joinToString(".")
+        return "$reversedClientId:/oauthredirect"
     }
 
     actual suspend fun signOut() {
