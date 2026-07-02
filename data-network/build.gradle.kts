@@ -40,7 +40,11 @@ kotlin {
     val devServerUrlProvider = providers.gradleProperty("DEV_SERVER_URL")
     // Labs REST sync config (Workstream E). Blank when unset, so a Labs mode is selectable but
     // unconfigured until the owner provides these (ORG_GRADLE_PROJECT_LABS_* / local.properties).
-    val labsFirebaseApiKeyProvider = providers.gradleProperty("LABS_FIREBASE_API_KEY")
+    // Per-env because staging/prod are separate Firebase projects with separate (public) Web API
+    // keys; signInWithIdp mints a token from whichever project owns the key, so the env's key must
+    // match the env's backend.
+    val labsStagingFirebaseApiKeyProvider = providers.gradleProperty("LABS_STAGING_FIREBASE_API_KEY")
+    val labsProdFirebaseApiKeyProvider = providers.gradleProperty("LABS_PROD_FIREBASE_API_KEY")
     val labsStagingUrlProvider = providers.gradleProperty("LABS_STAGING_URL")
     val labsProdUrlProvider = providers.gradleProperty("LABS_PROD_URL")
     // Labs sign-in OAuth clients (Workstream E). Per-env because staging/prod are separate Firebase
@@ -55,7 +59,8 @@ kotlin {
 
         inputs.property("serverUrl", serverUrlProvider.orElse(""))
         inputs.property("devServerUrl", devServerUrlProvider.orElse(""))
-        inputs.property("labsFirebaseApiKey", labsFirebaseApiKeyProvider.orElse(""))
+        inputs.property("labsStagingFirebaseApiKey", labsStagingFirebaseApiKeyProvider.orElse(""))
+        inputs.property("labsProdFirebaseApiKey", labsProdFirebaseApiKeyProvider.orElse(""))
         inputs.property("labsStagingUrl", labsStagingUrlProvider.orElse(""))
         inputs.property("labsProdUrl", labsProdUrlProvider.orElse(""))
         inputs.property("labsStagingOAuthClientId", labsStagingOAuthClientIdProvider.orElse(""))
@@ -67,7 +72,8 @@ kotlin {
         doLast {
             val serverUrl = serverUrlProvider.orNull
             val devServerUrl = devServerUrlProvider.orNull
-            val labsFirebaseApiKey = labsFirebaseApiKeyProvider.orElse("").get()
+            val labsStagingFirebaseApiKey = labsStagingFirebaseApiKeyProvider.orElse("").get()
+            val labsProdFirebaseApiKey = labsProdFirebaseApiKeyProvider.orElse("").get()
             val labsStagingUrl = labsStagingUrlProvider.orElse("").get()
             val labsProdUrl = labsProdUrlProvider.orElse("").get()
             val labsStagingOAuthClientId = labsStagingOAuthClientIdProvider.orElse("").get()
@@ -84,7 +90,8 @@ kotlin {
                 object BuildConfig {
                     const val PRODUCTION_SERVER_URL = "$serverUrl"
                     const val DEV_SERVER_URL = "$devServerUrl"
-                    const val LABS_FIREBASE_API_KEY = "$labsFirebaseApiKey"
+                    const val LABS_STAGING_FIREBASE_API_KEY = "$labsStagingFirebaseApiKey"
+                    const val LABS_PROD_FIREBASE_API_KEY = "$labsProdFirebaseApiKey"
                     const val LABS_STAGING_URL = "$labsStagingUrl"
                     const val LABS_PROD_URL = "$labsProdUrl"
                     const val LABS_STAGING_GOOGLE_OAUTH_CLIENT_ID = "$labsStagingOAuthClientId"

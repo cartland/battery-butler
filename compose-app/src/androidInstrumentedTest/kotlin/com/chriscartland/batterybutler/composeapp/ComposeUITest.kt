@@ -118,8 +118,8 @@ class ComposeUITest {
     }
 
     /**
-     * Verify the Google Sign-In button is present and the "Continue as Guest"
-     * option exists when credentials are configured.
+     * Verify the login screen's skip option ("Continue without signing in") is present
+     * when credentials are configured.
      *
      * Skips gracefully when credentials are not configured.
      */
@@ -133,8 +133,10 @@ class ComposeUITest {
 
         composeTestRule.waitForIdle()
 
-        // Find the guest sign-in option — verify no crash
-        composeTestRule.onNodeWithText("Continue as Guest").assertExists()
+        // Find the skip option — verify no crash. (The old "Continue as Guest" button was
+        // removed when the login screen became backend-aware; the skip is now the single
+        // "Continue without signing in" button.)
+        composeTestRule.onNodeWithText("Continue without signing in").assertExists()
     }
 
     /**
