@@ -174,7 +174,7 @@ actual class GoogleSignInBridge {
                     "account exists on-device, this usually means the app's signing certificate " +
                     "(e.g. the Play App Signing SHA-1, which differs from the upload keystore's) " +
                     "isn't registered on the Android OAuth client for this project. " +
-                    "Cause: ${e.message}",
+                    "Cause: ${e.message.orEmpty()}",
             )
             Result.Error(
                 AuthError.SignIn.Failed(
@@ -183,7 +183,10 @@ actual class GoogleSignInBridge {
                 ),
             )
         } catch (e: GetCredentialException) {
-            Log.w(TAG, "GetCredentialException (${e.type}) for client ...${clientId.takeLast(15)}: ${e.message}")
+            Log.w(
+                TAG,
+                "GetCredentialException (${e.type}) for client ...${clientId.takeLast(15)}: ${e.message.orEmpty()}",
+            )
             val errorMessage = when {
                 e.message?.contains("network", ignoreCase = true) == true -> "Network error"
                 else -> "Sign-in failed"
