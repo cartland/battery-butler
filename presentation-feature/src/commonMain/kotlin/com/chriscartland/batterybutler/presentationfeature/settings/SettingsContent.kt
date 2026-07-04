@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
@@ -233,6 +235,7 @@ fun SettingsContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
+                .verticalScroll(rememberScrollState())
                 .padding(Padding.standard),
             verticalArrangement = Arrangement.spacedBy(Padding.standard),
         ) {
@@ -419,7 +422,7 @@ fun SettingsContent(
                             Text(
                                 text = composeStringResource(
                                     Res.string.settings_labs_sign_in_failed,
-                                    labsAuthState.error.message,
+                                    labsAuthState.error.cause ?: labsAuthState.error.message,
                                 ),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.error,

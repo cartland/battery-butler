@@ -9,6 +9,50 @@ Project task tracking for Battery Butler.
 
 ## P2
 
+### bb-gsi-sha1 — Google Sign-In fails on Play Store release build: `NoCredentialException` ("No Google account found")
+
+**Symptom (reported 2026-07-03, android/35 Play Store internal-track build):** tapping
+"Sign in to Labs" in Settings fails with "No Google account found," even though the
+device has Google accounts configured. The string is the hardcoded `message` in
+`GoogleSignInBridge.android.kt`'s `NoCredentialException` catch, surfaced verbatim via
+`settings_labs_sign_in_failed`.
+
+**Root cause (diagnosed, not yet confirmed against Play Console):**
+`performSignIn()` calls `CredentialManager.getCredential()` with
+`GetGoogleIdOption.setServerClientId(clientId)`. `NoCredentialException` fires not only
+when there's truly no Google account, but also when Play Services can't verify the
+calling app (package name + signing certificate) against an Android OAuth client
+registered for the project. `release-android.yml` builds the Play Store AAB
+(`bundleRelease`), and Play Store distribution uses **Play App Signing** — Google
+re-signs the app with its own certificate, distinct from the CI upload keystore used
+when the Labs OAuth client was originally set up (`bb-labs-owner`). Nothing in
+`README.md` / `GoogleSignInBridge.android.kt`'s header covers fetching the **Play App
+Signing** certificate's SHA-1 (as opposed to the upload keystore's, via
+`./gradlew signingReport`) and registering it.
+
+Note: `GOOGLE_WEB_CLIENT_ID` (legacy own-backend sign-in) is never set in
+`release-android.yml` at all, so that path fails with "Google Sign-In not configured,"
+not this message — the reported symptom is only reachable via the **Labs** sign-in flow
+(`LABS_PROD_GOOGLE_OAUTH_CLIENT_ID` / `LABS_STAGING_GOOGLE_OAUTH_CLIENT_ID`, wired in
+`release-android.yml`).
+
+**Fix (owner action — needs Play Console + Google Cloud Console access):**
+1. Play Console → app → Setup → App integrity → App signing key certificate → copy the
+   **SHA-1**.
+2. Google Cloud Console → APIs & Services → Credentials → find (or create) the
+   **Android** OAuth client for `com.chriscartland.batterybutler` under the same
+   project as `LABS_PROD_GOOGLE_OAUTH_CLIENT_ID` → add that SHA-1 (keep the existing
+   upload-keystore SHA-1 too, for local/CI-signed release-mode testing).
+3. Repeat for the Labs **staging** client/project if staging is tested via Play Store
+   internal-track builds too.
+4. Allow time for propagation (Google notes this can take a few hours), then retest
+   sign-in on a Play-Store-installed build.
+
+A diagnostic `Log.w` was added at the `NoCredentialException` catch site (masked client
+ID suffix + hint) to make this faster to confirm from Logcat next time. Related:
+`bb-labs-owner` (created the OAuth client), `bb-labs-signin` (wired the interactive
+sign-in call, now landed and is what surfaced this).
+
 ### bb-lg42 — DB restore: ViewModel Flows don't re-emit after `restoreFromLegacy` until app restart
 
 **Symptom (android/30 → still present android/31):** after Settings → Restore
