@@ -9,49 +9,27 @@ Project task tracking for Battery Butler.
 
 ## P2
 
-### bb-gsi-sha1 — Google Sign-In fails on Play Store release build: `NoCredentialException` ("No Google account found")
+### bb-gsi-staging — Labs staging sign-in only testable via local debug builds, not Play Store
 
-**Symptom (reported 2026-07-03, android/35 Play Store internal-track build):** tapping
-"Sign in to Labs" in Settings fails with "No Google account found," even though the
-device has Google accounts configured. The string is the hardcoded `message` in
-`GoogleSignInBridge.android.kt`'s `NoCredentialException` catch, surfaced verbatim via
-`settings_labs_sign_in_failed`.
+**Context:** `bb-gsi-sha1` (below, in Done) fixed Labs **prod** sign-in on Play Store
+release builds. Staging cannot share that fix: Google only lets one (package name +
+signing certificate) pair be verified as an Android OAuth client under a single Google
+Cloud project, globally — and since Battery Butler is one APK toggling between Labs
+staging/prod via a Settings dropdown (not separate installs), only one project
+(`cartland-labs`, prod) can own that verification for any Play-Store-signed build.
 
-**Root cause (diagnosed, not yet confirmed against Play Console):**
-`performSignIn()` calls `CredentialManager.getCredential()` with
-`GetGoogleIdOption.setServerClientId(clientId)`. `NoCredentialException` fires not only
-when there's truly no Google account, but also when Play Services can't verify the
-calling app (package name + signing certificate) against an Android OAuth client
-registered for the project. `release-android.yml` builds the Play Store AAB
-(`bundleRelease`), and Play Store distribution uses **Play App Signing** — Google
-re-signs the app with its own certificate, distinct from the CI upload keystore used
-when the Labs OAuth client was originally set up (`bb-labs-owner`). Nothing in
-`README.md` / `GoogleSignInBridge.android.kt`'s header covers fetching the **Play App
-Signing** certificate's SHA-1 (as opposed to the upload keystore's, via
-`./gradlew signingReport`) and registering it.
+Pointing staging's client ID at prod's (tried on android/37) got past Credential
+Manager but failed the token exchange: `signInWithIdp HTTP 400` — Firebase Auth's
+built-in Google provider only trusts ID tokens whose audience is a client registered
+under that *same* project, and there's no console setting to add a foreign project's
+client ID as a trusted audience. `LABS_STAGING_GOOGLE_OAUTH_CLIENT_ID` was reverted to
+its own value (`247996361369-...`, the `cartland-labs-staging` project's real client).
 
-Note: `GOOGLE_WEB_CLIENT_ID` (legacy own-backend sign-in) is never set in
-`release-android.yml` at all, so that path fails with "Google Sign-In not configured,"
-not this message — the reported symptom is only reachable via the **Labs** sign-in flow
-(`LABS_PROD_GOOGLE_OAUTH_CLIENT_ID` / `LABS_STAGING_GOOGLE_OAUTH_CLIENT_ID`, wired in
-`release-android.yml`).
-
-**Fix (owner action — needs Play Console + Google Cloud Console access):**
-1. Play Console → app → Setup → App integrity → App signing key certificate → copy the
-   **SHA-1**.
-2. Google Cloud Console → APIs & Services → Credentials → find (or create) the
-   **Android** OAuth client for `com.chriscartland.batterybutler` under the same
-   project as `LABS_PROD_GOOGLE_OAUTH_CLIENT_ID` → add that SHA-1 (keep the existing
-   upload-keystore SHA-1 too, for local/CI-signed release-mode testing).
-3. Repeat for the Labs **staging** client/project if staging is tested via Play Store
-   internal-track builds too.
-4. Allow time for propagation (Google notes this can take a few hours), then retest
-   sign-in on a Play-Store-installed build.
-
-A diagnostic `Log.w` was added at the `NoCredentialException` catch site (masked client
-ID suffix + hint) to make this faster to confirm from Logcat next time. Related:
-`bb-labs-owner` (created the OAuth client), `bb-labs-signin` (wired the interactive
-sign-in call, now landed and is what surfaced this).
+**To make Labs staging sign-in testable at all:** register the **debug keystore's**
+SHA-1 (via `./gradlew signingReport`, a certificate not claimed by prod) as an Android
+OAuth client under `cartland-labs-staging`'s project, then test staging sign-in only
+via local debug builds — never via a Play-Store-installed release (those all share
+prod's identity now). Not yet done; low priority since staging is a dev-only backend.
 
 ### bb-lg42 — DB restore: ViewModel Flows don't re-emit after `restoreFromLegacy` until app restart
 
@@ -353,6 +331,25 @@ Swift reads the generated `xValue` — with a local `./scripts/build-ios.sh` (de
 Related: bb-k4sk (Kotlin/SKIE version coupling), `.agent/ios.md` (Option A pattern).
 
 ## Done
+
+### bb-gsi-sha1 — Google Sign-In fails on Play Store release build ("No Google account found" / `NoCredentialException`) — DONE 2026-07-04 (PR #1312, android/36, android/37)
+Reported on android/35: "Sign in to Labs" failed with "No Google account found" despite
+real Google accounts on-device. `GoogleSignInBridge.android.kt`'s generic error catch was
+silently swallowing the real exception, and Settings only showed a generic bucket
+message. PR #1312 (android/36) added logging and switched Settings to show `error.cause`
+instead — the next repro surfaced the real error: `[28444] Developer console is not set
+up correctly`. Root cause: `LABS_PROD_GOOGLE_OAUTH_CLIENT_ID` (GitHub Actions variable,
+wired into `release-android.yml`) held the **wrong** Web client ID —
+`247996361369-88u7lkclu151dp0psg4gprnv5dvglu0b...`, actually Labs **staging**'s client ID,
+apparently copy-pasted into prod's slot by mistake. Prod's real client ID (Firebase
+Console → `cartland-labs` → Authentication → Sign-in method → Google → Web SDK
+configuration) is `604157815175-a5t5fec1mqlo4u44skoa9rmfeb72bvts...`. Updated the
+variable and released android/37; confirmed working on a Play-Store-installed build.
+(The Play App Signing vs upload-keystore SHA-1 theory from the initial write-up was a
+red herring — both were already registered correctly.) Attempting to share this fix for
+Labs staging too (pointing its client ID at prod's) failed with `signInWithIdp HTTP 400`
+— Firebase Auth's Google provider won't trust a token audience from a different project.
+Staging's variable was reverted to its own value; follow-up tracked as `bb-gsi-staging`.
 
 ### bb-iosv — Fix build_ios_native (CONFIGURATION_BUILD_DIR broke SwiftPM) — DONE 2026-06-28 (PR #1270)
 `build_ios_native` was red on `main` from the migration (#1250). Root cause: the job set
