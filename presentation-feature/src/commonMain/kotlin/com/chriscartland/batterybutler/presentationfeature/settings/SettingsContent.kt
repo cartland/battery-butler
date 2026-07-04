@@ -422,7 +422,7 @@ fun SettingsContent(
                             Text(
                                 text = composeStringResource(
                                     Res.string.settings_labs_sign_in_failed,
-                                    labsAuthState.error.message,
+                                    labsAuthState.error.cause ?: labsAuthState.error.message,
                                 ),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.error,
