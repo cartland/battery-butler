@@ -9,6 +9,27 @@ Project task tracking for Battery Butler.
 
 ## P2
 
+### bb-play-pub-stale — `docs/GOOGLE_PLAY_PUBLISHING.md` is stale relative to the actual release flow
+
+**Found 2026-07-04** while debugging Labs sign-in (`bb-gsi-sha1`) and releasing
+android/36–38. The doc describes a `publish-android.yml` workflow that no longer
+exists (`.github/workflows/` only has `release-android.yml`) and a simplified
+"just push a tag" flow with no mention of the sentinel-CI-gate / `--check` /
+`--confirm-tag` wrapper (`scripts/release-android.sh`) that's actually required
+today — see the `release-android` skill and `.agent/ci.md` § Pre-Release CI Gate.
+Following the doc as written (a raw `git tag android/N && git push origin android/N`)
+would bypass the sentinel gate entirely.
+
+The secrets it lists (`KEYSTORE_BASE64`, `KEY_ALIAS`, `KEY_PASSWORD`,
+`GOOGLE_PLAY_SERVICE_ACCOUNT_JSON`) do still match what `release-android.yml`
+actually reads — only the workflow name and release procedure are stale.
+
+**Fix:** update `docs/GOOGLE_PLAY_PUBLISHING.md` to reference `release-android.yml` /
+`scripts/release-android.sh` and describe the sentinel-gate flow (or fold its
+secrets-setup content into the `release-android` skill / README and retire this
+file). Small, docs-only; not urgent since the secrets info is still correct and the
+skill doc is the actual source of truth agents follow.
+
 ### bb-lg42 — DB restore: ViewModel Flows don't re-emit after `restoreFromLegacy` until app restart
 
 **Symptom (android/30 → still present android/31):** after Settings → Restore
