@@ -39,6 +39,9 @@ interface DeviceRepository {
      */
     fun dismissSyncStatus()
 
+    /** Triggers an immediate remote resync (e.g. for pull-to-refresh), independent of the timing of the background sync loop. */
+    suspend fun resync()
+
     // region Device Operations
 
     /** Returns a flow of all devices, sorted by name. */

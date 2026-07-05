@@ -9,6 +9,7 @@ import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
 import com.chriscartland.batterybutler.usecase.GetBatteryEventsUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.GetDevicesUseCase
+import com.chriscartland.batterybutler.usecase.ResyncUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -124,5 +125,6 @@ class CrashProofHistoryListViewModelTest {
             getBatteryEventsUseCase = GetBatteryEventsUseCase(repo),
             getDevicesUseCase = GetDevicesUseCase(repo),
             getDeviceTypesUseCase = GetDeviceTypesUseCase(repo),
+            resyncUseCase = ResyncUseCase(repo),
         )
 }

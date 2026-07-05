@@ -12,6 +12,7 @@ import com.chriscartland.batterybutler.usecase.ExportDataUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.GetDevicesUseCase
 import com.chriscartland.batterybutler.usecase.GetSyncStatusUseCase
+import com.chriscartland.batterybutler.usecase.ResyncUseCase
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -230,5 +231,6 @@ class HomeViewModelTest {
             exportDataUseCase = ExportDataUseCase(repo, testDispatcherProvider),
             getSyncStatusUseCase = GetSyncStatusUseCase(repo),
             dismissSyncStatusUseCase = DismissSyncStatusUseCase(repo),
+            resyncUseCase = ResyncUseCase(repo),
         )
 }

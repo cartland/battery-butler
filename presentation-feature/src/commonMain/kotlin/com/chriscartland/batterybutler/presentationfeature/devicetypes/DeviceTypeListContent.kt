@@ -19,10 +19,12 @@ import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -59,7 +61,7 @@ import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeG
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeListScreenState
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeSortOption
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun DeviceTypeListContent(
     state: DeviceTypeListScreenState,
@@ -73,91 +75,99 @@ fun DeviceTypeListContent(
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
+    isRefreshing: Boolean = false,
+    onRefresh: () -> Unit = {},
 ) {
-    Box(modifier = modifier.fillMaxSize()) {
-        when (state) {
-            DeviceTypeListScreenState.Loading -> {
-                LoadingWithLabel(
-                    label = composeStringResource(Res.string.status_loading_device_types),
-                    modifier = Modifier.align(Alignment.Center),
-                )
-            }
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = onRefresh,
+        modifier = modifier.fillMaxSize(),
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            when (state) {
+                DeviceTypeListScreenState.Loading -> {
+                    LoadingWithLabel(
+                        label = composeStringResource(Res.string.status_loading_device_types),
+                        modifier = Modifier.align(Alignment.Center),
+                    )
+                }
 
-            is DeviceTypeListScreenState.Error -> {
-                EmptyStateContent(
-                    icon = Icons.Default.Warning,
-                    title = composeStringResource(Res.string.error_load_device_types),
-                    message = state.message,
-                    modifier = Modifier.padding(contentPadding),
-                    action = {
-                        Button(onClick = onRetry) {
-                            Text(composeStringResource(Res.string.action_try_again))
-                        }
-                    },
-                )
-            }
-
-            is DeviceTypeListScreenState.Success -> {
-                val allTypes = remember(state.groupedTypes) { state.groupedTypes.values.flatten() }
-                if (allTypes.isEmpty()) {
+                is DeviceTypeListScreenState.Error -> {
                     EmptyStateContent(
-                        icon = Icons.AutoMirrored.Filled.List,
-                        title = composeStringResource(Res.string.empty_types_title),
-                        message = composeStringResource(Res.string.empty_types_message),
+                        icon = Icons.Default.Warning,
+                        title = composeStringResource(Res.string.error_load_device_types),
+                        message = state.message,
                         modifier = Modifier.padding(contentPadding),
                         action = {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Button(onClick = onAddTypeClick) {
-                                    Text(composeStringResource(Res.string.action_add_type))
-                                }
-                                Spacer(modifier = Modifier.height(8.dp))
-                                OutlinedButton(onClick = onPreloadTypes) {
-                                    Text(composeStringResource(Res.string.action_load_common_types))
-                                }
+                            Button(onClick = onRetry) {
+                                Text(composeStringResource(Res.string.action_try_again))
                             }
                         },
                     )
-                } else {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = contentPadding,
-                        verticalArrangement = Arrangement.spacedBy(Padding.medium),
-                    ) {
-                        item {
-                            DeviceTypeFilterRow(
-                                state = state,
-                                onSortOptionSelected = onSortOptionSelected,
-                                onGroupOptionSelected = onGroupOptionSelected,
-                                onSortDirectionToggle = onSortDirectionToggle,
-                                onGroupDirectionToggle = onGroupDirectionToggle,
-                            )
-                        }
-                        item {
-                            AddItemCard(composeStringResource(Res.string.add_item_card_device_type), onAddTypeClick)
-                        }
-                        state.groupedTypes.forEach { (groupName, types) ->
-                            if (state.groupOption != DeviceTypeGroupOption.NONE) {
-                                stickyHeader {
-                                    Surface(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        color = MaterialTheme.colorScheme.surfaceVariant,
-                                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    ) {
-                                        Text(
-                                            text = groupName,
-                                            modifier = Modifier.padding(horizontal = Padding.standard, vertical = Padding.small),
-                                            style = MaterialTheme.typography.labelLarge,
-                                            fontWeight = FontWeight.Bold,
-                                        )
+                }
+
+                is DeviceTypeListScreenState.Success -> {
+                    val allTypes = remember(state.groupedTypes) { state.groupedTypes.values.flatten() }
+                    if (allTypes.isEmpty()) {
+                        EmptyStateContent(
+                            icon = Icons.AutoMirrored.Filled.List,
+                            title = composeStringResource(Res.string.empty_types_title),
+                            message = composeStringResource(Res.string.empty_types_message),
+                            modifier = Modifier.padding(contentPadding),
+                            action = {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Button(onClick = onAddTypeClick) {
+                                        Text(composeStringResource(Res.string.action_add_type))
+                                    }
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    OutlinedButton(onClick = onPreloadTypes) {
+                                        Text(composeStringResource(Res.string.action_load_common_types))
                                     }
                                 }
-                            }
-
-                            items(types, key = { it.id }) { type ->
-                                DeviceTypeListItem(
-                                    deviceType = type,
-                                    onClick = { onEditType(type.id) },
+                            },
+                        )
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = contentPadding,
+                            verticalArrangement = Arrangement.spacedBy(Padding.medium),
+                        ) {
+                            item {
+                                DeviceTypeFilterRow(
+                                    state = state,
+                                    onSortOptionSelected = onSortOptionSelected,
+                                    onGroupOptionSelected = onGroupOptionSelected,
+                                    onSortDirectionToggle = onSortDirectionToggle,
+                                    onGroupDirectionToggle = onGroupDirectionToggle,
                                 )
+                            }
+                            item {
+                                AddItemCard(composeStringResource(Res.string.add_item_card_device_type), onAddTypeClick)
+                            }
+                            state.groupedTypes.forEach { (groupName, types) ->
+                                if (state.groupOption != DeviceTypeGroupOption.NONE) {
+                                    stickyHeader {
+                                        Surface(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            color = MaterialTheme.colorScheme.surfaceVariant,
+                                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        ) {
+                                            Text(
+                                                text = groupName,
+                                                modifier = Modifier.padding(horizontal = Padding.standard, vertical = Padding.small),
+                                                style = MaterialTheme.typography.labelLarge,
+                                                fontWeight = FontWeight.Bold,
+                                            )
+                                        }
+                                    }
+                                }
+
+                                items(types, key = { it.id }) { type ->
+                                    DeviceTypeListItem(
+                                        deviceType = type,
+                                        onClick = { onEditType(type.id) },
+                                    )
+                                }
                             }
                         }
                     }

@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Inbox
 import androidx.compose.material3.Button
@@ -36,7 +38,11 @@ fun EmptyStateContent(
     action: (@Composable () -> Unit)? = null,
 ) {
     Column(
-        modifier = modifier.fillMaxSize(),
+        // verticalScroll (even though content always fits) gives this a nested scroll
+        // connection, so a PullToRefreshBox ancestor can detect a pull gesture while this
+        // state (no list) is showing -- see HistoryListContent/DeviceTypeListContent/
+        // HomeScreenContent, which wrap Loading/Error/Empty branches in PullToRefreshBox.
+        modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {

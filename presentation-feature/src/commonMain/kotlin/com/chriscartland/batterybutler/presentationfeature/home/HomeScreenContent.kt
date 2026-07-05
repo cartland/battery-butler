@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.outlined.Devices
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
@@ -30,6 +31,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -80,7 +82,7 @@ import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalTime::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalTime::class, ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreenContent(
     state: HomeScreenState,
@@ -94,6 +96,8 @@ fun HomeScreenContent(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     nowInstant: Instant = Clock.System.now(),
+    isRefreshing: Boolean = false,
+    onRefresh: () -> Unit = {},
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -132,50 +136,56 @@ fun HomeScreenContent(
             start = innerPadding.calculateStartPadding(layoutDirection) + contentPadding.calculateStartPadding(layoutDirection),
             end = innerPadding.calculateEndPadding(layoutDirection) + contentPadding.calculateEndPadding(layoutDirection),
         )
-        Box(modifier = Modifier.fillMaxSize()) {
-            HomeScreenList(
-                state = state,
-                onGroupOptionToggle = onGroupOptionToggle,
-                onGroupOptionSelected = onGroupOptionSelected,
-                onSortOptionToggle = onSortOptionToggle,
-                onSortOptionSelected = onSortOptionSelected,
-                onDeviceClick = onDeviceClick,
-                onAddDeviceClick = onAddDeviceClick,
-                onRetry = onRetry,
-                contentPadding = mergedPadding,
-                nowInstant = nowInstant,
-            )
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = onRefresh,
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                HomeScreenList(
+                    state = state,
+                    onGroupOptionToggle = onGroupOptionToggle,
+                    onGroupOptionSelected = onGroupOptionSelected,
+                    onSortOptionToggle = onSortOptionToggle,
+                    onSortOptionSelected = onSortOptionSelected,
+                    onDeviceClick = onDeviceClick,
+                    onAddDeviceClick = onAddDeviceClick,
+                    onRetry = onRetry,
+                    contentPadding = mergedPadding,
+                    nowInstant = nowInstant,
+                )
 
-            // Sync status indicator overlay
-            AnimatedVisibility(
-                visible = state.syncStatus is SyncStatus.Syncing,
-                enter = fadeIn(),
-                exit = fadeOut(),
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .padding(top = mergedPadding.calculateTopPadding() + 8.dp),
-            ) {
-                Surface(
-                    shape = MaterialTheme.shapes.small,
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f),
-                    shadowElevation = 4.dp,
-                    tonalElevation = 4.dp,
+                // Sync status indicator overlay
+                AnimatedVisibility(
+                    visible = state.syncStatus is SyncStatus.Syncing,
+                    enter = fadeIn(),
+                    exit = fadeOut(),
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(top = mergedPadding.calculateTopPadding() + 8.dp),
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .padding(horizontal = Padding.medium, vertical = Padding.small),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
+                    Surface(
+                        shape = MaterialTheme.shapes.small,
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f),
+                        shadowElevation = 4.dp,
+                        tonalElevation = 4.dp,
                     ) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(12.dp),
-                            strokeWidth = 2.dp,
-                        )
-                        Text(
-                            text = composeStringResource(Res.string.status_syncing),
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
+                        Row(
+                            modifier = Modifier
+                                .padding(horizontal = Padding.medium, vertical = Padding.small),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(12.dp),
+                                strokeWidth = 2.dp,
+                            )
+                            Text(
+                                text = composeStringResource(Res.string.status_syncing),
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
                     }
                 }
             }

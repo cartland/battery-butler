@@ -2,6 +2,8 @@ package com.chriscartland.batterybutler.presentationcore.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -23,7 +25,9 @@ fun LoadingWithLabel(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier,
+        // verticalScroll gives this a nested scroll connection so a PullToRefreshBox
+        // ancestor can detect a pull gesture while Loading is showing (no list yet).
+        modifier = modifier.verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(Padding.standard),
     ) {
