@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.chriscartland.batterybutler.presentationcore.util.LocalFileLoader
 import com.chriscartland.batterybutler.presentationcore.util.LocalFileSaver
+import com.chriscartland.batterybutler.presentationcore.util.LocalSecureClipboard
 import com.chriscartland.batterybutler.presentationcore.util.generateFileTimestamp
 import com.chriscartland.batterybutler.presentationfeature.settings.SettingsContent
 import com.chriscartland.batterybutler.viewmodel.settings.SettingsViewModel
@@ -25,6 +26,7 @@ fun SettingsScreen(
     val currentUser by viewModel.currentUser.collectAsStateWithLifecycle()
     val fileSaver = LocalFileSaver.current
     val fileLoader = LocalFileLoader.current
+    val secureClipboard = LocalSecureClipboard.current
 
     LaunchedEffect(exportData) {
         exportData?.let { data ->
@@ -47,6 +49,14 @@ fun SettingsScreen(
     val importInProgress by viewModel.importInProgress.collectAsStateWithLifecycle()
     val isLabsMode by viewModel.isLabsMode.collectAsStateWithLifecycle()
     val labsAuthState by viewModel.labsAuthState.collectAsStateWithLifecycle()
+    val labsIdTokenToCopy by viewModel.labsIdTokenToCopy.collectAsStateWithLifecycle()
+
+    // The clipboard write itself happens here (this layer owns platform composition locals);
+    // SettingsContent's own LaunchedEffect on the same value shows the confirmation snackbar
+    // and clears the pending-copy signal.
+    LaunchedEffect(labsIdTokenToCopy) {
+        labsIdTokenToCopy?.let { token -> secureClipboard.copySensitive(token) }
+    }
 
     // Note: post-restore process restart is triggered at the App.kt root via
     // RestartCoordinator, NOT here. SettingsScreen would be unmounted (and the
@@ -87,5 +97,8 @@ fun SettingsScreen(
         labsAuthState = labsAuthState,
         onSignInToLabs = viewModel::onSignInToLabs,
         onSignOutLabs = viewModel::onSignOutLabs,
+        onCopyLabsIdToken = viewModel::onCopyLabsIdToken,
+        labsIdTokenToCopy = labsIdTokenToCopy,
+        onLabsIdTokenCopied = viewModel::onLabsIdTokenCopied,
     )
 }

@@ -118,6 +118,8 @@ class DefaultLabsAuthRepository(
         }
     }
 
+    override suspend fun getLabsIdToken(): String? = labsAuthGateway.getLabsIdToken()
+
     private fun fail(error: AuthError): Result<User, AuthError> {
         _labsAuthState.value = AuthState.Failed(error)
         return Result.Error(error)

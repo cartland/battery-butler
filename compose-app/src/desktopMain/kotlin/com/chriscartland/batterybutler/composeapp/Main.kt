@@ -15,6 +15,7 @@ import com.chriscartland.batterybutler.datanetwork.grpc.NetworkComponent
 import com.chriscartland.batterybutler.domain.model.AppVersion
 import com.chriscartland.batterybutler.presentationcore.util.DesktopFileLoader
 import com.chriscartland.batterybutler.presentationcore.util.DesktopFileSaver
+import com.chriscartland.batterybutler.presentationcore.util.DesktopSecureClipboard
 import com.chriscartland.batterybutler.presentationcore.util.DesktopShareHandler
 
 fun main() =
@@ -52,7 +53,8 @@ fun main() =
             val shareHandler = DesktopShareHandler()
             val fileSaver = DesktopFileSaver()
             val fileLoader = DesktopFileLoader()
+            val secureClipboard = DesktopSecureClipboard()
 
-            App(component, shareHandler, fileSaver, fileLoader)
+            App(component, shareHandler, fileSaver, fileLoader, secureClipboard)
         }
     }

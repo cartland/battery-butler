@@ -34,6 +34,7 @@ plugins {
 
 include(":compose-resources")
 include(":compose-app")
+include(":cli")
 include(":server:domain")
 include(":server:data")
 include(":server:app")

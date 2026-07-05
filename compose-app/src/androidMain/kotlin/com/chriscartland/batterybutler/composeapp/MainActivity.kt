@@ -13,6 +13,7 @@ import com.chriscartland.batterybutler.composeapp.debug.DebugNetworkReceiver
 import com.chriscartland.batterybutler.presentationcore.util.AndroidAppRestarter
 import com.chriscartland.batterybutler.presentationcore.util.AndroidFileLoader
 import com.chriscartland.batterybutler.presentationcore.util.AndroidFileSaver
+import com.chriscartland.batterybutler.presentationcore.util.AndroidSecureClipboard
 import com.chriscartland.batterybutler.presentationcore.util.AndroidShareHandler
 
 class MainActivity : ComponentActivity() {
@@ -40,10 +41,11 @@ class MainActivity : ComponentActivity() {
         val shareHandler = AndroidShareHandler(this)
         val fileSaver = AndroidFileSaver(this)
         fileLoader = AndroidFileLoader(this, openDocumentLauncher)
+        val secureClipboard = AndroidSecureClipboard(this)
         val appRestarter = AndroidAppRestarter(this)
 
         setContent {
-            App(component, shareHandler, fileSaver, fileLoader, appRestarter)
+            App(component, shareHandler, fileSaver, fileLoader, secureClipboard, appRestarter)
         }
 
         // DEBUG: Register receiver for ADB control

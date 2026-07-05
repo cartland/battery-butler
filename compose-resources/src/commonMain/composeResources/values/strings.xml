@@ -153,6 +153,10 @@
     <string name="settings_labs_sign_out">Sign out of Labs</string>
     <string name="settings_labs_signed_in">Signed in to Labs</string>
     <string name="settings_labs_sign_in_failed">Labs sign-in failed: %1$s</string>
+    <string name="settings_advanced_title">Advanced</string>
+    <string name="settings_advanced_copy_labs_token">Copy Labs ID Token</string>
+    <string name="settings_advanced_copy_labs_token_description">This copies a live access token for your Labs account (valid about an hour). Anyone with it can read and change your synced data — treat it like a password. Only paste it into tools you trust, such as the official Labs CLI, and never share it.</string>
+    <string name="settings_labs_token_copied">Labs ID token copied — treat it like a password</string>
     <string name="settings_export_data_title">Export Data</string>
     <string name="settings_export_data_description">Save all data as a .json file</string>
     <string name="settings_import_data_title">Import Data</string>
