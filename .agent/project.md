@@ -20,6 +20,23 @@ The app works entirely offline and syncs bidirectionally when online:
 - Changes sync to server when connectivity is available
 - Server changes sync back to local on reconnect
 
+**On-demand refresh (`SyncManager.resync()`)**: separate from the background
+`subscribeWithRetry()` loop, `resync()` (added for pull-to-refresh) does a single
+bounded fetch — `withTimeout(15.seconds) { remoteDataSource.subscribe().first() }`
+then `applyRemoteUpdate()` — catching timeout/error into `SyncStatus.Failed` rather
+than throwing. `ResyncUseCase` is a thin pass-through (`@NoTestRequired`). ViewModels
+that support pull-to-refresh (`HomeViewModel`, `DeviceTypeListViewModel`,
+`HistoryListViewModel`) expose `isRefreshing: StateFlow<Boolean>` and `onRefresh()`.
+
+**`PullToRefreshBox` requires a scrollable descendant.** Material3's
+`PullToRefreshBox` detects the pull gesture via nested-scroll interop — it does
+nothing if its content can't itself scroll (e.g. a short empty-state or loading
+screen that fits on one screen). This is why `EmptyStateContent` and
+`LoadingWithLabel` (`presentation-core`) both wrap their root in
+`.verticalScroll(rememberScrollState())`, even though their content rarely
+overflows — without it, pull-to-refresh silently doesn't work on those states.
+Confirmed via live on-device logcat testing, not just reading the Compose source.
+
 ### Module Dependencies
 
 Architecture is enforced by `buildSrc/.../ArchitectureCheckTask.kt`. Key rules:
@@ -153,6 +170,18 @@ The `experimental/` directory is a reference architecture for KMP apps. See `exp
 - **Testing**: `FakeLocalCounterDataSource` in `data-local/src/commonMain/`, `FakeAppScopedCounter` in `data/src/commonMain/`
 - **iOS bridge**: `CounterViewModelWrapper` polls KMP `StateFlow` via 60Hz Timer (no SKIE)
 
+### CLI Module (`:cli`)
+
+A JVM-only Kotlin CLI (`cli/src/main/kotlin/.../cli/Main.kt`) for talking to the
+Labs REST backend directly, without the app. Depends on `:data-network` and
+reuses its wire types (`SyncSnapshotWire`, `SyncPushRequestWire`,
+`SyncPushResponseWire`). Subcommands: `get` (fetch the current snapshot), `push`
+(send a sync payload). Auth via `--token` / `BB_LABS_ID_TOKEN` env var — get a
+live token from the app's Settings screen ("Copy Labs ID Token", Labs mode +
+signed in only) since the token is short-lived (~1hr). `--env` selects
+staging/prod; `--url` overrides directly. Run with
+`./gradlew :cli:run --args="get --env staging --token ..."`.
+
 ### UI Theme Constants
 
 Padding constants live in `presentation-core/.../theme/Padding.kt`. Use `Padding.standard` (16.dp), `Padding.small` (8.dp), `Padding.large` (24.dp), etc. instead of hardcoded dp values. Also `Padding.extraSmall` (4.dp), `Padding.medium` (12.dp), `Padding.extraLarge` (32.dp). PR #1108 swept single-arg `padding(N.dp)` sites; PR #1125 swept multi-arg `padding(horizontal = N.dp, ...)` sites in three feature files (AddDeviceType, EditDeviceType, DeviceDetail). Multi-arg padding in other feature files is a deferred follow-up.
@@ -211,6 +240,36 @@ val uiState = retryableStateIn(
 Other ViewModels keep the older `combine(...).safeStateIn(...)` form. Switch a ViewModel to `retryableStateIn` only when the screen exposes a Retry button.
 
 Content composables that pair with these ViewModels take an `onRetry: () -> Unit` parameter and render `Button(onClick = onRetry) { Text(Res.string.action_try_again) }` as the `action` slot of the error `EmptyStateContent`. Wiring happens in `MainTabsScreens.kt` (`onRetry = { viewModel.retry() }`).
+
+### Per-Network-Mode State (`NetworkModeKeyedState<T>`)
+
+`domain/model/NetworkModeKeyedState.kt` holds a separate value per `NetworkMode`
+(keyed by a caller-supplied `keyFor` function) instead of one shared
+`MutableStateFlow`. It exists to prevent a whole bug category: state from one
+Labs environment (e.g. staging) silently leaking into another (e.g. prod) when
+the user switches `NetworkMode` — discovered as a real bug in `DefaultLabsAuthRepository`,
+where a single `_labsAuthState` meant signing in to staging could appear
+"already authenticated" after switching to prod.
+
+```kotlin
+val authStateByMode = NetworkModeKeyedState<AuthState>(
+    networkMode = networkModeRepository.networkMode,
+    keyFor = { apiKeyForMode(it, labsFirebaseApiKey) },
+    default = AuthState.Unauthenticated,
+)
+val labsAuthState: Flow<AuthState> = authStateByMode.current
+// mutate with authStateByMode.setCurrent(...) / .updateCurrent { ... }
+```
+
+`current` is a `Flow<T>` (not `StateFlow`) — it re-derives via
+`networkMode.map(keyFor).distinctUntilChanged().flatMapLatest { stateFor(it) }`,
+so switching modes always reads that mode's own value, defaulting fresh if it's
+never been set. Note the explicit type argument (`NetworkModeKeyedState<AuthState>`)
+is required — passing a concrete subtype as `default` (e.g. `AuthState.Unauthenticated`)
+without it lets `T` infer to the narrow subtype instead of the sealed class.
+See `domain/src/commonTest/.../NetworkModeKeyedStateTest.kt` for the exact
+switch-and-leak scenario this guards against. **Reach for this instead of a bare
+`MutableStateFlow` for any new per-environment (Labs staging/prod) state.**
 
 ### KMP-Friendly Class Naming Convention
 

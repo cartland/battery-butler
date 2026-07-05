@@ -260,6 +260,15 @@ gRPC (`protobufPlugin` / gRPC codegen in `server/app/build.gradle.kts`), confirm
 
 ## P4
 
+### bb-cli-test-data — Clean up leftover `cli-test-type-1` test data on Labs staging
+
+While building and testing the `:cli` module's `push` subcommand this session, a
+test device type (`cli-test-type-1`, "CLI Push Test") was pushed to the **real**
+Labs staging backend. It's harmless (not real user data, staging only), but it
+should either be deleted via `cli push` with a tombstone/delete payload, or left
+with a note so a future session doesn't mistake it for genuine staging data. Not
+urgent — cosmetic cleanup only.
+
 ### bb-fa11 — Evaluate adding `validation_lint` to the release sentinel-set gate
 
 PR #1197 (server verify-ci) and PR #1200 (local `release-android.sh`) both use a
