@@ -23,6 +23,7 @@ class FakeLabsAuthRepository : LabsAuthRepository {
         )
     var signInCount = 0
     var signOutCount = 0
+    var idToken: String? = null
 
     override suspend fun signInToLabs(): Result<User, AuthError> {
         signInCount++
@@ -48,4 +49,6 @@ class FakeLabsAuthRepository : LabsAuthRepository {
     fun setLabsAuthState(state: AuthState) {
         _labsAuthState.value = state
     }
+
+    override suspend fun getLabsIdToken(): String? = idToken
 }

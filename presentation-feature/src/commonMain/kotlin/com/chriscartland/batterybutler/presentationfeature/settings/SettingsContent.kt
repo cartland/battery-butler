@@ -59,6 +59,9 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.netw
 import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_mock
 import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_none
 import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_title
+import com.chriscartland.batterybutler.composeresources.generated.resources.settings_advanced_copy_labs_token
+import com.chriscartland.batterybutler.composeresources.generated.resources.settings_advanced_copy_labs_token_description
+import com.chriscartland.batterybutler.composeresources.generated.resources.settings_advanced_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_app_version
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_app_version_unavailable
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_check_updates_description
@@ -87,6 +90,7 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.sett
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_labs_signed_in
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_labs_signing_in
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_labs_title
+import com.chriscartland.batterybutler.composeresources.generated.resources.settings_labs_token_copied
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_user_signed_in
 import com.chriscartland.batterybutler.domain.model.AppVersion
@@ -135,6 +139,9 @@ fun SettingsContent(
     labsAuthState: AuthState = AuthState.Unauthenticated,
     onSignInToLabs: () -> Unit = {},
     onSignOutLabs: () -> Unit = {},
+    onCopyLabsIdToken: () -> Unit = {},
+    labsIdTokenToCopy: String? = null,
+    onLabsIdTokenCopied: () -> Unit = {},
 ) {
     val uriHandler = LocalUriHandler.current
 
@@ -174,6 +181,9 @@ fun SettingsContent(
 
     val currentOnImportResultConsumed = rememberUpdatedState(onImportResultConsumed)
 
+    val currentOnLabsIdTokenCopied = rememberUpdatedState(onLabsIdTokenCopied)
+    val tokenCopiedMessage = composeStringResource(Res.string.settings_labs_token_copied)
+
     // Drive snackbar from restoreResult (richer signal). The boolean restoreComplete
     // remains in the API for callers that only want the success-or-fallback path,
     // but the snackbar messaging differentiates Success / DestructiveFallback /
@@ -189,6 +199,16 @@ fun SettingsContent(
         if (message != null) {
             snackbarHostState.showSnackbar(message)
             currentOnRestoreCompleteAcknowledged.value()
+        }
+    }
+
+    // The actual clipboard write happens in SettingsScreen (it owns platform composition
+    // locals); this just confirms it happened and clears the pending-copy signal, same
+    // separation of concerns as the file-based export/import flows.
+    LaunchedEffect(labsIdTokenToCopy) {
+        if (labsIdTokenToCopy != null) {
+            snackbarHostState.showSnackbar(tokenCopiedMessage)
+            currentOnLabsIdTokenCopied.value()
         }
     }
 
@@ -427,6 +447,46 @@ fun SettingsContent(
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.error,
                             )
+                        }
+                    }
+                }
+            }
+
+            // Advanced Card — only meaningful once actually signed in to Labs, since that's the
+            // only time a token exists to copy.
+            if (isLabsMode && labsAuthState is AuthState.Authenticated) {
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    ),
+                    shape = MaterialTheme.shapes.medium,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(Padding.standard),
+                    ) {
+                        Text(
+                            text = composeStringResource(Res.string.settings_advanced_title),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = composeStringResource(
+                                Res.string.settings_advanced_copy_labs_token_description,
+                            ),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Button(
+                            onClick = onCopyLabsIdToken,
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Text(composeStringResource(Res.string.settings_advanced_copy_labs_token))
                         }
                     }
                 }

@@ -32,4 +32,12 @@ interface LabsAuthRepository {
 
     /** If [labsAuthState] is [AuthState.Failed], transition back to [AuthState.Unauthenticated]. */
     fun clearError()
+
+    /**
+     * The current Labs Firebase ID token, refreshing it first if it's near expiry; null if not
+     * signed in. This is a live, short-lived credential (about an hour) for the currently-selected
+     * Labs environment — treat it like a password. Exposed so a user can copy it into a trusted
+     * external tool (e.g. the Labs CLI) without that tool needing its own OAuth flow.
+     */
+    suspend fun getLabsIdToken(): String?
 }

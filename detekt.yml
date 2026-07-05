@@ -598,6 +598,7 @@ Compose:
       - 'LocalButlerColors'
       - 'LocalFileLoader'
       - 'LocalFileSaver'
+      - 'LocalSecureClipboard'
       - 'LocalShareHandler'
 
 

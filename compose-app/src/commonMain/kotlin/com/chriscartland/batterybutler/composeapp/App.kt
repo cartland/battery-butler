@@ -59,7 +59,9 @@ import com.chriscartland.batterybutler.presentationcore.util.FileSaver
 import com.chriscartland.batterybutler.presentationcore.util.LocalAppRestarter
 import com.chriscartland.batterybutler.presentationcore.util.LocalFileLoader
 import com.chriscartland.batterybutler.presentationcore.util.LocalFileSaver
+import com.chriscartland.batterybutler.presentationcore.util.LocalSecureClipboard
 import com.chriscartland.batterybutler.presentationcore.util.LocalShareHandler
+import com.chriscartland.batterybutler.presentationcore.util.SecureClipboard
 import com.chriscartland.batterybutler.presentationcore.util.ShareHandler
 import com.chriscartland.batterybutler.presentationfeature.aichat.ChatMessage
 import com.chriscartland.batterybutler.presentationfeature.main.MainScreenShell
@@ -112,6 +114,7 @@ fun App(
     shareHandler: ShareHandler,
     fileSaver: FileSaver,
     fileLoader: FileLoader,
+    secureClipboard: SecureClipboard,
     appRestarter: AppRestarter = AppRestarter { /* default no-op for previews / unsupported platforms */ },
 ) {
     BatteryButlerTheme {
@@ -119,6 +122,7 @@ fun App(
             LocalShareHandler provides shareHandler,
             LocalFileSaver provides fileSaver,
             LocalFileLoader provides fileLoader,
+            LocalSecureClipboard provides secureClipboard,
             LocalAppRestarter provides appRestarter,
             LocalAppStrings provides ComposeAppStrings(),
         ) {

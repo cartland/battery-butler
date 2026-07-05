@@ -6,6 +6,7 @@ import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
 import com.chriscartland.batterybutler.domain.model.AppVersion
 import com.chriscartland.batterybutler.presentationcore.util.IosFileLoader
 import com.chriscartland.batterybutler.presentationcore.util.IosFileSaver
+import com.chriscartland.batterybutler.presentationcore.util.IosSecureClipboard
 import com.chriscartland.batterybutler.presentationcore.util.IosShareHandler
 
 @Suppress("ktlint:standard:function-naming")
@@ -26,5 +27,6 @@ fun MainViewController() =
         val shareHandler = IosShareHandler()
         val fileSaver = IosFileSaver()
         val fileLoader = IosFileLoader()
-        App(component, shareHandler, fileSaver, fileLoader)
+        val secureClipboard = IosSecureClipboard()
+        App(component, shareHandler, fileSaver, fileLoader, secureClipboard)
     }

@@ -160,6 +160,24 @@ class SettingsViewModel(
         }
     }
 
+    /**
+     * One-shot event carrying the Labs ID token to copy — set by [onCopyLabsIdToken], consumed by
+     * the Composable (which owns clipboard access) via [onLabsIdTokenCopied]. The clipboard
+     * side-effect itself stays out of the ViewModel, same separation [exportData] uses for file I/O.
+     */
+    private val _labsIdTokenToCopy = MutableStateFlow<String?>(viewModelScope, null)
+    val labsIdTokenToCopy: StateFlow<String?> = _labsIdTokenToCopy.asStateFlow()
+
+    fun onCopyLabsIdToken() {
+        viewModelScope.coroutineScope.launch {
+            _labsIdTokenToCopy.value = labsAuthRepository.getLabsIdToken()
+        }
+    }
+
+    fun onLabsIdTokenCopied() {
+        _labsIdTokenToCopy.value = null
+    }
+
     private val _exportData = MutableStateFlow<String?>(viewModelScope, null)
     val exportData: StateFlow<String?> = _exportData.asStateFlow()
 
