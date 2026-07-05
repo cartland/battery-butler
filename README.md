@@ -79,6 +79,7 @@ graph TD
     end
 
     subgraph "Others"
+        Cli[":cli"]
         DetektRules[":detekt-rules"]
         ExperimentalComposeApp[":experimental:compose-app"]
         ExperimentalData[":experimental:data"]
@@ -99,6 +100,8 @@ graph TD
     AndroidScreenshotTests --> PresentationCore
     AndroidScreenshotTests --> PresentationFeature
     AndroidScreenshotTests --> PresentationModel
+
+    Cli --> DataNetwork
 
     ComposeApp --> Ai
     ComposeApp --> ComposeResources
@@ -224,23 +227,23 @@ config:
 %% GENERATED FILE - DO NOT EDIT
 sankey-beta
 
-Codebase,Shared Code,30943
-Codebase,iOS Swift App,6261
-Codebase,Other,5153
-Codebase,CMP Apps,2636
+Codebase,Shared Code,34024
+Codebase,iOS Swift App,5631
+Codebase,Other,5472
+Codebase,CMP Apps,2711
 Codebase,Server,1530
 Codebase,Screenshot Tests,1213
 
-Shared Code,presentation-feature,6604
-Shared Code,viewmodel,5627
-Shared Code,usecase,5404
-Shared Code,presentation-core,2584
-Shared Code,data-network,2452
-Shared Code,domain,2426
-Shared Code,data,1919
-Shared Code,data-local,1695
-Shared Code,ai,496
-Shared Code,experimental:viewmodel,394
+Shared Code,presentation-feature,6841
+Shared Code,viewmodel,6144
+Shared Code,usecase,5426
+Shared Code,data-network,4099
+Shared Code,domain,2713
+Shared Code,presentation-core,2688
+Shared Code,data,2170
+Shared Code,data-local,1699
+Shared Code,ai,505
+Shared Code,experimental:viewmodel,397
 Shared Code,experimental:data,357
 Shared Code,experimental:usecase,316
 Shared Code,experimental:data-local,301
@@ -248,19 +251,20 @@ Shared Code,experimental:presentation-core,244
 Shared Code,compose-resources,70
 Shared Code,experimental:domain,54
 
-iOS Swift App,iosAppSwiftUI,6261
+iOS Swift App,iosAppSwiftUI,5631
 
 Other,buildSrc,2810
-Other,test-common,670
+Other,test-common,731
 Other,detekt-rules,413
 Other,presentation-model,321
 Other,e2e-tests,271
+Other,cli,237
 Other,ExperimentalApp,235
+Other,ios-swift-di,214
 Other,fixtures,209
-Other,ios-swift-di,193
 Other,iosAppComposeUI,31
 
-CMP Apps,compose-app,2369
+CMP Apps,compose-app,2444
 CMP Apps,experimental:compose-app,267
 
 Server,server:app,1344
@@ -269,23 +273,23 @@ Server,server:domain,34
 
 Screenshot Tests,android-screenshot-tests,1213
 
-presentation-feature,Kotlin,6604
-iosAppSwiftUI,Swift,6261
-viewmodel,Kotlin,5627
-usecase,Kotlin,5404
+presentation-feature,Kotlin,6841
+viewmodel,Kotlin,6144
+iosAppSwiftUI,Swift,5631
+usecase,Kotlin,5426
+data-network,Kotlin,4099
 buildSrc,Kotlin,2810
-presentation-core,Kotlin,2584
-data-network,Kotlin,2452
-domain,Kotlin,2426
-compose-app,Kotlin,2369
-data,Kotlin,1919
-data-local,Kotlin,1695
+domain,Kotlin,2713
+presentation-core,Kotlin,2688
+compose-app,Kotlin,2444
+data,Kotlin,2170
+data-local,Kotlin,1699
 server:app,Kotlin,1344
 android-screenshot-tests,Kotlin,1213
-test-common,Kotlin,670
-ai,Kotlin,496
+test-common,Kotlin,731
+ai,Kotlin,505
 detekt-rules,Kotlin,413
-experimental:viewmodel,Kotlin,394
+experimental:viewmodel,Kotlin,397
 experimental:data,Kotlin,357
 presentation-model,Kotlin,321
 experimental:usecase,Kotlin,316
@@ -293,9 +297,10 @@ experimental:data-local,Kotlin,301
 e2e-tests,Kotlin,271
 experimental:compose-app,Kotlin,267
 experimental:presentation-core,Kotlin,244
+cli,Kotlin,237
 ExperimentalApp,Swift,235
+ios-swift-di,Kotlin,214
 fixtures,Kotlin,209
-ios-swift-di,Kotlin,193
 server:data,Kotlin,152
 compose-resources,Kotlin,70
 experimental:domain,Kotlin,54
