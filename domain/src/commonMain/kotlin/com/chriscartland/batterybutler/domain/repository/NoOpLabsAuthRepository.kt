@@ -26,7 +26,7 @@ data object NoOpLabsAuthRepository : LabsAuthRepository {
 
     override suspend fun signOutLabs() {}
 
-    override fun clearError() {}
+    override suspend fun clearError() {}
 
     override suspend fun getLabsIdToken(): String? = null
 }

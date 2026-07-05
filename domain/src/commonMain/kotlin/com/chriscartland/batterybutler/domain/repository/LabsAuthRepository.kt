@@ -2,9 +2,10 @@ package com.chriscartland.batterybutler.domain.repository
 
 import com.chriscartland.batterybutler.domain.model.AuthError
 import com.chriscartland.batterybutler.domain.model.AuthState
+import com.chriscartland.batterybutler.domain.model.NetworkModeKeyedState
 import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.model.User
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.Flow
 
 /**
  * Authentication for the **Labs REST backend** (`NetworkMode.LabsStaging` / `LabsProd`).
@@ -15,10 +16,13 @@ import kotlinx.coroutines.flow.StateFlow
  *
  * [labsAuthState] reuses [AuthState] for UI parity with the own-backend account card. The Labs
  * session is in-memory (not persisted), so it starts [AuthState.Unauthenticated] every launch.
+ * It's keyed per network mode (see [NetworkModeKeyedState]): switching between Labs staging and
+ * prod reflects each environment's *own* status, never a stale value carried over from whichever
+ * one was previously selected.
  */
 interface LabsAuthRepository {
-    /** Current Labs auth state. Starts [AuthState.Unauthenticated]. */
-    val labsAuthState: StateFlow<AuthState>
+    /** Current Labs auth state for the *currently selected* network mode. Starts [AuthState.Unauthenticated]. */
+    val labsAuthState: Flow<AuthState>
 
     /**
      * Sign in to the Labs backend for the currently-selected Labs network mode. Picks the matching
@@ -31,7 +35,7 @@ interface LabsAuthRepository {
     suspend fun signOutLabs()
 
     /** If [labsAuthState] is [AuthState.Failed], transition back to [AuthState.Unauthenticated]. */
-    fun clearError()
+    suspend fun clearError()
 
     /**
      * The current Labs Firebase ID token, refreshing it first if it's near expiry; null if not
