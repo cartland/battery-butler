@@ -38,11 +38,11 @@ Regardless of the role, the agent remains a tool, and the user retains ultimate 
     *   Tags trigger production releases and cannot be easily undone.
     *   Release scripts provide safety checks, version validation, and confirmation prompts.
     *   **NEVER add a release script's safety-override flag on your own initiative**
-        (e.g., `--allow-duplicate-tag`, `--confirm-skipped-jobs`), even when you've
+        (e.g., `--allow-tagged-commit`, `--confirm-skipped-jobs`), even when you've
         reasoned out that it's safe. State which flag and why, and get the user to
         confirm that specific flag by name before running it — the auto-mode
         permission classifier will block an agent-introduced override otherwise
-        (observed 2026-07-04, `--allow-duplicate-tag` during the `bb-gsi-sha1`
+        (observed 2026-07-04, `--allow-tagged-commit` during the `bb-gsi-sha1`
         config-only re-release). This is a legitimate pattern (see the
         `release-android` skill), just never a unilateral one.
 

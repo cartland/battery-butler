@@ -60,7 +60,7 @@ SENTINEL_JOBS=(
 
 # Parse flags
 MODE="interactive"
-ALLOW_DUPLICATE_TAG=false
+ALLOW_TAGGED_COMMIT=false
 CONFIRM_TAG=""
 CONFIRM_HASH=""
 CONFIRM_ROLLBACK_FROM=""
@@ -90,7 +90,7 @@ Override flags (all require a specific value from --check output):
                                     equal the target commit. Use this only when CI
                                     ran in development mode or was path-filtered AND
                                     you have separately validated the build.
-  --allow-duplicate-tag             Skip prompt when commit already has an android/* tag.
+  --allow-tagged-commit             Skip prompt when commit already has an android/* tag.
 
 Help:
   -h, --help                Show this help
@@ -124,8 +124,8 @@ while [[ $# -gt 0 ]]; do
             CONFIRM_SKIPPED_JOBS="$2"
             shift 2
             ;;
-        --allow-duplicate-tag)
-            ALLOW_DUPLICATE_TAG=true
+        --allow-tagged-commit)
+            ALLOW_TAGGED_COMMIT=true
             shift
             ;;
         --dry-run)
@@ -494,7 +494,7 @@ if [ -n "$EXISTING_TAGS_ON_TARGET" ]; then
     echo -e "${YELLOW}Warning: This commit already has android tag(s):${RESET}"
     echo "$EXISTING_TAGS_ON_TARGET"
     echo ""
-    if [ "$ALLOW_DUPLICATE_TAG" = true ] || [ -n "$CONFIRM_ROLLBACK_FROM" ]; then
+    if [ "$ALLOW_TAGGED_COMMIT" = true ] || [ -n "$CONFIRM_ROLLBACK_FROM" ]; then
         echo "Continuing (override active)..."
     elif [ "$MODE" = "interactive" ]; then
         read -p "Create another tag anyway? (y/N) " -n 1 -r
@@ -504,7 +504,7 @@ if [ -n "$EXISTING_TAGS_ON_TARGET" ]; then
             exit 0
         fi
     else
-        echo -e "${RED}Error: Pass --allow-duplicate-tag or --confirm-rollback-from to proceed.${RESET}"
+        echo -e "${RED}Error: Pass --allow-tagged-commit or --confirm-rollback-from to proceed.${RESET}"
         exit 1
     fi
 fi

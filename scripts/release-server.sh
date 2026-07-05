@@ -8,7 +8,7 @@ cd "$(dirname "$0")/.."
 # Usage: ./scripts/release-server.sh [OPTIONS]
 #
 # Options:
-#   --allow-duplicate-tag  Skip prompt when commit already has a server/* tag
+#   --allow-tagged-commit  Skip prompt when commit already has a server/* tag
 #   --confirm-release      Skip final release confirmation prompt
 #   -h, --help             Show this help message
 #
@@ -26,25 +26,25 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # Parse flags
-ALLOW_DUPLICATE_TAG=false
+ALLOW_TAGGED_COMMIT=false
 CONFIRM_RELEASE=false
 
 show_help() {
     echo "Usage: ./scripts/release-server.sh [OPTIONS]"
     echo ""
     echo "Options:"
-    echo "  --allow-duplicate-tag  Skip prompt when commit already has a server/* tag"
+    echo "  --allow-tagged-commit  Skip prompt when commit already has a server/* tag"
     echo "  --confirm-release      Skip final release confirmation prompt"
     echo "  -h, --help             Show this help message"
     echo ""
     echo "For fully non-interactive mode, use both flags:"
-    echo "  ./scripts/release-server.sh --allow-duplicate-tag --confirm-release"
+    echo "  ./scripts/release-server.sh --allow-tagged-commit --confirm-release"
 }
 
 while [[ $# -gt 0 ]]; do
     case $1 in
-        --allow-duplicate-tag)
-            ALLOW_DUPLICATE_TAG=true
+        --allow-tagged-commit)
+            ALLOW_TAGGED_COMMIT=true
             shift
             ;;
         --confirm-release)
@@ -144,8 +144,8 @@ if [ -n "$EXISTING_TAGS" ]; then
     echo -e "${YELLOW}Warning: This commit already has server tag(s):${NC}"
     echo "$EXISTING_TAGS"
     echo ""
-    if [ "$ALLOW_DUPLICATE_TAG" = true ]; then
-        echo "--allow-duplicate-tag specified, continuing..."
+    if [ "$ALLOW_TAGGED_COMMIT" = true ]; then
+        echo "--allow-tagged-commit specified, continuing..."
     else
         read -p "Do you want to create another tag anyway? (y/N) " -n 1 -r
         echo ""
