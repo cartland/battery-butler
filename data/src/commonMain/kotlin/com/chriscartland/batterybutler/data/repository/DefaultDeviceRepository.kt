@@ -22,6 +22,8 @@ class DefaultDeviceRepository(
 
     override fun dismissSyncStatus() = syncManager.dismissSyncStatus()
 
+    override suspend fun resync() = syncManager.resync()
+
     override fun getAllDevices(): Flow<List<Device>> = localDataSource.getAllDevices()
 
     override fun getDeviceById(id: String): Flow<Device?> = localDataSource.getDeviceById(id)

@@ -158,6 +158,8 @@ private class RoundTripTestRepository : DeviceRepository {
 
     override fun dismissSyncStatus() {}
 
+    override suspend fun resync() {}
+
     override fun getAllDevices(): Flow<List<Device>> = flowOf(devices.toList())
 
     override fun getDeviceById(id: String): Flow<Device?> = flowOf(devices.find { it.id == id })

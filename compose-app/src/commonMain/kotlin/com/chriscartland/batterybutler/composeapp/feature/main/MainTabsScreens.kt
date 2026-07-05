@@ -27,6 +27,7 @@ fun DevicesScreenRoot(
     contentPadding: PaddingValues = PaddingValues(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
     val fileSaver = LocalFileSaver.current
 
     // Handle Export Data
@@ -51,6 +52,8 @@ fun DevicesScreenRoot(
         onRetry = { viewModel.retry() },
         modifier = modifier,
         contentPadding = contentPadding,
+        isRefreshing = isRefreshing,
+        onRefresh = { viewModel.onRefresh() },
     )
 }
 
@@ -63,6 +66,7 @@ fun TypesScreenRoot(
     contentPadding: PaddingValues = PaddingValues(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
 
     DeviceTypeListContent(
         state = state,
@@ -76,6 +80,8 @@ fun TypesScreenRoot(
         onRetry = { viewModel.retry() },
         modifier = modifier,
         contentPadding = contentPadding,
+        isRefreshing = isRefreshing,
+        onRefresh = { viewModel.onRefresh() },
     )
 }
 
@@ -88,6 +94,7 @@ fun HistoryScreenRoot(
     contentPadding: PaddingValues = PaddingValues(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
 
     HistoryListContent(
         state = state,
@@ -96,5 +103,7 @@ fun HistoryScreenRoot(
         onRetry = { viewModel.retry() },
         modifier = modifier,
         contentPadding = contentPadding,
+        isRefreshing = isRefreshing,
+        onRefresh = { viewModel.onRefresh() },
     )
 }

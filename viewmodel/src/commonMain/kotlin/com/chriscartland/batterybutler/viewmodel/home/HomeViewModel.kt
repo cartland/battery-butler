@@ -10,6 +10,7 @@ import com.chriscartland.batterybutler.usecase.ExportDataUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.GetDevicesUseCase
 import com.chriscartland.batterybutler.usecase.GetSyncStatusUseCase
+import com.chriscartland.batterybutler.usecase.ResyncUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
 import com.chriscartland.batterybutler.viewmodel.retryableStateIn
 import com.chriscartland.batterybutler.viewmodel.util.sortAndGroup
@@ -19,10 +20,12 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
+import com.rickclephas.kmp.observableviewmodel.MutableStateFlow as ObservableMutableStateFlow
 
 @Inject
 class HomeViewModel(
@@ -31,6 +34,7 @@ class HomeViewModel(
     private val exportDataUseCase: ExportDataUseCase,
     private val getSyncStatusUseCase: GetSyncStatusUseCase,
     private val dismissSyncStatusUseCase: DismissSyncStatusUseCase,
+    private val resyncUseCase: ResyncUseCase,
 ) : ViewModel() {
     private val sortOptionFlow = MutableStateFlow(SortOption.NAME)
     private val groupOptionFlow = MutableStateFlow(GroupOption.NONE)
@@ -148,6 +152,23 @@ class HomeViewModel(
 
     fun onExportDataConsumed() {
         exportDataFlow.value = null
+    }
+
+    // Exposed to SwiftUI: must use the observable factory so @StateViewModel re-renders.
+    private val _isRefreshing = ObservableMutableStateFlow(viewModelScope, false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
+    /**
+     * Pull-to-refresh trigger. Deliberately independent of [SyncStatus] (which the background
+     * sync loop also mutates on its own timer) so the refresh spinner only reflects this
+     * specific user-initiated action, not unrelated background sync activity.
+     */
+    fun onRefresh() {
+        viewModelScope.coroutineScope.launch {
+            _isRefreshing.value = true
+            resyncUseCase()
+            _isRefreshing.value = false
+        }
     }
 }
 

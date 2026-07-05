@@ -12,7 +12,9 @@ import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,7 +41,7 @@ import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
-@OptIn(ExperimentalTime::class)
+@OptIn(ExperimentalTime::class, ExperimentalMaterial3Api::class)
 @Composable
 fun HistoryListContent(
     state: HistoryListScreenState,
@@ -49,58 +51,66 @@ fun HistoryListContent(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     nowInstant: Instant = Clock.System.now(),
+    isRefreshing: Boolean = false,
+    onRefresh: () -> Unit = {},
 ) {
-    Box(modifier = modifier.fillMaxSize()) {
-        when (state) {
-            HistoryListScreenState.Loading -> {
-                LoadingWithLabel(
-                    label = composeStringResource(Res.string.status_loading_history),
-                    modifier = Modifier.align(Alignment.Center),
-                )
-            }
-
-            is HistoryListScreenState.Error -> {
-                EmptyStateContent(
-                    icon = Icons.Default.Warning,
-                    title = composeStringResource(Res.string.error_load_history),
-                    message = state.message,
-                    modifier = Modifier.padding(contentPadding),
-                    action = {
-                        Button(onClick = onRetry) {
-                            Text(composeStringResource(Res.string.action_try_again))
-                        }
-                    },
-                )
-            }
-
-            is HistoryListScreenState.Success -> {
-                if (state.items.isEmpty()) {
-                    EmptyStateContent(
-                        icon = Icons.Default.History,
-                        title = composeStringResource(Res.string.empty_history_title),
-                        message = composeStringResource(Res.string.empty_history_message),
-                        modifier = Modifier.padding(contentPadding),
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = onRefresh,
+        modifier = modifier.fillMaxSize(),
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            when (state) {
+                HistoryListScreenState.Loading -> {
+                    LoadingWithLabel(
+                        label = composeStringResource(Res.string.status_loading_history),
+                        modifier = Modifier.align(Alignment.Center),
                     )
-                } else {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = contentPadding,
-                        verticalArrangement = Arrangement.spacedBy(Padding.medium),
-                    ) {
-                        item {
-                            AddItemCard(composeStringResource(Res.string.add_item_card_battery_event), onAddEventClick)
-                        }
-                        items(state.items, key = { it.event.id }) { item ->
-                            HistoryListItem(
-                                event = item.event,
-                                deviceName = item.deviceName,
-                                deviceTypeName = item.deviceTypeName,
-                                deviceLocation = item.deviceLocation,
-                                onClick = {
-                                    onEventClick(item.event.id, item.event.deviceId)
-                                },
-                                nowInstant = nowInstant,
-                            )
+                }
+
+                is HistoryListScreenState.Error -> {
+                    EmptyStateContent(
+                        icon = Icons.Default.Warning,
+                        title = composeStringResource(Res.string.error_load_history),
+                        message = state.message,
+                        modifier = Modifier.padding(contentPadding),
+                        action = {
+                            Button(onClick = onRetry) {
+                                Text(composeStringResource(Res.string.action_try_again))
+                            }
+                        },
+                    )
+                }
+
+                is HistoryListScreenState.Success -> {
+                    if (state.items.isEmpty()) {
+                        EmptyStateContent(
+                            icon = Icons.Default.History,
+                            title = composeStringResource(Res.string.empty_history_title),
+                            message = composeStringResource(Res.string.empty_history_message),
+                            modifier = Modifier.padding(contentPadding),
+                        )
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = contentPadding,
+                            verticalArrangement = Arrangement.spacedBy(Padding.medium),
+                        ) {
+                            item {
+                                AddItemCard(composeStringResource(Res.string.add_item_card_battery_event), onAddEventClick)
+                            }
+                            items(state.items, key = { it.event.id }) { item ->
+                                HistoryListItem(
+                                    event = item.event,
+                                    deviceName = item.deviceName,
+                                    deviceTypeName = item.deviceTypeName,
+                                    deviceLocation = item.deviceLocation,
+                                    onClick = {
+                                        onEventClick(item.event.id, item.event.deviceId)
+                                    },
+                                    nowInstant = nowInstant,
+                                )
+                            }
                         }
                     }
                 }

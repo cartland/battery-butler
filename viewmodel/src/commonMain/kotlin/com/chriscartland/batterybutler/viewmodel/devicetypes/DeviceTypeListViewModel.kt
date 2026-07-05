@@ -7,6 +7,7 @@ import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeL
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeSortOption
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.PreloadCommonTypesUseCase
+import com.chriscartland.batterybutler.usecase.ResyncUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
 import com.chriscartland.batterybutler.viewmodel.retryableStateIn
 import com.chriscartland.batterybutler.viewmodel.util.sortAndGroup
@@ -14,6 +15,7 @@ import com.rickclephas.kmp.observableviewmodel.ViewModel
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -24,11 +26,28 @@ import com.rickclephas.kmp.observableviewmodel.MutableStateFlow as ObservableMut
 class DeviceTypeListViewModel(
     private val getDeviceTypesUseCase: GetDeviceTypesUseCase,
     private val preloadCommonTypesUseCase: PreloadCommonTypesUseCase,
+    private val resyncUseCase: ResyncUseCase,
 ) : ViewModel() {
     // Exposed to SwiftUI: must use the observable factory so @StateViewModel re-renders.
     // (Private funnel flows below stay plain — they combine into the observable uiState.)
     private val _actionError = ObservableMutableStateFlow<String?>(viewModelScope, null)
     val actionError: StateFlow<String?> = _actionError
+
+    private val _isRefreshing = ObservableMutableStateFlow(viewModelScope, false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
+    /**
+     * Pull-to-refresh trigger. Deliberately independent of the shared sync status (which the
+     * background sync loop also mutates on its own timer) so the refresh spinner only reflects
+     * this specific user-initiated action.
+     */
+    fun onRefresh() {
+        viewModelScope.coroutineScope.launch {
+            _isRefreshing.value = true
+            resyncUseCase()
+            _isRefreshing.value = false
+        }
+    }
 
     fun dismissActionError() {
         _actionError.value = null

@@ -81,6 +81,13 @@ class FakeDeviceRepository : DeviceRepository {
         _syncStatus.value = SyncStatus.Idle
     }
 
+    /** Number of times [resync] has been called. */
+    var resyncCount = 0
+
+    override suspend fun resync() {
+        resyncCount++
+    }
+
     override fun getAllDevices(): Flow<List<Device>> = devicesFlow
 
     override fun getDeviceById(id: String): Flow<Device?> = devicesFlow.map { list -> list.find { it.id == id } }

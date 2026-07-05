@@ -17,6 +17,14 @@ interface SyncManager {
 
     fun dismissSyncStatus()
 
+    /**
+     * Performs one immediate remote fetch (bypassing the background retry loop's backoff
+     * delay) and applies the result locally. Bounded by a timeout so it always resolves even
+     * against a server-streaming source with nothing new to push. Safe to call concurrently
+     * with the background sync loop -- applying the same snapshot twice is a harmless no-op.
+     */
+    suspend fun resync()
+
     fun pushUpdate(
         deviceTypes: List<DeviceType> = emptyList(),
         devices: List<Device> = emptyList(),

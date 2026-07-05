@@ -40,6 +40,8 @@ class StructuredPromptTest {
 
         override fun dismissSyncStatus() {}
 
+        override suspend fun resync() {}
+
         override fun getAllDevices() = flowOf(emptyList<Device>())
 
         override fun getDeviceById(id: String) = flowOf(null)

@@ -7,6 +7,7 @@ import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
 import com.chriscartland.batterybutler.testcommon.TestDevices
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.PreloadCommonTypesUseCase
+import com.chriscartland.batterybutler.usecase.ResyncUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -189,5 +190,6 @@ class DeviceTypeListViewModelTest {
         DeviceTypeListViewModel(
             getDeviceTypesUseCase = GetDeviceTypesUseCase(repo),
             preloadCommonTypesUseCase = PreloadCommonTypesUseCase(repo),
+            resyncUseCase = ResyncUseCase(repo),
         )
 }

@@ -12,12 +12,14 @@ import com.chriscartland.batterybutler.domain.model.SyncStatus
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
 import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import me.tatarka.inject.annotations.Inject
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Duration.Companion.milliseconds
@@ -140,10 +142,39 @@ class DefaultSyncManager(
         _syncStatus.value = SyncStatus.Idle
     }
 
+    override suspend fun resync() {
+        val currentMode = networkModeRepository.networkMode.first()
+        if (currentMode is NetworkMode.None) return
+
+        _syncStatus.value = SyncStatus.Syncing
+        try {
+            // .first() takes only the next emission then cancels the underlying subscription --
+            // correct for both a one-shot REST poll (completes on its own) and a long-lived
+            // gRPC server stream (would otherwise never complete). withTimeout bounds the wait
+            // so a server with nothing new to push can't hang the caller (e.g. a pull-to-refresh
+            // spinner) forever.
+            val update = withTimeout(RESYNC_TIMEOUT) { remoteDataSource.subscribe().first() }
+            applyRemoteUpdate(update)
+            _syncStatus.value = SyncStatus.Success
+        } catch (e: CancellationException) {
+            if (e !is TimeoutCancellationException) throw e
+            Logger.d(TAG) { "resync() timed out waiting for an update" }
+            _syncStatus.value = SyncStatus.Failed(
+                DataError.Network.ConnectionFailed(message = "Sync timed out", cause = null),
+            )
+        } catch (e: Exception) {
+            Logger.e(TAG, e) { "resync() failed" }
+            _syncStatus.value = SyncStatus.Failed(
+                DataError.Unknown(e.message ?: "Unknown error", e.toString()),
+            )
+        }
+    }
+
     internal companion object {
         const val TAG = "SyncManager"
         val INITIAL_BACKOFF_MS = 1.seconds.inWholeMilliseconds
         val MAX_BACKOFF_MS = 30.seconds.inWholeMilliseconds
+        val RESYNC_TIMEOUT = 15.seconds
 
         internal fun nextBackoff(currentMs: Long): Long = (currentMs * 2).coerceAtMost(MAX_BACKOFF_MS)
     }
