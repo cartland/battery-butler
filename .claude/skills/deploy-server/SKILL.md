@@ -35,7 +35,7 @@ Deploy the gRPC server to the **dev** environment.
 
 2. Run the release script:
    ```bash
-   ./scripts/release-server.sh --allow-duplicate-tag --confirm-release
+   ./scripts/release-server.sh --allow-tagged-commit --confirm-release
    ```
 
 3. Monitor the release workflow:

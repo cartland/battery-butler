@@ -36,7 +36,7 @@ Release the Android app to Play Store internal testing by creating a release tag
    - Create `android/N+1` on the current commit
    - Push the tag to trigger the `release-android.yml` workflow
 
-   > **Note:** Do NOT use `--allow-duplicate-tag` for normal releases. That flag is only for rollback scenarios where you intentionally re-tag an older commit. Without the flag, the script will warn and prompt if the commit already has a tag — which is the desired safety check.
+   > **Note:** Do NOT use `--allow-tagged-commit` for normal releases. That flag is only for rollback scenarios where you intentionally re-tag an older commit. Without the flag, the script will warn and prompt if the commit already has a tag — which is the desired safety check.
 
 3. Monitor the release workflow:
    ```bash
