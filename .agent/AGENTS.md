@@ -65,6 +65,17 @@ Regardless of the role, the agent remains a tool, and the user retains ultimate 
     *   Run `git fetch --prune origin` to clean up stale remote refs.
     *   See **After Your PR is Merged** section for the full checklist.
 
+6.  **NEVER Trust a `gh run watch` Completion Notification Alone**:
+    *   `gh run watch` (and the background task-completion notification it
+        generates) has been observed reporting a run as "completed" / exit 0
+        while the underlying GitHub Actions run was still `queued` or
+        `in_progress` with jobs not yet finished (observed 2026-07-04, during
+        Labs sign-in release verification — happened twice in the same session).
+    *   **Always** verify directly with `gh run view <run-id> --json status,conclusion`
+        (or equivalent) before treating a watched run as done — especially
+        before proceeding to a tag/release action, merging on the strength of
+        "CI passed," or reporting success to the user.
+
 ## Build & Test Health
 
 Keeping the build and tests healthy is a top priority. When you identify or fix build/test issues:
