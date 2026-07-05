@@ -35,6 +35,7 @@ Test types, coverage enforcement, and testing patterns for Battery Butler.
 
 - Pure Kotlin tests across all modules (domain, data, viewmodel, usecase, server, etc.)
 - Located in `src/commonTest/`, `src/test/`
+- **`:domain` has no `kotlinx-coroutines-test` dependency** (it depends on nothing — see Module Dependencies in `project.md`). Tests of suspend code in `domain/src/commonTest/` use plain `kotlinx.coroutines.runBlocking` with `kotlinx.coroutines.flow.first()`, not `runTest`/`TestScope`. See `NetworkModeKeyedStateTest.kt` for the pattern.
 - **Coroutine test gotcha**: `DefaultSyncManager` has an infinite `subscribeWithRetry()` loop in `init`. Never use `advanceUntilIdle()` in tests that create a SyncManager with a subscribe source that throws or completes (it schedules infinite tasks). Use `testDispatcher.scheduler.advanceTimeBy(ms)` + `runCurrent()` instead, and always call `scope.cancel()` at end.
 - `applyRemoteUpdate` and `nextBackoff` are `internal` on `DefaultSyncManager` for direct testing without the subscribe loop
 - **Crash-proof ViewModel tests** (`CrashProof*Test.kt`): Test error handling gaps in ViewModels. Two patterns:

@@ -44,12 +44,13 @@ The usecase module orchestrates business logic between presentation and data lay
 | `BatchAddDeviceTypesUseCase` | Parse text and create device types via AI |
 | `BatchAddBatteryEventsUseCase` | Parse text and record events via AI |
 
-### Sync & Network (3)
+### Sync & Network (4)
 | Use Case | Description |
 |----------|-------------|
 | `GetSyncStatusUseCase` | Observe sync status |
 | `DismissSyncStatusUseCase` | Clear sync status |
 | `SetNetworkModeUseCase` | Configure network mode |
+| `ResyncUseCase` | On-demand bounded resync (pull-to-refresh); thin delegate to `SyncManager.resync()` |
 
 ### Utilities (5)
 | Use Case | Description |

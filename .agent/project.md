@@ -326,6 +326,13 @@ Exporting and importing data uses a versioned JSON envelope. Key pieces:
 - **`LocalFileLoader`** — CompositionLocal that provides the `FileLoader` instance. Add to `detekt.yml` `CompositionLocalAllowlist`.
 - **iOS K/N gotcha**: do not use `String(bytes: ByteArray)` — only `String(chars: CharArray)` exists on K/N, and even then it's deprecated. Use `byteArray.decodeToString()` (UTF-8) for cross-platform safety.
 
+### Secure Clipboard
+
+For copying sensitive values (e.g. the Labs ID token in Settings → Advanced), use `SecureClipboard` (`presentation-core/.../util/SecureClipboard.kt`), an `expect/actual`-style abstraction exposed via the `LocalSecureClipboard` CompositionLocal (added to `detekt.yml` `CompositionLocalAllowlist`) — do not write sensitive values with the plain platform clipboard APIs directly. Platform behavior:
+- **Android** (`AndroidSecureClipboard.kt`): sets `ClipDescription.EXTRA_IS_SENSITIVE` via `PersistableBundle`, guarded by `Build.VERSION.SDK_INT >= TIRAMISU` (API 33+; masks the value in clipboard-history UIs on supporting OEMs/launchers).
+- **iOS** (`IosSecureClipboard.kt`): `UIPasteboard.generalPasteboard.setItems(...)` with `UIPasteboardOptionLocalOnly` (not synced via Handoff/iCloud) and a 60-second `UIPasteboardOptionExpirationDate`.
+- **Desktop** (`DesktopSecureClipboard.kt`): plain `java.awt.datatransfer` copy — no OS-level secure-clipboard equivalent exists on the JVM.
+
 ### Android Splash Screen
 
 The app uses `androidx.core:core-splashscreen` (added in PR #1109) for cold-start:
