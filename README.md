@@ -401,6 +401,64 @@ Add repository secret:
 ```
 Add the SHA-1 to your OAuth client in Google Cloud Console under "Android" application type.
 
+**Play Store release builds:** the SHA-1 that matters for a Play-Store-installed build
+is the **Play App Signing** certificate's fingerprint (Play Console → your app → Setup
+→ App integrity), not the upload keystore's — Google re-signs the app with its own
+certificate for distribution. Register *both* the upload keystore's SHA-1 (for local /
+CI-signed release-mode testing) and the Play App Signing SHA-1 (for what users
+actually run) under the Android OAuth client. Allow a few hours for propagation after
+adding a new fingerprint before retesting.
+
+## 🔐 Labs Multi-Environment OAuth Configuration
+
+Battery Butler's Labs backend integration (`NetworkMode.LabsStaging` /
+`NetworkMode.LabsProd`) has two separate backend environments — `cartland-labs`
+(prod) and `cartland-labs-staging` — each its own Firebase / Google Cloud project.
+But there is only **one** Android app: one package name, one set of signing
+certificates, switching between the two backends via a Settings dropdown at runtime,
+not via separate installs.
+
+### The constraint
+
+Google only allows a given **(package name, signing certificate)** pair to be
+verified as an **Android**-type OAuth client under a single Google Cloud project —
+globally, not per-project. Since both Labs modes run inside the identical installed
+APK, only **one** of the two projects can ever own Credential Manager's verification
+of this app. Attempting to register the same package + SHA-1 under a second project
+fails with an "already associated" error in Cloud Console.
+
+### The setup (as configured today)
+
+1. **Prod owns the Android OAuth client.** Under the `cartland-labs` (prod) Google
+   Cloud project, the Android OAuth client for `com.chriscartland.batterybutler` has
+   *both* the CI upload keystore's SHA-1 and the Play App Signing SHA-1 registered
+   (see the Play Store SHA-1 note above).
+2. **Both environments request tokens as prod.** The `LABS_PROD_GOOGLE_OAUTH_CLIENT_ID`
+   *and* `LABS_STAGING_GOOGLE_OAUTH_CLIENT_ID` GitHub Actions **variables** (Settings →
+   Secrets and variables → Actions → **Variables** tab — these are plain variables,
+   not secrets, since a Web client ID is baked into the public APK anyway) are both
+   set to **prod's** Web client ID. So `GoogleSignInBridge.signInWithClient()` always
+   authenticates against prod's project via Credential Manager, regardless of which
+   Labs mode is selected in Settings.
+3. **Staging's backend trusts prod's client ID as a foreign audience.** By default,
+   Firebase Auth's built-in Google provider only accepts ID tokens whose audience is
+   a client registered under that *same* project — so staging would otherwise reject
+   a token minted for prod's client ID with `signInWithIdp HTTP 400`. The fix: Google
+   Cloud Console → `cartland-labs-staging` project → **Identity Platform** → Providers
+   → **Google** → **Allowed client IDs** → Add → paste prod's Web client ID. This is
+   the one console setting that lets a project explicitly trust an external client ID.
+
+### If you ever need to redo this
+
+- Find each project's real Web client ID: Firebase Console → select the project →
+  Authentication → Sign-in method → Google → expand "Web SDK configuration."
+- Read/write the GitHub variables directly (they aren't masked):
+  `gh variable list` / `gh variable set LABS_PROD_GOOGLE_OAUTH_CLIENT_ID --body "..."`.
+- A build-time-only variable change still needs a new tagged release for
+  `BuildConfig` to pick it up — an app already installed from an older release won't
+  see the new value until updated.
+- Full incident history and diagnosis path: `TODO.md` → Done → `bb-gsi-sha1`.
+
 ## 🤝 Contributing
 
 This project uses `Spotless` for code formatting.
