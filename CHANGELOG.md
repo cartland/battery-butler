@@ -31,6 +31,39 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ---
 
+## 2026-07-05
+
+### Features
+
+- **Labs CLI (`:cli`)** ([#1317](https://github.com/cartland/battery-butler/pull/1317)): a new JVM command-line tool for talking to the Labs REST backend directly (`get`/`push` subcommands), reusing `:data-network`'s wire types (`SyncSnapshotWire`, `SyncPushRequestWire`, `SyncPushResponseWire`) so its parsing matches exactly what the app sends/expects. Auth via `--token <idToken>` or `BB_LABS_ID_TOKEN`; `--env staging|prod` or `--url` selects the backend.
+- **Copy Labs ID Token (Settings → Advanced)** ([#1317](https://github.com/cartland/battery-butler/pull/1317)): lets a signed-in Labs user copy their live Firebase ID token to feed the new CLI, without the CLI needing its own OAuth flow. Backed by a new cross-platform `SecureClipboard` abstraction (`presentation-core`): Android marks the clip `ClipDescription.EXTRA_IS_SENSITIVE` (API 33+), iOS sets `UIPasteboardOptionLocalOnly` + a 60-second `UIPasteboardOptionExpirationDate`, so the token isn't synced to other devices or left sitting in clipboard managers/history.
+- **Pull-to-refresh on Devices, Device Types, and History** ([#1318](https://github.com/cartland/battery-butler/pull/1318)): all three main screens now support pull-to-refresh via Material3 `PullToRefreshBox`, backed by a new `SyncManager.resync()` (a bounded single fetch, distinct from the existing background `subscribeWithRetry()` loop) exposed through `ResyncUseCase`. Required adding `.verticalScroll(...)` to the shared `EmptyStateContent`/`LoadingWithLabel` composables — `PullToRefreshBox` only detects the pull gesture over a scrollable descendant, so empty/loading states silently didn't support it otherwise. Confirmed via live on-device testing, not just a source read.
+
+### Fixes
+
+- **Labs auth state leaking across network-mode switches** ([#1319](https://github.com/cartland/battery-butler/pull/1319)): `DefaultLabsAuthRepository` held a single `_labsAuthState` field, so switching from Labs staging to Labs prod (or back) could surface a stale "already authenticated"/error state carried over from the other environment instead of that environment's own status. Fixed structurally rather than patched at the one call site: a new reusable `NetworkModeKeyedState<T>` (`domain/model/NetworkModeKeyedState.kt`) holds one value per network-mode key, so any future per-environment state can reach for it instead of a bare `MutableStateFlow`.
+
+### Documentation
+
+- **Session context captured** ([#1315](https://github.com/cartland/battery-butler/pull/1315), [#1320](https://github.com/cartland/battery-butler/pull/1320)): recorded the `NetworkModeKeyedState` pattern, pull-to-refresh/`resync()` mechanics, the `:cli` module, and a new `.agent/AGENTS.md` rule that `gh run watch` completion notifications can report a run as done while it's still `queued`/`in_progress` on GitHub — always verify with `gh run view --json status,conclusion` directly before acting on it.
+- **Generated diagrams and code-analysis refreshed**: `full_system_structure.mmd` (and the README module graph embedded from it) was missing the new `:cli` module, and `docs/CODE_ANALYSIS.md`'s line-count breakdown was stale after this session's additions. Regenerated via `./gradlew generateMermaidGraph analyzeCode`.
+
+## 2026-07-04
+
+### Fixes
+
+- **Settings screen not scrolling** ([#1309](https://github.com/cartland/battery-butler/pull/1309), [#1312](https://github.com/cartland/battery-butler/pull/1312)): the root `Column` in `SettingsContent.kt` was missing `.verticalScroll(rememberScrollState())`, so content taller than the screen (long device lists, error banners) was clipped with no way to reach it.
+- **Google Sign-In failures gave no diagnostic info** ([#1312](https://github.com/cartland/battery-butler/pull/1312)): `GoogleSignInBridge.android.kt` now logs the real `NoCredentialException`/`GetCredentialException` cause via `Log.w` instead of surfacing only a generic "no account found" failure, making on-device Google Sign-In issues actually debuggable.
+
+### Documentation
+
+- **Labs multi-Google-Cloud-project OAuth configuration** ([#1314](https://github.com/cartland/battery-butler/pull/1314)): new README section explaining why Play App Signing's SHA-1 fingerprint is globally exclusive to one (package, cert) pair — and therefore one Google Cloud project's Android OAuth client. Documents the resolved setup: prod owns the Android OAuth client, both environments' `GoogleSignInBridge` calls use prod's Web client ID, and staging trusts prod's client ID as a foreign audience via Identity Platform's **Allowed client IDs** setting — letting a single Play-Store-signed APK sign in to both the staging and prod Labs backends.
+- **`TODO.md` recorded the Google Sign-In fix and staging follow-up** ([#1313](https://github.com/cartland/battery-butler/pull/1313)).
+
+### Tooling
+
+- **`--allow-duplicate-tag` renamed to `--allow-tagged-commit`** ([#1316](https://github.com/cartland/battery-butler/pull/1316)) across `scripts/release-android.sh`, `scripts/release-server.sh`, and the corresponding skill/workflow docs. The old name was misleading: the flag doesn't permit duplicate tags (never allowed — Play rejects duplicate versionCodes, and the versionCode comes from the tag number), it permits re-tagging a commit that's already tagged (e.g. a config-only re-release with no new commit needed). Also added an `.agent/AGENTS.md` rule: never add a release script's safety-override flag on your own initiative — get the user to confirm the specific flag by name first.
+
 ## 2026-07-01
 
 ### Features

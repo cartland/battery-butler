@@ -45,6 +45,7 @@ graph TD
     end
 
     subgraph "Others"
+        Cli[":cli"]
         DetektRules[":detekt-rules"]
         ExperimentalComposeApp[":experimental:compose-app"]
         ExperimentalData[":experimental:data"]
@@ -65,6 +66,8 @@ graph TD
     AndroidScreenshotTests --> PresentationCore
     AndroidScreenshotTests --> PresentationFeature
     AndroidScreenshotTests --> PresentationModel
+
+    Cli --> DataNetwork
 
     ComposeApp --> Ai
     ComposeApp --> ComposeResources
