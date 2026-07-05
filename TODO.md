@@ -331,6 +331,27 @@ Related: bb-k4sk (Kotlin/SKIE version coupling), `.agent/ios.md` (Option A patte
 
 ## Done
 
+### bb-labs-mode-auth-state — Labs Sign-In showed a stale account after switching NetworkMode — DONE 2026-07-05 (structural fix, `NetworkModeKeyedState`)
+Found while auditing whether the app isolates credentials correctly across Labs staging/prod.
+Confirmed live on-device: sign in to Labs Prod, switch Network Mode to Labs Staging — Settings
+kept showing the **prod** account as "signed in" even though staging was never authenticated;
+tapping "Copy Labs ID Token" in that state silently did nothing (the token really was null for
+staging, but the UI gave no feedback). No credential leakage — `DefaultLabsAuthGateway` already
+correctly partitions **token** sessions per Firebase API key — but `DefaultLabsAuthRepository`'s
+`_labsAuthState` was a single unpartitioned `MutableStateFlow`, so switching modes never reset or
+re-evaluated it.
+
+**Structural fix, not just a patch:** added `domain/model/NetworkModeKeyedState.kt` — a small,
+directly-unit-tested (`NetworkModeKeyedStateTest.kt`, 3 tests, no fakes needed) class that holds
+one value per network-mode-derived key and reactively exposes whichever one is current, so
+there's no unpartitioned field left to go stale. `DefaultLabsAuthRepository.labsAuthState` now
+uses it (keyed the same way `DefaultLabsAuthGateway` already keys token sessions, via
+`apiKeyForMode`). `LabsAuthRepository.clearError()` became `suspend fun` as part of this (needs
+to read the current network mode). Intent: any *future* per-environment state should reach for
+this class instead of a bare `MutableStateFlow`, making this bug category structurally harder to
+reintroduce. Verified live: prod→staging now correctly shows unauthenticated; staging→prod
+correctly restores prod's own session (not just reset to default).
+
 ### bb-gsi-sha1 — Google Sign-In fails on Play Store release build ("No Google account found" / `NoCredentialException`) — DONE 2026-07-04 (PR #1312, android/36, android/37)
 Reported on android/35: "Sign in to Labs" failed with "No Google account found" despite
 real Google accounts on-device. `GoogleSignInBridge.android.kt`'s generic error catch was

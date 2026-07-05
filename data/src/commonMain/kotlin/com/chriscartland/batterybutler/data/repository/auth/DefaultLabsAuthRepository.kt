@@ -2,19 +2,20 @@ package com.chriscartland.batterybutler.data.repository.auth
 
 import co.touchlab.kermit.Logger
 import com.chriscartland.batterybutler.datanetwork.LabsAuthGateway
+import com.chriscartland.batterybutler.datanetwork.apiKeyForMode
 import com.chriscartland.batterybutler.datanetwork.auth.GoogleSignInBridge
 import com.chriscartland.batterybutler.domain.model.AuthError
 import com.chriscartland.batterybutler.domain.model.AuthState
+import com.chriscartland.batterybutler.domain.model.LabsFirebaseApiKey
 import com.chriscartland.batterybutler.domain.model.LabsProdGoogleOAuthClient
 import com.chriscartland.batterybutler.domain.model.LabsStagingGoogleOAuthClient
 import com.chriscartland.batterybutler.domain.model.NetworkMode
+import com.chriscartland.batterybutler.domain.model.NetworkModeKeyedState
 import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.model.User
 import com.chriscartland.batterybutler.domain.repository.LabsAuthRepository
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import me.tatarka.inject.annotations.Inject
 
@@ -29,19 +30,30 @@ import me.tatarka.inject.annotations.Inject
  * uses [GoogleSignInBridge.signInWithClient] with the per-env client rather than the own-backend
  * [GoogleSignInBridge.signIn]. The Labs session lives in the singleton gateway (shared with the
  * sync calls); this repo just tracks UI state.
+ *
+ * [labsAuthState] is keyed by network mode via [NetworkModeKeyedState] (same key,
+ * [apiKeyForMode], that [LabsAuthGateway] uses to partition its token sessions) rather than a
+ * plain `MutableStateFlow` -- a bare field would show a *previous* environment's "signed in"
+ * status right after switching Labs modes, since nothing would tell it the environment changed.
+ * See `bb-labs-mode-auth-state` in TODO.md for the bug this replaced.
  */
 @Inject
 class DefaultLabsAuthRepository(
     private val googleSignInBridge: GoogleSignInBridge,
     private val labsAuthGateway: LabsAuthGateway,
     private val networkModeRepository: NetworkModeRepository,
+    private val labsFirebaseApiKey: LabsFirebaseApiKey,
     private val labsStagingOAuthClient: LabsStagingGoogleOAuthClient,
     private val labsProdOAuthClient: LabsProdGoogleOAuthClient,
 ) : LabsAuthRepository {
     private val log = Logger.withTag("DefaultLabsAuthRepository")
 
-    private val _labsAuthState = MutableStateFlow<AuthState>(AuthState.Unauthenticated)
-    override val labsAuthState: StateFlow<AuthState> = _labsAuthState.asStateFlow()
+    private val authStateByMode = NetworkModeKeyedState<AuthState>(
+        networkMode = networkModeRepository.networkMode,
+        keyFor = { apiKeyForMode(it, labsFirebaseApiKey) },
+        default = AuthState.Unauthenticated,
+    )
+    override val labsAuthState: Flow<AuthState> = authStateByMode.current
 
     override suspend fun signInToLabs(): Result<User, AuthError> {
         val client = when (networkModeRepository.networkMode.first()) {
@@ -72,7 +84,7 @@ class DefaultLabsAuthRepository(
             )
         }
 
-        _labsAuthState.value = AuthState.Authenticating
+        authStateByMode.setCurrent(AuthState.Authenticating)
         return when (val signIn = googleSignInBridge.signInWithClient(clientId, clientSecret.ifBlank { null })) {
             is Result.Success -> {
                 exchangeForLabsSession(signIn.data)
@@ -97,7 +109,7 @@ class DefaultLabsAuthRepository(
                     photoUrl = google.photoUrl,
                 )
                 log.i { "Labs sign-in successful for ${google.email}" }
-                _labsAuthState.value = AuthState.Authenticated(user)
+                authStateByMode.setCurrent(AuthState.Authenticated(user))
                 Result.Success(user)
             }
 
@@ -109,19 +121,19 @@ class DefaultLabsAuthRepository(
 
     override suspend fun signOutLabs() {
         labsAuthGateway.signOutLabs()
-        _labsAuthState.value = AuthState.Unauthenticated
+        authStateByMode.setCurrent(AuthState.Unauthenticated)
     }
 
-    override fun clearError() {
-        if (_labsAuthState.value is AuthState.Failed) {
-            _labsAuthState.value = AuthState.Unauthenticated
+    override suspend fun clearError() {
+        authStateByMode.updateCurrent { current ->
+            if (current is AuthState.Failed) AuthState.Unauthenticated else current
         }
     }
 
     override suspend fun getLabsIdToken(): String? = labsAuthGateway.getLabsIdToken()
 
-    private fun fail(error: AuthError): Result<User, AuthError> {
-        _labsAuthState.value = AuthState.Failed(error)
+    private suspend fun fail(error: AuthError): Result<User, AuthError> {
+        authStateByMode.setCurrent(AuthState.Failed(error))
         return Result.Error(error)
     }
 

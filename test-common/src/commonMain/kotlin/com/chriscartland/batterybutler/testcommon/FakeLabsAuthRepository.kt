@@ -39,7 +39,7 @@ class FakeLabsAuthRepository : LabsAuthRepository {
         _labsAuthState.value = AuthState.Unauthenticated
     }
 
-    override fun clearError() {
+    override suspend fun clearError() {
         if (_labsAuthState.value is AuthState.Failed) {
             _labsAuthState.value = AuthState.Unauthenticated
         }

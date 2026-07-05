@@ -93,7 +93,9 @@ class LoginViewModel(
      */
     fun dismissError() {
         if (isLabsMode.value) {
-            labsAuthRepository.clearError()
+            viewModelScope.coroutineScope.launch {
+                labsAuthRepository.clearError()
+            }
         } else {
             authRepository.clearError()
         }
