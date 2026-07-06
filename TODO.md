@@ -9,6 +9,31 @@ Project task tracking for Battery Butler.
 
 ## P2
 
+### bb-android42-release — Finish the in-progress android/42 release
+
+**In progress 2026-07-06.** PR #1324 (data-location isolation fix, merged, main
+HEAD `f44313ce`) needs to ship as android/42. Sequence so far:
+1. `./scripts/release-android.sh --check` on `f44313ce` found the sentinel jobs
+   had no completed run (the push-to-main CI ran in `development` mode per
+   `.github/ci-mode.txt`, so build/instrumented/iOS jobs were skipped).
+2. Dispatched release-mode CI manually: `gh workflow run "Battery Butler CI" --ref main -f ci_mode=release`
+   → run `28782166382`. As of this note, most jobs passed
+   (`build_android`, `build_server`, `validation_instrumented`, `build_desktop`);
+   only `validation_ios_ui`/`build_ios_native`/`build_ios_compose` were still running.
+
+**Next steps for whoever picks this up:** confirm run `28782166382` finished
+successfully (`gh run view 28782166382 --json status,conclusion`), re-run
+`./scripts/release-android.sh --check` to confirm the sentinel gate now passes,
+then run the actual release **only after the user explicitly confirms the tag
+name** (`android/42` expected, but re-derive via `--check`'s "Next tag" line in
+case another release landed first) — per `.agent/AGENTS.md` Critical Rule 2,
+never add a release-script override flag or run the tagging step without that
+explicit confirmation.
+
+There's also a separate PR #1326 (Devices default-sort-order feature, CI green
+as of this note, not yet merged) that the user may want folded into this same
+release once merged — check its status too.
+
 ### bb-data-location-rename — Rename `NetworkMode` → `DataLocation` throughout the codebase (deferred follow-up)
 
 **Deferred 2026-07-06** from the `NetworkMode`-local-database-isolation fix (see the

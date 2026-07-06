@@ -251,6 +251,8 @@ Other ViewModels keep the older `combine(...).safeStateIn(...)` form. Switch a V
 
 Content composables that pair with these ViewModels take an `onRetry: () -> Unit` parameter and render `Button(onClick = onRetry) { Text(Res.string.action_try_again) }` as the `action` slot of the error `EmptyStateContent`. Wiring happens in `MainTabsScreens.kt` (`onRetry = { viewModel.retry() }`).
 
+**Gotcha: `initialValue = ScreenState()` uses the State class's OWN constructor defaults, not the ViewModel's internal flow defaults.** `retryableStateIn`'s `initialValue` (and `safeStateIn`'s) is shown before the real combined flow first emits. If a ViewModel changes an internal `MutableStateFlow`'s default (e.g. `HomeViewModel`'s `sortOptionFlow`/`isSortAscendingFlow` defaults, PR #1326), the `HomeScreenState()` placeholder's own constructor defaults must be updated too — otherwise there's a brief flash of the old default before real data loads, and a naive `viewModel.uiState.first()` in a test will silently observe the stale placeholder default instead of the new one (this bit the `` `toggleSortDirection inverts sort direction` `` test in PR #1326 — it passed before the sort-default change only because both defaults happened to agree).
+
 ### Per-Network-Mode State (`NetworkModeKeyedState<T>`)
 
 `domain/model/NetworkModeKeyedState.kt` holds a separate value per `NetworkMode`
@@ -280,6 +282,35 @@ without it lets `T` infer to the narrow subtype instead of the sealed class.
 See `domain/src/commonTest/.../NetworkModeKeyedStateTest.kt` for the exact
 switch-and-leak scenario this guards against. **Reach for this instead of a bare
 `MutableStateFlow` for any new per-environment (Labs staging/prod) state.**
+
+### Persisted Local-Database Isolation (`DatabaseOption`)
+
+`data-local/.../room/DatabaseOption.kt` is the on-disk counterpart to
+`NetworkModeKeyedState<T>` above — same "don't let one environment's state leak
+into another's" goal, but for the actual Room SQLite file instead of an
+in-memory flag. `DynamicDatabaseProvider` opens a distinct SQLite file per
+`DatabaseOption.fromNetworkMode(mode)` and swaps atomically when the mode
+changes (this per-subtype isolation existed since PR #1052).
+
+**Fixed in PR #1324**: `fromNetworkMode` used to match on the `NetworkMode`
+sealed subtype only, discarding the `url` payload `GrpcLocal`/`GrpcAws`/`GrpcDev`/
+`LabsStaging`/`LabsProd` all carry — so two different real backends sharing a
+subtype but a different url (reachable via the `ServerUrlReceiver` adb debug
+tool) would silently share one file. `DatabaseOption` is now a data class keyed
+on `(category: DatabaseCategory, fileName: String)`, where `fileName` gets a
+hash-of-normalized-url suffix whenever the mode carries a real url; a null/blank
+url still resolves to the bare per-category file name (`DatabaseOption.baseFileNames`),
+so existing installs aren't affected in the common case (fixed, build-configured
+urls). A one-time migration, `promoteBareFileIfNeeded` (wired into each
+platform's `DatabaseFactory.createNewDatabase`, called before Room opens the
+file), renames an existing bare file to the new url-suffixed name the first time
+a url-bearing mode opens it — so an existing user's data is inherited, not
+orphaned or duplicated. See `DatabaseOptionTest.kt` (commonTest, pure key
+derivation) and `DatabaseFilePromotionTest.kt` (jvmTest, the actual
+promotion/isolation behavior with real file I/O) for the exact guarantees.
+**Reach for this pattern (identity-aware file keying + rename-forward migration)
+for any future per-environment persisted state** — don't key local storage on a
+`NetworkMode` subtype alone if the subtype can carry a variable url.
 
 ### KMP-Friendly Class Naming Convention
 
