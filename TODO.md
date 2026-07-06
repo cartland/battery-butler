@@ -9,6 +9,31 @@ Project task tracking for Battery Butler.
 
 ## P2
 
+### bb-data-location-rename — Rename `NetworkMode` → `DataLocation` throughout the codebase (deferred follow-up)
+
+**Deferred 2026-07-06** from the `NetworkMode`-local-database-isolation fix (see the
+Done section entry for that PR). The user's original ask was to review data
+isolation across network switches and floated calling the concept "data
+location" instead of "network mode," since selecting a mode is really selecting
+an entire local dataset, not just a remote backend. The isolation *guarantee*
+was fixed separately and does not require this rename — this task is purely
+about renaming the concept everywhere it appears, for clarity:
+
+- `domain/model/NetworkMode.kt` (the sealed interface itself) and its 7
+  variants (`None`, `Mock`, `GrpcLocal`, `GrpcAws`, `GrpcDev`, `LabsStaging`,
+  `LabsProd`) — decide whether `Mock`/`None` (not really "locations") stay as-is
+  or get folded differently.
+- `NetworkModeRepository`/`DataStoreNetworkModeRepository`, `DelegatingRemoteDataSource`,
+  and every other repository/class name built on "NetworkMode".
+- User-facing Settings UI copy — currently literally labeled **"Network Mode"**
+  (`presentation-core/.../ExpandableSelectionControl.kt`, `SettingsContent.kt`'s
+  "Network Mode Card").
+- ~94 Kotlin files reference `NetworkMode` repo-wide (per a 2026-07-06 grep) —
+  this is a large, high-file-count rename that touches user-visible strings, so
+  give it its own explicitly-scoped PR (or a small number of PRs) rather than
+  bundling it with unrelated work. Not urgent; purely a clarity/naming
+  improvement, no behavior change implied.
+
 ### bb-play-pub-stale — `docs/GOOGLE_PLAY_PUBLISHING.md` is stale relative to the actual release flow
 
 **Found 2026-07-04** while debugging Labs sign-in (`bb-gsi-sha1`) and releasing

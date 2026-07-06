@@ -68,6 +68,7 @@ actual class DatabaseFactory {
     }
 
     private fun createNewDatabase(option: DatabaseOption): AppDatabase {
+        promoteBareFileIfNeeded(option)
         val dbFile = File(baseDir, option.fileName)
         return Room
             .databaseBuilder<AppDatabase>(

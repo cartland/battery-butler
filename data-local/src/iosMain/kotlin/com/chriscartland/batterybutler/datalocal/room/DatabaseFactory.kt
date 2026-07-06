@@ -123,6 +123,7 @@ actual class DatabaseFactory {
     }
 
     private fun createNewDatabase(option: DatabaseOption): AppDatabase {
+        promoteBareFileIfNeeded(option)
         val dbFile = "${fileDirectory()}/${option.fileName}"
         return Room
             .databaseBuilder<AppDatabase>(
