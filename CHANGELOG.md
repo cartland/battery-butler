@@ -31,6 +31,12 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ---
 
+## 2026-07-06
+
+### Documentation
+
+- **Labs CLI gotchas discovered during a real staging+prod data restore**: while clearing and restoring both Labs environments from a `Settings → Export Data` backup, found that `:cli push` silently no-ops on the app's own backup file format (it expects flat `SyncPushRequestWire` JSON, not the wrapped `BackupDto` shape — every field just defaults to empty rather than erroring) and that writes to `--env prod` require an `editors` scope enforced by the separate Labs backend service (`HTTP 403 requires scope 'editors'`; staging doesn't enforce this). Both documented in README's Labs CLI section and `.agent/project.md`; tracked as `bb-cli-backup-import` (add a real backup-import subcommand or at least fail loudly) and `bb-labs-scope-editors` in `TODO.md`.
+
 ## 2026-07-05
 
 ### Features

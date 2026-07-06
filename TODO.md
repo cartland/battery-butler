@@ -258,6 +258,38 @@ gRPC (`protobufPlugin` / gRPC codegen in `server/app/build.gradle.kts`), confirm
 `libs.versions.toml`, and bump `grpcJava` / `grpc-kotlin` / `wire`. Verify
 `validation_compile_tests` + `build_server` (release-mode) before merge.
 
+### bb-cli-backup-import — `:cli push` can't consume the app's own Export Data backup format
+
+**Found 2026-07-06** while clearing + restoring Labs staging and prod from a
+Google-Drive-hosted `Settings → Export Data` backup file. `cli push <file>` (see
+`cli/src/main/kotlin/.../cli/Main.kt`) decodes the file straight into
+`SyncPushRequestWire` (flat `deviceTypes`/`devices`/`events`/`deleted*Ids`, epoch-ms
+timestamps). The app's own backup format (`usecase/.../BackupDto.kt`) is a
+different, wrapped shape (`{"data":{"devices":[...],...}}`, ISO-8601 date strings,
+different optional fields — see `DeviceDto`/`DeviceTypeDto`/`BatteryEventDto`).
+Feeding a real export file to `push` today doesn't error: every `SyncPushRequestWire`
+field has a default, so it silently pushes empty arrays (a no-op that looks like
+success). Had to hand-write a throwaway Python conversion script for the actual
+restore this session (not committed — one-off).
+
+**Fix options:** (a) add a `restore-backup <file>` subcommand to `:cli` that parses
+the `BackupContainer` shape and maps each DTO to its Wire equivalent (mirroring
+`ImportDataUseCase`'s mapping, including the ISO-string → epoch-ms conversion), or
+(b) at minimum, make `push` reject/error on an unrecognized top-level shape instead
+of silently defaulting to empty. (a) is more useful; (b) is the safety-net minimum.
+
+### bb-labs-scope-editors — Document/handle the Labs backend's `editors` scope requirement for prod writes
+
+**Found 2026-07-06**: `POST /v1/battery-butler/sync` against Labs **prod**
+(`cartland-labs`) rejected an authenticated write with `HTTP 403
+{"error":{"code":"forbidden","message":"requires scope 'editors'"}}` even though
+the identical request against **staging** succeeded for the same user. This is
+authorization enforced by the Labs backend itself (a separate service, not in this
+repo) — granting the account `editors` on the backend's admin side resolved it.
+Noted in README's Labs CLI section so a future `cli push`/restore against prod
+isn't blocked by a mystery 403. No repo-side code change identified yet; revisit
+if the backend's admin/scope-granting process itself needs documenting here.
+
 ## P4
 
 ### bb-cli-test-data — Clean up leftover `cli-test-type-1` test data on Labs staging
