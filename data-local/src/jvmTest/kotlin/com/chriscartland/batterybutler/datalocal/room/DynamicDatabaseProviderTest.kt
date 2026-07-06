@@ -37,7 +37,7 @@ class DynamicDatabaseProviderTest {
     @BeforeTest
     @AfterTest
     fun cleanDbFiles() {
-        DatabaseOption.entries.forEach { File(tmpDir, it.fileName).delete() }
+        DatabaseOption.baseFileNames.values.forEach { File(tmpDir, it).delete() }
         DatabaseOption.legacyFileNames.values.forEach { File(tmpDir, it).delete() }
     }
 
@@ -55,8 +55,8 @@ class DynamicDatabaseProviderTest {
 
             // Seed the legacy file at the legacy filename. Trick: use the regular
             // factory path to write to the Offline DB, rename to legacy, evict.
-            val activeOption = DatabaseOption.Offline
-            val legacyFileName = DatabaseOption.legacyFileNames[activeOption]!!
+            val activeOption = DatabaseOption.OFFLINE
+            val legacyFileName = DatabaseOption.legacyFileNames[activeOption.category]!!
             val legacyType = DeviceType(
                 id = UUID.randomUUID().toString(),
                 name = "Legacy Type",

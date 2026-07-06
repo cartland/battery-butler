@@ -1,7 +1,7 @@
 package com.chriscartland.batterybutler.datalocal.room
 
 expect class DatabaseFactory {
-    fun createDatabase(option: DatabaseOption = DatabaseOption.Offline): AppDatabase
+    fun createDatabase(option: DatabaseOption = DatabaseOption.OFFLINE): AppDatabase
 
     fun evict(option: DatabaseOption)
 

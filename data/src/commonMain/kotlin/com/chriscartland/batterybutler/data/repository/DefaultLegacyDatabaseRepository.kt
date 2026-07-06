@@ -16,7 +16,7 @@ class DefaultLegacyDatabaseRepository(
 ) : LegacyDatabaseRepository {
     override fun getLegacyDatabaseInfo(networkMode: NetworkMode): LegacyDatabaseInfo? {
         val option = DatabaseOption.fromNetworkMode(networkMode)
-        val legacyFileName = DatabaseOption.legacyFileNames[option] ?: return null
+        val legacyFileName = DatabaseOption.legacyFileNames[option.category] ?: return null
         return LegacyDatabaseInfo(
             legacyFileName = legacyFileName,
             exists = databaseFactory.databaseFileExists(legacyFileName),

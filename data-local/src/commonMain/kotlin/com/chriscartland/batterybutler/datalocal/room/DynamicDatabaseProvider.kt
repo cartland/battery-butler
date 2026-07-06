@@ -42,8 +42,8 @@ class DynamicDatabaseProvider(
 ) {
     private val log = Logger.withTag("DynamicDbProvider")
     private val switchMutex = Mutex()
-    private var currentOption: DatabaseOption = DatabaseOption.Offline
-    private val _database = MutableStateFlow(factory.createDatabase(DatabaseOption.Offline))
+    private var currentOption: DatabaseOption = DatabaseOption.OFFLINE
+    private val _database = MutableStateFlow(factory.createDatabase(DatabaseOption.OFFLINE))
     val database: StateFlow<AppDatabase> = _database.asStateFlow()
 
     private val _rebindSignal = MutableSharedFlow<Long>(replay = 0, extraBufferCapacity = 1)
