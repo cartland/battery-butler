@@ -182,6 +182,16 @@ signed in only) since the token is short-lived (~1hr). `--env` selects
 staging/prod; `--url` overrides directly. Run with
 `./gradlew :cli:run --args="get --env staging --token ..."`.
 
+**`push`'s file argument must already be `SyncPushRequestWire`-shaped JSON** — it is
+NOT the same format as the app's own Settings → Export Data backup file (that's
+`BackupDto`'s wrapped `{"data": {...}}` shape with ISO date strings; see Data
+Export / Import below). Passing an export file to `push` silently no-ops (every
+field defaults to empty) rather than erroring — see `bb-cli-backup-import` in
+`TODO.md`. Also: writes to `--env prod` require an `editors` scope enforced by the
+Labs backend itself (a separate service, not in this repo) — a `HTTP 403 requires
+scope 'editors'` means the account needs that granted on the backend's admin side,
+not a client-side bug.
+
 ### UI Theme Constants
 
 Padding constants live in `presentation-core/.../theme/Padding.kt`. Use `Padding.standard` (16.dp), `Padding.small` (8.dp), `Padding.large` (24.dp), etc. instead of hardcoded dp values. Also `Padding.extraSmall` (4.dp), `Padding.medium` (12.dp), `Padding.extraLarge` (32.dp). PR #1108 swept single-arg `padding(N.dp)` sites; PR #1125 swept multi-arg `padding(horizontal = N.dp, ...)` sites in three feature files (AddDeviceType, EditDeviceType, DeviceDetail). Multi-arg padding in other feature files is a deferred follow-up.

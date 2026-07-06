@@ -58,6 +58,7 @@ Regardless of the role, the agent remains a tool, and the user retains ultimate 
 4.  **ALWAYS Ask Before Destructive or Irreversible Actions**:
     *   Creating tags, deploying, force-pushing, deleting branches on remote, or any action that affects production requires explicit confirmation.
     *   When uncertain about scope, ask clarifying questions before proceeding.
+    *   A garbled/ambiguous confirmation message does not count as explicit approval for a repeat destructive action — re-ask with the specific action spelled out (observed 2026-07-06: user's "grsbted" typo for a second Labs-prod clear+restore was correctly treated as unclear, not as a green light, until they confirmed "granted" plainly).
 
 5.  **ALWAYS Clean Up Branches After PR Merge**:
     *   Delete the local branch and verify the remote branch is deleted immediately after every PR merge.
