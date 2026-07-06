@@ -36,9 +36,9 @@ class HomeViewModel(
     private val dismissSyncStatusUseCase: DismissSyncStatusUseCase,
     private val resyncUseCase: ResyncUseCase,
 ) : ViewModel() {
-    private val sortOptionFlow = MutableStateFlow(SortOption.NAME)
+    private val sortOptionFlow = MutableStateFlow(SortOption.BATTERY_AGE)
     private val groupOptionFlow = MutableStateFlow(GroupOption.NONE)
-    private val isSortAscendingFlow = MutableStateFlow(true)
+    private val isSortAscendingFlow = MutableStateFlow(false)
     private val isGroupAscendingFlow = MutableStateFlow(true)
     private val exportDataFlow = MutableStateFlow<String?>(null)
     private var autoDismissJob: Job? = null

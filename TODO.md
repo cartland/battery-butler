@@ -315,6 +315,28 @@ Noted in README's Labs CLI section so a future `cli push`/restore against prod
 isn't blocked by a mystery 403. No repo-side code change identified yet; revisit
 if the backend's admin/scope-granting process itself needs documenting here.
 
+### bb-screenshot-flake — Intermittent pixel-level screenshot test flakiness unrelated to actual UI changes
+
+**Found 2026-07-06** while updating Home-screen screenshot baselines for the
+default-sort-order change. Running `validateDebugScreenshotTest`/`updateDebugScreenshotTest`
+twice on an otherwise-unchanged commit produced pixel-different (but *visually
+identical*, confirmed by side-by-side image comparison) renders for
+`TabletHistoryTest_Light` (`PlayStoreTabletScreenshotTestKt`) and
+`Tablet10DeviceDetailTest_Light` (`PlayStoreTablet10ScreenshotTestKt`) — neither
+screen was touched by the change being validated. A separate run also showed
+`AddDeviceTypeScreenPreviewTest`/`AddBatteryEventScreenPreviewTest`/
+`EditDeviceTypeScreenPreviewTest` (`ScreensScreenshotTestKt`) failing for what
+looked like the same reason. Likely font-hinting/anti-aliasing nondeterminism in
+the Android Studio preview renderer between separate JVM invocations, not a real
+regression. Left these baselines untouched (reverted after confirming
+byte-near-identical, visually-identical diffs) rather than blindly accepting
+whatever a given run happened to render.
+
+**Worth investigating:** whether this also causes spurious `validation_screenshots`
+CI failures unrelated to a PR's actual diff (would explain otherwise-mysterious
+red screenshot checks). If confirmed, look at pinning renderer/font versions or
+adding a tolerance threshold to the image comparison.
+
 ## P4
 
 ### bb-cli-test-data — Clean up leftover `cli-test-type-1` test data on Labs staging

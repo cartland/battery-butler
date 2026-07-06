@@ -7,9 +7,9 @@ import com.chriscartland.batterybutler.domain.model.SyncStatus
 data class HomeScreenState(
     val groupedDevices: Map<String, List<Device>> = emptyMap(),
     val deviceTypes: Map<String, DeviceType> = emptyMap(),
-    val isSortAscending: Boolean = true,
+    val isSortAscending: Boolean = false,
     val isGroupAscending: Boolean = true,
-    val sortOption: SortOption = SortOption.NAME,
+    val sortOption: SortOption = SortOption.BATTERY_AGE,
     val groupOption: GroupOption = GroupOption.NONE,
     val exportData: String? = null,
     val syncStatus: SyncStatus = SyncStatus.Idle,

@@ -29,6 +29,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 @OptIn(ExperimentalCoroutinesApi::class, ExperimentalTime::class)
 class HomeViewModelTest {
@@ -88,13 +89,25 @@ class HomeViewModelTest {
         }
 
     @Test
-    fun `devices are sorted by name by default`() =
+    fun `devices are sorted by battery age, most recently replaced first, by default`() =
         runTest {
             val repo = FakeDeviceRepository()
-            val deviceA = TestDevices.createDevice(id = "1", name = "Alpha")
-            val deviceB = TestDevices.createDevice(id = "2", name = "Zulu")
-            val deviceC = TestDevices.createDevice(id = "3", name = "Bravo")
-            repo.setDevices(listOf(deviceB, deviceA, deviceC))
+            val oldest = TestDevices.createDevice(
+                id = "1",
+                name = "Oldest",
+                batteryLastReplaced = Instant.fromEpochMilliseconds(1_000),
+            )
+            val newest = TestDevices.createDevice(
+                id = "2",
+                name = "Newest",
+                batteryLastReplaced = Instant.fromEpochMilliseconds(3_000),
+            )
+            val middle = TestDevices.createDevice(
+                id = "3",
+                name = "Middle",
+                batteryLastReplaced = Instant.fromEpochMilliseconds(2_000),
+            )
+            repo.setDevices(listOf(oldest, newest, middle))
 
             val viewModel = createViewModel(repo)
 
@@ -105,9 +118,11 @@ class HomeViewModelTest {
             }
             val devices = state.groupedDevices.values.flatten()
 
-            assertEquals("Alpha", devices[0].name)
-            assertEquals("Bravo", devices[1].name)
-            assertEquals("Zulu", devices[2].name)
+            assertEquals(SortOption.BATTERY_AGE, state.sortOption)
+            assertFalse(state.isSortAscending)
+            assertEquals("Newest", devices[0].name)
+            assertEquals("Middle", devices[1].name)
+            assertEquals("Oldest", devices[2].name)
         }
 
     @Test
@@ -141,12 +156,12 @@ class HomeViewModelTest {
             val viewModel = createViewModel(repo)
 
             val initialState = viewModel.uiState.first()
-            assertTrue(initialState.isSortAscending)
+            assertFalse(initialState.isSortAscending)
 
             viewModel.toggleSortDirection()
 
-            val updatedState = viewModel.uiState.first { !it.isSortAscending }
-            assertFalse(updatedState.isSortAscending)
+            val updatedState = viewModel.uiState.first { it.isSortAscending }
+            assertTrue(updatedState.isSortAscending)
         }
 
     @Test
