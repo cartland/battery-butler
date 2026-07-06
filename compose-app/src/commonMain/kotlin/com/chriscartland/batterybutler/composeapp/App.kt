@@ -192,7 +192,15 @@ fun App(
             val navigateToDevices = {
                 isAiExpanded = false
                 isTabTransition = true
-                tabTransitionForward = false
+                // Devices is the leftmost tab, so moving to it should read as a
+                // backward (leftward) slide. Unlike the other tabs, navigating to
+                // Devices SHRINKS the back stack ([Devices, X] -> [Devices]), which
+                // makes NavDisplay run the popTransitionSpec instead of the push
+                // transitionSpec. In the pop spec the directional semantics are
+                // inverted, so `forward = true` is what yields the leftward motion
+                // here. (Setting it false made Devices slide in from the right —
+                // the wrong way — for every switch to this tab.)
+                tabTransitionForward = true
                 backStack.clear()
                 backStack.add(Screen.Devices)
             }

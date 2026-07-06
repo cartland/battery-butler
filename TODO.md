@@ -129,6 +129,18 @@ conclusion (defensive companion to the bb-2r4g close-on-success guard).
 
 ## P3
 
+### bb-uxsync — Re-sync iOS palette + design doc to the revamped Android theme
+
+The Android theme (`presentation-core/.../theme/Color.kt` + `Theme.kt`) was overhauled:
+every Material 3 color role is now defined for both light and dark (previously the
+surface-container / surface-variant / inverse / outline-variant roles were unset and
+fell back to Material's cold purple baseline, which looked bad in dark mode). Several
+brand tones were also adjusted for WCAG AA contrast (primary/secondary/tertiary light
+darkened slightly; dark secondary/tertiary switched from the shared mid-tones to proper
+lighter dark-mode tones). `docs/design/IOS_DESIGN_LANGUAGE.md` §2 and the iOS SwiftUI
+`Color` constants still carry the OLD hex values — re-sync them so the two platforms
+keep a shared identity. Source of truth is the new `Color.kt`.
+
 ### bb-emult — `validate.sh` hangs on `pixel5api34DebugAndroidTest` when no emulator can boot
 
 `./scripts/validate.sh` step 4 runs `:compose-app:pixel5api34DebugAndroidTest`

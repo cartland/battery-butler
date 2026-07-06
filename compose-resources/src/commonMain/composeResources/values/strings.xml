@@ -143,6 +143,11 @@
     <string name="form_error_battery_type_required">Battery type is required</string>
     <string name="form_error_type_name_required">Type name is required</string>
     <string name="settings_title">Settings</string>
+    <string name="settings_section_account">Account</string>
+    <string name="settings_section_connection">Connection</string>
+    <string name="settings_section_ai">AI Assistant</string>
+    <string name="settings_section_data">Data</string>
+    <string name="settings_section_about">About</string>
     <string name="settings_user_signed_in">Signed In</string>
     <string name="settings_app_version_unavailable">Unavailable</string>
     <string name="action_sign_out">Sign Out</string>

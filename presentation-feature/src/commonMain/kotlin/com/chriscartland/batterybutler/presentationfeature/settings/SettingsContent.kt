@@ -91,6 +91,11 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.sett
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_labs_signing_in
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_labs_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_labs_token_copied
+import com.chriscartland.batterybutler.composeresources.generated.resources.settings_section_about
+import com.chriscartland.batterybutler.composeresources.generated.resources.settings_section_account
+import com.chriscartland.batterybutler.composeresources.generated.resources.settings_section_ai
+import com.chriscartland.batterybutler.composeresources.generated.resources.settings_section_connection
+import com.chriscartland.batterybutler.composeresources.generated.resources.settings_section_data
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_user_signed_in
 import com.chriscartland.batterybutler.domain.model.AppVersion
@@ -259,8 +264,11 @@ fun SettingsContent(
                 .padding(Padding.standard),
             verticalArrangement = Arrangement.spacedBy(Padding.standard),
         ) {
-            // Account Card
+            // Account
             if (currentUser != null) {
+                SettingsSectionHeader(
+                    composeStringResource(Res.string.settings_section_account),
+                )
                 Card(
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -317,6 +325,11 @@ fun SettingsContent(
                     }
                 }
             }
+
+            // Connection
+            SettingsSectionHeader(
+                composeStringResource(Res.string.settings_section_connection),
+            )
 
             // Network Mode Card
             ExpandableSelectionControl(
@@ -492,6 +505,11 @@ fun SettingsContent(
                 }
             }
 
+            // AI Assistant
+            SettingsSectionHeader(
+                composeStringResource(Res.string.settings_section_ai),
+            )
+
             // AI Engine Card
             ExpandableSelectionControl(
                 title = composeStringResource(Res.string.ai_engine_title),
@@ -506,6 +524,11 @@ fun SettingsContent(
                         AiEngineType.NoOp -> composeStringResource(Res.string.ai_engine_noop)
                     }
                 },
+            )
+
+            // Data
+            SettingsSectionHeader(
+                composeStringResource(Res.string.settings_section_data),
             )
 
             // Export Data Card
@@ -670,6 +693,11 @@ fun SettingsContent(
                 }
             }
 
+            // About
+            SettingsSectionHeader(
+                composeStringResource(Res.string.settings_section_about),
+            )
+
             // Check for Updates Card
             Card(
                 onClick = {
@@ -755,6 +783,20 @@ fun SettingsContent(
             }
         }
     }
+}
+
+@Composable
+private fun SettingsSectionHeader(
+    title: String,
+    modifier: Modifier = Modifier,
+) {
+    Text(
+        text = title,
+        style = MaterialTheme.typography.titleSmall,
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = modifier.padding(start = Padding.small, top = Padding.small),
+    )
 }
 
 @Preview(showBackground = true)
