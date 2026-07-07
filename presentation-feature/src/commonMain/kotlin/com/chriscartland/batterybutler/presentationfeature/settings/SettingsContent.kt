@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -24,6 +25,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -441,7 +443,14 @@ fun SettingsContent(
                                 }
                             }
 
-                            AuthState.Unknown, AuthState.Unauthenticated, is AuthState.Failed -> {
+                            AuthState.Unknown -> {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(24.dp),
+                                    strokeWidth = 2.dp,
+                                )
+                            }
+
+                            AuthState.Unauthenticated, is AuthState.Failed -> {
                                 Button(
                                     onClick = onSignInToLabs,
                                     modifier = Modifier.fillMaxWidth(),
@@ -857,6 +866,33 @@ fun SettingsContentAllNetworkModesPreview() {
             currentUser = null,
             onSignOut = {},
             initiallyExpandedNetworkModes = true,
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SettingsContentLabsAuthUnknownPreview() {
+    BatteryButlerTheme {
+        SettingsContent(
+            networkMode = NetworkMode.LabsStaging(null),
+            availableNetworkModes = listOf(NetworkMode.LabsStaging(null)),
+            onNetworkModeSelected = {},
+            aiEngineType = AiEngineType.Cloud,
+            availableAiEngines = AiEngineType.entries,
+            onAiEngineSelected = {},
+            onExportData = {},
+            onImportData = {},
+            importResult = null,
+            importError = null,
+            importInProgress = false,
+            onImportResultConsumed = {},
+            onBack = {},
+            appVersion = AppVersion.Android("1.0.0", 123),
+            currentUser = null,
+            onSignOut = {},
+            isLabsMode = true,
+            labsAuthState = AuthState.Unknown,
         )
     }
 }
