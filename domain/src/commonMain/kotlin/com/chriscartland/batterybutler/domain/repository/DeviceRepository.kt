@@ -8,6 +8,8 @@ import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.model.SyncStatus
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Repository interface for managing devices, device types, and battery events.
@@ -39,8 +41,17 @@ interface DeviceRepository {
      */
     fun dismissSyncStatus()
 
-    /** Triggers an immediate remote resync (e.g. for pull-to-refresh), independent of the timing of the background sync loop. */
-    suspend fun resync()
+    /**
+     * Triggers an immediate remote resync (e.g. for pull-to-refresh), independent of the timing
+     * of the background sync loop.
+     *
+     * @param timeout how long to wait for a remote update before giving up; the background sync
+     *   loop keeps retrying regardless, so this only bounds how long *this* call waits. Defaults
+     *   to a short timeout tuned for an interactive spinner (pull-to-refresh); callers with a
+     *   naturally longer wait already in progress and a higher chance of hitting a cold backend
+     *   (e.g. immediately after sign-in) may pass a longer one.
+     */
+    suspend fun resync(timeout: Duration = DEFAULT_RESYNC_TIMEOUT)
 
     /**
      * Deletes all locally cached devices, device types, and events for whichever environment is
@@ -110,3 +121,6 @@ interface DeviceRepository {
 
     // endregion
 }
+
+/** Default [DeviceRepository.resync] timeout, tuned for an interactive pull-to-refresh spinner. */
+val DEFAULT_RESYNC_TIMEOUT = 15.seconds

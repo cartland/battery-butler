@@ -4,7 +4,9 @@ import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.SyncStatus
+import com.chriscartland.batterybutler.domain.repository.DEFAULT_RESYNC_TIMEOUT
 import kotlinx.coroutines.flow.StateFlow
+import kotlin.time.Duration
 
 /**
  * Manages remote synchronization: subscribes for updates, pushes local changes,
@@ -19,11 +21,11 @@ interface SyncManager {
 
     /**
      * Performs one immediate remote fetch (bypassing the background retry loop's backoff
-     * delay) and applies the result locally. Bounded by a timeout so it always resolves even
+     * delay) and applies the result locally. Bounded by [timeout] so it always resolves even
      * against a server-streaming source with nothing new to push. Safe to call concurrently
      * with the background sync loop -- applying the same snapshot twice is a harmless no-op.
      */
-    suspend fun resync()
+    suspend fun resync(timeout: Duration = DEFAULT_RESYNC_TIMEOUT)
 
     fun pushUpdate(
         deviceTypes: List<DeviceType> = emptyList(),

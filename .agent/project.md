@@ -391,19 +391,52 @@ invoked through `SignOutLabsUseCase`) clears it alongside the local data
 clear — no usecase-layer changes needed, this is entirely internal to the
 repository.
 
-**Deliberately does not re-validate a real session** (unlike
-`DefaultAuthRepository`'s `scheduleTokenExpiry`) — the real Labs
-session/token still lives only in `LabsAuthGateway`, in-memory,
-process-lifetime only. If it's actually stale after a restart, that surfaces
-later via the normal sync-failure path, not here. This was an explicit user
-scoping decision ("I don't actually care about expired auth... I just care
-that we remember that we think we are signed in") after a fuller
-silent-token-refresh approach was considered and found to need real
-per-platform work (Android's Credential Manager supports an
-authorized-accounts-only silent flow already; iOS/Desktop use a hand-rolled
-OAuth PKCE flow with no persisted refresh token, so silent restore isn't
-available there without new infrastructure) — deemed out of scope once the
-lighter "just remember the belief" framing covered the actual complaint.
+**Deliberately does not re-validate a real session** by itself (unlike
+`DefaultAuthRepository`'s `scheduleTokenExpiry`) — this fix alone leaves the
+real Labs session/token in `LabsAuthGateway` unrestored. That gap is closed
+opportunistically by the next section, `LabsSessionStorage` itself still only
+tracks the lightweight UI-facing belief, no tokens, no expiry.
+
+### Opportunistic Silent Labs Re-Auth (`GoogleSignInBridge.signInSilentlyWithClient`)
+
+Follow-up to the section above (`bb-labs-silent-reauth` in TODO.md, fixed
+2026-07-07). The persisted-belief fix alone left a real gap: the UI shows
+"Authenticated" after a restart, but `LabsAuthGateway`'s actual session
+(process-lifetime, in-memory) is never re-established — so background sync
+could keep failing silently, with the explicit sign-in affordance now hidden
+since the UI believes it's already signed in.
+
+`GoogleSignInBridge` (`data-network/.../auth/`, `expect class`) gained
+`signInSilentlyWithClient(clientId, clientSecret)`: like `signInWithClient`
+but never shows UI. **Android** actual reuses `performSignIn`'s existing
+Credential Manager call with `setFilterByAuthorizedAccounts(true)` instead of
+`false` — succeeds only if the account was previously authorized, fails
+cleanly (`NoCredentialException`, logged at info not warning level, since
+"not yet authorized" is an expected outcome here) otherwise. **iOS/Desktop**
+actuals always return `Result.Error` immediately — neither bridge uses a
+native Sign-In SDK (both are hand-rolled interactive OAuth flows: iOS
+`ASWebAuthenticationSession`, Desktop browser-loopback PKCE), so there's no
+persisted session to silently check without opening a browser/sheet.
+
+`DefaultLabsAuthRepository`'s `init` block calls a new `attemptSilentReauth()`
+right after resolving `Unknown` from the persisted belief — guarded by
+`NetworkModeKeyedState.compareAndSet` now returning `Boolean` (true only when
+it actually performed the swap), so the silent attempt fires exactly once per
+belief-resolution and never redundantly re-fires on a subsequent *explicit*
+sign-in (which already has a real session). On success, completes the same
+`labsAuthGateway.signInToLabsWithGoogle` exchange `exchangeForLabsSession`
+uses. **Best-effort by design**: failure touches neither `authStateByMode`
+nor `labsSessionStorage` — the UI keeps showing the believed-signed-in state
+regardless, matching the exact tolerance the persisted-belief fix already
+established ("I don't actually care about expired auth"). Verified on a real
+emulator: sign in, force-stop, relaunch → logcat shows `"Silent Labs re-auth
+succeeded; real session re-established"` with zero UI/dialog shown.
+
+**Deferred**: iOS/Desktop still have no silent-restore path — would require
+adopting a native Sign-In SDK or building refresh-token persistence for their
+existing PKCE flows, a materially bigger feature than this fix. Those
+platforms rely solely on the persisted-belief UI fix; an explicit re-sign-in
+is still required there to restore a real session after a restart.
 
 ### KMP-Friendly Class Naming Convention
 

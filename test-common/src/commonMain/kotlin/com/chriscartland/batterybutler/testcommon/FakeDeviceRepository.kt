@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
+import kotlin.time.Duration
 
 /**
  * Fake implementation of [DeviceRepository] for testing.
@@ -84,8 +85,12 @@ class FakeDeviceRepository : DeviceRepository {
     /** Number of times [resync] has been called. */
     var resyncCount = 0
 
-    override suspend fun resync() {
+    /** The [Duration] passed to the most recent [resync] call, or null if never called. */
+    var lastResyncTimeout: Duration? = null
+
+    override suspend fun resync(timeout: Duration) {
         resyncCount++
+        lastResyncTimeout = timeout
     }
 
     /** Number of times [clearAllLocalData] has been called. */

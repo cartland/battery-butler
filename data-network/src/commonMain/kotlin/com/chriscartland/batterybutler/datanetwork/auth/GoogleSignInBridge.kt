@@ -53,6 +53,26 @@ expect class GoogleSignInBridge {
     ): Result<GoogleIdToken, AuthError.SignIn>
 
     /**
+     * Like [signInWithClient], but never shows any UI: succeeds only if the platform can silently
+     * confirm an already-authorized account for [clientId] (e.g. Android Credential Manager's
+     * authorized-accounts-only flow), and fails immediately otherwise. Used to opportunistically
+     * re-establish a real session after a process restart, when a persisted "believed signed in"
+     * flag already says the user was signed in -- so it must never prompt.
+     *
+     * Platforms with no such capability (iOS, Desktop -- both use an interactive OAuth sheet/browser
+     * with no persisted, silently-restorable session) always return [Result.Error] immediately.
+     *
+     * @param clientId the OAuth client ID to authenticate against.
+     * @param clientSecret same meaning as in [signInWithClient]; pass null when not applicable.
+     * @return [Result.Success] with [GoogleIdToken] on success,
+     *         [Result.Error] with [AuthError.SignIn] when no silent credential is available.
+     */
+    suspend fun signInSilentlyWithClient(
+        clientId: String,
+        clientSecret: String?,
+    ): Result<GoogleIdToken, AuthError.SignIn>
+
+    /**
      * Signs out the current Google account.
      */
     suspend fun signOut()

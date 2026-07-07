@@ -18,6 +18,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertTrue
+import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -252,7 +253,7 @@ private class TestExportRepository : DeviceRepository {
 
     override fun dismissSyncStatus() {}
 
-    override suspend fun resync() {}
+    override suspend fun resync(timeout: Duration) {}
 
     override suspend fun clearAllLocalData() {}
 

@@ -98,6 +98,20 @@ actual class GoogleSignInBridge {
         return performSignIn(clientId)
     }
 
+    actual suspend fun signInSilentlyWithClient(
+        clientId: String,
+        clientSecret: String?,
+    ): Result<GoogleIdToken, AuthError.SignIn> =
+        // iOS uses an interactive ASWebAuthenticationSession sheet with no persisted, silently
+        // restorable session (this bridge doesn't use Google's native Sign-In SDK) -- there's
+        // nothing to check without showing UI, so this always fails immediately.
+        Result.Error(
+            AuthError.SignIn.Failed(
+                message = "Silent sign-in not available",
+                cause = "iOS sign-in requires the interactive sheet; no session to restore silently",
+            ),
+        )
+
     /**
      * Core PKCE + [ASWebAuthenticationSession] flow against [signInClientId]. The redirect URI is the
      * client's reversed-client-ID custom scheme (see [redirectUriFor]), which the app must declare in

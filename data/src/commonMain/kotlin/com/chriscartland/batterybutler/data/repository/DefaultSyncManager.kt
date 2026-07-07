@@ -22,6 +22,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import me.tatarka.inject.annotations.Inject
 import kotlin.coroutines.cancellation.CancellationException
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
@@ -142,7 +143,7 @@ class DefaultSyncManager(
         _syncStatus.value = SyncStatus.Idle
     }
 
-    override suspend fun resync() {
+    override suspend fun resync(timeout: Duration) {
         val currentMode = networkModeRepository.networkMode.first()
         if (currentMode is NetworkMode.None) return
 
@@ -153,7 +154,7 @@ class DefaultSyncManager(
             // gRPC server stream (would otherwise never complete). withTimeout bounds the wait
             // so a server with nothing new to push can't hang the caller (e.g. a pull-to-refresh
             // spinner) forever.
-            val update = withTimeout(RESYNC_TIMEOUT) { remoteDataSource.subscribe().first() }
+            val update = withTimeout(timeout) { remoteDataSource.subscribe().first() }
             applyRemoteUpdate(update)
             _syncStatus.value = SyncStatus.Success
         } catch (e: CancellationException) {
@@ -174,7 +175,6 @@ class DefaultSyncManager(
         const val TAG = "SyncManager"
         val INITIAL_BACKOFF_MS = 1.seconds.inWholeMilliseconds
         val MAX_BACKOFF_MS = 30.seconds.inWholeMilliseconds
-        val RESYNC_TIMEOUT = 15.seconds
 
         internal fun nextBackoff(currentMs: Long): Long = (currentMs * 2).coerceAtMost(MAX_BACKOFF_MS)
     }

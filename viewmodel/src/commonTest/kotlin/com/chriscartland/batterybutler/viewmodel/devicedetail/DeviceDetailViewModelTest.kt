@@ -34,6 +34,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -249,7 +250,7 @@ private class FakeDetailRepository : DeviceRepository {
 
     override fun dismissSyncStatus() {}
 
-    override suspend fun resync() {}
+    override suspend fun resync(timeout: Duration) {}
 
     override suspend fun clearAllLocalData() {}
 

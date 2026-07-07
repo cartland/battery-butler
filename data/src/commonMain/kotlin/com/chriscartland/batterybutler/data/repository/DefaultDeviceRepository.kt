@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import me.tatarka.inject.annotations.Inject
 import kotlin.coroutines.cancellation.CancellationException
+import kotlin.time.Duration
 
 @Inject
 class DefaultDeviceRepository(
@@ -22,7 +23,7 @@ class DefaultDeviceRepository(
 
     override fun dismissSyncStatus() = syncManager.dismissSyncStatus()
 
-    override suspend fun resync() = syncManager.resync()
+    override suspend fun resync(timeout: Duration) = syncManager.resync(timeout)
 
     override suspend fun clearAllLocalData() = localDataSource.clearAll()
 
