@@ -13,6 +13,8 @@ import com.chriscartland.batterybutler.datalocal.LocalDataSource
 import com.chriscartland.batterybutler.datalocal.RoomLocalDataSource
 import com.chriscartland.batterybutler.datalocal.auth.AuthTokenStorage
 import com.chriscartland.batterybutler.datalocal.auth.DataStoreAuthTokenStorage
+import com.chriscartland.batterybutler.datalocal.auth.DataStoreLabsSessionStorage
+import com.chriscartland.batterybutler.datalocal.auth.LabsSessionStorage
 import com.chriscartland.batterybutler.datalocal.preferences.DataStoreFactory
 import com.chriscartland.batterybutler.datalocal.preferences.DataStorePreferencesDataSource
 import com.chriscartland.batterybutler.datalocal.preferences.PreferencesDataSource
@@ -88,6 +90,9 @@ interface DataComponent {
 
     @Provides
     fun provideAuthTokenStorage(storage: DataStoreAuthTokenStorage): AuthTokenStorage = storage
+
+    @Provides
+    fun provideLabsSessionStorage(storage: DataStoreLabsSessionStorage): LabsSessionStorage = storage
 
     @Provides
     fun provideAuthRepository(repo: DefaultAuthRepository): AuthRepository = repo

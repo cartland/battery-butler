@@ -1,6 +1,7 @@
 package com.chriscartland.batterybutler.data.repository.auth
 
 import co.touchlab.kermit.Logger
+import com.chriscartland.batterybutler.datalocal.auth.LabsSessionStorage
 import com.chriscartland.batterybutler.datanetwork.LabsAuthGateway
 import com.chriscartland.batterybutler.datanetwork.apiKeyForMode
 import com.chriscartland.batterybutler.datanetwork.auth.GoogleSignInBridge
@@ -15,8 +16,14 @@ import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.model.User
 import com.chriscartland.batterybutler.domain.repository.LabsAuthRepository
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 
 /**
@@ -36,7 +43,17 @@ import me.tatarka.inject.annotations.Inject
  * plain `MutableStateFlow` -- a bare field would show a *previous* environment's "signed in"
  * status right after switching Labs modes, since nothing would tell it the environment changed.
  * See `bb-labs-mode-auth-state` in TODO.md for the bug this replaced.
+ *
+ * Each key's [AuthState] starts as [AuthState.Unknown] and is resolved once from
+ * [labsSessionStorage] -- a lightweight, per-environment "believed signed in" flag persisted
+ * across process restarts (profile info only, no tokens, no expiry). This exists so that after
+ * the OS kills and relaunches the process (auth state is otherwise in-memory only and would reset
+ * to [AuthState.Unauthenticated] every launch), the UI doesn't show a "Sign in to Labs" prompt at
+ * the same moment the already-synced local data is visible. It deliberately does *not* re-validate
+ * a real session -- if the underlying Labs/Google session actually expired, that surfaces later via
+ * the normal sync-failure path, not here. See `bb-labs-signout-clear` in TODO.md.
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 @Inject
 class DefaultLabsAuthRepository(
     private val googleSignInBridge: GoogleSignInBridge,
@@ -45,15 +62,31 @@ class DefaultLabsAuthRepository(
     private val labsFirebaseApiKey: LabsFirebaseApiKey,
     private val labsStagingOAuthClient: LabsStagingGoogleOAuthClient,
     private val labsProdOAuthClient: LabsProdGoogleOAuthClient,
+    private val labsSessionStorage: LabsSessionStorage,
+    private val scope: CoroutineScope,
 ) : LabsAuthRepository {
     private val log = Logger.withTag("DefaultLabsAuthRepository")
 
     private val authStateByMode = NetworkModeKeyedState<AuthState>(
         networkMode = networkModeRepository.networkMode,
         keyFor = { apiKeyForMode(it, labsFirebaseApiKey) },
-        default = AuthState.Unauthenticated,
+        default = AuthState.Unknown,
     )
     override val labsAuthState: Flow<AuthState> = authStateByMode.current
+
+    init {
+        scope.launch {
+            networkModeRepository.networkMode
+                .map { apiKeyForMode(it, labsFirebaseApiKey) }
+                .distinctUntilChanged()
+                .flatMapLatest { key -> labsSessionStorage.observeUser(key).map { key to it } }
+                .distinctUntilChanged()
+                .collect { (key, user) ->
+                    val resolved = user?.let { AuthState.Authenticated(it) } ?: AuthState.Unauthenticated
+                    authStateByMode.compareAndSet(key, expected = AuthState.Unknown, newValue = resolved)
+                }
+        }
+    }
 
     override suspend fun signInToLabs(): Result<User, AuthError> {
         val client = when (networkModeRepository.networkMode.first()) {
@@ -110,6 +143,7 @@ class DefaultLabsAuthRepository(
                 )
                 log.i { "Labs sign-in successful for ${google.email}" }
                 authStateByMode.setCurrent(AuthState.Authenticated(user))
+                labsSessionStorage.saveUser(apiKeyForMode(networkModeRepository.networkMode.first(), labsFirebaseApiKey), user)
                 Result.Success(user)
             }
 
@@ -122,6 +156,7 @@ class DefaultLabsAuthRepository(
     override suspend fun signOutLabs() {
         labsAuthGateway.signOutLabs()
         authStateByMode.setCurrent(AuthState.Unauthenticated)
+        labsSessionStorage.clearUser(apiKeyForMode(networkModeRepository.networkMode.first(), labsFirebaseApiKey))
     }
 
     override suspend fun clearError() {
