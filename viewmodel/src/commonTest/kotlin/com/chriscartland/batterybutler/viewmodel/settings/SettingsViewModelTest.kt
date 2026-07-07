@@ -28,6 +28,7 @@ import com.chriscartland.batterybutler.usecase.ImportDataUseCase
 import com.chriscartland.batterybutler.usecase.RestoreLegacyDatabaseUseCase
 import com.chriscartland.batterybutler.usecase.SignInToLabsUseCase
 import com.chriscartland.batterybutler.usecase.SignOutLabsUseCase
+import com.chriscartland.batterybutler.usecase.SignOutUseCase
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -234,15 +235,19 @@ class SettingsViewModelTest {
         }
 
     @Test
-    fun `signOut calls auth repository`() =
+    fun `signOut calls auth repository and clears the locally cached data`() =
         runTest {
             val authRepo = FakeAuthRepository()
-            val viewModel = createViewModel(authRepository = authRepo)
+            val deviceRepo = FakeDeviceRepository()
+            deviceRepo.setDevices(listOf(TestDevices.createDevice(id = "cached-device")))
+            val viewModel = createViewModel(authRepository = authRepo, deviceRepository = deviceRepo)
 
             viewModel.signOut()
             advanceUntilIdle()
 
             assertEquals(1, authRepo.signOutCallCount)
+            assertEquals(1, deviceRepo.clearAllLocalDataCount)
+            assertTrue(deviceRepo.getAllDevices().first().isEmpty())
         }
 
     // endregion
@@ -675,6 +680,7 @@ class SettingsViewModelTest {
             restartCoordinator = restartCoordinator,
             signInToLabsUseCase = SignInToLabsUseCase(labsAuthRepository, deviceRepository),
             signOutLabsUseCase = SignOutLabsUseCase(labsAuthRepository, deviceRepository),
+            signOutUseCase = SignOutUseCase(authRepository, deviceRepository),
             productionServerUrl = ProductionServerUrl("http://test-server:80"),
             devServerUrl = DevServerUrl("http://test-dev-server:80"),
             labsStagingUrl = LabsStagingUrl(""),
