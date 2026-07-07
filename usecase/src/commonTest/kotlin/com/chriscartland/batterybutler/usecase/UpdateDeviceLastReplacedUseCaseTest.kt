@@ -18,6 +18,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -190,7 +191,7 @@ class UpdateDeviceLastReplacedUseCaseTest {
 
         override fun dismissSyncStatus() {}
 
-        override suspend fun resync() {}
+        override suspend fun resync(timeout: Duration) {}
 
         override suspend fun clearAllLocalData() {}
 

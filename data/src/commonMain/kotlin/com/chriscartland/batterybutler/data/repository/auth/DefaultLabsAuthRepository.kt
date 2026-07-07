@@ -52,6 +52,14 @@ import me.tatarka.inject.annotations.Inject
  * the same moment the already-synced local data is visible. It deliberately does *not* re-validate
  * a real session -- if the underlying Labs/Google session actually expired, that surfaces later via
  * the normal sync-failure path, not here. See `bb-labs-signout-clear` in TODO.md.
+ *
+ * Right after resolving `Unknown` from persisted storage this way, [attemptSilentReauth] also
+ * makes one opportunistic, no-UI attempt to re-establish the *real* [labsAuthGateway] session (via
+ * [GoogleSignInBridge.signInSilentlyWithClient], which only succeeds if the platform can silently
+ * confirm an already-authorized account -- currently just Android's Credential Manager). This is
+ * best-effort: on failure it changes nothing (no UI impact, no state rollback) and background sync
+ * simply keeps failing until the user explicitly signs in again, exactly as it would without this
+ * attempt at all. See `bb-labs-persist-signin-belief` in TODO.md.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 @Inject
@@ -83,30 +91,54 @@ class DefaultLabsAuthRepository(
                 .distinctUntilChanged()
                 .collect { (key, user) ->
                     val resolved = user?.let { AuthState.Authenticated(it) } ?: AuthState.Unauthenticated
-                    authStateByMode.compareAndSet(key, expected = AuthState.Unknown, newValue = resolved)
+                    val resolvedFromUnknown = authStateByMode.compareAndSet(key, expected = AuthState.Unknown, newValue = resolved)
+                    if (resolvedFromUnknown && user != null) {
+                        attemptSilentReauth()
+                    }
                 }
         }
     }
 
-    override suspend fun signInToLabs(): Result<User, AuthError> {
-        val client = when (networkModeRepository.networkMode.first()) {
-            is NetworkMode.LabsStaging -> {
-                labsStagingOAuthClient.clientId to labsStagingOAuthClient.clientSecret
+    /** Staging/prod OAuth client for whichever Labs mode is selected right now, or null if not a Labs mode. */
+    private suspend fun labsOAuthClient(): Pair<String, String>? =
+        when (networkModeRepository.networkMode.first()) {
+            is NetworkMode.LabsStaging -> labsStagingOAuthClient.clientId to labsStagingOAuthClient.clientSecret
+            is NetworkMode.LabsProd -> labsProdOAuthClient.clientId to labsProdOAuthClient.clientSecret
+            else -> null
+        }
+
+    /**
+     * One opportunistic, no-UI attempt to re-establish the real gateway session right after
+     * resolving a persisted "believed signed in" belief. Never touches [authStateByMode] or
+     * [labsSessionStorage] -- success needs no state change (already Authenticated from the
+     * belief), and failure is left silent by design so the believed-signed-in UI doesn't flip back
+     * to a sign-in prompt just because this best-effort attempt didn't pan out.
+     */
+    private suspend fun attemptSilentReauth() {
+        val (clientId, clientSecret) = labsOAuthClient() ?: return
+        if (clientId.isBlank()) return
+        when (val signIn = googleSignInBridge.signInSilentlyWithClient(clientId, clientSecret.ifBlank { null })) {
+            is Result.Success -> {
+                when (val exchange = labsAuthGateway.signInToLabsWithGoogle(signIn.data.idToken)) {
+                    is Result.Success -> log.i { "Silent Labs re-auth succeeded; real session re-established" }
+                    is Result.Error -> log.w { "Silent Labs re-auth: token exchange failed: ${exchange.error.message}" }
+                }
             }
 
-            is NetworkMode.LabsProd -> {
-                labsProdOAuthClient.clientId to labsProdOAuthClient.clientSecret
-            }
-
-            else -> {
-                return fail(
-                    AuthError.Configuration.NotConfigured(
-                        message = "Not a Labs network mode",
-                        cause = "Select Labs (staging) or Labs (prod) before signing in to Labs",
-                    ),
-                )
+            is Result.Error -> {
+                log.i { "Silent Labs re-auth not available: ${signIn.error.message}" }
             }
         }
+    }
+
+    override suspend fun signInToLabs(): Result<User, AuthError> {
+        val client = labsOAuthClient()
+            ?: return fail(
+                AuthError.Configuration.NotConfigured(
+                    message = "Not a Labs network mode",
+                    cause = "Select Labs (staging) or Labs (prod) before signing in to Labs",
+                ),
+            )
         val (clientId, clientSecret) = client
         if (clientId.isBlank()) {
             return fail(

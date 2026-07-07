@@ -124,7 +124,25 @@ actual class GoogleSignInBridge {
         return performSignIn(clientId)
     }
 
-    private suspend fun performSignIn(clientId: String): Result<GoogleIdToken, AuthError.SignIn> {
+    actual suspend fun signInSilentlyWithClient(
+        clientId: String,
+        clientSecret: String?,
+    ): Result<GoogleIdToken, AuthError.SignIn> {
+        if (clientId.isBlank()) {
+            return Result.Error(
+                AuthError.SignIn.Failed(
+                    message = "Google Sign-In not configured",
+                    cause = "Client ID is blank",
+                ),
+            )
+        }
+        return performSignIn(clientId, filterByAuthorizedAccounts = true)
+    }
+
+    private suspend fun performSignIn(
+        clientId: String,
+        filterByAuthorizedAccounts: Boolean = false,
+    ): Result<GoogleIdToken, AuthError.SignIn> {
         val activity = activityProvider?.invoke()
         if (activity == null) {
             return Result.Error(
@@ -147,7 +165,7 @@ actual class GoogleSignInBridge {
 
         val googleIdOption = GetGoogleIdOption
             .Builder()
-            .setFilterByAuthorizedAccounts(false)
+            .setFilterByAuthorizedAccounts(filterByAuthorizedAccounts)
             .setServerClientId(clientId)
             .setAutoSelectEnabled(true)
             .build()
@@ -168,14 +186,21 @@ actual class GoogleSignInBridge {
                 ),
             )
         } catch (e: NoCredentialException) {
-            Log.w(
-                TAG,
-                "NoCredentialException for client ...${clientId.takeLast(15)} — if a Google " +
-                    "account exists on-device, this usually means the app's signing certificate " +
-                    "(e.g. the Play App Signing SHA-1, which differs from the upload keystore's) " +
-                    "isn't registered on the Android OAuth client for this project. " +
-                    "Cause: ${e.message.orEmpty()}",
-            )
+            if (filterByAuthorizedAccounts) {
+                // Expected/common outcome for a silent, authorized-accounts-only request (e.g. the
+                // very first sign-in ever, before any account has been authorized) -- not a
+                // misconfiguration signal, so no warning-level log here.
+                Log.i(TAG, "Silent sign-in: no already-authorized account for client ...${clientId.takeLast(15)}")
+            } else {
+                Log.w(
+                    TAG,
+                    "NoCredentialException for client ...${clientId.takeLast(15)} — if a Google " +
+                        "account exists on-device, this usually means the app's signing certificate " +
+                        "(e.g. the Play App Signing SHA-1, which differs from the upload keystore's) " +
+                        "isn't registered on the Android OAuth client for this project. " +
+                        "Cause: ${e.message.orEmpty()}",
+                )
+            }
             Result.Error(
                 AuthError.SignIn.Failed(
                     message = "No Google account found",

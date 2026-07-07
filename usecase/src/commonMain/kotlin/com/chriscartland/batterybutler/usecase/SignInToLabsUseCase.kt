@@ -6,11 +6,17 @@ import com.chriscartland.batterybutler.domain.model.User
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.domain.repository.LabsAuthRepository
 import me.tatarka.inject.annotations.Inject
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Signs in to the Labs backend and, on success, triggers an immediate resync so the currently
  * selected Labs environment's devices populate right away instead of waiting for the ambient
  * background sync loop (whose retry backoff can drift up to 30s while signed out).
+ *
+ * Uses a longer-than-default [SIGN_IN_RESYNC_TIMEOUT]: the user is already in a natural loading
+ * moment after tapping sign-in (unlike pull-to-refresh's interactive spinner), and a Labs backend
+ * that's been idle for a while can take longer than the default 15s to respond to its first
+ * request. See `bb-labs-cold-resync` in TODO.md.
  */
 @Inject
 class SignInToLabsUseCase(
@@ -20,8 +26,12 @@ class SignInToLabsUseCase(
     suspend operator fun invoke(): Result<User, AuthError> {
         val result = labsAuthRepository.signInToLabs()
         if (result is Result.Success) {
-            deviceRepository.resync()
+            deviceRepository.resync(timeout = SIGN_IN_RESYNC_TIMEOUT)
         }
         return result
+    }
+
+    private companion object {
+        val SIGN_IN_RESYNC_TIMEOUT = 60.seconds
     }
 }

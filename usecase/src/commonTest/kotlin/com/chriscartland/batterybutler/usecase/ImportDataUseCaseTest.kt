@@ -21,6 +21,7 @@ import kotlinx.serialization.json.Json
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -430,7 +431,7 @@ private class TestImportRepository : DeviceRepository {
 
     override fun dismissSyncStatus() {}
 
-    override suspend fun resync() {}
+    override suspend fun resync(timeout: Duration) {}
 
     override suspend fun clearAllLocalData() {}
 

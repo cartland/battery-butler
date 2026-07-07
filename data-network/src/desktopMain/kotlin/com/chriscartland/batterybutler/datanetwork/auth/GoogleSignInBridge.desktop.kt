@@ -79,6 +79,20 @@ actual class GoogleSignInBridge {
         return performSignIn(clientId, clientSecret)
     }
 
+    actual suspend fun signInSilentlyWithClient(
+        clientId: String,
+        clientSecret: String?,
+    ): Result<GoogleIdToken, AuthError.SignIn> =
+        // Desktop uses a browser-based PKCE loopback flow with no persisted, silently restorable
+        // session -- there's nothing to check without opening a browser, so this always fails
+        // immediately.
+        Result.Error(
+            AuthError.SignIn.Failed(
+                message = "Silent sign-in not available",
+                cause = "Desktop sign-in requires opening the browser; no session to restore silently",
+            ),
+        )
+
     /**
      * Core PKCE loopback flow against [signInClientId]. [signInClientSecret], when present, is sent
      * at token exchange — required for Google "Desktop app" clients (e.g. the Labs client).

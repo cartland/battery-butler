@@ -58,13 +58,17 @@ class NetworkModeKeyedState<T>(
      * Sets the value for [key] only if its current value equals [expected] -- used to resolve a
      * placeholder default (e.g. from an async read of persisted state) without clobbering a real
      * transition that already happened for that key in the meantime.
+     *
+     * @return true if the value was actually set (i.e. it still equaled [expected]).
      */
     fun compareAndSet(
         key: String,
         expected: T,
         newValue: T,
-    ) {
+    ): Boolean {
         val flow = stateFor(key)
-        if (flow.value == expected) flow.value = newValue
+        if (flow.value != expected) return false
+        flow.value = newValue
+        return true
     }
 }
