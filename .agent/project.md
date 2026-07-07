@@ -362,6 +362,49 @@ Deferred: the app's own gRPC `AuthRepository.signOut()` has the identical gap
 per-environment sessions) — not fixed, since "which mode's data to clear" is
 less unambiguous there.
 
+### Persisted "Believed Signed In To Labs" (`LabsSessionStorage`)
+
+Follow-up to the sign-out fix above (`bb-labs-persist-signin-belief` in
+TODO.md, fixed 2026-07-07). `labsAuthState` is otherwise in-memory only and
+always resets to `Unauthenticated` on process launch — since Android kills
+backgrounded processes fairly often, a genuinely-signed-in user could see
+"Sign in to Labs" at the same moment the Devices/Types/History tabs still
+showed their real cached data, after nothing more than a process restart. A
+naive "clear local data whenever `Unauthenticated` is observed" fix was
+rejected: every cold start starts `Unauthenticated`, so that would wipe the
+cache on every restart and defeat offline-first caching.
+
+Mirrors the pattern `DefaultAuthRepository` (the app's own gRPC auth) already
+used for this identical problem: `authStateByMode`'s per-key default changed
+from `AuthState.Unauthenticated` to `AuthState.Unknown` (a state the UI
+already treats as "loading" — see `LoginContent.kt`), and a `DefaultLabsAuthRepository`
+`init` block resolves each key's `Unknown` from `LabsSessionStorage` /
+`DataStoreLabsSessionStorage` (`data-local/.../auth/`) — a lightweight,
+per-Labs-environment (staging/prod, keyed the same way as the existing
+in-memory `NetworkModeKeyedState`, via `apiKeyForMode`) persisted flag storing
+only profile info (`User`: id/email/displayName/photoUrl), **no tokens, no
+expiry tracking**. The resolve is guarded by a new generic
+`NetworkModeKeyedState.compareAndSet(key, expected, newValue)` so it can never
+clobber a real sign-in/out transition that already happened for that key.
+`signInToLabs()`'s success path saves the belief; `signOutLabs()` (already
+invoked through `SignOutLabsUseCase`) clears it alongside the local data
+clear — no usecase-layer changes needed, this is entirely internal to the
+repository.
+
+**Deliberately does not re-validate a real session** (unlike
+`DefaultAuthRepository`'s `scheduleTokenExpiry`) — the real Labs
+session/token still lives only in `LabsAuthGateway`, in-memory,
+process-lifetime only. If it's actually stale after a restart, that surfaces
+later via the normal sync-failure path, not here. This was an explicit user
+scoping decision ("I don't actually care about expired auth... I just care
+that we remember that we think we are signed in") after a fuller
+silent-token-refresh approach was considered and found to need real
+per-platform work (Android's Credential Manager supports an
+authorized-accounts-only silent flow already; iOS/Desktop use a hand-rolled
+OAuth PKCE flow with no persisted refresh token, so silent restore isn't
+available there without new infrastructure) — deemed out of scope once the
+lighter "just remember the belief" framing covered the actual complaint.
+
 ### KMP-Friendly Class Naming Convention
 
 Enforced by `checkNamingConventions` Gradle task (in `validate.sh` and CI):

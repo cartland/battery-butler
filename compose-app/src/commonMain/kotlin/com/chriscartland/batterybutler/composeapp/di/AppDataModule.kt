@@ -10,6 +10,8 @@ import com.chriscartland.batterybutler.data.repository.SyncManager
 import com.chriscartland.batterybutler.data.repository.auth.DefaultAuthRepository
 import com.chriscartland.batterybutler.datalocal.auth.AuthTokenStorage
 import com.chriscartland.batterybutler.datalocal.auth.DataStoreAuthTokenStorage
+import com.chriscartland.batterybutler.datalocal.auth.DataStoreLabsSessionStorage
+import com.chriscartland.batterybutler.datalocal.auth.LabsSessionStorage
 import com.chriscartland.batterybutler.datalocal.preferences.DataStorePreferencesDataSource
 import com.chriscartland.batterybutler.datalocal.preferences.PreferencesDataSource
 import com.chriscartland.batterybutler.datalocal.room.AppDatabase
@@ -52,6 +54,10 @@ interface AppDataModule : DataComponent {
     @Provides
     @Singleton
     override fun provideAuthTokenStorage(storage: DataStoreAuthTokenStorage): AuthTokenStorage = super.provideAuthTokenStorage(storage)
+
+    @Provides
+    @Singleton
+    override fun provideLabsSessionStorage(storage: DataStoreLabsSessionStorage): LabsSessionStorage = super.provideLabsSessionStorage(storage)
 
     @Provides
     @Singleton
