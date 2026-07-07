@@ -30,6 +30,9 @@ interface DeviceDao {
     @Query("DELETE FROM devices WHERE id = :id")
     suspend fun deleteDevice(id: String)
 
+    @Query("DELETE FROM devices")
+    suspend fun deleteAllDevices()
+
     // Device Types
     @Query("SELECT * FROM device_types")
     fun getAllDeviceTypes(): Flow<List<DeviceTypeEntity>>
@@ -48,6 +51,9 @@ interface DeviceDao {
 
     @Query("DELETE FROM device_types WHERE id = :id")
     suspend fun deleteDeviceType(id: String)
+
+    @Query("DELETE FROM device_types")
+    suspend fun deleteAllDeviceTypes()
 
     @Query("SELECT COUNT(*) FROM device_types")
     suspend fun getDeviceTypeCount(): Int
@@ -73,4 +79,7 @@ interface DeviceDao {
 
     @Query("DELETE FROM battery_events WHERE id = :id")
     suspend fun deleteEvent(id: String)
+
+    @Query("DELETE FROM battery_events")
+    suspend fun deleteAllEvents()
 }

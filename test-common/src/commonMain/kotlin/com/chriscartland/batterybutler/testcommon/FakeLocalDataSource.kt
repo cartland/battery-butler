@@ -109,4 +109,17 @@ class FakeLocalDataSource : LocalDataSource {
     override suspend fun deleteEvent(id: String) {
         deletedEventIds.add(id)
     }
+
+    /** Number of times [clearAll] has been called. */
+    var clearAllCallCount = 0
+
+    override suspend fun clearAll() {
+        clearAllCallCount++
+        devices.clear()
+        deviceTypes.clear()
+        events.clear()
+        devicesFlow = emptyFlow()
+        deviceTypesFlow = emptyFlow()
+        eventsFlow = emptyFlow()
+    }
 }

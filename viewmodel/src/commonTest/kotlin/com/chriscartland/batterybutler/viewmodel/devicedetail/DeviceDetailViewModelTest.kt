@@ -251,6 +251,8 @@ private class FakeDetailRepository : DeviceRepository {
 
     override suspend fun resync() {}
 
+    override suspend fun clearAllLocalData() {}
+
     override fun getAllDevices(): Flow<List<Device>> = flowOf(listOfNotNull(deviceFlow.value))
 
     override fun getDeviceById(id: String): Flow<Device?> = deviceFlow

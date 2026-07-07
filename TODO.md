@@ -152,6 +152,22 @@ resource exhaustion / external cancel-workflow actions.
 issues when the run conclusion is `cancelled` and no individual job has a `failure`
 conclusion (defensive companion to the bb-2r4g close-on-success guard).
 
+### bb-labs-signout-clear — Clear local Labs data on sign-out, resync on sign-in — DONE 2026-07-06 (structural fix, `SignOutLabsUseCase`/`SignInToLabsUseCase`)
+
+**User report**: "when I am signed out and change network, [both Labs environments] show data" — read as an isolation regression, but investigation showed the per-environment file isolation (bb PR #1324) was working correctly; the actual gap was that the Devices/Types/History tabs read local Room data with zero awareness of Labs auth state (by original offline-first design) and nothing had ever cleared local data on sign-out, so a previously-synced environment's cached devices stayed visible indefinitely after signing out.
+
+**Fix**: `DeviceRepository.clearAllLocalData()` (new) wired through two new UseCases — `SignOutLabsUseCase` (signs out + clears local data) and `SignInToLabsUseCase` (signs in + triggers an immediate `resync()` on success) — composed at the usecase layer rather than inside `DefaultLabsAuthRepository` itself, since that class takes an unfakeable platform `expect class` (`GoogleSignInBridge`) and is exempted from direct unit testing. `LoginViewModel`/`SettingsViewModel` now call these UseCases instead of the repository sign-in/out methods directly. Verified end-to-end on a real emulator against real Labs Prod data: sign-out immediately empties all three tabs; sign-in repopulates them.
+
+**Follow-up finding (not fixed, tracked separately below)**: on a *cold* Labs backend (first request after being idle), the immediate resync can exceed its 15s timeout — see `bb-labs-cold-resync`. This isn't a correctness bug (the ambient background sync loop still eventually recovers), just a latency characteristic worth improving.
+
+**Deferred**: the app's own gRPC `AuthRepository.signOut()` has the same gap (never clears local data) but is architecturally different (one global account spans all gRPC modes, vs. Labs's per-environment sessions) — not fixed here, flagged as a fast, low-risk follow-up if wanted.
+
+### bb-labs-cold-resync — Immediate post-sign-in resync can time out on a cold Labs backend
+
+**Found 2026-07-06** while manually verifying `bb-labs-signout-clear` on a real emulator: the first sign-in after the Labs backend had been idle for a while took about 4 minutes for devices to actually populate (the new `SignInToLabsUseCase`'s immediate `resync()` call has a 15s timeout inherited from `DefaultSyncManager.RESYNC_TIMEOUT`, likely tied to a cold-start delay on the Labs backend's hosting). A second sign-in shortly after (backend already warm) synced within ~15 seconds, confirming this is backend cold-start latency, not a logic bug — the resync silently times out (caught, logged, `SyncStatus.Failed`), and the pre-existing ambient `subscribeWithRetry()` background loop is what eventually recovers, exactly as it did before this session's fix.
+
+**Worth considering**: a longer timeout specifically for the sign-in-triggered resync (vs. pull-to-refresh's, where a user is actively waiting and expects fast feedback), and/or a "still connecting" UI state distinct from the generic sync-failed indicator so a user signing in after a while doesn't think sign-in silently failed.
+
 ## P3
 
 ### bb-emult — `validate.sh` hangs on `pixel5api34DebugAndroidTest` when no emulator can boot

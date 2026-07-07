@@ -24,6 +24,8 @@ import com.chriscartland.batterybutler.usecase.GetAppVersionUseCase
 import com.chriscartland.batterybutler.usecase.GetLegacyDatabaseInfoUseCase
 import com.chriscartland.batterybutler.usecase.ImportDataUseCase
 import com.chriscartland.batterybutler.usecase.RestoreLegacyDatabaseUseCase
+import com.chriscartland.batterybutler.usecase.SignInToLabsUseCase
+import com.chriscartland.batterybutler.usecase.SignOutLabsUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
 import com.chriscartland.batterybutler.viewmodel.safeStateIn
 import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
@@ -49,6 +51,8 @@ class SettingsViewModel(
     private val restoreLegacyDatabaseUseCase: RestoreLegacyDatabaseUseCase,
     private val legacyDatabaseRepository: LegacyDatabaseRepository,
     private val restartCoordinator: RestartCoordinator,
+    private val signInToLabsUseCase: SignInToLabsUseCase,
+    private val signOutLabsUseCase: SignOutLabsUseCase,
     productionServerUrl: ProductionServerUrl,
     devServerUrl: DevServerUrl,
     labsStagingUrl: LabsStagingUrl,
@@ -150,13 +154,13 @@ class SettingsViewModel(
 
     fun onSignInToLabs() {
         viewModelScope.coroutineScope.launch {
-            labsAuthRepository.signInToLabs()
+            signInToLabsUseCase()
         }
     }
 
     fun onSignOutLabs() {
         viewModelScope.coroutineScope.launch {
-            labsAuthRepository.signOutLabs()
+            signOutLabsUseCase()
         }
     }
 

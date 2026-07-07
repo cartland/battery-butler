@@ -6,8 +6,10 @@ import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.model.User
 import com.chriscartland.batterybutler.testcommon.FakeAuthRepository
+import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
 import com.chriscartland.batterybutler.testcommon.FakeLabsAuthRepository
 import com.chriscartland.batterybutler.testcommon.FakeNetworkModeRepository
+import com.chriscartland.batterybutler.usecase.SignInToLabsUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -49,7 +51,12 @@ class LoginViewModelTest {
     fun `initial state is Unknown`() =
         runTest {
             val repo = FakeAuthRepository()
-            val viewModel = LoginViewModel(repo, FakeLabsAuthRepository(), FakeNetworkModeRepository(NetworkMode.None))
+            val viewModel = LoginViewModel(
+                repo,
+                FakeLabsAuthRepository(),
+                FakeNetworkModeRepository(NetworkMode.None),
+                SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository()),
+            )
 
             val state = viewModel.authState.value
 
@@ -60,7 +67,12 @@ class LoginViewModelTest {
     fun `authState reflects repository state changes`() =
         runTest {
             val repo = FakeAuthRepository()
-            val viewModel = LoginViewModel(repo, FakeLabsAuthRepository(), FakeNetworkModeRepository(NetworkMode.None))
+            val viewModel = LoginViewModel(
+                repo,
+                FakeLabsAuthRepository(),
+                FakeNetworkModeRepository(NetworkMode.None),
+                SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository()),
+            )
             advanceUntilIdle()
 
             repo.setAuthState(AuthState.Unauthenticated)
@@ -75,7 +87,12 @@ class LoginViewModelTest {
         runTest {
             val repo = FakeAuthRepository()
             repo.isConfigured = true
-            val viewModel = LoginViewModel(repo, FakeLabsAuthRepository(), FakeNetworkModeRepository(NetworkMode.None))
+            val viewModel = LoginViewModel(
+                repo,
+                FakeLabsAuthRepository(),
+                FakeNetworkModeRepository(NetworkMode.None),
+                SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository()),
+            )
 
             assertTrue(viewModel.isSignInAvailable)
         }
@@ -85,7 +102,12 @@ class LoginViewModelTest {
         runTest {
             val repo = FakeAuthRepository()
             repo.isConfigured = false
-            val viewModel = LoginViewModel(repo, FakeLabsAuthRepository(), FakeNetworkModeRepository(NetworkMode.None))
+            val viewModel = LoginViewModel(
+                repo,
+                FakeLabsAuthRepository(),
+                FakeNetworkModeRepository(NetworkMode.None),
+                SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository()),
+            )
 
             assertFalse(viewModel.isSignInAvailable)
         }
@@ -95,7 +117,12 @@ class LoginViewModelTest {
         runTest {
             val repo = FakeAuthRepository()
             repo.signInResult = Result.Success(testUser)
-            val viewModel = LoginViewModel(repo, FakeLabsAuthRepository(), FakeNetworkModeRepository(NetworkMode.None))
+            val viewModel = LoginViewModel(
+                repo,
+                FakeLabsAuthRepository(),
+                FakeNetworkModeRepository(NetworkMode.None),
+                SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository()),
+            )
 
             viewModel.signInWithGoogle()
             advanceUntilIdle()
@@ -108,7 +135,12 @@ class LoginViewModelTest {
         runTest {
             val repo = FakeAuthRepository()
             repo.signInResult = Result.Success(testUser)
-            val viewModel = LoginViewModel(repo, FakeLabsAuthRepository(), FakeNetworkModeRepository(NetworkMode.None))
+            val viewModel = LoginViewModel(
+                repo,
+                FakeLabsAuthRepository(),
+                FakeNetworkModeRepository(NetworkMode.None),
+                SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository()),
+            )
 
             viewModel.signInWithGoogle()
             advanceUntilIdle()
@@ -124,7 +156,12 @@ class LoginViewModelTest {
             val repo = FakeAuthRepository()
             val error = AuthError.SignIn.Cancelled()
             repo.signInResult = Result.Error(error)
-            val viewModel = LoginViewModel(repo, FakeLabsAuthRepository(), FakeNetworkModeRepository(NetworkMode.None))
+            val viewModel = LoginViewModel(
+                repo,
+                FakeLabsAuthRepository(),
+                FakeNetworkModeRepository(NetworkMode.None),
+                SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository()),
+            )
 
             viewModel.signInWithGoogle()
             advanceUntilIdle()
@@ -143,7 +180,12 @@ class LoginViewModelTest {
                 cause = "No internet",
             )
             repo.signInResult = Result.Error(error)
-            val viewModel = LoginViewModel(repo, FakeLabsAuthRepository(), FakeNetworkModeRepository(NetworkMode.None))
+            val viewModel = LoginViewModel(
+                repo,
+                FakeLabsAuthRepository(),
+                FakeNetworkModeRepository(NetworkMode.None),
+                SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository()),
+            )
 
             viewModel.signInWithGoogle()
             advanceUntilIdle()
@@ -159,7 +201,12 @@ class LoginViewModelTest {
             val repo = FakeAuthRepository()
             val error = AuthError.Configuration.NotConfigured()
             repo.signInResult = Result.Error(error)
-            val viewModel = LoginViewModel(repo, FakeLabsAuthRepository(), FakeNetworkModeRepository(NetworkMode.None))
+            val viewModel = LoginViewModel(
+                repo,
+                FakeLabsAuthRepository(),
+                FakeNetworkModeRepository(NetworkMode.None),
+                SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository()),
+            )
 
             viewModel.signInWithGoogle()
             advanceUntilIdle()
@@ -174,7 +221,12 @@ class LoginViewModelTest {
         runTest {
             val repo = FakeAuthRepository()
             repo.setAuthState(AuthState.Failed(AuthError.SignIn.Cancelled()))
-            val viewModel = LoginViewModel(repo, FakeLabsAuthRepository(), FakeNetworkModeRepository(NetworkMode.None))
+            val viewModel = LoginViewModel(
+                repo,
+                FakeLabsAuthRepository(),
+                FakeNetworkModeRepository(NetworkMode.None),
+                SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository()),
+            )
 
             viewModel.dismissError()
 
@@ -186,7 +238,12 @@ class LoginViewModelTest {
         runTest {
             val repo = FakeAuthRepository()
             repo.setAuthState(AuthState.Failed(AuthError.SignIn.Cancelled()))
-            val viewModel = LoginViewModel(repo, FakeLabsAuthRepository(), FakeNetworkModeRepository(NetworkMode.None))
+            val viewModel = LoginViewModel(
+                repo,
+                FakeLabsAuthRepository(),
+                FakeNetworkModeRepository(NetworkMode.None),
+                SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository()),
+            )
             advanceUntilIdle()
 
             viewModel.dismissError()
@@ -207,7 +264,12 @@ class LoginViewModelTest {
                 photoUrl = "https://example.com/photo.jpg",
             )
             repo.signInResult = Result.Success(userWithPhoto)
-            val viewModel = LoginViewModel(repo, FakeLabsAuthRepository(), FakeNetworkModeRepository(NetworkMode.None))
+            val viewModel = LoginViewModel(
+                repo,
+                FakeLabsAuthRepository(),
+                FakeNetworkModeRepository(NetworkMode.None),
+                SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository()),
+            )
 
             viewModel.signInWithGoogle()
             advanceUntilIdle()
@@ -229,7 +291,12 @@ class LoginViewModelTest {
                 cause = "Detailed cause",
             )
             repo.signInResult = Result.Error(error)
-            val viewModel = LoginViewModel(repo, FakeLabsAuthRepository(), FakeNetworkModeRepository(NetworkMode.None))
+            val viewModel = LoginViewModel(
+                repo,
+                FakeLabsAuthRepository(),
+                FakeNetworkModeRepository(NetworkMode.None),
+                SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository()),
+            )
 
             viewModel.signInWithGoogle()
             advanceUntilIdle()
@@ -250,6 +317,7 @@ class LoginViewModelTest {
                 grpcRepo,
                 labsRepo,
                 FakeNetworkModeRepository(NetworkMode.LabsStaging("https://example.com")),
+                SignInToLabsUseCase(labsRepo, FakeDeviceRepository()),
             )
             advanceUntilIdle() // let isLabsMode (Eagerly) observe the Labs mode
 
@@ -273,6 +341,7 @@ class LoginViewModelTest {
                 grpcRepo,
                 labsRepo,
                 FakeNetworkModeRepository(NetworkMode.LabsStaging("https://example.com")),
+                SignInToLabsUseCase(labsRepo, FakeDeviceRepository()),
             )
             advanceUntilIdle()
 

@@ -126,4 +126,10 @@ class RoomLocalDataSource(
     override suspend fun deleteEvent(id: String) {
         dao.deleteEvent(id)
     }
+
+    override suspend fun clearAll() {
+        dao.deleteAllDevices()
+        dao.deleteAllDeviceTypes()
+        dao.deleteAllEvents()
+    }
 }
