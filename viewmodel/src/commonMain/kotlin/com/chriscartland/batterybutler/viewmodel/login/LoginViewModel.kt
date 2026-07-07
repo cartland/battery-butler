@@ -5,6 +5,7 @@ import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.repository.AuthRepository
 import com.chriscartland.batterybutler.domain.repository.LabsAuthRepository
 import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
+import com.chriscartland.batterybutler.usecase.SignInToLabsUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
 import com.chriscartland.batterybutler.viewmodel.safeStateIn
 import com.rickclephas.kmp.observableviewmodel.ViewModel
@@ -31,6 +32,7 @@ class LoginViewModel(
     private val authRepository: AuthRepository,
     private val labsAuthRepository: LabsAuthRepository,
     private val networkModeRepository: NetworkModeRepository,
+    private val signInToLabsUseCase: SignInToLabsUseCase,
 ) : ViewModel() {
     /**
      * True when the selected backend is a Labs (REST) mode — the front door then signs in to Labs.
@@ -80,7 +82,7 @@ class LoginViewModel(
     fun signInWithGoogle() {
         viewModelScope.coroutineScope.launch {
             if (isLabsMode.value) {
-                labsAuthRepository.signInToLabs()
+                signInToLabsUseCase()
             } else {
                 authRepository.signInWithGoogle()
             }

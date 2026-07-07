@@ -432,6 +432,8 @@ private class TestImportRepository : DeviceRepository {
 
     override suspend fun resync() {}
 
+    override suspend fun clearAllLocalData() {}
+
     override fun getAllDevices(): Flow<List<Device>> = flowOf(devices.toList())
 
     override fun getDeviceById(id: String): Flow<Device?> = flowOf(devices.find { it.id == id })

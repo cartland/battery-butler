@@ -42,6 +42,14 @@ interface DeviceRepository {
     /** Triggers an immediate remote resync (e.g. for pull-to-refresh), independent of the timing of the background sync loop. */
     suspend fun resync()
 
+    /**
+     * Deletes all locally cached devices, device types, and events for whichever environment is
+     * currently selected. Does not touch the remote backend. Intended for sign-out: local storage
+     * is isolated per network mode (see [com.chriscartland.batterybutler.domain.model.NetworkMode]),
+     * so this only clears the currently-active environment's cache.
+     */
+    suspend fun clearAllLocalData()
+
     // region Device Operations
 
     /** Returns a flow of all devices, sorted by name. */

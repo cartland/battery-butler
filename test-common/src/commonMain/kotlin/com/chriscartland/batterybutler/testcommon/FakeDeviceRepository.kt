@@ -88,6 +88,19 @@ class FakeDeviceRepository : DeviceRepository {
         resyncCount++
     }
 
+    /** Number of times [clearAllLocalData] has been called. */
+    var clearAllLocalDataCount = 0
+
+    override suspend fun clearAllLocalData() {
+        clearAllLocalDataCount++
+        devices.clear()
+        deviceTypes.clear()
+        events.clear()
+        devicesFlow.value = emptyList()
+        deviceTypesFlow.value = emptyList()
+        eventsFlow.value = emptyList()
+    }
+
     override fun getAllDevices(): Flow<List<Device>> = devicesFlow
 
     override fun getDeviceById(id: String): Flow<Device?> = devicesFlow.map { list -> list.find { it.id == id } }

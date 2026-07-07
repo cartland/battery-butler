@@ -26,6 +26,8 @@ import com.chriscartland.batterybutler.usecase.GetAppVersionUseCase
 import com.chriscartland.batterybutler.usecase.GetLegacyDatabaseInfoUseCase
 import com.chriscartland.batterybutler.usecase.ImportDataUseCase
 import com.chriscartland.batterybutler.usecase.RestoreLegacyDatabaseUseCase
+import com.chriscartland.batterybutler.usecase.SignInToLabsUseCase
+import com.chriscartland.batterybutler.usecase.SignOutLabsUseCase
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -160,10 +162,11 @@ class SettingsViewModelTest {
         }
 
     @Test
-    fun `onSignInToLabs signs in via the labs repository`() =
+    fun `onSignInToLabs signs in via the labs repository and triggers a resync`() =
         runTest {
             val labsRepo = FakeLabsAuthRepository()
-            val viewModel = createViewModel(labsAuthRepository = labsRepo)
+            val deviceRepo = FakeDeviceRepository()
+            val viewModel = createViewModel(labsAuthRepository = labsRepo, deviceRepository = deviceRepo)
             advanceUntilIdle()
 
             viewModel.onSignInToLabs()
@@ -171,10 +174,11 @@ class SettingsViewModelTest {
 
             assertEquals(1, labsRepo.signInCount)
             assertTrue(viewModel.isLabsSignedIn.first { it })
+            assertEquals(1, deviceRepo.resyncCount)
         }
 
     @Test
-    fun `onSignOutLabs clears the labs session`() =
+    fun `onSignOutLabs clears the labs session and the locally cached data`() =
         runTest {
             val labsRepo = FakeLabsAuthRepository()
             labsRepo.setLabsAuthState(
@@ -182,7 +186,9 @@ class SettingsViewModelTest {
                     User(id = "u", email = "labs@example.com", displayName = null, photoUrl = null),
                 ),
             )
-            val viewModel = createViewModel(labsAuthRepository = labsRepo)
+            val deviceRepo = FakeDeviceRepository()
+            deviceRepo.setDevices(listOf(TestDevices.createDevice(id = "cached-device")))
+            val viewModel = createViewModel(labsAuthRepository = labsRepo, deviceRepository = deviceRepo)
             advanceUntilIdle()
             assertTrue(viewModel.isLabsSignedIn.first { it })
 
@@ -191,6 +197,8 @@ class SettingsViewModelTest {
 
             assertEquals(1, labsRepo.signOutCount)
             assertFalse(viewModel.isLabsSignedIn.first { !it })
+            assertEquals(1, deviceRepo.clearAllLocalDataCount)
+            assertTrue(deviceRepo.getAllDevices().first().isEmpty())
         }
 
     @Test
@@ -665,6 +673,8 @@ class SettingsViewModelTest {
             restoreLegacyDatabaseUseCase = RestoreLegacyDatabaseUseCase(legacyDatabaseRepository),
             legacyDatabaseRepository = legacyDatabaseRepository,
             restartCoordinator = restartCoordinator,
+            signInToLabsUseCase = SignInToLabsUseCase(labsAuthRepository, deviceRepository),
+            signOutLabsUseCase = SignOutLabsUseCase(labsAuthRepository, deviceRepository),
             productionServerUrl = ProductionServerUrl("http://test-server:80"),
             devServerUrl = DevServerUrl("http://test-dev-server:80"),
             labsStagingUrl = LabsStagingUrl(""),

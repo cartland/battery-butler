@@ -312,6 +312,56 @@ promotion/isolation behavior with real file I/O) for the exact guarantees.
 for any future per-environment persisted state** — don't key local storage on a
 `NetworkMode` subtype alone if the subtype can carry a variable url.
 
+### Clear Local Data On Sign-Out (`SignOutLabsUseCase`/`SignInToLabsUseCase`)
+
+File-level isolation (above) guarantees different Labs environments' caches
+never mix, but it doesn't address a separate, real gap: `HomeViewModel`/Devices
+tab reads local Room data with **zero awareness of Labs auth state** (deliberate
+offline-first design), and nothing ever cleared local data on sign-out — so a
+previously-synced environment's devices stayed visible indefinitely after
+signing out (`bb-labs-signout-clear` in TODO.md, fixed 2026-07-06).
+
+`DeviceRepository.clearAllLocalData()` (→ `LocalDataSource.clearAll()` → three
+new `DELETE FROM ...` DAO queries) is composed into sign-in/out via two
+UseCases rather than inside `DefaultLabsAuthRepository` itself:
+
+```kotlin
+class SignOutLabsUseCase(labsAuthRepository: LabsAuthRepository, deviceRepository: DeviceRepository) {
+    suspend operator fun invoke() {
+        labsAuthRepository.signOutLabs()
+        deviceRepository.clearAllLocalData()
+    }
+}
+class SignInToLabsUseCase(labsAuthRepository: LabsAuthRepository, deviceRepository: DeviceRepository) {
+    suspend operator fun invoke(): Result<User, AuthError> {
+        val result = labsAuthRepository.signInToLabs()
+        if (result is Result.Success) deviceRepository.resync()
+        return result
+    }
+}
+```
+
+**Why a UseCase, not inside the repository**: `DefaultLabsAuthRepository` takes
+an unfakeable platform `expect class` (`GoogleSignInBridge`) and is explicitly
+exempted from direct unit testing (`test-coverage-exemptions.txt`). Composing at
+the usecase layer — depending only on the two plain repository interfaces —
+keeps this fully unit-testable with `FakeLabsAuthRepository`/`FakeDeviceRepository`,
+and matches the existing pattern of usecases composing multiple repositories
+into one workflow (e.g. `BuildAiContextUseCase`). `LoginViewModel`/`SettingsViewModel`
+call these UseCases instead of the repository's sign-in/out methods directly —
+**any new Labs sign-in/out call site should go through these UseCases, not the
+repository directly**, or it'll silently skip the clear/resync guarantee.
+
+`SignInToLabsUseCase`'s `resync()` reuses the same bounded (15s timeout)
+mechanism pull-to-refresh uses; on a cold Labs backend this can time out before
+data arrives (falls back to the ambient background sync loop, which still
+recovers — not a correctness bug, see `bb-labs-cold-resync` in TODO.md).
+
+Deferred: the app's own gRPC `AuthRepository.signOut()` has the identical gap
+(one global account across `GrpcLocal`/`GrpcAws`/`GrpcDev`, vs. Labs's
+per-environment sessions) — not fixed, since "which mode's data to clear" is
+less unambiguous there.
+
 ### KMP-Friendly Class Naming Convention
 
 Enforced by `checkNamingConventions` Gradle task (in `validate.sh` and CI):

@@ -43,4 +43,7 @@ interface LocalDataSource {
     suspend fun updateEvent(event: BatteryEvent)
 
     suspend fun deleteEvent(id: String)
+
+    /** Deletes all devices, device types, and events from the currently active local store. */
+    suspend fun clearAll()
 }
