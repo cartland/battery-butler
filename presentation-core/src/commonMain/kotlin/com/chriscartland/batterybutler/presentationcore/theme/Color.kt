@@ -14,7 +14,7 @@ import androidx.compose.ui.graphics.Color
 // Primary — Sage Green
 // ---------------------------------------------------------------------------
 val PrimaryLight = Color(0xFF3F6B54) // Deep Sage (darkened slightly for AA on linen)
-val PrimaryDark = Color(0xFF9BD4B5) // Luminous Sage (tone ~80, bright on dark)
+val PrimaryDark = Color(0xFFC4E8D5) // Luminous Sage (tone ~84, brightened for dark-mode contrast/pop)
 val OnPrimaryLight = Color.White
 val OnPrimaryDark = Color(0xFF003824) // Deep forest
 val PrimaryContainerLight = Color(0xFFC1E9D2) // Pastel sage green
@@ -26,7 +26,7 @@ val OnPrimaryContainerDark = Color(0xFFC1E9D2) // Pastel sage for contrast
 // Secondary — Warm Walnut (sensors/controls/gaming icons)
 // ---------------------------------------------------------------------------
 val SecondaryLight = Color(0xFF7A6248) // Warm Walnut (darkened for AA on linen)
-val SecondaryDark = Color(0xFFDBC0A0) // Light warm tan (tone ~80, bright on dark)
+val SecondaryDark = Color(0xFFEBDAC6) // Light warm tan (tone ~85, brightened for dark-mode contrast/pop)
 val OnSecondaryLight = Color.White
 val OnSecondaryDark = Color(0xFF412E17) // Deep espresso
 val SecondaryContainerLight = Color(0xFFEBDFC8) // Warm cream/linen
@@ -38,7 +38,7 @@ val OnSecondaryContainerDark = Color(0xFFEBDFC8) // Warm cream for contrast
 // Tertiary — Steel Blue (AI/accent, electronics/smart home icons)
 // ---------------------------------------------------------------------------
 val TertiaryLight = Color(0xFF4A6678) // Soft Steel Blue (darkened for AA on linen)
-val TertiaryDark = Color(0xFFAECBE0) // Light steel blue (tone ~80, bright on dark)
+val TertiaryDark = Color(0xFFCEE0EE) // Light steel blue (tone ~87, brightened for dark-mode contrast/pop)
 val OnTertiaryLight = Color.White
 val OnTertiaryDark = Color(0xFF12333F) // Deep steel
 val TertiaryContainerLight = Color(0xFFD5E3EC) // Light blue-grey container
@@ -73,7 +73,7 @@ val OnBackgroundDark = Color(0xFFE1E3DD)
 val SurfaceDark = Color(0xFF191C1A) // Matches background (M3 tonal surface)
 val OnSurfaceDark = Color(0xFFE1E3DD)
 val SurfaceVariantDark = Color(0xFF3C4A40) // Warm green-grey — cards, badges, chips
-val OnSurfaceVariantDark = Color(0xFFC1CABD) // Warm light grey — secondary text (AA)
+val OnSurfaceVariantDark = Color(0xFFCCD4C9) // Warm light grey — secondary text, brightened (AA)
 val SurfaceContainerLowestDark = Color(0xFF0E120F)
 val SurfaceContainerLowDark = Color(0xFF1B1F1C)
 val SurfaceContainerDark = Color(0xFF1F2320)
