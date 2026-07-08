@@ -5,6 +5,7 @@ import com.chriscartland.batterybutler.domain.model.ai.AiEngine
 import com.chriscartland.batterybutler.domain.model.ai.AiMessage
 import com.chriscartland.batterybutler.domain.model.ai.AiRole
 import com.chriscartland.batterybutler.domain.model.ai.ToolHandler
+import com.google.mlkit.genai.common.FeatureStatus
 import com.google.mlkit.genai.prompt.GenerateContentRequest
 import com.google.mlkit.genai.prompt.Generation
 import com.google.mlkit.genai.prompt.GenerationConfig
@@ -23,7 +24,9 @@ import java.util.UUID
 class OnDeviceAiEngine(
     private val context: Context,
 ) : AiEngine {
-    private val _isAvailable = MutableStateFlow(true) // Assume available, update if checkStatus fails
+    // Real availability is unknown until checkStatus() runs (see generateResponse below), so
+    // default to false rather than optimistically assuming the on-device model is ready.
+    private val _isAvailable = MutableStateFlow(false)
     override val isAvailable: Flow<Boolean> = _isAvailable.asStateFlow()
     override val compatibility: Flow<Boolean> = flow { emit(true) }
 
@@ -38,6 +41,45 @@ class OnDeviceAiEngine(
     ): Flow<AiMessage> =
         flow {
             try {
+                // AICore/Gemini Nano is only supported on specific hardware and requires the
+                // model to be downloaded before use. Attempting generateContent() without
+                // checking status first surfaces as an opaque "INFERENCE_ERROR/UNKNOWN" error
+                // on unsupported or not-yet-downloaded devices, so check reality first.
+                val status = generativeModel.checkStatus()
+                _isAvailable.value = status == FeatureStatus.AVAILABLE
+
+                when (status) {
+                    FeatureStatus.UNAVAILABLE -> {
+                        emit(
+                            AiMessage(
+                                id = UUID.randomUUID().toString(),
+                                role = AiRole.MODEL,
+                                text = "On-device AI isn't supported on this device. " +
+                                    "Try Cloud AI in Settings instead.",
+                                isPartial = false,
+                            ),
+                        )
+                        return@flow
+                    }
+
+                    FeatureStatus.DOWNLOADABLE, FeatureStatus.DOWNLOADING -> {
+                        emit(
+                            AiMessage(
+                                id = UUID.randomUUID().toString(),
+                                role = AiRole.MODEL,
+                                text = "The on-device AI model needs to download first (large " +
+                                    "file, requires Wi-Fi) — try again in a bit.",
+                                isPartial = false,
+                            ),
+                        )
+                        return@flow
+                    }
+
+                    else -> {
+                        Unit
+                    } // AVAILABLE (or an unrecognized future status): proceed below.
+                }
+
                 // System Prompt for Function Calling
                 val systemPrompt =
                     """
