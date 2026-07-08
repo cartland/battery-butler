@@ -14,6 +14,7 @@ import com.google.firebase.ai.ai
 import com.google.firebase.ai.type.FunctionDeclaration
 import com.google.firebase.ai.type.FunctionResponsePart
 import com.google.firebase.ai.type.GenerativeBackend
+import com.google.firebase.ai.type.InvalidAPIKeyException
 import com.google.firebase.ai.type.Schema
 import com.google.firebase.ai.type.Tool
 import com.google.firebase.ai.type.content
@@ -248,6 +249,22 @@ class AndroidAiEngine : AiEngine {
 
                 val text = response.text
                 emit(AiMessage("resp_${System.currentTimeMillis()}", AiRole.MODEL, text ?: "No text response", false))
+            } catch (e: InvalidAPIKeyException) {
+                // Thrown when google-services.json is syntactically valid (so isAvailable is true)
+                // but its Gemini API key is a placeholder/invalid, e.g. the mock config committed to
+                // the repo before a real Firebase project is provisioned (see bb-fbai-setup in
+                // TODO.md). Surface the same friendly guidance as the FirebaseApp-missing case instead
+                // of the raw SDK message ("API key not valid. Please pass a valid API key.").
+                co.touchlab.kermit.Logger
+                    .e("AndroidAiEngine") { "Error generating response: ${e.message ?: "Unknown error"}" }
+                emit(
+                    AiMessage(
+                        "error",
+                        AiRole.MODEL,
+                        "AI is unavailable: Firebase is not configured with a valid Gemini API key.",
+                        false,
+                    ),
+                )
             } catch (e: Exception) {
                 if (e is CancellationException) throw e
                 val errorMsg = e.message ?: "Unknown error"
