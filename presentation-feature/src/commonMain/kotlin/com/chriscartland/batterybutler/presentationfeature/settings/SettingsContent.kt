@@ -53,14 +53,14 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.ai_e
 import com.chriscartland.batterybutler.composeresources.generated.resources.ai_engine_noop
 import com.chriscartland.batterybutler.composeresources.generated.resources.ai_engine_on_device
 import com.chriscartland.batterybutler.composeresources.generated.resources.ai_engine_title
-import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_grpc_aws
-import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_grpc_dev
-import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_grpc_local
-import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_labs_prod
-import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_labs_staging
-import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_mock
-import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_none
-import com.chriscartland.batterybutler.composeresources.generated.resources.network_mode_title
+import com.chriscartland.batterybutler.composeresources.generated.resources.data_mode_grpc_aws
+import com.chriscartland.batterybutler.composeresources.generated.resources.data_mode_grpc_dev
+import com.chriscartland.batterybutler.composeresources.generated.resources.data_mode_grpc_local
+import com.chriscartland.batterybutler.composeresources.generated.resources.data_mode_labs_prod
+import com.chriscartland.batterybutler.composeresources.generated.resources.data_mode_labs_staging
+import com.chriscartland.batterybutler.composeresources.generated.resources.data_mode_mock
+import com.chriscartland.batterybutler.composeresources.generated.resources.data_mode_none
+import com.chriscartland.batterybutler.composeresources.generated.resources.data_mode_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_advanced_copy_labs_token
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_advanced_copy_labs_token_description
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_advanced_title
@@ -102,9 +102,9 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.sett
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_user_signed_in
 import com.chriscartland.batterybutler.domain.model.AppVersion
 import com.chriscartland.batterybutler.domain.model.AuthState
+import com.chriscartland.batterybutler.domain.model.DataMode
 import com.chriscartland.batterybutler.domain.model.ImportResult
 import com.chriscartland.batterybutler.domain.model.LegacyDatabaseInfo
-import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.model.RestoreResult
 import com.chriscartland.batterybutler.domain.model.User
 import com.chriscartland.batterybutler.domain.model.ai.AiEngineType
@@ -117,9 +117,9 @@ import kotlinx.coroutines.launch
 @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsContent(
-    networkMode: NetworkMode,
-    availableNetworkModes: List<NetworkMode>,
-    onNetworkModeSelected: (NetworkMode) -> Unit,
+    dataMode: DataMode,
+    availableDataModes: List<DataMode>,
+    onDataModeSelected: (DataMode) -> Unit,
     aiEngineType: AiEngineType,
     availableAiEngines: List<AiEngineType>,
     onAiEngineSelected: (AiEngineType) -> Unit,
@@ -134,7 +134,7 @@ fun SettingsContent(
     currentUser: User?,
     onSignOut: () -> Unit,
     modifier: Modifier = Modifier,
-    initiallyExpandedNetworkModes: Boolean = false,
+    initiallyExpandedDataModes: Boolean = false,
     currentDatabaseFileName: String = "",
     legacyDatabaseInfo: LegacyDatabaseInfo? = null,
     onRestoreLegacyDatabase: () -> Unit = {},
@@ -333,44 +333,44 @@ fun SettingsContent(
                 composeStringResource(Res.string.settings_section_connection),
             )
 
-            // Network Mode Card
+            // Data Mode Card
             ExpandableSelectionControl(
-                title = composeStringResource(Res.string.network_mode_title),
-                currentSelection = networkMode,
-                options = availableNetworkModes,
-                onOptionSelected = onNetworkModeSelected,
+                title = composeStringResource(Res.string.data_mode_title),
+                currentSelection = dataMode,
+                options = availableDataModes,
+                onOptionSelected = onDataModeSelected,
                 leadingIcon = Icons.Default.Wifi,
-                initiallyExpanded = initiallyExpandedNetworkModes,
+                initiallyExpanded = initiallyExpandedDataModes,
                 optionLabel = { mode ->
                     when (mode) {
-                        is NetworkMode.None -> composeStringResource(Res.string.network_mode_none)
+                        is DataMode.None -> composeStringResource(Res.string.data_mode_none)
 
-                        is NetworkMode.Mock -> composeStringResource(Res.string.network_mode_mock)
+                        is DataMode.Mock -> composeStringResource(Res.string.data_mode_mock)
 
-                        is NetworkMode.GrpcLocal -> composeStringResource(
-                            Res.string.network_mode_grpc_local,
+                        is DataMode.GrpcLocal -> composeStringResource(
+                            Res.string.data_mode_grpc_local,
                         )
 
-                        is NetworkMode.GrpcAws -> composeStringResource(
-                            Res.string.network_mode_grpc_aws,
+                        is DataMode.GrpcAws -> composeStringResource(
+                            Res.string.data_mode_grpc_aws,
                         )
 
-                        is NetworkMode.GrpcDev -> composeStringResource(
-                            Res.string.network_mode_grpc_dev,
+                        is DataMode.GrpcDev -> composeStringResource(
+                            Res.string.data_mode_grpc_dev,
                         )
 
-                        is NetworkMode.LabsStaging -> composeStringResource(
-                            Res.string.network_mode_labs_staging,
+                        is DataMode.LabsStaging -> composeStringResource(
+                            Res.string.data_mode_labs_staging,
                         )
 
-                        is NetworkMode.LabsProd -> composeStringResource(
-                            Res.string.network_mode_labs_prod,
+                        is DataMode.LabsProd -> composeStringResource(
+                            Res.string.data_mode_labs_prod,
                         )
                     }
                 },
             )
 
-            // Labs Sign-In Card — only when a Labs (REST) network mode is selected. The Labs
+            // Labs Sign-In Card — only when a Labs (REST) data mode is selected. The Labs
             // backend needs its own Google sign-in (separate account from the gRPC backend above).
             if (isLabsMode) {
                 Card(
@@ -813,9 +813,9 @@ private fun SettingsSectionHeader(
 fun SettingsContentPreview() {
     BatteryButlerTheme {
         SettingsContent(
-            networkMode = NetworkMode.Mock,
-            availableNetworkModes = listOf(NetworkMode.Mock),
-            onNetworkModeSelected = {},
+            dataMode = DataMode.Mock,
+            availableDataModes = listOf(DataMode.Mock),
+            onDataModeSelected = {},
             aiEngineType = AiEngineType.Cloud,
             availableAiEngines = AiEngineType.entries,
             onAiEngineSelected = {},
@@ -840,18 +840,18 @@ fun SettingsContentPreview() {
 
 @Preview(showBackground = true)
 @Composable
-fun SettingsContentAllNetworkModesPreview() {
+fun SettingsContentAllDataModesPreview() {
     BatteryButlerTheme {
         SettingsContent(
-            networkMode = NetworkMode.GrpcLocal("http://10.0.2.2:50051"),
-            availableNetworkModes = listOf(
-                NetworkMode.None,
-                NetworkMode.Mock,
-                NetworkMode.GrpcLocal("http://10.0.2.2:50051"),
-                NetworkMode.GrpcDev("http://example.com:80"),
-                NetworkMode.GrpcAws("http://example.com:80"),
+            dataMode = DataMode.GrpcLocal("http://10.0.2.2:50051"),
+            availableDataModes = listOf(
+                DataMode.None,
+                DataMode.Mock,
+                DataMode.GrpcLocal("http://10.0.2.2:50051"),
+                DataMode.GrpcDev("http://example.com:80"),
+                DataMode.GrpcAws("http://example.com:80"),
             ),
-            onNetworkModeSelected = {},
+            onDataModeSelected = {},
             aiEngineType = AiEngineType.Cloud,
             availableAiEngines = AiEngineType.entries,
             onAiEngineSelected = {},
@@ -865,7 +865,7 @@ fun SettingsContentAllNetworkModesPreview() {
             appVersion = AppVersion.Android("1.0.0", 123),
             currentUser = null,
             onSignOut = {},
-            initiallyExpandedNetworkModes = true,
+            initiallyExpandedDataModes = true,
         )
     }
 }
@@ -875,9 +875,9 @@ fun SettingsContentAllNetworkModesPreview() {
 fun SettingsContentLabsAuthUnknownPreview() {
     BatteryButlerTheme {
         SettingsContent(
-            networkMode = NetworkMode.LabsStaging(null),
-            availableNetworkModes = listOf(NetworkMode.LabsStaging(null)),
-            onNetworkModeSelected = {},
+            dataMode = DataMode.LabsStaging(null),
+            availableDataModes = listOf(DataMode.LabsStaging(null)),
+            onDataModeSelected = {},
             aiEngineType = AiEngineType.Cloud,
             availableAiEngines = AiEngineType.entries,
             onAiEngineSelected = {},

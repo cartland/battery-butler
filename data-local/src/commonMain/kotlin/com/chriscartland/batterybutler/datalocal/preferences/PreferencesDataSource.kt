@@ -7,13 +7,13 @@ import kotlinx.coroutines.flow.Flow
  */
 interface PreferencesDataSource {
     /**
-     * Observe the stored network mode value.
+     * Observe the stored data mode value.
      * Returns null if no value has been stored.
      */
-    val networkModeValue: Flow<String?>
+    val dataModeValue: Flow<String?>
 
     /**
-     * Store the network mode value.
+     * Store the data mode value.
      */
-    suspend fun setNetworkModeValue(value: String)
+    suspend fun setDataModeValue(value: String)
 }

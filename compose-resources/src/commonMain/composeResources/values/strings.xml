@@ -23,15 +23,16 @@
     <string name="tab_types">Types</string>
     <string name="tab_history">History</string>
 
-    <!-- Network Mode -->
-    <string name="network_mode_title">Network Mode</string>
-    <string name="network_mode_none">None (Offline)</string>
-    <string name="network_mode_mock">Mock</string>
-    <string name="network_mode_grpc_local">gRPC Local</string>
-    <string name="network_mode_grpc_aws">Prod Server (disabled)</string>
-    <string name="network_mode_grpc_dev">Dev Server (disabled)</string>
-    <string name="network_mode_labs_staging">Labs Staging</string>
-    <string name="network_mode_labs_prod">Labs Prod</string>
+    <!-- Data Mode -->
+    <string name="data_mode_title">Data Mode</string>
+    <string name="data_mode_none">Device only</string>
+    <string name="data_mode_labs_prod">Production</string>
+    <string name="data_mode_labs_staging">Staging</string>
+    <string name="data_mode_mock">Mock</string>
+    <!-- Legacy modes, hidden behind FeatureFlag.LEGACY_DATA_MODES (disabled by default) -->
+    <string name="data_mode_grpc_local">gRPC Local</string>
+    <string name="data_mode_grpc_aws">Prod Server (disabled)</string>
+    <string name="data_mode_grpc_dev">Dev Server (disabled)</string>
 
     <!-- AI Engine -->
     <string name="ai_engine_title">AI Engine</string>

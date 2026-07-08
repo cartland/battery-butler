@@ -20,10 +20,10 @@ struct SettingsScreen: View {
             // Account
             currentUser: viewModel.currentUserValue,
             onSignOut: { viewModel.signOut() },
-            // Network mode
-            networkMode: viewModel.networkModeValue,
-            availableNetworkModes: viewModel.availableNetworkModes,
-            onNetworkModeSelected: { mode in viewModel.onNetworkModeSelected(mode: mode) },
+            // Data mode
+            dataMode: viewModel.dataModeValue,
+            availableDataModes: viewModel.availableDataModes,
+            onDataModeSelected: { mode in viewModel.onDataModeSelected(mode: mode) },
             // AI engine
             aiEngineType: viewModel.aiEngineTypeValue,
             availableAiEngines: viewModel.availableAiEngines,
@@ -94,7 +94,7 @@ struct SettingsScreen: View {
 // bb-ovm1: Option A manual state accessors (no NativeCoroutines).
 extension SettingsViewModel {
     var currentUserValue: User? { currentUser.value }
-    var networkModeValue: NetworkMode { networkMode.value }
+    var dataModeValue: DataMode { dataMode.value }
     var aiEngineTypeValue: AiEngineType { aiEngineType.value }
     var exportDataValue: String? { exportData.value }
     var importResultValue: ImportResult? { importResult.value }
@@ -112,10 +112,10 @@ struct SettingsContentView: View {
     // Account
     let currentUser: User?
     let onSignOut: () -> Void
-    // Network mode
-    let networkMode: NetworkMode
-    let availableNetworkModes: [NetworkMode]
-    let onNetworkModeSelected: (NetworkMode) -> Void
+    // Data mode
+    let dataMode: DataMode
+    let availableDataModes: [DataMode]
+    let onDataModeSelected: (DataMode) -> Void
     // AI engine
     let aiEngineType: AiEngineType
     let availableAiEngines: [AiEngineType]
@@ -131,7 +131,7 @@ struct SettingsContentView: View {
     // Version
     let appVersion: String
 
-    @State private var isNetworkModeExpanded = false
+    @State private var isDataModeExpanded = false
     @State private var isAiEngineExpanded = false
 
     var body: some View {
@@ -167,19 +167,19 @@ struct SettingsContentView: View {
                 }
             }
 
-            // Network Mode section
+            // Data Mode section
             Section {
-                DisclosureGroup(isExpanded: $isNetworkModeExpanded) {
-                    ForEach(Array(availableNetworkModes.enumerated()), id: \.offset) { _, mode in
+                DisclosureGroup(isExpanded: $isDataModeExpanded) {
+                    ForEach(Array(availableDataModes.enumerated()), id: \.offset) { _, mode in
                         Button {
-                            onNetworkModeSelected(mode)
-                            isNetworkModeExpanded = false
+                            onDataModeSelected(mode)
+                            isDataModeExpanded = false
                         } label: {
                             HStack {
-                                Text(SettingsDisplay.networkModeDisplayName(mode))
+                                Text(SettingsDisplay.dataModeDisplayName(mode))
                                     .foregroundStyle(Color.butlerOnSurface)
                                 Spacer()
-                                if networkModesEqual(networkMode, mode) {
+                                if dataModesEqual(dataMode, mode) {
                                     Image(systemName: "checkmark")
                                         .foregroundStyle(Color.butlerPrimary)
                                 }
@@ -191,16 +191,16 @@ struct SettingsContentView: View {
                         Image(systemName: "wifi")
                             .foregroundStyle(Color.butlerPrimary)
                         VStack(alignment: .leading, spacing: ButlerSpacing.extraSmall) {
-                            Text("settings.network_mode.title")
+                            Text("settings.data_mode.title")
                                 .foregroundStyle(Color.butlerOnSurface)
-                            Text(SettingsDisplay.networkModeDisplayName(networkMode))
+                            Text(SettingsDisplay.dataModeDisplayName(dataMode))
                                 .font(.caption)
                                 .foregroundStyle(Color.butlerOnSurfaceVariant)
                         }
                     }
                 }
             } header: {
-                Text("settings.section.network")
+                Text("settings.section.data")
             }
 
             // AI Engine section
@@ -326,19 +326,19 @@ struct SettingsContentView: View {
         }
     }
 
-    /// Compares two NetworkMode instances for equality by type and URL.
-    /// NetworkMode is a sealed interface in Kotlin, so we compare by concrete type.
-    private func networkModesEqual(_ a: NetworkMode, _ b: NetworkMode) -> Bool {
+    /// Compares two DataMode instances for equality by type and URL.
+    /// DataMode is a sealed interface in Kotlin, so we compare by concrete type.
+    private func dataModesEqual(_ a: DataMode, _ b: DataMode) -> Bool {
         switch (a, b) {
-        case (is NetworkModeNone, is NetworkModeNone):
+        case (is DataModeNone, is DataModeNone):
             return true
-        case (is NetworkModeMock, is NetworkModeMock):
+        case (is DataModeMock, is DataModeMock):
             return true
-        case (let aLocal as NetworkModeGrpcLocal, let bLocal as NetworkModeGrpcLocal):
+        case (let aLocal as DataModeGrpcLocal, let bLocal as DataModeGrpcLocal):
             return aLocal.url == bLocal.url
-        case (let aAws as NetworkModeGrpcAws, let bAws as NetworkModeGrpcAws):
+        case (let aAws as DataModeGrpcAws, let bAws as DataModeGrpcAws):
             return aAws.url == bAws.url
-        case (let aDev as NetworkModeGrpcDev, let bDev as NetworkModeGrpcDev):
+        case (let aDev as DataModeGrpcDev, let bDev as DataModeGrpcDev):
             return aDev.url == bDev.url
         default:
             return false

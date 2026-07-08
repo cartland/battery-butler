@@ -3,7 +3,7 @@ package com.chriscartland.batterybutler.composeapp.di
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.chriscartland.batterybutler.data.di.DataComponent
-import com.chriscartland.batterybutler.data.repository.DataStoreNetworkModeRepository
+import com.chriscartland.batterybutler.data.repository.DataStoreDataModeRepository
 import com.chriscartland.batterybutler.data.repository.DefaultDeviceRepository
 import com.chriscartland.batterybutler.data.repository.DefaultSyncManager
 import com.chriscartland.batterybutler.data.repository.SyncManager
@@ -18,8 +18,8 @@ import com.chriscartland.batterybutler.datalocal.room.AppDatabase
 import com.chriscartland.batterybutler.datanetwork.DelegatingRemoteDataSource
 import com.chriscartland.batterybutler.datanetwork.RemoteDataSource
 import com.chriscartland.batterybutler.domain.repository.AuthRepository
+import com.chriscartland.batterybutler.domain.repository.DataModeRepository
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
-import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
 import me.tatarka.inject.annotations.Provides
 
 interface AppDataModule : DataComponent {
@@ -37,7 +37,7 @@ interface AppDataModule : DataComponent {
 
     @Provides
     @Singleton
-    override fun provideNetworkModeRepository(repo: DataStoreNetworkModeRepository): NetworkModeRepository = super.provideNetworkModeRepository(repo)
+    override fun provideDataModeRepository(repo: DataStoreDataModeRepository): DataModeRepository = super.provideDataModeRepository(repo)
 
     @Provides
     @Singleton

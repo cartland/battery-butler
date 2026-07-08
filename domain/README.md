@@ -23,7 +23,7 @@ The domain module defines the core business entities, models, and repository con
 
 | Model | Description |
 |-------|-------------|
-| `NetworkMode` | Sealed interface: None, Mock, GrpcLocal, GrpcAws, GrpcDev, LabsStaging, LabsProd |
+| `DataMode` | Sealed interface: None, Mock, GrpcLocal, GrpcAws, GrpcDev, LabsStaging, LabsProd |
 | `SyncStatus` | Sealed interface: Idle, Syncing, Success, Failed |
 | `AppVersion` | Platform-specific version info (Android, iOS, Desktop) |
 | `ProductionServerUrl` | Data class wrapping production server URL for type-safe DI |
@@ -65,7 +65,7 @@ interface DeviceRepository {
 }
 ```
 
-### NetworkModeRepository
+### DataModeRepository
 
 Manages network connectivity configuration.
 
@@ -75,9 +75,9 @@ Provides platform-specific app version information.
 
 ## Utilities
 
-### NetworkModeKeyedState\<T\>
+### DataModeKeyedState\<T\>
 
-Holds one value per `NetworkMode` (keyed by a caller-supplied function) instead of a single shared `MutableStateFlow`, so state doesn't leak across a `NetworkMode` switch (e.g. Labs staging auth state bleeding into Labs prod). `current: Flow<T>` re-derives on each mode change, defaulting fresh for a never-seen key; `setCurrent`/`updateCurrent` mutate the currently-selected key. Used by `LabsAuthRepository`'s `labsAuthState`. See `NetworkModeKeyedStateTest.kt` for the exact cross-mode-leak scenario it prevents.
+Holds one value per `DataMode` (keyed by a caller-supplied function) instead of a single shared `MutableStateFlow`, so state doesn't leak across a `DataMode` switch (e.g. Labs staging auth state bleeding into Labs prod). `current: Flow<T>` re-derives on each mode change, defaulting fresh for a never-seen key; `setCurrent`/`updateCurrent` mutate the currently-selected key. Used by `LabsAuthRepository`'s `labsAuthState`. See `DataModeKeyedStateTest.kt` for the exact cross-mode-leak scenario it prevents.
 
 ## Architecture
 

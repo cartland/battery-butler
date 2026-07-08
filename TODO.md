@@ -34,30 +34,25 @@ There's also a separate PR #1326 (Devices default-sort-order feature, CI green
 as of this note, not yet merged) that the user may want folded into this same
 release once merged — check its status too.
 
-### bb-data-location-rename — Rename `NetworkMode` → `DataLocation` throughout the codebase (deferred follow-up)
+### bb-data-location-rename — Rename `NetworkMode` → `DataMode` throughout the codebase — DONE 2026-07-07
 
-**Deferred 2026-07-06** from the `NetworkMode`-local-database-isolation fix (see the
-Done section entry for that PR). The user's original ask was to review data
-isolation across network switches and floated calling the concept "data
-location" instead of "network mode," since selecting a mode is really selecting
-an entire local dataset, not just a remote backend. The isolation *guarantee*
-was fixed separately and does not require this rename — this task is purely
-about renaming the concept everywhere it appears, for clarity:
+**Deferred 2026-07-06** from the `NetworkMode`-local-database-isolation fix (see the Done section
+entry for that PR), floated then as "data location". **Superseded 2026-07-07**: the user gave an
+explicit instruction to call it **"Data Mode"** instead, plus two related behavior changes bundled
+into the same PR:
 
-- `domain/model/NetworkMode.kt` (the sealed interface itself) and its 7
-  variants (`None`, `Mock`, `GrpcLocal`, `GrpcAws`, `GrpcDev`, `LabsStaging`,
-  `LabsProd`) — decide whether `Mock`/`None` (not really "locations") stay as-is
-  or get folded differently.
-- `NetworkModeRepository`/`DataStoreNetworkModeRepository`, `DelegatingRemoteDataSource`,
-  and every other repository/class name built on "NetworkMode".
-- User-facing Settings UI copy — currently literally labeled **"Network Mode"**
-  (`presentation-core/.../ExpandableSelectionControl.kt`, `SettingsContent.kt`'s
-  "Network Mode Card").
-- ~94 Kotlin files reference `NetworkMode` repo-wide (per a 2026-07-06 grep) —
-  this is a large, high-file-count rename that touches user-visible strings, so
-  give it its own explicitly-scoped PR (or a small number of PRs) rather than
-  bundling it with unrelated work. Not urgent; purely a clarity/naming
-  improvement, no behavior change implied.
+- Renamed `NetworkMode` → `DataMode` (sealed interface, repository, use case, `DataModeKeyedState`,
+  DI bindings, strings, docs, iOS Swift bindings) across ~90 files. The sealed variant names
+  themselves (`None`, `Mock`, `GrpcLocal`, `GrpcAws`, `GrpcDev`, `LabsStaging`, `LabsProd`) were
+  deliberately left unchanged — renaming `LabsStaging`/`LabsProd` would have cascaded into the
+  entire Labs auth subsystem (`LabsAuthRepository`, `LabsSessionStorage`, `apiKeyForMode`, etc.),
+  which was out of scope. The on-disk DataStore preference key literal (`"network_mode"`) was also
+  deliberately left unchanged, so existing installs keep their saved selection across the update.
+- Reordered + relabeled the visible Settings picker to **Device only / Production / Staging /
+  Mock** (`None` / `LabsProd` / `LabsStaging` / `Mock`), per the user's requested ordering.
+- Added `FeatureFlag.LEGACY_DATA_MODES` (disabled by default in both `AppComponent` and
+  `NativeComponent`) to hide the legacy own-backend modes (`GrpcLocal`, `GrpcAws`, `GrpcDev` —
+  AWS infrastructure is hibernated) from the picker unless explicitly enabled.
 
 ### bb-play-pub-stale — `docs/GOOGLE_PLAY_PUBLISHING.md` is stale relative to the actual release flow
 
@@ -166,7 +161,7 @@ conclusion (defensive companion to the bb-2r4g close-on-success guard).
 
 **Follow-up to `bb-labs-signout-clear`**: after that fix shipped (android/44), user asked whether more protection was needed. Investigation found a remaining gap: `labsAuthState` is in-memory only and always resets to `Unauthenticated` on process launch, so a user who is genuinely signed in but whose app process gets killed (common on Android under memory pressure) sees "Sign in to Labs" at the same moment the Devices/Types/History tabs still show their real, legitimately-cached data — the same contradictory symptom as the original bug, just triggered by a process restart instead of an explicit sign-out. A naive "clear local data whenever Unauthenticated is observed" fix was rejected — every cold start starts `Unauthenticated`, so this would wipe the cache on every restart and defeat offline-first caching.
 
-**Fix**: mirrored the existing pattern already used by the app's own gRPC `DefaultAuthRepository` (which persists via `AuthTokenStorage` and starts `AuthState.Unknown`, resolving from storage once). Added `LabsSessionStorage`/`DataStoreLabsSessionStorage` (`data-local/.../auth/`) — a lightweight, per-Labs-environment (staging/prod, keyed the same way as the existing in-memory `NetworkModeKeyedState`) persisted "believed signed in" flag storing only profile info (`User`), no tokens, no expiry. `DefaultLabsAuthRepository`'s `authStateByMode` now defaults to `AuthState.Unknown` and resolves to `Authenticated`/`Unauthenticated` from persisted storage in an `init` block, guarded by a new generic `NetworkModeKeyedState.compareAndSet` so it never clobbers a real sign-in/out that happens first. Sign-in saves the belief; sign-out (already called via `SignOutLabsUseCase`) clears it alongside the local data clear. Deliberately does not re-validate a real session or track expiry — per explicit user scoping ("I don't actually care about expired auth... I just care that we remember that we think we are signed in"). Verified end-to-end on a real emulator: sign in, `adb shell am force-stop` + relaunch → Settings shows the signed-in account immediately (no false "Sign in to Labs"), Devices tab still shows cached data; sign out, force-stop + relaunch → correctly shows signed-out with an empty Devices tab.
+**Fix**: mirrored the existing pattern already used by the app's own gRPC `DefaultAuthRepository` (which persists via `AuthTokenStorage` and starts `AuthState.Unknown`, resolving from storage once). Added `LabsSessionStorage`/`DataStoreLabsSessionStorage` (`data-local/.../auth/`) — a lightweight, per-Labs-environment (staging/prod, keyed the same way as the existing in-memory `DataModeKeyedState`) persisted "believed signed in" flag storing only profile info (`User`), no tokens, no expiry. `DefaultLabsAuthRepository`'s `authStateByMode` now defaults to `AuthState.Unknown` and resolves to `Authenticated`/`Unauthenticated` from persisted storage in an `init` block, guarded by a new generic `DataModeKeyedState.compareAndSet` so it never clobbers a real sign-in/out that happens first. Sign-in saves the belief; sign-out (already called via `SignOutLabsUseCase`) clears it alongside the local data clear. Deliberately does not re-validate a real session or track expiry — per explicit user scoping ("I don't actually care about expired auth... I just care that we remember that we think we are signed in"). Verified end-to-end on a real emulator: sign in, `adb shell am force-stop` + relaunch → Settings shows the signed-in account immediately (no false "Sign in to Labs"), Devices tab still shows cached data; sign out, force-stop + relaunch → correctly shows signed-out with an empty Devices tab.
 
 ### bb-labs-cold-resync — Immediate post-sign-in resync can time out on a cold Labs backend — Partially DONE 2026-07-07
 
@@ -178,7 +173,7 @@ conclusion (defensive companion to the bb-2r4g close-on-success guard).
 
 **Follow-up to `bb-labs-persist-signin-belief`**: that fix persisted the *belief* that the user is signed in to Labs so the UI doesn't contradict itself after a process restart, but deliberately left the *real* gateway session unrestored — meaning background sync could keep failing silently until the user explicitly re-signed in (whose entry point was now hidden, since the UI shows Authenticated). Flagged as the most concrete remaining gap when asked "do we need more protections."
 
-**Fix**: added `GoogleSignInBridge.signInSilentlyWithClient(clientId, clientSecret)` to the expect/actual (`data-network/.../auth/`). Android actual reuses the existing Credential Manager `performSignIn` path with `setFilterByAuthorizedAccounts(true)` instead of `false` (succeeds only if the account was previously authorized, no UI). iOS/Desktop actuals always return `Result.Error` immediately — neither uses a native Sign-In SDK (both are hand-rolled interactive OAuth flows with no persisted, silently-restorable session), so there's nothing to check without showing UI. `DefaultLabsAuthRepository`'s `init` block now calls a new `attemptSilentReauth()` right after resolving `AuthState.Unknown` from the persisted belief (guarded by `NetworkModeKeyedState.compareAndSet`'s new boolean return, so it only fires once per belief-resolution, not on every subsequent explicit sign-in). Best-effort by design: on failure it changes nothing (no state rollback, no UI impact) — background sync just keeps failing as it would without this attempt, exactly matching the tolerance already established for `bb-labs-persist-signin-belief`. Verified end-to-end on a real emulator: sign in, `adb shell am force-stop` + relaunch → logcat confirms `"Silent Labs re-auth succeeded; real session re-established"`, Settings' "Copy Labs ID Token" reflects a live token, no dialog ever shown.
+**Fix**: added `GoogleSignInBridge.signInSilentlyWithClient(clientId, clientSecret)` to the expect/actual (`data-network/.../auth/`). Android actual reuses the existing Credential Manager `performSignIn` path with `setFilterByAuthorizedAccounts(true)` instead of `false` (succeeds only if the account was previously authorized, no UI). iOS/Desktop actuals always return `Result.Error` immediately — neither uses a native Sign-In SDK (both are hand-rolled interactive OAuth flows with no persisted, silently-restorable session), so there's nothing to check without showing UI. `DefaultLabsAuthRepository`'s `init` block now calls a new `attemptSilentReauth()` right after resolving `AuthState.Unknown` from the persisted belief (guarded by `DataModeKeyedState.compareAndSet`'s new boolean return, so it only fires once per belief-resolution, not on every subsequent explicit sign-in). Best-effort by design: on failure it changes nothing (no state rollback, no UI impact) — background sync just keeps failing as it would without this attempt, exactly matching the tolerance already established for `bb-labs-persist-signin-belief`. Verified end-to-end on a real emulator: sign in, `adb shell am force-stop` + relaunch → logcat confirms `"Silent Labs re-auth succeeded; real session re-established"`, Settings' "Copy Labs ID Token" reflects a live token, no dialog ever shown.
 
 **Deferred**: real silent re-auth for iOS/Desktop would require adopting a native Sign-In SDK or building refresh-token persistence for the existing PKCE flows — a materially bigger feature, not done here. Those platforms rely solely on the persisted-belief UI fix; their real session still needs an explicit re-sign-in after a process restart if the ambient in-memory session was lost.
 
@@ -486,9 +481,9 @@ Related: bb-k4sk (Kotlin/SKIE version coupling), `.agent/ios.md` (Option A patte
 
 ## Done
 
-### bb-labs-mode-auth-state — Labs Sign-In showed a stale account after switching NetworkMode — DONE 2026-07-05 (structural fix, `NetworkModeKeyedState`)
+### bb-labs-mode-auth-state — Labs Sign-In showed a stale account after switching DataMode — DONE 2026-07-05 (structural fix, `DataModeKeyedState`)
 Found while auditing whether the app isolates credentials correctly across Labs staging/prod.
-Confirmed live on-device: sign in to Labs Prod, switch Network Mode to Labs Staging — Settings
+Confirmed live on-device: sign in to Labs Prod, switch Data Mode to Labs Staging — Settings
 kept showing the **prod** account as "signed in" even though staging was never authenticated;
 tapping "Copy Labs ID Token" in that state silently did nothing (the token really was null for
 staging, but the UI gave no feedback). No credential leakage — `DefaultLabsAuthGateway` already
@@ -496,13 +491,13 @@ correctly partitions **token** sessions per Firebase API key — but `DefaultLab
 `_labsAuthState` was a single unpartitioned `MutableStateFlow`, so switching modes never reset or
 re-evaluated it.
 
-**Structural fix, not just a patch:** added `domain/model/NetworkModeKeyedState.kt` — a small,
-directly-unit-tested (`NetworkModeKeyedStateTest.kt`, 3 tests, no fakes needed) class that holds
-one value per network-mode-derived key and reactively exposes whichever one is current, so
+**Structural fix, not just a patch:** added `domain/model/DataModeKeyedState.kt` — a small,
+directly-unit-tested (`DataModeKeyedStateTest.kt`, 3 tests, no fakes needed) class that holds
+one value per data-mode-derived key and reactively exposes whichever one is current, so
 there's no unpartitioned field left to go stale. `DefaultLabsAuthRepository.labsAuthState` now
 uses it (keyed the same way `DefaultLabsAuthGateway` already keys token sessions, via
 `apiKeyForMode`). `LabsAuthRepository.clearError()` became `suspend fun` as part of this (needs
-to read the current network mode). Intent: any *future* per-environment state should reach for
+to read the current data mode). Intent: any *future* per-environment state should reach for
 this class instead of a bare `MutableStateFlow`, making this bug category structurally harder to
 reintroduce. Verified live: prod→staging now correctly shows unauthenticated; staging→prod
 correctly restores prod's own session (not just reset to default).

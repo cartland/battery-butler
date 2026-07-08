@@ -1,10 +1,10 @@
 package com.chriscartland.batterybutler.viewmodel.login
 
 import com.chriscartland.batterybutler.domain.model.AuthState
-import com.chriscartland.batterybutler.domain.model.NetworkMode
+import com.chriscartland.batterybutler.domain.model.DataMode
 import com.chriscartland.batterybutler.domain.repository.AuthRepository
+import com.chriscartland.batterybutler.domain.repository.DataModeRepository
 import com.chriscartland.batterybutler.domain.repository.LabsAuthRepository
-import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
 import com.chriscartland.batterybutler.usecase.SignInToLabsUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
 import com.chriscartland.batterybutler.viewmodel.safeStateIn
@@ -21,25 +21,25 @@ import me.tatarka.inject.annotations.Inject
 /**
  * ViewModel for the Login screen.
  *
- * The front-door sign-in **follows the selected backend**: in a Labs ([NetworkMode.LabsStaging] /
- * [NetworkMode.LabsProd]) mode it drives the Labs Google sign-in, otherwise the app's own gRPC
+ * The front-door sign-in **follows the selected backend**: in a Labs ([DataMode.LabsStaging] /
+ * [DataMode.LabsProd]) mode it drives the Labs Google sign-in, otherwise the app's own gRPC
  * account. This keeps the login tied to whichever backend the app is pointed at — the app defaults
- * to Labs (see `DataStoreNetworkModeRepository`), so a fresh install shows a prominent Labs sign-in.
+ * to Labs (see `DataStoreDataModeRepository`), so a fresh install shows a prominent Labs sign-in.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 @Inject
 class LoginViewModel(
     private val authRepository: AuthRepository,
     private val labsAuthRepository: LabsAuthRepository,
-    private val networkModeRepository: NetworkModeRepository,
+    private val dataModeRepository: DataModeRepository,
     private val signInToLabsUseCase: SignInToLabsUseCase,
 ) : ViewModel() {
     /**
      * True when the selected backend is a Labs (REST) mode — the front door then signs in to Labs.
      * Eagerly shared so [signInWithGoogle] / [dismissError] / [isSignInAvailable] can read `.value`.
      */
-    val isLabsMode: StateFlow<Boolean> = networkModeRepository.networkMode
-        .map { it is NetworkMode.LabsStaging || it is NetworkMode.LabsProd }
+    val isLabsMode: StateFlow<Boolean> = dataModeRepository.dataMode
+        .map { it is DataMode.LabsStaging || it is DataMode.LabsProd }
         .safeStateIn(
             viewModelScope = viewModelScope,
             started = SharingStarted.Eagerly,
@@ -55,9 +55,9 @@ class LoginViewModel(
      * - [AuthState.Authenticated]: Navigate to main screen
      * - [AuthState.Failed]: Error message with retry option
      */
-    val authState: StateFlow<AuthState> = networkModeRepository.networkMode
+    val authState: StateFlow<AuthState> = dataModeRepository.dataMode
         .flatMapLatest { mode ->
-            if (mode is NetworkMode.LabsStaging || mode is NetworkMode.LabsProd) {
+            if (mode is DataMode.LabsStaging || mode is DataMode.LabsProd) {
                 labsAuthRepository.labsAuthState
             } else {
                 authRepository.authState

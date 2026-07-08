@@ -39,7 +39,7 @@ Development implementation:
 
 ### DelegatingRemoteDataSource
 
-Routes to appropriate data source based on `NetworkMode`:
+Routes to appropriate data source based on `DataMode`:
 - `Mock` → MockRemoteDataSource
 - `GrpcLocal` / `GrpcAws` / `GrpcDev` → GrpcSyncDataSource
 

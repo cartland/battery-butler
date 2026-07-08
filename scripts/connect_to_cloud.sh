@@ -18,10 +18,10 @@ adb shell am broadcast \
   -a com.chriscartland.batterybutler.SET_SERVER_URL \
   --esn url
 
-# 2. Set Network Mode to GRPC_LOCAL (Real Network)
+# 2. Set Data Mode to GRPC_LOCAL (Real Network)
 adb shell am broadcast \
   -n com.chriscartland.batterybutler/com.chriscartland.batterybutler.composeapp.debug.DebugNetworkReceiver \
-  -a com.chriscartland.batterybutler.SET_NETWORK_MODE \
+  -a com.chriscartland.batterybutler.SET_DATA_MODE \
   --es mode GRPC_LOCAL
 
 echo "App configured for Cloud Connectivity."

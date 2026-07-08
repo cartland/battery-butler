@@ -6,11 +6,11 @@ import com.chriscartland.batterybutler.datalocal.auth.StoredAuthToken
 import com.chriscartland.batterybutler.datanetwork.auth.GoogleSignInBridge
 import com.chriscartland.batterybutler.domain.model.AuthError
 import com.chriscartland.batterybutler.domain.model.AuthState
-import com.chriscartland.batterybutler.domain.model.NetworkMode
+import com.chriscartland.batterybutler.domain.model.DataMode
 import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.model.User
 import com.chriscartland.batterybutler.domain.repository.AuthRepository
-import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
+import com.chriscartland.batterybutler.domain.repository.DataModeRepository
 import com.chriscartland.batterybutler.proto.AuthServiceClient
 import com.chriscartland.batterybutler.proto.VerifyTokenRequest
 import kotlinx.coroutines.CoroutineScope
@@ -46,7 +46,7 @@ class DefaultAuthRepository(
     private val googleSignInBridge: GoogleSignInBridge,
     private val authServiceClient: AuthServiceClient,
     private val tokenStorage: AuthTokenStorage,
-    private val networkModeRepository: NetworkModeRepository,
+    private val dataModeRepository: DataModeRepository,
     private val scope: CoroutineScope,
 ) : AuthRepository {
     private val log = Logger.withTag("DefaultAuthRepository")
@@ -81,13 +81,13 @@ class DefaultAuthRepository(
     override fun isSignInAvailable(): Boolean = googleSignInBridge.isConfigured()
 
     override suspend fun signInWithGoogle(): Result<User, AuthError> {
-        val currentMode = networkModeRepository.networkMode.first()
-        if (currentMode is NetworkMode.None) {
-            log.w { "Network Mode is None (Offline), skipping Google Sign-In" }
+        val currentMode = dataModeRepository.dataMode.first()
+        if (currentMode is DataMode.None) {
+            log.w { "Data Mode is None (Offline), skipping Google Sign-In" }
             return Result.Error(
                 AuthError.SignIn.NetworkError(
                     message = "Offline Mode Enabled",
-                    cause = "Network Mode is set to None",
+                    cause = "Data Mode is set to None",
                 ),
             )
         }
@@ -149,10 +149,10 @@ class DefaultAuthRepository(
         displayName: String?,
         photoUrl: String?,
     ): Result<User, AuthError> {
-        // Check network mode first
-        val currentMode = networkModeRepository.networkMode.first()
-        if (currentMode is NetworkMode.None) {
-            log.i { "Network Mode None: Skipping server verification, using local-only auth" }
+        // Check data mode first
+        val currentMode = dataModeRepository.dataMode.first()
+        if (currentMode is DataMode.None) {
+            log.i { "Data Mode None: Skipping server verification, using local-only auth" }
             return fallbackToLocalAuth(idToken, email, displayName, photoUrl)
         }
 

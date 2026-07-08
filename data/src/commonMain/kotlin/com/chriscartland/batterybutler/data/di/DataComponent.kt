@@ -3,7 +3,7 @@ package com.chriscartland.batterybutler.data.di
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.chriscartland.batterybutler.data.provider.DefaultDispatcherProvider
-import com.chriscartland.batterybutler.data.repository.DataStoreNetworkModeRepository
+import com.chriscartland.batterybutler.data.repository.DataStoreDataModeRepository
 import com.chriscartland.batterybutler.data.repository.DefaultDeviceRepository
 import com.chriscartland.batterybutler.data.repository.DefaultLegacyDatabaseRepository
 import com.chriscartland.batterybutler.data.repository.DefaultSyncManager
@@ -24,12 +24,12 @@ import com.chriscartland.batterybutler.datanetwork.DelegatingRemoteDataSource
 import com.chriscartland.batterybutler.datanetwork.RemoteDataSource
 import com.chriscartland.batterybutler.datanetwork.auth.GoogleSignInBridge
 import com.chriscartland.batterybutler.datanetwork.grpc.NetworkComponent
+import com.chriscartland.batterybutler.domain.model.DataMode
 import com.chriscartland.batterybutler.domain.model.DispatcherProvider
-import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.repository.AuthRepository
+import com.chriscartland.batterybutler.domain.repository.DataModeRepository
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.domain.repository.LegacyDatabaseRepository
-import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
 import com.chriscartland.batterybutler.proto.AuthServiceClient
 import com.chriscartland.batterybutler.proto.GrpcAuthServiceClient
 import com.chriscartland.batterybutler.proto.GrpcSyncServiceClient
@@ -71,10 +71,10 @@ interface DataComponent {
     fun provideDeviceRepository(repo: DefaultDeviceRepository): DeviceRepository = repo
 
     @Provides
-    fun provideNetworkModeRepository(repo: DataStoreNetworkModeRepository): NetworkModeRepository = repo
+    fun provideDataModeRepository(repo: DataStoreDataModeRepository): DataModeRepository = repo
 
     @Provides
-    fun provideNetworkModeFlow(repo: NetworkModeRepository): Flow<NetworkMode> = repo.networkMode
+    fun provideDataModeFlow(repo: DataModeRepository): Flow<DataMode> = repo.dataMode
 
     @Provides
     fun provideRemoteDataSource(dataSource: DelegatingRemoteDataSource): RemoteDataSource = dataSource

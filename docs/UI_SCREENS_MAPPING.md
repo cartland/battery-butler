@@ -39,7 +39,7 @@ The following table tracks specific feature gaps between the Compose Multiplatfo
 |---------|---------|-------------|-----|
 | Sort/Group controls (Home) | Yes | Yes | ~~bb-847x~~ (PR #971) |
 | Sort/Group controls (Types) | Yes | Yes | ~~bb-847x~~ (PR #971) |
-| Settings: Network mode | Yes | Yes | ~~bb-abn6~~ (PR #972) |
+| Settings: Data mode | Yes | Yes | ~~bb-abn6~~ (PR #972) |
 | Settings: AI engine picker | Yes | Yes | ~~bb-abn6~~ (PR #972) |
 | Settings: Account section | Yes | Yes | ~~bb-abn6~~ (PR #972) |
 | History enrichment (icons, location) | Yes | Yes | ~~bb-wddv~~ (PR #973) |
@@ -119,12 +119,12 @@ The following table tracks specific feature gaps between the Compose Multiplatfo
 > - Both approaches provide equivalent functionality through platform-native UX patterns
 
 ### 7. Settings
-- **Compose:** `SettingsScreen.kt` provides a full settings experience: network mode selector (Prod/Dev/Local/Mock/None), AI engine selector, sign-out button, account info, export data, check for updates, and dynamic app version from `BuildConfig`.
-- **SwiftUI:** `SettingsScreen.swift` provides full feature parity: account section, network mode selector, AI engine selector, export data, check for updates, and app version.
+- **Compose:** `SettingsScreen.kt` provides a full settings experience: data mode selector (Prod/Dev/Local/Mock/None), AI engine selector, sign-out button, account info, export data, check for updates, and dynamic app version from `BuildConfig`.
+- **SwiftUI:** `SettingsScreen.swift` provides full feature parity: account section, data mode selector, AI engine selector, export data, check for updates, and app version.
 
 > **Resolved Feature Gaps (PR #972):**
 > - Account section with user info and Sign Out
-> - Network mode selector (DisclosureGroup)
+> - Data mode selector (DisclosureGroup)
 > - AI engine selector
 > - Enhanced app version display
 >

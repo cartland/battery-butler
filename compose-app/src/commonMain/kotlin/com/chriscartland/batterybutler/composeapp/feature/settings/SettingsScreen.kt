@@ -37,7 +37,7 @@ fun SettingsScreen(
             viewModel.onExportDataConsumed()
         }
     }
-    val networkMode by viewModel.networkMode.collectAsStateWithLifecycle()
+    val dataMode by viewModel.dataMode.collectAsStateWithLifecycle()
     val aiEngineType by viewModel.aiEngineType.collectAsStateWithLifecycle()
     val currentDatabaseFileName by viewModel.currentDatabaseFileName.collectAsStateWithLifecycle()
     val legacyDatabaseInfo by viewModel.legacyDatabaseInfo.collectAsStateWithLifecycle()
@@ -65,9 +65,9 @@ fun SettingsScreen(
     // See bb-lg42 for the full history.
 
     SettingsContent(
-        networkMode = networkMode,
-        availableNetworkModes = viewModel.availableNetworkModes,
-        onNetworkModeSelected = viewModel::onNetworkModeSelected,
+        dataMode = dataMode,
+        availableDataModes = viewModel.availableDataModes,
+        onDataModeSelected = viewModel::onDataModeSelected,
         aiEngineType = aiEngineType,
         availableAiEngines = viewModel.availableAiEngines,
         onAiEngineSelected = viewModel::onAiEngineSelected,

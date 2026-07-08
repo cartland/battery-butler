@@ -2,13 +2,13 @@ package com.chriscartland.batterybutler.viewmodel.login
 
 import com.chriscartland.batterybutler.domain.model.AuthError
 import com.chriscartland.batterybutler.domain.model.AuthState
-import com.chriscartland.batterybutler.domain.model.NetworkMode
+import com.chriscartland.batterybutler.domain.model.DataMode
 import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.model.User
 import com.chriscartland.batterybutler.testcommon.FakeAuthRepository
+import com.chriscartland.batterybutler.testcommon.FakeDataModeRepository
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
 import com.chriscartland.batterybutler.testcommon.FakeLabsAuthRepository
-import com.chriscartland.batterybutler.testcommon.FakeNetworkModeRepository
 import com.chriscartland.batterybutler.usecase.SignInToLabsUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -54,7 +54,7 @@ class LoginViewModelTest {
             val viewModel = LoginViewModel(
                 repo,
                 FakeLabsAuthRepository(),
-                FakeNetworkModeRepository(NetworkMode.None),
+                FakeDataModeRepository(DataMode.None),
                 SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository()),
             )
 
@@ -70,7 +70,7 @@ class LoginViewModelTest {
             val viewModel = LoginViewModel(
                 repo,
                 FakeLabsAuthRepository(),
-                FakeNetworkModeRepository(NetworkMode.None),
+                FakeDataModeRepository(DataMode.None),
                 SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository()),
             )
             advanceUntilIdle()
@@ -90,7 +90,7 @@ class LoginViewModelTest {
             val viewModel = LoginViewModel(
                 repo,
                 FakeLabsAuthRepository(),
-                FakeNetworkModeRepository(NetworkMode.None),
+                FakeDataModeRepository(DataMode.None),
                 SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository()),
             )
 
@@ -105,7 +105,7 @@ class LoginViewModelTest {
             val viewModel = LoginViewModel(
                 repo,
                 FakeLabsAuthRepository(),
-                FakeNetworkModeRepository(NetworkMode.None),
+                FakeDataModeRepository(DataMode.None),
                 SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository()),
             )
 
@@ -120,7 +120,7 @@ class LoginViewModelTest {
             val viewModel = LoginViewModel(
                 repo,
                 FakeLabsAuthRepository(),
-                FakeNetworkModeRepository(NetworkMode.None),
+                FakeDataModeRepository(DataMode.None),
                 SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository()),
             )
 
@@ -138,7 +138,7 @@ class LoginViewModelTest {
             val viewModel = LoginViewModel(
                 repo,
                 FakeLabsAuthRepository(),
-                FakeNetworkModeRepository(NetworkMode.None),
+                FakeDataModeRepository(DataMode.None),
                 SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository()),
             )
 
@@ -159,7 +159,7 @@ class LoginViewModelTest {
             val viewModel = LoginViewModel(
                 repo,
                 FakeLabsAuthRepository(),
-                FakeNetworkModeRepository(NetworkMode.None),
+                FakeDataModeRepository(DataMode.None),
                 SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository()),
             )
 
@@ -183,7 +183,7 @@ class LoginViewModelTest {
             val viewModel = LoginViewModel(
                 repo,
                 FakeLabsAuthRepository(),
-                FakeNetworkModeRepository(NetworkMode.None),
+                FakeDataModeRepository(DataMode.None),
                 SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository()),
             )
 
@@ -204,7 +204,7 @@ class LoginViewModelTest {
             val viewModel = LoginViewModel(
                 repo,
                 FakeLabsAuthRepository(),
-                FakeNetworkModeRepository(NetworkMode.None),
+                FakeDataModeRepository(DataMode.None),
                 SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository()),
             )
 
@@ -224,7 +224,7 @@ class LoginViewModelTest {
             val viewModel = LoginViewModel(
                 repo,
                 FakeLabsAuthRepository(),
-                FakeNetworkModeRepository(NetworkMode.None),
+                FakeDataModeRepository(DataMode.None),
                 SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository()),
             )
 
@@ -241,7 +241,7 @@ class LoginViewModelTest {
             val viewModel = LoginViewModel(
                 repo,
                 FakeLabsAuthRepository(),
-                FakeNetworkModeRepository(NetworkMode.None),
+                FakeDataModeRepository(DataMode.None),
                 SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository()),
             )
             advanceUntilIdle()
@@ -267,7 +267,7 @@ class LoginViewModelTest {
             val viewModel = LoginViewModel(
                 repo,
                 FakeLabsAuthRepository(),
-                FakeNetworkModeRepository(NetworkMode.None),
+                FakeDataModeRepository(DataMode.None),
                 SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository()),
             )
 
@@ -294,7 +294,7 @@ class LoginViewModelTest {
             val viewModel = LoginViewModel(
                 repo,
                 FakeLabsAuthRepository(),
-                FakeNetworkModeRepository(NetworkMode.None),
+                FakeDataModeRepository(DataMode.None),
                 SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository()),
             )
 
@@ -316,7 +316,7 @@ class LoginViewModelTest {
             val viewModel = LoginViewModel(
                 grpcRepo,
                 labsRepo,
-                FakeNetworkModeRepository(NetworkMode.LabsStaging("https://example.com")),
+                FakeDataModeRepository(DataMode.LabsStaging("https://example.com")),
                 SignInToLabsUseCase(labsRepo, FakeDeviceRepository()),
             )
             advanceUntilIdle() // let isLabsMode (Eagerly) observe the Labs mode
@@ -340,7 +340,7 @@ class LoginViewModelTest {
             val viewModel = LoginViewModel(
                 grpcRepo,
                 labsRepo,
-                FakeNetworkModeRepository(NetworkMode.LabsStaging("https://example.com")),
+                FakeDataModeRepository(DataMode.LabsStaging("https://example.com")),
                 SignInToLabsUseCase(labsRepo, FakeDeviceRepository()),
             )
             advanceUntilIdle()

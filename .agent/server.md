@@ -79,20 +79,25 @@ Server URLs (prod and dev) flow through the system as follows:
 - `AppComponent` (Android/Desktop) and `NativeComponent` (iOS) provide both from BuildConfig
 - ViewModels and other components receive them via constructor injection
 
-**NetworkMode variants:**
-- `NetworkMode.GrpcAws(url)` — Prod server
-- `NetworkMode.GrpcDev(url)` — Dev server
-- `NetworkMode.GrpcLocal(url)` — Local development server
-- `NetworkMode.Mock` — Offline mock data
-- `NetworkMode.None` — Network disabled (default)
+**DataMode variants:**
+- `DataMode.None` — Device only, no backend (default)
+- `DataMode.LabsProd(url)` — Production (Labs REST backend, prod channel)
+- `DataMode.LabsStaging(url)` — Staging (Labs REST backend, staging channel)
+- `DataMode.Mock` — Offline mock data
+- `DataMode.GrpcAws(url)` — legacy own-backend prod server (AWS, hibernated)
+- `DataMode.GrpcDev(url)` — legacy own-backend dev server (AWS, hibernated)
+- `DataMode.GrpcLocal(url)` — legacy own-backend local development server
 
-Settings UI displays them in this order: Prod Server / Dev Server / gRPC Local / Mock / None (Offline).
+Settings UI shows **Device only / Production / Staging / Mock** by default, in that order. The
+three legacy `Grpc*` variants are hidden behind `FeatureFlag.LEGACY_DATA_MODES` (disabled by
+default in both `AppComponent` and `NativeComponent` — see `bb-data-location-rename` history in
+`TODO.md`); enable that flag locally to surface them for AWS-backend debugging.
 
 **Key rules:**
 - **NEVER hardcode NLB hostnames** in Kotlin source — use `BuildConfig.PRODUCTION_SERVER_URL` / `BuildConfig.DEV_SERVER_URL` or `ProductionServerUrl` / `DevServerUrl`
 - `gradle.properties` has fallback values for local dev only; CI always overrides from secrets
 - `release-android.yml` validates server connectivity before uploading to Play Store
-- When adding a new NetworkMode variant, update all `when` branches (check: DelegatingGrpcClient, DelegatingRemoteDataSource, DynamicDatabaseProvider, DataStoreNetworkModeRepository, SettingsContent, DebugNetworkReceiver, NetworkModeTest)
+- When adding a new DataMode variant, update all `when` branches (check: DelegatingGrpcClient, DelegatingRemoteDataSource, DynamicDatabaseProvider, DataStoreDataModeRepository, SettingsContent, DebugDataModeReceiver, DataModeTest) and `SettingsViewModel.availableDataModes`
 
 ## Secrets Management
 

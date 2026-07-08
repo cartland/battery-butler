@@ -21,4 +21,12 @@ enum class FeatureFlag {
      * Requires server configuration.
      */
     REMOTE_SYNC,
+
+    /**
+     * Legacy/hibernated [com.chriscartland.batterybutler.domain.model.DataMode] options
+     * (`GrpcLocal`, `GrpcAws`, `GrpcDev`) in the Settings Data Mode picker. AWS infrastructure is
+     * hibernated (see `.agent/project.md`), so these are disabled by default; the picker only
+     * shows Device only / Production / Staging / Mock unless this is enabled.
+     */
+    LEGACY_DATA_MODES,
 }

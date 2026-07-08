@@ -1,6 +1,6 @@
 package com.chriscartland.batterybutler.datalocal.room
 
-import com.chriscartland.batterybutler.domain.model.NetworkMode
+import com.chriscartland.batterybutler.domain.model.DataMode
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
@@ -9,15 +9,15 @@ import kotlin.test.assertNull
 class DatabaseOptionTest {
     @Test
     fun `same mode constructed twice resolves to an equal DatabaseOption`() {
-        val a = DatabaseOption.fromNetworkMode(NetworkMode.GrpcAws("https://prod.example.com"))
-        val b = DatabaseOption.fromNetworkMode(NetworkMode.GrpcAws("https://prod.example.com"))
+        val a = DatabaseOption.fromDataMode(DataMode.GrpcAws("https://prod.example.com"))
+        val b = DatabaseOption.fromDataMode(DataMode.GrpcAws("https://prod.example.com"))
         assertEquals(a, b)
     }
 
     @Test
     fun `same subtype with a different url resolves to a different DatabaseOption and file name`() {
-        val a = DatabaseOption.fromNetworkMode(NetworkMode.GrpcAws("https://prod-a.example.com"))
-        val b = DatabaseOption.fromNetworkMode(NetworkMode.GrpcAws("https://prod-b.example.com"))
+        val a = DatabaseOption.fromDataMode(DataMode.GrpcAws("https://prod-a.example.com"))
+        val b = DatabaseOption.fromDataMode(DataMode.GrpcAws("https://prod-b.example.com"))
         assertNotEquals(a, b)
         assertNotEquals(a.fileName, b.fileName)
         // This is the exact bug this class exists to prevent: two different real backends must
@@ -27,8 +27,8 @@ class DatabaseOptionTest {
 
     @Test
     fun `null and blank urls resolve to the bare category file, with no suffix`() {
-        val nullUrl = DatabaseOption.fromNetworkMode(NetworkMode.GrpcAws(null))
-        val blankUrl = DatabaseOption.fromNetworkMode(NetworkMode.GrpcAws("   "))
+        val nullUrl = DatabaseOption.fromDataMode(DataMode.GrpcAws(null))
+        val blankUrl = DatabaseOption.fromDataMode(DataMode.GrpcAws("   "))
         val bare = DatabaseOption.baseFileNames.getValue(DatabaseCategory.ProductionServer)
         assertEquals(bare, nullUrl.fileName)
         assertEquals(bare, blankUrl.fileName)
@@ -37,16 +37,16 @@ class DatabaseOptionTest {
 
     @Test
     fun `a literal 'null' string url does not collide with an actual null url`() {
-        val nullUrl = DatabaseOption.fromNetworkMode(NetworkMode.GrpcAws(null))
-        val literalNullString = DatabaseOption.fromNetworkMode(NetworkMode.GrpcAws("null"))
+        val nullUrl = DatabaseOption.fromDataMode(DataMode.GrpcAws(null))
+        val literalNullString = DatabaseOption.fromDataMode(DataMode.GrpcAws("null"))
         assertNotEquals(nullUrl, literalNullString)
         assertNotEquals(DatabaseOption.baseFileNames.getValue(DatabaseCategory.ProductionServer), literalNullString.fileName)
     }
 
     @Test
     fun `case and trailing-slash-only url differences normalize to the same key`() {
-        val a = DatabaseOption.fromNetworkMode(NetworkMode.GrpcDev("http://Example.com:8080/"))
-        val b = DatabaseOption.fromNetworkMode(NetworkMode.GrpcDev("http://example.com:8080"))
+        val a = DatabaseOption.fromDataMode(DataMode.GrpcDev("http://Example.com:8080/"))
+        val b = DatabaseOption.fromDataMode(DataMode.GrpcDev("http://example.com:8080"))
         assertEquals(a, b)
     }
 
@@ -72,8 +72,8 @@ class DatabaseOptionTest {
 
     @Test
     fun `Mock and None ignore any url and resolve to their bare files`() {
-        assertEquals(DatabaseOption.baseFileNames.getValue(DatabaseCategory.Mock), DatabaseOption.fromNetworkMode(NetworkMode.Mock).fileName)
-        assertEquals(DatabaseOption.baseFileNames.getValue(DatabaseCategory.Offline), DatabaseOption.fromNetworkMode(NetworkMode.None).fileName)
-        assertEquals(DatabaseOption.OFFLINE, DatabaseOption.fromNetworkMode(NetworkMode.None))
+        assertEquals(DatabaseOption.baseFileNames.getValue(DatabaseCategory.Mock), DatabaseOption.fromDataMode(DataMode.Mock).fileName)
+        assertEquals(DatabaseOption.baseFileNames.getValue(DatabaseCategory.Offline), DatabaseOption.fromDataMode(DataMode.None).fileName)
+        assertEquals(DatabaseOption.OFFLINE, DatabaseOption.fromDataMode(DataMode.None))
     }
 }

@@ -5,7 +5,7 @@ package com.chriscartland.batterybutler.domain.model
  *
  * Per-env because staging (`cartland-labs-staging`) and prod (`cartland-labs`) are separate Firebase
  * projects with separate (public) Web API keys. The Labs REST sync auth ([FirebaseIdTokenProvider]
- * in :data-network) uses the key matching the current [NetworkMode] to exchange a Google ID token
+ * in :data-network) uses the key matching the current [DataMode] to exchange a Google ID token
  * for a Labs Firebase ID token minted by that env's project. Either may be blank when unconfigured
  * (owner setup pending).
  */

@@ -11,7 +11,7 @@ package com.chriscartland.batterybutler.domain.model
 sealed interface RestoreResult {
     /**
      * Restore completed: legacy file copied over the active database file,
-     * Room reopened cleanly, [com.chriscartland.batterybutler.domain.model.NetworkMode]-bound
+     * Room reopened cleanly, [com.chriscartland.batterybutler.domain.model.DataMode]-bound
      * flows have been re-bound. Data should be visible across all tabs.
      */
     data object Success : RestoreResult

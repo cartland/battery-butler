@@ -1,9 +1,9 @@
 package com.chriscartland.batterybutler.datanetwork.grpc
 
 import co.touchlab.kermit.Logger
+import com.chriscartland.batterybutler.domain.model.DataMode
 import com.chriscartland.batterybutler.domain.model.DispatcherProvider
-import com.chriscartland.batterybutler.domain.model.NetworkMode
-import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
+import com.chriscartland.batterybutler.domain.repository.DataModeRepository
 import com.squareup.wire.GrpcCall
 import com.squareup.wire.GrpcClient
 import com.squareup.wire.GrpcMethod
@@ -27,7 +27,7 @@ sealed interface GrpcClientState {
 
 class DelegatingGrpcClient(
     private val factory: (String, DispatcherProvider) -> GrpcClient,
-    private val networkModeRepository: NetworkModeRepository,
+    private val dataModeRepository: DataModeRepository,
     private val scope: CoroutineScope,
     private val dispatcherProvider: DispatcherProvider,
     private val tokenProvider: (() -> String?)? = null,
@@ -37,9 +37,9 @@ class DelegatingGrpcClient(
 
     init {
         scope.launch {
-            networkModeRepository.networkMode.collect { mode ->
+            dataModeRepository.dataMode.collect { mode ->
                 val newClient = when (mode) {
-                    is NetworkMode.GrpcLocal -> {
+                    is DataMode.GrpcLocal -> {
                         val url = mode.url
                         if (url.isNullOrBlank()) {
                             GrpcClientState.InvalidConfiguration
@@ -54,10 +54,10 @@ class DelegatingGrpcClient(
                         }
                     }
 
-                    is NetworkMode.GrpcAws, is NetworkMode.GrpcDev -> {
+                    is DataMode.GrpcAws, is DataMode.GrpcDev -> {
                         val url = when (mode) {
-                            is NetworkMode.GrpcAws -> mode.url
-                            is NetworkMode.GrpcDev -> mode.url
+                            is DataMode.GrpcAws -> mode.url
+                            is DataMode.GrpcDev -> mode.url
                         }
                         if (url.isNullOrBlank()) {
                             GrpcClientState.InvalidConfiguration
@@ -73,10 +73,10 @@ class DelegatingGrpcClient(
                     }
 
                     // Mock, None, and the Labs (REST) modes don't use a GrpcClient.
-                    NetworkMode.Mock,
-                    NetworkMode.None,
-                    is NetworkMode.LabsStaging,
-                    is NetworkMode.LabsProd,
+                    DataMode.Mock,
+                    DataMode.None,
+                    is DataMode.LabsStaging,
+                    is DataMode.LabsProd,
                     -> {
                         GrpcClientState.Uninitialized
                     }

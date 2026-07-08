@@ -126,7 +126,7 @@ Battery Butler helps users track battery-powered devices and their replacement h
 
 | Feature | Description | Journey | Tests |
 |---------|-------------|---------|-------|
-| Network Mode | Mock (offline), gRPC Local, gRPC AWS | J12 | SettingsViewModelTest (13) |
+| Data Mode | Mock (offline), gRPC Local, gRPC AWS | J12 | SettingsViewModelTest (13) |
 | Export Data | Save all data as timestamped JSON file | J15 | ExportDataUseCaseTest (8) |
 | App Version | Platform-specific version display | J12 | SettingsViewModelTest |
 

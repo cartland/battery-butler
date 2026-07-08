@@ -1,7 +1,7 @@
 package com.chriscartland.batterybutler.usecase
 
+import com.chriscartland.batterybutler.domain.model.DataMode
 import com.chriscartland.batterybutler.domain.model.LegacyDatabaseInfo
-import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.testcommon.FakeLegacyDatabaseRepository
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -16,7 +16,7 @@ class GetLegacyDatabaseInfoUseCaseTest {
         val repo = FakeLegacyDatabaseRepository()
         val useCase = GetLegacyDatabaseInfoUseCase(repo)
 
-        val result = useCase(NetworkMode.GrpcLocal("http://localhost:50051"))
+        val result = useCase(DataMode.GrpcLocal("http://localhost:50051"))
 
         assertNull(result)
     }
@@ -24,13 +24,13 @@ class GetLegacyDatabaseInfoUseCaseTest {
     @Test
     fun `returns legacy info when repository has data`() {
         val repo = FakeLegacyDatabaseRepository()
-        repo.legacyInfoByMode[NetworkMode.None] = LegacyDatabaseInfo(
+        repo.legacyInfoByMode[DataMode.None] = LegacyDatabaseInfo(
             legacyFileName = "battery-butler.db",
             exists = true,
         )
         val useCase = GetLegacyDatabaseInfoUseCase(repo)
 
-        val result = useCase(NetworkMode.None)
+        val result = useCase(DataMode.None)
 
         assertNotNull(result)
         assertEquals("battery-butler.db", result.legacyFileName)
@@ -40,13 +40,13 @@ class GetLegacyDatabaseInfoUseCaseTest {
     @Test
     fun `returns info with exists false when legacy file missing`() {
         val repo = FakeLegacyDatabaseRepository()
-        repo.legacyInfoByMode[NetworkMode.Mock] = LegacyDatabaseInfo(
+        repo.legacyInfoByMode[DataMode.Mock] = LegacyDatabaseInfo(
             legacyFileName = "battery-butler-dev.db",
             exists = false,
         )
         val useCase = GetLegacyDatabaseInfoUseCase(repo)
 
-        val result = useCase(NetworkMode.Mock)
+        val result = useCase(DataMode.Mock)
 
         assertNotNull(result)
         assertEquals("battery-butler-dev.db", result.legacyFileName)

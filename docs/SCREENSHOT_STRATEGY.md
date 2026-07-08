@@ -26,7 +26,7 @@ Light and dark mode for each state (both Android and iOS have this today).
 - Populated vs. empty lists (already covered for most screens)
 - Edge cases that affect layout: deleted-device references, very old battery age colors, long text truncation
 - AI overlay states (collapsed on each tab, expanded, full-height)
-- Settings variants (network mode options)
+- Settings variants (data mode options)
 
 ### Tier 3 — Optional (components and form factors)
 
@@ -72,7 +72,7 @@ When adding a screenshot test to one platform, check the parity matrix below. If
 | | Empty | ✓ L/D | ✓ | — |
 | | Loading | ✓ L/D | ✓ | — |
 | **Settings** | Default | ✓ L/D | ✓ | — |
-| | All network modes | ✓ L/D | — | Platform divergence: iOS Settings has no network mode UI |
+| | All data modes | ✓ L/D | — | Platform divergence: iOS Settings has no data mode UI |
 | **AddDevice** | Empty form | ✓ L/D | ✓ | — |
 | | Filled form | ✓ L/D | ✓ | — |
 | **AddBatteryEvent** | With devices | ✓ L/D | ✓ | — |
@@ -145,7 +145,7 @@ When adding a screenshot test to one platform, check the parity matrix below. If
 1. **iOS dark mode snapshots complete** — all 48 test functions produce both light and dark snapshots (96 PNGs total), matching Android's dual-mode coverage.
 2. **iOS Tier 1 complete** — all screens now have snapshot coverage for their meaningful states. DeviceTypeDetail was the last gap, closed by PR #911.
 3. **Android Tier 1 gaps closed** — History, Types, EventDetail, EditDeviceType Loading states and EditDevice Loading/NotFound states now have coverage.
-4. **Remaining platform divergence** — Settings "All network modes" is Android-only (iOS Settings has no network mode UI).
+4. **Remaining platform divergence** — Settings "All data modes" is Android-only (iOS Settings has no data mode UI).
 
 ### Unique strengths
 

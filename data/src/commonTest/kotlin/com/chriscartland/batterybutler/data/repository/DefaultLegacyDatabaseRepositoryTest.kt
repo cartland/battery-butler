@@ -1,6 +1,6 @@
 package com.chriscartland.batterybutler.data.repository
 
-import com.chriscartland.batterybutler.domain.model.NetworkMode
+import com.chriscartland.batterybutler.domain.model.DataMode
 import com.chriscartland.batterybutler.testcommon.FakeLegacyDatabaseRepository
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -20,7 +20,7 @@ class DefaultLegacyDatabaseRepositoryTest {
     fun `getLegacyDatabaseInfo returns null for mode without legacy file`() {
         val repo = FakeLegacyDatabaseRepository()
 
-        val result = repo.getLegacyDatabaseInfo(NetworkMode.GrpcLocal("http://localhost:50051"))
+        val result = repo.getLegacyDatabaseInfo(DataMode.GrpcLocal("http://localhost:50051"))
 
         assertNull(result)
     }
@@ -28,12 +28,12 @@ class DefaultLegacyDatabaseRepositoryTest {
     @Test
     fun `getLegacyDatabaseInfo returns info when legacy file exists`() {
         val repo = FakeLegacyDatabaseRepository()
-        repo.legacyInfoByMode[NetworkMode.None] = com.chriscartland.batterybutler.domain.model.LegacyDatabaseInfo(
+        repo.legacyInfoByMode[DataMode.None] = com.chriscartland.batterybutler.domain.model.LegacyDatabaseInfo(
             legacyFileName = "battery-butler.db",
             exists = true,
         )
 
-        val result = repo.getLegacyDatabaseInfo(NetworkMode.None)
+        val result = repo.getLegacyDatabaseInfo(DataMode.None)
 
         assertNotNull(result)
         assertEquals("battery-butler.db", result.legacyFileName)
@@ -43,9 +43,9 @@ class DefaultLegacyDatabaseRepositoryTest {
     @Test
     fun `getCurrentDatabaseFileName returns file name for mode`() {
         val repo = FakeLegacyDatabaseRepository()
-        repo.fileNameByMode[NetworkMode.None] = "battery-butler-offline.db"
+        repo.fileNameByMode[DataMode.None] = "battery-butler-offline.db"
 
-        val result = repo.getCurrentDatabaseFileName(NetworkMode.None)
+        val result = repo.getCurrentDatabaseFileName(DataMode.None)
 
         assertEquals("battery-butler-offline.db", result)
     }

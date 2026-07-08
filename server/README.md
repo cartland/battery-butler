@@ -166,6 +166,6 @@ When ready to restore AWS infrastructure:
 3. Run `server-build.yml` to rebuild and deploy to dev
 4. Update `gradle.properties` comment (remove hibernation note)
 5. Update `strings.xml` — remove "(disabled)" from server labels
-6. Reorder `SettingsViewModel.availableNetworkModes` — AWS options first
+6. Reorder `SettingsViewModel.availableDataModes` — AWS options first
 7. Update this README — remove hibernation notice
 8. Promote to prod via `/promote-server`

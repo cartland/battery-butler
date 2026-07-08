@@ -36,9 +36,9 @@ Features:
 - Batch operations for efficient remote updates
 - Error handling with graceful fallback
 
-### InMemoryNetworkModeRepository
+### InMemoryDataModeRepository
 
-Manages network mode switching between Mock, GrpcLocal, and GrpcAws.
+Manages data mode switching between Mock, GrpcLocal, and GrpcAws.
 
 ### StaticAppInfoRepository
 

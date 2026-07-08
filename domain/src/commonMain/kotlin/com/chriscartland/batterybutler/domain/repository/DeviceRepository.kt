@@ -56,7 +56,7 @@ interface DeviceRepository {
     /**
      * Deletes all locally cached devices, device types, and events for whichever environment is
      * currently selected. Does not touch the remote backend. Intended for sign-out: local storage
-     * is isolated per network mode (see [com.chriscartland.batterybutler.domain.model.NetworkMode]),
+     * is isolated per data mode (see [com.chriscartland.batterybutler.domain.model.DataMode]),
      * so this only clears the currently-active environment's cache.
      */
     suspend fun clearAllLocalData()

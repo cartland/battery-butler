@@ -1,8 +1,8 @@
 package com.chriscartland.batterybutler.datalocal.room
 
 import com.chriscartland.batterybutler.datalocal.room.entity.toEntity
+import com.chriscartland.batterybutler.domain.model.DataMode
 import com.chriscartland.batterybutler.domain.model.DeviceType
-import com.chriscartland.batterybutler.domain.model.NetworkMode
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import java.io.File
@@ -31,7 +31,7 @@ class DatabaseFilePromotionTest {
     fun cleanDbFiles() {
         DatabaseOption.baseFileNames.values.forEach { File(tmpDir, it).delete() }
         listOf(urlA, urlB).forEach {
-            File(tmpDir, DatabaseOption.fromNetworkMode(NetworkMode.GrpcAws(it)).fileName).delete()
+            File(tmpDir, DatabaseOption.fromDataMode(DataMode.GrpcAws(it)).fileName).delete()
         }
     }
 
@@ -44,14 +44,14 @@ class DatabaseFilePromotionTest {
             val bareOption = DatabaseOption(DatabaseCategory.ProductionServer, prodBareFileName)
             val type = marker()
 
-            // Seed a bare (pre-upgrade-style) file directly, bypassing fromNetworkMode.
+            // Seed a bare (pre-upgrade-style) file directly, bypassing fromDataMode.
             val seedDb = factory.createDatabase(bareOption)
             seedDb.deviceDao().insertDeviceType(type.toEntity())
             seedDb.close()
             factory.evict(bareOption)
             assertTrue(File(tmpDir, prodBareFileName).exists(), "bare file should exist after seeding")
 
-            val promoted = factory.createDatabase(DatabaseOption.fromNetworkMode(NetworkMode.GrpcAws(urlA)))
+            val promoted = factory.createDatabase(DatabaseOption.fromDataMode(DataMode.GrpcAws(urlA)))
             val types = promoted.deviceDao().getAllDeviceTypes().first()
 
             assertEquals(1, types.size)
@@ -72,7 +72,7 @@ class DatabaseFilePromotionTest {
             factory.evict(bareOption)
 
             // urlA promotes/inherits the bare file's data.
-            val dbA = factory.createDatabase(DatabaseOption.fromNetworkMode(NetworkMode.GrpcAws(urlA)))
+            val dbA = factory.createDatabase(DatabaseOption.fromDataMode(DataMode.GrpcAws(urlA)))
             assertEquals(
                 1,
                 dbA
@@ -83,7 +83,7 @@ class DatabaseFilePromotionTest {
             )
 
             // urlB is a different backend under the same category: must start empty, no bleed-through.
-            val dbB = factory.createDatabase(DatabaseOption.fromNetworkMode(NetworkMode.GrpcAws(urlB)))
+            val dbB = factory.createDatabase(DatabaseOption.fromDataMode(DataMode.GrpcAws(urlB)))
             assertTrue(
                 dbB
                     .deviceDao()
@@ -100,7 +100,7 @@ class DatabaseFilePromotionTest {
             val factory = DatabaseFactory()
             val bareOption = DatabaseOption(DatabaseCategory.ProductionServer, prodBareFileName)
             val type = marker()
-            val option = DatabaseOption.fromNetworkMode(NetworkMode.GrpcAws(urlA))
+            val option = DatabaseOption.fromDataMode(DataMode.GrpcAws(urlA))
 
             val seedDb = factory.createDatabase(bareOption)
             seedDb.deviceDao().insertDeviceType(type.toEntity())

@@ -1,7 +1,7 @@
 package com.chriscartland.batterybutler.domain.repository
 
+import com.chriscartland.batterybutler.domain.model.DataMode
 import com.chriscartland.batterybutler.domain.model.LegacyDatabaseInfo
-import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.model.RestoreResult
 
 /**
@@ -9,15 +9,15 @@ import com.chriscartland.batterybutler.domain.model.RestoreResult
  */
 interface LegacyDatabaseRepository {
     /**
-     * Returns information about the legacy database file for the given network mode,
+     * Returns information about the legacy database file for the given data mode,
      * or null if no legacy file name is associated with this mode.
      */
-    fun getLegacyDatabaseInfo(networkMode: NetworkMode): LegacyDatabaseInfo?
+    fun getLegacyDatabaseInfo(dataMode: DataMode): LegacyDatabaseInfo?
 
     /**
-     * Returns the current database file name for the given network mode.
+     * Returns the current database file name for the given data mode.
      */
-    fun getCurrentDatabaseFileName(networkMode: NetworkMode): String
+    fun getCurrentDatabaseFileName(dataMode: DataMode): String
 
     /**
      * Restores the current database from the legacy file. The active database
