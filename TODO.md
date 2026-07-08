@@ -177,6 +177,14 @@ conclusion (defensive companion to the bb-2r4g close-on-success guard).
 
 **Deferred**: real silent re-auth for iOS/Desktop would require adopting a native Sign-In SDK or building refresh-token persistence for the existing PKCE flows — a materially bigger feature, not done here. Those platforms rely solely on the persisted-belief UI fix; their real session still needs an explicit re-sign-in after a process restart if the ambient in-memory session was lost.
 
+### bb-auth-session-length — Own-backend session forced the interactive Google account picker every ~1h — DONE 2026-07-08
+
+**User report**: "when I return to the app after a while I get a popup to select my Google account" every "few hours." Investigation found the OWN-backend (gRPC) session token — separate from the Labs session above — expired after 24h if the server verified it, or a hardcoded **1 hour** (`DefaultAuthRepository.LOCAL_TOKEN_EXPIRY_MS`) if only locally-verified (e.g. server unreachable at sign-in). `refreshToken()` was a stub that always errored ("user must re-authenticate"), and neither the in-memory expiry timer nor a cold start finding an already-expired stored token ever attempted anything before dropping straight to `AuthState.Unauthenticated` — the only path back in was the fully interactive account picker (`GoogleSignInBridge.signIn()`, `filterByAuthorizedAccounts=false`).
+
+**Fix**: added `GoogleSignInBridge.signInSilently()` to the expect/actual (mirrors the Labs-specific `signInSilentlyWithClient` above, but uses the bridge's already-`initialize()`d default client instead of an explicit Labs client — so no new client-id plumbing needed). Android reuses `performSignIn(clientId, filterByAuthorizedAccounts = true)`; iOS/Desktop always return `Result.Error` (same reasoning as Labs — hand-rolled interactive flows, nothing to check silently). `DefaultAuthRepository`'s `scheduleTokenExpiry` and cold-start init path both now call a new `attemptSilentRefresh()` instead of clearing the token outright: on success it calls the existing `verifyWithServer(...)` exactly as an explicit sign-in would (re-arming the next expiry itself, so the loop self-perpetuates); on failure it falls back to the original clear-and-sign-out behavior. Cold start with an already-expired stored token now shows the believed-signed-in user optimistically (`toAuthState()` no longer checks expiry) while the silent refresh runs in the background, instead of flashing signed-out first — same rationale as `bb-labs-persist-signin-belief`.
+
+**Result**: on Android, the account picker should now only ever appear on a genuinely first sign-in or after the user explicitly signs out / revokes access on-device — not on a routine ~1h/24h expiry. iOS/Desktop are unchanged (same deferred-scope reasoning as `bb-labs-silent-reauth` above).
+
 ## P3
 
 ### bb-uxsync — Re-sync iOS palette + design doc to the revamped Android theme

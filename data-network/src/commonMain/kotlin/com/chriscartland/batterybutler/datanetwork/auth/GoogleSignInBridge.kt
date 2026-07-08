@@ -36,6 +36,21 @@ expect class GoogleSignInBridge {
     suspend fun signIn(): Result<GoogleIdToken, AuthError.SignIn>
 
     /**
+     * Like [signIn], but never shows any UI: succeeds only if the platform can silently confirm an
+     * already-authorized account for the client passed to [initialize], and fails immediately
+     * otherwise. Used to opportunistically renew the own-backend session (see
+     * [com.chriscartland.batterybutler.data.repository.auth.DefaultAuthRepository]) without
+     * prompting the user for their Google account again after the local session token expires.
+     *
+     * Platforms with no such capability (iOS, Desktop -- both use an interactive OAuth sheet/browser
+     * with no persisted, silently-restorable session) always return [Result.Error] immediately.
+     *
+     * @return [Result.Success] with [GoogleIdToken] on success,
+     *         [Result.Error] with [AuthError.SignIn] when no silent credential is available.
+     */
+    suspend fun signInSilently(): Result<GoogleIdToken, AuthError.SignIn>
+
+    /**
      * Like [signIn], but signs in against an EXPLICIT OAuth client rather than the one passed to
      * [initialize]. Used for Labs sign-in, which needs a Google ID token minted for the Labs OAuth
      * client (whose audience the Labs Firebase project trusts).
