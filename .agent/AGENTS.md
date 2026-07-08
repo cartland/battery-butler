@@ -100,6 +100,22 @@ Keeping the build and tests healthy is a top priority. When you identify or fix 
    - **Screenshot tests**: Must run (baseline mismatches indicate UI changes, not broken infrastructure). Use the `/update-android-screenshots` and `/update-ios-screenshots` workflows to regenerate missing or changed baselines locally before pushing.
    - **Always regenerate and commit reference images** when adding or changing screenshot tests. Run `./scripts/generate-android-screenshots.sh` to generate PNGs, then commit the new/updated images in `android-screenshot-tests/src/screenshotTestDebug/reference/` alongside the test code. PRs that add screenshot tests without reference images are incomplete.
 
+## Parallel Worktrees & `validate.sh`
+
+**Never run a full `./scripts/validate.sh` concurrently in more than one git worktree on the same machine.** Confirmed 2026-07-07/08 (see `bb-worktree-validate-collision` in TODO.md) this reliably corrupts shared toolchain state across worktrees, not just slows things down:
+
+- The iOS Checks section's `./gradlew --stop` kills *every* compatible Gradle daemon in the shared registry (`~/.gradle/daemon/`), not just the caller's — any other worktree's in-flight build dies with `DaemonStoppedException`.
+- Two worktrees' `pixel5api34Setup` (Gradle Managed Device) tasks booting the same AVD name error with "Running multiple emulators with the same AVD is an experimental feature."
+- Concurrent `:server:app:jibBuildTar` runs pulling the same Docker base image can hit Docker Hub's anonymous-pull rate limit, which looks like a hang (near-zero CPU, no log growth) rather than a clean failure.
+
+If you must validate multiple worktrees around the same time, either serialize the runs, or isolate each one's Gradle daemon registry so `--stop` calls can't cross-contaminate:
+```bash
+GRADLE_OPTS="-Dorg.gradle.daemon.registry.base=/tmp/gradle-daemon-<unique-name>" ./scripts/validate.sh
+```
+`GRADLE_OPTS="-Dorg.gradle.daemon=false"` does **not** work for this — `org.gradle.daemon` is only read from `gradle.properties`/CLI flags, not JVM system properties, and even a `gradle.properties` override just spawns a "single-use" daemon that's still in the same shared registry (still killable by another worktree's `--stop`). `org.gradle.daemon.registry.base` is the one setting that's actually honored via a system property and gives real isolation.
+
+Separately: a stale `~/Library/Developer/Xcode/DerivedData/iosAppSwiftUI-*` can break that scheme with `Unable to resolve module dependency: 'KMPObservableViewModelCore'` even when `xcodebuild -resolvePackageDependencies` succeeds. This is a local dev-machine artifact (confirmed via `git stash` to reproduce on unmodified `main`), not a real regression — CI runners start with fresh `DerivedData` and don't hit it. Fix locally: `rm -rf ~/Library/Developer/Xcode/DerivedData/iosAppSwiftUI-*` and rebuild.
+
 ## Project Technical Rules
 
 - **Configuration**:

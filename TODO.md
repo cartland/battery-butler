@@ -211,6 +211,15 @@ and skip-with-warning (or add a `--skip-instrumented` flag) instead of hanging;
 machines without a bootable emulator. Pick whichever keeps "validate before push"
 honest without an indefinite hang.
 
+**Related symptom found 2026-07-07**: on a machine where the emulator *can* boot,
+running `validate.sh` concurrently in two+ git worktrees makes both try to boot
+the same Gradle Managed Device AVD name (`dev34_google_apis_arm64-v8a_Pixel_5`),
+which errors with "Running multiple emulators with the same AVD is an
+experimental feature. Please use -read-only flag to enable this feature." See
+`bb-worktree-validate-collision` for the full writeup (this is one symptom of a
+broader "don't run `validate.sh` concurrently across worktrees" problem, now also
+documented in `.agent/AGENTS.md`).
+
 ### bb-syncit — Live integration test for the Labs `/sync` wire contract (credential-gated)
 
 The REST sync contract (`data-network/.../rest/SyncDto.kt`, PR #1272) is pinned two
@@ -398,6 +407,53 @@ whatever a given run happened to render.
 CI failures unrelated to a PR's actual diff (would explain otherwise-mysterious
 red screenshot checks). If confirmed, look at pinning renderer/font versions or
 adding a tolerance threshold to the image comparison.
+
+### bb-worktree-validate-collision — Running `validate.sh` concurrently across git worktrees corrupts shared toolchain state
+
+**Found 2026-07-07/08** while landing 4 independent PRs in parallel (one main
+session + 3 background agents, each in its own `git worktree`, each running the
+full `./scripts/validate.sh`). Running more than one at a time on the same
+machine hits three distinct collisions, all now documented as a workflow rule in
+`.agent/AGENTS.md` ("Parallel Worktrees & `validate.sh`"):
+
+1. **Shared Gradle daemon registry**: `validate.sh`'s iOS Checks section runs
+   `./gradlew --stop` ("Reclaim heap before memory-intensive iOS builds") before
+   the memory-intensive iOS build steps. `--stop` targets *every* compatible
+   daemon in the shared registry (`~/.gradle/daemon/`), not just the caller's own
+   — so it kills every other worktree's in-flight Gradle build with
+   `org.gradle.launcher.daemon.server.api.DaemonStoppedException`. Confirmed
+   `GRADLE_OPTS="-Dorg.gradle.daemon=false"` does **not** fix this (that property
+   is only read from `gradle.properties`/CLI, not JVM system properties passed
+   via `GRADLE_OPTS`) — even a local `gradle.properties` override just spawns a
+   "single-use" daemon that's still registered in the same shared registry and
+   still gets killed. The fix that actually works:
+   `GRADLE_OPTS="-Dorg.gradle.daemon.registry.base=<unique-dir-per-worktree>"`,
+   which *is* honored as a system property and gives each worktree's run its own
+   private daemon pool, immune to other worktrees' `--stop` calls.
+2. **Android emulator/AVD collision**: two worktrees' `pixel5api34Setup`
+   Gradle Managed Device tasks try to boot the same AVD name
+   (`dev34_google_apis_arm64-v8a_Pixel_5`) simultaneously — see `bb-emult` for
+   the exact error.
+3. **Docker Hub anonymous-pull rate limiting**: multiple concurrent
+   `:server:app:jibBuildTar` tasks pulling the same `eclipse-temurin:21-jre-alpine`
+   base image from one IP can exhaust the anonymous pull quota, manifesting as
+   an apparent hang ("The base image requires auth. Trying again...", near-zero
+   CPU time, no forward progress) rather than a clean error.
+
+**Separately discovered while debugging the above**: a stale local
+`~/Library/Developer/Xcode/DerivedData/iosAppSwiftUI-*` can break the
+`iosAppSwiftUI` xcodebuild step with `Unable to resolve module dependency:
+'KMPObservableViewModelCore'` even though `xcodebuild -resolvePackageDependencies`
+reports the package resolved fine. Confirmed via `git stash` that this
+reproduces identically on unmodified `main` — a local dev-machine artifact, not
+a code regression, and CI runners (fresh `DerivedData` every run) shouldn't hit
+it. Workaround (`rm -rf` the stale dir) documented in `.agent/ios.md`; root
+cause not investigated further since it's non-blocking once known.
+
+**Not yet done:** actually fixing `validate.sh`/`ci.yml` so concurrent runs are
+safe by default (e.g. always isolating the daemon registry, or documenting a
+`--worktree-safe` flag) — the current state is "documented gotcha + manual
+workaround," not a structural fix.
 
 ## P4
 

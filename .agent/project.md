@@ -283,6 +283,22 @@ See `domain/src/commonTest/.../DataModeKeyedStateTest.kt` for the exact
 switch-and-leak scenario this guards against. **Reach for this instead of a bare
 `MutableStateFlow` for any new per-environment (Labs staging/prod) state.**
 
+### Settings Data Mode Picker & `FeatureFlag`-Gated Options
+
+`SettingsViewModel.availableDataModes` shows **Device only / Production /
+Staging / Mock** (`DataMode.None` / `LabsProd` / `LabsStaging` / `Mock`) by
+default, in that order. The legacy own-backend modes (`GrpcLocal`, `GrpcAws`,
+`GrpcDev` — AWS infrastructure is hibernated) are appended only when
+`featureFlagProvider.isEnabled(FeatureFlag.LEGACY_DATA_MODES)` is true; that
+flag is not added to the `enabledFeatures` set in either `AppComponent.kt`
+(Android/Desktop) or `NativeComponent.kt` (iOS), so it's disabled by default
+everywhere. This is the established pattern for hiding a build-time-disabled
+option from a picker without deleting the code path: add a `FeatureFlag` enum
+entry, gate the option's inclusion in the list with
+`featureFlagProvider.isEnabled(...)`, and simply don't add it to either
+component's `enabledFeatures` set. See `domain/model/FeatureFlag.kt` /
+`domain/repository/FeatureFlagProvider.kt` for the underlying mechanism.
+
 ### Persisted Local-Database Isolation (`DatabaseOption`)
 
 `data-local/.../room/DatabaseOption.kt` is the on-disk counterpart to
