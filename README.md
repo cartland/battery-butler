@@ -363,7 +363,7 @@ This project uses Gradle for build and test orchestration.
 A JVM command-line tool for talking to the Labs REST backend directly, without the app — useful for inspecting or seeding staging/prod data.
 *   Get the current snapshot: `./gradlew :cli:run --args="get --env staging --token <labs-id-token>"`
 *   Push a sync payload: `./gradlew :cli:run --args="push --env staging --token <labs-id-token> <path-to-payload.json>"`
-*   The token is a short-lived (~1hr) Labs Firebase ID token. Grab a live one from the app: **Settings → Advanced → Copy Labs ID Token** (visible when signed in to a Labs network mode), or set it via the `BB_LABS_ID_TOKEN` env var instead of `--token`.
+*   The token is a short-lived (~1hr) Labs Firebase ID token. Grab a live one from the app: **Settings → Advanced → Copy Labs ID Token** (visible when signed in to a Labs data mode), or set it via the `BB_LABS_ID_TOKEN` env var instead of `--token`.
 *   **`push`'s payload must already be in wire format** (flat `{"deviceTypes":[...],"devices":[...],"events":[...],"deletedDeviceTypeIds":[...],...}`, matching `SyncPushRequestWire`) — it is **not** the same shape as the app's own Settings → Export Data backup file (which wraps the data in `{"data":{...}}` with different field names/types, e.g. ISO date strings instead of epoch-ms). Feeding an export file to `push` directly doesn't error; every field just defaults to empty/zero, silently pushing nothing. Converting one format to the other currently requires a one-off script (see `bb-cli-backup-import` in `TODO.md`).
 *   **Writes to prod (`--env prod`) require an `editors` scope/role** enforced by the Labs backend itself (observed 2026-07-06: identical staging/prod requests, prod returned `HTTP 403 {"error":{"code":"forbidden","message":"requires scope 'editors'"}}` while staging succeeded). This is backend-side authorization outside this repo — if you hit that error, the account needs `editors` granted on the Labs backend's admin side first.
 *   Deploy to AWS: Push to main auto-deploys to dev. See `server/README.md` for multi-environment deployment (dev/staging/prod).
@@ -424,8 +424,8 @@ adding a new fingerprint before retesting.
 
 ## 🔐 Labs Multi-Environment OAuth Configuration
 
-Battery Butler's Labs backend integration (`NetworkMode.LabsStaging` /
-`NetworkMode.LabsProd`) has two separate backend environments — `cartland-labs`
+Battery Butler's Labs backend integration (`DataMode.LabsStaging` /
+`DataMode.LabsProd`) has two separate backend environments — `cartland-labs`
 (prod) and `cartland-labs-staging` — each its own Firebase / Google Cloud project.
 But there is only **one** Android app: one package name, one set of signing
 certificates, switching between the two backends via a Settings dropdown at runtime,

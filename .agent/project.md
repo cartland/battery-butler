@@ -253,19 +253,19 @@ Content composables that pair with these ViewModels take an `onRetry: () -> Unit
 
 **Gotcha: `initialValue = ScreenState()` uses the State class's OWN constructor defaults, not the ViewModel's internal flow defaults.** `retryableStateIn`'s `initialValue` (and `safeStateIn`'s) is shown before the real combined flow first emits. If a ViewModel changes an internal `MutableStateFlow`'s default (e.g. `HomeViewModel`'s `sortOptionFlow`/`isSortAscendingFlow` defaults, PR #1326), the `HomeScreenState()` placeholder's own constructor defaults must be updated too — otherwise there's a brief flash of the old default before real data loads, and a naive `viewModel.uiState.first()` in a test will silently observe the stale placeholder default instead of the new one (this bit the `` `toggleSortDirection inverts sort direction` `` test in PR #1326 — it passed before the sort-default change only because both defaults happened to agree).
 
-### Per-Network-Mode State (`NetworkModeKeyedState<T>`)
+### Per-Data-Mode State (`DataModeKeyedState<T>`)
 
-`domain/model/NetworkModeKeyedState.kt` holds a separate value per `NetworkMode`
+`domain/model/DataModeKeyedState.kt` holds a separate value per `DataMode`
 (keyed by a caller-supplied `keyFor` function) instead of one shared
 `MutableStateFlow`. It exists to prevent a whole bug category: state from one
 Labs environment (e.g. staging) silently leaking into another (e.g. prod) when
-the user switches `NetworkMode` — discovered as a real bug in `DefaultLabsAuthRepository`,
+the user switches `DataMode` — discovered as a real bug in `DefaultLabsAuthRepository`,
 where a single `_labsAuthState` meant signing in to staging could appear
 "already authenticated" after switching to prod.
 
 ```kotlin
-val authStateByMode = NetworkModeKeyedState<AuthState>(
-    networkMode = networkModeRepository.networkMode,
+val authStateByMode = DataModeKeyedState<AuthState>(
+    dataMode = dataModeRepository.dataMode,
     keyFor = { apiKeyForMode(it, labsFirebaseApiKey) },
     default = AuthState.Unauthenticated,
 )
@@ -274,25 +274,25 @@ val labsAuthState: Flow<AuthState> = authStateByMode.current
 ```
 
 `current` is a `Flow<T>` (not `StateFlow`) — it re-derives via
-`networkMode.map(keyFor).distinctUntilChanged().flatMapLatest { stateFor(it) }`,
+`dataMode.map(keyFor).distinctUntilChanged().flatMapLatest { stateFor(it) }`,
 so switching modes always reads that mode's own value, defaulting fresh if it's
-never been set. Note the explicit type argument (`NetworkModeKeyedState<AuthState>`)
+never been set. Note the explicit type argument (`DataModeKeyedState<AuthState>`)
 is required — passing a concrete subtype as `default` (e.g. `AuthState.Unauthenticated`)
 without it lets `T` infer to the narrow subtype instead of the sealed class.
-See `domain/src/commonTest/.../NetworkModeKeyedStateTest.kt` for the exact
+See `domain/src/commonTest/.../DataModeKeyedStateTest.kt` for the exact
 switch-and-leak scenario this guards against. **Reach for this instead of a bare
 `MutableStateFlow` for any new per-environment (Labs staging/prod) state.**
 
 ### Persisted Local-Database Isolation (`DatabaseOption`)
 
 `data-local/.../room/DatabaseOption.kt` is the on-disk counterpart to
-`NetworkModeKeyedState<T>` above — same "don't let one environment's state leak
+`DataModeKeyedState<T>` above — same "don't let one environment's state leak
 into another's" goal, but for the actual Room SQLite file instead of an
 in-memory flag. `DynamicDatabaseProvider` opens a distinct SQLite file per
-`DatabaseOption.fromNetworkMode(mode)` and swaps atomically when the mode
+`DatabaseOption.fromDataMode(mode)` and swaps atomically when the mode
 changes (this per-subtype isolation existed since PR #1052).
 
-**Fixed in PR #1324**: `fromNetworkMode` used to match on the `NetworkMode`
+**Fixed in PR #1324**: `fromDataMode` used to match on the `DataMode`
 sealed subtype only, discarding the `url` payload `GrpcLocal`/`GrpcAws`/`GrpcDev`/
 `LabsStaging`/`LabsProd` all carry — so two different real backends sharing a
 subtype but a different url (reachable via the `ServerUrlReceiver` adb debug
@@ -310,7 +310,7 @@ derivation) and `DatabaseFilePromotionTest.kt` (jvmTest, the actual
 promotion/isolation behavior with real file I/O) for the exact guarantees.
 **Reach for this pattern (identity-aware file keying + rename-forward migration)
 for any future per-environment persisted state** — don't key local storage on a
-`NetworkMode` subtype alone if the subtype can carry a variable url.
+`DataMode` subtype alone if the subtype can carry a variable url.
 
 ### Clear Local Data On Sign-Out (`SignOutLabsUseCase`/`SignInToLabsUseCase`)
 
@@ -381,10 +381,10 @@ already treats as "loading" — see `LoginContent.kt`), and a `DefaultLabsAuthRe
 `init` block resolves each key's `Unknown` from `LabsSessionStorage` /
 `DataStoreLabsSessionStorage` (`data-local/.../auth/`) — a lightweight,
 per-Labs-environment (staging/prod, keyed the same way as the existing
-in-memory `NetworkModeKeyedState`, via `apiKeyForMode`) persisted flag storing
+in-memory `DataModeKeyedState`, via `apiKeyForMode`) persisted flag storing
 only profile info (`User`: id/email/displayName/photoUrl), **no tokens, no
 expiry tracking**. The resolve is guarded by a new generic
-`NetworkModeKeyedState.compareAndSet(key, expected, newValue)` so it can never
+`DataModeKeyedState.compareAndSet(key, expected, newValue)` so it can never
 clobber a real sign-in/out transition that already happened for that key.
 `signInToLabs()`'s success path saves the belief; `signOutLabs()` (already
 invoked through `SignOutLabsUseCase`) clears it alongside the local data
@@ -420,7 +420,7 @@ persisted session to silently check without opening a browser/sheet.
 
 `DefaultLabsAuthRepository`'s `init` block calls a new `attemptSilentReauth()`
 right after resolving `Unknown` from the persisted belief — guarded by
-`NetworkModeKeyedState.compareAndSet` now returning `Boolean` (true only when
+`DataModeKeyedState.compareAndSet` now returning `Boolean` (true only when
 it actually performed the swap), so the silent attempt fires exactly once per
 belief-resolution and never redundantly re-fires on a subsequent *explicit*
 sign-in (which already has a real session). On success, completes the same

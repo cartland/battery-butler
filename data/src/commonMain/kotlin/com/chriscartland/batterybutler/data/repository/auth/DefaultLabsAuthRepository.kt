@@ -7,15 +7,15 @@ import com.chriscartland.batterybutler.datanetwork.apiKeyForMode
 import com.chriscartland.batterybutler.datanetwork.auth.GoogleSignInBridge
 import com.chriscartland.batterybutler.domain.model.AuthError
 import com.chriscartland.batterybutler.domain.model.AuthState
+import com.chriscartland.batterybutler.domain.model.DataMode
+import com.chriscartland.batterybutler.domain.model.DataModeKeyedState
 import com.chriscartland.batterybutler.domain.model.LabsFirebaseApiKey
 import com.chriscartland.batterybutler.domain.model.LabsProdGoogleOAuthClient
 import com.chriscartland.batterybutler.domain.model.LabsStagingGoogleOAuthClient
-import com.chriscartland.batterybutler.domain.model.NetworkMode
-import com.chriscartland.batterybutler.domain.model.NetworkModeKeyedState
 import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.model.User
+import com.chriscartland.batterybutler.domain.repository.DataModeRepository
 import com.chriscartland.batterybutler.domain.repository.LabsAuthRepository
-import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -32,13 +32,13 @@ import me.tatarka.inject.annotations.Inject
  *   Google Sign-In (Labs OAuth client) --> Google ID token
  *     --> [LabsAuthGateway.signInToLabsWithGoogle] (signInWithIdp) --> Labs session
  *
- * The OAuth client is chosen by the currently-selected Labs network mode (staging vs prod). The
+ * The OAuth client is chosen by the currently-selected Labs data mode (staging vs prod). The
  * Google token's `aud` must be a Labs client the Labs Firebase project trusts, which is why this
  * uses [GoogleSignInBridge.signInWithClient] with the per-env client rather than the own-backend
  * [GoogleSignInBridge.signIn]. The Labs session lives in the singleton gateway (shared with the
  * sync calls); this repo just tracks UI state.
  *
- * [labsAuthState] is keyed by network mode via [NetworkModeKeyedState] (same key,
+ * [labsAuthState] is keyed by data mode via [DataModeKeyedState] (same key,
  * [apiKeyForMode], that [LabsAuthGateway] uses to partition its token sessions) rather than a
  * plain `MutableStateFlow` -- a bare field would show a *previous* environment's "signed in"
  * status right after switching Labs modes, since nothing would tell it the environment changed.
@@ -66,7 +66,7 @@ import me.tatarka.inject.annotations.Inject
 class DefaultLabsAuthRepository(
     private val googleSignInBridge: GoogleSignInBridge,
     private val labsAuthGateway: LabsAuthGateway,
-    private val networkModeRepository: NetworkModeRepository,
+    private val dataModeRepository: DataModeRepository,
     private val labsFirebaseApiKey: LabsFirebaseApiKey,
     private val labsStagingOAuthClient: LabsStagingGoogleOAuthClient,
     private val labsProdOAuthClient: LabsProdGoogleOAuthClient,
@@ -75,8 +75,8 @@ class DefaultLabsAuthRepository(
 ) : LabsAuthRepository {
     private val log = Logger.withTag("DefaultLabsAuthRepository")
 
-    private val authStateByMode = NetworkModeKeyedState<AuthState>(
-        networkMode = networkModeRepository.networkMode,
+    private val authStateByMode = DataModeKeyedState<AuthState>(
+        dataMode = dataModeRepository.dataMode,
         keyFor = { apiKeyForMode(it, labsFirebaseApiKey) },
         default = AuthState.Unknown,
     )
@@ -84,7 +84,7 @@ class DefaultLabsAuthRepository(
 
     init {
         scope.launch {
-            networkModeRepository.networkMode
+            dataModeRepository.dataMode
                 .map { apiKeyForMode(it, labsFirebaseApiKey) }
                 .distinctUntilChanged()
                 .flatMapLatest { key -> labsSessionStorage.observeUser(key).map { key to it } }
@@ -101,9 +101,9 @@ class DefaultLabsAuthRepository(
 
     /** Staging/prod OAuth client for whichever Labs mode is selected right now, or null if not a Labs mode. */
     private suspend fun labsOAuthClient(): Pair<String, String>? =
-        when (networkModeRepository.networkMode.first()) {
-            is NetworkMode.LabsStaging -> labsStagingOAuthClient.clientId to labsStagingOAuthClient.clientSecret
-            is NetworkMode.LabsProd -> labsProdOAuthClient.clientId to labsProdOAuthClient.clientSecret
+        when (dataModeRepository.dataMode.first()) {
+            is DataMode.LabsStaging -> labsStagingOAuthClient.clientId to labsStagingOAuthClient.clientSecret
+            is DataMode.LabsProd -> labsProdOAuthClient.clientId to labsProdOAuthClient.clientSecret
             else -> null
         }
 
@@ -135,7 +135,7 @@ class DefaultLabsAuthRepository(
         val client = labsOAuthClient()
             ?: return fail(
                 AuthError.Configuration.NotConfigured(
-                    message = "Not a Labs network mode",
+                    message = "Not a Labs data mode",
                     cause = "Select Labs (staging) or Labs (prod) before signing in to Labs",
                 ),
             )
@@ -175,7 +175,7 @@ class DefaultLabsAuthRepository(
                 )
                 log.i { "Labs sign-in successful for ${google.email}" }
                 authStateByMode.setCurrent(AuthState.Authenticated(user))
-                labsSessionStorage.saveUser(apiKeyForMode(networkModeRepository.networkMode.first(), labsFirebaseApiKey), user)
+                labsSessionStorage.saveUser(apiKeyForMode(dataModeRepository.dataMode.first(), labsFirebaseApiKey), user)
                 Result.Success(user)
             }
 
@@ -188,7 +188,7 @@ class DefaultLabsAuthRepository(
     override suspend fun signOutLabs() {
         labsAuthGateway.signOutLabs()
         authStateByMode.setCurrent(AuthState.Unauthenticated)
-        labsSessionStorage.clearUser(apiKeyForMode(networkModeRepository.networkMode.first(), labsFirebaseApiKey))
+        labsSessionStorage.clearUser(apiKeyForMode(dataModeRepository.dataMode.first(), labsFirebaseApiKey))
     }
 
     override suspend fun clearError() {

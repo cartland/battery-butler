@@ -5,11 +5,11 @@ import com.chriscartland.batterybutler.datalocal.LocalDataSource
 import com.chriscartland.batterybutler.datanetwork.RemoteDataSource
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.DataError
+import com.chriscartland.batterybutler.domain.model.DataMode
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
-import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.model.SyncStatus
-import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
+import com.chriscartland.batterybutler.domain.repository.DataModeRepository
 import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.TimeoutCancellationException
@@ -30,7 +30,7 @@ import kotlin.time.Duration.Companion.seconds
 class DefaultSyncManager(
     private val localDataSource: LocalDataSource,
     private val remoteDataSource: RemoteDataSource,
-    private val networkModeRepository: NetworkModeRepository,
+    private val dataModeRepository: DataModeRepository,
     private val scope: CoroutineScope,
 ) : SyncManager {
     private val _syncStatus = MutableStateFlow<SyncStatus>(SyncStatus.Idle)
@@ -51,8 +51,8 @@ class DefaultSyncManager(
     private suspend fun subscribeWithRetry() {
         var backoffMs = INITIAL_BACKOFF_MS
         while (true) {
-            val currentMode = networkModeRepository.networkMode.first()
-            if (currentMode is NetworkMode.None) {
+            val currentMode = dataModeRepository.dataMode.first()
+            if (currentMode is DataMode.None) {
                 delay(5000)
                 continue
             }
@@ -103,9 +103,9 @@ class DefaultSyncManager(
         deletedEventIds: List<String>,
     ) {
         scope.launch {
-            val currentMode = networkModeRepository.networkMode.first()
-            if (currentMode is NetworkMode.None) {
-                Logger.d(TAG) { "Network Mode None: Skipping push update" }
+            val currentMode = dataModeRepository.dataMode.first()
+            if (currentMode is DataMode.None) {
+                Logger.d(TAG) { "Data Mode None: Skipping push update" }
                 return@launch
             }
 
@@ -144,8 +144,8 @@ class DefaultSyncManager(
     }
 
     override suspend fun resync(timeout: Duration) {
-        val currentMode = networkModeRepository.networkMode.first()
-        if (currentMode is NetworkMode.None) return
+        val currentMode = dataModeRepository.dataMode.first()
+        if (currentMode is DataMode.None) return
 
         _syncStatus.value = SyncStatus.Syncing
         try {

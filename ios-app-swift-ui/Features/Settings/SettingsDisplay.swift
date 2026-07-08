@@ -2,21 +2,21 @@ import Foundation
 import shared
 
 // bb-ovm1: Relocated from SettingsViewModelWrapper (deleted in the KMP-ObservableViewModel
-// migration). Pure display-name mappings for sealed NetworkMode / enum AiEngineType.
+// migration). Pure display-name mappings for sealed DataMode / enum AiEngineType.
 enum SettingsDisplay {
-    /// Returns a user-visible display name for a NetworkMode value.
-    static func networkModeDisplayName(_ mode: NetworkMode) -> String {
+    /// Returns a user-visible display name for a DataMode value.
+    static func dataModeDisplayName(_ mode: DataMode) -> String {
         switch mode {
-        case is NetworkModeNone:
-            return String(localized: "settings.network_mode.none")
-        case is NetworkModeMock:
-            return String(localized: "settings.network_mode.mock")
-        case is NetworkModeGrpcLocal:
-            return String(localized: "settings.network_mode.grpc_local")
-        case is NetworkModeGrpcAws:
-            return String(localized: "settings.network_mode.grpc_aws")
-        case is NetworkModeGrpcDev:
-            return String(localized: "settings.network_mode.grpc_dev")
+        case is DataModeNone:
+            return String(localized: "settings.data_mode.none")
+        case is DataModeMock:
+            return String(localized: "settings.data_mode.mock")
+        case is DataModeGrpcLocal:
+            return String(localized: "settings.data_mode.grpc_local")
+        case is DataModeGrpcAws:
+            return String(localized: "settings.data_mode.grpc_aws")
+        case is DataModeGrpcDev:
+            return String(localized: "settings.data_mode.grpc_dev")
         default:
             return String(localized: "common.unknown")
         }

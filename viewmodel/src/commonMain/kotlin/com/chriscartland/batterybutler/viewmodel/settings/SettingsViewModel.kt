@@ -2,12 +2,13 @@ package com.chriscartland.batterybutler.viewmodel.settings
 
 import com.chriscartland.batterybutler.domain.model.AppVersion
 import com.chriscartland.batterybutler.domain.model.AuthState
+import com.chriscartland.batterybutler.domain.model.DataMode
 import com.chriscartland.batterybutler.domain.model.DevServerUrl
+import com.chriscartland.batterybutler.domain.model.FeatureFlag
 import com.chriscartland.batterybutler.domain.model.ImportResult
 import com.chriscartland.batterybutler.domain.model.LabsProdUrl
 import com.chriscartland.batterybutler.domain.model.LabsStagingUrl
 import com.chriscartland.batterybutler.domain.model.LegacyDatabaseInfo
-import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.model.ProductionServerUrl
 import com.chriscartland.batterybutler.domain.model.RestoreResult
 import com.chriscartland.batterybutler.domain.model.Result
@@ -15,9 +16,10 @@ import com.chriscartland.batterybutler.domain.model.User
 import com.chriscartland.batterybutler.domain.model.ai.AiEngineType
 import com.chriscartland.batterybutler.domain.repository.AiPreferencesRepository
 import com.chriscartland.batterybutler.domain.repository.AuthRepository
+import com.chriscartland.batterybutler.domain.repository.DataModeRepository
+import com.chriscartland.batterybutler.domain.repository.FeatureFlagProvider
 import com.chriscartland.batterybutler.domain.repository.LabsAuthRepository
 import com.chriscartland.batterybutler.domain.repository.LegacyDatabaseRepository
-import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
 import com.chriscartland.batterybutler.domain.repository.RestartCoordinator
 import com.chriscartland.batterybutler.usecase.ExportDataUseCase
 import com.chriscartland.batterybutler.usecase.GetAppVersionUseCase
@@ -43,7 +45,7 @@ import me.tatarka.inject.annotations.Inject
 class SettingsViewModel(
     private val exportDataUseCase: ExportDataUseCase,
     private val importDataUseCase: ImportDataUseCase,
-    private val networkModeRepository: NetworkModeRepository,
+    private val dataModeRepository: DataModeRepository,
     private val getAppVersionUseCase: GetAppVersionUseCase,
     private val authRepository: AuthRepository,
     private val labsAuthRepository: LabsAuthRepository,
@@ -55,32 +57,33 @@ class SettingsViewModel(
     private val signInToLabsUseCase: SignInToLabsUseCase,
     private val signOutLabsUseCase: SignOutLabsUseCase,
     private val signOutUseCase: SignOutUseCase,
+    private val featureFlagProvider: FeatureFlagProvider,
     productionServerUrl: ProductionServerUrl,
     devServerUrl: DevServerUrl,
     labsStagingUrl: LabsStagingUrl,
     labsProdUrl: LabsProdUrl,
 ) : ViewModel() {
-    val networkMode: StateFlow<NetworkMode> = networkModeRepository.networkMode
+    val dataMode: StateFlow<DataMode> = dataModeRepository.dataMode
         .safeStateIn(
             viewModelScope,
             defaultWhileSubscribed(),
-            NetworkMode.None,
+            DataMode.None,
         )
 
-    // AWS infrastructure is hibernated — cloud servers are not running.
-    // Order: None first (default), then escalating connectivity.
-    val availableNetworkModes = listOf(
-        NetworkMode.None,
-        NetworkMode.Mock,
-        NetworkMode.GrpcLocal("http://10.0.2.2:50051"),
-        // AWS servers (hibernated — not currently running, kept for future re-enablement)
-        NetworkMode.GrpcDev(devServerUrl.url),
-        NetworkMode.GrpcAws(productionServerUrl.url),
-        // Labs REST backend (staging + prod). The host is injected from secret config
-        // (Workstream E); a blank URL maps to null, rendering the mode unavailable until configured.
-        NetworkMode.LabsStaging(labsStagingUrl.url.ifBlank { null }),
-        NetworkMode.LabsProd(labsProdUrl.url.ifBlank { null }),
-    )
+    // User-facing order: Device only, Production, Staging, Mock. GrpcLocal/GrpcAws/GrpcDev are
+    // legacy own-backend modes (AWS infrastructure is hibernated) hidden behind
+    // FeatureFlag.LEGACY_DATA_MODES, disabled by default — see AppComponent/NativeComponent.
+    val availableDataModes = buildList {
+        add(DataMode.None)
+        add(DataMode.LabsProd(labsProdUrl.url.ifBlank { null }))
+        add(DataMode.LabsStaging(labsStagingUrl.url.ifBlank { null }))
+        add(DataMode.Mock)
+        if (featureFlagProvider.isEnabled(FeatureFlag.LEGACY_DATA_MODES)) {
+            add(DataMode.GrpcLocal("http://10.0.2.2:50051"))
+            add(DataMode.GrpcDev(devServerUrl.url))
+            add(DataMode.GrpcAws(productionServerUrl.url))
+        }
+    }
 
     val aiEngineType = aiPreferencesRepository.aiEngineType
         .safeStateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), AiEngineType.Cloud)
@@ -100,9 +103,9 @@ class SettingsViewModel(
         _appVersion.value = getAppVersionUseCase()
     }
 
-    fun onNetworkModeSelected(mode: NetworkMode) {
+    fun onDataModeSelected(mode: DataMode) {
         viewModelScope.coroutineScope.launch {
-            networkModeRepository.setNetworkMode(mode)
+            dataModeRepository.setDataMode(mode)
         }
     }
 
@@ -126,12 +129,12 @@ class SettingsViewModel(
     }
 
     // --- Labs (REST backend) sign-in -------------------------------------------------------------
-    // Separate account from the own-backend auth above: a Labs network mode needs its own Google
+    // Separate account from the own-backend auth above: a Labs data mode needs its own Google
     // sign-in against the Labs OAuth client. The UI shows this only when a Labs mode is selected.
 
-    /** True when the selected network mode is a Labs (REST) mode — gates the Labs account UI. */
-    val isLabsMode: StateFlow<Boolean> = networkMode
-        .map { it is NetworkMode.LabsStaging || it is NetworkMode.LabsProd }
+    /** True when the selected data mode is a Labs (REST) mode — gates the Labs account UI. */
+    val isLabsMode: StateFlow<Boolean> = dataMode
+        .map { it is DataMode.LabsStaging || it is DataMode.LabsProd }
         .safeStateIn(viewModelScope, defaultWhileSubscribed(), false)
 
     val labsAuthState: StateFlow<AuthState> = labsAuthRepository.labsAuthState
@@ -199,12 +202,12 @@ class SettingsViewModel(
     }
 
     // Database info for Settings display
-    val currentDatabaseFileName: StateFlow<String> = networkMode
+    val currentDatabaseFileName: StateFlow<String> = dataMode
         .map { mode ->
             legacyDatabaseRepository.getCurrentDatabaseFileName(mode)
         }.safeStateIn(viewModelScope, defaultWhileSubscribed(), "")
 
-    val legacyDatabaseInfo: StateFlow<LegacyDatabaseInfo?> = networkMode
+    val legacyDatabaseInfo: StateFlow<LegacyDatabaseInfo?> = dataMode
         .map { mode ->
             getLegacyDatabaseInfoUseCase(mode)
         }.safeStateIn(viewModelScope, defaultWhileSubscribed(), null)

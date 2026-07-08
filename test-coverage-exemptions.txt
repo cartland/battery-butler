@@ -11,7 +11,7 @@ GetAppVersionUseCase | Thin wrapper: single-line delegation
 GetDeviceDetailUseCase | Thin wrapper: single-line delegation
 GetEventDetailUseCase | Thin wrapper: single-line delegation
 GetSyncStatusUseCase | Thin wrapper: single-line delegation
-SetNetworkModeUseCase | Thin wrapper: single-line delegation
+SetDataModeUseCase | Thin wrapper: single-line delegation
 UpdateDeviceTypeUseCase | Thin wrapper: single-line delegation
 DeleteBatteryEventUseCase | Thin wrapper: single-line delegation
 UpdateBatteryEventUseCase | Thin wrapper: single-line delegation

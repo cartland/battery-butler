@@ -9,7 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.chriscartland.batterybutler.BatteryButlerApplication
-import com.chriscartland.batterybutler.composeapp.debug.DebugNetworkReceiver
+import com.chriscartland.batterybutler.composeapp.debug.DebugDataModeReceiver
 import com.chriscartland.batterybutler.presentationcore.util.AndroidAppRestarter
 import com.chriscartland.batterybutler.presentationcore.util.AndroidFileLoader
 import com.chriscartland.batterybutler.presentationcore.util.AndroidFileSaver
@@ -17,7 +17,7 @@ import com.chriscartland.batterybutler.presentationcore.util.AndroidSecureClipbo
 import com.chriscartland.batterybutler.presentationcore.util.AndroidShareHandler
 
 class MainActivity : ComponentActivity() {
-    private var debugNetworkReceiver: DebugNetworkReceiver? = null
+    private var debugDataModeReceiver: DebugDataModeReceiver? = null
     private lateinit var fileLoader: AndroidFileLoader
 
     private val openDocumentLauncher = registerForActivityResult(
@@ -49,12 +49,12 @@ class MainActivity : ComponentActivity() {
         }
 
         // DEBUG: Register receiver for ADB control
-        // adb shell am broadcast -a com.chriscartland.batterybutler.SET_NETWORK_MODE --es mode "GRPC_LOCAL"
-        debugNetworkReceiver = DebugNetworkReceiver(component.setNetworkModeUseCase, component.appScope)
-        val filter = IntentFilter(DebugNetworkReceiver.ACTION_SET_NETWORK_MODE)
+        // adb shell am broadcast -a com.chriscartland.batterybutler.SET_DATA_MODE --es mode "GRPC_LOCAL"
+        debugDataModeReceiver = DebugDataModeReceiver(component.setDataModeUseCase, component.appScope)
+        val filter = IntentFilter(DebugDataModeReceiver.ACTION_SET_DATA_MODE)
         ContextCompat.registerReceiver(
             this,
-            debugNetworkReceiver,
+            debugDataModeReceiver,
             filter,
             ContextCompat.RECEIVER_EXPORTED,
         )
@@ -65,8 +65,8 @@ class MainActivity : ComponentActivity() {
         val app = application as BatteryButlerApplication
         app.appComponent.googleSignInBridge.unbindActivity()
 
-        debugNetworkReceiver?.let { unregisterReceiver(it) }
-        debugNetworkReceiver = null
+        debugDataModeReceiver?.let { unregisterReceiver(it) }
+        debugDataModeReceiver = null
         super.onDestroy()
     }
 }

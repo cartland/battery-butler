@@ -3,10 +3,10 @@ package com.chriscartland.batterybutler.datanetwork
 import com.chriscartland.batterybutler.datanetwork.rest.FirebaseIdTokenProvider
 import com.chriscartland.batterybutler.datanetwork.rest.createSyncHttpClient
 import com.chriscartland.batterybutler.domain.model.AuthError
+import com.chriscartland.batterybutler.domain.model.DataMode
 import com.chriscartland.batterybutler.domain.model.LabsFirebaseApiKey
-import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.model.Result
-import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
+import com.chriscartland.batterybutler.domain.repository.DataModeRepository
 import kotlinx.coroutines.flow.first
 import me.tatarka.inject.annotations.Inject
 
@@ -17,11 +17,11 @@ import me.tatarka.inject.annotations.Inject
  * Blank when that env is unconfigured.
  */
 fun apiKeyForMode(
-    mode: NetworkMode,
+    mode: DataMode,
     keys: LabsFirebaseApiKey,
 ): String =
     when (mode) {
-        is NetworkMode.LabsProd -> keys.prod
+        is DataMode.LabsProd -> keys.prod
         else -> keys.staging
     }
 
@@ -30,7 +30,7 @@ fun apiKeyForMode(
  *
  * Provided as a DI singleton (see AppComponent) so a session is shared between the sign-in trigger
  * and [DelegatingRemoteDataSource]'s token reads. The Firebase Web API key is selected by the
- * **current [NetworkMode]** (staging vs prod are separate Firebase projects — see [apiKeyForMode]),
+ * **current [DataMode]** (staging vs prod are separate Firebase projects — see [apiKeyForMode]),
  * and one provider is kept per env key so a mode switch uses that env's session. The HTTP client +
  * providers are built lazily, so nothing is created until a Labs mode is actually used. Keys are
  * blank until owner setup; the provider then reports `NotConfigured` and yields no token, so the app
@@ -38,7 +38,7 @@ fun apiKeyForMode(
  */
 @Inject
 class DefaultLabsAuthGateway(
-    private val networkModeRepository: NetworkModeRepository,
+    private val dataModeRepository: DataModeRepository,
     private val labsFirebaseApiKey: LabsFirebaseApiKey,
 ) : LabsAuthGateway {
     private val httpClient by lazy { createSyncHttpClient() }
@@ -48,7 +48,7 @@ class DefaultLabsAuthGateway(
     private val providersByApiKey = mutableMapOf<String, FirebaseIdTokenProvider>()
 
     private suspend fun currentProvider(): FirebaseIdTokenProvider {
-        val apiKey = apiKeyForMode(networkModeRepository.networkMode.first(), labsFirebaseApiKey)
+        val apiKey = apiKeyForMode(dataModeRepository.dataMode.first(), labsFirebaseApiKey)
         return providersByApiKey.getOrPut(apiKey) {
             FirebaseIdTokenProvider(httpClient = httpClient, apiKey = apiKey)
         }

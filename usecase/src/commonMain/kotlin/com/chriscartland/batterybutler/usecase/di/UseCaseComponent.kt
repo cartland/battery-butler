@@ -25,7 +25,7 @@ import com.chriscartland.batterybutler.usecase.ImportDataUseCase
 import com.chriscartland.batterybutler.usecase.PreloadCommonTypesUseCase
 import com.chriscartland.batterybutler.usecase.RestoreLegacyDatabaseUseCase
 import com.chriscartland.batterybutler.usecase.SendChatMessageUseCase
-import com.chriscartland.batterybutler.usecase.SetNetworkModeUseCase
+import com.chriscartland.batterybutler.usecase.SetDataModeUseCase
 import com.chriscartland.batterybutler.usecase.SuggestDeviceIconUseCase
 import com.chriscartland.batterybutler.usecase.UpdateBatteryEventUseCase
 import com.chriscartland.batterybutler.usecase.UpdateDeviceTypeUseCase
@@ -70,7 +70,7 @@ abstract class UseCaseComponent {
     // Sync and network operations
     abstract val getSyncStatusUseCase: GetSyncStatusUseCase
     abstract val dismissSyncStatusUseCase: DismissSyncStatusUseCase
-    abstract val setNetworkModeUseCase: SetNetworkModeUseCase
+    abstract val setDataModeUseCase: SetDataModeUseCase
 
     // App info and utilities
     abstract val getAppVersionUseCase: GetAppVersionUseCase

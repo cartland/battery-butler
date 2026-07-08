@@ -19,7 +19,7 @@ env:
   # Labs backend config. All PUBLIC values (shipped in the client): per-env URL, Firebase Web API
   # key, and OAuth Web client ID. Stored as repository Variables (Settings → Secrets and variables →
   # Actions → Variables), not Secrets, because they are not confidential. When LABS_PROD_URL is set,
-  # a fresh install defaults to Labs prod (DataStoreNetworkModeRepository.defaultNetworkMode); unset
+  # a fresh install defaults to Labs prod (DataStoreDataModeRepository.defaultDataMode); unset
   # → the build safely defaults offline. The OAuth client *secret* is intentionally omitted: Android
   # Credential Manager authenticates by server client ID only and ignores it.
   ORG_GRADLE_PROJECT_LABS_STAGING_URL: ${{ vars.LABS_STAGING_URL }}

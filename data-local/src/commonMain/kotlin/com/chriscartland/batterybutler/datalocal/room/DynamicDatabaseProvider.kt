@@ -2,7 +2,7 @@ package com.chriscartland.batterybutler.datalocal.room
 
 import co.touchlab.kermit.Logger
 import com.chriscartland.batterybutler.domain.model.RestoreResult
-import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
+import com.chriscartland.batterybutler.domain.repository.DataModeRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +17,7 @@ import me.tatarka.inject.annotations.Inject
 import kotlin.coroutines.cancellation.CancellationException
 
 /**
- * Provides a dynamically switchable database based on the current network mode.
+ * Provides a dynamically switchable database based on the current data mode.
  *
  * Uses a mutex to ensure atomic database switching - external code reading [database]
  * will never observe a closed database during mode transitions.
@@ -37,7 +37,7 @@ import kotlin.coroutines.cancellation.CancellationException
 @Inject
 class DynamicDatabaseProvider(
     private val factory: DatabaseFactory,
-    private val networkModeRepository: NetworkModeRepository,
+    private val dataModeRepository: DataModeRepository,
     private val scope: CoroutineScope,
 ) {
     private val log = Logger.withTag("DynamicDbProvider")
@@ -52,8 +52,8 @@ class DynamicDatabaseProvider(
 
     init {
         scope.launch {
-            networkModeRepository.networkMode.collect { mode ->
-                val targetOption = DatabaseOption.fromNetworkMode(mode)
+            dataModeRepository.dataMode.collect { mode ->
+                val targetOption = DatabaseOption.fromDataMode(mode)
 
                 switchMutex.withLock {
                     if (targetOption != currentOption) {

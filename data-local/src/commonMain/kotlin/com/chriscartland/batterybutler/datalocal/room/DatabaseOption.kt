@@ -1,6 +1,6 @@
 package com.chriscartland.batterybutler.datalocal.room
 
-import com.chriscartland.batterybutler.domain.model.NetworkMode
+import com.chriscartland.batterybutler.domain.model.DataMode
 
 enum class DatabaseCategory {
     Offline,
@@ -13,10 +13,10 @@ enum class DatabaseCategory {
 }
 
 /**
- * Identifies a local database file. [category] mirrors the [NetworkMode] subtype; [fileName] also
+ * Identifies a local database file. [category] mirrors the [DataMode] subtype; [fileName] also
  * incorporates the mode's `url` (when it carries one) so two different real backends sharing a
  * subtype but a different URL never resolve to the same physical SQLite file — see
- * [fromNetworkMode]. Equality is structural (data class), so callers can keep comparing
+ * [fromDataMode]. Equality is structural (data class), so callers can keep comparing
  * `DatabaseOption` instances directly (e.g. [DynamicDatabaseProvider]'s `targetOption != currentOption`).
  */
 data class DatabaseOption(
@@ -47,10 +47,10 @@ data class DatabaseOption(
          * Derives the [DatabaseOption] for [mode]. A mode with no url (or a blank one) resolves to
          * the bare per-category file name, unchanged from before this class tracked urls. A mode
          * with a real url gets that file name suffixed with a hash of the normalized url, so two
-         * different urls under the same category (e.g. two [NetworkMode.GrpcAws] pointed at
+         * different urls under the same category (e.g. two [DataMode.GrpcAws] pointed at
          * different physical servers, as `ServerUrlReceiver` allows) never collide on one file.
          */
-        fun fromNetworkMode(mode: NetworkMode): DatabaseOption {
+        fun fromDataMode(mode: DataMode): DatabaseOption {
             val category = categoryFor(mode)
             val base = baseFileNames.getValue(category)
             val key = urlKeyFor(mode)
@@ -58,29 +58,29 @@ data class DatabaseOption(
             return DatabaseOption(category, fileName)
         }
 
-        private fun categoryFor(mode: NetworkMode): DatabaseCategory =
+        private fun categoryFor(mode: DataMode): DatabaseCategory =
             when (mode) {
-                NetworkMode.None -> DatabaseCategory.Offline
-                NetworkMode.Mock -> DatabaseCategory.Mock
-                is NetworkMode.GrpcLocal -> DatabaseCategory.LocalServer
-                is NetworkMode.GrpcAws -> DatabaseCategory.ProductionServer
-                is NetworkMode.GrpcDev -> DatabaseCategory.DevServer
-                is NetworkMode.LabsStaging -> DatabaseCategory.LabsStaging
-                is NetworkMode.LabsProd -> DatabaseCategory.LabsProd
+                DataMode.None -> DatabaseCategory.Offline
+                DataMode.Mock -> DatabaseCategory.Mock
+                is DataMode.GrpcLocal -> DatabaseCategory.LocalServer
+                is DataMode.GrpcAws -> DatabaseCategory.ProductionServer
+                is DataMode.GrpcDev -> DatabaseCategory.DevServer
+                is DataMode.LabsStaging -> DatabaseCategory.LabsStaging
+                is DataMode.LabsProd -> DatabaseCategory.LabsProd
             }
 
         /** The mode's url, or null if it doesn't carry one / it's blank — never a literal "null" string. */
-        private fun rawUrlFor(mode: NetworkMode): String? =
+        private fun rawUrlFor(mode: DataMode): String? =
             when (mode) {
-                is NetworkMode.GrpcLocal -> mode.url
-                is NetworkMode.GrpcAws -> mode.url
-                is NetworkMode.GrpcDev -> mode.url
-                is NetworkMode.LabsStaging -> mode.url
-                is NetworkMode.LabsProd -> mode.url
-                NetworkMode.Mock, NetworkMode.None -> null
+                is DataMode.GrpcLocal -> mode.url
+                is DataMode.GrpcAws -> mode.url
+                is DataMode.GrpcDev -> mode.url
+                is DataMode.LabsStaging -> mode.url
+                is DataMode.LabsProd -> mode.url
+                DataMode.Mock, DataMode.None -> null
             }
 
-        private fun urlKeyFor(mode: NetworkMode): String? {
+        private fun urlKeyFor(mode: DataMode): String? {
             val normalized = rawUrlFor(mode)
                 ?.trim()
                 ?.ifBlank { null }

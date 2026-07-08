@@ -35,7 +35,7 @@ Test types, coverage enforcement, and testing patterns for Battery Butler.
 
 - Pure Kotlin tests across all modules (domain, data, viewmodel, usecase, server, etc.)
 - Located in `src/commonTest/`, `src/test/`
-- **`:domain` has no `kotlinx-coroutines-test` dependency** (it depends on nothing — see Module Dependencies in `project.md`). Tests of suspend code in `domain/src/commonTest/` use plain `kotlinx.coroutines.runBlocking` with `kotlinx.coroutines.flow.first()`, not `runTest`/`TestScope`. See `NetworkModeKeyedStateTest.kt` for the pattern.
+- **`:domain` has no `kotlinx-coroutines-test` dependency** (it depends on nothing — see Module Dependencies in `project.md`). Tests of suspend code in `domain/src/commonTest/` use plain `kotlinx.coroutines.runBlocking` with `kotlinx.coroutines.flow.first()`, not `runTest`/`TestScope`. See `DataModeKeyedStateTest.kt` for the pattern.
 - **Coroutine test gotcha**: `DefaultSyncManager` has an infinite `subscribeWithRetry()` loop in `init`. Never use `advanceUntilIdle()` in tests that create a SyncManager with a subscribe source that throws or completes (it schedules infinite tasks). Use `testDispatcher.scheduler.advanceTimeBy(ms)` + `runCurrent()` instead, and always call `scope.cancel()` at end.
 - `applyRemoteUpdate` and `nextBackoff` are `internal` on `DefaultSyncManager` for direct testing without the subscribe loop
 - **Crash-proof ViewModel tests** (`CrashProof*Test.kt`): Test error handling gaps in ViewModels. Two patterns:
@@ -45,7 +45,7 @@ Test types, coverage enforcement, and testing patterns for Battery Butler.
 ## Instrumented Tests (`scripts/test.sh`)
 
 - Require an Android emulator (CI uses managed Pixel 5 API 34 with KVM)
-- All tests are offline-capable — no server needed (app defaults to `NetworkMode.None`)
+- All tests are offline-capable — no server needed (app defaults to `DataMode.None`)
 - `compose-app/src/androidInstrumentedTest/`: `ComposeUITest` (UI navigation), `ExampleInstrumentedTest` (app context)
 - `data/src/androidInstrumentedTest/`: `DatabaseSanityTest` (Room schema), `MigrationTest` (Room migrations 3→4→5)
 - **BackHandler priority**: The app uses a single unified NavDisplay back stack. The AI overlay's `PredictiveBackHandler` composes deeper than NavDisplay's handler, giving it higher priority when expanded. In tests, use actual UI back buttons (Cancel/Done/Back arrow) instead of `Espresso.pressBack()` to avoid BackHandler conflicts.

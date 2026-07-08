@@ -33,9 +33,9 @@ echo "[DEBUG] Logcat Monitor PID: $LOGCAT_PID"
 echo "[DEBUG] Waiting 15s for Server and App..."
 sleep 15
 
-# 5. Trigger Network Mode Switch (via Broadcast)
+# 5. Trigger Data Mode Switch (via Broadcast)
 echo "[DEBUG] Triggering Network Switch to GRPC_LOCAL..."
-adb shell am broadcast -a com.chriscartland.batterybutler.SET_NETWORK_MODE --es mode "GRPC_LOCAL"
+adb shell am broadcast -a com.chriscartland.batterybutler.SET_DATA_MODE --es mode "GRPC_LOCAL"
 
 echo "[DEBUG] Waiting 15s for data sync..."
 sleep 15

@@ -26,10 +26,10 @@ import com.chriscartland.batterybutler.domain.model.ProductionServerUrl
 import com.chriscartland.batterybutler.domain.model.ai.AiEngine
 import com.chriscartland.batterybutler.domain.repository.AiPreferencesRepository
 import com.chriscartland.batterybutler.domain.repository.AppInfoRepository
+import com.chriscartland.batterybutler.domain.repository.DataModeRepository
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.domain.repository.FeatureFlagProvider
 import com.chriscartland.batterybutler.domain.repository.LabsAuthRepository
-import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
 import com.chriscartland.batterybutler.domain.repository.RestartCoordinator
 import com.chriscartland.batterybutler.usecase.di.UseCaseComponent
 import com.chriscartland.batterybutler.viewmodel.addbatteryevent.AddBatteryEventViewModel
@@ -85,7 +85,7 @@ abstract class AppComponent(
     abstract val aiChatViewModel: AiChatViewModel
     abstract val settingsViewModel: SettingsViewModel
     abstract val featureFlagProvider: FeatureFlagProvider
-    abstract val networkModeRepository: NetworkModeRepository
+    abstract val dataModeRepository: DataModeRepository
     abstract val restartCoordinator: RestartCoordinator
     abstract override val appScope: CoroutineScope
 
@@ -174,7 +174,7 @@ abstract class AppComponent(
     @Provides
     @Singleton
     fun provideDelegatingGrpcClient(
-        networkModeRepository: NetworkModeRepository,
+        dataModeRepository: DataModeRepository,
         scope: CoroutineScope,
         dispatcherProvider: DispatcherProvider,
         authTokenStorage: AuthTokenStorage,
@@ -187,7 +187,7 @@ abstract class AppComponent(
         }
         return DelegatingGrpcClient(
             factory = networkComponent::createGrpcClient,
-            networkModeRepository = networkModeRepository,
+            dataModeRepository = dataModeRepository,
             scope = scope,
             dispatcherProvider = dispatcherProvider,
             tokenProvider = { cachedToken.value },

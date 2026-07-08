@@ -4,13 +4,13 @@ import com.chriscartland.batterybutler.datanetwork.RemoteDataSource
 import com.chriscartland.batterybutler.datanetwork.RemoteDataSourceState
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.DataError
+import com.chriscartland.batterybutler.domain.model.DataMode
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
-import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.model.SyncStatus
 import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
+import com.chriscartland.batterybutler.testcommon.FakeDataModeRepository
 import com.chriscartland.batterybutler.testcommon.FakeLocalDataSource
-import com.chriscartland.batterybutler.testcommon.FakeNetworkModeRepository
 import com.chriscartland.batterybutler.testcommon.FakeRemoteDataSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -63,10 +63,10 @@ class DefaultDeviceRepositoryTest {
     private fun createRepo(
         local: FakeLocalDataSource = FakeLocalDataSource(),
         remote: RemoteDataSource = FakeRemoteDataSource(),
-        networkMode: FakeNetworkModeRepository = FakeNetworkModeRepository(NetworkMode.Mock),
+        dataMode: FakeDataModeRepository = FakeDataModeRepository(DataMode.Mock),
     ): RepoTestHarness {
         val repoScope = CoroutineScope(testDispatcher + Job())
-        val syncManager = DefaultSyncManager(local, remote, networkMode, repoScope)
+        val syncManager = DefaultSyncManager(local, remote, dataMode, repoScope)
         val repo = DefaultDeviceRepository(local, syncManager)
         return RepoTestHarness(repo, syncManager, repoScope)
     }
@@ -355,16 +355,16 @@ class DefaultDeviceRepositoryTest {
         }
 
     // ───────────────────────────────────────────────────────
-    // Network Mode Tests
+    // Data Mode Tests
     // ───────────────────────────────────────────────────────
 
     @Test
-    fun `push is skipped when network mode is None`() =
+    fun `push is skipped when data mode is None`() =
         runTest(testDispatcher) {
             val local = FakeLocalDataSource()
             val remote = FakeRemoteDataSource()
-            val networkMode = FakeNetworkModeRepository(NetworkMode.None)
-            val (repo, _, repoScope) = createRepo(local, remote, networkMode)
+            val dataMode = FakeDataModeRepository(DataMode.None)
+            val (repo, _, repoScope) = createRepo(local, remote, dataMode)
             val device = createDevice(id = "1", name = "Offline Device")
 
             repo.addDevice(device)

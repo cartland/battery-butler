@@ -120,13 +120,13 @@ These issues affect all SwiftUI screens, not just individual ones:
 | App version display | ✅ | ✅ | — |
 | Sign-out button | ✅ | ❌ | No sign-out option |
 | Account info display | ✅ | ❌ | — |
-| Network mode selector | ✅ | ❌ | No network mode switching |
+| Data mode selector | ✅ | ❌ | No data mode switching |
 | AI engine selector | ✅ | ❌ | — |
 | Check for updates | ✅ | ❌ | — |
 | Export data | ✅ | ❌ | — |
 | Dynamic version (BuildConfig) | ✅ | ❌ | Hardcoded version string |
 
-**Compose:** `SettingsScreen.kt` — full settings with network mode, AI engine, export, update check, sign-out.
+**Compose:** `SettingsScreen.kt` — full settings with data mode, AI engine, export, update check, sign-out.
 **SwiftUI:** `SettingsScreen.swift` — shows app version only.
 **Tracking:** `bb-abn6`
 

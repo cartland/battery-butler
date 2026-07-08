@@ -14,11 +14,11 @@ sleep 5
 adb logcat > connectivity_test.log &
 LOG_PID=$!
 
-# 1. Set Network Mode to GRPC_AWS (AWS Cloud)
+# 1. Set Data Mode to GRPC_AWS (AWS Cloud)
 echo "Broadcasting GRPC_AWS mode..."
 adb shell am broadcast \
   -p com.chriscartland.batterybutler \
-  -a com.chriscartland.batterybutler.SET_NETWORK_MODE \
+  -a com.chriscartland.batterybutler.SET_DATA_MODE \
   --es mode GRPC_AWS
 
 # 2. Reset Server URL to default
@@ -38,7 +38,7 @@ for i in {1..30}; do
         FOUND=1
         break
     fi
-    if grep -q "Network mode set to GRPC_AWS via UseCase" connectivity_test.log; then
+    if grep -q "Data mode set to GRPC_AWS via UseCase" connectivity_test.log; then
         echo "Mode switch verified..."
     fi
     sleep 1

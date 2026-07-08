@@ -5,17 +5,17 @@ import android.content.Context
 import android.content.Intent
 import co.touchlab.kermit.Logger
 import com.chriscartland.batterybutler.datanetwork.BuildConfig
-import com.chriscartland.batterybutler.domain.model.NetworkMode
-import com.chriscartland.batterybutler.usecase.SetNetworkModeUseCase
+import com.chriscartland.batterybutler.domain.model.DataMode
+import com.chriscartland.batterybutler.usecase.SetDataModeUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-class DebugNetworkReceiver(
-    private val setNetworkModeUseCase: SetNetworkModeUseCase,
+class DebugDataModeReceiver(
+    private val setDataModeUseCase: SetDataModeUseCase,
     private val scope: CoroutineScope,
 ) : BroadcastReceiver() {
     companion object {
-        const val ACTION_SET_NETWORK_MODE = "com.chriscartland.batterybutler.SET_NETWORK_MODE"
+        const val ACTION_SET_DATA_MODE = "com.chriscartland.batterybutler.SET_DATA_MODE"
         const val EXTRA_MODE = "mode"
         private const val TAG = "BatteryButlerReceiver"
     }
@@ -24,19 +24,19 @@ class DebugNetworkReceiver(
         context: Context?,
         intent: Intent?,
     ) {
-        if (intent?.action == ACTION_SET_NETWORK_MODE) {
+        if (intent?.action == ACTION_SET_DATA_MODE) {
             val modeString = intent.getStringExtra(EXTRA_MODE)
             Logger.d(TAG) { "Broadcast received. Mode: $modeString" }
 
             val mode = when (modeString) {
                 // Hardcoded Android Emulator Localhost
-                "GRPC_LOCAL" -> NetworkMode.GrpcLocal("http://10.0.2.2:50051")
+                "GRPC_LOCAL" -> DataMode.GrpcLocal("http://10.0.2.2:50051")
 
-                "GRPC_AWS" -> NetworkMode.GrpcAws(BuildConfig.PRODUCTION_SERVER_URL)
+                "GRPC_AWS" -> DataMode.GrpcAws(BuildConfig.PRODUCTION_SERVER_URL)
 
-                "GRPC_DEV" -> NetworkMode.GrpcDev(BuildConfig.DEV_SERVER_URL)
+                "GRPC_DEV" -> DataMode.GrpcDev(BuildConfig.DEV_SERVER_URL)
 
-                "MOCK" -> NetworkMode.Mock
+                "MOCK" -> DataMode.Mock
 
                 else -> null
             }
@@ -44,8 +44,8 @@ class DebugNetworkReceiver(
             if (mode != null) {
                 // Use injected scope for proper lifecycle management
                 scope.launch {
-                    setNetworkModeUseCase(mode)
-                    Logger.d(TAG) { "Network mode set to $mode via UseCase" }
+                    setDataModeUseCase(mode)
+                    Logger.d(TAG) { "Data mode set to $mode via UseCase" }
                 }
             } else {
                 Logger.d(TAG) { "Invalid mode received: $modeString" }

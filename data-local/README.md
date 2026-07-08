@@ -34,7 +34,7 @@ Single DAO with operations for all entities:
 
 ### DynamicDatabaseProvider
 
-Manages dual databases based on network mode:
+Manages dual databases based on data mode:
 - `battery-butler.db` - Production data
 - `battery-butler-dev.db` - Development/mock data
 

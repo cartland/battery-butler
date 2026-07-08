@@ -49,7 +49,7 @@ The usecase module orchestrates business logic between presentation and data lay
 |----------|-------------|
 | `GetSyncStatusUseCase` | Observe sync status |
 | `DismissSyncStatusUseCase` | Clear sync status |
-| `SetNetworkModeUseCase` | Configure network mode |
+| `SetDataModeUseCase` | Configure data mode |
 | `ResyncUseCase` | On-demand bounded resync (pull-to-refresh); thin delegate to `SyncManager.resync()` |
 
 ### Utilities (5)

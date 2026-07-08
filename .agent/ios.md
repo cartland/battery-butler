@@ -76,7 +76,7 @@ PR #873 implemented the full iOS design language from `docs/design/IOS_DESIGN_LA
 - `Color` extensions used with `.foregroundStyle()` require explicit `Color.` prefix (e.g., `Color.butlerPrimary`). Implicit member syntax (`.butlerPrimary`) fails with "type 'ShapeStyle' has no member" — especially in ternary expressions.
 - KMP `Instant` type cannot be referenced by name in Swift. Use `instant.toEpochMilliseconds()` and pass `Int64` to helper functions instead.
 - `sync_pbxproj.rb` now syncs both `Features/` and `Core/` subdirectories.
-- Settings shows only app version (missing sign-out, network mode, AI engine)
+- Settings shows only app version (missing sign-out, data mode, AI engine)
 - **Localization**: `iosApp/Localizable.strings` provides en-US base strings (~130 keys). SwiftUI views use dot-notation keys (e.g., `Text("home.title")`). Non-SwiftUI contexts use `String(localized:)`. Dynamic user data is not localized. Short format strings with interpolation (`"\(days)d"`) are not yet localized (need pluralization support). The `iosApp/` directory uses `PBXFileSystemSynchronizedRootGroup` so new files are auto-included in builds.
 
 ## KMP Swift Constructor Gotchas
@@ -96,7 +96,7 @@ PR #873 implemented the full iOS design language from `docs/design/IOS_DESIGN_LA
 
 `LoginErrorInfo.errorInfo(for:)` is a standalone `static` helper for direct testability (relocated
 from the deleted `LoginViewModelWrapper` in bb-ovm1; `SettingsDisplay` similarly holds the
-network-mode / AI-engine display-name helpers).
+data-mode / AI-engine display-name helpers).
 
 **KMP AuthError constructors in Swift**: All subtypes require full-param init including `message:` — the no-arg init is unavailable despite Kotlin defaults. Example: `AuthErrorSignInFailed(message: "Sign-in failed", cause: nil)`.
 
@@ -172,3 +172,4 @@ To record locally: `./scripts/record-ios-snapshots.sh` (uses `SNAPSHOT_TESTING_R
 
 - **iOS protos**: Run `./scripts/generate-protos.sh` before iOS builds if proto files changed. The script generates Swift protobuf files from Bazel.
 - **iOS Swift wrapper API sync**: When a KMP shared ViewModel or use case changes its public API (e.g., adding a parameter to `sendMessage`), the corresponding Swift wrapper in `ios-app-swift-ui/Features/*/` must be updated too. The iOS build (`build_ios_native`) is the canary — a mismatch causes a Swift compile error with "missing argument for parameter". After any KMP API change, grep `ios-app-swift-ui/` for the function name to catch wrappers that need updating.
+- **Stale local DerivedData can break `iosAppSwiftUI` with "Unable to resolve module dependency: 'KMPObservableViewModelCore'"** even though `xcodebuild -resolvePackageDependencies` reports the package resolved fine. Confirmed 2026-07-07 this is a *local dev-machine* artifact, not a real regression — reproduces identically on unmodified `main` and is unrelated to any code change; CI runners start with fresh `DerivedData` so they don't hit it. Fix: `rm -rf ~/Library/Developer/Xcode/DerivedData/iosAppSwiftUI-*` and rebuild. Also: running `./scripts/validate.sh` concurrently across multiple git worktrees on the same machine causes real collisions — the shared Gradle daemon registry (one worktree's `--stop` in the "iOS Checks" section kills every other worktree's in-flight build) and the Android emulator/AVD (two worktrees booting the same managed-device AVD name errors with "Running multiple emulators with the same AVD"). Either serialize `validate.sh` runs across worktrees, or isolate the Gradle daemon registry per run with `GRADLE_OPTS="-Dorg.gradle.daemon.registry.base=<unique-dir>"`.

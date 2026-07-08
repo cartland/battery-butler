@@ -5,8 +5,8 @@ import com.chriscartland.batterybutler.datanetwork.grpc.DelegatingGrpcClient
 import com.chriscartland.batterybutler.datanetwork.grpc.GrpcClientState
 import com.chriscartland.batterybutler.datanetwork.rest.RestRemoteDataSource
 import com.chriscartland.batterybutler.datanetwork.rest.createSyncHttpClient
-import com.chriscartland.batterybutler.domain.model.NetworkMode
-import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
+import com.chriscartland.batterybutler.domain.model.DataMode
+import com.chriscartland.batterybutler.domain.repository.DataModeRepository
 import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
 import com.squareup.wire.GrpcClient
 import kotlinx.coroutines.CoroutineScope
@@ -27,7 +27,7 @@ class DelegatingRemoteDataSource(
     private val mockDataSource: MockRemoteDataSource,
     private val grpcDataSource: GrpcSyncDataSource,
     private val delegatingGrpcClient: DelegatingGrpcClient,
-    private val networkModeRepository: NetworkModeRepository,
+    private val dataModeRepository: DataModeRepository,
     private val labsAuthGateway: LabsAuthGateway,
     private val scope: CoroutineScope,
 ) : RemoteDataSource {
@@ -46,18 +46,18 @@ class DelegatingRemoteDataSource(
         )
 
     override val state: StateFlow<RemoteDataSourceState> =
-        networkModeRepository.networkMode
+        dataModeRepository.dataMode
             .flatMapLatest { mode ->
                 when (mode) {
-                    NetworkMode.None -> {
+                    DataMode.None -> {
                         kotlinx.coroutines.flow.flowOf(RemoteDataSourceState.NotStarted)
                     }
 
-                    NetworkMode.Mock -> {
+                    DataMode.Mock -> {
                         mockDataSource.state
                     }
 
-                    is NetworkMode.GrpcLocal, is NetworkMode.GrpcAws, is NetworkMode.GrpcDev -> {
+                    is DataMode.GrpcLocal, is DataMode.GrpcAws, is DataMode.GrpcDev -> {
                         delegatingGrpcClient.clientState.map { clientState ->
                             when (clientState) {
                                 GrpcClientState.Uninitialized -> RemoteDataSourceState.NotStarted
@@ -67,11 +67,11 @@ class DelegatingRemoteDataSource(
                         }
                     }
 
-                    is NetworkMode.LabsStaging -> {
+                    is DataMode.LabsStaging -> {
                         restDataSource(mode.url).state
                     }
 
-                    is NetworkMode.LabsProd -> {
+                    is DataMode.LabsProd -> {
                         restDataSource(mode.url).state
                     }
                 }
@@ -79,55 +79,55 @@ class DelegatingRemoteDataSource(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun subscribe(): Flow<RemoteUpdate> =
-        networkModeRepository.networkMode.flatMapLatest { mode ->
+        dataModeRepository.dataMode.flatMapLatest { mode ->
             when (mode) {
-                NetworkMode.None -> {
+                DataMode.None -> {
                     kotlinx.coroutines.flow.emptyFlow()
                 }
 
-                NetworkMode.Mock -> {
+                DataMode.Mock -> {
                     mockDataSource.subscribe()
                 }
 
-                is NetworkMode.GrpcLocal -> {
+                is DataMode.GrpcLocal -> {
                     // Wait for the client to be ready
                     delegatingGrpcClient.clientState
                         .mapNotNull { (it as? GrpcClientState.Ready)?.client }
                         .flatMapLatest<GrpcClient, RemoteUpdate> { grpcDataSource.subscribe() }
                 }
 
-                is NetworkMode.GrpcAws, is NetworkMode.GrpcDev -> {
+                is DataMode.GrpcAws, is DataMode.GrpcDev -> {
                     // Wait for the client to be ready
                     delegatingGrpcClient.clientState
                         .mapNotNull { (it as? GrpcClientState.Ready)?.client }
                         .flatMapLatest<GrpcClient, RemoteUpdate> { grpcDataSource.subscribe() }
                 }
 
-                is NetworkMode.LabsStaging -> {
+                is DataMode.LabsStaging -> {
                     restDataSource(mode.url).subscribe()
                 }
 
-                is NetworkMode.LabsProd -> {
+                is DataMode.LabsProd -> {
                     restDataSource(mode.url).subscribe()
                 }
             }
         }
 
     override suspend fun push(update: RemoteUpdate): Boolean {
-        val mode = networkModeRepository.networkMode.first()
+        val mode = dataModeRepository.dataMode.first()
         Logger.d("DelegatingRemoteDS") { "push() called with mode=$mode" }
         return when (mode) {
-            NetworkMode.None -> {
+            DataMode.None -> {
                 Logger.d("DelegatingRemoteDS") { "Pushing to None (no-op)" }
                 true
             }
 
-            NetworkMode.Mock -> {
+            DataMode.Mock -> {
                 Logger.d("DelegatingRemoteDS") { "Pushing to Mock (no-op)" }
                 mockDataSource.push(update)
             }
 
-            is NetworkMode.GrpcLocal, is NetworkMode.GrpcAws, is NetworkMode.GrpcDev -> {
+            is DataMode.GrpcLocal, is DataMode.GrpcAws, is DataMode.GrpcDev -> {
                 // Wait for the client to be ready before pushing
                 Logger.d("DelegatingRemoteDS") { "Waiting for gRPC client to be ready..." }
                 delegatingGrpcClient.clientState.first { it is GrpcClientState.Ready }
@@ -137,11 +137,11 @@ class DelegatingRemoteDataSource(
                 success
             }
 
-            is NetworkMode.LabsStaging -> {
+            is DataMode.LabsStaging -> {
                 restDataSource(mode.url).push(update)
             }
 
-            is NetworkMode.LabsProd -> {
+            is DataMode.LabsProd -> {
                 restDataSource(mode.url).push(update)
             }
         }

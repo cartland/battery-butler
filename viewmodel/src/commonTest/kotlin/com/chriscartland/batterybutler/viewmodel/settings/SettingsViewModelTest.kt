@@ -2,19 +2,21 @@ package com.chriscartland.batterybutler.viewmodel.settings
 
 import com.chriscartland.batterybutler.domain.model.AppVersion
 import com.chriscartland.batterybutler.domain.model.AuthState
+import com.chriscartland.batterybutler.domain.model.DataMode
 import com.chriscartland.batterybutler.domain.model.DevServerUrl
 import com.chriscartland.batterybutler.domain.model.DispatcherProvider
+import com.chriscartland.batterybutler.domain.model.FeatureFlag
 import com.chriscartland.batterybutler.domain.model.LabsProdUrl
 import com.chriscartland.batterybutler.domain.model.LabsStagingUrl
 import com.chriscartland.batterybutler.domain.model.LegacyDatabaseInfo
-import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.model.ProductionServerUrl
 import com.chriscartland.batterybutler.domain.model.RestoreResult
 import com.chriscartland.batterybutler.domain.model.User
 import com.chriscartland.batterybutler.domain.model.ai.AiEngineType
 import com.chriscartland.batterybutler.domain.repository.AiPreferencesRepository
 import com.chriscartland.batterybutler.domain.repository.AppInfoRepository
-import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
+import com.chriscartland.batterybutler.domain.repository.DataModeRepository
+import com.chriscartland.batterybutler.domain.repository.FeatureFlagProvider
 import com.chriscartland.batterybutler.domain.repository.RestartCoordinator
 import com.chriscartland.batterybutler.testcommon.FakeAuthRepository
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
@@ -68,22 +70,22 @@ class SettingsViewModelTest {
 
     // region Fake implementations
 
-    private class FakeNetworkModeRepository : NetworkModeRepository {
-        private val _networkMode = MutableStateFlow<NetworkMode>(NetworkMode.None)
-        override val networkMode: Flow<NetworkMode> = _networkMode
-        var setNetworkModeCallCount = 0
+    private class FakeDataModeRepository : DataModeRepository {
+        private val _dataMode = MutableStateFlow<DataMode>(DataMode.None)
+        override val dataMode: Flow<DataMode> = _dataMode
+        var setDataModeCallCount = 0
             private set
-        var lastSetMode: NetworkMode? = null
+        var lastSetMode: DataMode? = null
             private set
 
-        override suspend fun setNetworkMode(mode: NetworkMode) {
-            setNetworkModeCallCount++
+        override suspend fun setDataMode(mode: DataMode) {
+            setDataModeCallCount++
             lastSetMode = mode
-            _networkMode.value = mode
+            _dataMode.value = mode
         }
 
-        fun setCurrentMode(mode: NetworkMode) {
-            _networkMode.value = mode
+        fun setCurrentMode(mode: DataMode) {
+            _dataMode.value = mode
         }
     }
 
@@ -91,6 +93,14 @@ class SettingsViewModelTest {
         private val version: AppVersion = AppVersion.Unavailable,
     ) : AppInfoRepository {
         override fun getAppVersion(): AppVersion = version
+    }
+
+    private class FakeFeatureFlagProvider(
+        private val enabledFlags: Set<FeatureFlag> = emptySet(),
+    ) : FeatureFlagProvider {
+        override fun isEnabled(flag: FeatureFlag): Boolean = enabledFlags.contains(flag)
+
+        override fun observeEnabled(flag: FeatureFlag): Flow<Boolean> = MutableStateFlow(isEnabled(flag))
     }
 
     private class FakeAiPreferencesRepository : AiPreferencesRepository {
@@ -151,13 +161,13 @@ class SettingsViewModelTest {
         }
 
     @Test
-    fun `isLabsMode reflects the selected network mode`() =
+    fun `isLabsMode reflects the selected data mode`() =
         runTest {
             val viewModel = createViewModel()
             advanceUntilIdle()
             assertFalse(viewModel.isLabsMode.first())
 
-            viewModel.onNetworkModeSelected(NetworkMode.LabsStaging("https://staging.example"))
+            viewModel.onDataModeSelected(DataMode.LabsStaging("https://staging.example"))
             advanceUntilIdle()
             assertTrue(viewModel.isLabsMode.first { it })
         }
@@ -252,32 +262,32 @@ class SettingsViewModelTest {
 
     // endregion
 
-    // region Network mode tests
+    // region Data mode tests
 
     @Test
-    fun `networkMode reflects repository state`() =
+    fun `dataMode reflects repository state`() =
         runTest {
-            val networkRepo = FakeNetworkModeRepository()
-            networkRepo.setCurrentMode(NetworkMode.Mock)
-            val viewModel = createViewModel(networkModeRepository = networkRepo)
+            val networkRepo = FakeDataModeRepository()
+            networkRepo.setCurrentMode(DataMode.Mock)
+            val viewModel = createViewModel(dataModeRepository = networkRepo)
             advanceUntilIdle()
 
-            val mode = viewModel.networkMode.first { it == NetworkMode.Mock }
+            val mode = viewModel.dataMode.first { it == DataMode.Mock }
 
-            assertEquals(NetworkMode.Mock, mode)
+            assertEquals(DataMode.Mock, mode)
         }
 
     @Test
-    fun `onNetworkModeSelected updates repository`() =
+    fun `onDataModeSelected updates repository`() =
         runTest {
-            val networkRepo = FakeNetworkModeRepository()
-            val viewModel = createViewModel(networkModeRepository = networkRepo)
+            val networkRepo = FakeDataModeRepository()
+            val viewModel = createViewModel(dataModeRepository = networkRepo)
 
-            viewModel.onNetworkModeSelected(NetworkMode.Mock)
+            viewModel.onDataModeSelected(DataMode.Mock)
             advanceUntilIdle()
 
-            assertEquals(1, networkRepo.setNetworkModeCallCount)
-            assertEquals(NetworkMode.Mock, networkRepo.lastSetMode)
+            assertEquals(1, networkRepo.setDataModeCallCount)
+            assertEquals(DataMode.Mock, networkRepo.lastSetMode)
         }
 
     // endregion
@@ -380,10 +390,10 @@ class SettingsViewModelTest {
     // region Database recovery tests
 
     @Test
-    fun `currentDatabaseFileName reflects network mode`() =
+    fun `currentDatabaseFileName reflects data mode`() =
         runTest {
             val legacyRepo = FakeLegacyDatabaseRepository()
-            legacyRepo.fileNameByMode[NetworkMode.None] = "battery-butler-offline.db"
+            legacyRepo.fileNameByMode[DataMode.None] = "battery-butler-offline.db"
             val viewModel = createViewModel(legacyDatabaseRepository = legacyRepo)
             advanceUntilIdle()
 
@@ -395,11 +405,11 @@ class SettingsViewModelTest {
     @Test
     fun `legacyDatabaseInfo is null for modes without legacy files`() =
         runTest {
-            val networkRepo = FakeNetworkModeRepository()
-            networkRepo.setCurrentMode(NetworkMode.GrpcLocal("http://localhost:50051"))
+            val networkRepo = FakeDataModeRepository()
+            networkRepo.setCurrentMode(DataMode.GrpcLocal("http://localhost:50051"))
             val legacyRepo = FakeLegacyDatabaseRepository()
             val viewModel = createViewModel(
-                networkModeRepository = networkRepo,
+                dataModeRepository = networkRepo,
                 legacyDatabaseRepository = legacyRepo,
             )
             advanceUntilIdle()
@@ -413,7 +423,7 @@ class SettingsViewModelTest {
     fun `legacyDatabaseInfo shows existing legacy file`() =
         runTest {
             val legacyRepo = FakeLegacyDatabaseRepository()
-            legacyRepo.legacyInfoByMode[NetworkMode.None] = LegacyDatabaseInfo(
+            legacyRepo.legacyInfoByMode[DataMode.None] = LegacyDatabaseInfo(
                 legacyFileName = "battery-butler.db",
                 exists = true,
             )
@@ -431,7 +441,7 @@ class SettingsViewModelTest {
     fun `onRestoreLegacyDatabase calls use case with legacy file name`() =
         runTest {
             val legacyRepo = FakeLegacyDatabaseRepository()
-            legacyRepo.legacyInfoByMode[NetworkMode.None] = LegacyDatabaseInfo(
+            legacyRepo.legacyInfoByMode[DataMode.None] = LegacyDatabaseInfo(
                 legacyFileName = "battery-butler.db",
                 exists = true,
             )
@@ -451,7 +461,7 @@ class SettingsViewModelTest {
     fun `onRestoreLegacyDatabase sets restoreComplete on success`() =
         runTest {
             val legacyRepo = FakeLegacyDatabaseRepository()
-            legacyRepo.legacyInfoByMode[NetworkMode.None] = LegacyDatabaseInfo(
+            legacyRepo.legacyInfoByMode[DataMode.None] = LegacyDatabaseInfo(
                 legacyFileName = "battery-butler.db",
                 exists = true,
             )
@@ -485,7 +495,7 @@ class SettingsViewModelTest {
     fun `onRestoreCompleteAcknowledged resets restoreComplete`() =
         runTest {
             val legacyRepo = FakeLegacyDatabaseRepository()
-            legacyRepo.legacyInfoByMode[NetworkMode.None] = LegacyDatabaseInfo(
+            legacyRepo.legacyInfoByMode[DataMode.None] = LegacyDatabaseInfo(
                 legacyFileName = "battery-butler.db",
                 exists = true,
             )
@@ -507,7 +517,7 @@ class SettingsViewModelTest {
     fun `onRestoreLegacyDatabase exposes Success via restoreResult`() =
         runTest {
             val legacyRepo = FakeLegacyDatabaseRepository()
-            legacyRepo.legacyInfoByMode[NetworkMode.None] = LegacyDatabaseInfo("battery-butler.db", true)
+            legacyRepo.legacyInfoByMode[DataMode.None] = LegacyDatabaseInfo("battery-butler.db", true)
             legacyRepo.restoreResult = RestoreResult.Success
             val viewModel = createViewModel(legacyDatabaseRepository = legacyRepo)
             advanceUntilIdle()
@@ -524,7 +534,7 @@ class SettingsViewModelTest {
     fun `onRestoreLegacyDatabase exposes DestructiveFallback and still flags complete`() =
         runTest {
             val legacyRepo = FakeLegacyDatabaseRepository()
-            legacyRepo.legacyInfoByMode[NetworkMode.None] = LegacyDatabaseInfo("battery-butler.db", true)
+            legacyRepo.legacyInfoByMode[DataMode.None] = LegacyDatabaseInfo("battery-butler.db", true)
             legacyRepo.restoreResult = RestoreResult.DestructiveFallback(fromVersion = 0)
             val viewModel = createViewModel(legacyDatabaseRepository = legacyRepo)
             advanceUntilIdle()
@@ -544,7 +554,7 @@ class SettingsViewModelTest {
     fun `onRestoreLegacyDatabase exposes Failure without flagging complete`() =
         runTest {
             val legacyRepo = FakeLegacyDatabaseRepository()
-            legacyRepo.legacyInfoByMode[NetworkMode.None] = LegacyDatabaseInfo("battery-butler.db", true)
+            legacyRepo.legacyInfoByMode[DataMode.None] = LegacyDatabaseInfo("battery-butler.db", true)
             legacyRepo.restoreResult = RestoreResult.Failure(
                 errorMessage = "copy failed",
                 throwableClassName = "IOException",
@@ -565,7 +575,7 @@ class SettingsViewModelTest {
     fun `onRestoreLegacyDatabase exposes LegacyFileUnavailable without flagging complete`() =
         runTest {
             val legacyRepo = FakeLegacyDatabaseRepository()
-            legacyRepo.legacyInfoByMode[NetworkMode.None] = LegacyDatabaseInfo("battery-butler.db", true)
+            legacyRepo.legacyInfoByMode[DataMode.None] = LegacyDatabaseInfo("battery-butler.db", true)
             legacyRepo.restoreResult = RestoreResult.LegacyFileUnavailable(reason = "file not found")
             val viewModel = createViewModel(legacyDatabaseRepository = legacyRepo)
             advanceUntilIdle()
@@ -583,7 +593,7 @@ class SettingsViewModelTest {
     fun `onRestoreLegacyDatabase requests restart on Success`() =
         runTest {
             val legacyRepo = FakeLegacyDatabaseRepository()
-            legacyRepo.legacyInfoByMode[NetworkMode.None] = LegacyDatabaseInfo("battery-butler.db", true)
+            legacyRepo.legacyInfoByMode[DataMode.None] = LegacyDatabaseInfo("battery-butler.db", true)
             legacyRepo.restoreResult = RestoreResult.Success
             val coordinator = RestartCoordinator()
             val events = mutableListOf<Unit>()
@@ -608,7 +618,7 @@ class SettingsViewModelTest {
     fun `onRestoreLegacyDatabase requests restart on DestructiveFallback`() =
         runTest {
             val legacyRepo = FakeLegacyDatabaseRepository()
-            legacyRepo.legacyInfoByMode[NetworkMode.None] = LegacyDatabaseInfo("battery-butler.db", true)
+            legacyRepo.legacyInfoByMode[DataMode.None] = LegacyDatabaseInfo("battery-butler.db", true)
             legacyRepo.restoreResult = RestoreResult.DestructiveFallback(fromVersion = 0)
             val coordinator = RestartCoordinator()
             val events = mutableListOf<Unit>()
@@ -633,7 +643,7 @@ class SettingsViewModelTest {
     fun `onRestoreLegacyDatabase does NOT request restart on Failure`() =
         runTest {
             val legacyRepo = FakeLegacyDatabaseRepository()
-            legacyRepo.legacyInfoByMode[NetworkMode.None] = LegacyDatabaseInfo("battery-butler.db", true)
+            legacyRepo.legacyInfoByMode[DataMode.None] = LegacyDatabaseInfo("battery-butler.db", true)
             legacyRepo.restoreResult = RestoreResult.Failure("copy failed", "IOException")
             val coordinator = RestartCoordinator()
             val events = mutableListOf<Unit>()
@@ -658,18 +668,19 @@ class SettingsViewModelTest {
 
     private fun createViewModel(
         deviceRepository: FakeDeviceRepository = FakeDeviceRepository(),
-        networkModeRepository: FakeNetworkModeRepository = FakeNetworkModeRepository(),
+        dataModeRepository: FakeDataModeRepository = FakeDataModeRepository(),
         appInfoRepository: AppInfoRepository = FakeAppInfoRepository(),
         authRepository: FakeAuthRepository = FakeAuthRepository(),
         labsAuthRepository: FakeLabsAuthRepository = FakeLabsAuthRepository(),
         aiPreferencesRepository: FakeAiPreferencesRepository = FakeAiPreferencesRepository(),
         legacyDatabaseRepository: FakeLegacyDatabaseRepository = FakeLegacyDatabaseRepository(),
         restartCoordinator: RestartCoordinator = RestartCoordinator(),
+        featureFlagProvider: FeatureFlagProvider = FakeFeatureFlagProvider(),
     ): SettingsViewModel =
         SettingsViewModel(
             exportDataUseCase = ExportDataUseCase(deviceRepository, testDispatcherProvider),
             importDataUseCase = ImportDataUseCase(deviceRepository, testDispatcherProvider),
-            networkModeRepository = networkModeRepository,
+            dataModeRepository = dataModeRepository,
             getAppVersionUseCase = GetAppVersionUseCase(appInfoRepository),
             authRepository = authRepository,
             labsAuthRepository = labsAuthRepository,
@@ -681,9 +692,45 @@ class SettingsViewModelTest {
             signInToLabsUseCase = SignInToLabsUseCase(labsAuthRepository, deviceRepository),
             signOutLabsUseCase = SignOutLabsUseCase(labsAuthRepository, deviceRepository),
             signOutUseCase = SignOutUseCase(authRepository, deviceRepository),
+            featureFlagProvider = featureFlagProvider,
             productionServerUrl = ProductionServerUrl("http://test-server:80"),
             devServerUrl = DevServerUrl("http://test-dev-server:80"),
-            labsStagingUrl = LabsStagingUrl(""),
-            labsProdUrl = LabsProdUrl(""),
+            labsStagingUrl = LabsStagingUrl("https://staging.example"),
+            labsProdUrl = LabsProdUrl("https://prod.example"),
         )
+
+    // region Data mode availability tests
+
+    @Test
+    fun `availableDataModes hides legacy modes and orders Device only, Production, Staging, Mock by default`() =
+        runTest {
+            val viewModel = createViewModel()
+            advanceUntilIdle()
+
+            assertEquals(
+                listOf(
+                    DataMode.None,
+                    DataMode.LabsProd("https://prod.example"),
+                    DataMode.LabsStaging("https://staging.example"),
+                    DataMode.Mock,
+                ),
+                viewModel.availableDataModes,
+            )
+        }
+
+    @Test
+    fun `availableDataModes includes legacy modes when LEGACY_DATA_MODES flag is enabled`() =
+        runTest {
+            val viewModel = createViewModel(
+                featureFlagProvider = FakeFeatureFlagProvider(setOf(FeatureFlag.LEGACY_DATA_MODES)),
+            )
+            advanceUntilIdle()
+
+            assertEquals(7, viewModel.availableDataModes.size)
+            assertTrue(viewModel.availableDataModes.any { it is DataMode.GrpcLocal })
+            assertTrue(viewModel.availableDataModes.any { it is DataMode.GrpcAws })
+            assertTrue(viewModel.availableDataModes.any { it is DataMode.GrpcDev })
+        }
+
+    // endregion
 }

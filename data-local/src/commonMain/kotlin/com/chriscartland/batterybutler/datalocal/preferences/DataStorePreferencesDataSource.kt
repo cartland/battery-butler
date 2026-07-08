@@ -16,15 +16,18 @@ class DataStorePreferencesDataSource(
     private val dataStore: DataStore<Preferences>,
 ) : PreferencesDataSource {
     private companion object {
-        val NETWORK_MODE_KEY = stringPreferencesKey("network_mode")
+        // Storage key literal deliberately left as "network_mode" (not renamed to match the
+        // DataMode rename) so existing installs keep their saved selection across the app update
+        // that ships this rename, instead of silently reverting to the default.
+        val DATA_MODE_KEY = stringPreferencesKey("network_mode")
     }
 
-    override val networkModeValue: Flow<String?> = dataStore.data
-        .map { preferences -> preferences[NETWORK_MODE_KEY] }
+    override val dataModeValue: Flow<String?> = dataStore.data
+        .map { preferences -> preferences[DATA_MODE_KEY] }
 
-    override suspend fun setNetworkModeValue(value: String) {
+    override suspend fun setDataModeValue(value: String) {
         dataStore.edit { preferences ->
-            preferences[NETWORK_MODE_KEY] = value
+            preferences[DATA_MODE_KEY] = value
         }
     }
 }

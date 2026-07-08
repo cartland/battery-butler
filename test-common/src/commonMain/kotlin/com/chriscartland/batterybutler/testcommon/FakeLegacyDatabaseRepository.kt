@@ -1,30 +1,30 @@
 package com.chriscartland.batterybutler.testcommon
 
+import com.chriscartland.batterybutler.domain.model.DataMode
 import com.chriscartland.batterybutler.domain.model.LegacyDatabaseInfo
-import com.chriscartland.batterybutler.domain.model.NetworkMode
 import com.chriscartland.batterybutler.domain.model.RestoreResult
 import com.chriscartland.batterybutler.domain.repository.LegacyDatabaseRepository
 
 /**
  * Fake implementation of [LegacyDatabaseRepository] for testing.
  *
- * Provides configurable legacy database info per network mode and
+ * Provides configurable legacy database info per data mode and
  * tracks restore calls.
  *
  * Example usage:
  * ```kotlin
  * val repo = FakeLegacyDatabaseRepository()
- * repo.legacyInfoByMode[NetworkMode.None] = LegacyDatabaseInfo("old.db", true)
- * val info = repo.getLegacyDatabaseInfo(NetworkMode.None)
+ * repo.legacyInfoByMode[DataMode.None] = LegacyDatabaseInfo("old.db", true)
+ * val info = repo.getLegacyDatabaseInfo(DataMode.None)
  * assertEquals("old.db", info?.legacyFileName)
  * ```
  */
 class FakeLegacyDatabaseRepository : LegacyDatabaseRepository {
-    /** Configurable legacy info responses, keyed by NetworkMode. */
-    val legacyInfoByMode = mutableMapOf<NetworkMode, LegacyDatabaseInfo>()
+    /** Configurable legacy info responses, keyed by DataMode. */
+    val legacyInfoByMode = mutableMapOf<DataMode, LegacyDatabaseInfo>()
 
-    /** Configurable current file name responses, keyed by NetworkMode. */
-    val fileNameByMode = mutableMapOf<NetworkMode, String>()
+    /** Configurable current file name responses, keyed by DataMode. */
+    val fileNameByMode = mutableMapOf<DataMode, String>()
 
     /** Number of times [restoreLegacyDatabase] has been called. */
     var restoreCallCount = 0
@@ -37,9 +37,9 @@ class FakeLegacyDatabaseRepository : LegacyDatabaseRepository {
     /** Result to return from [restoreLegacyDatabase]. Defaults to Success. */
     var restoreResult: RestoreResult = RestoreResult.Success
 
-    override fun getLegacyDatabaseInfo(networkMode: NetworkMode): LegacyDatabaseInfo? = legacyInfoByMode[networkMode]
+    override fun getLegacyDatabaseInfo(dataMode: DataMode): LegacyDatabaseInfo? = legacyInfoByMode[dataMode]
 
-    override fun getCurrentDatabaseFileName(networkMode: NetworkMode): String = fileNameByMode[networkMode] ?: "unknown.db"
+    override fun getCurrentDatabaseFileName(dataMode: DataMode): String = fileNameByMode[dataMode] ?: "unknown.db"
 
     override suspend fun restoreLegacyDatabase(legacyFileName: String): RestoreResult {
         restoreCallCount++

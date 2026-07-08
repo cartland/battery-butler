@@ -4,10 +4,10 @@ import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
 import com.chriscartland.batterybutler.datalocal.room.DatabaseOption
 import com.chriscartland.batterybutler.datalocal.room.DynamicDatabaseProvider
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
+import com.chriscartland.batterybutler.domain.model.DataMode
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
-import com.chriscartland.batterybutler.domain.model.NetworkMode
-import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
+import com.chriscartland.batterybutler.domain.repository.DataModeRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
@@ -43,7 +43,7 @@ class RoomLocalDataSourceTest {
             val factory = DatabaseFactory()
             val provider = DynamicDatabaseProvider(
                 factory = factory,
-                networkModeRepository = FakeNetworkModeRepo(NetworkMode.None),
+                dataModeRepository = FakeDataModeRepo(DataMode.None),
                 scope = providerScope,
             )
             val localDataSource = RoomLocalDataSource(provider)
@@ -74,13 +74,13 @@ class RoomLocalDataSourceTest {
             providerScope.cancel()
         }
 
-    private class FakeNetworkModeRepo(
-        initial: NetworkMode,
-    ) : NetworkModeRepository {
+    private class FakeDataModeRepo(
+        initial: DataMode,
+    ) : DataModeRepository {
         private val mode = MutableStateFlow(initial)
-        override val networkMode: Flow<NetworkMode> = mode
+        override val dataMode: Flow<DataMode> = mode
 
-        override suspend fun setNetworkMode(m: NetworkMode) {
+        override suspend fun setDataMode(m: DataMode) {
             mode.value = m
         }
     }

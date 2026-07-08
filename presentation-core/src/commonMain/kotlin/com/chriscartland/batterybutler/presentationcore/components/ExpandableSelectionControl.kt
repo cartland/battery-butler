@@ -137,7 +137,7 @@ fun <T> ExpandableSelectionControl(
 fun ExpandableSelectionControlPreview() {
     BatteryButlerTheme {
         ExpandableSelectionControl(
-            title = "Network Mode",
+            title = "Data Mode",
             currentSelection = "Local Server",
             options = listOf("Mock Data", "Local Server", "Production"),
             onOptionSelected = {},

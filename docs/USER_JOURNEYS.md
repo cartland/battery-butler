@@ -224,11 +224,11 @@ Use this alongside [FEATURES.md](FEATURES.md) (feature inventory) and [TESTING.m
 **Screen:** Any screen -> `Screen.Settings`
 
 1. User taps the settings icon.
-2. Settings screen shows: Network Mode selector, Export Data button, App Version.
-3. User can change network mode (Prod Server, Dev Server, gRPC Local, Mock, None/Offline).
+2. Settings screen shows: Data Mode selector, Export Data button, App Version.
+3. User can change data mode (Prod Server, Dev Server, gRPC Local, Mock, None/Offline).
 
 **Edge cases:**
-- Switching network mode triggers sync reconnection
+- Switching data mode triggers sync reconnection
 
 **Prerequisites:** J1
 
@@ -316,4 +316,4 @@ Use this alongside [FEATURES.md](FEATURES.md) (feature inventory) and [TESTING.m
 - Sync failure — error shown in snackbar, auto-retry with backoff
 - App backgrounded during sync — sync continues to completion
 
-**Prerequisites:** J1, network mode set to a server option (J12)
+**Prerequisites:** J1, data mode set to a server option (J12)

@@ -1,22 +1,22 @@
 package com.chriscartland.batterybutler.domain.model
 
 /**
- * Represents the network connectivity mode for the application.
+ * Represents which backend/data source the application reads and writes to.
  *
  * @property Mock Runs completely offline with simulated data.
  * @property GrpcLocal Connects to a locally running gRPC server (e.g., localhost).
  * @property GrpcAws Connects to the production AWS gRPC environment.
  */
-sealed interface NetworkMode {
+sealed interface DataMode {
     /**
      * Offline mock mode using static fixtures.
      */
-    data object Mock : NetworkMode
+    data object Mock : DataMode
 
     /**
-     * Network disabled. App operates locally only.
+     * No backend. App operates locally only ("Device only").
      */
-    data object None : NetworkMode
+    data object None : DataMode
 
     /**
      * Local development server mode.
@@ -24,7 +24,7 @@ sealed interface NetworkMode {
      */
     data class GrpcLocal(
         val url: String?,
-    ) : NetworkMode
+    ) : DataMode
 
     /**
      * Production AWS cloud mode.
@@ -32,7 +32,7 @@ sealed interface NetworkMode {
      */
     data class GrpcAws(
         val url: String?,
-    ) : NetworkMode
+    ) : DataMode
 
     /**
      * Dev server mode.
@@ -40,7 +40,7 @@ sealed interface NetworkMode {
      */
     data class GrpcDev(
         val url: String?,
-    ) : NetworkMode
+    ) : DataMode
 
     /**
      * Labs backend, staging channel — REST over HTTPS.
@@ -48,7 +48,7 @@ sealed interface NetworkMode {
      */
     data class LabsStaging(
         val url: String?,
-    ) : NetworkMode
+    ) : DataMode
 
     /**
      * Labs backend, production channel — REST over HTTPS.
@@ -56,5 +56,5 @@ sealed interface NetworkMode {
      */
     data class LabsProd(
         val url: String?,
-    ) : NetworkMode
+    ) : DataMode
 }

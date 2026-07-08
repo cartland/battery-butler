@@ -10,4 +10,4 @@ Run the full E2E debugging flow (Server + App + Log Monitor).
    ```
 
 2. Interact with the app:
-   The script passes ADB broadcasts to switch the network mode.
+   The script passes ADB broadcasts to switch the data mode.

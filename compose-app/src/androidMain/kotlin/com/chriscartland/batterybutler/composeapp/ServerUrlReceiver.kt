@@ -37,7 +37,7 @@ class ServerUrlReceiver : BroadcastReceiver() {
          */
 
         // Access use case through AppComponent
-        val setNetworkModeUseCase = application.appComponent.setNetworkModeUseCase
+        val setDataModeUseCase = application.appComponent.setDataModeUseCase
         // We also need the repository to get the current mode?
         // Or we just force a specific mode. If we set URL, we probably imply "AWS" logic (custom URL) or "Local"?
         // Typically explicit URL means we want to point to a specific GRPC server.
@@ -52,19 +52,19 @@ class ServerUrlReceiver : BroadcastReceiver() {
         // Previous `DelegatingGrpcClient` used `localUrl` when in `GRPC_LOCAL`.
         // `ServerUrlReceiver` was used to override `SharedServerConfig` which was read by both?
         // Actually, `ServerUrlReceiver` used to set `SharedServerConfig.setServerUrl`.
-        // `NetworkMode.GRPC_LOCAL` forced `LOCAL_GRPC_ADDRESS_ANDROID`.
+        // `DataMode.GRPC_LOCAL` forced `LOCAL_GRPC_ADDRESS_ANDROID`.
         // So `ServerUrlReceiver` was likely used for *testing* on AWS mode or overriding.
 
         // Let's launch a coroutine scope to call suspend function? BroadcastReceiver goAsync?
-        // `setNetworkMode` is suspend.
+        // `setDataMode` is suspend.
         // We can use `goAsync()` and a scope.
 
         val pendingResult = goAsync()
         // We added provideAppScope() in AppComponent, but it returns CoroutineScope.
         // We can't access it easily if it's not a property.
         // Let's use GlobalScope or construct one, or access the one from Application if available.
-        // Ideally, `setNetworkModeUseCase` shouldn't be suspend if it just updates a stateflow?
-        // `InMemoryNetworkModeRepository` sets a value on MutableStateFlow. It doesn't strictly need to be suspend,
+        // Ideally, `setDataModeUseCase` shouldn't be suspend if it just updates a stateflow?
+        // `InMemoryDataModeRepository` sets a value on MutableStateFlow. It doesn't strictly need to be suspend,
         // but the interface says so.
 
         // Let's use kotlinx.coroutines.runBlocking for simplicity in Receiver if we expect it to be fast (InMemory)?
@@ -76,9 +76,9 @@ class ServerUrlReceiver : BroadcastReceiver() {
                 Logger.d("ServerUrlReceiver") { "Updating Server URL" }
                 // If 10.0.2.2, maybe Local? But let's just use GrpcAws(url) as "Custom" for now.
                 // Or wait, if we are in Local mode, we might want to stay in Local mode but change URL?
-                // But simplified NetworkMode means the Mode CARRIES the URL.
+                // But simplified DataMode means the Mode CARRIES the URL.
                 // So we switch to a Mode that has this URL.
-                com.chriscartland.batterybutler.domain.model.NetworkMode
+                com.chriscartland.batterybutler.domain.model.DataMode
                     .GrpcAws(url)
             } else {
                 Logger.d("ServerUrlReceiver") { "Resetting Server URL to default" }
@@ -86,14 +86,14 @@ class ServerUrlReceiver : BroadcastReceiver() {
                 // We can reset to GrpcAws(DefaultUrl) or just leave it?
                 // Previous code `resetServerUrl()` cleared the override.
                 // Here, let's switch to standard AWS.
-                com.chriscartland.batterybutler.domain.model.NetworkMode.GrpcAws(
+                com.chriscartland.batterybutler.domain.model.DataMode.GrpcAws(
                     BuildConfig.PRODUCTION_SERVER_URL,
                 )
             }
 
             application.appComponent.appScope.launch {
                 try {
-                    setNetworkModeUseCase(mode)
+                    setDataModeUseCase(mode)
                 } finally {
                     pendingResult.finish()
                 }

@@ -4,7 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.chriscartland.batterybutler.ai.NoOpAiEngine
 import com.chriscartland.batterybutler.data.provider.DefaultDispatcherProvider
-import com.chriscartland.batterybutler.data.repository.DataStoreNetworkModeRepository
+import com.chriscartland.batterybutler.data.repository.DataStoreDataModeRepository
 import com.chriscartland.batterybutler.data.repository.DefaultDeviceRepository
 import com.chriscartland.batterybutler.data.repository.DefaultFeatureFlagProvider
 import com.chriscartland.batterybutler.data.repository.DefaultLegacyDatabaseRepository
@@ -30,11 +30,11 @@ import com.chriscartland.batterybutler.domain.model.ProductionServerUrl
 import com.chriscartland.batterybutler.domain.model.ai.AiEngine
 import com.chriscartland.batterybutler.domain.repository.AiPreferencesRepository
 import com.chriscartland.batterybutler.domain.repository.AuthRepository
+import com.chriscartland.batterybutler.domain.repository.DataModeRepository
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.domain.repository.FeatureFlagProvider
 import com.chriscartland.batterybutler.domain.repository.LabsAuthRepository
 import com.chriscartland.batterybutler.domain.repository.LegacyDatabaseRepository
-import com.chriscartland.batterybutler.domain.repository.NetworkModeRepository
 import com.chriscartland.batterybutler.domain.repository.NoOpLabsAuthRepository
 import com.chriscartland.batterybutler.domain.repository.RestartCoordinator
 import com.chriscartland.batterybutler.viewmodel.addbatteryevent.AddBatteryEventViewModel
@@ -117,7 +117,7 @@ abstract class NativeComponent(
 
     @Provides
     @SharedSingleton
-    fun provideNetworkModeRepository(impl: DataStoreNetworkModeRepository): NetworkModeRepository = impl
+    fun provideDataModeRepository(impl: DataStoreDataModeRepository): DataModeRepository = impl
 
     @Provides
     @SharedSingleton
@@ -143,7 +143,7 @@ abstract class NativeComponent(
     @SharedSingleton
     fun provideDevServerUrl(): DevServerUrl = DevServerUrl(BuildConfig.DEV_SERVER_URL)
 
-    // SettingsViewModel takes these (Workstream E) to offer the Labs network modes; the iOS
+    // SettingsViewModel takes these (Workstream E) to offer the Labs data modes; the iOS
     // NativeComponent must provide them just like AppComponent does, or its kotlin-inject graph
     // can't build SettingsViewModel. (#1286 added them to AppComponent but missed this component.)
     @Provides
