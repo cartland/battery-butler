@@ -39,6 +39,17 @@ import kotlin.time.ExperimentalTime
  *
  * After Google Sign-In, verifies the ID token with the server to get a
  * session token. Falls back to local-only auth if the server is unreachable.
+ *
+ * The session token's lifetime is intentionally short (24h if the server verified it,
+ * [LOCAL_TOKEN_EXPIRY_MS] -- 1h -- if only locally-verified) since it isn't itself refreshable
+ * ([refreshToken] is a stub). Instead of forcing the user through the interactive account picker
+ * every time it lapses, both [scheduleTokenExpiry] (fires in-memory) and cold start (a stored
+ * token found already expired) drive [attemptSilentRefresh]: one opportunistic, no-UI attempt via
+ * [GoogleSignInBridge.signInSilently] to confirm the same Google account is still authorized on
+ * this device, re-verified with the server exactly like an explicit sign-in. Success re-arms the
+ * next expiry with zero user interaction; failure (no silently-restorable session -- currently
+ * only Android's Credential Manager has one) falls back to the original behavior of clearing the
+ * token and dropping to [AuthState.Unauthenticated]. See `bb-auth-session-length` in TODO.md.
  */
 @OptIn(ExperimentalTime::class)
 @Inject
@@ -68,10 +79,20 @@ class DefaultAuthRepository(
         scope.launch {
             tokenStorage.storedToken.collect { storedToken ->
                 if (_authState.value is AuthState.Unknown) {
-                    val newState = storedToken?.toAuthState() ?: AuthState.Unauthenticated
-                    _authState.value = newState
-                    if (newState is AuthState.Authenticated && storedToken != null) {
-                        scheduleTokenExpiry(storedToken.expiresAtMs)
+                    if (storedToken == null) {
+                        _authState.value = AuthState.Unauthenticated
+                    } else {
+                        // Optimistic: show the believed-signed-in user immediately (same rationale
+                        // as DefaultLabsAuthRepository's persisted belief) rather than an
+                        // already-expired token forcing a signed-out flash before the silent
+                        // refresh below has even had a chance to run.
+                        _authState.value = storedToken.toAuthState()
+                        val now = Clock.System.now().toEpochMilliseconds()
+                        if (storedToken.expiresAtMs > now) {
+                            scheduleTokenExpiry(storedToken.expiresAtMs)
+                        } else {
+                            attemptSilentRefresh()
+                        }
                     }
                 }
             }
@@ -237,35 +258,51 @@ class DefaultAuthRepository(
         expiryJob?.cancel()
         val delayMs = expiresAtMs - Clock.System.now().toEpochMilliseconds()
         if (delayMs <= 0) {
-            log.i { "Token already expired, signing out" }
-            _authState.value = AuthState.Unauthenticated
+            log.i { "Token already expired, attempting silent refresh" }
+            expiryJob = scope.launch { attemptSilentRefresh() }
             return
         }
         log.d { "Scheduling token expiry in ${delayMs / 1000}s" }
         expiryJob = scope.launch {
             delay(delayMs)
-            log.i { "Session token expired" }
-            tokenStorage.clearToken()
-            _authState.value = AuthState.Unauthenticated
+            log.i { "Session token expired, attempting silent refresh" }
+            attemptSilentRefresh()
         }
     }
 
-    private fun StoredAuthToken.toAuthState(): AuthState {
-        val now = Clock.System.now().toEpochMilliseconds()
-        return if (expiresAtMs > now) {
-            AuthState.Authenticated(
-                User(
-                    id = userId,
-                    email = email,
-                    displayName = displayName,
-                    photoUrl = photoUrl,
-                ),
-            )
-        } else {
-            // Token expired
-            AuthState.Unauthenticated
+    /**
+     * One opportunistic, no-UI attempt to renew the session via [GoogleSignInBridge.signInSilently]
+     * -- succeeds only if the platform can silently confirm the same Google account is still
+     * authorized (currently just Android's Credential Manager). On success, re-verifies with the
+     * server exactly like an explicit sign-in ([verifyWithServer]), which re-arms the next
+     * [scheduleTokenExpiry] itself. On failure, falls back to the original behavior: clear the
+     * stored token and drop to [AuthState.Unauthenticated].
+     */
+    private suspend fun attemptSilentRefresh() {
+        when (val signIn = googleSignInBridge.signInSilently()) {
+            is Result.Success -> {
+                val googleToken = signIn.data
+                log.i { "Silent session refresh succeeded for ${googleToken.email}" }
+                verifyWithServer(googleToken.idToken, googleToken.email, googleToken.displayName, googleToken.photoUrl)
+            }
+
+            is Result.Error -> {
+                log.i { "Silent session refresh not available: ${signIn.error.message}" }
+                tokenStorage.clearToken()
+                _authState.value = AuthState.Unauthenticated
+            }
         }
     }
+
+    private fun StoredAuthToken.toAuthState(): AuthState =
+        AuthState.Authenticated(
+            User(
+                id = userId,
+                email = email,
+                displayName = displayName,
+                photoUrl = photoUrl,
+            ),
+        )
 
     private companion object {
         // 1 hour token expiry for local-only auth fallback

@@ -104,6 +104,19 @@ actual class GoogleSignInBridge {
         return performSignIn(clientId)
     }
 
+    actual suspend fun signInSilently(): Result<GoogleIdToken, AuthError.SignIn> {
+        val clientId = webClientId
+        if (clientId.isNullOrBlank()) {
+            return Result.Error(
+                AuthError.SignIn.Failed(
+                    message = "Google Sign-In not configured",
+                    cause = "GOOGLE_WEB_CLIENT_ID is not set in local.properties",
+                ),
+            )
+        }
+        return performSignIn(clientId, filterByAuthorizedAccounts = true)
+    }
+
     actual suspend fun signInWithClient(
         clientId: String,
         clientSecret: String?,

@@ -454,6 +454,38 @@ existing PKCE flows, a materially bigger feature than this fix. Those
 platforms rely solely on the persisted-belief UI fix; an explicit re-sign-in
 is still required there to restore a real session after a restart.
 
+### Own-Backend Silent Session Refresh (`GoogleSignInBridge.signInSilently`)
+
+`bb-auth-session-length` in TODO.md, fixed 2026-07-08. Distinct from the Labs
+sections above: this is the app's *own* gRPC-backend account
+(`DefaultAuthRepository`), whose session token isn't itself refreshable
+(`refreshToken()` is a stub) and expired after 24h (server-verified) or a
+hardcoded 1h (`LOCAL_TOKEN_EXPIRY_MS`, local-only fallback when the server was
+unreachable at sign-in) — previously always forcing the fully interactive
+account picker (`GoogleSignInBridge.signIn()`) to get back in.
+
+`GoogleSignInBridge` gained `signInSilently()` — same shape as
+`signInSilentlyWithClient` but uses the bridge's already-`initialize()`d
+default client (the own-backend account has no per-environment client the way
+Labs staging/prod do, so no client-id parameter is needed). Android reuses
+`performSignIn(clientId, filterByAuthorizedAccounts = true)`; iOS/Desktop
+always return `Result.Error` (identical reasoning to
+`signInSilentlyWithClient`).
+
+`DefaultAuthRepository.scheduleTokenExpiry` no longer clears the token
+directly when its timer fires (or immediately on a cold start with an
+already-expired stored token) — both paths now call a new
+`attemptSilentRefresh()`. On success it calls the existing `verifyWithServer`
+exactly like an explicit sign-in, which re-arms the next
+`scheduleTokenExpiry` itself (self-perpetuating: as long as Credential
+Manager keeps confirming the account, the session renews indefinitely with
+zero prompts). On failure it falls back to the original clear-token +
+`Unauthenticated` behavior — no regression for iOS/Desktop or a device with
+no cached account. `StoredAuthToken.toAuthState()` no longer checks expiry
+(always `Authenticated`) so a cold start with an expired token shows the
+believed-signed-in user immediately instead of a signed-out flash while the
+silent refresh runs — mirroring the Labs persisted-belief UX exactly.
+
 ### KMP-Friendly Class Naming Convention
 
 Enforced by `checkNamingConventions` Gradle task (in `validate.sh` and CI):

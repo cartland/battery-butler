@@ -76,6 +76,16 @@ actual class GoogleSignInBridge {
         return performSignIn(id)
     }
 
+    actual suspend fun signInSilently(): Result<GoogleIdToken, AuthError.SignIn> =
+        // iOS uses an interactive ASWebAuthenticationSession sheet with no persisted, silently
+        // restorable session -- there's nothing to check without showing UI, so this always fails.
+        Result.Error(
+            AuthError.SignIn.Failed(
+                message = "Silent sign-in not available",
+                cause = "iOS sign-in requires the interactive sheet; no session to restore silently",
+            ),
+        )
+
     actual suspend fun signInWithClient(
         clientId: String,
         clientSecret: String?,
