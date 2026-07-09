@@ -1,6 +1,7 @@
 package com.chriscartland.batterybutler.ai
 
 import android.content.Context
+import co.touchlab.kermit.Logger
 import com.chriscartland.batterybutler.domain.model.ai.AiEngine
 import com.chriscartland.batterybutler.domain.model.ai.AiMessage
 import com.chriscartland.batterybutler.domain.model.ai.AiRole
@@ -76,8 +77,18 @@ class OnDeviceAiEngine(
                     }
 
                     else -> {
-                        Unit
-                    } // AVAILABLE (or an unrecognized future status): proceed below.
+                        // AVAILABLE (or an unrecognized future status): proceed below.
+                        // Best-effort pre-initialization -- AICore has been observed throwing a
+                        // generic "INFERENCE_ERROR/UNKNOWN" on a cold first inference even when
+                        // checkStatus() reports AVAILABLE; warmup() exists specifically to load
+                        // the model into memory ahead of the real call and avoid that. Failure
+                        // here doesn't block generation: proceed regardless and let the real
+                        // generateContent() call surface whatever error it actually hits.
+                        runCatching { generativeModel.warmup() }
+                            .onFailure { e ->
+                                Logger.w("OnDeviceAiEngine") { "warmup() failed, proceeding anyway: ${e.message}" }
+                            }
+                    }
                 }
 
                 // System Prompt for Function Calling
