@@ -147,6 +147,56 @@ resource exhaustion / external cancel-workflow actions.
 issues when the run conclusion is `cancelled` and no individual job has a `failure`
 conclusion (defensive companion to the bb-2r4g close-on-success guard).
 
+**Reproduced 2026-07-08/09 with a cleaner signature.** Manually dispatching
+`gh workflow run "Battery Butler CI" --ref main -f ci_mode=release` right after
+merging a PR (to get real sentinel-job results for `release-android.sh --check`)
+collided with the *automatic* `push` event's own CI run on the exact same SHA —
+both are separate runs (not the same run being retried), and the `workflow_dispatch`
+run's `validation_ios_ui` job came back `cancelled` while the `push` run's own
+`validation_ios_ui` (dev-mode) came back `skipped` — neither ever produced a
+`success` for that job on that SHA. Concrete run IDs: dispatch `28920860024` vs
+push `28920850417`, both on SHA `7e96bd9ab6970ab1ecba2914dcab7cdfa44168cd`.
+**Workaround that reliably avoids it:** before `gh workflow run`, check
+`gh run list --workflow "Battery Butler CI" --limit 3 --json databaseId,status,headSha,event`
+for an in-progress run on the target SHA and wait for it to finish first, *then*
+dispatch — a single run on a SHA never collides with itself. Worked cleanly both
+times tried (releases android/46 and android/47).
+
+### bb-ci-issue-autoclose-devmode — `ci-failure`+`blocking` issues don't reliably auto-close under dev-mode CI
+
+**Found 2026-07-09** while trying to merge PR #1343: `validation_no_blocking_issues`
+failed, citing 2 open blocking issues (#1334, #1335) filed 2026-07-07 against a
+much older commit (`798fe1a1`). Manually verified both underlying jobs
+(`build_ios_compose`, `ci` aggregator) actually pass on a descendant commit —
+confirmed via a *release-mode* run (`28923355620`) — but the issues had stayed
+open for 2 days despite many green pushes to `main` in between.
+
+**Root cause (suspected, not fully confirmed):** `.github/ci-mode.txt` is
+`development` on normal pushes, which *skips* jobs like `build_ios_compose`
+rather than re-running them. Whatever auto-closes `ci-failure` issues (per their
+body text: "It will auto-close on the next green push-to-main CI run") likely
+keys off that specific job reporting `success` — a `skipped` conclusion on every
+routine dev-mode push never satisfies that, so a blocking issue filed against a
+job only exercised in release mode can only self-heal on another release-mode
+run, which doesn't happen automatically. (The two issues in question *did*
+eventually auto-close, apparently right around a later push — timing suggests
+PR #1344's merge triggered it, but the exact trigger condition wasn't isolated.)
+
+**Impact:** any `ci-failure`+`blocking` issue filed against a dev-mode-skipped
+job can silently pause all PR auto-merges for days with no forcing function to
+clear it, until someone happens to run release-mode CI and manually closes it
+(per the documented allowance in `.agent/AGENTS.md`) or a lucky push satisfies
+whatever the real auto-close condition is.
+
+**Investigate:** find the actual auto-close workflow/script (likely near
+`ci-post-merge-issue.yml` / `scripts/file-ci-failure-issue.sh`) and confirm
+whether it requires the specific originally-failed job to report `success`, or
+whether it's keyed off the `ci` aggregator alone (which — per this incident —
+also didn't trigger it on routine dev-mode pushes). Fix: either have it accept
+`skipped` as "not currently failing" for jobs the current `ci-mode` doesn't run,
+or have it periodically re-check against the latest release-mode run instead of
+only reacting to push events.
+
 ### bb-labs-signout-clear — Clear local Labs data on sign-out, resync on sign-in — DONE 2026-07-06 (structural fix, `SignOutLabsUseCase`/`SignInToLabsUseCase`)
 
 **User report**: "when I am signed out and change network, [both Labs environments] show data" — read as an isolation regression, but investigation showed the per-environment file isolation (bb PR #1324) was working correctly; the actual gap was that the Devices/Types/History tabs read local Room data with zero awareness of Labs auth state (by original offline-first design) and nothing had ever cleared local data on sign-out, so a previously-synced environment's cached devices stayed visible indefinitely after signing out.
@@ -275,6 +325,29 @@ The cloud AI engine migrated from the deprecated `com.google.ai.client.generativ
 launches fine but the cloud AI chat reports unavailable. To enable it: create a Firebase project
 with the **Gemini Developer API** enabled and add its real `google-services.json` (package
 `com.chriscartland.batterybutler`). The on-device mlkit engine is unaffected.
+
+### bb-ondevice-ai-warmup-verify — Confirm `warmup()` actually fixes the on-device AI `INFERENCE_ERROR` on real hardware
+
+**Context 2026-07-09.** User reported (real device, not emulator — AICore isn't
+emulator-supported) hitting `On-Device AI Error: [ErrorCode 0] AICore failed
+with error type 2-INFERENCE_ERROR and error code 0-UNKNOWN: Inference failed.`
+even after PR #1338 added a `checkStatus()` gate. Confirmed via the exact
+error text (identical to the pre-#1338 raw message, not the new "not
+supported"/"needs to download" messages) that `checkStatus()` was reporting
+`AVAILABLE` — the status gate wasn't the gap. PR #1344 added a best-effort
+`generativeModel.warmup()` call (verified to exist in the actual SDK jar)
+right before `generateContent()`, on the theory that AICore can throw a
+generic inference error on a cold first call even when status says ready.
+
+**Not verified end-to-end** — no access to a real AICore-capable device in
+this session (shipped in android/47 on the strength of the SDK's documented
+`warmup()` purpose + full local `validate.sh`, not a live repro). **Next
+step:** ask the user to retest on-device AI after updating to android/47 (or
+later) and report back whether the same `INFERENCE_ERROR` recurs. If it does,
+`warmup()` alone isn't sufficient — look at device-specific AICore app
+version/updates, available storage, or whether this is a known upstream
+`com.google.mlkit:genai-prompt:1.0.0-beta1` issue (still beta as of this
+writing) worth filing with Google or pinning a different version for.
 
 ### bb-j6td — Remove misleading `GITHUB_TOKEN` fallback in `ci-trigger-auto-prs.yml`
 
