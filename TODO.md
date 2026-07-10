@@ -187,6 +187,60 @@ conclusion (defensive companion to the bb-2r4g close-on-success guard).
 
 ## P3
 
+### bb-anim-ios-record-flight — SwiftUI parity for the record-replacement flight animation
+
+The Compose Device Detail screen animates a newly recorded battery event flying
+from the "Record replacement" button into its spot in the history list, with the
+list auto-scrolling to keep the landing visible (`presentation-feature/.../devicedetail/RecordReplacementFlight.kt`
++ `DeviceDetailContent.kt`). The native SwiftUI `DeviceDetailScreen.swift` has no
+equivalent. SwiftUI building blocks: `matchedGeometryEffect` for the button→row
+morph, `ScrollViewReader.scrollTo` for the scroll, `withAnimation`/`transition`
+for the list insertion. Tracked in `docs/UI_SCREENS_MAPPING.md` gap table.
+
+### bb-anim-ideas — Animation backlog: motion polish across the app
+
+Breadth survey done 2026-07-09 (deep dive landed as the record-replacement
+flight above). The app is otherwise almost motion-free — only the sync-status
+fade (`HomeScreenContent.kt`), the AI chat panel height (`MainScreen.kt`), and a
+chevron rotation (`ExpandableSelectionControl.kt`). Candidate animations, roughly
+ordered by payoff/effort:
+
+- [ ] **`Modifier.animateItem()` on the three tab lists** — Home
+  (`HomeScreenContent.kt:351`), Types (`DeviceTypeListContent.kt:165`), History
+  (`HistoryListContent.kt:102`). All already use stable `key = { it.id }`, so
+  insert/remove fades and — the big one — items gliding to their new positions
+  when sort/group options change are nearly free. Do this one first.
+- [ ] **Animated sort/group transitions** — pairs with the above: when
+  `sortOption`/`isSortAscending` changes, rows glide instead of snapping.
+  Also rotate the sort-direction arrow icon (Home/Types filter rows).
+- [ ] **Staggered first-load entrance** — items fade+slide up with a small
+  per-index delay on first composition of a tab list. Guard so it runs once per
+  screen entry, not on every recomposition.
+- [ ] **AI chat message entrance + typing indicator** — new chat bubbles slide
+  in (`AiTabContent.kt`); replace the static "thinking" state with a pulsing
+  three-dot indicator.
+- [ ] **Battery icon fill on record** — after a replacement is recorded, animate
+  the `BatteryFull` icon on the new row (or the stat card) filling from empty —
+  reinforces "fresh battery".
+- [ ] **Shared-element list→detail transition** — device card icon/name morphs
+  into the Device Detail header (`SharedTransitionLayout` + NavDisplay).
+  Highest wow, highest risk; prototype behind a small scope first.
+- [ ] **Pull-to-refresh custom indicator** — replace the stock spinner with a
+  battery outline that fills while refreshing (`PullToRefreshBox` custom
+  `indicator` slot; Home/Types/History).
+- [ ] **Press-scale micro-interaction as a shared modifier** — extract the
+  record button's press-scale (added with the flight PR) into a
+  `Modifier.pressScale()` helper in `presentation-core` and apply to list cards
+  and primary buttons app-wide.
+- [ ] **Bottom-nav selection indicator** — animate the active-tab pill/icon
+  (scale or sliding indicator) in `MainScreenShell`'s NavigationBar.
+- [ ] **Count-up stats** — Device Detail stat cards and "N days" labels animate
+  from 0/previous value on first show (`animateIntAsState`).
+- [ ] **Empty-state breathing** — idle scale/opacity loop on `EmptyStateContent`
+  illustrations; must respect reduced-motion once a platform signal is available.
+- [ ] **iOS parity decision per item** — each shipped Compose animation should
+  get a row in `docs/UI_SCREENS_MAPPING.md` (see bb-anim-ios-record-flight).
+
 ### bb-uxsync — Re-sync iOS palette + design doc to the revamped Android theme
 
 The Android theme (`presentation-core/.../theme/Color.kt` + `Theme.kt`) was overhauled:
