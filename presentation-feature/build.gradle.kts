@@ -43,6 +43,13 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.uiTooling)
         }
+
+        jvmTest.dependencies {
+            implementation(libs.kotlin.test)
+            @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+            implementation(compose.uiTest)
+            implementation(compose.desktop.currentOs)
+        }
     }
 
     sourceSets.all {

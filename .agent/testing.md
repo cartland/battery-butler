@@ -42,6 +42,42 @@ Test types, coverage enforcement, and testing patterns for Battery Butler.
   - **Pattern A** (safeStateIn): Throwing repo flow → verify `safeStateIn` catches exception but UI stays stuck at initial value (e.g., `Loading`). Tests pass, documenting the broken UX.
   - **Pattern B** (viewModelScope.launch): Can't use `assertFailsWith` because `SupervisorJob` sends exceptions to the thread's uncaught handler asynchronously (not through `advanceUntilIdle()`). `runTest` catches these and fails. Use **intercepting repo** pattern instead: record exception without rethrowing, then assert no error state exists on the ViewModel.
 
+## Headless Compose UI Tests (jvmTest, no emulator)
+
+Introduced with the record-replacement flight animation (PR #1347,
+`presentation-feature/src/jvmTest/.../RecordReplacementFlightUiTest.kt`). Desktop
+Compose UI tests run **headless** under plain `./gradlew :<module>:jvmTest` — real
+composition, layout, semantics, and animation frames, no emulator or window. Use
+them to verify interactive/animated Compose behavior that screenshot tests (static)
+and instrumented tests (slow, emulator-bound) can't cover cheaply.
+
+Setup (see `presentation-feature/build.gradle.kts`):
+
+```kotlin
+jvmTest.dependencies {
+    implementation(libs.kotlin.test)
+    @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+    implementation(compose.uiTest)
+    implementation(compose.desktop.currentOs)
+}
+```
+
+Patterns and gotchas:
+
+- Use `runComposeUiTest { ... }` (`@OptIn(ExperimentalTestApi::class)`) with
+  `mainClock.autoAdvance = false` + `mainClock.advanceTimeBy(ms)` to drive
+  animations deterministically. Coroutine `delay()`s inside `LaunchedEffect` are
+  virtualized by the same clock.
+- **String resources are NOT findable as text** in headless jvmTest —
+  `onNodeWithText("Record Replacement")` fails for a `composeStringResource(...)`
+  label even though data-driven strings (e.g. a device name) resolve fine. Find
+  resource-labeled nodes by `Modifier.testTag(...)` instead (tags live in an
+  internal `*TestTags` object next to the composable, e.g. `RecordFlightTestTags`).
+- `assertDoesNotExist()` is a member of `SemanticsNodeInteraction` — don't import it.
+- Semantics exist even at `graphicsLayer` alpha 0, so "hidden" can't be asserted
+  via `assertDoesNotExist` — assert on the mechanism (e.g. a ghost overlay's tag
+  appearing/disappearing) plus pure unit tests of the state machine's alpha logic.
+
 ## Instrumented Tests (`scripts/test.sh`)
 
 - Require an Android emulator (CI uses managed Pixel 5 API 34 with KVM)

@@ -55,6 +55,7 @@ The following table tracks specific feature gaps between the Compose Multiplatfo
 | Settings: check for updates | Yes | Yes | PR #984 |
 | AI Chat | Split-screen overlay | Full-screen (toolbar) | Design decision (bb-ke1y closed) |
 | Nav animations | Yes | N/A | Platform-specific (iOS uses native UIKit transitions) |
+| Device Detail: record-replacement flight animation | Yes | No | bb-anim-ios-record-flight |
 
 ## Detailed Breakdown & Unique Characteristics
 
