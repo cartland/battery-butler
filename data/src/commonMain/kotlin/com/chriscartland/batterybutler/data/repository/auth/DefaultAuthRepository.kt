@@ -130,7 +130,13 @@ class DefaultAuthRepository(
                 val googleToken = result.data
                 log.i { "Google Sign-In successful for ${googleToken.email}" }
 
-                verifyWithServer(googleToken.idToken, googleToken.email, googleToken.displayName, googleToken.photoUrl)
+                verifyWithServer(
+                    googleToken.idToken,
+                    googleToken.email,
+                    googleToken.displayName,
+                    googleToken.photoUrl,
+                    isExplicitAttempt = true,
+                )
             }
 
             is Result.Error -> {
@@ -163,12 +169,22 @@ class DefaultAuthRepository(
     /**
      * Verify the Google ID token with the server to get a session token.
      * Falls back to local-only auth if the server is unreachable.
+     *
+     * @param isExplicitAttempt True when called from a user-initiated [signInWithGoogle], false
+     *   when called from the background [attemptSilentRefresh]. A server-rejected token only drops
+     *   to [AuthState.Failed] (which [LoginContent] auto-shows as an error dialog) for an explicit
+     *   attempt the user is actively waiting on -- a background attempt fails quietly to
+     *   [AuthState.Unauthenticated] instead, matching how a failed [GoogleSignInBridge.signInSilently]
+     *   call is already handled in [attemptSilentRefresh]. Otherwise a routine background refresh
+     *   cycle could leave the user with an unprompted error dialog whose only action opens the
+     *   interactive picker. See `bb-silent-reauth-cooldown` in TODO.md.
      */
     private suspend fun verifyWithServer(
         idToken: String,
         email: String?,
         displayName: String?,
         photoUrl: String?,
+        isExplicitAttempt: Boolean,
     ): Result<User, AuthError> {
         // Check data mode first
         val currentMode = dataModeRepository.dataMode.first()
@@ -209,7 +225,12 @@ class DefaultAuthRepository(
                     message = "Server rejected token",
                     cause = response.error_message,
                 )
-                _authState.value = AuthState.Failed(error)
+                if (!isExplicitAttempt) {
+                    // Background silent-refresh: drop the stale token quietly instead of leaving
+                    // it around for a state that no longer reflects it.
+                    tokenStorage.clearToken()
+                }
+                _authState.value = authStateForServerRejection(isExplicitAttempt, error)
                 Result.Error(error)
             }
         } catch (e: CancellationException) {
@@ -283,7 +304,13 @@ class DefaultAuthRepository(
             is Result.Success -> {
                 val googleToken = signIn.data
                 log.i { "Silent session refresh succeeded for ${googleToken.email}" }
-                verifyWithServer(googleToken.idToken, googleToken.email, googleToken.displayName, googleToken.photoUrl)
+                verifyWithServer(
+                    googleToken.idToken,
+                    googleToken.email,
+                    googleToken.displayName,
+                    googleToken.photoUrl,
+                    isExplicitAttempt = false,
+                )
             }
 
             is Result.Error -> {

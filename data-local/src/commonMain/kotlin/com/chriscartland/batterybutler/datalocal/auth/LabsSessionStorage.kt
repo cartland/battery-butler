@@ -25,4 +25,13 @@ interface LabsSessionStorage {
 
     /** Clears the believed-signed-in user for [environmentKey]. */
     suspend fun clearUser(environmentKey: String)
+
+    /** Epoch-ms of the last opportunistic silent re-auth attempt for [environmentKey], or null if never attempted. */
+    suspend fun getLastSilentReauthAttemptMs(environmentKey: String): Long?
+
+    /** Records that a silent re-auth attempt was made for [environmentKey] at [atMs]. */
+    suspend fun recordSilentReauthAttempt(
+        environmentKey: String,
+        atMs: Long,
+    )
 }
