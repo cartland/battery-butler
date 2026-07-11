@@ -599,6 +599,58 @@ Related: bb-k4sk (Kotlin/SKIE version coupling), `.agent/ios.md` (Option A patte
 
 ## Done
 
+### bb-silent-reauth-cooldown — Google Sign-In dialog appeared frequently on app resume — DONE 2026-07-11
+
+User-reported: "the Android app frequently has the Google sign-in dialog appear when I return to
+the app after some time." The app defaults to Labs mode (`LoginViewModel.kt`), so
+`DefaultLabsAuthRepository` is the relevant path for almost every user, not the own-backend
+`DefaultAuthRepository` (gated behind the disabled-by-default `LEGACY_DATA_MODES` flag).
+
+**Root cause**: `DefaultLabsAuthRepository`'s `init` block calls `attemptSilentReauth()` once per
+process (re)start, right after resolving the persisted "believed signed in" belief
+(`bb-labs-silent-reauth`, done 2026-07-07). Since the repository is a DI singleton, it's recreated
+fresh — and `attemptSilentReauth()` fires again — every time Android kills the backgrounded process
+and the user reopens the app, which happens often. That call
+(`GoogleSignInBridge.signInSilentlyWithClient`) was assumed to be headless because it passes
+`filterByAuthorizedAccounts(true)`, but on Android it uses the *exact same* Credential Manager
+`getCredential()` call as the interactive picker — that flag narrows candidates, it doesn't
+guarantee zero UI. With multiple Google accounts on-device, or Play Services deciding a credential
+needs re-confirmation, the "silent" call can still surface a chooser/bottom-sheet, landing right
+when the user reopens the app. The original fix's doc comment ("no UI") was based on a single-account
+emulator test, not a real API guarantee.
+
+**Fix** (`data/.../repository/auth/SilentAuthRecoveryPolicy.kt`, new file):
+1. `SilentReauthCooldown.shouldAttempt(lastAttemptAtMs, nowMs)` — pure, unit-tested gate with a
+   6-hour cooldown. `DefaultLabsAuthRepository.attemptSilentReauth()` now checks a persisted
+   per-environment `LabsSessionStorage.getLastSilentReauthAttemptMs()` (new DataStore-backed key,
+   `DataStoreLabsSessionStorage`) before attempting, and records the attempt before calling
+   `signInSilentlyWithClient`. Safe to skip: both callers already tolerate the pre-existing session
+   staying unrestored until the next attempt or an explicit sign-in (background sync just keeps
+   failing quietly, exactly as documented for the original best-effort design).
+2. Secondary, own-backend defensive fix: `DefaultAuthRepository.verifyWithServer` gained an
+   `isExplicitAttempt` param. Previously, if a *background* `attemptSilentRefresh()` succeeded at the
+   Credential Manager step but the **server** rejected the token, `_authState` unconditionally
+   dropped to `AuthState.Failed` — which `LoginContent.kt` auto-shows as an `ErrorDialog` with
+   "Try Again" wired straight to the interactive `onGoogleSignIn`. A background-triggered rejection
+   now falls back to `AuthState.Unauthenticated` quietly instead, matching how a failed
+   `signInSilently()` call was already handled. Extracted as pure `authStateForServerRejection()`
+   for direct unit testing (`SilentAuthRecoveryPolicyTest.kt`, 8 tests total across both helpers).
+   This path is gated behind `LEGACY_DATA_MODES` (off by default) so it's a smaller-blast-radius fix
+   than the Labs one, but the bug was real regardless of reachability.
+
+**Deferred**: did not add the same cooldown to `DefaultAuthRepository`'s cold-start
+`attemptSilentRefresh()` call (when a stored token is found already-expired at process restart) —
+that method is also called from the natural `scheduleTokenExpiry()` timer within a single process
+life, and a uniform cooldown longer than `LOCAL_TOKEN_EXPIRY_MS` (1h) would incorrectly suppress
+that legitimate self-perpetuating refresh loop. Would need a cooldown scoped only to the cold-start
+call site, not inside the shared `attemptSilentRefresh()` — skipped since this path is unreachable
+for a default-config user (`LEGACY_DATA_MODES` off). Revisit if `DefaultAuthRepository` is ever used
+by more than test/legacy configurations.
+
+**Both repositories remain exempt from direct unit tests** (`GoogleSignInBridge` expect class,
+unfakeable — see `test-coverage-exemptions.txt`); the new decision logic was extracted into pure,
+directly-testable functions instead of relying on integration coverage.
+
 ### bb-labs-mode-auth-state — Labs Sign-In showed a stale account after switching DataMode — DONE 2026-07-05 (structural fix, `DataModeKeyedState`)
 Found while auditing whether the app isolates credentials correctly across Labs staging/prod.
 Confirmed live on-device: sign in to Labs Prod, switch Data Mode to Labs Staging — Settings

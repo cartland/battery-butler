@@ -446,7 +446,24 @@ nor `labsSessionStorage` — the UI keeps showing the believed-signed-in state
 regardless, matching the exact tolerance the persisted-belief fix already
 established ("I don't actually care about expired auth"). Verified on a real
 emulator: sign in, force-stop, relaunch → logcat shows `"Silent Labs re-auth
-succeeded; real session re-established"` with zero UI/dialog shown.
+succeeded; real session re-established"` with zero UI/dialog shown on that
+particular single-account run.
+
+**Correction (`bb-silent-reauth-cooldown`, 2026-07-11)**: "zero UI/dialog
+shown" above is **not a guarantee** — it was one emulator observation, not a
+property of the underlying API. On Android, `signInSilentlyWithClient` uses
+the *same* Credential Manager `getCredential()` call as the interactive
+picker; `filterByAuthorizedAccounts(true)` narrows candidates, it doesn't
+suppress UI. With multiple on-device Google accounts, or Play Services
+deciding a credential needs re-confirmation, this call can still show a
+chooser/bottom-sheet — and because this repository is a DI singleton
+recreated fresh (re-running `attemptSilentReauth()`) on every process
+restart, a user who frequently has the app killed and reopened saw that OS
+dialog frequently. Fixed by throttling attempts with a 6h cooldown
+(`SilentReauthCooldown`, persisted per-environment via
+`LabsSessionStorage.getLastSilentReauthAttemptMs`/`recordSilentReauthAttempt`)
+— see the `bb-silent-reauth-cooldown` entry in TODO.md's Done section for the
+full writeup, including the analogous `DefaultAuthRepository` fix below.
 
 **Deferred**: iOS/Desktop still have no silent-restore path — would require
 adopting a native Sign-In SDK or building refresh-token persistence for their
@@ -485,6 +502,19 @@ no cached account. `StoredAuthToken.toAuthState()` no longer checks expiry
 (always `Authenticated`) so a cold start with an expired token shows the
 believed-signed-in user immediately instead of a signed-out flash while the
 silent refresh runs — mirroring the Labs persisted-belief UX exactly.
+
+**Follow-up (`bb-silent-reauth-cooldown`, 2026-07-11)**: a background
+`attemptSilentRefresh()` that reached `verifyWithServer` but got rejected by
+the *server* (not the local Credential Manager step) used to unconditionally
+drop `_authState` to `AuthState.Failed`, which `LoginContent.kt` auto-shows as
+an `ErrorDialog` with "Try Again" wired to the interactive `signIn()` — i.e. a
+background attempt could leave an unprompted dialog waiting the next time the
+user opened the app. `verifyWithServer` now takes `isExplicitAttempt`; a
+background-triggered server rejection falls back to `AuthState.Unauthenticated`
+quietly instead, matching how a failed `signInSilently()` call was already
+handled. This path is gated behind the disabled-by-default `LEGACY_DATA_MODES`
+flag, so lower real-world impact than the Labs fix above, but the same class
+of bug. See TODO.md's `bb-silent-reauth-cooldown` Done entry.
 
 ### KMP-Friendly Class Naming Convention
 
