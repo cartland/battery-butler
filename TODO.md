@@ -599,6 +599,84 @@ Related: bb-k4sk (Kotlin/SKIE version coupling), `.agent/ios.md` (Option A patte
 
 ## Done
 
+### bb-labs-refresh-token-persistence — Google Sign-In dialog still appeared on 1.0.0-49 after `bb-silent-reauth-cooldown` — DONE 2026-07-18
+
+User-reported (1.0.0-49, the release containing `bb-silent-reauth-cooldown`): the Google Sign-In
+dialog still appeared when returning to the app "later in the day." Root cause: the 6h cooldown
+added by `bb-silent-reauth-cooldown` only *throttled* `attemptSilentReauth()`'s use of
+`GoogleSignInBridge.signInSilentlyWithClient` (Android Credential Manager's `getCredential()` call,
+never guaranteed headless) — a normal "open app in the morning, come back in the evening" gap
+exceeds 6h, so the cooldown had already elapsed and the same UI-risky call fired again. Throttling
+treated the symptom (frequency); it never removed the OS-UI risk itself.
+
+**Redesign**: separate *obtaining* a Google identity assertion (interactive, OS-owned, UI is
+expected — only [`signInToLabs`]) from *maintaining* a session (must never risk OS UI). The Labs
+path already had a real, working, non-interactive renewal mechanism —
+`FirebaseIdTokenProvider`'s Firebase refresh token, refreshed via a plain `securetoken.googleapis
+.com` REST call — it was just held in-memory only (`FirebaseIdTokenProvider.session`) and lost on
+every process death, which is *why* the app fell back to Credential Manager on every cold start.
+
+**Fix**:
+1. New `domain.repository.LabsRefreshTokenPersistence` port (thin key-value store, one per Labs
+   environment) — defined in `domain` (not `data-local`) so `data-network`'s
+   `DefaultLabsAuthGateway` can depend on it without a new inter-module edge; implemented by
+   `data-local`'s `DataStoreLabsRefreshTokenPersistence` (DataStore-backed, same shared store as
+   `DataStoreLabsSessionStorage`, new key prefix).
+2. `FirebaseIdTokenProvider` gained `restoreSession(refreshToken)` and `currentRefreshToken()`.
+   `restoreSession` classifies failures: HTTP 4xx (`RefreshOutcome.Invalid`) means the refresh
+   token was actually rejected — authoritative, maps to `AuthError.Token.Invalid`; anything else
+   (network exception, 5xx) is `RefreshOutcome.Transient`, maps to `AuthError.SignIn.NetworkError`
+   and should **not** be treated as a sign-out.
+3. `LabsAuthGateway` gained `restoreSession(): Result<Unit, AuthError>` (no-arg — the gateway owns
+   reading/writing the persisted token itself). `DefaultLabsAuthGateway` write-through persists the
+   refresh token on sign-in success and on `restoreSession` success, and clears it on `Token.Invalid`
+   or explicit `signOutLabs()`.
+4. `DefaultLabsAuthRepository.attemptSilentReauth()` → `restoreLabsSession(key)`: calls
+   `labsAuthGateway.restoreSession()` (pure network call now, so **no cooldown needed** — safe on
+   every process start). Only `AuthError.Token.Invalid` clears the believed-signed-in belief and
+   flips to `Unauthenticated`; a transient error is left alone exactly like the old best-effort
+   design (background sync keeps failing quietly until the next attempt or an explicit sign-in).
+5. Removed the now-dead `SilentReauthCooldown` (`SilentAuthRecoveryPolicy.kt`) and its
+   `LabsSessionStorage.getLastSilentReauthAttemptMs`/`recordSilentReauthAttempt` backing fields.
+
+**Side effect**: this also fixes iOS/Desktop's Labs silent-restore gap noted as a "materially bigger
+feature" deferral in `bb-labs-silent-reauth` — `FirebaseIdTokenProvider` is `commonMain` and
+platform-agnostic, unrelated to `GoogleSignInBridge`'s platform-specific silent methods (which stay
+interactive-only on iOS/Desktop). Persisting its refresh token benefits all three platforms; they no
+longer need a full interactive OAuth sheet/browser after every process restart for Labs mode.
+
+**Deliberate design choice — client-held refresh token, not a server-mediated session**: the
+refresh token is persisted on-device (DataStore), matching RFC 8252 ("OAuth 2.0 for Native Apps")
+and exactly how the official Firebase Auth SDK behaves internally. This is the standard pattern for
+native/mobile OAuth clients (unlike browser-based confidential clients, the OS gives real secure
+storage). The tradeoff vs. a server-mediated session: revocation propagates on the *next* refresh
+attempt, not instantly. A backend-mediated session (this repo's own gRPC server holding the token,
+issuing a short-lived session cookie to the client) would give instant revocation but requires a
+backend in the loop for every renewal — not available here: the Labs backend is external/third-party
+(can't add endpoints to it), and this repo's own gRPC server is legacy, off by default
+(`LEGACY_DATA_MODES`), and hibernated on AWS per `.agent/server.md`. Scoped out as a separate,
+much larger project if ever revisited.
+
+**Deferred / accepted scope limits**:
+- Own-backend path (`DefaultAuthRepository`, legacy, `LEGACY_DATA_MODES` off by default) untouched.
+  It has no server-side infra for this pattern at all: session token is a random UUID in an
+  in-memory `ConcurrentHashMap` (`AuthService.kt`, wiped on server restart), fixed 24h expiry, no
+  `RefreshToken`/`SignOut` RPC in the proto, and `signOut()` never notifies the server (the token
+  stays valid until natural expiry even after "sign out"). Fixing this needs a persisted session
+  store and two new RPCs — a real follow-up project, not done here since the path is off by default.
+- `GoogleSignInBridge.signInSilentlyWithClient` is now unused (only `DefaultLabsAuthRepository`
+  called it), but left in the interface + all three platform actuals rather than removed — a
+  same-shaped method (`signInSilently()`, own-backend) is still used, and removing an expect/actual
+  method across Android/iOS/Desktop is a separate, higher-risk cleanup not bundled with this fix.
+- `FirebaseIdTokenProvider.currentRefreshToken()` is re-persisted after `signInWithGoogle` and
+  `restoreSession`, but *not* after an in-session `getIdToken()` refresh (which also updates
+  `session.refreshToken` if Firebase ever rotates it). Google's classic OAuth2 token endpoint
+  typically doesn't rotate refresh tokens on `securetoken.googleapis.com` (the pre-existing
+  `body.refreshToken.ifBlank { refreshToken }` fallback is defensive, not confirmed rotation
+  behavior); if it ever does, a persisted-but-now-stale refresh token would only be discovered the
+  *next* time `restoreSession` runs (transient failure, not incorrectly treated as revocation,
+  since only HTTP 4xx maps to `Invalid`) — degrades gracefully, not a correctness bug.
+
 ### bb-silent-reauth-cooldown — Google Sign-In dialog appeared frequently on app resume — DONE 2026-07-11
 
 User-reported: "the Android app frequently has the Google sign-in dialog appear when I return to

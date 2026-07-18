@@ -13,6 +13,7 @@ import com.chriscartland.batterybutler.datalocal.LocalDataSource
 import com.chriscartland.batterybutler.datalocal.RoomLocalDataSource
 import com.chriscartland.batterybutler.datalocal.auth.AuthTokenStorage
 import com.chriscartland.batterybutler.datalocal.auth.DataStoreAuthTokenStorage
+import com.chriscartland.batterybutler.datalocal.auth.DataStoreLabsRefreshTokenPersistence
 import com.chriscartland.batterybutler.datalocal.auth.DataStoreLabsSessionStorage
 import com.chriscartland.batterybutler.datalocal.auth.LabsSessionStorage
 import com.chriscartland.batterybutler.datalocal.preferences.DataStoreFactory
@@ -29,6 +30,7 @@ import com.chriscartland.batterybutler.domain.model.DispatcherProvider
 import com.chriscartland.batterybutler.domain.repository.AuthRepository
 import com.chriscartland.batterybutler.domain.repository.DataModeRepository
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
+import com.chriscartland.batterybutler.domain.repository.LabsRefreshTokenPersistence
 import com.chriscartland.batterybutler.domain.repository.LegacyDatabaseRepository
 import com.chriscartland.batterybutler.proto.AuthServiceClient
 import com.chriscartland.batterybutler.proto.GrpcAuthServiceClient
@@ -93,6 +95,9 @@ interface DataComponent {
 
     @Provides
     fun provideLabsSessionStorage(storage: DataStoreLabsSessionStorage): LabsSessionStorage = storage
+
+    @Provides
+    fun provideLabsRefreshTokenPersistence(storage: DataStoreLabsRefreshTokenPersistence): LabsRefreshTokenPersistence = storage
 
     @Provides
     fun provideAuthRepository(repo: DefaultAuthRepository): AuthRepository = repo

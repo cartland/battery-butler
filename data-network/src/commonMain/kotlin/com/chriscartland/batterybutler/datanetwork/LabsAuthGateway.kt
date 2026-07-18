@@ -17,7 +17,10 @@ import com.chriscartland.batterybutler.domain.model.Result
  *  - [getLabsIdToken] — the `Authorization: Bearer` source for [com.chriscartland.batterybutler
  *    .datanetwork.rest.RestRemoteDataSource]; `null` until sign-in (or when unconfigured),
  *    refreshed silently afterwards.
- *  - [signOutLabs] — clears the session.
+ *  - [restoreSession] — rebuild a session from a *persisted* refresh token (e.g. right after
+ *    process start), with no Google/Credential Manager involvement. See
+ *    `bb-labs-refresh-token-persistence` in TODO.md.
+ *  - [signOutLabs] — clears the session (in-memory and persisted).
  *
  * Why a gateway rather than letting [DelegatingRemoteDataSource] hold the provider: the session
  * holder must be the singleton. [DelegatingRemoteDataSource] is unscoped, so the shared session
@@ -30,4 +33,15 @@ interface LabsAuthGateway {
     suspend fun getLabsIdToken(): String?
 
     suspend fun signOutLabs()
+
+    /**
+     * Restore a session for the currently-selected Labs environment from its persisted refresh
+     * token, via a plain network call — no Google/Credential Manager involvement, so (unlike
+     * [com.chriscartland.batterybutler.datanetwork.auth.GoogleSignInBridge]'s silent methods) this
+     * carries no OS-UI risk and is safe to call on every process start. [AuthError.Token.Invalid]
+     * means the refresh token was actually rejected (an authoritative "signed out" signal); other
+     * errors (no persisted token, network unreachable, unconfigured) are transient/expected and
+     * should be left alone rather than treated as a sign-out.
+     */
+    suspend fun restoreSession(): Result<Unit, AuthError>
 }

@@ -10,6 +10,7 @@ import com.chriscartland.batterybutler.data.repository.SyncManager
 import com.chriscartland.batterybutler.data.repository.auth.DefaultAuthRepository
 import com.chriscartland.batterybutler.datalocal.auth.AuthTokenStorage
 import com.chriscartland.batterybutler.datalocal.auth.DataStoreAuthTokenStorage
+import com.chriscartland.batterybutler.datalocal.auth.DataStoreLabsRefreshTokenPersistence
 import com.chriscartland.batterybutler.datalocal.auth.DataStoreLabsSessionStorage
 import com.chriscartland.batterybutler.datalocal.auth.LabsSessionStorage
 import com.chriscartland.batterybutler.datalocal.preferences.DataStorePreferencesDataSource
@@ -20,6 +21,7 @@ import com.chriscartland.batterybutler.datanetwork.RemoteDataSource
 import com.chriscartland.batterybutler.domain.repository.AuthRepository
 import com.chriscartland.batterybutler.domain.repository.DataModeRepository
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
+import com.chriscartland.batterybutler.domain.repository.LabsRefreshTokenPersistence
 import me.tatarka.inject.annotations.Provides
 
 interface AppDataModule : DataComponent {
@@ -58,6 +60,10 @@ interface AppDataModule : DataComponent {
     @Provides
     @Singleton
     override fun provideLabsSessionStorage(storage: DataStoreLabsSessionStorage): LabsSessionStorage = super.provideLabsSessionStorage(storage)
+
+    @Provides
+    @Singleton
+    override fun provideLabsRefreshTokenPersistence(storage: DataStoreLabsRefreshTokenPersistence): LabsRefreshTokenPersistence = super.provideLabsRefreshTokenPersistence(storage)
 
     @Provides
     @Singleton

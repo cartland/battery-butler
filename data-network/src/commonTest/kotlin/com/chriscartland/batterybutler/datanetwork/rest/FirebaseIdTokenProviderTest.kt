@@ -130,6 +130,98 @@ class FirebaseIdTokenProviderTest {
             assertNull(provider.getIdToken())
         }
 
+    @Test
+    fun `currentRefreshToken is null before sign-in and reflects the session afterward`() =
+        runTest {
+            val provider = provider { respondJson(SIGN_IN_JSON) }
+            assertNull(provider.currentRefreshToken())
+
+            assertIs<Result.Success<Unit>>(provider.signInWithGoogle("google-tok"))
+
+            assertEquals("refresh-1", provider.currentRefreshToken())
+        }
+
+    @Test
+    fun `restoreSession rebuilds a session from a persisted refresh token with no interactive call`() =
+        runTest {
+            var seenPath: String? = null
+            var seenBody: String? = null
+            val provider = provider { request ->
+                seenPath = request.url.encodedPath
+                seenBody = (request.body as? io.ktor.http.content.TextContent)?.text
+                respondJson(REFRESH_JSON)
+            }
+
+            val result = provider.restoreSession("persisted-refresh-token")
+
+            assertIs<Result.Success<Unit>>(result)
+            assertTrue(seenPath?.endsWith("/v1/token") == true)
+            assertTrue(seenBody?.contains("persisted-refresh-token") == true)
+            assertEquals("labs-id-2", provider.getIdToken())
+            assertEquals("refresh-2", provider.currentRefreshToken())
+        }
+
+    @Test
+    fun `restoreSession maps an HTTP 400 to an authoritative Token Invalid error`() =
+        runTest {
+            val provider = provider {
+                respond(
+                    content = """{"error":{"message":"INVALID_REFRESH_TOKEN"}}""",
+                    status = HttpStatusCode.BadRequest,
+                    headers = headersOf(HttpHeaders.ContentType, "application/json"),
+                )
+            }
+
+            val result = provider.restoreSession("revoked-refresh-token")
+
+            assertIs<Result.Error<AuthError>>(result)
+            assertIs<AuthError.Token.Invalid>(result.error)
+            assertNull(provider.getIdToken())
+        }
+
+    @Test
+    fun `restoreSession maps a network exception to a transient NetworkError, not Invalid`() =
+        runTest {
+            val provider = provider { throw RuntimeException("boom") }
+
+            val result = provider.restoreSession("some-refresh-token")
+
+            assertIs<Result.Error<AuthError>>(result)
+            assertIs<AuthError.SignIn.NetworkError>(result.error)
+        }
+
+    @Test
+    fun `restoreSession maps a 5xx server error to a transient NetworkError, not Invalid`() =
+        runTest {
+            val provider = provider {
+                respond(
+                    content = "",
+                    status = HttpStatusCode.InternalServerError,
+                )
+            }
+
+            val result = provider.restoreSession("some-refresh-token")
+
+            assertIs<Result.Error<AuthError>>(result)
+            assertIs<AuthError.SignIn.NetworkError>(result.error)
+        }
+
+    @Test
+    fun `restoreSession with a blank api key reports NotConfigured and makes no call`() =
+        runTest {
+            var called = false
+            val provider = provider(apiKey = "") {
+                called = true
+                respondJson(REFRESH_JSON)
+            }
+
+            val result = provider.restoreSession("some-refresh-token")
+
+            assertIs<Result.Error<AuthError>>(result)
+            assertIs<AuthError.Configuration.NotConfigured>(result.error)
+            assertTrue(!called)
+        }
+
     private companion object {
         fun provider(
             apiKey: String = "test-api-key",

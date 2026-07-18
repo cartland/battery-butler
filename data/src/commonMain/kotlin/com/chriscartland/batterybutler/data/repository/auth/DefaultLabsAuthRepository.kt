@@ -25,7 +25,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
-import kotlin.time.Clock
 
 /**
  * Default [LabsAuthRepository]. Drives the Labs sign-in chain:
@@ -54,22 +53,23 @@ import kotlin.time.Clock
  * a real session -- if the underlying Labs/Google session actually expired, that surfaces later via
  * the normal sync-failure path, not here. See `bb-labs-signout-clear` in TODO.md.
  *
- * Right after resolving `Unknown` from persisted storage this way, [attemptSilentReauth] also
- * makes one opportunistic attempt to re-establish the *real* [labsAuthGateway] session (via
- * [GoogleSignInBridge.signInSilentlyWithClient], which only succeeds if the platform can silently
- * confirm an already-authorized account -- currently just Android's Credential Manager). This is
- * best-effort: on failure it changes nothing (no UI impact, no state rollback) and background sync
- * simply keeps failing until the user explicitly signs in again, exactly as it would without this
- * attempt at all. See `bb-labs-persist-signin-belief` in TODO.md.
+ * Right after resolving `Unknown` from persisted storage this way, [restoreLabsSession] also makes
+ * one opportunistic attempt to re-establish the *real* [labsAuthGateway] session, via
+ * [LabsAuthGateway.restoreSession] -- a plain, non-interactive network call against a persisted
+ * Labs refresh token, never [GoogleSignInBridge]'s silent Credential Manager path. This is
+ * best-effort: on a transient failure (no persisted token yet, network unreachable) it changes
+ * nothing (no UI impact, no state rollback) and background sync simply keeps failing until the
+ * user explicitly signs in again, exactly as it would without this attempt at all. Only an
+ * *authoritative* rejection (the refresh token was actually revoked) clears the belief and flips
+ * to [AuthState.Unauthenticated]. See `bb-labs-persist-signin-belief` and
+ * `bb-labs-refresh-token-persistence` in TODO.md.
  *
- * The "silent" call is not actually guaranteed headless -- on Android it is the same Credential
- * Manager `getCredential` call as the interactive picker, differing only by
- * `filterByAuthorizedAccounts`, and can still surface a chooser/bottom-sheet (multiple on-device
- * accounts, or Play Services deciding a credential needs re-confirmation). Since this repository
- * (and its `attemptSilentReauth` call) is recreated fresh on every process (re)start,
- * [SilentReauthCooldown] throttles repeat attempts per environment so that frequently
- * killing/reopening the app doesn't multiply how often that OS UI can appear. See
- * `bb-silent-reauth-cooldown` in TODO.md.
+ * An earlier version of this attempt used [GoogleSignInBridge.signInSilentlyWithClient], which is
+ * *not* actually guaranteed headless on Android -- it's the same Credential Manager `getCredential`
+ * call as the interactive picker, differing only by `filterByAuthorizedAccounts`, and could still
+ * surface a chooser/bottom-sheet on every process (re)start. [LabsAuthGateway.restoreSession] has
+ * no such risk (it's a plain HTTP call), so it needs no cooldown and is safe to run on every start.
+ * See `bb-silent-reauth-cooldown` in TODO.md for the bug this replaced.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 @Inject
@@ -103,7 +103,7 @@ class DefaultLabsAuthRepository(
                     val resolved = user?.let { AuthState.Authenticated(it) } ?: AuthState.Unauthenticated
                     val resolvedFromUnknown = authStateByMode.compareAndSet(key, expected = AuthState.Unknown, newValue = resolved)
                     if (resolvedFromUnknown && user != null) {
-                        attemptSilentReauth()
+                        restoreLabsSession(key)
                     }
                 }
         }
@@ -119,36 +119,34 @@ class DefaultLabsAuthRepository(
 
     /**
      * One opportunistic attempt to re-establish the real gateway session right after resolving a
-     * persisted "believed signed in" belief -- gated by [SilentReauthCooldown] since it's recreated
-     * fresh (and would otherwise fire again) on every process (re)start. Never touches
-     * [authStateByMode] or the believed-signed-in user in [labsSessionStorage] -- success needs no
-     * state change (already Authenticated from the belief), and failure is left silent by design so
-     * the believed-signed-in UI doesn't flip back to a sign-in prompt just because this best-effort
-     * attempt didn't pan out.
+     * persisted "believed signed in" belief, via [LabsAuthGateway.restoreSession] -- a plain
+     * network call against a persisted refresh token, no OS-UI risk, so (unlike the
+     * Credential-Manager-based attempt this replaced) it needs no cooldown and is safe to run on
+     * every process (re)start. On success or a transient failure, never touches [authStateByMode]
+     * or the believed-signed-in user in [labsSessionStorage] -- success needs no state change
+     * (already Authenticated from the belief), and a transient failure (no persisted token yet,
+     * network unreachable) is left silent by design so the believed-signed-in UI doesn't flip back
+     * to a sign-in prompt just because this best-effort attempt didn't pan out. Only an
+     * *authoritative* rejection ([AuthError.Token.Invalid] -- the refresh token was actually
+     * revoked) clears the belief and flips to [AuthState.Unauthenticated], silently (no error
+     * dialog -- this is a background-triggered transition, not a user-waited-on one).
      */
-    private suspend fun attemptSilentReauth() {
-        val (clientId, clientSecret) = labsOAuthClient() ?: return
-        if (clientId.isBlank()) return
+    private suspend fun restoreLabsSession(key: String) {
+        if (labsOAuthClient() == null) return
 
-        val key = apiKeyForMode(dataModeRepository.dataMode.first(), labsFirebaseApiKey)
-        val now = Clock.System.now().toEpochMilliseconds()
-        val lastAttempt = labsSessionStorage.getLastSilentReauthAttemptMs(key)
-        if (!SilentReauthCooldown.shouldAttempt(lastAttempt, now)) {
-            log.i { "Silent Labs re-auth skipped: attempted ${(now - lastAttempt!!) / 1000}s ago, cooldown not elapsed" }
-            return
-        }
-        labsSessionStorage.recordSilentReauthAttempt(key, now)
-
-        when (val signIn = googleSignInBridge.signInSilentlyWithClient(clientId, clientSecret.ifBlank { null })) {
+        when (val result = labsAuthGateway.restoreSession()) {
             is Result.Success -> {
-                when (val exchange = labsAuthGateway.signInToLabsWithGoogle(signIn.data.idToken)) {
-                    is Result.Success -> log.i { "Silent Labs re-auth succeeded; real session re-established" }
-                    is Result.Error -> log.w { "Silent Labs re-auth: token exchange failed: ${exchange.error.message}" }
-                }
+                log.i { "Labs session restored from persisted refresh token" }
             }
 
             is Result.Error -> {
-                log.i { "Silent Labs re-auth not available: ${signIn.error.message}" }
+                if (result.error is AuthError.Token.Invalid) {
+                    log.i { "Labs refresh token rejected; clearing believed-signed-in state" }
+                    authStateByMode.setCurrent(AuthState.Unauthenticated)
+                    labsSessionStorage.clearUser(key)
+                } else {
+                    log.i { "Labs session restore not available yet: ${result.error.message}" }
+                }
             }
         }
     }

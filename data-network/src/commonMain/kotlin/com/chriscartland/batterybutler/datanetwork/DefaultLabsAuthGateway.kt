@@ -7,6 +7,7 @@ import com.chriscartland.batterybutler.domain.model.DataMode
 import com.chriscartland.batterybutler.domain.model.LabsFirebaseApiKey
 import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.repository.DataModeRepository
+import com.chriscartland.batterybutler.domain.repository.LabsRefreshTokenPersistence
 import kotlinx.coroutines.flow.first
 import me.tatarka.inject.annotations.Inject
 
@@ -35,11 +36,18 @@ fun apiKeyForMode(
  * providers are built lazily, so nothing is created until a Labs mode is actually used. Keys are
  * blank until owner setup; the provider then reports `NotConfigured` and yields no token, so the app
  * degrades (sends no Bearer header → 401) rather than crashing.
+ *
+ * [refreshTokenPersistence] durably persists each provider's refresh token (write-through on
+ * sign-in and [restoreSession] success, cleared on an authoritative rejection or sign-out) so
+ * [restoreSession] can rebuild a session after this in-memory instance is recreated on process
+ * restart, without ever falling back to Google/Credential Manager for that. See
+ * `bb-labs-refresh-token-persistence` in TODO.md.
  */
 @Inject
 class DefaultLabsAuthGateway(
     private val dataModeRepository: DataModeRepository,
     private val labsFirebaseApiKey: LabsFirebaseApiKey,
+    private val refreshTokenPersistence: LabsRefreshTokenPersistence,
 ) : LabsAuthGateway {
     private val httpClient by lazy { createSyncHttpClient() }
 
@@ -47,16 +55,40 @@ class DefaultLabsAuthGateway(
     // in-memory session across mode switches; created on first use of that env.
     private val providersByApiKey = mutableMapOf<String, FirebaseIdTokenProvider>()
 
-    private suspend fun currentProvider(): FirebaseIdTokenProvider {
+    private suspend fun providerForCurrentMode(): Pair<String, FirebaseIdTokenProvider> {
         val apiKey = apiKeyForMode(dataModeRepository.dataMode.first(), labsFirebaseApiKey)
-        return providersByApiKey.getOrPut(apiKey) {
+        val provider = providersByApiKey.getOrPut(apiKey) {
             FirebaseIdTokenProvider(httpClient = httpClient, apiKey = apiKey)
         }
+        return apiKey to provider
     }
 
-    override suspend fun signInToLabsWithGoogle(googleIdToken: String): Result<Unit, AuthError> = currentProvider().signInWithGoogle(googleIdToken)
+    override suspend fun signInToLabsWithGoogle(googleIdToken: String): Result<Unit, AuthError> {
+        val (apiKey, provider) = providerForCurrentMode()
+        val result = provider.signInWithGoogle(googleIdToken)
+        if (result is Result.Success) {
+            provider.currentRefreshToken()?.let { refreshTokenPersistence.save(apiKey, it) }
+        }
+        return result
+    }
 
-    override suspend fun getLabsIdToken(): String? = currentProvider().getIdToken()
+    override suspend fun getLabsIdToken(): String? = providerForCurrentMode().second.getIdToken()
 
-    override suspend fun signOutLabs() = currentProvider().signOut()
+    override suspend fun signOutLabs() {
+        val (apiKey, provider) = providerForCurrentMode()
+        provider.signOut()
+        refreshTokenPersistence.clear(apiKey)
+    }
+
+    override suspend fun restoreSession(): Result<Unit, AuthError> {
+        val (apiKey, provider) = providerForCurrentMode()
+        val refreshToken = refreshTokenPersistence.get(apiKey)
+            ?: return Result.Error(AuthError.Token.Expired(message = "No persisted Labs session"))
+        val result = provider.restoreSession(refreshToken)
+        when (result) {
+            is Result.Success -> provider.currentRefreshToken()?.let { refreshTokenPersistence.save(apiKey, it) }
+            is Result.Error -> if (result.error is AuthError.Token.Invalid) refreshTokenPersistence.clear(apiKey)
+        }
+        return result
+    }
 }
