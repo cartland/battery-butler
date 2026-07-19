@@ -36,7 +36,7 @@ class SyncGoldenFixtureTest {
             snapshot.deviceTypes.single(),
         )
         assertEquals(
-            DeviceWire(
+            DeviceSnapshotWire(
                 id = "device-kitchen",
                 name = "Kitchen Alarm",
                 typeId = "type-smoke",
@@ -44,6 +44,7 @@ class SyncGoldenFixtureTest {
                 batteryLastReplacedTimestampMs = 1_704_067_200_000,
                 lastUpdatedTimestampMs = 1_704_153_600_000,
                 imagePath = "/images/kitchen-alarm.jpg",
+                imageEtag = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
             ),
             snapshot.devices.single(),
         )
@@ -103,7 +104,8 @@ class SyncGoldenFixtureTest {
                   "location": "Kitchen",
                   "batteryLastReplacedTimestampMs": 1704067200000,
                   "lastUpdatedTimestampMs": 1704153600000,
-                  "imagePath": "/images/kitchen-alarm.jpg"
+                  "imagePath": "/images/kitchen-alarm.jpg",
+                  "imageEtag": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
                 }
               ],
               "events": [

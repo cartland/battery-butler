@@ -21,7 +21,9 @@ import com.chriscartland.batterybutler.datalocal.preferences.DataStorePreference
 import com.chriscartland.batterybutler.datalocal.preferences.PreferencesDataSource
 import com.chriscartland.batterybutler.datalocal.room.AppDatabase
 import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
+import com.chriscartland.batterybutler.datanetwork.DelegatingDeviceImageDataSource
 import com.chriscartland.batterybutler.datanetwork.DelegatingRemoteDataSource
+import com.chriscartland.batterybutler.datanetwork.DeviceImageDataSource
 import com.chriscartland.batterybutler.datanetwork.RemoteDataSource
 import com.chriscartland.batterybutler.datanetwork.auth.GoogleSignInBridge
 import com.chriscartland.batterybutler.datanetwork.grpc.NetworkComponent
@@ -80,6 +82,9 @@ interface DataComponent {
 
     @Provides
     fun provideRemoteDataSource(dataSource: DelegatingRemoteDataSource): RemoteDataSource = dataSource
+
+    @Provides
+    fun provideDeviceImageDataSource(dataSource: DelegatingDeviceImageDataSource): DeviceImageDataSource = dataSource
 
     @Provides
     fun provideLocalDataSource(dataSource: RoomLocalDataSource): LocalDataSource = dataSource

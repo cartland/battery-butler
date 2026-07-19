@@ -8,7 +8,7 @@ import com.chriscartland.batterybutler.datalocal.room.entity.BatteryEventEntity
 import com.chriscartland.batterybutler.datalocal.room.entity.DeviceEntity
 import com.chriscartland.batterybutler.datalocal.room.entity.DeviceTypeEntity
 
-@Database(entities = [DeviceEntity::class, DeviceTypeEntity::class, BatteryEventEntity::class], version = 5)
+@Database(entities = [DeviceEntity::class, DeviceTypeEntity::class, BatteryEventEntity::class], version = 6)
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun deviceDao(): DeviceDao

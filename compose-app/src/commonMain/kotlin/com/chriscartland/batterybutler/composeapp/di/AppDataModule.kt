@@ -16,7 +16,9 @@ import com.chriscartland.batterybutler.datalocal.auth.LabsSessionStorage
 import com.chriscartland.batterybutler.datalocal.preferences.DataStorePreferencesDataSource
 import com.chriscartland.batterybutler.datalocal.preferences.PreferencesDataSource
 import com.chriscartland.batterybutler.datalocal.room.AppDatabase
+import com.chriscartland.batterybutler.datanetwork.DelegatingDeviceImageDataSource
 import com.chriscartland.batterybutler.datanetwork.DelegatingRemoteDataSource
+import com.chriscartland.batterybutler.datanetwork.DeviceImageDataSource
 import com.chriscartland.batterybutler.datanetwork.RemoteDataSource
 import com.chriscartland.batterybutler.domain.repository.AuthRepository
 import com.chriscartland.batterybutler.domain.repository.DataModeRepository
@@ -44,6 +46,10 @@ interface AppDataModule : DataComponent {
     @Provides
     @Singleton
     override fun provideRemoteDataSource(dataSource: DelegatingRemoteDataSource): RemoteDataSource = super.provideRemoteDataSource(dataSource)
+
+    @Provides
+    @Singleton
+    override fun provideDeviceImageDataSource(dataSource: DelegatingDeviceImageDataSource): DeviceImageDataSource = super.provideDeviceImageDataSource(dataSource)
 
     @Provides
     @Singleton

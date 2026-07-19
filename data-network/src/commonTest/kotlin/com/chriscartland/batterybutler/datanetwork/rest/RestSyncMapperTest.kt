@@ -19,7 +19,7 @@ class RestSyncMapperTest {
     fun `toRemoteUpdate maps a snapshot to a full-snapshot RemoteUpdate`() {
         val snapshot = SyncSnapshotWire(
             deviceTypes = listOf(DeviceTypeWire(id = "type1", name = "Type 1")),
-            devices = listOf(DeviceWire(id = "dev1", name = "Device 1", typeId = "type1", location = "Loc 1")),
+            devices = listOf(DeviceSnapshotWire(id = "dev1", name = "Device 1", typeId = "type1", location = "Loc 1")),
             events = listOf(BatteryEventWire(id = "ev1", deviceId = "dev1", dateTimestampMs = 1_704_067_200_000, notes = "Note 1")),
         )
 
@@ -61,16 +61,17 @@ class RestSyncMapperTest {
     // --- empty string -> null ---
 
     @Test
-    fun `empty location, defaultIcon, notes, imagePath map to null`() {
+    fun `empty location, defaultIcon, notes, imagePath, imageEtag map to null`() {
         val snapshot = SyncSnapshotWire(
             deviceTypes = listOf(DeviceTypeWire(id = "t", name = "T", defaultIcon = "")),
-            devices = listOf(DeviceWire(id = "d", name = "D", typeId = "t", location = "", imagePath = "")),
+            devices = listOf(DeviceSnapshotWire(id = "d", name = "D", typeId = "t", location = "", imagePath = "", imageEtag = "")),
             events = listOf(BatteryEventWire(id = "e", deviceId = "d", dateTimestampMs = 1, notes = "")),
         )
         val domain = RestSyncMapper.toRemoteUpdate(snapshot)
         assertNull(domain.deviceTypes.single().defaultIcon)
         assertNull(domain.devices.single().location)
         assertNull(domain.devices.single().imagePath)
+        assertNull(domain.devices.single().imageEtag)
         assertNull(domain.events.single().notes)
     }
 
@@ -78,7 +79,7 @@ class RestSyncMapperTest {
 
     @Test
     fun `zero timestamps map to epoch`() {
-        val device = DeviceWire(id = "d", name = "D", typeId = "t", batteryLastReplacedTimestampMs = 0, lastUpdatedTimestampMs = 0)
+        val device = DeviceSnapshotWire(id = "d", name = "D", typeId = "t", batteryLastReplacedTimestampMs = 0, lastUpdatedTimestampMs = 0)
         val domain = RestSyncMapper.toRemoteUpdate(SyncSnapshotWire(devices = listOf(device)))
         assertEquals(Instant.fromEpochMilliseconds(0), domain.devices.single().batteryLastReplaced)
         assertEquals(Instant.fromEpochMilliseconds(0), domain.devices.single().lastUpdated)
@@ -132,23 +133,76 @@ class RestSyncMapperTest {
                     batteryLastReplaced = Instant.fromEpochMilliseconds(1_704_067_200_000),
                     lastUpdated = Instant.fromEpochMilliseconds(1_704_153_600_000),
                     imagePath = "/img/a.jpg",
+                    // imageEtag is snapshot-only (server-managed, dropped on push) -- not part of this
+                    // push-side round trip. See `pushed device has no imageEtag field` below.
                 ),
             ),
             events = listOf(BatteryEvent(id = "e1", deviceId = "d1", date = Instant.fromEpochMilliseconds(1_704_067_200_000), notes = "Duracell")),
         )
+        val pushed = RestSyncMapper.toPushRequest(update)
 
         // wire shape carries no isFullSnapshot; toRemoteUpdate always marks a snapshot full.
+        // Push devices carry no imageEtag at all, so re-wrapping them into a snapshot device
+        // (imageEtag defaults to "") is the correct simulation of "the server never echoes it back".
         val roundTripped = RestSyncMapper.toRemoteUpdate(
             SyncSnapshotWire(
-                deviceTypes = RestSyncMapper.toPushRequest(update).deviceTypes,
-                devices = RestSyncMapper.toPushRequest(update).devices,
-                events = RestSyncMapper.toPushRequest(update).events,
+                deviceTypes = pushed.deviceTypes,
+                devices = pushed.devices.map {
+                    DeviceSnapshotWire(
+                        id = it.id,
+                        name = it.name,
+                        typeId = it.typeId,
+                        location = it.location,
+                        batteryLastReplacedTimestampMs = it.batteryLastReplacedTimestampMs,
+                        lastUpdatedTimestampMs = it.lastUpdatedTimestampMs,
+                        imagePath = it.imagePath,
+                    )
+                },
+                events = pushed.events,
             ),
         )
 
         assertEquals(update.deviceTypes.single(), roundTripped.deviceTypes.single())
         assertEquals(update.devices.single(), roundTripped.devices.single())
         assertEquals(update.events.single(), roundTripped.events.single())
+    }
+
+    @Test
+    fun `pushed device has no imageEtag field -- it is server-managed and snapshot-only`() {
+        val update = RemoteUpdate(
+            isFullSnapshot = false,
+            deviceTypes = emptyList(),
+            devices = listOf(
+                Device(
+                    id = "d1",
+                    name = "D",
+                    typeId = "t1",
+                    batteryLastReplaced = Instant.fromEpochMilliseconds(0),
+                    lastUpdated = Instant.fromEpochMilliseconds(0),
+                    imageEtag = "should-never-be-sent",
+                ),
+            ),
+            events = emptyList(),
+        )
+
+        val wire = RestSyncMapper.toPushRequest(update)
+
+        // DeviceWire (the push shape) has no imageEtag property at all -- this is a compile-time
+        // guarantee, not just a runtime assertion, but the id check keeps the test meaningful.
+        assertEquals("d1", wire.devices.single().id)
+    }
+
+    @Test
+    fun `snapshot imageEtag maps empty to null and a value to itself`() {
+        val withEtag = RestSyncMapper.toRemoteUpdate(
+            SyncSnapshotWire(devices = listOf(DeviceSnapshotWire(id = "d", name = "D", typeId = "t", imageEtag = "abc123"))),
+        )
+        assertEquals("abc123", withEtag.devices.single().imageEtag)
+
+        val withoutEtag = RestSyncMapper.toRemoteUpdate(
+            SyncSnapshotWire(devices = listOf(DeviceSnapshotWire(id = "d", name = "D", typeId = "t", imageEtag = ""))),
+        )
+        assertNull(withoutEtag.devices.single().imageEtag)
     }
 
     // --- deleted ids ---
