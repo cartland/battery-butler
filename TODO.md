@@ -187,6 +187,36 @@ conclusion (defensive companion to the bb-2r4g close-on-success guard).
 
 ## P3
 
+### bb-dimg — Device photos: capture, upload, and display a per-device image (Labs backend)
+
+Let each device optionally have one photo, shown next to its name/location: pick →
+upload → replace/remove, displayed in the detail avatar + list item. **Full spec:
+[`docs/DEVICE_IMAGES.md`](docs/DEVICE_IMAGES.md)** — read it first; this is the summary.
+
+**The backend half is already live** — the Labs backend serves an emit-only
+`imageEtag` on each snapshot device plus three `PUT/GET/DELETE
+/v1/battery-butler/devices/{id}/image` routes (10 MB cap; JPEG/PNG/WebP only; the
+device must be synced first). No coordinated backend change is needed; the client
+can build against Labs staging independently.
+
+**Key facts that shape the work** (details + anchor files in the spec):
+- `imagePath` is **already wired end-to-end** (domain, proto, wire DTO, Room, sync)
+  but **dormant in the UI** — reuse that plumbing; don't rebuild it. `imageEtag`
+  (new, server-managed) is the cache key + change signal, kept **separate** from the
+  client-owned `imagePath`.
+- **No image library, picker, camera, or HEIC/downscale code exists anywhere** —
+  capture + normalize-to-JPEG (iOS HEIC→JPEG especially) + display are new, per
+  platform (Android Photo Picker / iOS PHPicker / desktop file chooser).
+- **Labs-mode only** — blob images exist only on the Labs backend; gate the photo UI
+  on backend capability (Mock/gRPC/None stay icon-only).
+
+**Workstreams** (spec §6, recommended order A→B→D→C→E→F, small PRs): (A) mirror
+`imageEtag` in `SyncDto.kt` + contract/golden tests in lockstep; (B) binary transport
+via a `DeviceImageDataSource` on `RestRemoteDataSource`; (C) per-platform pick +
+JPEG normalize; (D) etag-keyed byte cache + `ImageBitmap` display; (E) upload/replace/
+delete orchestration (push device *before* first upload); (F) UI in Add/Edit + detail/
+list + screenshot baselines. Success criteria in §9.
+
 ### bb-anim-ios-record-flight — SwiftUI parity for the record-replacement flight animation
 
 The Compose Device Detail screen animates a newly recorded battery event flying
