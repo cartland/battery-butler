@@ -18,11 +18,14 @@ regression.
 > against.
 >
 > **What's not in this repo (get it from the project maintainer):** the `LABS_*` values (host +
-> keys) and an account with **device-edit access** to the Labs **staging** backend. Inject the
+> keys) and an account with **device-edit (write) access** to the Labs **staging** backend. Inject the
 > values the usual way (`local.properties` locally, CI config in workflows) — the same as any other
-> Labs-backed build; they are an external ask, not a missing file here. You can build and unit-test
-> workstreams **A/B/D with no backend access at all**; you only need staging to run the end-to-end
-> checks in §9.
+> Labs-backed build; they are an external ask, not a missing file here. **Read access is not enough:**
+> image `PUT`/`DELETE` need the same write permission as pushing a device, so an account that can sign
+> in and *list* devices but lacks write gets a **403 (write permission required)** on upload even though
+> everything else works — confirm the verification account has write, not just read. You can build and
+> unit-test workstreams **A/B/D with no backend access at all**; you only need staging to run the
+> end-to-end checks in §9.
 
 ---
 
@@ -151,9 +154,11 @@ independently. Keep the mirror **in lockstep with the backend contract fixtures*
 - `data-network/src/commonTest/…/rest/SyncGoldenFixtureTest.kt` — the snapshot golden gains **one key**,
   `"imageEtag"`, on its device(s); the push-request golden is **unchanged** (the split is real; see §6A).
   *"No coordinated backend change" means no backend **code** change* — but the golden is byte-shared with
-  the backend repo's fixture, so use the exact `imageEtag` value the backend emits for that fixture device
-  (get it from the maintainer, or read it off a live staging snapshot). Structurally it is just the one
-  added key.
+  the backend repo's fixture, so the value must match what the backend emits. **As of the current backend
+  fixture** the one device (`device-kitchen`) uses
+  `"imageEtag": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"` — which is `sha256("")`,
+  a deterministic fixture constant, so **no live upload is needed** to obtain it — placed as the **last**
+  field on the device (after `imagePath`) so the bytes match. Structurally it is just the one added key.
 
 ---
 
