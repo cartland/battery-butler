@@ -471,6 +471,32 @@ existing PKCE flows, a materially bigger feature than this fix. Those
 platforms rely solely on the persisted-belief UI fix; an explicit re-sign-in
 is still required there to restore a real session after a restart.
 
+**Superseded (`bb-labs-refresh-token-persistence`, 2026-07-18)**: the 6h
+cooldown above only *throttled* the UI-risky `signInSilentlyWithClient` call —
+it never removed the risk, and a normal "open in the morning, return in the
+evening" gap exceeds 6h, so users still saw the dialog. `attemptSilentReauth`
+(Credential-Manager-based) was replaced entirely by
+`DefaultLabsAuthRepository.restoreLabsSession`, which calls the new
+`LabsAuthGateway.restoreSession()` — a plain, non-interactive
+`securetoken.googleapis.com` REST call against a *persisted* Labs Firebase
+refresh token (new `domain.repository.LabsRefreshTokenPersistence` port,
+`data-local`'s `DataStoreLabsRefreshTokenPersistence` impl). This carries no
+OS-UI risk at all, so it needs no cooldown and runs on every process start.
+Only an authoritative rejection (`AuthError.Token.Invalid`, HTTP 4xx from the
+refresh call — the token was actually revoked) clears the belief and signs
+the user out; a transient failure (no persisted token, network unreachable)
+is left alone exactly like the old best-effort design. `SilentReauthCooldown`
+and its `LabsSessionStorage` timestamp fields were deleted as dead code. This
+also resolves the iOS/Desktop deferral immediately above: `FirebaseIdToken
+Provider` is `commonMain` and unrelated to `GoogleSignInBridge`'s
+platform-specific silent methods, so persisting its refresh token benefits
+all three platforms — iOS/Desktop no longer need a full interactive
+OAuth sheet/browser after every process restart for Labs mode. See
+`bb-labs-refresh-token-persistence` in TODO.md's Done section for the full
+writeup, including why the refresh token is deliberately held client-side
+(standard for native/mobile OAuth, matching Firebase's own SDK) rather than
+server-mediated.
+
 ### Own-Backend Silent Session Refresh (`GoogleSignInBridge.signInSilently`)
 
 `bb-auth-session-length` in TODO.md, fixed 2026-07-08. Distinct from the Labs

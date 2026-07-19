@@ -14,11 +14,13 @@ import kotlinx.coroutines.flow.Flow
  * flow is: Google Sign-In against the *Labs* OAuth client → exchange the Google ID token for a Labs
  * Firebase ID token (held by the Labs auth gateway) → subsequent Labs `/sync` calls carry it.
  *
- * [labsAuthState] reuses [AuthState] for UI parity with the own-backend account card. The Labs
- * session is in-memory (not persisted), so it starts [AuthState.Unauthenticated] every launch.
- * It's keyed per data mode (see [DataModeKeyedState]): switching between Labs staging and
- * prod reflects each environment's *own* status, never a stale value carried over from whichever
- * one was previously selected.
+ * [labsAuthState] reuses [AuthState] for UI parity with the own-backend account card. A lightweight
+ * "believed signed in" belief survives process restarts (see `LabsSessionStorage`), and the real
+ * session is restored non-interactively from a persisted refresh token where possible (see
+ * `LabsRefreshTokenPersistence`) -- so [AuthState.Authenticated] can carry across a relaunch rather
+ * than starting [AuthState.Unauthenticated] every time. It's keyed per data mode (see
+ * [DataModeKeyedState]): switching between Labs staging and prod reflects each environment's *own*
+ * status, never a stale value carried over from whichever one was previously selected.
  */
 interface LabsAuthRepository {
     /** Current Labs auth state for the *currently selected* data mode. Starts [AuthState.Unauthenticated]. */

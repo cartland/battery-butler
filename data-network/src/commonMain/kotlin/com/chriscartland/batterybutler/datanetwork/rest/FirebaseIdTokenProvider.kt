@@ -29,7 +29,11 @@ import kotlin.time.ExperimentalTime
  *
  * [signInWithGoogle] is the one interactive step (it needs a Google ID token whose audience the
  * Labs Firebase project trusts — the OAuth-client owner setup). Afterwards [getIdToken] refreshes
- * silently with the stored refresh token. The HTTP boundary is wrapped (project rule: never throw
+ * silently with the stored refresh token, and [restoreSession] can rebuild a session from a
+ * *persisted* refresh token (e.g. after this in-memory instance is recreated on process restart)
+ * without any Google/Credential Manager involvement — see `bb-labs-refresh-token-persistence` in
+ * TODO.md for why that matters (Credential Manager's "silent" sign-in is not actually
+ * headless-guaranteed on Android). The HTTP boundary is wrapped (project rule: never throw
  * except [CancellationException]); a failure returns null/[Result.Error] so an unconfigured or
  * signed-out app sends no header and gets a 401 — it degrades, never crashes.
  *
@@ -99,38 +103,92 @@ internal class FirebaseIdTokenProvider(
             if (now() < current.expiresAtMs - EXPIRY_BUFFER_MS) {
                 return current.idToken
             }
-            val refreshed = refresh(current.refreshToken) ?: return null
+            val refreshed = (refresh(current.refreshToken) as? RefreshOutcome.Success)?.session ?: return null
             session = refreshed
             refreshed.idToken
         }
 
+    /**
+     * Restore a session non-interactively from a persisted [refreshToken] (e.g. right after
+     * process start), without any Google/Credential Manager involvement -- a plain network call,
+     * so unlike [com.chriscartland.batterybutler.datanetwork.auth.GoogleSignInBridge]'s silent
+     * methods it carries no OS-UI risk. Distinguishes an **authoritative** rejection (the refresh
+     * token itself is invalid/revoked -- [AuthError.Token.Invalid], the caller should stop treating
+     * the user as signed in) from a **transient** failure (network unreachable, server error --
+     * [AuthError.SignIn.NetworkError], safe to leave the existing believed-signed-in state alone
+     * and retry later). See `bb-labs-refresh-token-persistence` in TODO.md.
+     */
+    suspend fun restoreSession(refreshToken: String): Result<Unit, AuthError> {
+        if (apiKey.isBlank()) return Result.Error(AuthError.Configuration.NotConfigured())
+        return when (val outcome = refresh(refreshToken)) {
+            is RefreshOutcome.Success -> {
+                mutex.withLock { session = outcome.session }
+                Result.Success(Unit)
+            }
+
+            RefreshOutcome.Invalid -> {
+                Result.Error(AuthError.Token.Invalid(message = "Labs refresh token rejected"))
+            }
+
+            RefreshOutcome.Transient -> {
+                Result.Error(AuthError.SignIn.NetworkError())
+            }
+        }
+    }
+
+    /**
+     * The current session's refresh token (kept up to date across [getIdToken] refreshes, in case
+     * Firebase ever rotates it), or null if not signed in. Read by [com.chriscartland.batterybutler
+     * .datanetwork.DefaultLabsAuthGateway] for persistence -- see
+     * [com.chriscartland.batterybutler.domain.repository.LabsRefreshTokenPersistence].
+     */
+    suspend fun currentRefreshToken(): String? = mutex.withLock { session?.refreshToken }
+
     /** Clear the session (e.g. on sign-out). */
     suspend fun signOut() = mutex.withLock { session = null }
 
-    private suspend fun refresh(refreshToken: String): Session? {
-        if (apiKey.isBlank()) return null
+    private sealed interface RefreshOutcome {
+        data class Success(
+            val session: Session,
+        ) : RefreshOutcome
+
+        /** HTTP 4xx: the refresh token itself was rejected -- authoritative, not worth retrying. */
+        data object Invalid : RefreshOutcome
+
+        /** Network exception or non-4xx failure: worth retrying later, doesn't imply revocation. */
+        data object Transient : RefreshOutcome
+    }
+
+    private suspend fun refresh(refreshToken: String): RefreshOutcome {
+        if (apiKey.isBlank()) return RefreshOutcome.Transient
         return try {
             val response = httpClient.post(SECURE_TOKEN_URL) {
                 parameter("key", apiKey)
                 contentType(ContentType.Application.Json)
                 setBody(RefreshTokenRequest(refreshToken = refreshToken))
             }
-            if (!response.status.isSuccess()) return null
+            if (response.status.value in INVALID_STATUS_RANGE) {
+                log.i { "Labs Firebase refresh token rejected: HTTP ${response.status.value}" }
+                return RefreshOutcome.Invalid
+            }
+            if (!response.status.isSuccess()) return RefreshOutcome.Transient
             val body = response.body<RefreshTokenResponse>()
             if (body.idToken.isBlank()) {
-                null
+                RefreshOutcome.Transient
             } else {
-                Session(
-                    idToken = body.idToken,
-                    refreshToken = body.refreshToken.ifBlank { refreshToken },
-                    expiresAtMs = expiresAtFrom(body.expiresIn),
+                RefreshOutcome.Success(
+                    Session(
+                        idToken = body.idToken,
+                        refreshToken = body.refreshToken.ifBlank { refreshToken },
+                        expiresAtMs = expiresAtFrom(body.expiresIn),
+                    ),
                 )
             }
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
             log.w(e) { "Labs Firebase token refresh failed" }
-            null
+            RefreshOutcome.Transient
         }
     }
 
@@ -144,5 +202,6 @@ internal class FirebaseIdTokenProvider(
         const val SECURE_TOKEN_URL = "https://securetoken.googleapis.com/v1/token"
         const val EXPIRY_BUFFER_MS = 60_000L
         const val MILLIS_PER_SECOND = 1_000L
+        val INVALID_STATUS_RANGE = 400..499
     }
 }

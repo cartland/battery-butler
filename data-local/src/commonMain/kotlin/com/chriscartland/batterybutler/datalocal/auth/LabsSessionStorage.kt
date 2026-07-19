@@ -10,8 +10,10 @@ import kotlinx.coroutines.flow.Flow
  *
  * This is deliberately lightweight: no tokens, no expiry. It exists purely so the UI-facing
  * [com.chriscartland.batterybutler.domain.model.AuthState] can survive a process restart without
- * showing a "signed out" prompt next to already-cached local data. The real Labs session/token
- * lives only in `LabsAuthGateway` and is not persisted here or restored from here.
+ * showing a "signed out" prompt next to already-cached local data. The real Labs session/token is
+ * not persisted here -- it's restored from a durable refresh token in
+ * [com.chriscartland.batterybutler.domain.repository.LabsRefreshTokenPersistence] instead (a
+ * separate, purpose-built store -- see `bb-labs-refresh-token-persistence` in TODO.md).
  */
 interface LabsSessionStorage {
     /** Emits the believed-signed-in user for [environmentKey], or null if not signed in. */
@@ -25,13 +27,4 @@ interface LabsSessionStorage {
 
     /** Clears the believed-signed-in user for [environmentKey]. */
     suspend fun clearUser(environmentKey: String)
-
-    /** Epoch-ms of the last opportunistic silent re-auth attempt for [environmentKey], or null if never attempted. */
-    suspend fun getLastSilentReauthAttemptMs(environmentKey: String): Long?
-
-    /** Records that a silent re-auth attempt was made for [environmentKey] at [atMs]. */
-    suspend fun recordSilentReauthAttempt(
-        environmentKey: String,
-        atMs: Long,
-    )
 }

@@ -3,11 +3,9 @@ package com.chriscartland.batterybutler.datalocal.auth
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.chriscartland.batterybutler.domain.model.User
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import me.tatarka.inject.annotations.Inject
 
@@ -26,8 +24,6 @@ class DataStoreLabsSessionStorage(
     private fun displayNameKey(environmentKey: String) = stringPreferencesKey("labs_session_${environmentKey}_display_name")
 
     private fun photoUrlKey(environmentKey: String) = stringPreferencesKey("labs_session_${environmentKey}_photo_url")
-
-    private fun lastSilentReauthAttemptKey(environmentKey: String) = longPreferencesKey("labs_session_${environmentKey}_last_silent_reauth_attempt_ms")
 
     override fun observeUser(environmentKey: String): Flow<User?> =
         dataStore.data.map { preferences ->
@@ -76,17 +72,6 @@ class DataStoreLabsSessionStorage(
             preferences.remove(emailKey(environmentKey))
             preferences.remove(displayNameKey(environmentKey))
             preferences.remove(photoUrlKey(environmentKey))
-        }
-    }
-
-    override suspend fun getLastSilentReauthAttemptMs(environmentKey: String): Long? = dataStore.data.map { preferences -> preferences[lastSilentReauthAttemptKey(environmentKey)] }.first()
-
-    override suspend fun recordSilentReauthAttempt(
-        environmentKey: String,
-        atMs: Long,
-    ) {
-        dataStore.edit { preferences ->
-            preferences[lastSilentReauthAttemptKey(environmentKey)] = atMs
         }
     }
 }
