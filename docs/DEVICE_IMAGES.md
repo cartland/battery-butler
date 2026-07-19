@@ -16,6 +16,13 @@ regression.
 > server URL and keys come from `BuildConfig`/`AppConfig` (the `LABS_*` properties), never from
 > source. This doc names none of them; it only describes the contract *shape* the client codes
 > against.
+>
+> **What's not in this repo (get it from the project maintainer):** the `LABS_*` values (host +
+> keys) and an account with **device-edit access** to the Labs **staging** backend. Inject the
+> values the usual way (`local.properties` locally, CI config in workflows) — the same as any other
+> Labs-backed build; they are an external ask, not a missing file here. You can build and unit-test
+> workstreams **A/B/D with no backend access at all**; you only need staging to run the end-to-end
+> checks in §9.
 
 ---
 
@@ -137,10 +144,16 @@ yet, and its wire-contract test pins the old field set. The client PR simply **r
 mirror; it needs **no** coordinated backend change and can proceed against the Labs staging backend
 independently. Keep the mirror **in lockstep with the backend contract fixtures**:
 
-- `data-network/src/commonTest/…/rest/SyncWireContractTest.kt` — add `"imageEtag"` to the **snapshot**
-  device key set; **leave the push set unchanged**.
-- `data-network/src/commonTest/…/rest/SyncGoldenFixtureTest.kt` — the snapshot golden gains
-  `"imageEtag"`; the push-request golden is **unchanged** (the split is real; see §6A).
+- `data-network/src/commonTest/…/rest/SyncWireContractTest.kt` — today there is a **single** `DeviceWire`
+  field-set pin (both sides share it). **Add a new pin** for the snapshot device shape (the `DeviceWire`
+  fields **plus** `imageEtag`) and **leave the existing `DeviceWire` (push) pin unchanged** — don't just
+  widen the current one, or the push side drifts.
+- `data-network/src/commonTest/…/rest/SyncGoldenFixtureTest.kt` — the snapshot golden gains **one key**,
+  `"imageEtag"`, on its device(s); the push-request golden is **unchanged** (the split is real; see §6A).
+  *"No coordinated backend change" means no backend **code** change* — but the golden is byte-shared with
+  the backend repo's fixture, so use the exact `imageEtag` value the backend emits for that fixture device
+  (get it from the maintainer, or read it off a live staging snapshot). Structurally it is just the one
+  added key.
 
 ---
 
@@ -296,7 +309,8 @@ Against the **Labs backend** (staging first), signed in as a user who can edit d
 8. **Old-mode safety.** In Mock/gRPC/None modes the app behaves exactly as before (icon-only, no photo
    affordances) — no crashes, no failed image calls.
 9. **Contract green + aligned.** `SyncWireContractTest` + `SyncGoldenFixtureTest` pass and the snapshot
-   golden matches the backend byte-for-byte; the push golden is unchanged.
+   golden matches the backend byte-for-byte (the `imageEtag` value to use is per §5); the push golden is
+   unchanged.
 
 ---
 
@@ -306,7 +320,8 @@ Against the **Labs backend** (staging first), signed in as a user who can edit d
 2. **Client PR(s)**, staging-first: land A+B+D behind the capability gate (testable with `MockEngine`
    + a fixed etag), then C (per-platform capture), then E+F (UX), then screenshot updates. Keep PRs
    small per `.agent/AGENTS.md`; each on its own `agent/…` branch. Verify each against the **Labs
-   staging** backend (`NetworkMode.LabsStaging`); your account needs edit access there.
+   staging** backend (`NetworkMode.LabsStaging`); your account needs edit access there (how to obtain
+   access + the `LABS_*` values is in the config note at the top).
 3. **Prove it on a device** against staging using §9 — especially the iOS HEIC path and second-install
    propagation.
 4. **Prod:** no backend release needed — point the app at `NetworkMode.LabsProd` (config via the
