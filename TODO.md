@@ -189,10 +189,20 @@ conclusion (defensive companion to the bb-2r4g close-on-success guard).
 
 ### bb-dimg — Device photos: capture, upload, and display a per-device image (Labs backend)
 
-**Status (2026-07-19): workstreams A–F implemented, compile/test/screenshot-verified
-locally; branch `device-images-a`, draft PR #1359.** Remaining: live E2E verification
-against Labs staging (spec §9 — upload → display → persist round trip, replace,
-remove, on an emulator/device against `chriscartlanddemo@gmail.com`'s Labs account).
+**Status (2026-07-19): workstreams A–F implemented AND live-verified end-to-end against
+Labs staging; branch `device-images-a`, draft PR #1359 ready for review/merge.** On an
+Android emulator signed in as `chriscartlanddemo@gmail.com` in Staging mode: picked a
+real image via the Android Photo Picker → normalized → uploaded (HTTP 200, real etag
+returned) → displayed correctly on Edit Device, Device Detail, and the device list →
+removed cleanly (buttons revert, avatar reverts to the fallback icon). Root-caused two
+false alarms during that pass rather than shipping around them: (1) an "Unable to check
+Uri permission... WM lock" system log that looked causal but was unrelated noise: the
+picker→bytes→normalize→upload chain works fine regardless; (2) intermittent HTTP 401s
+on upload traced to `DefaultLabsAuthGateway`'s best-effort, already-documented
+refresh-token restore race on a cold process start (`bb-labs-refresh-token-persistence`)
+— not a regression from this work, reproduces only when acting faster than a human
+right after launch. Remaining follow-ups noted below (Add Device photo, Detail-screen
+tap-to-change) are unchanged.
 
 Let each device optionally have one photo, shown next to its name/location: pick →
 upload → replace/remove, displayed in the detail avatar + list item. **Full spec:
