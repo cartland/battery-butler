@@ -22,7 +22,8 @@ final class KmpInteropTests: XCTestCase {
             batteryLastReplaced: instant,
             lastUpdated: instant,
             location: "Room",
-            imagePath: nil
+            imagePath: nil,
+            imageEtag: nil
         )
         XCTAssertEqual(device.id, "d1")
         XCTAssertEqual(device.name, "Test Device")
@@ -126,7 +127,8 @@ final class KmpInteropTests: XCTestCase {
             groupOption: .none,
             exportData: nil,
             syncStatus: SyncStatusIdle(),
-            error: nil
+            error: nil,
+            deviceImagesByEtag: [:]
         )
         XCTAssertTrue(state.isSortAscending)
         XCTAssertEqual(state.sortOption, .name)
@@ -176,7 +178,8 @@ final class KmpInteropTests: XCTestCase {
         let success: DeviceDetailScreenState = DeviceDetailScreenStateSuccess(
             device: device,
             deviceType: deviceType,
-            events: events
+            events: events,
+            imageBytes: nil
         )
 
         XCTAssertTrue(loading is DeviceDetailScreenStateLoading)

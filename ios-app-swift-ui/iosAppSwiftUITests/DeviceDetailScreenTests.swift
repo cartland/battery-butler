@@ -13,7 +13,8 @@ final class DeviceDetailScreenTests: XCTestCase {
             batteryLastReplaced: KotlinInstant.Companion.shared.fromEpochMilliseconds(epochMilliseconds: 1704067200000), // Jan 1, 2024
             lastUpdated: KotlinInstant.Companion.shared.fromEpochMilliseconds(epochMilliseconds: 1704067200000),
             location: "Living Room",
-            imagePath: nil
+            imagePath: nil,
+            imageEtag: nil
         )
 
         let dummyType = DeviceType(
@@ -27,7 +28,8 @@ final class DeviceDetailScreenTests: XCTestCase {
         let successState = DeviceDetailScreenStateSuccess(
             device: dummyDevice,
             deviceType: dummyType,
-            events: []
+            events: [],
+            imageBytes: nil
         )
 
         let view = DeviceDetailContentView(
