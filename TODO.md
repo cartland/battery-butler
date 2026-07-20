@@ -204,6 +204,23 @@ refresh-token restore race on a cold process start (`bb-labs-refresh-token-persi
 right after launch. Remaining follow-ups noted below (Add Device photo, Detail-screen
 tap-to-change) are unchanged.
 
+**Full-diff review pass (2026-07-20)** before recommending release found and fixed three
+real defects (independently corroborated by a second reviewer pass, not just self-review):
+Android decoded picked photos at full resolution before downscaling (a 50MP camera photo
+could OOM on a typical heap — now decodes at a memory-bounded `inSampleSize` first);
+Desktop/JVM never read EXIF orientation at all, so a portrait phone photo picked on
+Desktop shipped permanently sideways (normalization strips EXIF on re-encode, so there's
+no recovering it downstream — added a dependency-free JPEG/EXIF reader + transform,
+verified empirically via pixel-sampling tests across all 8 orientation values, which
+caught a real sign error in the "transverse" case on the first pass); and a picked image
+that fails local normalization (corrupt/unsupported) silently did nothing in the UI —
+now surfaces a proper error. Two lower-severity items were deliberately deferred rather
+than fixed in this pass: no loading indicator / double-tap guard during
+upload-or-remove (idempotent PUT/DELETE, so a duplicate request just wastes bandwidth,
+doesn't corrupt anything), and `HomeViewModel`'s per-etag image map re-queries Room on
+every sort/group change, not just when the device set's etags actually change (extra
+local reads, not a correctness issue).
+
 Let each device optionally have one photo, shown next to its name/location: pick →
 upload → replace/remove, displayed in the detail avatar + list item. **Full spec:
 [`docs/DEVICE_IMAGES.md`](docs/DEVICE_IMAGES.md)** — read it first; this is the summary.
