@@ -189,6 +189,11 @@ conclusion (defensive companion to the bb-2r4g close-on-success guard).
 
 ### bb-dimg — Device photos: capture, upload, and display a per-device image (Labs backend)
 
+**Status (2026-07-19): workstreams A–F implemented, compile/test/screenshot-verified
+locally; branch `device-images-a`, draft PR #1359.** Remaining: live E2E verification
+against Labs staging (spec §9 — upload → display → persist round trip, replace,
+remove, on an emulator/device against `chriscartlanddemo@gmail.com`'s Labs account).
+
 Let each device optionally have one photo, shown next to its name/location: pick →
 upload → replace/remove, displayed in the detail avatar + list item. **Full spec:
 [`docs/DEVICE_IMAGES.md`](docs/DEVICE_IMAGES.md)** — read it first; this is the summary.
@@ -216,6 +221,16 @@ via a `DeviceImageDataSource` on `RestRemoteDataSource`; (C) per-platform pick +
 JPEG normalize; (D) etag-keyed byte cache + `ImageBitmap` display; (E) upload/replace/
 delete orchestration (push device *before* first upload); (F) UI in Add/Edit + detail/
 list + screenshot baselines. Success criteria in §9.
+
+**Deliberate scope cut for (E)/(F):** photo upload/replace/remove UI landed on the
+**Edit Device screen only**. Add Device was skipped because the backend 404s an
+image PUT for a not-yet-synced device (would need to hold picked bytes across the
+create→sync→upload boundary — real complexity, deferred). Tap-to-change from the
+Device Detail screen (which already *displays* the photo, from workstream D) was
+skipped purely to bound scope. Both are natural small follow-ups once E2E-verified.
+Android/iOS picker + normalizer code is compile-verified only (no real device/
+simulator manual testing in this environment) — same accepted gap as other
+unfakeable platform bridges (e.g. `GoogleSignInBridge`).
 
 ### bb-anim-ios-record-flight — SwiftUI parity for the record-replacement flight animation
 

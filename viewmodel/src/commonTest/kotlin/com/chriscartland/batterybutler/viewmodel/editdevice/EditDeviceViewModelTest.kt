@@ -1,14 +1,21 @@
 package com.chriscartland.batterybutler.viewmodel.editdevice
 
+import com.chriscartland.batterybutler.domain.model.DeviceImageError
 import com.chriscartland.batterybutler.domain.model.DeviceInput
 import com.chriscartland.batterybutler.domain.model.DeviceType
+import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.presentationmodel.editdevice.EditDeviceScreenState
+import com.chriscartland.batterybutler.testcommon.FakeDeviceImageRepository
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
 import com.chriscartland.batterybutler.testcommon.TestDevices
+import com.chriscartland.batterybutler.usecase.DeleteDeviceImageUseCase
 import com.chriscartland.batterybutler.usecase.DeleteDeviceUseCase
+import com.chriscartland.batterybutler.usecase.GetCachedDeviceImageUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceDetailUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
+import com.chriscartland.batterybutler.usecase.IsDeviceImagesSupportedUseCase
 import com.chriscartland.batterybutler.usecase.UpdateDeviceUseCase
+import com.chriscartland.batterybutler.usecase.UploadDeviceImageUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -21,6 +28,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -117,9 +125,66 @@ class EditDeviceViewModelTest {
             assertTrue(repo.devices.isEmpty())
         }
 
+    @Test
+    fun `uploadPhoto stores the new etag on the device after a successful upload`() =
+        runTest {
+            val repo = FakeDeviceRepository()
+            val device = TestDevices.createDevice(id = "device-1", name = "Test Device")
+            repo.setDevices(listOf(device))
+            val imageRepo = FakeDeviceImageRepository().apply { uploadResult = Result.Success("etag-1") }
+
+            val viewModel = createViewModel(repo, "device-1", imageRepo)
+            viewModel.uiState.first { it is EditDeviceScreenState.Success }
+
+            viewModel.uploadPhoto(byteArrayOf(1, 2, 3), "image/jpeg")
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            assertEquals("etag-1", repo.devices[0].imageEtag)
+            assertNull(viewModel.photoError.value)
+        }
+
+    @Test
+    fun `uploadPhoto surfaces a repository error without touching the device`() =
+        runTest {
+            val repo = FakeDeviceRepository()
+            val device = TestDevices.createDevice(id = "device-1", name = "Test Device")
+            repo.setDevices(listOf(device))
+            val imageRepo = FakeDeviceImageRepository().apply {
+                uploadResult = Result.Error(DeviceImageError.TooLarge())
+            }
+
+            val viewModel = createViewModel(repo, "device-1", imageRepo)
+            viewModel.uiState.first { it is EditDeviceScreenState.Success }
+
+            viewModel.uploadPhoto(byteArrayOf(1, 2, 3), "image/jpeg")
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            assertIs<DeviceImageError.TooLarge>(viewModel.photoError.value)
+            assertNull(repo.devices[0].imageEtag)
+        }
+
+    @Test
+    fun `removePhoto clears the device's imageEtag`() =
+        runTest {
+            val repo = FakeDeviceRepository()
+            val device = TestDevices.createDevice(id = "device-1", name = "Test Device").copy(imageEtag = "etag-1")
+            repo.setDevices(listOf(device))
+            val imageRepo = FakeDeviceImageRepository()
+
+            val viewModel = createViewModel(repo, "device-1", imageRepo)
+            viewModel.uiState.first { it is EditDeviceScreenState.Success }
+
+            viewModel.removePhoto()
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            assertEquals(listOf("device-1"), imageRepo.deletedDeviceIds)
+            assertNull(repo.devices[0].imageEtag)
+        }
+
     private fun createViewModel(
         repo: FakeDeviceRepository,
         deviceId: String,
+        imageRepo: FakeDeviceImageRepository = FakeDeviceImageRepository(),
     ): EditDeviceViewModel =
         EditDeviceViewModel(
             deviceId = deviceId,
@@ -127,5 +192,9 @@ class EditDeviceViewModelTest {
             getDeviceTypesUseCase = GetDeviceTypesUseCase(repo),
             updateDeviceUseCase = UpdateDeviceUseCase(repo),
             deleteDeviceUseCase = DeleteDeviceUseCase(repo),
+            getCachedDeviceImageUseCase = GetCachedDeviceImageUseCase(imageRepo),
+            uploadDeviceImageUseCase = UploadDeviceImageUseCase(imageRepo),
+            deleteDeviceImageUseCase = DeleteDeviceImageUseCase(imageRepo),
+            isDeviceImagesSupportedUseCase = IsDeviceImagesSupportedUseCase(imageRepo),
         )
 }

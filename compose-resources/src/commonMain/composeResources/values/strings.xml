@@ -137,6 +137,13 @@
     <string name="action_delete_device">Delete Device</string>
     <string name="label_select_type">Select Type</string>
     <string name="action_add_new_device_type">Add New Device Type...</string>
+    <string name="action_choose_photo">Choose Photo</string>
+    <string name="action_change_photo">Change Photo</string>
+    <string name="action_remove_photo">Remove Photo</string>
+    <string name="device_image_error_invalid_image">Unsupported image type or corrupt image data</string>
+    <string name="device_image_error_device_not_found">Device not found -- sync it before uploading a photo</string>
+    <string name="device_image_error_too_large">Image is too large (10 MB limit)</string>
+    <string name="device_image_error_network">Network error -- please try again</string>
 
     <!-- Settings -->
     <string name="form_error_device_name_required">Device name is required</string>
