@@ -93,6 +93,10 @@ class EditDeviceViewModel(
     private val _photoError = MutableStateFlow<DeviceImageError?>(viewModelScope, null)
     val photoError: StateFlow<DeviceImageError?> = _photoError
 
+    /** True while a photo upload or removal is in flight, for a loading indicator + double-tap guard. */
+    private val _photoUploading = MutableStateFlow(viewModelScope, false)
+    val photoUploading: StateFlow<Boolean> = _photoUploading
+
     fun updateDevice(input: DeviceInput) {
         val currentState = uiState.value
         if (currentState is EditDeviceScreenState.Success) {
@@ -115,33 +119,35 @@ class EditDeviceViewModel(
         }
     }
 
-    /** Uploads a photo already picked and normalized by the UI layer, then records the new etag. */
+    /**
+     * Uploads a photo already picked and normalized by the UI layer. The upload itself (and
+     * recording the new etag) runs on [UploadDeviceImageUseCase]'s own app-scoped coroutine, so it
+     * completes even if this screen closes before it's done -- only [photoUploading]/[photoError]
+     * are tied to this ViewModel's lifetime.
+     */
     fun uploadPhoto(
         bytes: ByteArray,
         contentType: String,
     ) {
         viewModelScope.coroutineScope.launch {
+            _photoError.value = null
+            _photoUploading.value = true
             when (val result = uploadDeviceImageUseCase(deviceId, bytes, contentType)) {
-                is Result.Success -> {
-                    _photoError.value = null
-                    applyImageEtag(result.data)
-                }
-
-                is Result.Error -> {
-                    _photoError.value = result.error
-                }
+                is Result.Success -> Unit
+                is Result.Error -> _photoError.value = result.error
             }
+            _photoUploading.value = false
         }
     }
 
     fun removePhoto() {
         viewModelScope.coroutineScope.launch {
-            if (deleteDeviceImageUseCase(deviceId)) {
-                _photoError.value = null
-                applyImageEtag(null)
-            } else {
+            _photoError.value = null
+            _photoUploading.value = true
+            if (!deleteDeviceImageUseCase(deviceId)) {
                 _photoError.value = DeviceImageError.NetworkError(message = "Failed to remove photo")
             }
+            _photoUploading.value = false
         }
     }
 
@@ -152,10 +158,5 @@ class EditDeviceViewModel(
     /** The UI layer picked bytes it couldn't decode/normalize locally -- surface it like any other photo error. */
     fun reportPhotoPickFailed() {
         _photoError.value = DeviceImageError.InvalidImage()
-    }
-
-    private suspend fun applyImageEtag(imageEtag: String?) {
-        val current = (uiState.value as? EditDeviceScreenState.Success)?.device ?: return
-        updateDeviceUseCase(current.copy(imageEtag = imageEtag, lastUpdated = Clock.System.now()))
     }
 }

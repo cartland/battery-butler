@@ -17,6 +17,7 @@ fun EditDeviceScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val photoError by viewModel.photoError.collectAsStateWithLifecycle()
+    val photoUploading by viewModel.photoUploading.collectAsStateWithLifecycle()
 
     EditDeviceContent(
         uiState = uiState,
@@ -35,5 +36,6 @@ fun EditDeviceScreen(
         onRemovePhoto = { viewModel.removePhoto() },
         onPhotoPickFailed = { viewModel.reportPhotoPickFailed() },
         photoError = photoError,
+        photoUploading = photoUploading,
     )
 }
