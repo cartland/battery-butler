@@ -5,8 +5,8 @@ import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
-import kotlin.time.Clock
 import me.tatarka.inject.annotations.Inject
+import kotlin.time.Clock
 
 /**
  * Deletes a device photo and, on success, clears the device's etag -- both steps run on [scope]
@@ -20,13 +20,14 @@ class DeleteDeviceImageUseCase(
     private val scope: CoroutineScope,
 ) {
     suspend operator fun invoke(deviceId: String): Boolean =
-        scope.async {
-            val success = deviceImageRepository.deleteImage(deviceId)
-            if (success) {
-                applyImageEtag(deviceId)
-            }
-            success
-        }.await()
+        scope
+            .async {
+                val success = deviceImageRepository.deleteImage(deviceId)
+                if (success) {
+                    applyImageEtag(deviceId)
+                }
+                success
+            }.await()
 
     private suspend fun applyImageEtag(deviceId: String) {
         val device = deviceRepository.getDeviceById(deviceId).first() ?: return

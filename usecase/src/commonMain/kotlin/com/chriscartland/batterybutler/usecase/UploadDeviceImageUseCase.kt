@@ -7,8 +7,8 @@ import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
-import kotlin.time.Clock
 import me.tatarka.inject.annotations.Inject
+import kotlin.time.Clock
 
 /**
  * Uploads a device photo and, on success, writes the returned etag onto the device -- both steps
@@ -29,13 +29,14 @@ class UploadDeviceImageUseCase(
         bytes: ByteArray,
         contentType: String,
     ): Result<String, DeviceImageError> =
-        scope.async {
-            val result = deviceImageRepository.uploadImage(deviceId, bytes, contentType)
-            if (result is Result.Success) {
-                applyImageEtag(deviceId, result.data)
-            }
-            result
-        }.await()
+        scope
+            .async {
+                val result = deviceImageRepository.uploadImage(deviceId, bytes, contentType)
+                if (result is Result.Success) {
+                    applyImageEtag(deviceId, result.data)
+                }
+                result
+            }.await()
 
     private suspend fun applyImageEtag(
         deviceId: String,
