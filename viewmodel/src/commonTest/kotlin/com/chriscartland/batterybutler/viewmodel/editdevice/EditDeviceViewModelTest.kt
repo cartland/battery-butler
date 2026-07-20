@@ -16,8 +16,10 @@ import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.IsDeviceImagesSupportedUseCase
 import com.chriscartland.batterybutler.usecase.UpdateDeviceUseCase
 import com.chriscartland.batterybutler.usecase.UploadDeviceImageUseCase
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -141,6 +143,7 @@ class EditDeviceViewModelTest {
 
             assertEquals("etag-1", repo.devices[0].imageEtag)
             assertNull(viewModel.photoError.value)
+            assertEquals(false, viewModel.photoUploading.value)
         }
 
     @Test
@@ -161,6 +164,7 @@ class EditDeviceViewModelTest {
 
             assertIs<DeviceImageError.TooLarge>(viewModel.photoError.value)
             assertNull(repo.devices[0].imageEtag)
+            assertEquals(false, viewModel.photoUploading.value)
         }
 
     @Test
@@ -201,16 +205,18 @@ class EditDeviceViewModelTest {
         repo: FakeDeviceRepository,
         deviceId: String,
         imageRepo: FakeDeviceImageRepository = FakeDeviceImageRepository(),
-    ): EditDeviceViewModel =
-        EditDeviceViewModel(
+    ): EditDeviceViewModel {
+        val scope = CoroutineScope(testDispatcher + Job())
+        return EditDeviceViewModel(
             deviceId = deviceId,
             getDeviceDetailUseCase = GetDeviceDetailUseCase(repo),
             getDeviceTypesUseCase = GetDeviceTypesUseCase(repo),
             updateDeviceUseCase = UpdateDeviceUseCase(repo),
             deleteDeviceUseCase = DeleteDeviceUseCase(repo),
             getCachedDeviceImageUseCase = GetCachedDeviceImageUseCase(imageRepo),
-            uploadDeviceImageUseCase = UploadDeviceImageUseCase(imageRepo),
-            deleteDeviceImageUseCase = DeleteDeviceImageUseCase(imageRepo),
+            uploadDeviceImageUseCase = UploadDeviceImageUseCase(imageRepo, repo, scope),
+            deleteDeviceImageUseCase = DeleteDeviceImageUseCase(imageRepo, repo, scope),
             isDeviceImagesSupportedUseCase = IsDeviceImagesSupportedUseCase(imageRepo),
         )
+    }
 }

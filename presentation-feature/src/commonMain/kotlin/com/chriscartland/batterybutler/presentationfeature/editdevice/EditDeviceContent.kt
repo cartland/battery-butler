@@ -108,6 +108,7 @@ fun EditDeviceContent(
     onRemovePhoto: () -> Unit = {},
     onPhotoPickFailed: () -> Unit = {},
     photoError: DeviceImageError? = null,
+    photoUploading: Boolean = false,
 ) {
     // Local state for form fields
     var name by rememberSaveable { mutableStateOf("") }
@@ -195,6 +196,7 @@ fun EditDeviceContent(
                             DevicePhotoSection(
                                 imageBytes = state.imageBytes,
                                 photoError = photoError,
+                                photoUploading = photoUploading,
                                 onPhotoPicked = onPhotoPicked,
                                 onRemovePhoto = onRemovePhoto,
                                 onPhotoPickFailed = onPhotoPickFailed,
@@ -352,6 +354,7 @@ fun EditDeviceContent(
 private fun DevicePhotoSection(
     imageBytes: DeviceImageBytes?,
     photoError: DeviceImageError?,
+    photoUploading: Boolean,
     onPhotoPicked: (bytes: ByteArray, contentType: String) -> Unit,
     onRemovePhoto: () -> Unit,
     onPhotoPickFailed: () -> Unit,
@@ -383,12 +386,26 @@ private fun DevicePhotoSection(
                     tint = MaterialTheme.colorScheme.onPrimaryContainer,
                 )
             }
+            if (photoUploading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.4f)),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(32.dp),
+                        color = MaterialTheme.colorScheme.onPrimary,
+                    )
+                }
+            }
         }
 
         Spacer(modifier = Modifier.height(8.dp))
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             TextButton(
+                enabled = !photoUploading,
                 onClick = {
                     picker.pickImage { pickedBytes ->
                         if (pickedBytes != null) {
@@ -409,7 +426,7 @@ private fun DevicePhotoSection(
                 )
             }
             if (imageBitmap != null) {
-                TextButton(onClick = onRemovePhoto) {
+                TextButton(enabled = !photoUploading, onClick = onRemovePhoto) {
                     Text(composeStringResource(Res.string.action_remove_photo))
                 }
             }

@@ -221,6 +221,34 @@ doesn't corrupt anything), and `HomeViewModel`'s per-etag image map re-queries R
 every sort/group change, not just when the device set's etags actually change (extra
 local reads, not a correctness issue).
 
+**Reliability fix (2026-07-20)** — user-reported after android/51: on real Labs staging,
+picking a photo showed no loading state, no error, and no image after the pick, even
+though the server logs confirmed the upload `PUT` genuinely succeeded (twice). Root
+cause: `EditDeviceViewModel.uploadPhoto()`/`removePhoto()` ran the upload/delete *and*
+the follow-up local write of the device's `imageEtag` entirely inside `viewModelScope`.
+With zero visual feedback during the upload, the natural next move is to tap Save or
+Back — which clears the ViewModel and cancels `viewModelScope` mid-upload, silently
+dropping the local etag write (and the cache population it depends on) even though the
+byte upload had already landed server-side. No error surfaced either, since the
+cancelled coroutine never reached the `_photoError` assignment.
+
+**Fix**: moved the upload/delete orchestration — network call, cache write, and the
+device's `imageEtag` update — out of `viewModelScope` and into `UploadDeviceImageUseCase`
+/`DeleteDeviceImageUseCase`, run via `scope.async { }.await()` on the injected app-scoped
+`CoroutineScope` (the same one `DeviceImageSyncCoordinator`/`DefaultSyncManager` already
+use). Awaiting from `viewModelScope` still gives immediate UI feedback while the screen
+is open, but cancelling the awaiter (screen closing) no longer cancels the underlying
+work, since `scope.async` is not a structured child of the caller's job. Also resolved
+the two deferred items from the review pass above: `EditDeviceViewModel` now exposes
+`photoUploading: StateFlow<Boolean>`, wired to a semi-transparent spinner overlay on the
+avatar and `enabled = !photoUploading` on the Change/Remove buttons (loading indicator +
+double-tap guard in one change). `_photoError` is now cleared at the start of every new
+attempt instead of only on the next result, so a stale error doesn't linger visibly
+through a retry. `HomeViewModel`'s re-query inefficiency remains deferred (unrelated to
+this bug). Verified: `usecase`/`viewmodel` unit tests updated and passing, and both DI
+graphs (`compose-app` Android, `ios-swift-di`) resolve the new use-case constructor
+params via KSP without any manual wiring changes.
+
 Let each device optionally have one photo, shown next to its name/location: pick →
 upload → replace/remove, displayed in the detail avatar + list item. **Full spec:
 [`docs/DEVICE_IMAGES.md`](docs/DEVICE_IMAGES.md)** — read it first; this is the summary.
