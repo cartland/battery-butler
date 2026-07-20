@@ -21,7 +21,8 @@ final class EditBatteryEventScreenTests: XCTestCase {
             batteryLastReplaced: KotlinInstant.Companion.shared.fromEpochMilliseconds(epochMilliseconds: 1704067200000),
             lastUpdated: KotlinInstant.Companion.shared.fromEpochMilliseconds(epochMilliseconds: 1704067200000),
             location: "Living Room",
-            imagePath: nil
+            imagePath: nil,
+            imageEtag: nil
         )
 
         let dummyDeviceType = DeviceType(

@@ -34,7 +34,8 @@ final class HomeScreenTests: XCTestCase {
             groupOption: .none,
             exportData: nil,
             syncStatus: SyncStatusIdle(),
-            error: nil
+            error: nil,
+            deviceImagesByEtag: [:]
         )
 
         let view = makeView(state: state)
@@ -57,7 +58,8 @@ final class HomeScreenTests: XCTestCase {
             groupOption: .none,
             exportData: nil,
             syncStatus: SyncStatusIdle(),
-            error: nil
+            error: nil,
+            deviceImagesByEtag: [:]
         )
 
         let view = makeView(state: state)
@@ -83,7 +85,8 @@ final class HomeScreenTests: XCTestCase {
             groupOption: .none,
             exportData: nil,
             syncStatus: SyncStatusSyncing(),
-            error: nil
+            error: nil,
+            deviceImagesByEtag: [:]
         )
 
         let view = makeView(state: state)
