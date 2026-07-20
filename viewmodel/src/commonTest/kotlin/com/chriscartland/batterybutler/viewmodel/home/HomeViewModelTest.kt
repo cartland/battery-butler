@@ -5,10 +5,12 @@ import com.chriscartland.batterybutler.domain.model.DispatcherProvider
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.presentationmodel.home.GroupOption
 import com.chriscartland.batterybutler.presentationmodel.home.SortOption
+import com.chriscartland.batterybutler.testcommon.FakeDeviceImageRepository
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
 import com.chriscartland.batterybutler.testcommon.TestDevices
 import com.chriscartland.batterybutler.usecase.DismissSyncStatusUseCase
 import com.chriscartland.batterybutler.usecase.ExportDataUseCase
+import com.chriscartland.batterybutler.usecase.GetCachedDeviceImageUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.GetDevicesUseCase
 import com.chriscartland.batterybutler.usecase.GetSyncStatusUseCase
@@ -247,5 +249,6 @@ class HomeViewModelTest {
             getSyncStatusUseCase = GetSyncStatusUseCase(repo),
             dismissSyncStatusUseCase = DismissSyncStatusUseCase(repo),
             resyncUseCase = ResyncUseCase(repo),
+            getCachedDeviceImageUseCase = GetCachedDeviceImageUseCase(FakeDeviceImageRepository()),
         )
 }

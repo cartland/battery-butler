@@ -250,6 +250,7 @@
     <string name="label_notes">Notes</string>
     <string name="content_desc_back">Back</string>
     <string name="content_desc_device_icon">Device icon</string>
+    <string name="content_desc_device_photo">Device photo</string>
     <string name="content_desc_device_type">Device type</string>
     <string name="content_desc_device_type_icon">Device type icon</string>
     <string name="content_desc_location">Location</string>

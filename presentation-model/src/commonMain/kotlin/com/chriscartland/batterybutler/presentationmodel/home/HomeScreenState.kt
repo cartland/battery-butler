@@ -1,6 +1,7 @@
 package com.chriscartland.batterybutler.presentationmodel.home
 
 import com.chriscartland.batterybutler.domain.model.Device
+import com.chriscartland.batterybutler.domain.model.DeviceImageBytes
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.SyncStatus
 
@@ -14,6 +15,8 @@ data class HomeScreenState(
     val exportData: String? = null,
     val syncStatus: SyncStatus = SyncStatus.Idle,
     val error: String? = null,
+    /** Cached photo bytes keyed by [Device.imageEtag], for devices whose photo has finished caching. */
+    val deviceImagesByEtag: Map<String, DeviceImageBytes> = emptyMap(),
 )
 
 enum class SortOption {

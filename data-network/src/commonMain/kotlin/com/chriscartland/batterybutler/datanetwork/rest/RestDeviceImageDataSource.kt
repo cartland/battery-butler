@@ -1,7 +1,7 @@
 package com.chriscartland.batterybutler.datanetwork.rest
 
 import co.touchlab.kermit.Logger
-import com.chriscartland.batterybutler.datanetwork.DeviceImageBytes
+import com.chriscartland.batterybutler.domain.model.DeviceImageBytes
 import com.chriscartland.batterybutler.domain.model.DeviceImageError
 import com.chriscartland.batterybutler.domain.model.Result
 import io.ktor.client.HttpClient

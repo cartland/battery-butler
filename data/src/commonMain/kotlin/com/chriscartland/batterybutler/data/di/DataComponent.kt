@@ -4,12 +4,15 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.chriscartland.batterybutler.data.provider.DefaultDispatcherProvider
 import com.chriscartland.batterybutler.data.repository.DataStoreDataModeRepository
+import com.chriscartland.batterybutler.data.repository.DefaultDeviceImageRepository
 import com.chriscartland.batterybutler.data.repository.DefaultDeviceRepository
 import com.chriscartland.batterybutler.data.repository.DefaultLegacyDatabaseRepository
 import com.chriscartland.batterybutler.data.repository.DefaultSyncManager
 import com.chriscartland.batterybutler.data.repository.SyncManager
 import com.chriscartland.batterybutler.data.repository.auth.DefaultAuthRepository
+import com.chriscartland.batterybutler.datalocal.DeviceImageCache
 import com.chriscartland.batterybutler.datalocal.LocalDataSource
+import com.chriscartland.batterybutler.datalocal.RoomDeviceImageCache
 import com.chriscartland.batterybutler.datalocal.RoomLocalDataSource
 import com.chriscartland.batterybutler.datalocal.auth.AuthTokenStorage
 import com.chriscartland.batterybutler.datalocal.auth.DataStoreAuthTokenStorage
@@ -31,6 +34,7 @@ import com.chriscartland.batterybutler.domain.model.DataMode
 import com.chriscartland.batterybutler.domain.model.DispatcherProvider
 import com.chriscartland.batterybutler.domain.repository.AuthRepository
 import com.chriscartland.batterybutler.domain.repository.DataModeRepository
+import com.chriscartland.batterybutler.domain.repository.DeviceImageRepository
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.domain.repository.LabsRefreshTokenPersistence
 import com.chriscartland.batterybutler.domain.repository.LegacyDatabaseRepository
@@ -75,6 +79,9 @@ interface DataComponent {
     fun provideDeviceRepository(repo: DefaultDeviceRepository): DeviceRepository = repo
 
     @Provides
+    fun provideDeviceImageRepository(repo: DefaultDeviceImageRepository): DeviceImageRepository = repo
+
+    @Provides
     fun provideDataModeRepository(repo: DataStoreDataModeRepository): DataModeRepository = repo
 
     @Provides
@@ -88,6 +95,9 @@ interface DataComponent {
 
     @Provides
     fun provideLocalDataSource(dataSource: RoomLocalDataSource): LocalDataSource = dataSource
+
+    @Provides
+    fun provideDeviceImageCache(cache: RoomDeviceImageCache): DeviceImageCache = cache
 
     @Provides
     fun provideSyncServiceClient(client: GrpcClient): SyncServiceClient = GrpcSyncServiceClient(client)

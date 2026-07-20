@@ -1,5 +1,6 @@
 package com.chriscartland.batterybutler.presentationcore.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -16,11 +17,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.chriscartland.batterybutler.composeresources.composeStringResource
+import com.chriscartland.batterybutler.composeresources.generated.resources.Res
+import com.chriscartland.batterybutler.composeresources.generated.resources.content_desc_device_photo
 import com.chriscartland.batterybutler.domain.model.Device
+import com.chriscartland.batterybutler.domain.model.DeviceImageBytes
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationcore.theme.IconSize
@@ -56,6 +62,7 @@ fun DeviceListItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     nowInstant: Instant = Clock.System.now(),
+    imageBytes: DeviceImageBytes? = null,
 ) {
     val daysInt = remember(device.batteryLastReplaced, nowInstant) {
         if (device.batteryLastReplaced.toEpochMilliseconds() == 0L) {
@@ -74,13 +81,23 @@ fun DeviceListItem(
         onClick = onClick,
         modifier = modifier,
         leading = {
-            val accent = DeviceIconMapper.getResolvedIconAccent(deviceType?.defaultIcon)
-            ButlerIconBox(
-                icon = DeviceIconMapper.getIcon(deviceType?.defaultIcon),
-                contentDescription = deviceType?.name ?: "Device Icon",
-                containerColor = accent.container,
-                contentColor = accent.content,
-            )
+            val imageBitmap = rememberDeviceImageBitmap(imageBytes)
+            if (imageBitmap != null) {
+                Image(
+                    bitmap = imageBitmap,
+                    contentDescription = composeStringResource(Res.string.content_desc_device_photo),
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.size(48.dp).clip(MaterialTheme.shapes.small),
+                )
+            } else {
+                val accent = DeviceIconMapper.getResolvedIconAccent(deviceType?.defaultIcon)
+                ButlerIconBox(
+                    icon = DeviceIconMapper.getIcon(deviceType?.defaultIcon),
+                    contentDescription = deviceType?.name ?: "Device Icon",
+                    containerColor = accent.container,
+                    contentColor = accent.content,
+                )
+            }
         },
         trailing = {
             Column(

@@ -3,6 +3,7 @@ package com.chriscartland.batterybutler.datanetwork
 import com.chriscartland.batterybutler.datanetwork.rest.RestDeviceImageDataSource
 import com.chriscartland.batterybutler.datanetwork.rest.createSyncHttpClient
 import com.chriscartland.batterybutler.domain.model.DataMode
+import com.chriscartland.batterybutler.domain.model.DeviceImageBytes
 import com.chriscartland.batterybutler.domain.model.DeviceImageError
 import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.repository.DataModeRepository

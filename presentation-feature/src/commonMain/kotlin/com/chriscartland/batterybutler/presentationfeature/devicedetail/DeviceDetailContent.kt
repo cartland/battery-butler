@@ -3,6 +3,7 @@ package com.chriscartland.batterybutler.presentationfeature.devicedetail
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -48,6 +49,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -76,6 +78,7 @@ import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMapper
 import com.chriscartland.batterybutler.presentationcore.components.HistoryListItem
+import com.chriscartland.batterybutler.presentationcore.components.rememberDeviceImageBitmap
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationcore.theme.Padding
 import com.chriscartland.batterybutler.presentationmodel.devicedetail.DeviceDetailScreenState
@@ -231,6 +234,7 @@ fun DeviceDetailBody(
                 // Profile Header
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Box(modifier = Modifier.padding(bottom = Padding.standard)) {
+                        val imageBitmap = rememberDeviceImageBitmap(state.imageBytes)
                         Box(
                             modifier = Modifier
                                 .size(112.dp)
@@ -238,12 +242,21 @@ fun DeviceDetailBody(
                                 .background(MaterialTheme.colorScheme.primaryContainer),
                             contentAlignment = Alignment.Center,
                         ) {
-                            Icon(
-                                imageVector = DeviceIconMapper.getIcon(iconName),
-                                contentDescription = composeStringResource(Res.string.content_desc_device_icon),
-                                modifier = Modifier.size(64.dp),
-                                tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                            )
+                            if (imageBitmap != null) {
+                                Image(
+                                    bitmap = imageBitmap,
+                                    contentDescription = composeStringResource(Res.string.content_desc_device_icon),
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier.fillMaxSize(),
+                                )
+                            } else {
+                                Icon(
+                                    imageVector = DeviceIconMapper.getIcon(iconName),
+                                    contentDescription = composeStringResource(Res.string.content_desc_device_icon),
+                                    modifier = Modifier.size(64.dp),
+                                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                                )
+                            }
                         }
                     }
                     Text(

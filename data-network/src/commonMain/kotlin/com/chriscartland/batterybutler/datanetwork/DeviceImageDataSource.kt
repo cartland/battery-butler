@@ -1,14 +1,9 @@
 package com.chriscartland.batterybutler.datanetwork
 
+import com.chriscartland.batterybutler.domain.model.DeviceImageBytes
 import com.chriscartland.batterybutler.domain.model.DeviceImageError
 import com.chriscartland.batterybutler.domain.model.Result
 import kotlinx.coroutines.flow.Flow
-
-/** Raw image bytes fetched from the backend, with the `Content-Type` the server stored it as. */
-class DeviceImageBytes(
-    val bytes: ByteArray,
-    val contentType: String,
-)
 
 /**
  * A capability interface, separate from [RemoteDataSource], for the per-device photo endpoints

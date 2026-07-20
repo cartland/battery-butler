@@ -1,12 +1,15 @@
 package com.chriscartland.batterybutler.viewmodel.home
 
 import com.chriscartland.batterybutler.domain.model.Device
+import com.chriscartland.batterybutler.domain.model.DeviceImageBytes
+import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.SyncStatus
 import com.chriscartland.batterybutler.presentationmodel.home.GroupOption
 import com.chriscartland.batterybutler.presentationmodel.home.HomeScreenState
 import com.chriscartland.batterybutler.presentationmodel.home.SortOption
 import com.chriscartland.batterybutler.usecase.DismissSyncStatusUseCase
 import com.chriscartland.batterybutler.usecase.ExportDataUseCase
+import com.chriscartland.batterybutler.usecase.GetCachedDeviceImageUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.GetDevicesUseCase
 import com.chriscartland.batterybutler.usecase.GetSyncStatusUseCase
@@ -16,17 +19,23 @@ import com.chriscartland.batterybutler.viewmodel.retryableStateIn
 import com.chriscartland.batterybutler.viewmodel.util.sortAndGroup
 import com.rickclephas.kmp.observableviewmodel.ViewModel
 import com.rickclephas.kmp.observableviewmodel.coroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 import com.rickclephas.kmp.observableviewmodel.MutableStateFlow as ObservableMutableStateFlow
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @Inject
 class HomeViewModel(
     private val getDevicesUseCase: GetDevicesUseCase,
@@ -35,6 +44,7 @@ class HomeViewModel(
     private val getSyncStatusUseCase: GetSyncStatusUseCase,
     private val dismissSyncStatusUseCase: DismissSyncStatusUseCase,
     private val resyncUseCase: ResyncUseCase,
+    private val getCachedDeviceImageUseCase: GetCachedDeviceImageUseCase,
 ) : ViewModel() {
     private val sortOptionFlow = MutableStateFlow(SortOption.BATTERY_AGE)
     private val groupOptionFlow = MutableStateFlow(GroupOption.NONE)
@@ -89,6 +99,11 @@ class HomeViewModel(
                 getDeviceTypesUseCase(),
                 getSyncStatusUseCase(),
             ) { config, devices, types, syncStatus ->
+                DeviceListInputs(config, devices, types, syncStatus)
+            }.flatMapLatest { inputs ->
+                observeImagesByEtag(inputs.devices).map { images -> inputs to images }
+            }.map { (inputs, images) ->
+                val (config, devices, types, syncStatus) = inputs
                 val typeMap = types.associateBy { it.id }
 
                 val sortComparator = when (config.sort) {
@@ -122,6 +137,7 @@ class HomeViewModel(
                     isGroupAscending = config.isGroupAscending,
                     exportData = config.exportData,
                     syncStatus = syncStatus,
+                    deviceImagesByEtag = images,
                 )
             }
         },
@@ -170,6 +186,20 @@ class HomeViewModel(
             _isRefreshing.value = false
         }
     }
+
+    /**
+     * Reactive map of every distinct [Device.imageEtag] among [devices] to its cached bytes,
+     * re-keyed (via the caller's `flatMapLatest`) whenever the device list's set of etags
+     * changes. An etag missing from the result just means "not cached yet" -- the list item
+     * falls back to its icon until sync populates it. See `docs/DEVICE_IMAGES.md` §6D.
+     */
+    private fun observeImagesByEtag(devices: List<Device>): Flow<Map<String, DeviceImageBytes>> {
+        val etags = devices.mapNotNull { it.imageEtag }.distinct()
+        if (etags.isEmpty()) return flowOf(emptyMap())
+        return combine(etags.map { etag -> getCachedDeviceImageUseCase(etag).map { bytes -> etag to bytes } }) { pairs ->
+            pairs.mapNotNull { (etag, bytes) -> bytes?.let { etag to it } }.toMap()
+        }
+    }
 }
 
 private data class SortConfig(
@@ -178,4 +208,11 @@ private data class SortConfig(
     val isSortAscending: Boolean,
     val isGroupAscending: Boolean,
     val exportData: String?,
+)
+
+private data class DeviceListInputs(
+    val config: SortConfig,
+    val devices: List<Device>,
+    val types: List<DeviceType>,
+    val syncStatus: SyncStatus,
 )
