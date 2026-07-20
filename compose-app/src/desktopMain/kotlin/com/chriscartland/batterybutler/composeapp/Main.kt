@@ -13,6 +13,7 @@ import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
 import com.chriscartland.batterybutler.datanetwork.auth.GoogleSignInBridge
 import com.chriscartland.batterybutler.datanetwork.grpc.NetworkComponent
 import com.chriscartland.batterybutler.domain.model.AppVersion
+import com.chriscartland.batterybutler.presentationcore.util.DesktopDeviceImagePicker
 import com.chriscartland.batterybutler.presentationcore.util.DesktopFileLoader
 import com.chriscartland.batterybutler.presentationcore.util.DesktopFileSaver
 import com.chriscartland.batterybutler.presentationcore.util.DesktopSecureClipboard
@@ -54,7 +55,15 @@ fun main() =
             val fileSaver = DesktopFileSaver()
             val fileLoader = DesktopFileLoader()
             val secureClipboard = DesktopSecureClipboard()
+            val deviceImagePicker = DesktopDeviceImagePicker()
 
-            App(component, shareHandler, fileSaver, fileLoader, secureClipboard)
+            App(
+                component = component,
+                shareHandler = shareHandler,
+                fileSaver = fileSaver,
+                fileLoader = fileLoader,
+                secureClipboard = secureClipboard,
+                deviceImagePicker = deviceImagePicker,
+            )
         }
     }

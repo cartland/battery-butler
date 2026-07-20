@@ -79,7 +79,7 @@ actual class DatabaseFactory(
                 name = dbFile.absolutePath,
                 factory = { AppDatabaseConstructor.initialize() },
             ).setDriver(BundledSQLiteDriver())
-            .addMigrations(MIGRATION_3_4, MIGRATION_4_5)
+            .addMigrations(MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
             // If a legacy restore lands a file at a schema version we have no migration
             // path from (e.g. raw SQLite with user_version=0, or pre-v3 Room), don't
             // hang or throw — fall back to creating a fresh v5 schema. The user-facing

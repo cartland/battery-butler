@@ -354,6 +354,7 @@ fun HomeScreenList(
                         deviceType = state.deviceTypes[device.typeId],
                         onClick = { onDeviceClick(device) },
                         nowInstant = nowInstant,
+                        imageBytes = device.imageEtag?.let { state.deviceImagesByEtag[it] },
                     )
                 }
             }

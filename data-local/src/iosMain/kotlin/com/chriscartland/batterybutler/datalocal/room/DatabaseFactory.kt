@@ -130,7 +130,7 @@ actual class DatabaseFactory {
                 name = dbFile,
                 factory = { AppDatabaseConstructor.initialize() },
             ).setDriver(BundledSQLiteDriver())
-            .addMigrations(MIGRATION_3_4, MIGRATION_4_5)
+            .addMigrations(MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
             .fallbackToDestructiveMigrationFrom(false, 0, 1, 2)
             .build()
     }

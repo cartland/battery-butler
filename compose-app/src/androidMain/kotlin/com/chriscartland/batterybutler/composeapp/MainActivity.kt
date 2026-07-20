@@ -11,6 +11,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.chriscartland.batterybutler.BatteryButlerApplication
 import com.chriscartland.batterybutler.composeapp.debug.DebugDataModeReceiver
 import com.chriscartland.batterybutler.presentationcore.util.AndroidAppRestarter
+import com.chriscartland.batterybutler.presentationcore.util.AndroidDeviceImagePicker
 import com.chriscartland.batterybutler.presentationcore.util.AndroidFileLoader
 import com.chriscartland.batterybutler.presentationcore.util.AndroidFileSaver
 import com.chriscartland.batterybutler.presentationcore.util.AndroidSecureClipboard
@@ -19,11 +20,18 @@ import com.chriscartland.batterybutler.presentationcore.util.AndroidShareHandler
 class MainActivity : ComponentActivity() {
     private var debugDataModeReceiver: DebugDataModeReceiver? = null
     private lateinit var fileLoader: AndroidFileLoader
+    private lateinit var deviceImagePicker: AndroidDeviceImagePicker
 
     private val openDocumentLauncher = registerForActivityResult(
         ActivityResultContracts.OpenDocument(),
     ) { uri ->
         fileLoader.handleResult(uri)
+    }
+
+    private val pickDeviceImageLauncher = registerForActivityResult(
+        ActivityResultContracts.PickVisualMedia(),
+    ) { uri ->
+        deviceImagePicker.handleResult(uri)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,9 +51,10 @@ class MainActivity : ComponentActivity() {
         fileLoader = AndroidFileLoader(this, openDocumentLauncher)
         val secureClipboard = AndroidSecureClipboard(this)
         val appRestarter = AndroidAppRestarter(this)
+        deviceImagePicker = AndroidDeviceImagePicker(this, pickDeviceImageLauncher)
 
         setContent {
-            App(component, shareHandler, fileSaver, fileLoader, secureClipboard, appRestarter)
+            App(component, shareHandler, fileSaver, fileLoader, secureClipboard, appRestarter, deviceImagePicker)
         }
 
         // DEBUG: Register receiver for ADB control

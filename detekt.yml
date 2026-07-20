@@ -596,6 +596,7 @@ Compose:
       - 'LocalAppRestarter'
       - 'LocalAppStrings'
       - 'LocalButlerColors'
+      - 'LocalDeviceImagePicker'
       - 'LocalFileLoader'
       - 'LocalFileSaver'
       - 'LocalSecureClipboard'

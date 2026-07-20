@@ -54,9 +54,11 @@ import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationcore.theme.LocalAiAction
 import com.chriscartland.batterybutler.presentationcore.theme.LocalAiAvailable
 import com.chriscartland.batterybutler.presentationcore.util.AppRestarter
+import com.chriscartland.batterybutler.presentationcore.util.DeviceImagePicker
 import com.chriscartland.batterybutler.presentationcore.util.FileLoader
 import com.chriscartland.batterybutler.presentationcore.util.FileSaver
 import com.chriscartland.batterybutler.presentationcore.util.LocalAppRestarter
+import com.chriscartland.batterybutler.presentationcore.util.LocalDeviceImagePicker
 import com.chriscartland.batterybutler.presentationcore.util.LocalFileLoader
 import com.chriscartland.batterybutler.presentationcore.util.LocalFileSaver
 import com.chriscartland.batterybutler.presentationcore.util.LocalSecureClipboard
@@ -116,6 +118,7 @@ fun App(
     fileLoader: FileLoader,
     secureClipboard: SecureClipboard,
     appRestarter: AppRestarter = AppRestarter { /* default no-op for previews / unsupported platforms */ },
+    deviceImagePicker: DeviceImagePicker = DeviceImagePicker { onResult -> onResult(null) },
 ) {
     BatteryButlerTheme {
         CompositionLocalProvider(
@@ -125,6 +128,7 @@ fun App(
             LocalSecureClipboard provides secureClipboard,
             LocalAppRestarter provides appRestarter,
             LocalAppStrings provides ComposeAppStrings(),
+            LocalDeviceImagePicker provides deviceImagePicker,
         ) {
             // Root-level restart observer. The RestartCoordinator on the
             // AppComponent is a long-lived SharedFlow; this collector lives

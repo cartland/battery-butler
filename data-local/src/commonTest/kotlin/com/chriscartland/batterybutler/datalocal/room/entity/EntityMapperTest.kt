@@ -23,6 +23,7 @@ class EntityMapperTest {
             lastUpdated = Instant.parse("2024-07-01T08:00:00Z"),
             location = "Kitchen",
             imagePath = "/images/smoke.png",
+            imageEtag = "abc123",
         )
 
         val result = device.toEntity().toDomain()
@@ -31,7 +32,7 @@ class EntityMapperTest {
     }
 
     @Test
-    fun `Device round-trip with null location and imagePath`() {
+    fun `Device round-trip with null location, imagePath, and imageEtag`() {
         val device = Device(
             id = "dev-1",
             name = "Test Device",
@@ -40,6 +41,7 @@ class EntityMapperTest {
             lastUpdated = Instant.parse("2024-01-01T00:00:00Z"),
             location = null,
             imagePath = null,
+            imageEtag = null,
         )
 
         val result = device.toEntity().toDomain()
@@ -47,6 +49,7 @@ class EntityMapperTest {
         assertEquals(device, result)
         assertNull(result.location)
         assertNull(result.imagePath)
+        assertNull(result.imageEtag)
     }
 
     @Test
@@ -60,6 +63,7 @@ class EntityMapperTest {
             lastUpdated = epochMillis,
             location = null,
             imagePath = null,
+            imageEtag = null,
         )
 
         val domain = entity.toDomain()

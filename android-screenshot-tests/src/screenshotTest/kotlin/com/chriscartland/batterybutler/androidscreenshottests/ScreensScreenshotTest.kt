@@ -11,6 +11,7 @@ import com.chriscartland.batterybutler.presentationfeature.aichat.AiChatContentP
 import com.chriscartland.batterybutler.presentationfeature.devicetypes.DeviceTypeListContentEmptyPreview
 import com.chriscartland.batterybutler.presentationfeature.devicetypes.DeviceTypeListContentErrorPreview
 import com.chriscartland.batterybutler.presentationfeature.devicetypes.EditDeviceTypeContentPreview
+import com.chriscartland.batterybutler.presentationfeature.editdevice.EditDeviceContentPhotoPreview
 import com.chriscartland.batterybutler.presentationfeature.editdevice.EditDeviceContentPreview
 import com.chriscartland.batterybutler.presentationfeature.history.HistoryListContentEmptyPreview
 import com.chriscartland.batterybutler.presentationfeature.history.HistoryListContentErrorPreview
@@ -78,6 +79,16 @@ fun AddBatteryEventScreenPreviewTest() {
 fun EditDeviceScreenPreviewTest() {
     ScreenshotTestTheme {
         EditDeviceContentPreview()
+    }
+}
+
+@PreviewTest
+@Preview(showBackground = true, name = "Light")
+@Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun EditDeviceScreenPhotoPreviewTest() {
+    ScreenshotTestTheme {
+        EditDeviceContentPhotoPreview()
     }
 }
 

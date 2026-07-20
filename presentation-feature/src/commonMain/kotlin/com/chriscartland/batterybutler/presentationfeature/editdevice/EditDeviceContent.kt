@@ -1,16 +1,24 @@
 package com.chriscartland.batterybutler.presentationfeature.editdevice
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Photo
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -28,6 +36,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,7 +45,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -46,9 +57,17 @@ import com.chriscartland.batterybutler.composeresources.composeStringResource
 import com.chriscartland.batterybutler.composeresources.generated.resources.Res
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_add_new_device_type
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_cancel
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_change_photo
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_choose_photo
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_delete
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_delete_device
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_remove_photo
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_save_bold
+import com.chriscartland.batterybutler.composeresources.generated.resources.content_desc_device_photo
+import com.chriscartland.batterybutler.composeresources.generated.resources.device_image_error_device_not_found
+import com.chriscartland.batterybutler.composeresources.generated.resources.device_image_error_invalid_image
+import com.chriscartland.batterybutler.composeresources.generated.resources.device_image_error_network
+import com.chriscartland.batterybutler.composeresources.generated.resources.device_image_error_too_large
 import com.chriscartland.batterybutler.composeresources.generated.resources.dialog_delete_device_text
 import com.chriscartland.batterybutler.composeresources.generated.resources.dialog_delete_device_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.edit_device_title
@@ -60,12 +79,18 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.labe
 import com.chriscartland.batterybutler.composeresources.generated.resources.label_location
 import com.chriscartland.batterybutler.composeresources.generated.resources.label_select_type
 import com.chriscartland.batterybutler.domain.model.Device
+import com.chriscartland.batterybutler.domain.model.DeviceImageBytes
+import com.chriscartland.batterybutler.domain.model.DeviceImageError
 import com.chriscartland.batterybutler.domain.model.DeviceInput
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMapper
+import com.chriscartland.batterybutler.presentationcore.components.rememberDeviceImageBitmap
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationcore.theme.Padding
+import com.chriscartland.batterybutler.presentationcore.util.DeviceImagePicker
+import com.chriscartland.batterybutler.presentationcore.util.LocalDeviceImagePicker
+import com.chriscartland.batterybutler.presentationcore.util.normalizeDeviceImage
 import com.chriscartland.batterybutler.presentationmodel.editdevice.EditDeviceScreenState
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -79,6 +104,10 @@ fun EditDeviceContent(
     onAddDeviceTypeClick: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    onPhotoPicked: (bytes: ByteArray, contentType: String) -> Unit = { _, _ -> },
+    onRemovePhoto: () -> Unit = {},
+    onPhotoPickFailed: () -> Unit = {},
+    photoError: DeviceImageError? = null,
 ) {
     // Local state for form fields
     var name by rememberSaveable { mutableStateOf("") }
@@ -162,6 +191,17 @@ fun EditDeviceContent(
                             .verticalScroll(rememberScrollState())
                             .padding(Padding.standard),
                     ) {
+                        if (state.imagesSupported) {
+                            DevicePhotoSection(
+                                imageBytes = state.imageBytes,
+                                photoError = photoError,
+                                onPhotoPicked = onPhotoPicked,
+                                onRemovePhoto = onRemovePhoto,
+                                onPhotoPickFailed = onPhotoPickFailed,
+                            )
+                            Spacer(modifier = Modifier.height(24.dp))
+                        }
+
                         // Name Input
                         OutlinedTextField(
                             value = name,
@@ -308,6 +348,92 @@ fun EditDeviceContent(
     }
 }
 
+@Composable
+private fun DevicePhotoSection(
+    imageBytes: DeviceImageBytes?,
+    photoError: DeviceImageError?,
+    onPhotoPicked: (bytes: ByteArray, contentType: String) -> Unit,
+    onRemovePhoto: () -> Unit,
+    onPhotoPickFailed: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val picker = LocalDeviceImagePicker.current
+    val imageBitmap = rememberDeviceImageBitmap(imageBytes)
+
+    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+        Box(
+            modifier = Modifier
+                .size(112.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.primaryContainer),
+            contentAlignment = Alignment.Center,
+        ) {
+            if (imageBitmap != null) {
+                Image(
+                    bitmap = imageBitmap,
+                    contentDescription = composeStringResource(Res.string.content_desc_device_photo),
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize(),
+                )
+            } else {
+                Icon(
+                    imageVector = Icons.Default.Photo,
+                    contentDescription = composeStringResource(Res.string.content_desc_device_photo),
+                    modifier = Modifier.size(48.dp),
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            TextButton(
+                onClick = {
+                    picker.pickImage { pickedBytes ->
+                        if (pickedBytes != null) {
+                            val normalized = normalizeDeviceImage(pickedBytes)
+                            if (normalized != null) {
+                                onPhotoPicked(normalized.bytes, normalized.contentType)
+                            } else {
+                                onPhotoPickFailed()
+                            }
+                        }
+                    }
+                },
+            ) {
+                Text(
+                    composeStringResource(
+                        if (imageBitmap != null) Res.string.action_change_photo else Res.string.action_choose_photo,
+                    ),
+                )
+            }
+            if (imageBitmap != null) {
+                TextButton(onClick = onRemovePhoto) {
+                    Text(composeStringResource(Res.string.action_remove_photo))
+                }
+            }
+        }
+
+        if (photoError != null) {
+            Text(
+                text = getPhotoErrorText(photoError),
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+            )
+        }
+    }
+}
+
+@Composable
+private fun getPhotoErrorText(error: DeviceImageError): String =
+    when (error) {
+        is DeviceImageError.InvalidImage -> composeStringResource(Res.string.device_image_error_invalid_image)
+        is DeviceImageError.DeviceNotFound -> composeStringResource(Res.string.device_image_error_device_not_found)
+        is DeviceImageError.TooLarge -> composeStringResource(Res.string.device_image_error_too_large)
+        is DeviceImageError.NetworkError -> composeStringResource(Res.string.device_image_error_network)
+    }
+
 @Preview(showBackground = true)
 @Composable
 fun EditDeviceLoadingPreview() {
@@ -354,5 +480,30 @@ fun EditDeviceContentPreview() {
             onAddDeviceTypeClick = {},
             onBack = {},
         )
+    }
+}
+
+@OptIn(ExperimentalTime::class)
+@Preview(showBackground = true)
+@Composable
+fun EditDeviceContentPhotoPreview() {
+    BatteryButlerTheme {
+        val now = Instant.parse("2026-01-18T17:00:00Z")
+        val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
+        val device = Device("dev1", "Kitchen Smoke", "type1", now, now, "Kitchen")
+        CompositionLocalProvider(LocalDeviceImagePicker provides DeviceImagePicker { onResult -> onResult(null) }) {
+            EditDeviceContent(
+                uiState = EditDeviceScreenState.Success(
+                    device = device,
+                    deviceTypes = listOf(type),
+                    imagesSupported = true,
+                ),
+                onSave = {},
+                onDelete = {},
+                onAddDeviceTypeClick = {},
+                onBack = {},
+                photoError = DeviceImageError.TooLarge(),
+            )
+        }
     }
 }

@@ -31,6 +31,7 @@ class DefaultSyncManager(
     private val localDataSource: LocalDataSource,
     private val remoteDataSource: RemoteDataSource,
     private val dataModeRepository: DataModeRepository,
+    private val deviceImageSyncCoordinator: DeviceImageSyncCoordinator,
     private val scope: CoroutineScope,
 ) : SyncManager {
     private val _syncStatus = MutableStateFlow<SyncStatus>(SyncStatus.Idle)
@@ -92,6 +93,8 @@ class DefaultSyncManager(
         localDataSource.addDeviceTypes(update.deviceTypes)
         localDataSource.addDevices(update.devices)
         localDataSource.addEvents(update.events)
+
+        deviceImageSyncCoordinator.onRemoteUpdate(update)
     }
 
     override fun pushUpdate(

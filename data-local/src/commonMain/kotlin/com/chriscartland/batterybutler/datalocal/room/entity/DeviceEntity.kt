@@ -18,6 +18,7 @@ data class DeviceEntity(
     val lastUpdated: Long, // Store as Long (ms)
     val location: String?,
     val imagePath: String?,
+    val imageEtag: String?,
 )
 
 fun DeviceEntity.toDomain(): Device =
@@ -29,6 +30,7 @@ fun DeviceEntity.toDomain(): Device =
         lastUpdated = Instant.fromEpochMilliseconds(lastUpdated),
         location = location,
         imagePath = imagePath,
+        imageEtag = imageEtag,
     )
 
 fun Device.toEntity(): DeviceEntity =
@@ -40,4 +42,5 @@ fun Device.toEntity(): DeviceEntity =
         lastUpdated = lastUpdated.toEpochMilliseconds(),
         location = location,
         imagePath = imagePath,
+        imageEtag = imageEtag,
     )

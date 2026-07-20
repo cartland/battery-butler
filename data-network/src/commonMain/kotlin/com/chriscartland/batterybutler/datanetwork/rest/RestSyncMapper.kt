@@ -19,7 +19,10 @@ import kotlin.time.Instant
  *
  * Field asymmetries (same as SyncMapper): the wire's `createdTimestampMs` has no domain field
  * (dropped on read; set to the event date on write); the domain's `batteryType` on an event has
- * no wire field (dropped on write).
+ * no wire field (dropped on write). `Device.imageEtag` is populated only from a snapshot's
+ * [DeviceSnapshotWire] (empty -> null, matching `imagePath`) and dropped on write -- `toWire()`
+ * still produces the plain [DeviceWire] push shape, which has no `imageEtag` field at all. See
+ * `docs/DEVICE_IMAGES.md` §3 for why it's a separate, server-managed field.
  */
 @OptIn(ExperimentalTime::class)
 internal object RestSyncMapper {
@@ -61,7 +64,7 @@ internal object RestSyncMapper {
             batteryQuantity = batteryQuantity,
         )
 
-    private fun DeviceWire.toDomain(): Device =
+    private fun DeviceSnapshotWire.toDomain(): Device =
         Device(
             id = id,
             name = name,
@@ -70,6 +73,7 @@ internal object RestSyncMapper {
             batteryLastReplaced = batteryLastReplacedTimestampMs.toInstantOrEpoch(),
             lastUpdated = lastUpdatedTimestampMs.toInstantOrEpoch(),
             imagePath = imagePath.takeIf { it.isNotEmpty() },
+            imageEtag = imageEtag.takeIf { it.isNotEmpty() },
         )
 
     private fun Device.toWire(): DeviceWire =

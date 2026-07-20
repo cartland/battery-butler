@@ -44,6 +44,24 @@ data class DeviceWire(
     val imagePath: String = "",
 )
 
+/**
+ * A device as it appears in a `GET /sync` snapshot: [DeviceWire]'s fields plus the
+ * server-managed [imageEtag]. Snapshot-only -- `POST /sync` still carries plain [DeviceWire] --
+ * because a push replaces the whole device record server-side, so server-owned state can't live
+ * in the same shape a client pushes. See `docs/DEVICE_IMAGES.md` §3.
+ */
+@Serializable
+data class DeviceSnapshotWire(
+    val id: String,
+    val name: String = "",
+    val typeId: String = "",
+    val location: String = "",
+    val batteryLastReplacedTimestampMs: Long = 0,
+    val lastUpdatedTimestampMs: Long = 0,
+    val imagePath: String = "",
+    val imageEtag: String = "",
+)
+
 /** A battery-replacement event for a device. */
 @Serializable
 data class BatteryEventWire(
@@ -58,7 +76,7 @@ data class BatteryEventWire(
 @Serializable
 data class SyncSnapshotWire(
     val deviceTypes: List<DeviceTypeWire> = emptyList(),
-    val devices: List<DeviceWire> = emptyList(),
+    val devices: List<DeviceSnapshotWire> = emptyList(),
     val events: List<BatteryEventWire> = emptyList(),
 )
 

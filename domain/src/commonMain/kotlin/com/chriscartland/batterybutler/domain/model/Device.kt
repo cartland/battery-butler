@@ -14,7 +14,12 @@ import kotlin.time.Instant
  * @property batteryLastReplaced Timestamp when the battery was last replaced.
  * @property lastUpdated Timestamp when any device metadata was last modified.
  * @property location Optional user-defined location (e.g., "Kitchen", "Garage").
- * @property imagePath Optional path to a user-provided image of the device.
+ * @property imagePath Optional path to a user-provided image of the device. Client-owned and
+ *   opaque to the server; do not confuse with [imageEtag].
+ * @property imageEtag Opaque content hash of the device's server-stored photo, or null if it has
+ *   none. Server-managed and read-only for the client -- it is the cache key and change signal
+ *   for the Labs backend's image endpoints (`PUT/GET/DELETE .../devices/{id}/image`), populated
+ *   only from a sync snapshot, never sent on a push. See `docs/DEVICE_IMAGES.md`.
  * @throws IllegalArgumentException if [id] or [name] is blank.
  */
 @OptIn(kotlin.time.ExperimentalTime::class)
@@ -26,6 +31,7 @@ data class Device(
     val lastUpdated: Instant,
     val location: String? = null,
     val imagePath: String? = null,
+    val imageEtag: String? = null,
 ) {
     init {
         require(id.isNotBlank()) { "Device ID cannot be blank" }

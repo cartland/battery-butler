@@ -10,6 +10,8 @@ import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.SyncStatus
 import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
 import com.chriscartland.batterybutler.testcommon.FakeDataModeRepository
+import com.chriscartland.batterybutler.testcommon.FakeDeviceImageCache
+import com.chriscartland.batterybutler.testcommon.FakeDeviceImageDataSource
 import com.chriscartland.batterybutler.testcommon.FakeLocalDataSource
 import com.chriscartland.batterybutler.testcommon.FakeRemoteDataSource
 import kotlinx.coroutines.CoroutineScope
@@ -66,7 +68,8 @@ class DefaultDeviceRepositoryTest {
         dataMode: FakeDataModeRepository = FakeDataModeRepository(DataMode.Mock),
     ): RepoTestHarness {
         val repoScope = CoroutineScope(testDispatcher + Job())
-        val syncManager = DefaultSyncManager(local, remote, dataMode, repoScope)
+        val imageCoordinator = DeviceImageSyncCoordinator(FakeDeviceImageDataSource(), FakeDeviceImageCache(), repoScope)
+        val syncManager = DefaultSyncManager(local, remote, dataMode, imageCoordinator, repoScope)
         val repo = DefaultDeviceRepository(local, syncManager)
         return RepoTestHarness(repo, syncManager, repoScope)
     }

@@ -4,6 +4,7 @@ import com.chriscartland.batterybutler.composeapp.di.IosComponentHelper
 import com.chriscartland.batterybutler.datalocal.preferences.DataStoreFactory
 import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
 import com.chriscartland.batterybutler.domain.model.AppVersion
+import com.chriscartland.batterybutler.presentationcore.util.IosDeviceImagePicker
 import com.chriscartland.batterybutler.presentationcore.util.IosFileLoader
 import com.chriscartland.batterybutler.presentationcore.util.IosFileSaver
 import com.chriscartland.batterybutler.presentationcore.util.IosSecureClipboard
@@ -28,5 +29,13 @@ fun MainViewController() =
         val fileSaver = IosFileSaver()
         val fileLoader = IosFileLoader()
         val secureClipboard = IosSecureClipboard()
-        App(component, shareHandler, fileSaver, fileLoader, secureClipboard)
+        val deviceImagePicker = IosDeviceImagePicker()
+        App(
+            component = component,
+            shareHandler = shareHandler,
+            fileSaver = fileSaver,
+            fileLoader = fileLoader,
+            secureClipboard = secureClipboard,
+            deviceImagePicker = deviceImagePicker,
+        )
     }

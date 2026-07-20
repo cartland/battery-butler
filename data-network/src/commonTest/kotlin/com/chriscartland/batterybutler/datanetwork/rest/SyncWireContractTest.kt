@@ -48,6 +48,23 @@ class SyncWireContractTest {
     }
 
     @Test
+    fun `DeviceSnapshotWire field set is pinned`() {
+        assertEquals(
+            setOf(
+                "id",
+                "name",
+                "typeId",
+                "location",
+                "batteryLastReplacedTimestampMs",
+                "lastUpdatedTimestampMs",
+                "imagePath",
+                "imageEtag",
+            ),
+            keysOf(DeviceSnapshotWire(id = "x")),
+        )
+    }
+
+    @Test
     fun `BatteryEventWire field set is pinned`() {
         assertEquals(
             setOf("id", "deviceId", "dateTimestampMs", "createdTimestampMs", "notes"),
@@ -114,6 +131,24 @@ class SyncWireContractTest {
     }
 
     @Test
+    fun `DeviceSnapshotWire applies proto3 defaults`() {
+        val parsed = lenient.decodeFromString<DeviceSnapshotWire>("""{"id":"x"}""")
+        assertEquals(
+            DeviceSnapshotWire(
+                id = "x",
+                name = "",
+                typeId = "",
+                location = "",
+                batteryLastReplacedTimestampMs = 0,
+                lastUpdatedTimestampMs = 0,
+                imagePath = "",
+                imageEtag = "",
+            ),
+            parsed,
+        )
+    }
+
+    @Test
     fun `BatteryEventWire applies proto3 defaults`() {
         val parsed = lenient.decodeFromString<BatteryEventWire>("""{"id":"x"}""")
         assertEquals(
@@ -147,7 +182,7 @@ class SyncWireContractTest {
         val snapshot = SyncSnapshotWire(
             deviceTypes = listOf(DeviceTypeWire(id = "t1", name = "Smoke Alarm", defaultIcon = "smoke", batteryType = "9V", batteryQuantity = 2)),
             devices = listOf(
-                DeviceWire(
+                DeviceSnapshotWire(
                     id = "d1",
                     name = "Kitchen Alarm",
                     typeId = "t1",
@@ -155,6 +190,7 @@ class SyncWireContractTest {
                     batteryLastReplacedTimestampMs = 1_704_067_200_000,
                     lastUpdatedTimestampMs = 1_704_153_600_000,
                     imagePath = "/img/a.jpg",
+                    imageEtag = "abc123",
                 ),
             ),
             events = listOf(
