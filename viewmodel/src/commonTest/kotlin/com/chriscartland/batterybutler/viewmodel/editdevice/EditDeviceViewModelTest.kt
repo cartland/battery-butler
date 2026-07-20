@@ -181,6 +181,22 @@ class EditDeviceViewModelTest {
             assertNull(repo.devices[0].imageEtag)
         }
 
+    @Test
+    fun `reportPhotoPickFailed surfaces an InvalidImage error without touching the device`() =
+        runTest {
+            val repo = FakeDeviceRepository()
+            val device = TestDevices.createDevice(id = "device-1", name = "Test Device")
+            repo.setDevices(listOf(device))
+
+            val viewModel = createViewModel(repo, "device-1")
+            viewModel.uiState.first { it is EditDeviceScreenState.Success }
+
+            viewModel.reportPhotoPickFailed()
+
+            assertIs<DeviceImageError.InvalidImage>(viewModel.photoError.value)
+            assertNull(repo.devices[0].imageEtag)
+        }
+
     private fun createViewModel(
         repo: FakeDeviceRepository,
         deviceId: String,

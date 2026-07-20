@@ -149,6 +149,11 @@ class EditDeviceViewModel(
         _photoError.value = null
     }
 
+    /** The UI layer picked bytes it couldn't decode/normalize locally -- surface it like any other photo error. */
+    fun reportPhotoPickFailed() {
+        _photoError.value = DeviceImageError.InvalidImage()
+    }
+
     private suspend fun applyImageEtag(imageEtag: String?) {
         val current = (uiState.value as? EditDeviceScreenState.Success)?.device ?: return
         updateDeviceUseCase(current.copy(imageEtag = imageEtag, lastUpdated = Clock.System.now()))

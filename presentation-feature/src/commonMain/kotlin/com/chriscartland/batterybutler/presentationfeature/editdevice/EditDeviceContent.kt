@@ -106,6 +106,7 @@ fun EditDeviceContent(
     modifier: Modifier = Modifier,
     onPhotoPicked: (bytes: ByteArray, contentType: String) -> Unit = { _, _ -> },
     onRemovePhoto: () -> Unit = {},
+    onPhotoPickFailed: () -> Unit = {},
     photoError: DeviceImageError? = null,
 ) {
     // Local state for form fields
@@ -196,6 +197,7 @@ fun EditDeviceContent(
                                 photoError = photoError,
                                 onPhotoPicked = onPhotoPicked,
                                 onRemovePhoto = onRemovePhoto,
+                                onPhotoPickFailed = onPhotoPickFailed,
                             )
                             Spacer(modifier = Modifier.height(24.dp))
                         }
@@ -352,6 +354,7 @@ private fun DevicePhotoSection(
     photoError: DeviceImageError?,
     onPhotoPicked: (bytes: ByteArray, contentType: String) -> Unit,
     onRemovePhoto: () -> Unit,
+    onPhotoPickFailed: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val picker = LocalDeviceImagePicker.current
@@ -392,6 +395,8 @@ private fun DevicePhotoSection(
                             val normalized = normalizeDeviceImage(pickedBytes)
                             if (normalized != null) {
                                 onPhotoPicked(normalized.bytes, normalized.contentType)
+                            } else {
+                                onPhotoPickFailed()
                             }
                         }
                     }

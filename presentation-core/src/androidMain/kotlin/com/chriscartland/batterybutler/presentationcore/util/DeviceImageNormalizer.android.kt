@@ -14,7 +14,7 @@ private const val TAG = "DeviceImageNormalizer"
 
 actual fun normalizeDeviceImage(bytes: ByteArray): NormalizedDeviceImage? {
     val decoded = try {
-        BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+        decodeBounded(bytes, DEVICE_IMAGE_MAX_DIMENSION_PX)
     } catch (e: Exception) {
         Logger.w(TAG, e) { "Failed to decode picked image" }
         null
@@ -28,6 +28,42 @@ actual fun normalizeDeviceImage(bytes: ByteArray): NormalizedDeviceImage? {
     val wasCompressed = flattened.compress(Bitmap.CompressFormat.JPEG, DEVICE_IMAGE_JPEG_QUALITY, output)
     if (!wasCompressed) return null
     return NormalizedDeviceImage(bytes = output.toByteArray(), contentType = "image/jpeg")
+}
+
+/**
+ * Decodes [bytes] at a memory-bounded resolution instead of full size -- a full-resolution decode
+ * of a modern phone photo (e.g. 50MP) can allocate several hundred MB of raw ARGB_8888 pixels
+ * before [downscale] ever runs, risking an [OutOfMemoryError]. `inSampleSize` decodes directly at
+ * a power-of-two-reduced resolution; the exact target size is still reached by the existing
+ * [downscale] step afterward, unaffected by any EXIF-orientation rotation applied in between
+ * (rotation doesn't change how many raw pixels the decoder had to allocate).
+ */
+private fun decodeBounded(
+    bytes: ByteArray,
+    maxDimensionPx: Int,
+): Bitmap? {
+    val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+    BitmapFactory.decodeByteArray(bytes, 0, bytes.size, bounds)
+    if (bounds.outWidth <= 0 || bounds.outHeight <= 0) return null
+
+    val options = BitmapFactory.Options().apply {
+        inSampleSize = calculateInSampleSize(bounds.outWidth, bounds.outHeight, maxDimensionPx)
+    }
+    return BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
+}
+
+/** The largest power-of-two sample size that still leaves the long edge >= [maxDimensionPx]. */
+private fun calculateInSampleSize(
+    width: Int,
+    height: Int,
+    maxDimensionPx: Int,
+): Int {
+    var sampleSize = 1
+    var longEdge = maxOf(width, height)
+    while (longEdge / (sampleSize * 2) >= maxDimensionPx) {
+        sampleSize *= 2
+    }
+    return sampleSize
 }
 
 /** `BitmapFactory` ignores EXIF orientation -- rotate/flip [bitmap] to match [rawBytes]'s tag. */

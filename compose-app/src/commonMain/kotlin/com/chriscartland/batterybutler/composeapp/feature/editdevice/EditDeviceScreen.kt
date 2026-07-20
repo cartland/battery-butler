@@ -33,6 +33,7 @@ fun EditDeviceScreen(
         modifier = modifier,
         onPhotoPicked = { bytes, contentType -> viewModel.uploadPhoto(bytes, contentType) },
         onRemovePhoto = { viewModel.removePhoto() },
+        onPhotoPickFailed = { viewModel.reportPhotoPickFailed() },
         photoError = photoError,
     )
 }
