@@ -5,13 +5,16 @@ import androidx.datastore.preferences.core.Preferences
 import com.chriscartland.batterybutler.ai.NoOpAiEngine
 import com.chriscartland.batterybutler.data.provider.DefaultDispatcherProvider
 import com.chriscartland.batterybutler.data.repository.DataStoreDataModeRepository
+import com.chriscartland.batterybutler.data.repository.DefaultDeviceImageRepository
 import com.chriscartland.batterybutler.data.repository.DefaultDeviceRepository
 import com.chriscartland.batterybutler.data.repository.DefaultFeatureFlagProvider
 import com.chriscartland.batterybutler.data.repository.DefaultLegacyDatabaseRepository
 import com.chriscartland.batterybutler.data.repository.DefaultSyncManager
 import com.chriscartland.batterybutler.data.repository.InMemoryAiPreferencesRepository
 import com.chriscartland.batterybutler.data.repository.SyncManager
+import com.chriscartland.batterybutler.datalocal.DeviceImageCache
 import com.chriscartland.batterybutler.datalocal.LocalDataSource
+import com.chriscartland.batterybutler.datalocal.RoomDeviceImageCache
 import com.chriscartland.batterybutler.datalocal.RoomLocalDataSource
 import com.chriscartland.batterybutler.datalocal.preferences.DataStoreFactory
 import com.chriscartland.batterybutler.datalocal.preferences.DataStorePreferencesDataSource
@@ -20,6 +23,8 @@ import com.chriscartland.batterybutler.datalocal.room.AppDatabase
 import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
 import com.chriscartland.batterybutler.datalocal.room.DeviceDao
 import com.chriscartland.batterybutler.datanetwork.BuildConfig
+import com.chriscartland.batterybutler.datanetwork.DeviceImageDataSource
+import com.chriscartland.batterybutler.datanetwork.NoOpDeviceImageDataSource
 import com.chriscartland.batterybutler.datanetwork.RemoteDataSource
 import com.chriscartland.batterybutler.domain.model.DevServerUrl
 import com.chriscartland.batterybutler.domain.model.DispatcherProvider
@@ -31,6 +36,7 @@ import com.chriscartland.batterybutler.domain.model.ai.AiEngine
 import com.chriscartland.batterybutler.domain.repository.AiPreferencesRepository
 import com.chriscartland.batterybutler.domain.repository.AuthRepository
 import com.chriscartland.batterybutler.domain.repository.DataModeRepository
+import com.chriscartland.batterybutler.domain.repository.DeviceImageRepository
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.domain.repository.FeatureFlagProvider
 import com.chriscartland.batterybutler.domain.repository.LabsAuthRepository
@@ -106,6 +112,25 @@ abstract class NativeComponent(
     @Provides
     @SharedSingleton
     fun provideDeviceRepository(repo: DefaultDeviceRepository): DeviceRepository = repo
+
+    // Device images need a signed-in Labs session (DelegatingDeviceImageDataSource ->
+    // LabsAuthGateway), which -- like LabsAuthRepository above -- isn't wired into this
+    // component (Labs sign-in isn't supported on iOS). The shared ViewModels
+    // (EditDeviceViewModel, HomeViewModel, DeviceDetailViewModel) still require these providers
+    // to resolve, so this component gets the same no-op treatment as provideLabsAuthRepository.
+    // See `docs/DEVICE_IMAGES.md`; missed here once already for a Workstream-E dependency
+    // (SettingsViewModel's Labs URLs, see the comment below) -- don't repeat that mistake.
+    @Provides
+    @SharedSingleton
+    fun provideDeviceImageDataSource(): DeviceImageDataSource = NoOpDeviceImageDataSource
+
+    @Provides
+    @SharedSingleton
+    fun provideDeviceImageRepository(repo: DefaultDeviceImageRepository): DeviceImageRepository = repo
+
+    @Provides
+    @SharedSingleton
+    fun provideDeviceImageCache(cache: RoomDeviceImageCache): DeviceImageCache = cache
 
     @Provides
     @SharedSingleton
