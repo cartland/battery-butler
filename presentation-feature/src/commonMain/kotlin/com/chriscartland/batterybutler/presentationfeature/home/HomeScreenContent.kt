@@ -56,6 +56,7 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.filt
 import com.chriscartland.batterybutler.composeresources.generated.resources.filter_sort_label
 import com.chriscartland.batterybutler.composeresources.generated.resources.status_syncing
 import com.chriscartland.batterybutler.composeresources.generated.resources.sync_error_ai
+import com.chriscartland.batterybutler.composeresources.generated.resources.sync_error_auth_required
 import com.chriscartland.batterybutler.composeresources.generated.resources.sync_error_data
 import com.chriscartland.batterybutler.composeresources.generated.resources.sync_error_network
 import com.chriscartland.batterybutler.composeresources.generated.resources.sync_error_not_ready
@@ -102,8 +103,14 @@ fun HomeScreenContent(
     val snackbarHostState = remember { SnackbarHostState() }
 
     // Resolve sync error message in composable scope (outside LaunchedEffect)
-    val syncErrorMessage = (state.syncStatus as? SyncStatus.Failed)?.let {
-        getSyncErrorMessage(it.error)
+    val syncErrorMessage = when (val syncStatus = state.syncStatus) {
+        is SyncStatus.Failed -> getSyncErrorMessage(syncStatus.error)
+
+        // Auth-required is deliberately distinct from a generic failure: sync isn't broken,
+        // the user just needs to sign in again. Fuller UX copy/flow lands in a follow-up PR.
+        is SyncStatus.AuthRequired -> composeStringResource(Res.string.sync_error_auth_required)
+
+        else -> null
     }
 
     // Show snackbar when sync fails

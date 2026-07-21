@@ -3,11 +3,13 @@ package com.chriscartland.batterybutler.data.repository
 import co.touchlab.kermit.Logger
 import com.chriscartland.batterybutler.datalocal.LocalDataSource
 import com.chriscartland.batterybutler.datanetwork.RemoteDataSource
+import com.chriscartland.batterybutler.datanetwork.RemoteSyncException
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.DataError
 import com.chriscartland.batterybutler.domain.model.DataMode
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
+import com.chriscartland.batterybutler.domain.model.SyncOutcome
 import com.chriscartland.batterybutler.domain.model.SyncStatus
 import com.chriscartland.batterybutler.domain.repository.DataModeRepository
 import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
@@ -72,12 +74,19 @@ class DefaultSyncManager(
             } catch (e: Exception) {
                 if (e is CancellationException) throw e
                 Logger.e(TAG, e) { "Subscribe failed, retrying in ${backoffMs}ms" }
-                _syncStatus.value = SyncStatus.Failed(
-                    DataError.Network.ConnectionFailed(
-                        message = "Sync disconnected",
-                        cause = e.message,
-                    ),
-                )
+                // A typed wire failure (auth-required / server error) surfaces as its own
+                // status; nothing was applied locally. The loop stays alive either way and
+                // keeps retrying with the same backoff.
+                _syncStatus.value = when (e) {
+                    is RemoteSyncException -> e.toSyncOutcome().toSyncStatus()
+
+                    else -> SyncStatus.Failed(
+                        DataError.Network.ConnectionFailed(
+                            message = "Sync disconnected",
+                            cause = e.message,
+                        ),
+                    )
+                }
             }
             delay(backoffMs.milliseconds)
             backoffMs = nextBackoff(backoffMs)
@@ -146,9 +155,13 @@ class DefaultSyncManager(
             } catch (e: Exception) {
                 if (e is CancellationException) throw e
                 Logger.e(TAG, e) { "Push failed" }
-                _syncStatus.value = SyncStatus.Failed(
-                    DataError.Unknown(e.message ?: "Unknown error", e.toString()),
-                )
+                _syncStatus.value = when (e) {
+                    is RemoteSyncException -> e.toSyncOutcome().toSyncStatus()
+
+                    else -> SyncStatus.Failed(
+                        DataError.Unknown(e.message ?: "Unknown error", e.toString()),
+                    )
+                }
             }
         }
     }
@@ -157,12 +170,12 @@ class DefaultSyncManager(
         _syncStatus.value = SyncStatus.Idle
     }
 
-    override suspend fun resync(timeout: Duration) {
+    override suspend fun resync(timeout: Duration): SyncOutcome {
         val currentMode = dataModeRepository.dataMode.first()
-        if (currentMode is DataMode.None) return
+        if (currentMode is DataMode.None) return SyncOutcome.Skipped
 
         _syncStatus.value = SyncStatus.Syncing
-        try {
+        val outcome = try {
             // .first() takes only the next emission then cancels the underlying subscription --
             // correct for both a one-shot REST poll (completes on its own) and a long-lived
             // gRPC server stream (would otherwise never complete). withTimeout bounds the wait
@@ -170,19 +183,26 @@ class DefaultSyncManager(
             // spinner) forever.
             val update = withTimeout(timeout) { remoteDataSource.subscribe().first() }
             applyRemoteUpdate(update)
-            _syncStatus.value = SyncStatus.Success
+            SyncOutcome.Success
         } catch (e: CancellationException) {
             if (e !is TimeoutCancellationException) throw e
             Logger.d(TAG) { "resync() timed out waiting for an update" }
-            _syncStatus.value = SyncStatus.Failed(
+            SyncOutcome.Failed(
                 DataError.Network.ConnectionFailed(message = "Sync timed out", cause = null),
             )
+        } catch (e: RemoteSyncException) {
+            // Typed wire failure: auth-required (401 / no session) or a server error. Nothing
+            // was applied locally; the caller gets the real outcome instead of a fake success.
+            Logger.e(TAG, e) { "resync() failed at the wire layer" }
+            e.toSyncOutcome()
         } catch (e: Exception) {
             Logger.e(TAG, e) { "resync() failed" }
-            _syncStatus.value = SyncStatus.Failed(
+            SyncOutcome.Failed(
                 DataError.Unknown(e.message ?: "Unknown error", e.toString()),
             )
         }
+        _syncStatus.value = outcome.toSyncStatus()
+        return outcome
     }
 
     internal companion object {
@@ -193,3 +213,25 @@ class DefaultSyncManager(
         internal fun nextBackoff(currentMs: Long): Long = (currentMs * 2).coerceAtMost(MAX_BACKOFF_MS)
     }
 }
+
+/** Maps a typed wire failure to the [SyncOutcome] it means for the attempt that threw it. */
+private fun RemoteSyncException.toSyncOutcome(): SyncOutcome =
+    when (this) {
+        is RemoteSyncException.AuthRequired -> SyncOutcome.AuthRequired(reason)
+
+        is RemoteSyncException.ServerError -> SyncOutcome.Failed(
+            DataError.Network.ServerError(cause = "HTTP $statusCode"),
+        )
+    }
+
+/**
+ * The [SyncStatus] to publish for a terminal [SyncOutcome]. [SyncOutcome.Skipped] maps to
+ * [SyncStatus.Idle] for exhaustiveness only — sync-skipping paths return before publishing.
+ */
+private fun SyncOutcome.toSyncStatus(): SyncStatus =
+    when (this) {
+        SyncOutcome.Success -> SyncStatus.Success
+        SyncOutcome.Skipped -> SyncStatus.Idle
+        is SyncOutcome.AuthRequired -> SyncStatus.AuthRequired(reason)
+        is SyncOutcome.Failed -> SyncStatus.Failed(error)
+    }

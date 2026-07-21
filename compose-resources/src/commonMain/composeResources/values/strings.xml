@@ -210,6 +210,7 @@
     <string name="sync_error_data">There was a problem with your data. Please try again.</string>
     <string name="sync_error_ai">AI feature encountered an error. Please try again.</string>
     <string name="sync_error_unknown">Something went wrong. Your data is safe on this device.</string>
+    <string name="sync_error_auth_required">Sign in required. Your data is safe on this device.</string>
 
     <!-- Device Type List -->
     <string name="action_add_type">Add Type</string>
