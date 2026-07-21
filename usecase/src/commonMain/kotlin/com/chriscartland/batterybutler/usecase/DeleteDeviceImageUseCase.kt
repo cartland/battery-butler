@@ -1,5 +1,6 @@
 package com.chriscartland.batterybutler.usecase
 
+import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.repository.DeviceImageRepository
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import kotlinx.coroutines.CoroutineScope
@@ -23,14 +24,17 @@ class DeleteDeviceImageUseCase(
         scope
             .async {
                 val success = deviceImageRepository.deleteImage(deviceId)
-                if (success) {
-                    applyImageEtag(deviceId)
-                }
-                success
+                success && applyImageEtag(deviceId)
             }.await()
 
-    private suspend fun applyImageEtag(deviceId: String) {
-        val device = deviceRepository.getDeviceById(deviceId).first() ?: return
-        deviceRepository.updateDevice(device.copy(imageEtag = null, lastUpdated = Clock.System.now()))
+    /**
+     * Clears the device's etag; returns false (not silently true) if the device can't be found or
+     * the local write fails, so a failure here doesn't get reported as a successful removal. See
+     * the matching fix in [UploadDeviceImageUseCase.applyImageEtag] / `bb-dimg-image-not-shown` in
+     * TODO.md.
+     */
+    private suspend fun applyImageEtag(deviceId: String): Boolean {
+        val device = deviceRepository.getDeviceById(deviceId).first() ?: return false
+        return deviceRepository.updateDevice(device.copy(imageEtag = null, lastUpdated = Clock.System.now())) is Result.Success
     }
 }

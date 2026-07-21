@@ -33,16 +33,30 @@ class UploadDeviceImageUseCase(
             .async {
                 val result = deviceImageRepository.uploadImage(deviceId, bytes, contentType)
                 if (result is Result.Success) {
-                    applyImageEtag(deviceId, result.data)
+                    val applyResult = applyImageEtag(deviceId, result.data)
+                    if (applyResult is Result.Error) return@async applyResult
                 }
                 result
             }.await()
 
+    /**
+     * Writes [imageEtag] onto the device record. Both failure modes here were previously silent
+     * (an early `return` on a missing device, and a discarded [Result] from [DeviceRepository.updateDevice])
+     * -- the upload would report [Result.Success] to the caller even though the etag never actually
+     * landed locally, so the photo would never appear even though the byte upload genuinely
+     * succeeded. See `bb-dimg-image-not-shown` in TODO.md.
+     */
     private suspend fun applyImageEtag(
         deviceId: String,
         imageEtag: String?,
-    ) {
-        val device = deviceRepository.getDeviceById(deviceId).first() ?: return
-        deviceRepository.updateDevice(device.copy(imageEtag = imageEtag, lastUpdated = Clock.System.now()))
+    ): Result<Unit, DeviceImageError> {
+        val device = deviceRepository.getDeviceById(deviceId).first()
+            ?: return Result.Error(DeviceImageError.DeviceNotFound())
+        return when (
+            val result = deviceRepository.updateDevice(device.copy(imageEtag = imageEtag, lastUpdated = Clock.System.now()))
+        ) {
+            is Result.Success -> Result.Success(Unit)
+            is Result.Error -> Result.Error(DeviceImageError.NetworkError(cause = result.error.message))
+        }
     }
 }

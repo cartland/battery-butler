@@ -1,5 +1,6 @@
 package com.chriscartland.batterybutler.usecase
 
+import com.chriscartland.batterybutler.domain.model.DataError
 import com.chriscartland.batterybutler.domain.model.DeviceImageBytes
 import com.chriscartland.batterybutler.domain.model.DeviceImageError
 import com.chriscartland.batterybutler.domain.model.Result
@@ -86,5 +87,18 @@ class DeleteDeviceImageUseCaseTest {
             testScheduler.advanceUntilIdle()
 
             assertNull(deviceRepo.devices.single { it.id == "dev1" }.imageEtag)
+        }
+
+    /** `bb-dimg-image-not-shown`: same discarded-`Result` bug as the upload use case. */
+    @Test
+    fun `returns false when the byte delete succeeds but applying the etag fails`() =
+        runTest {
+            val imageRepo = FakeDeviceImageRepository()
+            val deviceRepo = FakeDeviceRepository()
+            deviceRepo.setDevices(listOf(TestDevices.createDevice(id = "dev1").copy(imageEtag = "etag-1")))
+            deviceRepo.updateDeviceResult = Result.Error(DataError.Database.WriteFailed(message = "disk full"))
+            val useCase = DeleteDeviceImageUseCase(imageRepo, deviceRepo, CoroutineScope(StandardTestDispatcher(testScheduler) + Job()))
+
+            assertEquals(false, useCase("dev1"))
         }
 }
