@@ -12,6 +12,7 @@ import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
 import com.chriscartland.batterybutler.testcommon.FakeDataModeRepository
 import com.chriscartland.batterybutler.testcommon.FakeDeviceImageCache
 import com.chriscartland.batterybutler.testcommon.FakeDeviceImageDataSource
+import com.chriscartland.batterybutler.testcommon.FakeLabsAuthRepository
 import com.chriscartland.batterybutler.testcommon.FakeLocalDataSource
 import com.chriscartland.batterybutler.testcommon.FakeRemoteDataSource
 import kotlinx.coroutines.CoroutineScope
@@ -69,7 +70,7 @@ class DefaultDeviceRepositoryTest {
     ): RepoTestHarness {
         val repoScope = CoroutineScope(testDispatcher + Job())
         val imageCoordinator = DeviceImageSyncCoordinator(FakeDeviceImageDataSource(), FakeDeviceImageCache(), repoScope)
-        val syncManager = DefaultSyncManager(local, remote, dataMode, imageCoordinator, repoScope)
+        val syncManager = DefaultSyncManager(local, remote, dataMode, imageCoordinator, FakeLabsAuthRepository(), repoScope)
         val repo = DefaultDeviceRepository(local, syncManager)
         return RepoTestHarness(repo, syncManager, repoScope)
     }
@@ -698,20 +699,27 @@ class DefaultDeviceRepositoryTest {
             remote.onSubscribe = { emptyFlow() }
 
             val (_, _, repoScope) = createRepo(remote = remote)
-            // First subscribe attempt
-            testDispatcher.scheduler.advanceTimeBy(100)
-            testDispatcher.scheduler.runCurrent()
-            val firstCount = remote.subscribeCallCount
+            try {
+                // First subscribe attempt
+                testDispatcher.scheduler.advanceTimeBy(100)
+                testDispatcher.scheduler.runCurrent()
+                val firstCount = remote.subscribeCallCount
 
-            // After stream ends, wait past the 1s backoff for reconnect
-            testDispatcher.scheduler.advanceTimeBy(1500)
-            testDispatcher.scheduler.runCurrent()
+                // A CLEAN stream end is not a failure: the loop reconnects on the poll cadence
+                // (self-driven progress, `bb-sync-loop-starvation`), not the failure backoff.
+                testDispatcher.scheduler.advanceTimeBy(1500)
+                testDispatcher.scheduler.runCurrent()
+                assertEquals(firstCount, remote.subscribeCallCount, "a clean end must not reconnect on the failure backoff")
 
-            assertTrue(
-                remote.subscribeCallCount > firstCount,
-                "Expected reconnect, calls: ${remote.subscribeCallCount}",
-            )
-            repoScope.cancel()
+                testDispatcher.scheduler.advanceTimeBy(DefaultSyncManager.SYNC_POLL_INTERVAL_MS)
+                testDispatcher.scheduler.runCurrent()
+                assertTrue(
+                    remote.subscribeCallCount > firstCount,
+                    "Expected reconnect within the poll interval, calls: ${remote.subscribeCallCount}",
+                )
+            } finally {
+                repoScope.cancel()
+            }
         }
 
     // ───────────────────────────────────────────────────────
@@ -804,13 +812,18 @@ class DefaultDeviceRepositoryTest {
             testDispatcher.scheduler.advanceTimeBy(2500)
             testDispatcher.scheduler.runCurrent()
 
-            // If backoff NOT reset: next backoff would be 4s (doubled from 2s).
-            // If backoff IS reset: next backoff is 1s (INITIAL_BACKOFF_MS).
-            // Wait 1.5s — enough for reset backoff (1s), not enough for non-reset (4s).
+            // A clean successful end reconnects on the poll cadence (not the failure backoff).
+            testDispatcher.scheduler.advanceTimeBy(DefaultSyncManager.SYNC_POLL_INTERVAL_MS + 100)
+            testDispatcher.scheduler.runCurrent()
+            assertTrue(idx >= 4, "Expected the post-success reconnect within the poll interval, got $idx")
+
+            // Call 4 failed. If backoff was NOT reset by call 3's success, the next retry would
+            // wait 4s (doubled from 2s); if it WAS reset, it waits 1s. Wait 1.5s — enough for
+            // the reset backoff, not enough for the non-reset one.
             testDispatcher.scheduler.advanceTimeBy(1500)
             testDispatcher.scheduler.runCurrent()
 
-            assertTrue(idx >= 4, "Backoff should have reset to 1s, expected 4 calls, got $idx")
+            assertTrue(idx >= 5, "Backoff should have reset to 1s after the successful receipt, got $idx")
             repoScope.cancel()
         }
 

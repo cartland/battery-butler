@@ -58,6 +58,10 @@ import kotlin.test.assertTrue
 class SettingsViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
 
+    // App-lifetime stand-in for SignInToLabsUseCase's injected scope; runs on the test dispatcher
+    // so launched resyncs execute under the test's virtual time.
+    private val useCaseScope = kotlinx.coroutines.CoroutineScope(testDispatcher + kotlinx.coroutines.SupervisorJob())
+
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
@@ -130,7 +134,7 @@ class SettingsViewModelTest {
     fun `currentUser is null when unauthenticated`() =
         runTest {
             val authRepo = FakeAuthRepository()
-            authRepo.setAuthState(AuthState.Unauthenticated)
+            authRepo.setAuthState(AuthState.Unauthenticated())
             val viewModel = createViewModel(authRepository = authRepo)
             advanceUntilIdle()
 
@@ -216,7 +220,7 @@ class SettingsViewModelTest {
     fun `isSignedIn is false when unauthenticated`() =
         runTest {
             val authRepo = FakeAuthRepository()
-            authRepo.setAuthState(AuthState.Unauthenticated)
+            authRepo.setAuthState(AuthState.Unauthenticated())
             val viewModel = createViewModel(authRepository = authRepo)
             advanceUntilIdle()
 
@@ -689,7 +693,7 @@ class SettingsViewModelTest {
             restoreLegacyDatabaseUseCase = RestoreLegacyDatabaseUseCase(legacyDatabaseRepository),
             legacyDatabaseRepository = legacyDatabaseRepository,
             restartCoordinator = restartCoordinator,
-            signInToLabsUseCase = SignInToLabsUseCase(labsAuthRepository, deviceRepository),
+            signInToLabsUseCase = SignInToLabsUseCase(labsAuthRepository, deviceRepository, useCaseScope),
             signOutLabsUseCase = SignOutLabsUseCase(labsAuthRepository, deviceRepository),
             signOutUseCase = SignOutUseCase(authRepository, deviceRepository),
             featureFlagProvider = featureFlagProvider,

@@ -138,7 +138,7 @@ class SettingsViewModel(
         .safeStateIn(viewModelScope, defaultWhileSubscribed(), false)
 
     val labsAuthState: StateFlow<AuthState> = labsAuthRepository.labsAuthState
-        .safeStateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AuthState.Unauthenticated)
+        .safeStateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AuthState.Unauthenticated())
 
     @Suppress("ElseCaseInsteadOfExhaustiveWhen")
     val labsUser: StateFlow<User?> = labsAuthRepository.labsAuthState

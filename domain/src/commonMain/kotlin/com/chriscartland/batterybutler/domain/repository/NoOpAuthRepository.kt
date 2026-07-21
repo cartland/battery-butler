@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.flowOf
 
 data object NoOpAuthRepository : AuthRepository {
     override val authState: StateFlow<AuthState> =
-        MutableStateFlow(AuthState.Unauthenticated)
+        MutableStateFlow(AuthState.Unauthenticated())
     override val currentUser: Flow<User?> = flowOf(null)
 
     override fun isSignInAvailable(): Boolean = false

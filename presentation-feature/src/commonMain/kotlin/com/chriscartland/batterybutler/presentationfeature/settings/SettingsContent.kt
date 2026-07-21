@@ -143,7 +143,7 @@ fun SettingsContent(
     restoreResult: RestoreResult? = null,
     onRestoreCompleteAcknowledged: () -> Unit = {},
     isLabsMode: Boolean = false,
-    labsAuthState: AuthState = AuthState.Unauthenticated,
+    labsAuthState: AuthState = AuthState.Unauthenticated(),
     onSignInToLabs: () -> Unit = {},
     onSignOutLabs: () -> Unit = {},
     onCopyLabsIdToken: () -> Unit = {},
@@ -450,7 +450,7 @@ fun SettingsContent(
                                 )
                             }
 
-                            AuthState.Unauthenticated, is AuthState.Failed -> {
+                            is AuthState.Unauthenticated, is AuthState.Failed -> {
                                 Button(
                                     onClick = onSignInToLabs,
                                     modifier = Modifier.fillMaxWidth(),

@@ -25,4 +25,12 @@ sealed class RemoteSyncException(
     class ServerError(
         val statusCode: Int,
     ) : RemoteSyncException("Sync server error: HTTP $statusCode")
+
+    /**
+     * A session exists but a Bearer token could not be obtained for *transient* reasons (the
+     * refresh/restore call hit a network failure or 5xx); no sync request was sent. Distinct
+     * from [AuthRequired] on purpose: the user is still signed in, so this must surface on the
+     * sync layer's network-failure path — a flaky network must never show "sign in required".
+     */
+    class TokenUnavailable : RemoteSyncException("Sync token unavailable (transient refresh failure)")
 }
