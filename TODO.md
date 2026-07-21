@@ -9,6 +9,48 @@ Project task tracking for Battery Butler.
 
 ## P2
 
+### bb-signin-empty-list — Device list empties after sign-out → sign-in (Labs) — fix shipped 2026-07-21
+
+**Symptom (reported on android/55):** a user signed out of Labs and back in; the device list came
+up **empty**, even though the backend still had every device and the final `/sync` returned 200
+with the full snapshot. **Not a regression** — every file in the faulty chain is byte-identical to
+android/54; the user simply exercised the sign-out → sign-in path.
+
+**Root cause:** sign-out intentionally wipes the local DB (`SignOutLabsUseCase` →
+`clearAllLocalData`), so repopulation depends on the post-sign-in `/sync`. But that resync was being
+defeated by two cancellation vectors:
+
+1. **Spurious `dataMode` re-emissions.** `dataMode` was `DataStore.data.map { … }` with **no
+   `distinctUntilChanged`**. `DataStore.data` re-emits the whole preferences object on every edit to
+   *any* key, and that store is shared with the Labs session + refresh-token persistence
+   (`DataStoreLabsSessionStorage` / `DataStoreLabsRefreshTokenPersistence`). Each sign-in write
+   therefore re-emitted a structurally-identical `DataMode`. `DelegatingRemoteDataSource.subscribe()`
+   does `dataMode.flatMapLatest { … }`, so every re-emission **cancelled the in-flight `/sync` GET
+   and restarted it** — the burst of ~10 interleaved 200/401 requests, and a repopulating 200 could
+   be discarded before it committed.
+2. **Torn snapshot write.** When a 200 *was* collected, `applyRemoteUpdate` wrote to Room on the
+   (cancellable) collector coroutine; a re-emission cancelling the collector between the delete pass
+   and the insert pass left the DB empty.
+
+**Fix (this change):**
+- `DataStoreDataModeRepository.dataMode` now ends in `.distinctUntilChanged()` — unrelated DataStore
+  writes no longer re-emit an unchanged mode, so they stop cancelling the sync. (pinned by
+  `DataStoreDataModeRepositoryTest`)
+- `DefaultSyncManager.applyRemoteUpdate` wraps the local-DB writes in `withContext(NonCancellable)`,
+  so a full-snapshot apply commits atomically even if the collector is cancelled mid-write (image
+  coordinator stays cancellable). (pinned by `DefaultSyncManagerTest`)
+
+Item 3 (resync on sign-in) was already present: `SignInToLabsUseCase` calls `resync(60s)` on
+success. The two fixes above are what make that existing resync (and the background sync) robust.
+
+**Residual / follow-up (not fixed here):** that sign-in resync runs on `LoginViewModel.viewModelScope`
+(`signInWithGoogle()` → `signInToLabsUseCase()`), and `authState` → `Authenticated` drives the
+Login→Main navigation that can tear that scope down. If navigation cancels the resync *before* its
+`subscribe().first()` GET returns, the list repopulates only on the next app open / pull-to-refresh
+(both recover; data is never lost). Consider running the sign-in resync on an app-scoped coroutine
+(or re-firing the background sync on auth-state → Authenticated) so it can't be cancelled by
+navigation.
+
 ### bb-crashlytics — Add Firebase Crashlytics (Android) — DONE 2026-07-21
 
 Prompted directly by the stuck-spinner bug (android/52 → android/53): the app had **no crash

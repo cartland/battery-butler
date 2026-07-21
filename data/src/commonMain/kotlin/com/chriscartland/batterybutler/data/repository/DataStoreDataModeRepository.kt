@@ -6,6 +6,7 @@ import com.chriscartland.batterybutler.domain.model.LabsProdUrl
 import com.chriscartland.batterybutler.domain.model.LabsStagingUrl
 import com.chriscartland.batterybutler.domain.repository.DataModeRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import me.tatarka.inject.annotations.Inject
 
@@ -38,8 +39,18 @@ class DataStoreDataModeRepository(
     // [defaultDataMode]). Prod-first so a configured release defaults real users to prod.
     private val defaultMode: DataMode = defaultDataMode(labsProdUrl.url, labsStagingUrl.url)
 
+    // `dataModeValue` is backed by `DataStore.data`, which re-emits the WHOLE preferences object on
+    // every edit to ANY key. That store is shared with the Labs session + refresh-token persistence
+    // (see DataStoreLabsSessionStorage / DataStoreLabsRefreshTokenPersistence), so a sign-in's
+    // token/session writes would otherwise re-emit a structurally-identical DataMode here. Consumers
+    // key off that: DelegatingRemoteDataSource.subscribe() does `dataMode.flatMapLatest { … }`, so a
+    // spurious re-emission CANCELS the in-flight `/sync` and restarts it — which, right after
+    // sign-out cleared the local DB, could cancel the repopulating snapshot write mid-flight and
+    // leave the device list empty. `distinctUntilChanged()` collapses those no-op re-emissions so
+    // only a real mode change reaches consumers. See `bb-signin-empty-list` in TODO.md.
     override val dataMode: Flow<DataMode> = preferencesDataSource.dataModeValue
         .map { value -> value?.toDataMode(defaultMode) ?: defaultMode }
+        .distinctUntilChanged()
 
     override suspend fun setDataMode(mode: DataMode) {
         preferencesDataSource.setDataModeValue(mode.toStorageValue())
