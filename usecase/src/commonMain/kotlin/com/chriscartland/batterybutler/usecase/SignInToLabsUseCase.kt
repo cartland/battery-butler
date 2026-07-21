@@ -26,6 +26,11 @@ class SignInToLabsUseCase(
     suspend operator fun invoke(): Result<User, AuthError> {
         val result = labsAuthRepository.signInToLabs()
         if (result is Result.Success) {
+            // resync() now reports a typed SyncOutcome (success / auth-required / failed) instead
+            // of masquerading every failure as a silent no-op. The outcome already reaches the user
+            // via syncStatus (AuthRequired renders as "sign in required"); *reacting* to it here —
+            // e.g. treating a post-sign-in AuthRequired as a failed sign-in — is deliberately left
+            // to the auth-state reaction follow-up PR.
             deviceRepository.resync(timeout = SIGN_IN_RESYNC_TIMEOUT)
         }
         return result

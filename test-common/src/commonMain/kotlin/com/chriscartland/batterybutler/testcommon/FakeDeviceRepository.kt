@@ -5,6 +5,7 @@ import com.chriscartland.batterybutler.domain.model.DataError
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.Result
+import com.chriscartland.batterybutler.domain.model.SyncOutcome
 import com.chriscartland.batterybutler.domain.model.SyncStatus
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import kotlinx.coroutines.flow.Flow
@@ -91,9 +92,13 @@ class FakeDeviceRepository : DeviceRepository {
     /** The [Duration] passed to the most recent [resync] call, or null if never called. */
     var lastResyncTimeout: Duration? = null
 
-    override suspend fun resync(timeout: Duration) {
+    /** The [SyncOutcome] that [resync] returns. Set to simulate auth or sync failures. */
+    var resyncOutcome: SyncOutcome = SyncOutcome.Success
+
+    override suspend fun resync(timeout: Duration): SyncOutcome {
         resyncCount++
         lastResyncTimeout = timeout
+        return resyncOutcome
     }
 
     /** Number of times [clearAllLocalData] has been called. */

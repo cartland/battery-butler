@@ -1,7 +1,9 @@
 package com.chriscartland.batterybutler.datanetwork.rest
 
 import com.chriscartland.batterybutler.datanetwork.RemoteDataSourceState
+import com.chriscartland.batterybutler.datanetwork.RemoteSyncException
 import com.chriscartland.batterybutler.domain.model.Device
+import com.chriscartland.batterybutler.domain.model.SyncAuthReason
 import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
@@ -21,7 +23,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.jsonObject
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
+import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 import kotlin.time.Instant
 
@@ -95,34 +97,128 @@ class RestRemoteDataSourceTest {
             assertEquals("type-smoke", device.typeId)
         }
 
+    /**
+     * The wire-honesty defect this PR fixes: a 401 JSON error body deserialized cleanly into
+     * [SyncSnapshotWire] (all fields defaulted) and was emitted as an *empty full snapshot*,
+     * so a signed-out client showed "synced". A 401 must surface as a typed auth failure and
+     * must never emit an update.
+     */
     @Test
-    fun `no Authorization header is sent when the token is null`() =
+    fun `subscribe surfaces a 401 JSON error body as AuthRequired instead of an empty snapshot`() =
         runTest {
-            var hadAuth = true
-            val client = mockClient { request ->
-                hadAuth = request.headers.contains(HttpHeaders.Authorization)
+            val emitted = mutableListOf<RemoteUpdate>()
+            val client = mockClient { respondJson(unauthorizedBody(reason = "expired"), HttpStatusCode.Unauthorized) }
+
+            val failure = assertFailsWith<RemoteSyncException.AuthRequired> {
+                RestRemoteDataSource(client, BASE_URL, tokenProvider = { "stale" })
+                    .subscribe()
+                    .collect { emitted += it }
+            }
+
+            assertEquals(SyncAuthReason.TOKEN_EXPIRED, failure.reason)
+            assertTrue(emitted.isEmpty(), "a 401 must not emit any update, got $emitted")
+        }
+
+    @Test
+    fun `subscribe maps a 401 invalid reason to TOKEN_INVALID`() =
+        runTest {
+            val client = mockClient { respondJson(unauthorizedBody(reason = "invalid"), HttpStatusCode.Unauthorized) }
+            val failure = assertFailsWith<RemoteSyncException.AuthRequired> {
+                RestRemoteDataSource(client, BASE_URL, tokenProvider = { "bad" }).subscribe().toList()
+            }
+            assertEquals(SyncAuthReason.TOKEN_INVALID, failure.reason)
+        }
+
+    @Test
+    fun `subscribe maps a 401 without details to UNKNOWN`() =
+        runTest {
+            val client = mockClient {
+                respondJson("""{"error":{"code":"unauthorized","message":"Sign in required"}}""", HttpStatusCode.Unauthorized)
+            }
+            val failure = assertFailsWith<RemoteSyncException.AuthRequired> {
+                RestRemoteDataSource(client, BASE_URL, tokenProvider = { "t" }).subscribe().toList()
+            }
+            assertEquals(SyncAuthReason.UNKNOWN, failure.reason)
+        }
+
+    @Test
+    fun `subscribe maps a non-JSON 401 body to UNKNOWN`() =
+        runTest {
+            val client = mockClient {
+                respond(
+                    content = "<html>Unauthorized</html>",
+                    status = HttpStatusCode.Unauthorized,
+                    headers = headersOf(HttpHeaders.ContentType, "text/html"),
+                )
+            }
+            val failure = assertFailsWith<RemoteSyncException.AuthRequired> {
+                RestRemoteDataSource(client, BASE_URL, tokenProvider = { "t" }).subscribe().toList()
+            }
+            assertEquals(SyncAuthReason.UNKNOWN, failure.reason)
+        }
+
+    @Test
+    fun `push surfaces a 401 as AuthRequired with the parsed reason`() =
+        runTest {
+            val client = mockClient { respondJson(unauthorizedBody(reason = "expired"), HttpStatusCode.Unauthorized) }
+            val failure = assertFailsWith<RemoteSyncException.AuthRequired> {
+                RestRemoteDataSource(client, BASE_URL, tokenProvider = { "stale" }).push(emptyUpdate())
+            }
+            assertEquals(SyncAuthReason.TOKEN_EXPIRED, failure.reason)
+        }
+
+    @Test
+    fun `subscribe surfaces a non-auth error status as ServerError with the code retained`() =
+        runTest {
+            val client = mockClient { respond("boom", HttpStatusCode.InternalServerError) }
+            val failure = assertFailsWith<RemoteSyncException.ServerError> {
+                RestRemoteDataSource(client, BASE_URL, tokenProvider = { "t" }).subscribe().toList()
+            }
+            assertEquals(500, failure.statusCode)
+        }
+
+    @Test
+    fun `push surfaces a non-auth error status as ServerError with the code retained`() =
+        runTest {
+            val client = mockClient { respond("boom", HttpStatusCode.InternalServerError) }
+            val failure = assertFailsWith<RemoteSyncException.ServerError> {
+                RestRemoteDataSource(client, BASE_URL, tokenProvider = { "t" }).push(emptyUpdate())
+            }
+            assertEquals(500, failure.statusCode)
+        }
+
+    @Test
+    fun `subscribe with no session fires no request and surfaces AuthRequired NO_SESSION`() =
+        runTest {
+            var requestCount = 0
+            val client = mockClient {
+                requestCount++
                 respondJson(SNAPSHOT_JSON)
             }
 
-            RestRemoteDataSource(client, BASE_URL, tokenProvider = { null }).subscribe().toList()
+            val failure = assertFailsWith<RemoteSyncException.AuthRequired> {
+                RestRemoteDataSource(client, BASE_URL, tokenProvider = { null }).subscribe().toList()
+            }
 
-            assertFalse(hadAuth)
+            assertEquals(SyncAuthReason.NO_SESSION, failure.reason)
+            assertEquals(0, requestCount, "no unauthenticated request may be fired without a session")
         }
 
     @Test
-    fun `push returns false on a server error instead of throwing`() =
+    fun `push with no session fires no request and surfaces AuthRequired NO_SESSION`() =
         runTest {
-            val client = mockClient { respond("boom", HttpStatusCode.InternalServerError) }
-            val ok = RestRemoteDataSource(client, BASE_URL, tokenProvider = { "t" }).push(emptyUpdate())
-            assertFalse(ok)
-        }
+            var requestCount = 0
+            val client = mockClient {
+                requestCount++
+                respondJson("""{"success":true,"message":"ok"}""")
+            }
 
-    @Test
-    fun `subscribe emits nothing on a server error instead of throwing`() =
-        runTest {
-            val client = mockClient { respond("boom", HttpStatusCode.InternalServerError) }
-            val updates = RestRemoteDataSource(client, BASE_URL, tokenProvider = { "t" }).subscribe().toList()
-            assertTrue(updates.isEmpty())
+            val failure = assertFailsWith<RemoteSyncException.AuthRequired> {
+                RestRemoteDataSource(client, BASE_URL, tokenProvider = { null }).push(emptyUpdate())
+            }
+
+            assertEquals(SyncAuthReason.NO_SESSION, failure.reason)
+            assertEquals(0, requestCount, "no unauthenticated request may be fired without a session")
         }
 
     @Test
@@ -146,12 +242,18 @@ class RestRemoteDataSourceTest {
                 install(ContentNegotiation) { json(syncJson) }
             }
 
-        fun MockRequestHandleScope.respondJson(content: String): HttpResponseData =
+        fun MockRequestHandleScope.respondJson(
+            content: String,
+            status: HttpStatusCode = HttpStatusCode.OK,
+        ): HttpResponseData =
             respond(
                 content = content,
-                status = HttpStatusCode.OK,
+                status = status,
                 headers = headersOf(HttpHeaders.ContentType, "application/json"),
             )
+
+        /** The Labs backend's 401 envelope; `details.reason` is mid-rollout so it may be absent. */
+        fun unauthorizedBody(reason: String): String = """{"error":{"code":"unauthorized","message":"Sign in required","details":{"reason":"$reason"}}}"""
 
         fun emptyUpdate() =
             RemoteUpdate(
