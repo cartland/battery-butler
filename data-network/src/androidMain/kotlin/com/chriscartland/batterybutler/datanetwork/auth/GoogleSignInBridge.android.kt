@@ -13,6 +13,7 @@ import androidx.credentials.exceptions.NoCredentialException
 import com.chriscartland.batterybutler.domain.model.AuthError
 import com.chriscartland.batterybutler.domain.model.Result
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 
 /**
@@ -180,7 +181,10 @@ actual class GoogleSignInBridge {
             .Builder()
             .setFilterByAuthorizedAccounts(filterByAuthorizedAccounts)
             .setServerClientId(clientId)
-            .setAutoSelectEnabled(true)
+            // Auto-select only makes sense on the silent (authorized-accounts) path. On an explicit
+            // interactive button press, auto-select is what makes the request throw
+            // NoCredentialException instead of showing the account picker, so gate it on the flag.
+            .setAutoSelectEnabled(filterByAuthorizedAccounts)
             .build()
 
         val request = GetCredentialRequest
@@ -202,24 +206,26 @@ actual class GoogleSignInBridge {
             if (filterByAuthorizedAccounts) {
                 // Expected/common outcome for a silent, authorized-accounts-only request (e.g. the
                 // very first sign-in ever, before any account has been authorized) -- not a
-                // misconfiguration signal, so no warning-level log here.
+                // misconfiguration signal, so no warning-level log here. Callers swallow this.
                 Log.i(TAG, "Silent sign-in: no already-authorized account for client ...${clientId.takeLast(15)}")
-            } else {
-                Log.w(
-                    TAG,
-                    "NoCredentialException for client ...${clientId.takeLast(15)} — if a Google " +
-                        "account exists on-device, this usually means the app's signing certificate " +
-                        "(e.g. the Play App Signing SHA-1, which differs from the upload keystore's) " +
-                        "isn't registered on the Android OAuth client for this project. " +
-                        "Cause: ${e.message.orEmpty()}",
+                Result.Error(
+                    AuthError.SignIn.Failed(
+                        message = "No Google account found",
+                        cause = e.message,
+                    ),
                 )
+            } else {
+                // Interactive path: the authorized-accounts Google ID request found nothing to show,
+                // so retry ONCE with the explicit "Sign in with Google" (add-account) flow, which
+                // always launches interactive UI instead of failing when there's no auto-selectable
+                // credential. Only if that also fails do we surface an error to the user.
+                Log.i(
+                    TAG,
+                    "Interactive sign-in: no auto-selectable Google account for client " +
+                        "...${clientId.takeLast(15)}; retrying with the explicit Sign in with Google flow",
+                )
+                retryWithSignInWithGoogle(activity, manager, clientId)
             }
-            Result.Error(
-                AuthError.SignIn.Failed(
-                    message = "No Google account found",
-                    cause = e.message,
-                ),
-            )
         } catch (e: GetCredentialException) {
             Log.w(
                 TAG,
@@ -241,6 +247,77 @@ actual class GoogleSignInBridge {
                 Result.Error(
                     AuthError.SignIn.Failed(
                         message = errorMessage,
+                        cause = e.message,
+                    ),
+                )
+            }
+        }
+    }
+
+    /**
+     * Interactive fallback for when the authorized-accounts Google ID request throws
+     * [NoCredentialException] (no auto-selectable credential). [GetSignInWithGoogleOption] is the
+     * explicit "Sign in with Google" / add-account flow: it always launches interactive UI, so it
+     * shows the account picker (or add-account screen) instead of failing. Routed through the same
+     * [handleSignInResponse]. If it *still* throws [NoCredentialException]/[GetCredentialException],
+     * we surface a user-facing error -- with clearer copy than the raw "No credentials available".
+     */
+    private suspend fun retryWithSignInWithGoogle(
+        activity: Activity,
+        manager: CredentialManager,
+        clientId: String,
+    ): Result<GoogleIdToken, AuthError.SignIn> {
+        val signInWithGoogleOption = GetSignInWithGoogleOption
+            .Builder(clientId)
+            .build()
+        val request = GetCredentialRequest
+            .Builder()
+            .addCredentialOption(signInWithGoogleOption)
+            .build()
+        return try {
+            val response = manager.getCredential(activity, request)
+            handleSignInResponse(response)
+        } catch (e: GetCredentialCancellationException) {
+            Result.Error(
+                AuthError.SignIn.Cancelled(
+                    message = "Sign-in cancelled",
+                    cause = e.message,
+                ),
+            )
+        } catch (e: NoCredentialException) {
+            Log.w(
+                TAG,
+                "NoCredentialException on the Sign in with Google retry for client " +
+                    "...${clientId.takeLast(15)} — if a Google account exists on-device, this usually " +
+                    "means the app's signing certificate (e.g. the Play App Signing SHA-1, which " +
+                    "differs from the upload keystore's) isn't registered on the Android OAuth client " +
+                    "for this project. Cause: ${e.message.orEmpty()}",
+            )
+            Result.Error(
+                AuthError.SignIn.Failed(
+                    message = "No Google account found",
+                    cause = "No Google account is available on this device, or this app build " +
+                        "isn't registered for sign-in.",
+                ),
+            )
+        } catch (e: GetCredentialException) {
+            Log.w(
+                TAG,
+                "GetCredentialException (${e.type}) on the Sign in with Google retry for client " +
+                    "...${clientId.takeLast(15)}: ${e.message.orEmpty()}",
+            )
+            val isNetworkError = e.message?.contains("network", ignoreCase = true) == true
+            if (isNetworkError) {
+                Result.Error(
+                    AuthError.SignIn.NetworkError(
+                        message = "Network error",
+                        cause = e.message,
+                    ),
+                )
+            } else {
+                Result.Error(
+                    AuthError.SignIn.Failed(
+                        message = "Sign-in failed",
                         cause = e.message,
                     ),
                 )
