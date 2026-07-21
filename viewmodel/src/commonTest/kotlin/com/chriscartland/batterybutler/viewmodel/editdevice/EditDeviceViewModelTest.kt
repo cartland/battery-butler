@@ -167,6 +167,32 @@ class EditDeviceViewModelTest {
             assertEquals(false, viewModel.photoUploading.value)
         }
 
+    /**
+     * Regression test: a real-world upload threw an unexpected exception (not a typed
+     * [DeviceImageError.NetworkError]) after the byte upload itself had already succeeded
+     * server-side, and [photoUploading] never got cleared -- the earlier version of `uploadPhoto`
+     * had no try/finally, so anything other than a [Result] return value left the spinner stuck
+     * forever with no error shown.
+     */
+    @Test
+    fun `uploadPhoto clears photoUploading and surfaces an error when the use case throws unexpectedly`() =
+        runTest {
+            val repo = FakeDeviceRepository()
+            val device = TestDevices.createDevice(id = "device-1", name = "Test Device")
+            repo.setDevices(listOf(device))
+            val imageRepo = FakeDeviceImageRepository().apply { uploadThrows = RuntimeException("boom") }
+
+            val viewModel = createViewModel(repo, "device-1", imageRepo)
+            viewModel.uiState.first { it is EditDeviceScreenState.Success }
+
+            viewModel.uploadPhoto(byteArrayOf(1, 2, 3), "image/jpeg")
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            assertEquals(false, viewModel.photoUploading.value)
+            assertIs<DeviceImageError.NetworkError>(viewModel.photoError.value)
+            assertNull(repo.devices[0].imageEtag)
+        }
+
     @Test
     fun `removePhoto clears the device's imageEtag`() =
         runTest {
@@ -183,6 +209,27 @@ class EditDeviceViewModelTest {
 
             assertEquals(listOf("device-1"), imageRepo.deletedDeviceIds)
             assertNull(repo.devices[0].imageEtag)
+            assertEquals(false, viewModel.photoUploading.value)
+        }
+
+    /** Same regression as the upload case, for `removePhoto`. */
+    @Test
+    fun `removePhoto clears photoUploading and surfaces an error when the use case throws unexpectedly`() =
+        runTest {
+            val repo = FakeDeviceRepository()
+            val device = TestDevices.createDevice(id = "device-1", name = "Test Device").copy(imageEtag = "etag-1")
+            repo.setDevices(listOf(device))
+            val imageRepo = FakeDeviceImageRepository().apply { deleteThrows = RuntimeException("boom") }
+
+            val viewModel = createViewModel(repo, "device-1", imageRepo)
+            viewModel.uiState.first { it is EditDeviceScreenState.Success }
+
+            viewModel.removePhoto()
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            assertEquals(false, viewModel.photoUploading.value)
+            assertIs<DeviceImageError.NetworkError>(viewModel.photoError.value)
+            assertEquals("etag-1", repo.devices[0].imageEtag)
         }
 
     @Test

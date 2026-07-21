@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Clock
 
 @Inject
@@ -123,7 +124,8 @@ class EditDeviceViewModel(
      * Uploads a photo already picked and normalized by the UI layer. The upload itself (and
      * recording the new etag) runs on [UploadDeviceImageUseCase]'s own app-scoped coroutine, so it
      * completes even if this screen closes before it's done -- only [photoUploading]/[photoError]
-     * are tied to this ViewModel's lifetime.
+     * are tied to this ViewModel's lifetime. [photoUploading] is cleared in a `finally` so an
+     * unexpected exception (not just a [Result.Error]) can never leave the spinner stuck forever.
      */
     fun uploadPhoto(
         bytes: ByteArray,
@@ -132,11 +134,18 @@ class EditDeviceViewModel(
         viewModelScope.coroutineScope.launch {
             _photoError.value = null
             _photoUploading.value = true
-            when (val result = uploadDeviceImageUseCase(deviceId, bytes, contentType)) {
-                is Result.Success -> Unit
-                is Result.Error -> _photoError.value = result.error
+            try {
+                when (val result = uploadDeviceImageUseCase(deviceId, bytes, contentType)) {
+                    is Result.Success -> Unit
+                    is Result.Error -> _photoError.value = result.error
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                _photoError.value = DeviceImageError.NetworkError(cause = e.message)
+            } finally {
+                _photoUploading.value = false
             }
-            _photoUploading.value = false
         }
     }
 
@@ -144,10 +153,17 @@ class EditDeviceViewModel(
         viewModelScope.coroutineScope.launch {
             _photoError.value = null
             _photoUploading.value = true
-            if (!deleteDeviceImageUseCase(deviceId)) {
-                _photoError.value = DeviceImageError.NetworkError(message = "Failed to remove photo")
+            try {
+                if (!deleteDeviceImageUseCase(deviceId)) {
+                    _photoError.value = DeviceImageError.NetworkError(message = "Failed to remove photo")
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                _photoError.value = DeviceImageError.NetworkError(cause = e.message)
+            } finally {
+                _photoUploading.value = false
             }
-            _photoUploading.value = false
         }
     }
 
