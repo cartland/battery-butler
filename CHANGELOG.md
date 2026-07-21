@@ -31,6 +31,27 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ---
 
+## 2026-07-21
+
+### Fixes
+
+- **Device-photo loading spinner no longer gets stuck forever** ([#1371](https://github.com/cartland/battery-butler/pull/1371)): user-reported on android/52 against prod — server logs confirmed a device-photo upload succeeded completely (200, bytes landed in the GCS bucket, `imageEtag` returned), but the client's loading spinner never cleared. Root cause: `EditDeviceViewModel.uploadPhoto()`/`removePhoto()` only cleared the loading flag on the line *after* the operation returned normally — no `try/finally` — so an unexpected exception (traced to the local Room cache write, which wasn't wrapped at the boundary the way the rest of the codebase's repositories are) skipped that line and left the spinner stuck with no error shown. Fixed with try/catch/finally: any exception besides `CancellationException` now surfaces as an error, and the loading flag always clears. Regression-tested with a fake that throws an *unexpected* exception (not a typed `DeviceImageError`), verified by reverting the fix locally and confirming the new tests fail first.
+
+### Features
+
+- **Firebase Crashlytics added for Android** ([#1374](https://github.com/cartland/battery-butler/pull/1374)): prompted directly by the bug above — the app had no crash reporting at all, so that bug was only found because a user happened to have direct backend log access. Installs a Kermit `LogWriter` that forwards any `Warn`/`Error`/`Assert` log call with a `Throwable` to `FirebaseCrashlytics.recordException()`, so every existing `Logger.e(tag, e) { ... }` call site across the shared KMP modules gets non-fatal crash reporting automatically, with no per-call-site changes needed. Android only for now (iOS needs its own Xcode/SPM work, tracked as `bb-crashlytics-ios`); scaffolded to degrade gracefully — `compose-app/google-services.json` is still a mock file, so this doesn't report anything real until a genuine Firebase project is created and wired in.
+
+## 2026-07-20
+
+### Features
+
+- **Device photos** ([#1359](https://github.com/cartland/battery-butler/pull/1359)): each device can now have one photo, shown in the detail avatar and list item — pick from the Android Photo Picker, upload, replace, or remove. Backend support (Labs staging/prod only — the app's own gRPC backend has no image storage) already existed; this is the full client implementation: wire-contract mirror, binary transport (`DeviceImageDataSource`), capture/normalize per platform (Android downscales with a memory-bounded `inSampleSize` to avoid OOM on large photos, and manually reads/applies EXIF orientation on Desktop/JVM since no image library in the project handles it), an etag-keyed local cache, and upload/remove UI on the Edit Device screen. Live-verified end-to-end against Labs staging before merge. Full spec: `docs/DEVICE_IMAGES.md`.
+- **Device photos: three follow-up fixes for the native SwiftUI app** ([#1363](https://github.com/cartland/battery-butler/pull/1363), [#1366](https://github.com/cartland/battery-butler/pull/1366), [#1369](https://github.com/cartland/battery-butler/pull/1369)): the device-photos feature broke `main`'s push-triggered CI in ways dev-mode PR CI structurally can't catch, because it skips the iOS/Android build and instrumented-test jobs on PRs. Root causes: (1) `ios-swift-di`'s standalone `NativeComponent` DI graph — a full duplicate of the Compose-app graph, not an extension of it — was never updated with providers for the new device-image types; (2) Swift doesn't respect Kotlin default parameter values across K/N interop, so every native Swift construction of a `Device`/`HomeScreenState`/etc. needed the new fields added explicitly, including inside array literals a narrower search missed on the first pass. Fixed across three PRs, each verified locally (KSP compile, then a real `xcodebuild build-for-testing` run) before pushing, rather than relying on another blind CI round-trip.
+
+### Fixes
+
+- **Device photo upload/delete now survives screen navigation** ([#1370](https://github.com/cartland/battery-butler/pull/1370)): live staging testing surfaced a bug where picking a photo showed no loading state, no error, and no image afterward — even though the upload had genuinely succeeded server-side. Cause: the upload/delete and the follow-up `device.imageEtag` write ran entirely inside `viewModelScope`, which gets cancelled the instant the screen closes (Save/Back right after picking, with no visual feedback nudging users to do exactly that). Fixed by moving that orchestration onto the same app-scoped `CoroutineScope` already used by `DeviceImageSyncCoordinator`/`DefaultSyncManager`, so cancelling the screen-scoped awaiter no longer cancels the underlying work. Also added a loading-state overlay + double-tap guard, closing two items the original feature PR's review pass had deliberately deferred.
+
 ## 2026-07-06
 
 ### Fixes
