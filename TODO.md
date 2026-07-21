@@ -56,6 +56,49 @@ Google/Firebase account project) registered for `com.chriscartland.batterybutler
 real `google-services.json`, and replace the mock file — until then Crashlytics silently reports
 nothing real.
 
+### bb-dimg-image-not-shown — Photo uploads: loading indicator now clears correctly, but the image still never displays
+
+**Live user report (2026-07-21), after android/53 (bb-dimg-reliability + the stuck-spinner fix,
+PR #1371) was released**: "the upload indicator stops but images still do not appear in the app."
+This is a **new, distinct symptom** from the two bugs already fixed this session — the spinner
+correctly starting and stopping now (PR #1371 confirmed working), but the photo itself never
+renders in the Edit Device avatar (or wherever it's being checked) afterward. Not yet
+investigated — no server-log correlation done yet for this specific report (unlike the earlier
+401 and stuck-spinner reports, which had backend log evidence to work from).
+
+**Where to start** (from the existing `bb-dimg`/`bb-dimg-reliability` code, not re-derived):
+1. Confirm first whether this is a **success-with-no-visible-error** case or a **swallowed-error**
+   case — check `EditDeviceViewModel.photoError` state / Kermit logs (now forwarded to
+   Crashlytics via `bb-crashlytics`, if that's released) for a `NetworkError` at the moment of
+   upload. If there's no error at all, the bug is in the success/render path, not the
+   upload/persist path already fixed.
+2. **Leading hypothesis #1 — decode failure, not a data-flow bug**: `rememberDeviceImageBitmap()`
+   (`presentation-core/.../components/DeviceImageBitmap.kt`) catches any decode exception and
+   returns `null` **silently** (just a Kermit `Logger.w`, no error surfaced to
+   `EditDeviceViewModel.photoError` at all, since decode happens in the UI layer, not the
+   ViewModel) — a `null` `ImageBitmap` renders the fallback `Icon`, visually indistinguishable
+   from "no photo" to the user. If the uploaded/cached bytes are somehow malformed relative to
+   what `org.jetbrains.compose.resources.decodeToImageBitmap()` (Skia) can decode, this exact
+   symptom results with zero error shown anywhere. Check Kermit/Crashlytics for
+   `"Failed to decode cached device image"` (the exact log line in that file).
+2. **Leading hypothesis #2 — cache key mismatch**: confirm the etag `DeviceImageCache.put()`
+   writes under (`DefaultDeviceImageRepository.uploadImage()`, keyed by the upload response's
+   returned etag) is byte-identical to the etag `EditDeviceViewModel.uiState`'s
+   `getCachedDeviceImageUseCase(imageEtag)` queries by (`device.imageEtag`, read back from Room
+   after `applyImageEtag()`'s `updateDevice()` call) — a round-trip mismatch (e.g. Room
+   string-column trimming/casing, or a race where the query fires before the cache write commits)
+   would also produce "no image, no error."
+3. **Leading hypothesis #3 — wrong screen**: confirm exactly which screen was being checked (Edit
+   Device itself, right after upload, vs. navigating away and checking Device Detail / the device
+   list afterward) — `DeviceDetailViewModel`/`HomeViewModel` have their own, separately-implemented
+   image-display wiring that was **not** covered by this session's `EditDeviceViewModel`-focused
+   reliability fixes (PRs #1370/#1371) and hasn't been audited for the same class of bug.
+
+**Priority**: high — this is the actual, original point of `bb-dimg` (showing the photo), still
+broken after two rounds of fixes to the surrounding reliability. Do not release a new tag claiming
+this is fixed without a real repro + fix, given the pattern this session of each fix uncovering
+the next layer.
+
 ### bb-android42-release — Finish the in-progress android/42 release
 
 **In progress 2026-07-06.** PR #1324 (data-location isolation fix, merged, main
@@ -233,6 +276,19 @@ conclusion (defensive companion to the bb-2r4g close-on-success guard).
 **Result**: on Android, the account picker should now only ever appear on a genuinely first sign-in or after the user explicitly signs out / revokes access on-device — not on a routine ~1h/24h expiry. iOS/Desktop are unchanged (same deferred-scope reasoning as `bb-labs-silent-reauth` above).
 
 ## P3
+
+### bb-crashlytics-ios — Extend Firebase Crashlytics to the two iOS apps
+
+Follow-up to `bb-crashlytics` (Android-only, done 2026-07-21, PR #1374): the same Kermit
+`LogWriter` → Crashlytics forwarding pattern should extend to `ios-app-compose-ui` (Compose
+Multiplatform) and `ios-app-swift-ui` (native SwiftUI) — right now neither iOS app reports crashes
+at all. Deferred deliberately because it needs Xcode-project-level changes (SPM or CocoaPods
+package addition, a real `GoogleService-Info.plist` per app once a real Firebase project exists)
+on **two separate** Xcode projects, materially bigger and riskier than the Android-only change.
+Not started; no investigation done yet on whether Kermit's `LogWriter` mechanism is even reachable
+the same way from Swift-side crash handling, or whether native Swift crashes need a separate
+`FirebaseCrashlytics`/Crashlytics-for-iOS SDK hook entirely (uncaught Swift exceptions won't route
+through Kermit at all — only Kotlin-side logged errors would).
 
 ### bb-dimg — Device photos: capture, upload, and display a per-device image (Labs backend)
 
