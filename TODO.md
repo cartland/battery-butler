@@ -9,6 +9,53 @@ Project task tracking for Battery Butler.
 
 ## P2
 
+### bb-crashlytics — Add Firebase Crashlytics (Android) — DONE 2026-07-21
+
+Prompted directly by the stuck-spinner bug (android/52 → android/53): the app had **no crash
+reporting at all** — the only reason that bug was found was a user with direct Labs-backend log
+access; the client itself gave no signal anything had gone wrong. Confirmed before starting: no
+Crashlytics/Sentry/Bugsnag dependency anywhere, and `compose-app/google-services.json` is a
+**mock** file (`mock-project-id`, fake API key) — there is no real Firebase project for the app
+itself (separate from the Labs backend's own Firebase project used only for sign-in).
+
+**Scope, per explicit user choice**: Android only this pass (iOS needs Xcode-project-level
+SPM/CocoaPods changes on two separate iOS apps — bigger, riskier, deferred); scaffold the
+integration now and let it degrade gracefully until a real Firebase project + config files are
+supplied, mirroring the existing `LABS_*`/Google Sign-In "inject later" pattern in this repo.
+
+**What was added**:
+- `com.google.firebase.crashlytics` Gradle plugin (3.0.7, pinned like `googleServices`) +
+  `firebase-crashlytics` artifact (via the existing `firebase-bom`) in `compose-app`'s
+  `androidMain` only.
+- `CrashlyticsLogWriter` (`compose-app/.../composeapp/logging/`) — a Kermit `LogWriter` that
+  forwards any `Warn`/`Error`/`Assert` log call with a `Throwable` to
+  `FirebaseCrashlytics.recordException()`. Installed once via `Logger.addLogWriter(...)` in
+  `BatteryButlerApplication.onCreate()` — this means **every existing `Logger.e(tag, e) { ... }`
+  call site across the shared KMP modules** (auth token refresh, sync, device-image
+  upload/fetch/delete, etc.) gets non-fatal crash reporting automatically, with no per-call-site
+  changes needed. Doesn't replace the existing Logcat writer, only adds to it.
+- Closed the gap that made the original bug invisible: `EditDeviceViewModel.uploadPhoto()`/
+  `removePhoto()`'s new (bb-dimg-reliability) catch blocks didn't call `Logger.e` at all before
+  this — added it, so an unexpected exception there is now both surfaced to the user *and*
+  captured as a non-fatal, going forward.
+
+**Safe with the mock config**: `FirebaseCrashlytics` queues reports locally and only attempts a
+network upload later — a fake project id just means the upload silently fails, not a crash at
+init or log time. Verified: `compose-app:assembleDebug` (Android, real dexing/packaging),
+`compileKotlinDesktop`, `compileKotlinIosSimulatorArm64` all succeed with the plugin applied;
+`detekt`/`spotlessCheck` clean. Did not verify live on a device/emulator (none available in this
+session) — the build-level verification plus Firebase's documented non-throwing behavior on
+invalid config was judged sufficient, but worth a real first-launch check before/soon after
+release.
+
+**Deferred**: iOS (both `ios-app-compose-ui` and `ios-app-swift-ui`) — needs its own
+`GoogleService-Info.plist` + SPM/CocoaPods wiring; not started. Desktop — Firebase Crashlytics
+doesn't support JVM desktop targets; would need a different crash-reporting mechanism entirely if
+ever wanted there. **Still needs a real Firebase project**: create one (or reuse an existing
+Google/Firebase account project) registered for `com.chriscartland.batterybutler`, download the
+real `google-services.json`, and replace the mock file — until then Crashlytics silently reports
+nothing real.
+
 ### bb-android42-release — Finish the in-progress android/42 release
 
 **In progress 2026-07-06.** PR #1324 (data-location isolation fix, merged, main

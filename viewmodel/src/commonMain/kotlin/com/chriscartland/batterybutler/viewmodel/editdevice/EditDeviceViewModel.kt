@@ -1,5 +1,6 @@
 package com.chriscartland.batterybutler.viewmodel.editdevice
 
+import co.touchlab.kermit.Logger
 import com.chriscartland.batterybutler.domain.model.DeviceImageError
 import com.chriscartland.batterybutler.domain.model.DeviceInput
 import com.chriscartland.batterybutler.domain.model.Result
@@ -142,6 +143,7 @@ class EditDeviceViewModel(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
+                Logger.e(TAG, e) { "uploadPhoto($deviceId) failed unexpectedly" }
                 _photoError.value = DeviceImageError.NetworkError(cause = e.message)
             } finally {
                 _photoUploading.value = false
@@ -160,6 +162,7 @@ class EditDeviceViewModel(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
+                Logger.e(TAG, e) { "removePhoto($deviceId) failed unexpectedly" }
                 _photoError.value = DeviceImageError.NetworkError(cause = e.message)
             } finally {
                 _photoUploading.value = false
@@ -174,5 +177,9 @@ class EditDeviceViewModel(
     /** The UI layer picked bytes it couldn't decode/normalize locally -- surface it like any other photo error. */
     fun reportPhotoPickFailed() {
         _photoError.value = DeviceImageError.InvalidImage()
+    }
+
+    private companion object {
+        const val TAG = "EditDeviceViewModel"
     }
 }
