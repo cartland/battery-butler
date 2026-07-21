@@ -99,6 +99,16 @@ class EditDeviceViewModel(
     private val _photoUploading = MutableStateFlow(viewModelScope, false)
     val photoUploading: StateFlow<Boolean> = _photoUploading
 
+    /**
+     * Set true for a brief moment after a successful photo upload, so the UI can show a transient
+     * "Photo updated" confirmation. This matters for a *same-photo* re-upload: the avatar is
+     * visually identical, so without an explicit cue the user gets no signal it worked. The UI
+     * clears it (via [clearPhotoUpdated]) after showing it; it's also reset at the start of each
+     * upload so a repeat upload re-triggers a fresh confirmation.
+     */
+    private val _photoUpdated = MutableStateFlow(viewModelScope, false)
+    val photoUpdated: StateFlow<Boolean> = _photoUpdated
+
     fun updateDevice(input: DeviceInput) {
         val currentState = uiState.value
         if (currentState is EditDeviceScreenState.Success) {
@@ -134,10 +144,11 @@ class EditDeviceViewModel(
     ) {
         viewModelScope.coroutineScope.launch {
             _photoError.value = null
+            _photoUpdated.value = false
             _photoUploading.value = true
             try {
                 when (val result = uploadDeviceImageUseCase(deviceId, bytes, contentType)) {
-                    is Result.Success -> Unit
+                    is Result.Success -> _photoUpdated.value = true
                     is Result.Error -> _photoError.value = result.error
                 }
             } catch (e: CancellationException) {
@@ -172,6 +183,11 @@ class EditDeviceViewModel(
 
     fun clearPhotoError() {
         _photoError.value = null
+    }
+
+    /** Called by the UI once it has shown the transient "Photo updated" confirmation. */
+    fun clearPhotoUpdated() {
+        _photoUpdated.value = false
     }
 
     /** The UI layer picked bytes it couldn't decode/normalize locally -- surface it like any other photo error. */

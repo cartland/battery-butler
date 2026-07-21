@@ -41,6 +41,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -68,6 +69,7 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.devi
 import com.chriscartland.batterybutler.composeresources.generated.resources.device_image_error_invalid_image
 import com.chriscartland.batterybutler.composeresources.generated.resources.device_image_error_network
 import com.chriscartland.batterybutler.composeresources.generated.resources.device_image_error_too_large
+import com.chriscartland.batterybutler.composeresources.generated.resources.device_image_updated
 import com.chriscartland.batterybutler.composeresources.generated.resources.dialog_delete_device_text
 import com.chriscartland.batterybutler.composeresources.generated.resources.dialog_delete_device_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.edit_device_title
@@ -92,6 +94,7 @@ import com.chriscartland.batterybutler.presentationcore.util.DeviceImagePicker
 import com.chriscartland.batterybutler.presentationcore.util.LocalDeviceImagePicker
 import com.chriscartland.batterybutler.presentationcore.util.normalizeDeviceImage
 import com.chriscartland.batterybutler.presentationmodel.editdevice.EditDeviceScreenState
+import kotlinx.coroutines.delay
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -107,8 +110,10 @@ fun EditDeviceContent(
     onPhotoPicked: (bytes: ByteArray, contentType: String) -> Unit = { _, _ -> },
     onRemovePhoto: () -> Unit = {},
     onPhotoPickFailed: () -> Unit = {},
+    onPhotoUpdatedShown: () -> Unit = {},
     photoError: DeviceImageError? = null,
     photoUploading: Boolean = false,
+    photoUpdated: Boolean = false,
 ) {
     // Local state for form fields
     var name by rememberSaveable { mutableStateOf("") }
@@ -197,9 +202,11 @@ fun EditDeviceContent(
                                 imageBytes = state.imageBytes,
                                 photoError = photoError,
                                 photoUploading = photoUploading,
+                                photoUpdated = photoUpdated,
                                 onPhotoPicked = onPhotoPicked,
                                 onRemovePhoto = onRemovePhoto,
                                 onPhotoPickFailed = onPhotoPickFailed,
+                                onPhotoUpdatedShown = onPhotoUpdatedShown,
                             )
                             Spacer(modifier = Modifier.height(24.dp))
                         }
@@ -355,9 +362,11 @@ private fun DevicePhotoSection(
     imageBytes: DeviceImageBytes?,
     photoError: DeviceImageError?,
     photoUploading: Boolean,
+    photoUpdated: Boolean,
     onPhotoPicked: (bytes: ByteArray, contentType: String) -> Unit,
     onRemovePhoto: () -> Unit,
     onPhotoPickFailed: () -> Unit,
+    onPhotoUpdatedShown: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val picker = LocalDeviceImagePicker.current
@@ -439,8 +448,31 @@ private fun DevicePhotoSection(
                 style = MaterialTheme.typography.bodySmall,
             )
         }
+
+        // Transient "Photo updated" confirmation. Needed because a same-photo re-upload leaves the
+        // avatar visually identical -- without this cue the user gets no signal it worked. Auto-clears
+        // after a short delay so it doesn't linger.
+        if (photoUpdated) {
+            Text(
+                text = composeStringResource(Res.string.device_image_updated),
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.bodySmall,
+            )
+        }
+        // rememberUpdatedState so the auto-clear effect restarts only on photoUpdated changes, while
+        // still invoking the latest callback instance.
+        val currentOnPhotoUpdatedShown by rememberUpdatedState(onPhotoUpdatedShown)
+        LaunchedEffect(photoUpdated) {
+            if (photoUpdated) {
+                delay(PHOTO_UPDATED_CUE_DURATION_MS)
+                currentOnPhotoUpdatedShown()
+            }
+        }
     }
 }
+
+/** How long the transient "Photo updated" confirmation stays visible before auto-clearing. */
+private const val PHOTO_UPDATED_CUE_DURATION_MS = 2500L
 
 @Composable
 private fun getPhotoErrorText(error: DeviceImageError): String =
