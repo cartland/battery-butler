@@ -12,6 +12,7 @@ import com.chriscartland.batterybutler.domain.model.SyncStatus
 import com.chriscartland.batterybutler.domain.repository.DataModeRepository
 import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import me.tatarka.inject.annotations.Inject
 import kotlin.coroutines.cancellation.CancellationException
@@ -85,14 +87,23 @@ class DefaultSyncManager(
     internal suspend fun applyRemoteUpdate(update: RemoteUpdate) {
         Logger.d(TAG) { "Received update: ${update.devices.size} devices" }
 
-        if (!update.isFullSnapshot) {
-            update.deletedDeviceTypeIds.forEach { localDataSource.deleteDeviceType(it) }
-            update.deletedDeviceIds.forEach { localDataSource.deleteDevice(it) }
-            update.deletedEventIds.forEach { localDataSource.deleteEvent(it) }
+        // The local-DB writes run under NonCancellable so a mode re-emission that cancels the
+        // collecting subscribe() (DelegatingRemoteDataSource does `dataMode.flatMapLatest { … }`)
+        // can never tear a snapshot apply half-committed — e.g. after sign-out cleared the DB, a
+        // cancellation between the delete pass and the insert pass would leave the device list
+        // empty even though a full snapshot arrived. Scoped to the local writes only; the image
+        // coordinator below stays cancellable (it does its own network work). See
+        // `bb-signin-empty-list` in TODO.md.
+        withContext(NonCancellable) {
+            if (!update.isFullSnapshot) {
+                update.deletedDeviceTypeIds.forEach { localDataSource.deleteDeviceType(it) }
+                update.deletedDeviceIds.forEach { localDataSource.deleteDevice(it) }
+                update.deletedEventIds.forEach { localDataSource.deleteEvent(it) }
+            }
+            localDataSource.addDeviceTypes(update.deviceTypes)
+            localDataSource.addDevices(update.devices)
+            localDataSource.addEvents(update.events)
         }
-        localDataSource.addDeviceTypes(update.deviceTypes)
-        localDataSource.addDevices(update.devices)
-        localDataSource.addEvents(update.events)
 
         deviceImageSyncCoordinator.onRemoteUpdate(update)
     }
