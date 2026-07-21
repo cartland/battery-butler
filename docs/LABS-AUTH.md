@@ -1,9 +1,10 @@
 # Labs Auth — architecture, lifecycle, and decision record
 
-**Status:** shipped (this document tracks the code as of the PR that introduced it; the auth
-reliability wave it closes is #1379 → #1380 → this PR, with the auth-state *UI* reaction left to
-PR C). Covers the **Labs backend** sign-in only (`NetworkMode.LabsStaging` / `LabsProd`); the
-app's own gRPC backend has its own `AuthRepository` and is out of scope here.
+**Status:** shipped (this document tracks the code as of the auth reliability wave that
+introduced it: #1379 → #1380 → #1382 → the PR C close-out, which added the session-expired UI
+reaction, Labs-specific sign-in failure copy, and the Firebase-uid user id). Covers the **Labs
+backend** sign-in only (`NetworkMode.LabsStaging` / `LabsProd`); the app's own gRPC backend has
+its own `AuthRepository` and is out of scope here.
 
 > **Config stays injected — never hardcode host/keys.** The Labs URLs, Firebase Web API keys, and
 > OAuth client ids come from `BuildConfig` (the `LABS_*` properties). This doc names none of
@@ -64,11 +65,29 @@ key (`apiKeyForMode`):
 `Unknown → (believed user resolved) → Authenticated | Unauthenticated`, plus `Authenticating`
 and `Failed(error)` around interactive sign-in.
 
-New in this PR: `Unauthenticated` carries a **cause** — `SignedOutCause.SIGNED_OUT` (default:
-never signed in, or explicit sign-out) vs `SignedOutCause.SESSION_EXPIRED` (reactive: the backend
-authoritatively rejected the stored session). Every existing `is Unauthenticated` check treats
-both as signed out; PR C's UI reaction can render "session expired — sign in again" from the
-cause.
+`Unauthenticated` carries a **cause** — `SignedOutCause.SIGNED_OUT` (default: never signed in,
+or explicit sign-out) vs `SignedOutCause.SESSION_EXPIRED` (reactive: the backend authoritatively
+rejected the stored session). Every existing `is Unauthenticated` check treats both as signed
+out. The UI reacts to the cause (PR C): the front-door login shows calm inline "your Labs session
+expired — sign in again" copy next to the normal sign-in button (never an error dialog — the user
+did nothing wrong), and the Settings Labs card's signed-out line says "Session expired — sign in
+again" instead of the first-run sign-in pitch (`isLabsSessionExpired` +
+`presentation-feature/…/auth/LabsAuthText.kt`). Labs sign-in *failures* map through
+`labsAuthErrorText` to Labs-specific strings (`labs_auth_error_*`) rather than the legacy
+own-backend `auth_error_*` copy. Home keeps #1380's `SyncStatus.AuthRequired` status string
+("Sign in required. Your data is safe on this device."), which the session-expired terminal 401
+already produces; a tap-through affordance from that snackbar was deliberately not added (it
+would thread a navigation callback through the Home scaffolding — the sign-in path is the front
+door / Settings card).
+
+**The signed-in `User.id` is the Firebase uid.** The token exchange surfaces
+`signInWithIdp`'s `localId` + `email` as `LabsSignInIdentity`, and the repository keys the
+believed user on that uid (`labsUserFrom`) — the id the backend authorizes and attributes writes
+with (e.g. device-image `uploadedByUid`) — falling back to the old email-shaped derivation only
+if the wire response omitted the uid. Installs from before this change persist an email-shaped id
+in `LabsSessionStorage`; that value is display-time only and the next successful sign-in
+overwrites it (no migration). Nothing client-side keys data off `User.id`: env partitioning uses
+the Firebase API key, local-DB isolation uses the `DataMode` identity.
 
 **Reactive session loss keeps local data.** The reactive path clears *credentials* (in-memory
 session, persisted refresh token, believed user) and flips the state — it never touches the
@@ -173,7 +192,7 @@ Battery-butler deliberately keeps the **refresh-token model**:
 
 Cost of this choice: a long-lived credential lives on the device (mitigated: never logged, per-env
 storage, cleared on sign-out and on any authoritative rejection) and the client owns refresh
-machinery (this PR). The labs server accepts both models, so this stays **revisitable** — if both
+machinery (#1382). The labs server accepts both models, so this stays **revisitable** — if both
 platforms ever gain genuinely-silent re-auth, the cookie model removes all client token handling.
 
 ## 7. Defect inventory → which PR fixed what
@@ -184,13 +203,15 @@ platforms ever gain genuinely-silent re-auth, the cookie model removes all clien
 | Torn snapshot apply on cancellation emptied the device list | #1379 (`NonCancellable` apply) |
 | 401 error body parsed as an empty snapshot ("synced" while signed out) | #1380 (status-aware wire, typed `RemoteSyncException`) |
 | Null token fired a guaranteed-401 request | #1380 (client-side `NO_SESSION` refusal) |
-| Sync loop starvation: one sync, then zero requests forever ("Syncing…" stuck) | this PR (manager-owned cadence + mode-once `subscribe()`) |
-| Cold start raced the session restore → `AuthRequired(NO_SESSION)` churn | this PR (restore gate) |
-| Transient refresh failure showed "sign in required" | this PR (`LabsTokenResult` / `TokenUnavailable`) |
-| Stale token 401 had no retry; no reaction to a dead session (state stayed "signed in") | this PR (retry-once + reactive session loss) |
-| Provider map race could split-brain an env's session | this PR (mutex) |
-| Rotated refresh token never persisted → cold-start restore failed | this PR (write-through on change) |
-| Mid-request refresh latency (3.4s syncs); mutex held across the refresh network call | this PR (proactive refresh, 5-min buffer, off-mutex single-flight) |
-| Post-sign-in resync died with the login screen's scope | this PR (app-scope resync) |
-| uiState withheld behind image-query first emissions (device list invisible with a full DB) | this PR (image-map seed) |
-| UI copy/flows reacting to `SESSION_EXPIRED` (re-auth prompt, etc.) | PR C (upcoming) |
+| Sync loop starvation: one sync, then zero requests forever ("Syncing…" stuck) | #1382 (manager-owned cadence + mode-once `subscribe()`) |
+| Cold start raced the session restore → `AuthRequired(NO_SESSION)` churn | #1382 (restore gate) |
+| Transient refresh failure showed "sign in required" | #1382 (`LabsTokenResult` / `TokenUnavailable`) |
+| Stale token 401 had no retry; no reaction to a dead session (state stayed "signed in") | #1382 (retry-once + reactive session loss) |
+| Provider map race could split-brain an env's session | #1382 (mutex) |
+| Rotated refresh token never persisted → cold-start restore failed | #1382 (write-through on change) |
+| Mid-request refresh latency (3.4s syncs); mutex held across the refresh network call | #1382 (proactive refresh, 5-min buffer, off-mutex single-flight) |
+| Post-sign-in resync died with the login screen's scope | #1382 (app-scope resync) |
+| uiState withheld behind image-query first emissions (device list invisible with a full DB) | #1382 (image-map seed) |
+| UI copy/flows reacting to `SESSION_EXPIRED` (re-auth prompt, etc.) | PR C (cause-aware login + Settings copy) |
+| Labs sign-in failures reused the own-backend gRPC-era copy ("Coming Soon", …) | PR C (`labsAuthErrorText` + `labs_auth_error_*` strings) |
+| `User.id` was the Google email, not the Firebase uid the backend authorizes with | PR C (`LabsSignInIdentity` threading `localId`) |

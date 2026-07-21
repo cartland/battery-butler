@@ -107,7 +107,11 @@ fun HomeScreenContent(
         is SyncStatus.Failed -> getSyncErrorMessage(syncStatus.error)
 
         // Auth-required is deliberately distinct from a generic failure: sync isn't broken,
-        // the user just needs to sign in again. Fuller UX copy/flow lands in a follow-up PR.
+        // the user just needs to sign in again. Covers the reactive session-expired case too
+        // (a terminal 401 flips sync to AuthRequired). No tap-through affordance here by
+        // design — that would thread a navigation callback through the Home scaffolding; the
+        // sign-in path is the front door / Settings Labs card, which carry the cause-aware
+        // "session expired" copy (see docs/LABS-AUTH.md §3).
         is SyncStatus.AuthRequired -> composeStringResource(Res.string.sync_error_auth_required)
 
         else -> null

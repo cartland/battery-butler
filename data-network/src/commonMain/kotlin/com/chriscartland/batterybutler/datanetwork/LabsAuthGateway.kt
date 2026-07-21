@@ -14,7 +14,8 @@ import kotlinx.coroutines.flow.Flow
  *
  *  - [signInToLabsWithGoogle] — the one interactive step (`bb-labs-signin`): exchange a Google ID
  *    token (minted for the **Labs** OAuth client) for a Labs session. Call once after Google
- *    Sign-In.
+ *    Sign-In. Success carries the [LabsSignInIdentity] the backend minted (Firebase uid + email)
+ *    so the caller keys the signed-in user on the uid the backend authorizes with.
  *  - [getLabsToken] (from [LabsSyncTokenSource]) — the `Authorization: Bearer` source for
  *    [com.chriscartland.batterybutler.datanetwork.rest.RestRemoteDataSource], as a typed
  *    [LabsTokenResult] so "no session" and "transient refresh failure" stay distinguishable;
@@ -37,7 +38,7 @@ import kotlinx.coroutines.flow.Flow
  * many delegating-data-source instances exist.
  */
 interface LabsAuthGateway : LabsSyncTokenSource {
-    suspend fun signInToLabsWithGoogle(googleIdToken: String): Result<Unit, AuthError>
+    suspend fun signInToLabsWithGoogle(googleIdToken: String): Result<LabsSignInIdentity, AuthError>
 
     /**
      * The current token or null — convenience for callers that only need a best-effort token

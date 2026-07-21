@@ -86,8 +86,8 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.sett
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_import_failed_message
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_import_success_message
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_labs_description
+import com.chriscartland.batterybutler.composeresources.generated.resources.settings_labs_session_expired
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_labs_sign_in
-import com.chriscartland.batterybutler.composeresources.generated.resources.settings_labs_sign_in_failed
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_labs_sign_out
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_labs_signed_in
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_labs_signing_in
@@ -106,12 +106,15 @@ import com.chriscartland.batterybutler.domain.model.DataMode
 import com.chriscartland.batterybutler.domain.model.ImportResult
 import com.chriscartland.batterybutler.domain.model.LegacyDatabaseInfo
 import com.chriscartland.batterybutler.domain.model.RestoreResult
+import com.chriscartland.batterybutler.domain.model.SignedOutCause
 import com.chriscartland.batterybutler.domain.model.User
 import com.chriscartland.batterybutler.domain.model.ai.AiEngineType
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.presentationcore.components.ExpandableSelectionControl
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationcore.theme.Padding
+import com.chriscartland.batterybutler.presentationfeature.auth.isLabsSessionExpired
+import com.chriscartland.batterybutler.presentationfeature.auth.labsAuthErrorText
 import kotlinx.coroutines.launch
 
 @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
@@ -403,10 +406,21 @@ fun SettingsContent(
                                 )
                                 val labsUser = (labsAuthState as? AuthState.Authenticated)?.user
                                 Text(
-                                    text = if (labsUser != null) {
-                                        labsUser.email ?: composeStringResource(Res.string.settings_labs_signed_in)
-                                    } else {
-                                        composeStringResource(Res.string.settings_labs_description)
+                                    text = when {
+                                        labsUser != null -> {
+                                            labsUser.email ?: composeStringResource(Res.string.settings_labs_signed_in)
+                                        }
+
+                                        // Reactive session loss: name the reason instead of the
+                                        // generic sign-in pitch, so the signed-out card doesn't
+                                        // read like the user was never signed in.
+                                        isLabsSessionExpired(labsAuthState) -> {
+                                            composeStringResource(Res.string.settings_labs_session_expired)
+                                        }
+
+                                        else -> {
+                                            composeStringResource(Res.string.settings_labs_description)
+                                        }
                                     },
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
@@ -461,10 +475,12 @@ fun SettingsContent(
                         }
                         if (labsAuthState is AuthState.Failed) {
                             Spacer(modifier = Modifier.height(8.dp))
+                            // Labs-specific copy (labsAuthErrorText) rather than the raw
+                            // AuthError cause, which carried internal detail like
+                            // "signInWithIdp HTTP 500".
                             Text(
                                 text = composeStringResource(
-                                    Res.string.settings_labs_sign_in_failed,
-                                    labsAuthState.error.cause ?: labsAuthState.error.message,
+                                    labsAuthErrorText(labsAuthState.error).message,
                                 ),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.error,
@@ -893,6 +909,33 @@ fun SettingsContentLabsAuthUnknownPreview() {
             onSignOut = {},
             isLabsMode = true,
             labsAuthState = AuthState.Unknown,
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SettingsContentLabsSessionExpiredPreview() {
+    BatteryButlerTheme {
+        SettingsContent(
+            dataMode = DataMode.LabsStaging(null),
+            availableDataModes = listOf(DataMode.LabsStaging(null)),
+            onDataModeSelected = {},
+            aiEngineType = AiEngineType.Cloud,
+            availableAiEngines = AiEngineType.entries,
+            onAiEngineSelected = {},
+            onExportData = {},
+            onImportData = {},
+            importResult = null,
+            importError = null,
+            importInProgress = false,
+            onImportResultConsumed = {},
+            onBack = {},
+            appVersion = AppVersion.Android("1.0.0", 123),
+            currentUser = null,
+            onSignOut = {},
+            isLabsMode = true,
+            labsAuthState = AuthState.Unauthenticated(cause = SignedOutCause.SESSION_EXPIRED),
         )
     }
 }

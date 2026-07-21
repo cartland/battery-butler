@@ -142,7 +142,7 @@ class DefaultLabsAuthGateway(
         }
     }
 
-    override suspend fun signInToLabsWithGoogle(googleIdToken: String): Result<Unit, AuthError> {
+    override suspend fun signInToLabsWithGoogle(googleIdToken: String): Result<LabsSignInIdentity, AuthError> {
         val (_, provider) = providerForCurrentMode()
         // A successful sign-in persists its refresh token via the provider's rotation callback.
         return provider.signInWithGoogle(googleIdToken)
