@@ -46,6 +46,7 @@ plugins {
     alias(libs.plugins.spotless) apply false
     alias(libs.plugins.detekt) apply false
     alias(libs.plugins.googleServices) apply false
+    alias(libs.plugins.firebaseCrashlytics) apply false
     id("architecture.check")
     id("preview.coverage.check")
     id("theme.layer.check")

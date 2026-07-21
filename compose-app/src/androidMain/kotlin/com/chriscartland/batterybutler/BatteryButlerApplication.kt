@@ -1,12 +1,14 @@
 package com.chriscartland.batterybutler
 
 import android.app.Application
+import co.touchlab.kermit.Logger
 import com.chriscartland.batterybutler.ai.AndroidAiEngine
 import com.chriscartland.batterybutler.ai.DynamicAiEngine
 import com.chriscartland.batterybutler.ai.OnDeviceAiEngine
 import com.chriscartland.batterybutler.composeapp.BuildConfig
 import com.chriscartland.batterybutler.composeapp.di.AppComponent
 import com.chriscartland.batterybutler.composeapp.di.create
+import com.chriscartland.batterybutler.composeapp.logging.CrashlyticsLogWriter
 import com.chriscartland.batterybutler.data.provider.DefaultDispatcherProvider
 import com.chriscartland.batterybutler.data.repository.AiPreferencesRepositoryImpl
 import com.chriscartland.batterybutler.datalocal.preferences.DataStoreFactory
@@ -56,5 +58,6 @@ class BatteryButlerApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        Logger.addLogWriter(CrashlyticsLogWriter())
     }
 }
