@@ -1,5 +1,6 @@
 package com.chriscartland.batterybutler.usecase
 
+import com.chriscartland.batterybutler.domain.model.DataError
 import com.chriscartland.batterybutler.domain.model.DeviceImageBytes
 import com.chriscartland.batterybutler.domain.model.DeviceImageError
 import com.chriscartland.batterybutler.domain.model.Result
@@ -109,5 +110,41 @@ class UploadDeviceImageUseCaseTest {
             testScheduler.advanceUntilIdle()
 
             assertEquals("etag-1", deviceRepo.devices.single { it.id == "dev1" }.imageEtag)
+        }
+
+    /**
+     * This is `bb-dimg-image-not-shown`: the byte upload can succeed while the *local* etag write
+     * silently fails (or the device isn't found), and the old code discarded that failure --
+     * reporting [Result.Success] to the caller even though the photo would never actually appear,
+     * since the device's `imageEtag` never changed. The fix must surface that failure instead of
+     * masking it as a successful upload.
+     */
+    @Test
+    fun `surfaces a failure when applying the etag to the device fails, even though the byte upload succeeded`() =
+        runTest {
+            val imageRepo = FakeDeviceImageRepository().apply { uploadResult = Result.Success("etag-1") }
+            val deviceRepo = FakeDeviceRepository()
+            deviceRepo.setDevices(listOf(TestDevices.createDevice(id = "dev1")))
+            deviceRepo.updateDeviceResult = Result.Error(DataError.Database.WriteFailed(message = "disk full"))
+            val useCase = UploadDeviceImageUseCase(imageRepo, deviceRepo, CoroutineScope(StandardTestDispatcher(testScheduler) + Job()))
+
+            val result = useCase("dev1", byteArrayOf(1, 2, 3), "image/jpeg")
+
+            assertIs<Result.Error<DeviceImageError>>(result)
+            assertNull(deviceRepo.devices.single { it.id == "dev1" }.imageEtag)
+        }
+
+    @Test
+    fun `surfaces DeviceNotFound when the device disappears between upload and applying the etag`() =
+        runTest {
+            val imageRepo = FakeDeviceImageRepository().apply { uploadResult = Result.Success("etag-1") }
+            val deviceRepo = FakeDeviceRepository()
+            // No device seeded -- getDeviceById(...).first() returns null.
+            val useCase = UploadDeviceImageUseCase(imageRepo, deviceRepo, CoroutineScope(StandardTestDispatcher(testScheduler) + Job()))
+
+            val result = useCase("dev1", byteArrayOf(1, 2, 3), "image/jpeg")
+
+            assertIs<Result.Error<DeviceImageError>>(result)
+            assertIs<DeviceImageError.DeviceNotFound>(result.error)
         }
 }

@@ -56,48 +56,45 @@ Google/Firebase account project) registered for `com.chriscartland.batterybutler
 real `google-services.json`, and replace the mock file — until then Crashlytics silently reports
 nothing real.
 
-### bb-dimg-image-not-shown — Photo uploads: loading indicator now clears correctly, but the image still never displays
+### bb-dimg-image-not-shown — Photo uploads: loading indicator now clears correctly, but the image still never displays — fix shipped 2026-07-21, live confirmation still pending
 
 **Live user report (2026-07-21), after android/53 (bb-dimg-reliability + the stuck-spinner fix,
 PR #1371) was released**: "the upload indicator stops but images still do not appear in the app."
-This is a **new, distinct symptom** from the two bugs already fixed this session — the spinner
-correctly starting and stopping now (PR #1371 confirmed working), but the photo itself never
-renders in the Edit Device avatar (or wherever it's being checked) afterward. Not yet
-investigated — no server-log correlation done yet for this specific report (unlike the earlier
-401 and stuck-spinner reports, which had backend log evidence to work from).
+Confirmed via the same backend-log-access process that cracked the two earlier bugs this
+session: PUT succeeds, bytes land in the prod GCS bucket, the Firestore metadata doc has the
+correct `imageEtag`, and a subsequent `POST /sync` even carries that etag back — server side is
+fully correct. On the client, no error text was visible and no logcat access was available for
+this report, so the ruling-out had to happen by code audit rather than a captured stack trace.
 
-**Where to start** (from the existing `bb-dimg`/`bb-dimg-reliability` code, not re-derived):
-1. Confirm first whether this is a **success-with-no-visible-error** case or a **swallowed-error**
-   case — check `EditDeviceViewModel.photoError` state / Kermit logs (now forwarded to
-   Crashlytics via `bb-crashlytics`, if that's released) for a `NetworkError` at the moment of
-   upload. If there's no error at all, the bug is in the success/render path, not the
-   upload/persist path already fixed.
-2. **Leading hypothesis #1 — decode failure, not a data-flow bug**: `rememberDeviceImageBitmap()`
-   (`presentation-core/.../components/DeviceImageBitmap.kt`) catches any decode exception and
-   returns `null` **silently** (just a Kermit `Logger.w`, no error surfaced to
-   `EditDeviceViewModel.photoError` at all, since decode happens in the UI layer, not the
-   ViewModel) — a `null` `ImageBitmap` renders the fallback `Icon`, visually indistinguishable
-   from "no photo" to the user. If the uploaded/cached bytes are somehow malformed relative to
-   what `org.jetbrains.compose.resources.decodeToImageBitmap()` (Skia) can decode, this exact
-   symptom results with zero error shown anywhere. Check Kermit/Crashlytics for
-   `"Failed to decode cached device image"` (the exact log line in that file).
-2. **Leading hypothesis #2 — cache key mismatch**: confirm the etag `DeviceImageCache.put()`
-   writes under (`DefaultDeviceImageRepository.uploadImage()`, keyed by the upload response's
-   returned etag) is byte-identical to the etag `EditDeviceViewModel.uiState`'s
-   `getCachedDeviceImageUseCase(imageEtag)` queries by (`device.imageEtag`, read back from Room
-   after `applyImageEtag()`'s `updateDevice()` call) — a round-trip mismatch (e.g. Room
-   string-column trimming/casing, or a race where the query fires before the cache write commits)
-   would also produce "no image, no error."
-3. **Leading hypothesis #3 — wrong screen**: confirm exactly which screen was being checked (Edit
-   Device itself, right after upload, vs. navigating away and checking Device Detail / the device
-   list afterward) — `DeviceDetailViewModel`/`HomeViewModel` have their own, separately-implemented
-   image-display wiring that was **not** covered by this session's `EditDeviceViewModel`-focused
-   reliability fixes (PRs #1370/#1371) and hasn't been audited for the same class of bug.
+**Root cause found**: `UploadDeviceImageUseCase.applyImageEtag()` (and the equivalent in
+`DeleteDeviceImageUseCase`) called `deviceRepository.updateDevice(...)` — which returns
+`Result<Unit, DataError>` — and **discarded the return value**. It also `return`ed silently if
+`getDeviceById(deviceId).first()` came back null. Either failure mode meant the outer use case
+still reported `Result.Success` (since the *byte upload* itself succeeded) even though the local
+`imageEtag` write never actually landed — exactly matching the symptom: no error shown (because
+none was surfaced), spinner clears normally (because the use case really did return
+`Result.Success`), and no image ever appears (because `device.imageEtag` in Room genuinely never
+changed, so the reactive `getCachedDeviceImageUseCase(imageEtag)` Flow the UI depends on never had
+anything new to emit).
 
-**Priority**: high — this is the actual, original point of `bb-dimg` (showing the photo), still
-broken after two rounds of fixes to the surrounding reliability. Do not release a new tag claiming
-this is fixed without a real repro + fix, given the pattern this session of each fix uncovering
-the next layer.
+**Fix**: `applyImageEtag()` now returns a typed result, and the caller propagates a real failure
+instead of masking it — `UploadDeviceImageUseCase.invoke()` returns `Result.Error` (not the
+upload's own stale `Result.Success`) if the etag-apply step fails, and `DeleteDeviceImageUseCase.invoke()`
+returns `false` in the same situation. `EditDeviceViewModel`'s existing error-surfacing (from
+PR #1371) now actually sees these failures. Regression-tested (`FakeDeviceRepository.updateDeviceResult`,
+new in `test-common`) and, per the established pattern this session, verified by temporarily
+reverting to the old discarded-`Result` code and confirming the new tests fail first.
+
+**Not yet confirmed live**: this is a real, structurally-confirmed defect that produces exactly
+the reported symptom, but there was no direct device-side evidence (logcat/Crashlytics — the
+latter isn't in a released build yet) pinning it down as *the* specific failure that occurred in
+the user's report, as opposed to one of the other candidates considered and not yet fully ruled
+out (a decode failure in `rememberDeviceImageBitmap()`, or a race with the general "Save" button
+overwriting a fresh `imageEtag` with a stale in-memory snapshot — see
+`EditDeviceViewModel.updateDevice()`, which copies from `uiState.value` at call time rather than a
+fresh repository read; not fixed here, flagged as a related latent bug worth a follow-up look if
+this fix doesn't fully resolve the report). **Needs a real re-test after this fix releases** before
+closing this out.
 
 ### bb-android42-release — Finish the in-progress android/42 release
 

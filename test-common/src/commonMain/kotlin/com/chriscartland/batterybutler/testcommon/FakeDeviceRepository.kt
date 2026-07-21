@@ -48,6 +48,9 @@ class FakeDeviceRepository : DeviceRepository {
     private val eventsFlow = MutableStateFlow<List<BatteryEvent>>(emptyList())
     private val _syncStatus = MutableStateFlow<SyncStatus>(SyncStatus.Idle)
 
+    /** When set, [updateDevice] returns this instead of writing the device and returning success. */
+    var updateDeviceResult: Result<Unit, DataError>? = null
+
     /** Sets the devices and updates the flow. */
     fun setDevices(newDevices: List<Device>) {
         devices.clear()
@@ -117,6 +120,7 @@ class FakeDeviceRepository : DeviceRepository {
     }
 
     override suspend fun updateDevice(device: Device): Result<Unit, DataError> {
+        updateDeviceResult?.let { return it }
         val index = devices.indexOfFirst { it.id == device.id }
         if (index >= 0) {
             devices[index] = device
