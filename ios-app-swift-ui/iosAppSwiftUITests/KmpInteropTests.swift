@@ -141,7 +141,10 @@ final class KmpInteropTests: XCTestCase {
 
     func testAuthStateSubtypes() {
         let unknown: AuthState = AuthStateUnknown()
-        let unauth: AuthState = AuthStateUnauthenticated()
+        // Unauthenticated became a data class carrying SignedOutCause (#1382); Kotlin default
+        // parameter values are not exported to Swift, so the cause must be passed explicitly.
+        let unauth: AuthState = AuthStateUnauthenticated(cause: .signedOut)
+        let expired: AuthState = AuthStateUnauthenticated(cause: .sessionExpired)
         let authing: AuthState = AuthStateAuthenticating()
 
         let user = User(id: "u1", email: nil, displayName: nil, photoUrl: nil)
@@ -153,9 +156,14 @@ final class KmpInteropTests: XCTestCase {
         // Verify type membership via is-checks
         XCTAssertTrue(unknown is AuthStateUnknown)
         XCTAssertTrue(unauth is AuthStateUnauthenticated)
+        XCTAssertTrue(expired is AuthStateUnauthenticated)
         XCTAssertTrue(authing is AuthStateAuthenticating)
         XCTAssertTrue(authed is AuthStateAuthenticated)
         XCTAssertTrue(failed is AuthStateFailed)
+
+        // The cause survives the K/N boundary.
+        XCTAssertEqual((unauth as? AuthStateUnauthenticated)?.cause, .signedOut)
+        XCTAssertEqual((expired as? AuthStateUnauthenticated)?.cause, .sessionExpired)
     }
 
     func testSyncStatusSubtypes() {
