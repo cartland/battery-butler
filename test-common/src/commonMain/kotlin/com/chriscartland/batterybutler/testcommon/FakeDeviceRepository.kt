@@ -95,9 +95,17 @@ class FakeDeviceRepository : DeviceRepository {
     /** The [SyncOutcome] that [resync] returns. Set to simulate auth or sync failures. */
     var resyncOutcome: SyncOutcome = SyncOutcome.Success
 
+    /** Number of times [resync] ran to completion (vs merely being called and then cancelled). */
+    var resyncCompletedCount = 0
+
+    /** Optional suspending body run inside [resync] — set to a gate to hold a resync in flight. */
+    var resyncBody: suspend () -> Unit = {}
+
     override suspend fun resync(timeout: Duration): SyncOutcome {
         resyncCount++
         lastResyncTimeout = timeout
+        resyncBody()
+        resyncCompletedCount++
         return resyncOutcome
     }
 

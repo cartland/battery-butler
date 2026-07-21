@@ -332,7 +332,7 @@ private fun getErrorText(error: AuthError): Pair<String, String> =
 fun LoginContentLabsPreview() {
     BatteryButlerTheme {
         LoginContent(
-            authState = AuthState.Unauthenticated,
+            authState = AuthState.Unauthenticated(),
             isSignInAvailable = true,
             isLabsMode = true,
             onGoogleSignIn = {},
@@ -347,7 +347,7 @@ fun LoginContentLabsPreview() {
 fun LoginContentUnauthenticatedPreview() {
     BatteryButlerTheme {
         LoginContent(
-            authState = AuthState.Unauthenticated,
+            authState = AuthState.Unauthenticated(),
             isSignInAvailable = true,
             isLabsMode = false,
             onGoogleSignIn = {},
@@ -377,7 +377,7 @@ fun LoginContentAuthenticatingPreview() {
 fun LoginContentNotConfiguredPreview() {
     BatteryButlerTheme {
         LoginContent(
-            authState = AuthState.Unauthenticated,
+            authState = AuthState.Unauthenticated(),
             isSignInAvailable = false,
             isLabsMode = false,
             onGoogleSignIn = {},

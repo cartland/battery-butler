@@ -7,6 +7,7 @@ import com.chriscartland.batterybutler.datanetwork.RemoteSyncException
 import com.chriscartland.batterybutler.domain.model.DataError
 import com.chriscartland.batterybutler.domain.model.DataMode
 import com.chriscartland.batterybutler.domain.model.Device
+import com.chriscartland.batterybutler.domain.model.LabsSessionRestoreResult
 import com.chriscartland.batterybutler.domain.model.SyncAuthReason
 import com.chriscartland.batterybutler.domain.model.SyncOutcome
 import com.chriscartland.batterybutler.domain.model.SyncStatus
@@ -14,11 +15,13 @@ import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
 import com.chriscartland.batterybutler.testcommon.FakeDataModeRepository
 import com.chriscartland.batterybutler.testcommon.FakeDeviceImageCache
 import com.chriscartland.batterybutler.testcommon.FakeDeviceImageDataSource
+import com.chriscartland.batterybutler.testcommon.FakeLabsAuthRepository
 import com.chriscartland.batterybutler.testcommon.FakeLocalDataSource
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
@@ -71,6 +74,7 @@ class DefaultSyncManagerTest {
                     FakeDeviceImageCache(),
                     scope,
                 ),
+                labsAuthRepository = FakeLabsAuthRepository(),
                 scope = scope,
             )
 
@@ -235,6 +239,7 @@ class DefaultSyncManagerTest {
                     FakeDeviceImageCache(),
                     scope,
                 ),
+                labsAuthRepository = FakeLabsAuthRepository(),
                 scope = scope,
             )
 
@@ -262,20 +267,286 @@ class DefaultSyncManagerTest {
             scope.cancel()
         }
 
+    // region Sync-loop starvation (self-driven cadence)
+
+    /**
+     * THE production starvation (`bb-sync-loop-starvation`): the remote flow emits one snapshot
+     * and then never completes — exactly how `DelegatingRemoteDataSource`'s old
+     * `dataMode.flatMapLatest { ... }` behaved after the inner one-shot REST fetch completed
+     * (the completion is swallowed; post-#1379 no `dataMode` re-emission ever arrives). The loop
+     * must have SELF-DRIVEN progress: with no preference writes and no mode changes, another
+     * fetch must happen within the poll interval. Against origin/main this test FAILS —
+     * `subscribeCount` stays 1 forever (one successful sync at 15:24, then zero requests for
+     * 30+ minutes on the user's device).
+     */
+    @Test
+    fun `after a successful Labs sync the loop fetches again within the poll interval`() =
+        runTest(testDispatcher) {
+            val fakeLocal = FakeLocalDataSource()
+            val scope = CoroutineScope(testDispatcher + Job())
+            val snapshot = RemoteUpdate(
+                isFullSnapshot = true,
+                deviceTypes = emptyList(),
+                devices = listOf(createDevice(id = "d1", name = "Device 1")),
+                events = emptyList(),
+            )
+            val remote = ScriptedRemoteDataSource().apply {
+                // Emits once, then stays open forever — the flatMapLatest-swallowed-completion shape.
+                onSubscribe = {
+                    flow {
+                        emit(snapshot)
+                        awaitCancellation()
+                    }
+                }
+            }
+            createSyncManager(
+                fakeLocal,
+                remote,
+                scope,
+                dataMode = DataMode.LabsStaging(url = "https://staging.example"),
+            )
+
+            runCurrent()
+            assertEquals(1, remote.subscribeCount)
+            assertEquals(1, fakeLocal.devices.size, "the first fetch applied")
+
+            advanceTimeBy(DefaultSyncManager.SYNC_POLL_INTERVAL_MS + 1)
+            runCurrent()
+            assertTrue(
+                remote.subscribeCount >= 2,
+                "the loop must self-drive its next fetch within the poll interval " +
+                    "(got ${remote.subscribeCount} subscribes — the starved loop never fetches again)",
+            )
+            scope.cancel()
+        }
+
+    /** A mode change interrupts the poll delay: switching to None stops fetching immediately. */
+    @Test
+    fun `switching to None mid-poll stops the loop and switching back resumes it`() =
+        runTest(testDispatcher) {
+            val fakeLocal = FakeLocalDataSource()
+            val scope = CoroutineScope(testDispatcher + Job())
+            val remote = ScriptedRemoteDataSource().apply {
+                onSubscribe = {
+                    flow {
+                        emit(
+                            RemoteUpdate(
+                                isFullSnapshot = true,
+                                deviceTypes = emptyList(),
+                                devices = emptyList(),
+                                events = emptyList(),
+                            ),
+                        )
+                        awaitCancellation()
+                    }
+                }
+            }
+            val dataModeRepository = FakeDataModeRepository(DataMode.LabsStaging(url = "https://staging.example"))
+            DefaultSyncManager(
+                localDataSource = fakeLocal,
+                remoteDataSource = remote,
+                dataModeRepository = dataModeRepository,
+                deviceImageSyncCoordinator = DeviceImageSyncCoordinator(
+                    FakeDeviceImageDataSource(),
+                    FakeDeviceImageCache(),
+                    scope,
+                ),
+                labsAuthRepository = FakeLabsAuthRepository(),
+                scope = scope,
+            )
+
+            runCurrent()
+            assertEquals(1, remote.subscribeCount)
+
+            dataModeRepository.setDataMode(DataMode.None)
+            runCurrent()
+            advanceTimeBy(DefaultSyncManager.SYNC_POLL_INTERVAL_MS * 10)
+            runCurrent()
+            assertEquals(1, remote.subscribeCount, "None mode must fetch nothing")
+
+            dataModeRepository.setDataMode(DataMode.LabsStaging(url = "https://staging.example"))
+            runCurrent()
+            assertEquals(2, remote.subscribeCount, "switching back must resume fetching immediately")
+            scope.cancel()
+        }
+
+    // endregion
+
+    // region Cold-start Labs session gate (PR B)
+
+    /**
+     * In a Labs mode, the background loop must fire ZERO remote requests until the environment's
+     * session restore has resolved — pre-fix, the loop's first iterations raced the restore and
+     * churned AuthRequired(NO_SESSION) on every believed-signed-in cold start. Against the
+     * pre-fix code (no gate) this test fails at the first assertion: subscribeCount is already 1.
+     */
+    @Test
+    fun `sync fires no request in a Labs mode until the session restore resolves`() =
+        runTest(testDispatcher) {
+            val fakeLocal = FakeLocalDataSource()
+            val scope = CoroutineScope(testDispatcher + Job())
+            val remote = ScriptedRemoteDataSource()
+            val labsAuth = FakeLabsAuthRepository().apply {
+                sessionRestoreGate = CompletableDeferred()
+                sessionRestoreResult = LabsSessionRestoreResult.RESTORED
+            }
+            createSyncManager(
+                fakeLocal,
+                remote,
+                scope,
+                dataMode = DataMode.LabsStaging(url = "https://staging.example"),
+                labsAuthRepository = labsAuth,
+            )
+
+            runCurrent()
+            assertEquals(0, remote.subscribeCount, "no request may fire while the restore is unresolved")
+            assertEquals(1, labsAuth.sessionRestoreAwaitCount, "the loop must be waiting on the gate")
+
+            labsAuth.sessionRestoreGate?.complete(Unit)
+            runCurrent()
+            assertTrue(remote.subscribeCount >= 1, "sync must proceed once the restore resolves")
+            scope.cancel()
+        }
+
+    /**
+     * A *transiently*-failed restore resolves (as TRANSIENT_FAILURE) instead of blocking: sync
+     * proceeds and surfaces whatever the wire yields — here a transient token failure, which maps
+     * to the NETWORK failure path, never AuthRequired ("flaky network must not say sign in").
+     */
+    @Test
+    fun `sync proceeds after a transiently-failed restore and a transient token failure maps to a network status`() =
+        runTest(testDispatcher) {
+            val fakeLocal = FakeLocalDataSource()
+            val scope = CoroutineScope(testDispatcher + Job())
+            val remote = ScriptedRemoteDataSource().apply {
+                onSubscribe = { flow { throw RemoteSyncException.TokenUnavailable() } }
+            }
+            val labsAuth = FakeLabsAuthRepository().apply {
+                sessionRestoreResult = LabsSessionRestoreResult.TRANSIENT_FAILURE
+            }
+            val syncManager = createSyncManager(
+                fakeLocal,
+                remote,
+                scope,
+                dataMode = DataMode.LabsStaging(url = "https://staging.example"),
+                labsAuthRepository = labsAuth,
+            )
+
+            runCurrent()
+            assertTrue(remote.subscribeCount >= 1, "a transient restore failure must not block sync")
+            val status = syncManager.syncStatus.value
+            assertIs<SyncStatus.Failed>(status, "a transient token failure is a network problem, got $status")
+            assertIs<DataError.Network.ConnectionFailed>(status.error)
+            scope.cancel()
+        }
+
+    /** The gate is Labs-only: None/Mock/gRPC modes never consult the Labs auth repository. */
+    @Test
+    fun `non-Labs modes never await the session gate`() =
+        runTest(testDispatcher) {
+            val fakeLocal = FakeLocalDataSource()
+            val scope = CoroutineScope(testDispatcher + Job())
+            val labsAuth = FakeLabsAuthRepository().apply { sessionRestoreGate = CompletableDeferred() }
+            createSyncManager(
+                fakeLocal,
+                ScriptedRemoteDataSource(),
+                scope,
+                dataMode = DataMode.Mock,
+                labsAuthRepository = labsAuth,
+            )
+
+            runCurrent()
+            assertEquals(0, labsAuth.sessionRestoreAwaitCount, "Mock mode must not touch the Labs gate")
+            scope.cancel()
+        }
+
+    /** resync() honors the same gate: no request until the restore resolves. */
+    @Test
+    fun `resync awaits the session restore gate in a Labs mode`() =
+        runTest(testDispatcher) {
+            val fakeLocal = FakeLocalDataSource()
+            val scope = CoroutineScope(testDispatcher + Job())
+            val remote = ScriptedRemoteDataSource().apply {
+                onSubscribe = {
+                    flowOf(
+                        RemoteUpdate(
+                            isFullSnapshot = true,
+                            deviceTypes = emptyList(),
+                            devices = listOf(createDevice(id = "d1", name = "Device 1")),
+                            events = emptyList(),
+                        ),
+                    )
+                }
+            }
+            val labsAuth = FakeLabsAuthRepository().apply {
+                sessionRestoreGate = CompletableDeferred()
+                sessionRestoreResult = LabsSessionRestoreResult.RESTORED
+            }
+            val syncManager = createSyncManager(
+                fakeLocal,
+                remote,
+                scope,
+                dataMode = DataMode.LabsStaging(url = "https://staging.example"),
+                labsAuthRepository = labsAuth,
+            )
+
+            val resync = async { syncManager.resync(timeout = 5.seconds) }
+            runCurrent()
+            assertTrue(!resync.isCompleted, "resync must be parked on the gate")
+
+            labsAuth.sessionRestoreGate?.complete(Unit)
+            runCurrent()
+            assertEquals(SyncOutcome.Success, resync.await())
+            scope.cancel()
+        }
+
+    /**
+     * Reactive session loss keeps local data: a terminal AuthRequired from the wire (the
+     * retry-once policy exhausted) surfaces as a status — and the local DB rows survive
+     * untouched. Only the explicit sign-out use case clears local data.
+     */
+    @Test
+    fun `a terminal auth failure leaves existing local rows untouched`() =
+        runTest(testDispatcher) {
+            val fakeLocal = FakeLocalDataSource()
+            fakeLocal.addDevices(listOf(createDevice(id = "d1", name = "Kept 1"), createDevice(id = "d2", name = "Kept 2")))
+            val scope = CoroutineScope(testDispatcher + Job())
+            val remote = ScriptedRemoteDataSource().apply {
+                onSubscribe = { flow { throw RemoteSyncException.AuthRequired(SyncAuthReason.TOKEN_INVALID) } }
+            }
+            val syncManager = createSyncManager(
+                fakeLocal,
+                remote,
+                scope,
+                dataMode = DataMode.LabsStaging(url = "https://staging.example"),
+                labsAuthRepository = FakeLabsAuthRepository(),
+            )
+
+            runCurrent()
+            assertEquals(SyncStatus.AuthRequired(SyncAuthReason.TOKEN_INVALID), syncManager.syncStatus.value)
+            assertEquals(2, fakeLocal.devices.size, "session loss must never clear the local device rows")
+            scope.cancel()
+        }
+
+    // endregion
+
     private fun createSyncManager(
         fakeLocal: FakeLocalDataSource,
         remote: RemoteDataSource,
         scope: CoroutineScope,
+        dataMode: DataMode = DataMode.Mock,
+        labsAuthRepository: FakeLabsAuthRepository = FakeLabsAuthRepository(),
     ): DefaultSyncManager =
         DefaultSyncManager(
             localDataSource = fakeLocal,
             remoteDataSource = remote,
-            dataModeRepository = FakeDataModeRepository(DataMode.Mock),
+            dataModeRepository = FakeDataModeRepository(dataMode),
             deviceImageSyncCoordinator = DeviceImageSyncCoordinator(
                 FakeDeviceImageDataSource(),
                 FakeDeviceImageCache(),
                 scope,
             ),
+            labsAuthRepository = labsAuthRepository,
             scope = scope,
         )
 

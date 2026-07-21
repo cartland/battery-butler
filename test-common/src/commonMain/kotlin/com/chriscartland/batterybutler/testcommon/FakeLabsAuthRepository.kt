@@ -2,9 +2,11 @@ package com.chriscartland.batterybutler.testcommon
 
 import com.chriscartland.batterybutler.domain.model.AuthError
 import com.chriscartland.batterybutler.domain.model.AuthState
+import com.chriscartland.batterybutler.domain.model.LabsSessionRestoreResult
 import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.model.User
 import com.chriscartland.batterybutler.domain.repository.LabsAuthRepository
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,8 +16,17 @@ import kotlinx.coroutines.flow.asStateFlow
  * state ([AuthState.Authenticated] on success, [AuthState.Failed] on error) and records call counts.
  */
 class FakeLabsAuthRepository : LabsAuthRepository {
-    private val _labsAuthState = MutableStateFlow<AuthState>(AuthState.Unauthenticated)
+    private val _labsAuthState = MutableStateFlow<AuthState>(AuthState.Unauthenticated())
     override val labsAuthState: StateFlow<AuthState> = _labsAuthState.asStateFlow()
+
+    /** What [awaitLabsSessionRestore] resolves to once [sessionRestoreGate] (if set) releases. */
+    var sessionRestoreResult: LabsSessionRestoreResult = LabsSessionRestoreResult.RESTORED
+
+    /** When non-null, [awaitLabsSessionRestore] suspends on this gate — complete it to release. */
+    var sessionRestoreGate: CompletableDeferred<Unit>? = null
+
+    /** Number of times [awaitLabsSessionRestore] has been called. */
+    var sessionRestoreAwaitCount = 0
 
     var signInResult: Result<User, AuthError> =
         Result.Success(
@@ -34,14 +45,20 @@ class FakeLabsAuthRepository : LabsAuthRepository {
         return signInResult
     }
 
+    override suspend fun awaitLabsSessionRestore(): LabsSessionRestoreResult {
+        sessionRestoreAwaitCount++
+        sessionRestoreGate?.await()
+        return sessionRestoreResult
+    }
+
     override suspend fun signOutLabs() {
         signOutCount++
-        _labsAuthState.value = AuthState.Unauthenticated
+        _labsAuthState.value = AuthState.Unauthenticated()
     }
 
     override suspend fun clearError() {
         if (_labsAuthState.value is AuthState.Failed) {
-            _labsAuthState.value = AuthState.Unauthenticated
+            _labsAuthState.value = AuthState.Unauthenticated()
         }
     }
 

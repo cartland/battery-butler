@@ -7,6 +7,8 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 /**
  * Holds one value of [T] per distinct key derived from [DataMode] (e.g. one Labs auth session
@@ -24,15 +26,21 @@ import kotlinx.coroutines.flow.map
  *
  * Use this instead of a bare `MutableStateFlow` whenever new state depends on "which backend is
  * selected right now" (staging vs prod, or any future per-environment concern).
+ *
+ * The per-key map is guarded by a [Mutex]: readers and writers arrive from independent
+ * coroutines (the auth repository's init collector, the sync loop's cold-start gate,
+ * UI-triggered transitions), and an unguarded `getOrPut` on a shared map is a real race -- two
+ * callers can each create a `MutableStateFlow` for the same key and one write is silently lost.
  */
 class DataModeKeyedState<T>(
     private val dataMode: Flow<DataMode>,
     private val keyFor: (DataMode) -> String,
     private val default: T,
 ) {
+    private val mapMutex = Mutex()
     private val statesByKey = mutableMapOf<String, MutableStateFlow<T>>()
 
-    private fun stateFor(key: String): MutableStateFlow<T> = statesByKey.getOrPut(key) { MutableStateFlow(default) }
+    private suspend fun stateFor(key: String): MutableStateFlow<T> = mapMutex.withLock { statesByKey.getOrPut(key) { MutableStateFlow(default) } }
 
     /** Reactively follows whichever key the current data mode maps to. */
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -45,6 +53,19 @@ class DataModeKeyedState<T>(
     /** Sets the value for the environment that is current *right now*. */
     suspend fun setCurrent(value: T) {
         stateFor(keyFor(dataMode.first())).value = value
+    }
+
+    /**
+     * Sets the value for an explicit [key], regardless of which environment is currently
+     * selected. For reactions to events that carry their own environment identity (e.g. a
+     * session invalidated for staging after the user already switched to prod) -- using
+     * [setCurrent] there would corrupt the *wrong* environment's state.
+     */
+    suspend fun setFor(
+        key: String,
+        value: T,
+    ) {
+        stateFor(key).value = value
     }
 
     /** Reads-and-writes the value for the environment that is current *right now*. */
@@ -61,7 +82,7 @@ class DataModeKeyedState<T>(
      *
      * @return true if the value was actually set (i.e. it still equaled [expected]).
      */
-    fun compareAndSet(
+    suspend fun compareAndSet(
         key: String,
         expected: T,
         newValue: T,

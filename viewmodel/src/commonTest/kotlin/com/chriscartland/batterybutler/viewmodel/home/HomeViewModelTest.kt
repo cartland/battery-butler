@@ -1,7 +1,11 @@
 package com.chriscartland.batterybutler.viewmodel.home
 
+import com.chriscartland.batterybutler.domain.model.DeviceImageBytes
+import com.chriscartland.batterybutler.domain.model.DeviceImageError
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.DispatcherProvider
+import com.chriscartland.batterybutler.domain.model.Result
+import com.chriscartland.batterybutler.domain.repository.DeviceImageRepository
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.presentationmodel.home.GroupOption
 import com.chriscartland.batterybutler.presentationmodel.home.SortOption
@@ -18,7 +22,11 @@ import com.chriscartland.batterybutler.usecase.ResyncUseCase
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -234,6 +242,38 @@ class HomeViewModelTest {
             assertEquals(1, state.groupedDevices["Bedroom"]?.size)
         }
 
+    /**
+     * uiState liveness: the device list must render even if image hydration is slow or stuck.
+     * The image observation is one Room-query flow per etag `combine`d together, and `combine`
+     * withholds until EVERY input emits — pre-fix, a device with an imageEtag whose cache flow
+     * hadn't answered yet held the ENTIRE uiState at its initial loading state, devices
+     * invisible despite a populated DB. Against the pre-fix code this test times out waiting
+     * for the first populated emission.
+     */
+    @Test
+    fun `uiState emits the device list even when the image observation never emits`() =
+        runTest {
+            val repo = FakeDeviceRepository()
+            val device = TestDevices.createDevice(id = "1", name = "Has Image", typeId = "type-1").copy(imageEtag = "etag-1")
+            repo.setDevices(listOf(device))
+            val viewModel = createViewModel(repo, imageRepository = NeverEmittingImageRepository())
+
+            val state = viewModel.uiState.first {
+                it.groupedDevices.values
+                    .flatten()
+                    .isNotEmpty()
+            }
+
+            assertEquals(
+                "Has Image",
+                state.groupedDevices.values
+                    .flatten()
+                    .single()
+                    .name,
+            )
+            assertTrue(state.deviceImagesByEtag.isEmpty(), "images hydrate later; the list must not wait for them")
+        }
+
     private val testDispatcherProvider = object : DispatcherProvider {
         private val dispatcher: CoroutineDispatcher = UnconfinedTestDispatcher()
         override val default: CoroutineDispatcher = dispatcher
@@ -241,7 +281,10 @@ class HomeViewModelTest {
         override val main: CoroutineDispatcher = dispatcher
     }
 
-    private fun createViewModel(repo: DeviceRepository): HomeViewModel =
+    private fun createViewModel(
+        repo: DeviceRepository,
+        imageRepository: DeviceImageRepository = FakeDeviceImageRepository(),
+    ): HomeViewModel =
         HomeViewModel(
             getDevicesUseCase = GetDevicesUseCase(repo),
             getDeviceTypesUseCase = GetDeviceTypesUseCase(repo),
@@ -249,6 +292,25 @@ class HomeViewModelTest {
             getSyncStatusUseCase = GetSyncStatusUseCase(repo),
             dismissSyncStatusUseCase = DismissSyncStatusUseCase(repo),
             resyncUseCase = ResyncUseCase(repo),
-            getCachedDeviceImageUseCase = GetCachedDeviceImageUseCase(FakeDeviceImageRepository()),
+            getCachedDeviceImageUseCase = GetCachedDeviceImageUseCase(imageRepository),
         )
+
+    /**
+     * A [DeviceImageRepository] whose cached-image observation NEVER emits — the worst case of
+     * the real chain, where each image is a Room query flow whose first value arrives
+     * asynchronously (or, degenerately, not at all).
+     */
+    private class NeverEmittingImageRepository : DeviceImageRepository {
+        override val supported: Flow<Boolean> = MutableStateFlow(false)
+
+        override fun observeCachedImage(imageEtag: String): Flow<DeviceImageBytes?> = flow { awaitCancellation() }
+
+        override suspend fun uploadImage(
+            deviceId: String,
+            bytes: ByteArray,
+            contentType: String,
+        ): Result<String, DeviceImageError> = Result.Success("unused")
+
+        override suspend fun deleteImage(deviceId: String): Boolean = true
+    }
 }

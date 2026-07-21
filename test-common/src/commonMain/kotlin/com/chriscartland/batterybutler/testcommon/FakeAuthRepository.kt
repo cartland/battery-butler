@@ -84,7 +84,7 @@ class FakeAuthRepository : AuthRepository {
 
     override suspend fun signOut() {
         signOutCallCount++
-        _authState.value = AuthState.Unauthenticated
+        _authState.value = AuthState.Unauthenticated()
     }
 
     override suspend fun refreshToken(): Result<Unit, AuthError> = refreshTokenResult
@@ -92,7 +92,7 @@ class FakeAuthRepository : AuthRepository {
     override fun clearError() {
         clearErrorCallCount++
         if (_authState.value is AuthState.Failed) {
-            _authState.value = AuthState.Unauthenticated
+            _authState.value = AuthState.Unauthenticated()
         }
     }
 }

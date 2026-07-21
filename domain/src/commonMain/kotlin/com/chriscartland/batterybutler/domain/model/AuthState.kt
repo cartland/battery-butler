@@ -21,8 +21,16 @@ sealed interface AuthState {
     /**
      * No user is signed in.
      * UI should show sign-in options.
+     *
+     * @property cause Why the user is signed out. [SignedOutCause.SIGNED_OUT] (the default)
+     *   covers "never signed in" and an explicit sign-out; [SignedOutCause.SESSION_EXPIRED]
+     *   marks a *reactive* sign-out — the backend authoritatively rejected the stored session —
+     *   so the UI can distinguish "your session expired" from a first-run sign-in prompt.
+     *   Every existing `is Unauthenticated` check treats both causes as signed out.
      */
-    data object Unauthenticated : AuthState
+    data class Unauthenticated(
+        val cause: SignedOutCause = SignedOutCause.SIGNED_OUT,
+    ) : AuthState
 
     /**
      * Sign-in is in progress.

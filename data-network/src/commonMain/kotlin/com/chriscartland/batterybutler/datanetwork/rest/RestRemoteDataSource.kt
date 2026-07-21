@@ -1,5 +1,7 @@
 package com.chriscartland.batterybutler.datanetwork.rest
 
+import com.chriscartland.batterybutler.datanetwork.LabsSyncTokenSource
+import com.chriscartland.batterybutler.datanetwork.LabsTokenResult
 import com.chriscartland.batterybutler.datanetwork.RemoteDataSource
 import com.chriscartland.batterybutler.datanetwork.RemoteDataSourceState
 import com.chriscartland.batterybutler.datanetwork.RemoteSyncException
@@ -38,16 +40,28 @@ import kotlinx.coroutines.flow.flow
  * they become a visible [com.chriscartland.batterybutler.domain.model.SyncStatus] instead of a
  * silent no-op. Local state is never touched by a failed call.
  *
- * @param tokenProvider yields a per-user Firebase ID token for the `Authorization` header;
- *   supplied by the auth layer. Yielding null means "no session": the call is refused
- *   client-side ([SyncAuthReason.NO_SESSION]) instead of firing a guaranteed-401
- *   unauthenticated request.
+ * ## Retry-once on a refreshable 401
+ *
+ * A 401 whose reason is `expired` — or an unknown-reason 401 on a token that *locally* looked
+ * unexpired (served from cache without a refresh) — earns exactly one forced token refresh and
+ * one retry of the same request: the common cause is a stale token (clock skew, a rotation the
+ * client missed), which a fresh token fixes without bothering the user. A 401 on a
+ * freshly-minted token, a 401 with reason `invalid`, or a still-401 retry is **terminal**: it is
+ * reported to [tokenSource] (which tears the session down and notifies the auth layer) and then
+ * thrown as [RemoteSyncException.AuthRequired]. A token that can't be obtained for *transient*
+ * reasons throws [RemoteSyncException.TokenUnavailable] instead — the sync layer surfaces that
+ * as a network failure, never as "sign in required".
+ *
+ * @param tokenSource yields the per-user Firebase ID token for the `Authorization` header (and
+ *   receives terminal-rejection reports); supplied by the auth layer.
+ *   [LabsTokenResult.NoSession] means the call is refused client-side
+ *   ([SyncAuthReason.NO_SESSION]) instead of firing a guaranteed-401 unauthenticated request.
  * @param baseUrl the env host (e.g. `https://<host>`), injected from config.
  */
 internal class RestRemoteDataSource(
     private val httpClient: HttpClient,
     private val baseUrl: String,
-    private val tokenProvider: suspend () -> String?,
+    private val tokenSource: LabsSyncTokenSource,
 ) : RemoteDataSource {
     override val state: StateFlow<RemoteDataSourceState> =
         MutableStateFlow(
@@ -60,39 +74,77 @@ internal class RestRemoteDataSource(
 
     override fun subscribe(): Flow<RemoteUpdate> =
         flow {
-            val token = requireToken()
-            val response = httpClient.get(syncUrl()) { bearerAuth(token) }
-            val snapshot: SyncSnapshotWire = response.bodyOrThrow()
+            val snapshot = executeAuthed<SyncSnapshotWire> { token ->
+                httpClient.get(syncUrl()) { bearerAuth(token) }
+            }
             emit(RestSyncMapper.toRemoteUpdate(snapshot))
         }
 
     override suspend fun push(update: RemoteUpdate): Boolean {
-        val token = requireToken()
-        val response = httpClient.post(syncUrl()) {
-            bearerAuth(token)
-            contentType(ContentType.Application.Json)
-            setBody(RestSyncMapper.toPushRequest(update))
+        val pushResponse = executeAuthed<SyncPushResponseWire> { token ->
+            httpClient.post(syncUrl()) {
+                bearerAuth(token)
+                contentType(ContentType.Application.Json)
+                setBody(RestSyncMapper.toPushRequest(update))
+            }
         }
-        val pushResponse: SyncPushResponseWire = response.bodyOrThrow()
         return pushResponse.success
     }
 
-    private suspend fun requireToken(): String = tokenProvider() ?: throw RemoteSyncException.AuthRequired(SyncAuthReason.NO_SESSION)
+    /**
+     * Runs [request] with a Bearer token, applying the retry-once policy documented on the class:
+     * parse the payload on 2xx, force-refresh + retry once on a refreshable 401, report + throw on
+     * a terminal 401, throw the typed wire failure on anything else.
+     */
+    private suspend inline fun <reified T> executeAuthed(request: (token: String) -> HttpResponse): T {
+        val first = requireToken(forceRefresh = false)
+        val response = request(first.idToken)
+        if (response.status.isSuccess()) return response.body()
+        if (response.status != HttpStatusCode.Unauthorized) {
+            throw RemoteSyncException.ServerError(response.status.value)
+        }
 
-    /** Parses the payload on 2xx; throws the typed wire failure for any other status. */
-    private suspend inline fun <reified T> HttpResponse.bodyOrThrow(): T =
-        when {
-            status.isSuccess() -> {
-                body()
-            }
+        val reason = parseAuthReason(response.bodyAsText())
+        if (!shouldRetryWithForcedRefresh(reason, first.servedFromCache)) {
+            tokenSource.reportSessionRejected(reason)
+            throw RemoteSyncException.AuthRequired(reason)
+        }
 
-            status == HttpStatusCode.Unauthorized -> {
-                throw RemoteSyncException.AuthRequired(parseAuthReason(bodyAsText()))
-            }
+        val second = requireToken(forceRefresh = true)
+        val retry = request(second.idToken)
+        if (retry.status.isSuccess()) return retry.body()
+        if (retry.status != HttpStatusCode.Unauthorized) {
+            throw RemoteSyncException.ServerError(retry.status.value)
+        }
+        val retryReason = parseAuthReason(retry.bodyAsText())
+        tokenSource.reportSessionRejected(retryReason)
+        throw RemoteSyncException.AuthRequired(retryReason)
+    }
 
-            else -> {
-                throw RemoteSyncException.ServerError(status.value)
-            }
+    /**
+     * Whether a 401 with [reason] on a token with [servedFromCache] earns the one forced-refresh
+     * retry. `expired` always does (that is precisely what a refresh fixes). An unknown reason
+     * does only when the token was served from cache — locally it looked unexpired, so the server
+     * may simply know better; if we *just* minted the token, another mint can't do better and the
+     * rejection is treated as authoritative. `invalid` is authoritative by definition, and
+     * NO_SESSION never reaches here (no request is sent without a token).
+     */
+    private fun shouldRetryWithForcedRefresh(
+        reason: SyncAuthReason,
+        servedFromCache: Boolean,
+    ): Boolean =
+        when (reason) {
+            SyncAuthReason.TOKEN_EXPIRED -> true
+            SyncAuthReason.UNKNOWN -> servedFromCache
+            SyncAuthReason.TOKEN_INVALID, SyncAuthReason.NO_SESSION -> false
+        }
+
+    private suspend fun requireToken(forceRefresh: Boolean): LabsTokenResult.Token =
+        when (val result = tokenSource.getLabsToken(forceRefresh)) {
+            is LabsTokenResult.Token -> result
+            LabsTokenResult.NoSession -> throw RemoteSyncException.AuthRequired(SyncAuthReason.NO_SESSION)
+            LabsTokenResult.SessionInvalidated -> throw RemoteSyncException.AuthRequired(SyncAuthReason.TOKEN_INVALID)
+            LabsTokenResult.TransientFailure -> throw RemoteSyncException.TokenUnavailable()
         }
 
     private fun syncUrl(): String = "${baseUrl.trimEnd('/')}$SYNC_PATH"

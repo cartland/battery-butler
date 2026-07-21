@@ -55,7 +55,7 @@ class LoginViewModelTest {
                 repo,
                 FakeLabsAuthRepository(),
                 FakeDataModeRepository(DataMode.None),
-                SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository()),
+                SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository(), backgroundScope),
             )
 
             val state = viewModel.authState.value
@@ -71,15 +71,15 @@ class LoginViewModelTest {
                 repo,
                 FakeLabsAuthRepository(),
                 FakeDataModeRepository(DataMode.None),
-                SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository()),
+                SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository(), backgroundScope),
             )
             advanceUntilIdle()
 
-            repo.setAuthState(AuthState.Unauthenticated)
+            repo.setAuthState(AuthState.Unauthenticated())
             advanceUntilIdle()
 
-            val state = viewModel.authState.first { it == AuthState.Unauthenticated }
-            assertEquals(AuthState.Unauthenticated, state)
+            val state = viewModel.authState.first { it is AuthState.Unauthenticated }
+            assertEquals(AuthState.Unauthenticated(), state)
         }
 
     @Test
@@ -91,7 +91,7 @@ class LoginViewModelTest {
                 repo,
                 FakeLabsAuthRepository(),
                 FakeDataModeRepository(DataMode.None),
-                SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository()),
+                SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository(), backgroundScope),
             )
 
             assertTrue(viewModel.isSignInAvailable)
@@ -106,7 +106,7 @@ class LoginViewModelTest {
                 repo,
                 FakeLabsAuthRepository(),
                 FakeDataModeRepository(DataMode.None),
-                SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository()),
+                SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository(), backgroundScope),
             )
 
             assertFalse(viewModel.isSignInAvailable)
@@ -121,7 +121,7 @@ class LoginViewModelTest {
                 repo,
                 FakeLabsAuthRepository(),
                 FakeDataModeRepository(DataMode.None),
-                SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository()),
+                SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository(), backgroundScope),
             )
 
             viewModel.signInWithGoogle()
@@ -139,7 +139,7 @@ class LoginViewModelTest {
                 repo,
                 FakeLabsAuthRepository(),
                 FakeDataModeRepository(DataMode.None),
-                SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository()),
+                SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository(), backgroundScope),
             )
 
             viewModel.signInWithGoogle()
@@ -160,7 +160,7 @@ class LoginViewModelTest {
                 repo,
                 FakeLabsAuthRepository(),
                 FakeDataModeRepository(DataMode.None),
-                SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository()),
+                SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository(), backgroundScope),
             )
 
             viewModel.signInWithGoogle()
@@ -184,7 +184,7 @@ class LoginViewModelTest {
                 repo,
                 FakeLabsAuthRepository(),
                 FakeDataModeRepository(DataMode.None),
-                SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository()),
+                SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository(), backgroundScope),
             )
 
             viewModel.signInWithGoogle()
@@ -205,7 +205,7 @@ class LoginViewModelTest {
                 repo,
                 FakeLabsAuthRepository(),
                 FakeDataModeRepository(DataMode.None),
-                SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository()),
+                SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository(), backgroundScope),
             )
 
             viewModel.signInWithGoogle()
@@ -225,7 +225,7 @@ class LoginViewModelTest {
                 repo,
                 FakeLabsAuthRepository(),
                 FakeDataModeRepository(DataMode.None),
-                SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository()),
+                SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository(), backgroundScope),
             )
 
             viewModel.dismissError()
@@ -242,15 +242,15 @@ class LoginViewModelTest {
                 repo,
                 FakeLabsAuthRepository(),
                 FakeDataModeRepository(DataMode.None),
-                SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository()),
+                SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository(), backgroundScope),
             )
             advanceUntilIdle()
 
             viewModel.dismissError()
             advanceUntilIdle()
 
-            val state = viewModel.authState.first { it == AuthState.Unauthenticated }
-            assertEquals(AuthState.Unauthenticated, state)
+            val state = viewModel.authState.first { it is AuthState.Unauthenticated }
+            assertEquals(AuthState.Unauthenticated(), state)
         }
 
     @Test
@@ -268,7 +268,7 @@ class LoginViewModelTest {
                 repo,
                 FakeLabsAuthRepository(),
                 FakeDataModeRepository(DataMode.None),
-                SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository()),
+                SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository(), backgroundScope),
             )
 
             viewModel.signInWithGoogle()
@@ -295,7 +295,7 @@ class LoginViewModelTest {
                 repo,
                 FakeLabsAuthRepository(),
                 FakeDataModeRepository(DataMode.None),
-                SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository()),
+                SignInToLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository(), backgroundScope),
             )
 
             viewModel.signInWithGoogle()
@@ -317,7 +317,7 @@ class LoginViewModelTest {
                 grpcRepo,
                 labsRepo,
                 FakeDataModeRepository(DataMode.LabsStaging("https://example.com")),
-                SignInToLabsUseCase(labsRepo, FakeDeviceRepository()),
+                SignInToLabsUseCase(labsRepo, FakeDeviceRepository(), backgroundScope),
             )
             advanceUntilIdle() // let isLabsMode (Eagerly) observe the Labs mode
 
@@ -341,11 +341,11 @@ class LoginViewModelTest {
                 grpcRepo,
                 labsRepo,
                 FakeDataModeRepository(DataMode.LabsStaging("https://example.com")),
-                SignInToLabsUseCase(labsRepo, FakeDeviceRepository()),
+                SignInToLabsUseCase(labsRepo, FakeDeviceRepository(), backgroundScope),
             )
             advanceUntilIdle()
 
-            val state = viewModel.authState.first { it == AuthState.Unauthenticated }
-            assertEquals(AuthState.Unauthenticated, state)
+            val state = viewModel.authState.first { it is AuthState.Unauthenticated }
+            assertEquals(AuthState.Unauthenticated(), state)
         }
 }

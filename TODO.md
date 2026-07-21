@@ -9,6 +9,36 @@ Project task tracking for Battery Butler.
 
 ## P2
 
+### bb-sync-loop-starvation — One successful sync, then zero requests forever ("Syncing..." stuck) — fix shipped 2026-07-21
+
+**Symptom (confirmed live on android/56):** prod logs show `GET /sync` 401 at 15:24:49, `GET
+/sync` 200 at 15:24:57, then **zero requests for 30+ minutes** while the app displays
+"Syncing..." forever.
+
+**Root cause:** `DelegatingRemoteDataSource.subscribe()` was `dataMode.flatMapLatest { … }` over
+the infinite DataStore preferences flow. The inner Labs REST flow does one GET, emits once, and
+*completes* — but `flatMapLatest` swallows that completion and waits for the next `dataMode`
+emission, which (after `bb-signin-empty-list` added `distinctUntilChanged`) never comes. So
+`DefaultSyncManager.subscribeWithRetry`'s `collect` hung forever after the first emission, the
+"stream ended → reconnect with backoff" model never ran, and `_syncStatus` stuck at whatever was
+last set. Pre-56, spurious DataStore-write re-emissions of `dataMode` were *accidentally* driving
+the retry cadence — the distinct guard fixed one bug and unmasked this one. (#1380's typed wire
+failures partially masked the FAILURE case — exceptions end the collect, so the loop iterated —
+but the SUCCESS case still starved.)
+
+**Fix (PR B of the auth wave):** the sync loop owns its cadence. `DefaultSyncManager` runs
+`dataMode.distinctUntilChanged().collectLatest { mode -> syncLoopForMode(mode) }`: Labs
+(request/response) modes do one fetch per iteration (`subscribe().first()`) then sleep the 60s
+poll interval; Mock/gRPC (stream) modes collect until the stream ends, then reconnect; failures
+back off 1s→…→30s; `DataMode.None` parks until the mode changes; a mode change cancels and
+restarts the loop (the `NonCancellable` snapshot apply from `bb-signin-empty-list` keeps that
+safe). `DelegatingRemoteDataSource.subscribe()` now reads the mode **once per collection** and
+completes when the source completes — mode reactivity lives in exactly one place. Pinned by
+`DefaultSyncManagerTest`'s "after a successful Labs sync the loop fetches again within the poll
+interval" (fails against the pre-fix loop) and the None-mode idle/resume test. Full architecture:
+`docs/LABS-AUTH.md`.
+
+
 ### bb-signin-empty-list — Device list empties after sign-out → sign-in (Labs) — fix shipped 2026-07-21
 
 **Symptom (reported on android/55):** a user signed out of Labs and back in; the device list came

@@ -16,4 +16,4 @@ import com.chriscartland.batterybutler.domain.model.AuthState
 internal fun authStateForServerRejection(
     isExplicitAttempt: Boolean,
     error: AuthError,
-): AuthState = if (isExplicitAttempt) AuthState.Failed(error) else AuthState.Unauthenticated
+): AuthState = if (isExplicitAttempt) AuthState.Failed(error) else AuthState.Unauthenticated()
