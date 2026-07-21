@@ -15,7 +15,8 @@ import kotlinx.coroutines.flow.MutableSharedFlow
  * session-loss path.
  */
 class FakeLabsAuthGateway : LabsAuthGateway {
-    private val _sessionInvalidations = MutableSharedFlow<LabsSessionInvalidation>()
+    // Buffered so a test can emit before pumping the collector's dispatcher.
+    private val _sessionInvalidations = MutableSharedFlow<LabsSessionInvalidation>(extraBufferCapacity = 8)
     override val sessionInvalidations: Flow<LabsSessionInvalidation> = _sessionInvalidations
 
     var signInResult: Result<Unit, AuthError> = Result.Success(Unit)
