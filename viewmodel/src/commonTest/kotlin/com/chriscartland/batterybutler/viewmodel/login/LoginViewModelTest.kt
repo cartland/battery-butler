@@ -4,6 +4,7 @@ import com.chriscartland.batterybutler.domain.model.AuthError
 import com.chriscartland.batterybutler.domain.model.AuthState
 import com.chriscartland.batterybutler.domain.model.DataMode
 import com.chriscartland.batterybutler.domain.model.Result
+import com.chriscartland.batterybutler.domain.model.SignedOutCause
 import com.chriscartland.batterybutler.domain.model.User
 import com.chriscartland.batterybutler.testcommon.FakeAuthRepository
 import com.chriscartland.batterybutler.testcommon.FakeDataModeRepository
@@ -347,5 +348,47 @@ class LoginViewModelTest {
 
             val state = viewModel.authState.first { it is AuthState.Unauthenticated }
             assertEquals(AuthState.Unauthenticated(), state)
+        }
+
+    /**
+     * Reactive session loss: the repository flips a Labs env to
+     * `Unauthenticated(SESSION_EXPIRED)` (see `LabsSessionLossReactionTest`), and the front door's
+     * UI model must surface that cause so LoginContent can show "session expired — sign in again"
+     * instead of the first-run sign-in prompt.
+     */
+    @Test
+    fun `in Labs mode authState surfaces the session-expired cause`() =
+        runTest {
+            val labsRepo = FakeLabsAuthRepository()
+            val viewModel = LoginViewModel(
+                FakeAuthRepository(),
+                labsRepo,
+                FakeDataModeRepository(DataMode.LabsStaging("https://example.com")),
+                SignInToLabsUseCase(labsRepo, FakeDeviceRepository(), backgroundScope),
+            )
+            labsRepo.setLabsAuthState(AuthState.Unauthenticated(cause = SignedOutCause.SESSION_EXPIRED))
+            advanceUntilIdle()
+
+            val state = viewModel.authState.first { it is AuthState.Unauthenticated }
+            assertIs<AuthState.Unauthenticated>(state)
+            assertEquals(SignedOutCause.SESSION_EXPIRED, state.cause)
+        }
+
+    @Test
+    fun `in Labs mode a plain signed-out state keeps the default cause`() =
+        runTest {
+            val labsRepo = FakeLabsAuthRepository()
+            val viewModel = LoginViewModel(
+                FakeAuthRepository(),
+                labsRepo,
+                FakeDataModeRepository(DataMode.LabsStaging("https://example.com")),
+                SignInToLabsUseCase(labsRepo, FakeDeviceRepository(), backgroundScope),
+            )
+            labsRepo.setLabsAuthState(AuthState.Unauthenticated())
+            advanceUntilIdle()
+
+            val state = viewModel.authState.first { it is AuthState.Unauthenticated }
+            assertIs<AuthState.Unauthenticated>(state)
+            assertEquals(SignedOutCause.SIGNED_OUT, state.cause)
         }
 }

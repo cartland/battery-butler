@@ -1,5 +1,6 @@
 package com.chriscartland.batterybutler.datanetwork.rest
 
+import com.chriscartland.batterybutler.datanetwork.LabsSignInIdentity
 import com.chriscartland.batterybutler.domain.model.AuthError
 import com.chriscartland.batterybutler.domain.model.Result
 import io.ktor.client.HttpClient
@@ -46,11 +47,46 @@ class FirebaseIdTokenProviderTest {
 
             val result = provider.signInWithGoogle("google-tok")
 
-            assertIs<Result.Success<Unit>>(result)
+            assertIs<Result.Success<LabsSignInIdentity>>(result)
             assertEquals("test-api-key", seenKey)
             assertTrue(seenPath?.endsWith("accounts:signInWithIdp") == true)
             assertTrue(seenBody?.contains("id_token=google-tok&providerId=google.com") == true)
             assertEquals("labs-id-1", provider.getIdToken())
+        }
+
+    /**
+     * `signInWithIdp`'s `localId` is the **Firebase uid** — the id the Labs backend authorizes
+     * and attributes writes with (e.g. device-image `uploadedByUid`). The sign-in result must
+     * surface it (plus the account email) so the auth repository can key [com.chriscartland
+     * .batterybutler.domain.model.User.id] on it instead of the Google profile email.
+     */
+    @Test
+    fun `signInWithGoogle returns the Firebase uid and email minted by signInWithIdp`() =
+        runTest {
+            val provider = provider(backgroundScope) { respondJson(SIGN_IN_JSON) }
+
+            val result = provider.signInWithGoogle("google-tok")
+
+            assertIs<Result.Success<LabsSignInIdentity>>(result)
+            assertEquals(
+                LabsSignInIdentity(firebaseUid = "uid1", email = "a@example.com"),
+                result.data,
+            )
+        }
+
+    @Test
+    fun `signInWithGoogle treats a blank localId and email as absent`() =
+        runTest {
+            val provider = provider(backgroundScope) {
+                // Lenient wire boundary: every response field defaults, so a response missing
+                // localId/email parses as blanks — those must surface as null, not "".
+                respondJson("""{"idToken":"labs-id-1","refreshToken":"refresh-1","expiresIn":"3600"}""")
+            }
+
+            val result = provider.signInWithGoogle("google-tok")
+
+            assertIs<Result.Success<LabsSignInIdentity>>(result)
+            assertEquals(LabsSignInIdentity(firebaseUid = null, email = null), result.data)
         }
 
     @Test
@@ -74,7 +110,7 @@ class FirebaseIdTokenProviderTest {
                 }
             }
 
-            assertIs<Result.Success<Unit>>(provider.signInWithGoogle("google-tok"))
+            assertIs<Result.Success<*>>(provider.signInWithGoogle("google-tok"))
             assertEquals("labs-id-1", provider.getIdToken()) // fresh, no refresh
             assertEquals(0, refreshCalls)
 
@@ -132,7 +168,7 @@ class FirebaseIdTokenProviderTest {
     fun `signOut clears the session`() =
         runTest {
             val provider = provider(backgroundScope) { respondJson(SIGN_IN_JSON) }
-            assertIs<Result.Success<Unit>>(provider.signInWithGoogle("google-tok"))
+            assertIs<Result.Success<*>>(provider.signInWithGoogle("google-tok"))
             assertEquals("labs-id-1", provider.getIdToken())
 
             provider.signOut()
@@ -146,7 +182,7 @@ class FirebaseIdTokenProviderTest {
             val provider = provider(backgroundScope) { respondJson(SIGN_IN_JSON) }
             assertNull(provider.currentRefreshToken())
 
-            assertIs<Result.Success<Unit>>(provider.signInWithGoogle("google-tok"))
+            assertIs<Result.Success<*>>(provider.signInWithGoogle("google-tok"))
 
             assertEquals("refresh-1", provider.currentRefreshToken())
         }
@@ -252,7 +288,7 @@ class FirebaseIdTokenProviderTest {
 
             // Session present but the (needed) refresh fails on the network -> TransientFailure,
             // and the session is kept for a later retry.
-            assertIs<Result.Success<Unit>>(provider.signInWithGoogle("google-tok"))
+            assertIs<Result.Success<*>>(provider.signInWithGoogle("google-tok"))
             nowMs += 3_600_000L
             failRefresh = true
             assertIs<FirebaseIdTokenProvider.TokenOutcome.TransientFailure>(provider.getToken())
@@ -276,7 +312,7 @@ class FirebaseIdTokenProviderTest {
                     respondJson(SIGN_IN_JSON)
                 }
             }
-            assertIs<Result.Success<Unit>>(provider.signInWithGoogle("google-tok"))
+            assertIs<Result.Success<*>>(provider.signInWithGoogle("google-tok"))
 
             val cached = provider.getToken()
             assertIs<FirebaseIdTokenProvider.TokenOutcome.Token>(cached)
@@ -305,7 +341,7 @@ class FirebaseIdTokenProviderTest {
                     respondJson(SIGN_IN_JSON)
                 }
             }
-            assertIs<Result.Success<Unit>>(provider.signInWithGoogle("google-tok"))
+            assertIs<Result.Success<*>>(provider.signInWithGoogle("google-tok"))
 
             nowMs += 3_600_000L
             assertIs<FirebaseIdTokenProvider.TokenOutcome.Invalid>(provider.getToken())
@@ -333,7 +369,7 @@ class FirebaseIdTokenProviderTest {
                     respondJson(SIGN_IN_JSON)
                 }
             }
-            assertIs<Result.Success<Unit>>(provider.signInWithGoogle("google-tok"))
+            assertIs<Result.Success<*>>(provider.signInWithGoogle("google-tok"))
             nowMs += 3_600_000L
 
             val results = (1..20).map { async { provider.getToken() } }.awaitAll()
@@ -361,7 +397,7 @@ class FirebaseIdTokenProviderTest {
                     respondJson(SIGN_IN_JSON)
                 }
             }
-            assertIs<Result.Success<Unit>>(provider.signInWithGoogle("google-tok"))
+            assertIs<Result.Success<*>>(provider.signInWithGoogle("google-tok"))
             assertEquals(listOf("refresh-1"), rotations, "sign-in reports its token for persistence")
 
             nowMs += 3_600_000L
@@ -394,7 +430,7 @@ class FirebaseIdTokenProviderTest {
                 }
             }
             provider.setProactiveRefresh(true)
-            assertIs<Result.Success<Unit>>(provider.signInWithGoogle("google-tok"))
+            assertIs<Result.Success<*>>(provider.signInWithGoogle("google-tok"))
             assertEquals(0, refreshCalls)
 
             // Just before the buffer boundary: still quiet.
@@ -431,7 +467,7 @@ class FirebaseIdTokenProviderTest {
                 }
             }
             provider.setProactiveRefresh(true)
-            assertIs<Result.Success<Unit>>(provider.signInWithGoogle("google-tok"))
+            assertIs<Result.Success<*>>(provider.signInWithGoogle("google-tok"))
 
             provider.signOut()
             advanceTimeBy(100_000_000L)
@@ -453,7 +489,7 @@ class FirebaseIdTokenProviderTest {
                 }
             }
             provider.setProactiveRefresh(true)
-            assertIs<Result.Success<Unit>>(provider.signInWithGoogle("google-tok"))
+            assertIs<Result.Success<*>>(provider.signInWithGoogle("google-tok"))
 
             provider.setProactiveRefresh(false) // e.g. the user switched to the other environment
             advanceTimeBy(100_000_000L)

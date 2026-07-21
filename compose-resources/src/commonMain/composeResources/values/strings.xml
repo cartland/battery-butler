@@ -118,6 +118,22 @@
     <string name="auth_error_title_expired">Session Expired</string>
     <string name="auth_error_message_expired">Please sign in again to sync your data.</string>
     <string name="auth_error_title_unknown">Something Went Wrong</string>
+
+    <!-- Labs sign-in (REST backend). The auth_error_* strings above were written for the legacy
+         own-backend flow (e.g. "Coming Soon" for its unconfigured OAuth); Labs failures carry
+         their own accurate copy below. -->
+    <string name="login_labs_session_expired">Your Labs session expired — sign in again to keep syncing. Your data is safe on this device.</string>
+    <string name="labs_auth_error_title_cancelled">Sign-In Cancelled</string>
+    <string name="labs_auth_error_message_cancelled">No problem — you can sign in to Labs anytime.</string>
+    <string name="labs_auth_error_title_network">Connection Problem</string>
+    <string name="labs_auth_error_message_network">Couldn\'t reach the Labs sign-in service. Check your internet connection and try again.</string>
+    <string name="labs_auth_error_title_not_configured">Labs Sign-In Not Configured</string>
+    <string name="labs_auth_error_message_not_configured">This build isn\'t set up for Labs sign-in on the selected environment.</string>
+    <string name="labs_auth_error_title_session_expired">Labs Session Expired</string>
+    <string name="labs_auth_error_message_session_expired">Sign in to Labs again to keep syncing. Your data is safe on this device.</string>
+    <string name="labs_auth_error_title_failed">Labs Sign-In Failed</string>
+    <string name="labs_auth_error_message_failed">Something went wrong signing in to Labs. Please try again — your data is safe on this device.</string>
+
     <string name="action_try_again">Try Again</string>
     <string name="action_ok">OK</string>
     <string name="action_save_bold">Save</string>
@@ -166,7 +182,7 @@
     <string name="settings_labs_signing_in">Signing in…</string>
     <string name="settings_labs_sign_out">Sign out of Labs</string>
     <string name="settings_labs_signed_in">Signed in to Labs</string>
-    <string name="settings_labs_sign_in_failed">Labs sign-in failed: %1$s</string>
+    <string name="settings_labs_session_expired">Session expired — sign in again</string>
     <string name="settings_advanced_title">Advanced</string>
     <string name="settings_advanced_copy_labs_token">Copy Labs ID Token</string>
     <string name="settings_advanced_copy_labs_token_description">This copies a live access token for your Labs account (valid about an hour). Anyone with it can read and change your synced data — treat it like a password. Only paste it into tools you trust, such as the official Labs CLI, and never share it.</string>

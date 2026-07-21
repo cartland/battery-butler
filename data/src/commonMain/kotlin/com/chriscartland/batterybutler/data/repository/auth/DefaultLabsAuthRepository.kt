@@ -3,7 +3,9 @@ package com.chriscartland.batterybutler.data.repository.auth
 import co.touchlab.kermit.Logger
 import com.chriscartland.batterybutler.datalocal.auth.LabsSessionStorage
 import com.chriscartland.batterybutler.datanetwork.LabsAuthGateway
+import com.chriscartland.batterybutler.datanetwork.LabsSignInIdentity
 import com.chriscartland.batterybutler.datanetwork.apiKeyForMode
+import com.chriscartland.batterybutler.datanetwork.auth.GoogleIdToken
 import com.chriscartland.batterybutler.datanetwork.auth.GoogleSignInBridge
 import com.chriscartland.batterybutler.domain.model.AuthError
 import com.chriscartland.batterybutler.domain.model.AuthState
@@ -267,17 +269,10 @@ class DefaultLabsAuthRepository(
         }
     }
 
-    private suspend fun exchangeForLabsSession(
-        google: com.chriscartland.batterybutler.datanetwork.auth.GoogleIdToken,
-    ): Result<User, AuthError> =
+    private suspend fun exchangeForLabsSession(google: GoogleIdToken): Result<User, AuthError> =
         when (val exchange = labsAuthGateway.signInToLabsWithGoogle(google.idToken)) {
             is Result.Success -> {
-                val user = User(
-                    id = google.email ?: google.idToken.take(USER_ID_FALLBACK_LEN),
-                    email = google.email,
-                    displayName = google.displayName,
-                    photoUrl = google.photoUrl,
-                )
+                val user = labsUserFrom(identity = exchange.data, google = google)
                 log.i { "Labs sign-in successful for ${google.email}" }
                 authStateByMode.setCurrent(AuthState.Authenticated(user))
                 val key = apiKeyForMode(dataModeRepository.dataMode.first(), labsFirebaseApiKey)
@@ -315,8 +310,28 @@ class DefaultLabsAuthRepository(
         authStateByMode.setCurrent(AuthState.Failed(error))
         return Result.Error(error)
     }
-
-    private companion object {
-        const val USER_ID_FALLBACK_LEN = 32
-    }
 }
+
+/**
+ * Builds the signed-in [User] from a successful Labs token exchange.
+ *
+ * [User.id] is the **Firebase uid** ([LabsSignInIdentity.firebaseUid], `signInWithIdp`'s
+ * `localId`) — the id the Labs backend actually authorizes and attributes writes with (e.g.
+ * device-image `uploadedByUid`), not the Google profile email the previous derivation used. The
+ * email/token-prefix fallbacks only fire if the wire response omitted the uid (lenient-consumer
+ * defaults). Existing installs may still hold an email-shaped id in the persisted believed user;
+ * that value is display-time only and is overwritten by the next successful sign-in — no
+ * migration needed.
+ */
+internal fun labsUserFrom(
+    identity: LabsSignInIdentity,
+    google: GoogleIdToken,
+): User =
+    User(
+        id = identity.firebaseUid ?: google.email ?: google.idToken.take(USER_ID_FALLBACK_LEN),
+        email = identity.email ?: google.email,
+        displayName = google.displayName,
+        photoUrl = google.photoUrl,
+    )
+
+private const val USER_ID_FALLBACK_LEN = 32

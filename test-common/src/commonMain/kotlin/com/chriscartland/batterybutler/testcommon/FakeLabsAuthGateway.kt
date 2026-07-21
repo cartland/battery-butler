@@ -2,6 +2,7 @@ package com.chriscartland.batterybutler.testcommon
 
 import com.chriscartland.batterybutler.datanetwork.LabsAuthGateway
 import com.chriscartland.batterybutler.datanetwork.LabsSessionInvalidation
+import com.chriscartland.batterybutler.datanetwork.LabsSignInIdentity
 import com.chriscartland.batterybutler.datanetwork.LabsTokenResult
 import com.chriscartland.batterybutler.domain.model.AuthError
 import com.chriscartland.batterybutler.domain.model.Result
@@ -19,7 +20,8 @@ class FakeLabsAuthGateway : LabsAuthGateway {
     private val _sessionInvalidations = MutableSharedFlow<LabsSessionInvalidation>(extraBufferCapacity = 8)
     override val sessionInvalidations: Flow<LabsSessionInvalidation> = _sessionInvalidations
 
-    var signInResult: Result<Unit, AuthError> = Result.Success(Unit)
+    var signInResult: Result<LabsSignInIdentity, AuthError> =
+        Result.Success(LabsSignInIdentity(firebaseUid = "fake-firebase-uid", email = "fake@example.com"))
     var restoreResult: Result<Unit, AuthError> = Result.Success(Unit)
     var tokenResult: LabsTokenResult = LabsTokenResult.NoSession
 
@@ -33,7 +35,7 @@ class FakeLabsAuthGateway : LabsAuthGateway {
         _sessionInvalidations.emit(invalidation)
     }
 
-    override suspend fun signInToLabsWithGoogle(googleIdToken: String): Result<Unit, AuthError> {
+    override suspend fun signInToLabsWithGoogle(googleIdToken: String): Result<LabsSignInIdentity, AuthError> {
         signInCount++
         return signInResult
     }

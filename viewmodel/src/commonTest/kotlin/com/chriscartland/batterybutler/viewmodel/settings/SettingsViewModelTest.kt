@@ -11,6 +11,7 @@ import com.chriscartland.batterybutler.domain.model.LabsStagingUrl
 import com.chriscartland.batterybutler.domain.model.LegacyDatabaseInfo
 import com.chriscartland.batterybutler.domain.model.ProductionServerUrl
 import com.chriscartland.batterybutler.domain.model.RestoreResult
+import com.chriscartland.batterybutler.domain.model.SignedOutCause
 import com.chriscartland.batterybutler.domain.model.User
 import com.chriscartland.batterybutler.domain.model.ai.AiEngineType
 import com.chriscartland.batterybutler.domain.repository.AiPreferencesRepository
@@ -214,6 +215,48 @@ class SettingsViewModelTest {
             assertFalse(viewModel.isLabsSignedIn.first { !it })
             assertEquals(1, deviceRepo.clearAllLocalDataCount)
             assertTrue(deviceRepo.getAllDevices().first().isEmpty())
+        }
+
+    /**
+     * Reactive session loss: the Labs card's UI model must surface the session-expired cause so
+     * SettingsContent can say "Session expired — sign in again" instead of the first-run sign-in
+     * pitch; a plain signed-out state must keep the default cause.
+     */
+    @Test
+    fun `labsAuthState surfaces the session-expired cause`() =
+        runTest {
+            val labsRepo = FakeLabsAuthRepository()
+            labsRepo.setLabsAuthState(AuthState.Unauthenticated(cause = SignedOutCause.SESSION_EXPIRED))
+            val viewModel = createViewModel(labsAuthRepository = labsRepo)
+
+            // Collect explicitly: the StateFlow's initial value is already Unauthenticated(),
+            // so a bare `first { it is Unauthenticated }` would race the repository emission
+            // and pass/fail on the default value instead of the propagated cause.
+            val states = mutableListOf<AuthState>()
+            val collector = launch(testDispatcher) { viewModel.labsAuthState.collect { states.add(it) } }
+            advanceUntilIdle()
+
+            val state = states.last()
+            assertIs<AuthState.Unauthenticated>(state)
+            assertEquals(SignedOutCause.SESSION_EXPIRED, state.cause)
+            collector.cancel()
+        }
+
+    @Test
+    fun `labsAuthState keeps the default cause for a plain signed-out state`() =
+        runTest {
+            val labsRepo = FakeLabsAuthRepository()
+            labsRepo.setLabsAuthState(AuthState.Unauthenticated())
+            val viewModel = createViewModel(labsAuthRepository = labsRepo)
+
+            val states = mutableListOf<AuthState>()
+            val collector = launch(testDispatcher) { viewModel.labsAuthState.collect { states.add(it) } }
+            advanceUntilIdle()
+
+            val state = states.last()
+            assertIs<AuthState.Unauthenticated>(state)
+            assertEquals(SignedOutCause.SIGNED_OUT, state.cause)
+            collector.cancel()
         }
 
     @Test

@@ -1,6 +1,7 @@
 package com.chriscartland.batterybutler.datanetwork.rest
 
 import co.touchlab.kermit.Logger
+import com.chriscartland.batterybutler.datanetwork.LabsSignInIdentity
 import com.chriscartland.batterybutler.domain.model.AuthError
 import com.chriscartland.batterybutler.domain.model.Result
 import io.ktor.client.HttpClient
@@ -112,9 +113,11 @@ internal class FirebaseIdTokenProvider(
 
     /**
      * Exchange a freshly-obtained Google ID token for a Labs session. Interactive — call once after
-     * Google Sign-In; [getToken] keeps it fresh afterwards.
+     * Google Sign-In; [getToken] keeps it fresh afterwards. The success value carries the identity
+     * the Labs backend minted (`localId` = the Firebase uid, plus the account email) so the caller
+     * can key the signed-in user on the uid the backend actually authorizes with.
      */
-    suspend fun signInWithGoogle(googleIdToken: String): Result<Unit, AuthError> {
+    suspend fun signInWithGoogle(googleIdToken: String): Result<LabsSignInIdentity, AuthError> {
         if (apiKey.isBlank()) {
             return Result.Error(AuthError.Configuration.NotConfigured())
         }
@@ -142,7 +145,12 @@ internal class FirebaseIdTokenProvider(
                 rescheduleProactiveLocked()
             }
             onRefreshTokenRotated(body.refreshToken)
-            Result.Success(Unit)
+            Result.Success(
+                LabsSignInIdentity(
+                    firebaseUid = body.localId.ifBlank { null },
+                    email = body.email.ifBlank { null },
+                ),
+            )
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
