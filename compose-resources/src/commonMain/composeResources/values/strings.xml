@@ -144,6 +144,7 @@
     <string name="device_image_error_device_not_found">Device not found -- sync it before uploading a photo</string>
     <string name="device_image_error_too_large">Image is too large (10 MB limit)</string>
     <string name="device_image_error_network">Network error -- please try again</string>
+    <string name="device_image_updated">Photo updated</string>
 
     <!-- Settings -->
     <string name="form_error_device_name_required">Device name is required</string>
