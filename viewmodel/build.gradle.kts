@@ -42,6 +42,7 @@ kotlin {
             api(project(":presentation-model"))
             implementation(project(":domain"))
             implementation(projects.usecase)
+            implementation(libs.kermit)
             implementation(libs.kotlinx.datetime)
             implementation(libs.uuid)
         }

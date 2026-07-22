@@ -23,6 +23,7 @@ fun DeviceDetailScreen(
         onBack = onBack,
         onEdit = onEdit,
         onEventClick = onEventClick,
+        onRetry = { viewModel.retry() },
         modifier = modifier,
     )
 }

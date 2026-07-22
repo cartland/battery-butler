@@ -188,9 +188,13 @@ final class KmpInteropTests: XCTestCase {
             imageBytes: nil
         )
 
+        let error: DeviceDetailScreenState = DeviceDetailScreenStateError(message: "boom")
+
         XCTAssertTrue(loading is DeviceDetailScreenStateLoading)
         XCTAssertTrue(notFound is DeviceDetailScreenStateNotFound)
         XCTAssertTrue(success is DeviceDetailScreenStateSuccess)
+        XCTAssertTrue(error is DeviceDetailScreenStateError)
+        XCTAssertEqual((error as? DeviceDetailScreenStateError)?.message, "boom")
     }
 
     func testBatchOperationResultSubtypes() {

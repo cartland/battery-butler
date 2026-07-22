@@ -47,6 +47,9 @@ class AddBatteryEventViewModel(
         viewModelScope = viewModelScope,
         started = defaultWhileSubscribed(),
         initialValue = emptyList(),
+        // Room-backed: on a transient DB failure keep an empty picker (logged to Crashlytics
+        // by safeStateIn) rather than terminating the flow.
+        onError = { emptyList() },
     )
 
     fun addEvent(

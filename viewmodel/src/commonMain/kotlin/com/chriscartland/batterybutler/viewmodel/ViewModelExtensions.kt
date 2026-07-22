@@ -1,5 +1,6 @@
 package com.chriscartland.batterybutler.viewmodel
 
+import co.touchlab.kermit.Logger
 import com.rickclephas.kmp.observableviewmodel.ViewModelScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -10,6 +11,15 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import com.rickclephas.kmp.observableviewmodel.stateIn as observableStateIn
+
+/**
+ * Tag for the safety-net catches below. These MUST log through Kermit (`Logger.e`), never
+ * `println`/`printStackTrace`: on Android, Kermit `Warn`+ severities are forwarded to
+ * Crashlytics (see `CrashlyticsLogWriter`), so a caught-but-otherwise-invisible flow failure
+ * (which can leave a screen showing a stale or initial value) still shows up in telemetry.
+ * A `println` here made a production wedge -- Device Details stuck at Loading -- invisible.
+ */
+private const val TAG = "ViewModelStateFlow"
 
 /**
  * Default timeout (in milliseconds) for [SharingStarted.WhileSubscribed] in ViewModels.
@@ -45,8 +55,7 @@ fun <T> Flow<T>.safeStateIn(
 ): StateFlow<T> =
     this
         .catch { e ->
-            println("ViewModel safeStateIn caught unhandled exception: ${e.message}")
-            e.printStackTrace()
+            Logger.e(TAG, e) { "safeStateIn caught unhandled exception (onError=${onError != null})" }
             val errorValue = onError?.invoke(e)
             if (errorValue != null) {
                 emit(errorValue)
@@ -73,8 +82,7 @@ fun <T> Flow<T>.safeStateIn(
 ): StateFlow<T> =
     this
         .catch { e ->
-            println("ViewModel safeStateIn caught unhandled exception: ${e.message}")
-            e.printStackTrace()
+            Logger.e(TAG, e) { "safeStateIn caught unhandled exception (onError=${onError != null})" }
             val errorValue = onError?.invoke(e)
             if (errorValue != null) {
                 emit(errorValue)
@@ -119,8 +127,7 @@ fun <T> retryableStateIn(
         .flatMapLatest {
             source()
                 .catch { e ->
-                    println("ViewModel retryableStateIn caught: ${e.message}")
-                    e.printStackTrace()
+                    Logger.e(TAG, e) { "retryableStateIn caught exception; emitting error state" }
                     emit(onError(e))
                 }
         }.stateIn(scope, started, initialValue)
@@ -145,8 +152,7 @@ fun <T> retryableStateIn(
         .flatMapLatest {
             source()
                 .catch { e ->
-                    println("ViewModel retryableStateIn caught: ${e.message}")
-                    e.printStackTrace()
+                    Logger.e(TAG, e) { "retryableStateIn caught exception; emitting error state" }
                     emit(onError(e))
                 }
         }.observableStateIn(viewModelScope, started, initialValue)

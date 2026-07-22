@@ -30,6 +30,7 @@ import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.DevicesOther
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Numbers
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -62,12 +63,14 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.Res
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_edit
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_record_replacement
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_record_replacement_description
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_try_again
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_view_all
 import com.chriscartland.batterybutler.composeresources.generated.resources.content_desc_device_icon
 import com.chriscartland.batterybutler.composeresources.generated.resources.content_desc_device_type
 import com.chriscartland.batterybutler.composeresources.generated.resources.content_desc_location
 import com.chriscartland.batterybutler.composeresources.generated.resources.device_detail_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.error_device_not_found
+import com.chriscartland.batterybutler.composeresources.generated.resources.error_load_device_detail
 import com.chriscartland.batterybutler.composeresources.generated.resources.label_quantity
 import com.chriscartland.batterybutler.composeresources.generated.resources.label_type
 import com.chriscartland.batterybutler.composeresources.generated.resources.section_history
@@ -77,6 +80,7 @@ import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
 import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMapper
+import com.chriscartland.batterybutler.presentationcore.components.EmptyStateContent
 import com.chriscartland.batterybutler.presentationcore.components.HistoryListItem
 import com.chriscartland.batterybutler.presentationcore.components.rememberDeviceImageBitmap
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
@@ -99,6 +103,7 @@ fun DeviceDetailContent(
     onBack: () -> Unit,
     onEdit: () -> Unit,
     onEventClick: (String) -> Unit,
+    onRetry: () -> Unit,
     modifier: Modifier = Modifier,
     nowInstant: Instant = Clock.System.now(),
 ) {
@@ -128,6 +133,19 @@ fun DeviceDetailContent(
 
                 DeviceDetailScreenState.NotFound -> {
                     Text(composeStringResource(Res.string.error_device_not_found), modifier = Modifier.align(Alignment.Center))
+                }
+
+                is DeviceDetailScreenState.Error -> {
+                    EmptyStateContent(
+                        icon = Icons.Default.Warning,
+                        title = composeStringResource(Res.string.error_load_device_detail),
+                        message = state.message,
+                        action = {
+                            Button(onClick = onRetry) {
+                                Text(composeStringResource(Res.string.action_try_again))
+                            }
+                        },
+                    )
                 }
 
                 is DeviceDetailScreenState.Success -> {
@@ -515,6 +533,7 @@ fun DeviceDetailContentPreview() {
             onBack = {},
             onEdit = {},
             onEventClick = {},
+            onRetry = {},
             nowInstant = nowInstant,
         )
     }
@@ -530,6 +549,7 @@ fun DeviceDetailLoadingPreview() {
             onBack = {},
             onEdit = {},
             onEventClick = {},
+            onRetry = {},
             nowInstant = Instant.parse("2026-01-18T17:00:00Z"),
         )
     }
@@ -545,6 +565,23 @@ fun DeviceDetailNotFoundPreview() {
             onBack = {},
             onEdit = {},
             onEventClick = {},
+            onRetry = {},
+            nowInstant = Instant.parse("2026-01-18T17:00:00Z"),
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DeviceDetailErrorPreview() {
+    BatteryButlerTheme {
+        DeviceDetailContent(
+            state = DeviceDetailScreenState.Error("Failed to load device details"),
+            onRecordReplacement = {},
+            onBack = {},
+            onEdit = {},
+            onEventClick = {},
+            onRetry = {},
             nowInstant = Instant.parse("2026-01-18T17:00:00Z"),
         )
     }

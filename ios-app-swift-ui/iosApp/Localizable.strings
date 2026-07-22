@@ -45,6 +45,7 @@
 "device_detail.no_history" = "No history recorded";
 "device_detail.not_found" = "Device not found";
 "device_detail.accessibility.loading" = "Loading device details";
+"device_detail.error.title" = "Could not load device details";
 "device_detail.stat.type" = "TYPE";
 "device_detail.stat.quantity" = "QUANTITY";
 "device_detail.stat.not_available" = "N/A";

@@ -90,6 +90,8 @@ class EditDeviceViewModel(
             viewModelScope = viewModelScope,
             started = defaultWhileSubscribed(),
             initialValue = EditDeviceScreenState.Loading,
+            // See DeviceTypeDetailViewModel: transient DB failure -> NotFound (logged), not a wedge.
+            onError = { EditDeviceScreenState.NotFound },
         )
 
     private val _photoError = MutableStateFlow<DeviceImageError?>(viewModelScope, null)
