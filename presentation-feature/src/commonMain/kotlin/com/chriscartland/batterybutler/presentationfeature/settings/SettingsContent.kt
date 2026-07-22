@@ -40,8 +40,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -95,8 +97,6 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.sett
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_labs_token_copied
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_section_about
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_section_account
-import com.chriscartland.batterybutler.composeresources.generated.resources.settings_section_ai
-import com.chriscartland.batterybutler.composeresources.generated.resources.settings_section_connection
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_section_data
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_user_signed_in
@@ -117,6 +117,30 @@ import com.chriscartland.batterybutler.presentationfeature.auth.isLabsSessionExp
 import com.chriscartland.batterybutler.presentationfeature.auth.labsAuthErrorText
 import kotlinx.coroutines.launch
 
+/** Test tags for [SettingsContent] — used by headless UI tests to pin section order. */
+internal object SettingsTestTags {
+    const val SECTION_ACCOUNT = "settings_section_account"
+    const val SECTION_DATA = "settings_section_data"
+    const val SECTION_ABOUT = "settings_section_about"
+    const val SECTION_ADVANCED = "settings_section_advanced"
+    const val DATA_MODE = "settings_data_mode"
+    const val AI_ENGINE = "settings_ai_engine"
+    const val COPY_LABS_TOKEN = "settings_copy_labs_token"
+}
+
+/**
+ * The Settings tab, organized user-relevant → developer:
+ *
+ * 1. **Account** — the sign-in surface(s). The Labs card whenever a Labs data mode is
+ *    selected; the own-backend account card whenever that user is signed in. Hidden
+ *    entirely when there is no account to show.
+ * 2. **Data** — Export and Import (backup/restore are one mental unit).
+ * 3. **About** — Check for updates + app version.
+ * 4. **Advanced** — environment and developer controls: the Data Mode picker (an
+ *    environment switch, not an everyday setting), the Labs ID token copy, the
+ *    Database card, and the AI engine picker (implementation config for the
+ *    assistant, not a feature toggle).
+ */
 @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsContent(
@@ -247,6 +271,13 @@ fun SettingsContent(
         }
     }
 
+    val appVersionText = when (appVersion) {
+        is AppVersion.Android -> "${appVersion.versionName}-${appVersion.versionCode}"
+        is AppVersion.Ios -> "${appVersion.versionName}-${appVersion.buildNumber}"
+        is AppVersion.Desktop -> appVersion.versionName
+        is AppVersion.Unavailable -> composeStringResource(Res.string.settings_app_version_unavailable)
+    }
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
@@ -269,74 +300,90 @@ fun SettingsContent(
                 .padding(Padding.standard),
             verticalArrangement = Arrangement.spacedBy(Padding.standard),
         ) {
-            // Account
-            if (currentUser != null) {
+            // Account — the sign-in surface(s), first because it's what users touch most.
+            if (isLabsMode || currentUser != null) {
                 SettingsSectionHeader(
                     composeStringResource(Res.string.settings_section_account),
+                    modifier = Modifier.testTag(SettingsTestTags.SECTION_ACCOUNT),
                 )
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                    ),
-                    shape = MaterialTheme.shapes.medium,
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(Padding.standard),
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Person,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
-                            )
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    text = currentUser.displayName ?: composeStringResource(Res.string.settings_user_signed_in),
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
-                                currentUser.email?.let { email ->
-                                    Text(
-                                        text = email,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                                    )
-                                }
-                            }
-                        }
-                        Spacer(modifier = Modifier.height(12.dp))
-                        Button(
-                            onClick = onSignOut,
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.errorContainer,
-                                contentColor = MaterialTheme.colorScheme.onErrorContainer,
-                            ),
-                            modifier = Modifier.fillMaxWidth(),
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.Logout,
-                                contentDescription = null,
-                                modifier = Modifier.padding(end = Padding.small),
-                            )
-                            Text(composeStringResource(Res.string.action_sign_out))
-                        }
-                    }
-                }
             }
 
-            // Connection
+            // Labs Sign-In Card — only when a Labs (REST) data mode is selected. The Labs
+            // backend needs its own Google sign-in (separate account from the gRPC backend).
+            if (isLabsMode) {
+                LabsAccountCard(
+                    labsAuthState = labsAuthState,
+                    onSignInToLabs = onSignInToLabs,
+                    onSignOutLabs = onSignOutLabs,
+                )
+            }
+
+            // Own-backend account card — only when that user is signed in.
+            if (currentUser != null) {
+                AppAccountCard(
+                    currentUser = currentUser,
+                    onSignOut = onSignOut,
+                )
+            }
+
+            // Data — backup and restore are one mental unit.
             SettingsSectionHeader(
-                composeStringResource(Res.string.settings_section_connection),
+                composeStringResource(Res.string.settings_section_data),
+                modifier = Modifier.testTag(SettingsTestTags.SECTION_DATA),
             )
 
-            // Data Mode Card
+            SettingsActionCard(
+                icon = Icons.Default.Download,
+                title = composeStringResource(Res.string.settings_export_data_title),
+                description = composeStringResource(Res.string.settings_export_data_description),
+                onClick = onExportData,
+            )
+
+            SettingsActionCard(
+                icon = Icons.Default.Upload,
+                title = composeStringResource(Res.string.settings_import_data_title),
+                description = composeStringResource(Res.string.settings_import_data_description),
+                onClick = onImportData,
+                enabled = !importInProgress,
+            )
+
+            // About
+            SettingsSectionHeader(
+                composeStringResource(Res.string.settings_section_about),
+                modifier = Modifier.testTag(SettingsTestTags.SECTION_ABOUT),
+            )
+
+            SettingsActionCard(
+                icon = Icons.AutoMirrored.Filled.OpenInNew,
+                title = composeStringResource(Res.string.settings_check_updates_title),
+                description = composeStringResource(Res.string.settings_check_updates_description),
+                onClick = {
+                    uriHandler.openUri(
+                        "https://play.google.com/store/apps/details?id=com.chriscartland.batterybutler",
+                    )
+                },
+            )
+
+            SettingsActionCard(
+                icon = Icons.Default.Info,
+                title = composeStringResource(Res.string.settings_app_version),
+                description = appVersionText,
+                onClick = {
+                    clipboardManager.setText(AnnotatedString(appVersionText))
+                    scope.launch {
+                        snackbarHostState.showSnackbar(copiedMessage)
+                    }
+                },
+            )
+
+            // Advanced — environment and developer controls, last on the page.
+            SettingsSectionHeader(
+                composeStringResource(Res.string.settings_advanced_title),
+                modifier = Modifier.testTag(SettingsTestTags.SECTION_ADVANCED),
+            )
+
+            // Data Mode picker — an environment switch (Production / Staging / Mock),
+            // not an everyday setting.
             ExpandableSelectionControl(
                 title = composeStringResource(Res.string.data_mode_title),
                 currentSelection = dataMode,
@@ -344,6 +391,7 @@ fun SettingsContent(
                 onOptionSelected = onDataModeSelected,
                 leadingIcon = Icons.Default.Wifi,
                 initiallyExpanded = initiallyExpandedDataModes,
+                modifier = Modifier.testTag(SettingsTestTags.DATA_MODE),
                 optionLabel = { mode ->
                     when (mode) {
                         is DataMode.None -> composeStringResource(Res.string.data_mode_none)
@@ -373,175 +421,35 @@ fun SettingsContent(
                 },
             )
 
-            // Labs Sign-In Card — only when a Labs (REST) data mode is selected. The Labs
-            // backend needs its own Google sign-in (separate account from the gRPC backend above).
-            if (isLabsMode) {
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                    ),
-                    shape = MaterialTheme.shapes.medium,
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(Padding.standard),
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Person,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
-                            )
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    text = composeStringResource(Res.string.settings_labs_title),
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
-                                val labsUser = (labsAuthState as? AuthState.Authenticated)?.user
-                                Text(
-                                    text = when {
-                                        labsUser != null -> {
-                                            labsUser.email ?: composeStringResource(Res.string.settings_labs_signed_in)
-                                        }
-
-                                        // Reactive session loss: name the reason instead of the
-                                        // generic sign-in pitch, so the signed-out card doesn't
-                                        // read like the user was never signed in.
-                                        isLabsSessionExpired(labsAuthState) -> {
-                                            composeStringResource(Res.string.settings_labs_session_expired)
-                                        }
-
-                                        else -> {
-                                            composeStringResource(Res.string.settings_labs_description)
-                                        }
-                                    },
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                                )
-                            }
-                        }
-                        Spacer(modifier = Modifier.height(12.dp))
-                        when (labsAuthState) {
-                            is AuthState.Authenticated -> {
-                                Button(
-                                    onClick = onSignOutLabs,
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = MaterialTheme.colorScheme.errorContainer,
-                                        contentColor = MaterialTheme.colorScheme.onErrorContainer,
-                                    ),
-                                    modifier = Modifier.fillMaxWidth(),
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.AutoMirrored.Filled.Logout,
-                                        contentDescription = null,
-                                        modifier = Modifier.padding(end = Padding.small),
-                                    )
-                                    Text(composeStringResource(Res.string.settings_labs_sign_out))
-                                }
-                            }
-
-                            AuthState.Authenticating -> {
-                                Button(
-                                    onClick = {},
-                                    enabled = false,
-                                    modifier = Modifier.fillMaxWidth(),
-                                ) {
-                                    Text(composeStringResource(Res.string.settings_labs_signing_in))
-                                }
-                            }
-
-                            AuthState.Unknown -> {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(24.dp),
-                                    strokeWidth = 2.dp,
-                                )
-                            }
-
-                            is AuthState.Unauthenticated, is AuthState.Failed -> {
-                                Button(
-                                    onClick = onSignInToLabs,
-                                    modifier = Modifier.fillMaxWidth(),
-                                ) {
-                                    Text(composeStringResource(Res.string.settings_labs_sign_in))
-                                }
-                            }
-                        }
-                        if (labsAuthState is AuthState.Failed) {
-                            Spacer(modifier = Modifier.height(8.dp))
-                            // Labs-specific copy (labsAuthErrorText) rather than the raw
-                            // AuthError cause, which carried internal detail like
-                            // "signInWithIdp HTTP 500".
-                            Text(
-                                text = composeStringResource(
-                                    labsAuthErrorText(labsAuthState.error).message,
-                                ),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.error,
-                            )
-                        }
-                    }
-                }
-            }
-
-            // Advanced Card — only meaningful once actually signed in to Labs, since that's the
-            // only time a token exists to copy.
+            // Copy Labs ID Token — only meaningful once actually signed in to Labs, since
+            // that's the only time a token exists to copy.
             if (isLabsMode && labsAuthState is AuthState.Authenticated) {
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                    ),
-                    shape = MaterialTheme.shapes.medium,
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(Padding.standard),
-                    ) {
-                        Text(
-                            text = composeStringResource(Res.string.settings_advanced_title),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = composeStringResource(
-                                Res.string.settings_advanced_copy_labs_token_description,
-                            ),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                        )
-                        Spacer(modifier = Modifier.height(12.dp))
-                        Button(
-                            onClick = onCopyLabsIdToken,
-                            modifier = Modifier.fillMaxWidth(),
-                        ) {
-                            Text(composeStringResource(Res.string.settings_advanced_copy_labs_token))
-                        }
-                    }
-                }
+                CopyLabsIdTokenCard(
+                    onCopyLabsIdToken = onCopyLabsIdToken,
+                    modifier = Modifier.testTag(SettingsTestTags.COPY_LABS_TOKEN),
+                )
             }
 
-            // AI Assistant
-            SettingsSectionHeader(
-                composeStringResource(Res.string.settings_section_ai),
-            )
+            // Database card — the file shown depends on the selected data mode.
+            if (currentDatabaseFileName.isNotEmpty()) {
+                DatabaseCard(
+                    currentDatabaseFileName = currentDatabaseFileName,
+                    appVersionText = appVersionText,
+                    legacyDatabaseInfo = legacyDatabaseInfo,
+                    onRestoreLegacyDatabase = onRestoreLegacyDatabase,
+                    restoreInProgress = restoreInProgress,
+                )
+            }
 
-            // AI Engine Card
+            // AI Engine picker — implementation config for the assistant
+            // (Cloud / On-Device / Disabled), not a feature toggle.
             ExpandableSelectionControl(
                 title = composeStringResource(Res.string.ai_engine_title),
                 currentSelection = aiEngineType,
                 options = availableAiEngines,
                 onOptionSelected = onAiEngineSelected,
                 leadingIcon = Icons.Default.AutoAwesome,
+                modifier = Modifier.testTag(SettingsTestTags.AI_ENGINE),
                 optionLabel = { mode ->
                     when (mode) {
                         AiEngineType.Cloud -> composeStringResource(Res.string.ai_engine_cloud)
@@ -550,262 +458,6 @@ fun SettingsContent(
                     }
                 },
             )
-
-            // Data
-            SettingsSectionHeader(
-                composeStringResource(Res.string.settings_section_data),
-            )
-
-            // Export Data Card
-            Card(
-                onClick = onExportData,
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                ),
-                shape = MaterialTheme.shapes.medium,
-                modifier = Modifier
-                    .fillMaxWidth(),
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(Padding.standard),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(Padding.standard),
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Download,
-                        contentDescription = composeStringResource(Res.string.settings_export_data_title),
-                        tint = MaterialTheme.colorScheme.primary,
-                    )
-                    Column {
-                        Text(
-                            text = composeStringResource(Res.string.settings_export_data_title),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                        Text(
-                            text = composeStringResource(Res.string.settings_export_data_description),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                        )
-                    }
-                }
-            }
-
-            // Import Data Card
-            Card(
-                onClick = onImportData,
-                enabled = !importInProgress,
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                ),
-                shape = MaterialTheme.shapes.medium,
-                modifier = Modifier
-                    .fillMaxWidth(),
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(Padding.standard),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(Padding.standard),
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Upload,
-                        contentDescription = composeStringResource(Res.string.settings_import_data_title),
-                        tint = MaterialTheme.colorScheme.primary,
-                    )
-                    Column {
-                        Text(
-                            text = composeStringResource(Res.string.settings_import_data_title),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                        Text(
-                            text = composeStringResource(Res.string.settings_import_data_description),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                        )
-                    }
-                }
-            }
-
-            // Database Card
-            val appVersionText = when (appVersion) {
-                is AppVersion.Android -> "${appVersion.versionName}-${appVersion.versionCode}"
-                is AppVersion.Ios -> "${appVersion.versionName}-${appVersion.buildNumber}"
-                is AppVersion.Desktop -> appVersion.versionName
-                is AppVersion.Unavailable -> composeStringResource(Res.string.settings_app_version_unavailable)
-            }
-            if (currentDatabaseFileName.isNotEmpty()) {
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                    ),
-                    shape = MaterialTheme.shapes.medium,
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(Padding.standard),
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(Padding.standard),
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Storage,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
-                            )
-                            Column {
-                                Text(
-                                    text = composeStringResource(Res.string.settings_database_title),
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
-                                Text(
-                                    text = composeStringResource(
-                                        Res.string.settings_database_file,
-                                        currentDatabaseFileName,
-                                    ),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                                )
-                                Text(
-                                    text = composeStringResource(
-                                        Res.string.settings_database_version,
-                                        appVersionText,
-                                    ),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                                )
-                            }
-                        }
-                        if (legacyDatabaseInfo?.exists == true) {
-                            Spacer(modifier = Modifier.height(12.dp))
-                            Text(
-                                text = composeStringResource(
-                                    Res.string.settings_database_legacy_found,
-                                    legacyDatabaseInfo.legacyFileName,
-                                ),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Button(
-                                onClick = onRestoreLegacyDatabase,
-                                enabled = !restoreInProgress,
-                                modifier = Modifier.fillMaxWidth(),
-                            ) {
-                                if (restoreInProgress) {
-                                    Text(
-                                        composeStringResource(Res.string.settings_database_restoring),
-                                    )
-                                } else {
-                                    Text(
-                                        composeStringResource(Res.string.settings_database_restore),
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            // About
-            SettingsSectionHeader(
-                composeStringResource(Res.string.settings_section_about),
-            )
-
-            // Check for Updates Card
-            Card(
-                onClick = {
-                    uriHandler.openUri(
-                        "https://play.google.com/store/apps/details?id=com.chriscartland.batterybutler",
-                    )
-                },
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                ),
-                shape = MaterialTheme.shapes.medium,
-                modifier = Modifier
-                    .fillMaxWidth(),
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(Padding.standard),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(Padding.standard),
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.OpenInNew,
-                        contentDescription = composeStringResource(Res.string.settings_check_updates_title),
-                        tint = MaterialTheme.colorScheme.primary,
-                    )
-                    Column {
-                        Text(
-                            text = composeStringResource(Res.string.settings_check_updates_title),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                        Text(
-                            text = composeStringResource(Res.string.settings_check_updates_description),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                        )
-                    }
-                }
-            }
-
-            // App Version Card
-            Card(
-                onClick = {
-                    clipboardManager.setText(AnnotatedString(appVersionText))
-                    scope.launch {
-                        snackbarHostState.showSnackbar(copiedMessage)
-                    }
-                },
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                ),
-                shape = MaterialTheme.shapes.medium,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(Padding.standard),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(Padding.standard),
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Info,
-                        contentDescription = composeStringResource(Res.string.settings_app_version),
-                        tint = MaterialTheme.colorScheme.primary,
-                    )
-                    Column {
-                        Text(
-                            text = composeStringResource(Res.string.settings_app_version),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                        Text(
-                            text = appVersionText,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                        )
-                    }
-                }
-            }
         }
     }
 }
@@ -822,6 +474,373 @@ private fun SettingsSectionHeader(
         color = MaterialTheme.colorScheme.primary,
         modifier = modifier.padding(start = Padding.small, top = Padding.small),
     )
+}
+
+/**
+ * The shared icon + title + description row card used by simple Settings actions
+ * (Export, Import, Check for updates, App version).
+ */
+@Composable
+private fun SettingsActionCard(
+    icon: ImageVector,
+    title: String,
+    description: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+) {
+    Card(
+        onClick = onClick,
+        enabled = enabled,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        ),
+        shape = MaterialTheme.shapes.medium,
+        modifier = modifier.fillMaxWidth(),
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(Padding.standard),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(Padding.standard),
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = title,
+                tint = MaterialTheme.colorScheme.primary,
+            )
+            Column {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Text(
+                    text = description,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                )
+            }
+        }
+    }
+}
+
+/** The Labs sign-in card: identity when signed in, sign in/out, session-expired copy. */
+@Composable
+private fun LabsAccountCard(
+    labsAuthState: AuthState,
+    onSignInToLabs: () -> Unit,
+    onSignOutLabs: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        ),
+        shape = MaterialTheme.shapes.medium,
+        modifier = modifier.fillMaxWidth(),
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(Padding.standard),
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                )
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = composeStringResource(Res.string.settings_labs_title),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    val labsUser = (labsAuthState as? AuthState.Authenticated)?.user
+                    Text(
+                        text = when {
+                            labsUser != null -> {
+                                labsUser.email ?: composeStringResource(Res.string.settings_labs_signed_in)
+                            }
+
+                            // Reactive session loss: name the reason instead of the
+                            // generic sign-in pitch, so the signed-out card doesn't
+                            // read like the user was never signed in.
+                            isLabsSessionExpired(labsAuthState) -> {
+                                composeStringResource(Res.string.settings_labs_session_expired)
+                            }
+
+                            else -> {
+                                composeStringResource(Res.string.settings_labs_description)
+                            }
+                        },
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+            when (labsAuthState) {
+                is AuthState.Authenticated -> {
+                    Button(
+                        onClick = onSignOutLabs,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.errorContainer,
+                            contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                        ),
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.Logout,
+                            contentDescription = null,
+                            modifier = Modifier.padding(end = Padding.small),
+                        )
+                        Text(composeStringResource(Res.string.settings_labs_sign_out))
+                    }
+                }
+
+                AuthState.Authenticating -> {
+                    Button(
+                        onClick = {},
+                        enabled = false,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Text(composeStringResource(Res.string.settings_labs_signing_in))
+                    }
+                }
+
+                AuthState.Unknown -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        strokeWidth = 2.dp,
+                    )
+                }
+
+                is AuthState.Unauthenticated, is AuthState.Failed -> {
+                    Button(
+                        onClick = onSignInToLabs,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Text(composeStringResource(Res.string.settings_labs_sign_in))
+                    }
+                }
+            }
+            if (labsAuthState is AuthState.Failed) {
+                Spacer(modifier = Modifier.height(8.dp))
+                // Labs-specific copy (labsAuthErrorText) rather than the raw
+                // AuthError cause, which carried internal detail like
+                // "signInWithIdp HTTP 500".
+                Text(
+                    text = composeStringResource(
+                        labsAuthErrorText(labsAuthState.error).message,
+                    ),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.error,
+                )
+            }
+        }
+    }
+}
+
+/** The own-backend (gRPC) account card: identity + sign out. */
+@Composable
+private fun AppAccountCard(
+    currentUser: User,
+    onSignOut: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        ),
+        shape = MaterialTheme.shapes.medium,
+        modifier = modifier.fillMaxWidth(),
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(Padding.standard),
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                )
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = currentUser.displayName ?: composeStringResource(Res.string.settings_user_signed_in),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    currentUser.email?.let { email ->
+                        Text(
+                            text = email,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                        )
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+            Button(
+                onClick = onSignOut,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.errorContainer,
+                    contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                ),
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.Logout,
+                    contentDescription = null,
+                    modifier = Modifier.padding(end = Padding.small),
+                )
+                Text(composeStringResource(Res.string.action_sign_out))
+            }
+        }
+    }
+}
+
+/** The developer card for copying a live Labs ID token, with its handle-like-a-password warning. */
+@Composable
+private fun CopyLabsIdTokenCard(
+    onCopyLabsIdToken: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        ),
+        shape = MaterialTheme.shapes.medium,
+        modifier = modifier.fillMaxWidth(),
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(Padding.standard),
+        ) {
+            Text(
+                text = composeStringResource(Res.string.settings_advanced_copy_labs_token),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = composeStringResource(
+                    Res.string.settings_advanced_copy_labs_token_description,
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Button(
+                onClick = onCopyLabsIdToken,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(composeStringResource(Res.string.settings_advanced_copy_labs_token))
+            }
+        }
+    }
+}
+
+/** The Database card: current file + version, and the legacy-restore flow when available. */
+@Composable
+private fun DatabaseCard(
+    currentDatabaseFileName: String,
+    appVersionText: String,
+    legacyDatabaseInfo: LegacyDatabaseInfo?,
+    onRestoreLegacyDatabase: () -> Unit,
+    restoreInProgress: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        ),
+        shape = MaterialTheme.shapes.medium,
+        modifier = modifier.fillMaxWidth(),
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(Padding.standard),
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(Padding.standard),
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Storage,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                )
+                Column {
+                    Text(
+                        text = composeStringResource(Res.string.settings_database_title),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Text(
+                        text = composeStringResource(
+                            Res.string.settings_database_file,
+                            currentDatabaseFileName,
+                        ),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                    )
+                    Text(
+                        text = composeStringResource(
+                            Res.string.settings_database_version,
+                            appVersionText,
+                        ),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                    )
+                }
+            }
+            if (legacyDatabaseInfo?.exists == true) {
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = composeStringResource(
+                        Res.string.settings_database_legacy_found,
+                        legacyDatabaseInfo.legacyFileName,
+                    ),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Button(
+                    onClick = onRestoreLegacyDatabase,
+                    enabled = !restoreInProgress,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    if (restoreInProgress) {
+                        Text(
+                            composeStringResource(Res.string.settings_database_restoring),
+                        )
+                    } else {
+                        Text(
+                            composeStringResource(Res.string.settings_database_restore),
+                        )
+                    }
+                }
+            }
+        }
+    }
 }
 
 @Preview(showBackground = true)
