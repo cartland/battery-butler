@@ -2,7 +2,7 @@
 
 # Screenshot Gallery
 
-Generated on Sun Jul 19 19:15:34 PDT 2026
+Generated on Tue Jul 21 18:33:35 UTC 2026
 
 ## Table of Contents
 - [AddDeviceScreenshotTestKt](#adddevicescreenshottestkt)
@@ -343,11 +343,11 @@ Generated on Sun Jul 19 19:15:34 PDT 2026
 ### EventDetailScreenPreviewTest_Light_fc5b723e_0
 <img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTest2Kt/EventDetailScreenPreviewTest_Light_fc5b723e_0.png" width="300" />
 
-### SettingsAllNetworkModesPreviewTest_Dark_77106447_0
-<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTest2Kt/SettingsAllNetworkModesPreviewTest_Dark_77106447_0.png" width="300" />
+### SettingsAllDataModesPreviewTest_Dark_77106447_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTest2Kt/SettingsAllDataModesPreviewTest_Dark_77106447_0.png" width="300" />
 
-### SettingsAllNetworkModesPreviewTest_Light_fc5b723e_0
-<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTest2Kt/SettingsAllNetworkModesPreviewTest_Light_fc5b723e_0.png" width="300" />
+### SettingsAllDataModesPreviewTest_Light_fc5b723e_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTest2Kt/SettingsAllDataModesPreviewTest_Light_fc5b723e_0.png" width="300" />
 
 ### SettingsScreenPreviewTest_Dark_77106447_0
 <img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTest2Kt/SettingsScreenPreviewTest_Dark_77106447_0.png" width="300" />
