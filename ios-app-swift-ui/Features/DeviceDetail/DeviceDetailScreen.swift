@@ -25,6 +25,9 @@ struct DeviceDetailScreen: View {
             onRecordReplacement: {
                 viewModel.recordReplacement()
             },
+            onRetry: {
+                viewModel.retry()
+            },
             eventDestination: { eventId in
                 EventDetailScreen(eventId: eventId, component: component)
             }
@@ -46,6 +49,7 @@ struct DeviceDetailScreen: View {
 struct DeviceDetailContentView<Destination: View>: View {
     let state: DeviceDetailScreenState
     let onRecordReplacement: () -> Void
+    let onRetry: () -> Void
     let eventDestination: (String) -> Destination
 
     var body: some View {
@@ -58,6 +62,25 @@ struct DeviceDetailContentView<Destination: View>: View {
                 )
             } else if state is DeviceDetailScreenStateNotFound {
                 Text("device_detail.not_found")
+            } else if let error = state as? DeviceDetailScreenStateError {
+                VStack(spacing: ButlerSpacing.standard) {
+                    Image(systemName: "exclamationmark.triangle")
+                        .font(.system(size: 48))
+                        .foregroundStyle(Color.butlerError)
+                    Text("device_detail.error.title")
+                        .font(.headline)
+                        .foregroundStyle(Color.butlerOnSurface)
+                    Text(error.message)
+                        .font(.subheadline)
+                        .foregroundStyle(Color.butlerOnSurfaceVariant)
+                        .multilineTextAlignment(.center)
+                    Button("common.try_again") {
+                        onRetry()
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+                .padding(ButlerSpacing.large)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 ProgressView()
                     .accessibilityLabel("device_detail.accessibility.loading")

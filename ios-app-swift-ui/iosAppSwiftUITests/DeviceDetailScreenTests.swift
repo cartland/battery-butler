@@ -35,6 +35,7 @@ final class DeviceDetailScreenTests: XCTestCase {
         let view = DeviceDetailContentView(
             state: successState,
             onRecordReplacement: {},
+            onRetry: {},
             eventDestination: { _ in Text("Event Details") }
         )
 
@@ -50,6 +51,7 @@ final class DeviceDetailScreenTests: XCTestCase {
         let view = DeviceDetailContentView(
             state: DeviceDetailScreenStateLoading(),
             onRecordReplacement: {},
+            onRetry: {},
             eventDestination: { _ in Text("Event Details") }
         )
 
@@ -65,6 +67,7 @@ final class DeviceDetailScreenTests: XCTestCase {
         let view = DeviceDetailContentView(
             state: DeviceDetailScreenStateNotFound(),
             onRecordReplacement: {},
+            onRetry: {},
             eventDestination: { _ in Text("Event Details") }
         )
 

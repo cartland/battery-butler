@@ -48,6 +48,8 @@ class EditDeviceTypeViewModel(
             viewModelScope = viewModelScope,
             started = defaultWhileSubscribed(),
             initialValue = EditDeviceTypeScreenState.Loading,
+            // See DeviceTypeDetailViewModel: transient DB failure -> NotFound (logged), not a wedge.
+            onError = { EditDeviceTypeScreenState.NotFound },
         )
 
     fun updateDeviceType(input: DeviceTypeInput) {

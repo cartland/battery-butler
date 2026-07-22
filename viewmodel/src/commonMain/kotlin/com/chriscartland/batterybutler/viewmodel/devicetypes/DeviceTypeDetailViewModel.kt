@@ -45,5 +45,11 @@ class DeviceTypeDetailViewModel(
         viewModelScope = viewModelScope,
         started = defaultWhileSubscribed(),
         initialValue = DeviceTypeDetailScreenState.Loading,
+        // Room-backed chain: a transient DB failure is caught + logged to Crashlytics by
+        // safeStateIn; fall back to NotFound instead of terminating the flow (which wedged the
+        // screen at Loading). Re-entering the screen re-subscribes and recovers. The full
+        // Error+Retry treatment lives on DeviceDetailViewModel; promote this screen too if
+        // telemetry shows it matters.
+        onError = { DeviceTypeDetailScreenState.NotFound },
     )
 }
