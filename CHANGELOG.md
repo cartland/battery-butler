@@ -31,6 +31,12 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ---
 
+## 2026-07-23
+
+### Performance
+
+- **Device photo decoding moved off the main thread**: reported as general app slowness "after the image API changes." The Room/repository layers of the device-image display path were already correctly async, but `rememberDeviceImageBitmap` decoded full-resolution Skia bitmaps synchronously inside a Compose `remember{}` block — on the composition/main thread, with no coroutine dispatch at all. Made worse by the cache key being the `ByteArray` *reference* rather than its content: since `DeviceImageBytes` is deliberately not a `data class`, any unrelated state change that caused Room to re-emit the same cached photo with a new `ByteArray` instance (sort/group toggles, recording a battery event) forced a full re-decode of every visible photo. Fixed with a new `DeviceImageBitmapLoader` that decodes via an injectable `CoroutineDispatcher` and caches by the stable, content-addressed `imageEtag` instead of by byte-array reference. `decode` is injectable specifically for testability — `DeviceImageBitmapLoaderTest` verifies genuine off-thread dispatch (confirmed with the revert-fix/confirm-test-fails/restore-fix technique), per-etag caching, cache eviction, decode-failure handling, and cancellation propagation, all without needing a real Skia decoder in unit tests. Follow-up query-architecture work (N+1 Room queries, full resubscribe on unrelated state changes) tracked separately in `TODO.md` (`bb-dimg-image-query-fanout`).
+
 ## 2026-07-21
 
 ### Fixes

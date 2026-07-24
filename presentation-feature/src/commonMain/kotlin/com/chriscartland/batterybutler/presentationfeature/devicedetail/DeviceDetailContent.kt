@@ -252,7 +252,7 @@ fun DeviceDetailBody(
                 // Profile Header
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Box(modifier = Modifier.padding(bottom = Padding.standard)) {
-                        val imageBitmap = rememberDeviceImageBitmap(state.imageBytes)
+                        val imageBitmap = rememberDeviceImageBitmap(state.device.imageEtag, state.imageBytes)
                         Box(
                             modifier = Modifier
                                 .size(112.dp)

@@ -199,6 +199,7 @@ fun EditDeviceContent(
                     ) {
                         if (state.imagesSupported) {
                             DevicePhotoSection(
+                                imageEtag = state.device.imageEtag,
                                 imageBytes = state.imageBytes,
                                 photoError = photoError,
                                 photoUploading = photoUploading,
@@ -359,6 +360,7 @@ fun EditDeviceContent(
 
 @Composable
 private fun DevicePhotoSection(
+    imageEtag: String?,
     imageBytes: DeviceImageBytes?,
     photoError: DeviceImageError?,
     photoUploading: Boolean,
@@ -370,7 +372,7 @@ private fun DevicePhotoSection(
     modifier: Modifier = Modifier,
 ) {
     val picker = LocalDeviceImagePicker.current
-    val imageBitmap = rememberDeviceImageBitmap(imageBytes)
+    val imageBitmap = rememberDeviceImageBitmap(imageEtag, imageBytes)
 
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         Box(
