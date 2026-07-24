@@ -81,7 +81,7 @@ fun DeviceListItem(
         onClick = onClick,
         modifier = modifier,
         leading = {
-            val imageBitmap = rememberDeviceImageBitmap(imageBytes)
+            val imageBitmap = rememberDeviceImageBitmap(device.imageEtag, imageBytes)
             if (imageBitmap != null) {
                 Image(
                     bitmap = imageBitmap,

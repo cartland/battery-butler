@@ -344,6 +344,82 @@ conclusion (defensive companion to the bb-2r4g close-on-success guard).
 
 **Result**: on Android, the account picker should now only ever appear on a genuinely first sign-in or after the user explicitly signs out / revokes access on-device — not on a routine ~1h/24h expiry. iOS/Desktop are unchanged (same deferred-scope reasoning as `bb-labs-silent-reauth` above).
 
+### bb-dimg-async-decode — Decode device photo bitmaps off the main thread — DONE 2026-07-23
+
+Reported as general app slowness "after the image API changes." Investigation (an Explore
+agent trace of the full device-image display path, ViewModel → use case →
+`DeviceImageRepository` → `RoomDeviceImageCache` → Compose UI) found the Room/repository layers
+were already correctly async — the actual problem was in
+`presentation-core/.../components/DeviceImageBitmap.kt`: `rememberDeviceImageBitmap` called
+`ByteArray.decodeToImageBitmap()` (a synchronous, CPU-bound Skia decode of up-to-2048px JPEGs,
+per the upload-time normalizer in `DeviceImageNormalizer.android.kt`) directly inside a Compose
+`remember{}` block — i.e. on the composition/main thread, with zero coroutine dispatch involved.
+This was made worse by the `remember` key being the `ByteArray` *reference*
+(`DeviceImageBytes` is deliberately not a `data class` — `ByteArray` equality is
+reference-based, see `DeviceImageBytes.kt`), so every unrelated state change that caused Room to
+re-emit the same cached image with a **new** `ByteArray` instance (e.g. sort/group toggles on
+Home, recording a battery event on Device Detail) forced a full-resolution re-decode of every
+visible photo on the main thread, even though the pixels never changed.
+
+**Fix**: new `DeviceImageBitmapLoader` (`presentation-core/.../components/`) — decodes via an
+injectable `CoroutineDispatcher` (`Dispatchers.Default` by default) and caches the decoded
+`ImageBitmap` by **`imageEtag`** (a stable, content-addressed key) rather than by byte-array
+reference, so a redundant re-fetch of the same cached photo is a cheap map lookup instead of a
+re-decode. `rememberDeviceImageBitmap` is now a thin `produceState`-based wrapper (genuinely
+suspends off the main thread via the loader) and takes an `imageEtag: String?` parameter,
+threaded from `DeviceListItem`, `DeviceDetailContent`, and `EditDeviceContent`'s
+`DevicePhotoSection` (all three already had `device.imageEtag` in scope). `decode` is an
+injectable lambda specifically so tests don't need a real Skia/Android bitmap decoder —
+`DeviceImageBitmapLoaderTest` covers off-thread dispatch (verified with the revert-fix/confirm-
+test-fails/restore-fix technique: temporarily removing `withContext` makes exactly one new test
+fail), per-etag caching across distinct byte-array instances, independent-etag decoding,
+`peek()` for the synchronous flicker-free initial value, FIFO cache eviction, decode-failure
+handling, and cancellation propagation.
+
+**Deliberately out of scope** (surfaced by the same investigation, not fixed here — see
+`bb-dimg-image-query-fanout` below): the N+1 Room query pattern in `HomeViewModel`
+(one live `Flow` per photographed device instead of one batched query) and the
+`flatMapLatest`-driven full resubscribe of all per-device image queries on unrelated state
+changes in both `HomeViewModel` and `DeviceDetailViewModel`. The etag-keyed cache added here
+makes both of those cheap (a map lookup instead of a decode) rather than eliminating the
+redundant queries themselves.
+
+### bb-dimg-image-query-fanout — Batch device-image Room queries; stop full resubscribe on unrelated state changes
+
+Follow-up to `bb-dimg-async-decode` (done 2026-07-23) — found during that investigation but
+deliberately not fixed, since it's a query-architecture change with more blast radius than "make
+decoding non-blocking." Two related issues:
+
+1. **N+1 query fan-out**: `HomeViewModel.observeImagesByEtag(devices)` opens one Room `Flow`
+   query per distinct `imageEtag` (`combine(etags.map { getCachedDeviceImageUseCase(etag) })`)
+   instead of a single batched query (e.g. `SELECT * FROM device_image_cache WHERE imageEtag IN
+   (...)`). A household with N photographed devices holds N live Room subscriptions instead of 1.
+2. **Full resubscribe on unrelated changes**: both `HomeViewModel.uiState` and
+   `DeviceDetailViewModel.uiState` wire the image-observing flow inside a `flatMapLatest` keyed
+   on broader state (sort/group/devices/types/syncStatus on Home; device/types/events on
+   Detail). Any unrelated change — toggling sort order, editing one device, recording a battery
+   replacement — tears down and re-creates **every** per-device image subscription, not just the
+   one that changed. `RoomDeviceImageCache.evictExcept` (run on every full sync snapshot) causes
+   a similar table-level-invalidation ripple independently of the `flatMapLatest` issue.
+
+Since `bb-dimg-async-decode` made the *decode* side of a redundant re-emission cheap (etag-keyed
+cache, not a re-decode), this is now a "wasted queries" efficiency issue rather than a
+main-thread-jank issue — lower urgency, but still real overhead on every sort toggle / device
+edit on a household with several photographed devices.
+
+### bb-dimg-thumbnail-decode — Decode/store a downscaled thumbnail for list/avatar display
+
+Follow-up to `bb-dimg-async-decode` — found during that investigation, not fixed. Cached device
+photo bytes are bounded to ~2048px long edge / ~200–600KB by the upload-time normalizer
+(`DeviceImageNormalizer.android.kt`), but the *display* decode path
+(`DeviceImageBitmapLoader`/`RoomDeviceImageCache`) always decodes and caches the **full**
+resolution bitmap, even though it's only ever rendered at 48dp (list row) or 112dp (avatar).
+Unlike the upload normalizer (which already does bounded/subsampled decoding), there's no
+`inSampleSize`-style subsampling or separate thumbnail column on the display path. Worth
+revisiting if decoded-bitmap memory pressure (not just CPU/thread) turns out to be a problem on
+lower-end devices — out of scope for the async-decode fix, which only addressed *which thread*
+the decode runs on, not *how much* work it does.
+
 ## P3
 
 ### bb-crashlytics-ios — Extend Firebase Crashlytics to the two iOS apps
