@@ -71,6 +71,8 @@ If any of these is not `success` on the target commit, the gate refuses. The fix
 
 > **Don't drop `-f ci_mode=release`.** The `ci_mode` workflow_dispatch input defaults to `development` and *overrides* the committed `ci-mode.txt`, so a bare `gh workflow run … --ref main` re-runs only the fast validations and **silently skips every build/instrumented/iOS sentinel** — the run still concludes `success`, and `--check` will still show those sentinels `skipped`. (Bit us on android/35, 2026-07-02.)
 
+> **Check for an in-progress run on the target SHA before dispatching.** A merge that just landed almost always has its own automatic `push`-triggered CI run still going. Dispatching a second (`workflow_dispatch`) run on the *same* SHA races it — GitHub Actions concurrency handling has been observed cancelling `validation_ios_ui` in one of the two runs, leaving neither with a clean `success` for that sentinel (see `bb-w73e` in TODO.md). Run `gh run list --workflow "Battery Butler CI" --limit 3 --json databaseId,status,headSha,event` first; if there's an `in_progress` run on your target SHA, wait for it to finish, *then* dispatch. Worked cleanly for android/46 and android/47 (2026-07-08/09) after being bitten by the collision once.
+
 This is why android/30 and android/31 used a 4-PR pre-flight: flip ci-mode → release, dispatch CI, watch all jobs go green, then push the tag. `--check` makes that flow explicit so you don't have to remember it.
 
 ## Rollback (two steps, by design)
