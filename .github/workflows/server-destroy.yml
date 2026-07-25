@@ -44,7 +44,7 @@ jobs:
       USE_OIDC: ${{ secrets.AWS_DEPLOY_ROLE_ARN != '' }}
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
 
     - name: Block production destroy
       if: inputs.environment == 'prod' || inputs.environment == 'production'
