@@ -29,6 +29,10 @@ updates:
       # See build.gradle.kts comments + https://github.com/GoogleContainerTools/jib/issues/4235
       # PR #1133 bumped past this constraint and broke build_server on main.
       - dependency-name: "com.google.cloud.tools:jib-gradle-plugin"
+      # Same pin, plugins-DSL marker form. Dependabot treats the plugin id used in
+      # libs.versions.toml as a distinct dependency from the artifact above, so it
+      # kept re-proposing the bump the artifact ignore blocks (PR #1248).
+      - dependency-name: "com.google.cloud.tools.jib:com.google.cloud.tools.jib.gradle.plugin"
       # Pinned to 2.10.0-beta01 — 2.11.0-beta01 DROPPED the iosX64 target, so every
       # org.jetbrains.androidx.lifecycle:* artifact fails K/N resolution
       # ("Couldn't resolve dependency ... Unresolved platforms: [iosX64]") and breaks
