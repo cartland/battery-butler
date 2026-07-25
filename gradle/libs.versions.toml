@@ -44,10 +44,10 @@ mlkit-genai-prompt = "1.0.0-beta1"
 protobufVersion = "4.35.0"
 # gRPC 1.79+ blocked: generated stubs use removed APIs (BlockingClientCall, blockingV2*Call).
 # Requires regenerating protos with matching codegen plugin version.
-grpcJava = "1.63.0"
-grpc-kotlin = "1.4.1"
+grpcJava = "1.78.0"
+grpc-kotlin = "1.5.0"
 # Wire 6.0+ blocked: bundled with gRPC group upgrade above.
-wire = "5.0.0"
+wire = "5.5.1"
 screenshot = "0.0.1-alpha12"
 skie = "0.10.12"
 # bb-ovm1 spike: KMP-ObservableViewModel is Kotlin-version-pinned; 1.0.1 ↔ Kotlin 2.3.0.
