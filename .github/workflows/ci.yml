@@ -232,7 +232,7 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
       - name: Cache Gradle
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.gradle/caches
@@ -242,7 +242,7 @@ jobs:
             ${{ runner.os }}-gradle-ios-
             ${{ runner.os }}-gradle-
       - name: Cache Bazel
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cache/bazel
@@ -377,7 +377,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Cache Gradle
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.gradle/caches
@@ -388,7 +388,7 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: Cache Xcode DerivedData
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/Library/Developer/Xcode/DerivedData
           key: ${{ runner.os }}-xcode-compose-${{ hashFiles('ios-app-compose-ui/**/*.swift', 'ios-app-compose-ui/**/*.xcodeproj/**') }}
@@ -429,7 +429,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Cache Gradle
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.gradle/caches
@@ -441,7 +441,7 @@ jobs:
 
       # Bazel caching for proto generation
       - name: Cache Bazel
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cache/bazel
