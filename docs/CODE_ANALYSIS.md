@@ -3,39 +3,39 @@
 # Code Analysis
 
 This document provides a breakdown of the codebase by application layer and module.
-Total Lines of Code: 59960
+Total Lines of Code: 60660
 
 ## Application Breakdown
-* Shared Code: 42,899 lines (71.5%)
-* Other: 5,830 lines (9.7%)
-* iOS Swift App: 5,657 lines (9.4%)
-* CMP Android, iOS, Desktop: 2,820 lines (4.7%)
-* Server: 1,530 lines (2.6%)
-* Android Screenshot Tests: 1,224 lines (2.0%)
+* Shared Code: 43,548 lines (71.8%)
+* Other: 5,839 lines (9.6%)
+* iOS Swift App: 5,687 lines (9.4%)
+* CMP Android, iOS, Desktop: 2,821 lines (4.7%)
+* Server: 1,530 lines (2.5%)
+* Android Screenshot Tests: 1,235 lines (2.0%)
 
 ## Module Breakdown
-* `:presentation-feature`: 7,967 lines (13.3%)
-* `:viewmodel`: 6,819 lines (11.4%)
-* `:data-network`: 6,415 lines (10.7%)
-* `:usecase`: 6,165 lines (10.3%)
-* `:iosAppSwiftUI.xcodeproj`: 5,657 lines (9.4%)
+* `:presentation-feature`: 8,153 lines (13.4%)
+* `:viewmodel`: 7,050 lines (11.6%)
+* `:data-network`: 6,415 lines (10.6%)
+* `:usecase`: 6,165 lines (10.2%)
+* `:iosAppSwiftUI.xcodeproj`: 5,687 lines (9.4%)
+* `:presentation-core`: 3,994 lines (6.6%)
 * `:data`: 3,856 lines (6.4%)
-* `:presentation-core`: 3,762 lines (6.3%)
-* `:domain`: 3,117 lines (5.2%)
-* `:buildSrc`: 2,810 lines (4.7%)
-* `:compose-app`: 2,553 lines (4.3%)
+* `:domain`: 3,117 lines (5.1%)
+* `:buildSrc`: 2,810 lines (4.6%)
+* `:compose-app`: 2,554 lines (4.2%)
 * `:data-local`: 2,484 lines (4.1%)
 * `:server:app`: 1,344 lines (2.2%)
-* `:android-screenshot-tests`: 1,224 lines (2.0%)
-* `:test-common`: 1,053 lines (1.8%)
-* `:ai`: 575 lines (1.0%)
+* `:android-screenshot-tests`: 1,235 lines (2.0%)
+* `:test-common`: 1,053 lines (1.7%)
+* `:ai`: 575 lines (0.9%)
 * `:detekt-rules`: 413 lines (0.7%)
 * `:experimental:viewmodel`: 397 lines (0.7%)
 * `:experimental:data`: 357 lines (0.6%)
-* `:presentation-model`: 332 lines (0.6%)
+* `:presentation-model`: 341 lines (0.6%)
 * `:experimental:usecase`: 316 lines (0.5%)
 * `:experimental:data-local`: 301 lines (0.5%)
-* `:e2e-tests`: 271 lines (0.5%)
+* `:e2e-tests`: 271 lines (0.4%)
 * `:experimental:compose-app`: 267 lines (0.4%)
 * `:experimental:presentation-core`: 244 lines (0.4%)
 * `:ios-swift-di`: 239 lines (0.4%)
@@ -49,8 +49,8 @@ Total Lines of Code: 59960
 * `:iosAppComposeUI.xcodeproj`: 31 lines (0.1%)
 
 ## Language Breakdown
-* Kotlin (.kt): 54,037 lines (90.1%)
-* Swift (.swift): 5,923 lines (9.9%)
+* Kotlin (.kt): 54,707 lines (90.2%)
+* Swift (.swift): 5,953 lines (9.8%)
 
 ## Code Distribution
 
@@ -68,19 +68,19 @@ config:
 %% GENERATED FILE - DO NOT EDIT
 sankey-beta
 
-Codebase,Shared Code,42899
-Codebase,Other,5830
-Codebase,iOS Swift App,5657
-Codebase,CMP Apps,2820
+Codebase,Shared Code,43548
+Codebase,Other,5839
+Codebase,iOS Swift App,5687
+Codebase,CMP Apps,2821
 Codebase,Server,1530
-Codebase,Screenshot Tests,1224
+Codebase,Screenshot Tests,1235
 
-Shared Code,presentation-feature,7967
-Shared Code,viewmodel,6819
+Shared Code,presentation-feature,8153
+Shared Code,viewmodel,7050
 Shared Code,data-network,6415
 Shared Code,usecase,6165
+Shared Code,presentation-core,3994
 Shared Code,data,3856
-Shared Code,presentation-core,3762
 Shared Code,domain,3117
 Shared Code,data-local,2484
 Shared Code,ai,575
@@ -95,7 +95,7 @@ Shared Code,experimental:domain,54
 Other,buildSrc,2810
 Other,test-common,1053
 Other,detekt-rules,413
-Other,presentation-model,332
+Other,presentation-model,341
 Other,e2e-tests,271
 Other,ios-swift-di,239
 Other,cli,237
@@ -103,36 +103,36 @@ Other,ExperimentalApp,235
 Other,fixtures,209
 Other,iosAppComposeUI,31
 
-iOS Swift App,iosAppSwiftUI,5657
+iOS Swift App,iosAppSwiftUI,5687
 
-CMP Apps,compose-app,2553
+CMP Apps,compose-app,2554
 CMP Apps,experimental:compose-app,267
 
 Server,server:app,1344
 Server,server:data,152
 Server,server:domain,34
 
-Screenshot Tests,android-screenshot-tests,1224
+Screenshot Tests,android-screenshot-tests,1235
 
-presentation-feature,Kotlin,7967
-viewmodel,Kotlin,6819
+presentation-feature,Kotlin,8153
+viewmodel,Kotlin,7050
 data-network,Kotlin,6415
 usecase,Kotlin,6165
-iosAppSwiftUI,Swift,5657
+iosAppSwiftUI,Swift,5687
+presentation-core,Kotlin,3994
 data,Kotlin,3856
-presentation-core,Kotlin,3762
 domain,Kotlin,3117
 buildSrc,Kotlin,2810
-compose-app,Kotlin,2553
+compose-app,Kotlin,2554
 data-local,Kotlin,2484
 server:app,Kotlin,1344
-android-screenshot-tests,Kotlin,1224
+android-screenshot-tests,Kotlin,1235
 test-common,Kotlin,1053
 ai,Kotlin,575
 detekt-rules,Kotlin,413
 experimental:viewmodel,Kotlin,397
 experimental:data,Kotlin,357
-presentation-model,Kotlin,332
+presentation-model,Kotlin,341
 experimental:usecase,Kotlin,316
 experimental:data-local,Kotlin,301
 e2e-tests,Kotlin,271

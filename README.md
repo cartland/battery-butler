@@ -227,19 +227,19 @@ config:
 %% GENERATED FILE - DO NOT EDIT
 sankey-beta
 
-Codebase,Shared Code,42899
-Codebase,Other,5830
-Codebase,iOS Swift App,5657
-Codebase,CMP Apps,2820
+Codebase,Shared Code,43548
+Codebase,Other,5839
+Codebase,iOS Swift App,5687
+Codebase,CMP Apps,2821
 Codebase,Server,1530
-Codebase,Screenshot Tests,1224
+Codebase,Screenshot Tests,1235
 
-Shared Code,presentation-feature,7967
-Shared Code,viewmodel,6819
+Shared Code,presentation-feature,8153
+Shared Code,viewmodel,7050
 Shared Code,data-network,6415
 Shared Code,usecase,6165
+Shared Code,presentation-core,3994
 Shared Code,data,3856
-Shared Code,presentation-core,3762
 Shared Code,domain,3117
 Shared Code,data-local,2484
 Shared Code,ai,575
@@ -254,7 +254,7 @@ Shared Code,experimental:domain,54
 Other,buildSrc,2810
 Other,test-common,1053
 Other,detekt-rules,413
-Other,presentation-model,332
+Other,presentation-model,341
 Other,e2e-tests,271
 Other,ios-swift-di,239
 Other,cli,237
@@ -262,36 +262,36 @@ Other,ExperimentalApp,235
 Other,fixtures,209
 Other,iosAppComposeUI,31
 
-iOS Swift App,iosAppSwiftUI,5657
+iOS Swift App,iosAppSwiftUI,5687
 
-CMP Apps,compose-app,2553
+CMP Apps,compose-app,2554
 CMP Apps,experimental:compose-app,267
 
 Server,server:app,1344
 Server,server:data,152
 Server,server:domain,34
 
-Screenshot Tests,android-screenshot-tests,1224
+Screenshot Tests,android-screenshot-tests,1235
 
-presentation-feature,Kotlin,7967
-viewmodel,Kotlin,6819
+presentation-feature,Kotlin,8153
+viewmodel,Kotlin,7050
 data-network,Kotlin,6415
 usecase,Kotlin,6165
-iosAppSwiftUI,Swift,5657
+iosAppSwiftUI,Swift,5687
+presentation-core,Kotlin,3994
 data,Kotlin,3856
-presentation-core,Kotlin,3762
 domain,Kotlin,3117
 buildSrc,Kotlin,2810
-compose-app,Kotlin,2553
+compose-app,Kotlin,2554
 data-local,Kotlin,2484
 server:app,Kotlin,1344
-android-screenshot-tests,Kotlin,1224
+android-screenshot-tests,Kotlin,1235
 test-common,Kotlin,1053
 ai,Kotlin,575
 detekt-rules,Kotlin,413
 experimental:viewmodel,Kotlin,397
 experimental:data,Kotlin,357
-presentation-model,Kotlin,332
+presentation-model,Kotlin,341
 experimental:usecase,Kotlin,316
 experimental:data-local,Kotlin,301
 e2e-tests,Kotlin,271
