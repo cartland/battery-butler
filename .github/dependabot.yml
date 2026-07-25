@@ -58,6 +58,13 @@ updates:
       # in TODO.md — bump SKIE and Kotlin together, verified via release-mode CI).
       - dependency-name: "org.jetbrains.kotlin:*"
         versions: [">= 2.3.10"]
+      # Same pin, plugins-DSL marker form: the TOML `kotlin` version key drives plugin
+      # markers in groups like org.jetbrains.kotlin.multiplatform, which the colon-anchored
+      # glob above does not match — PR #1402 bumped kotlin to 2.4.10 minutes after the
+      # artifact pin landed. The trailing-dot glob matches every org.jetbrains.kotlin.<x>
+      # marker group while leaving org.jetbrains.kotlinx* free (kotlinx has no dot).
+      - dependency-name: "org.jetbrains.kotlin.*"
+        versions: [">= 2.3.10"]
       # gRPC >= 1.79 / Wire >= 6.0 blocked: the generated gRPC stubs call codegen
       # APIs removed in 1.79 (BlockingClientCall, blockingV2UnaryCall, ...),
       # producing 5 compile errors in server/app. Dependabot PR #1223 (grpc group
