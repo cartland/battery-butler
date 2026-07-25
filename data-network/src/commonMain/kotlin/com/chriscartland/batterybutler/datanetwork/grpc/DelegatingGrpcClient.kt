@@ -6,7 +6,9 @@ import com.chriscartland.batterybutler.domain.model.DispatcherProvider
 import com.chriscartland.batterybutler.domain.repository.DataModeRepository
 import com.squareup.wire.GrpcCall
 import com.squareup.wire.GrpcClient
+import com.squareup.wire.GrpcClientStreamingCall
 import com.squareup.wire.GrpcMethod
+import com.squareup.wire.GrpcServerStreamingCall
 import com.squareup.wire.GrpcStreamingCall
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -100,6 +102,24 @@ class DelegatingGrpcClient(
         val delegate = (state as? GrpcClientState.Ready)?.client
             ?: throw IOException("Network client not ready. State: $state")
         val call = delegate.newStreamingCall(method)
+        call.requestMetadata = call.requestMetadata + authHeaders()
+        return call
+    }
+
+    override fun <S : Any, R : Any> newClientStreamingCall(method: GrpcMethod<S, R>): GrpcClientStreamingCall<S, R> {
+        val state = currentDelegate.value
+        val delegate = (state as? GrpcClientState.Ready)?.client
+            ?: throw IOException("Network client not ready. State: $state")
+        val call = delegate.newClientStreamingCall(method)
+        call.requestMetadata = call.requestMetadata + authHeaders()
+        return call
+    }
+
+    override fun <S : Any, R : Any> newServerStreamingCall(method: GrpcMethod<S, R>): GrpcServerStreamingCall<S, R> {
+        val state = currentDelegate.value
+        val delegate = (state as? GrpcClientState.Ready)?.client
+            ?: throw IOException("Network client not ready. State: $state")
+        val call = delegate.newServerStreamingCall(method)
         call.requestMetadata = call.requestMetadata + authHeaders()
         return call
     }

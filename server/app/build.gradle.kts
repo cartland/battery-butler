@@ -47,6 +47,10 @@ dependencies {
     implementation(libs.protobuf.kotlin)
     implementation(libs.grpc.netty)
     implementation(libs.grpc.protobuf)
+    // Align grpc-stub with the protoc-gen-grpc-java codegen version. Without this direct
+    // dependency, grpc-kotlin-stub's transitive grpc-stub (older) wins and the generated
+    // blocking-v2 stubs (BlockingClientCall etc.) fail to compile.
+    implementation(libs.grpc.stub)
     implementation(libs.grpc.kotlin.stub)
     implementation(libs.kotlin.stdlib)
     implementation(libs.kotlinx.datetime)

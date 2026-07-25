@@ -3,7 +3,9 @@ package com.chriscartland.batterybutler.datanetwork.grpc
 import com.chriscartland.batterybutler.domain.model.DispatcherProvider
 import com.squareup.wire.GrpcCall
 import com.squareup.wire.GrpcClient
+import com.squareup.wire.GrpcClientStreamingCall
 import com.squareup.wire.GrpcMethod
+import com.squareup.wire.GrpcServerStreamingCall
 import com.squareup.wire.GrpcStreamingCall
 import com.squareup.wire.MessageSink
 import com.squareup.wire.MessageSource
@@ -51,6 +53,14 @@ private class IosGrpcClient(
     override fun <S : Any, R : Any> newCall(method: GrpcMethod<S, R>): GrpcCall<S, R> = IosGrpcCall(client, url, method, dispatcherProvider)
 
     override fun <S : Any, R : Any> newStreamingCall(method: GrpcMethod<S, R>): GrpcStreamingCall<S, R> = IosGrpcStreamingCall(client, url, method, dispatcherProvider)
+
+    // Wire 5.5 added dedicated client-/server-streaming call types to the abstract GrpcClient.
+    // Wire's codegen still routes this project's only streaming RPC (SyncService/Subscribe)
+    // through newStreamingCall (verified by regenerating GrpcSyncServiceClient under 5.5.1),
+    // so these are never invoked. Same boundary precedent as executeBlocking below.
+    override fun <S : Any, R : Any> newClientStreamingCall(method: GrpcMethod<S, R>): GrpcClientStreamingCall<S, R> = throw UnsupportedOperationException("Client-streaming calls are not supported by the iOS gRPC transport")
+
+    override fun <S : Any, R : Any> newServerStreamingCall(method: GrpcMethod<S, R>): GrpcServerStreamingCall<S, R> = throw UnsupportedOperationException("Server-streaming calls are not supported by the iOS gRPC transport")
 }
 
 private fun frameGrpcMessage(payload: ByteArray): ByteArray {
