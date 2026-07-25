@@ -41,7 +41,7 @@ jobs:
       needs_spotless: ${{ steps.filter.outputs.needs_spotless }}
       ci_mode: ${{ steps.read_mode.outputs.ci_mode }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Read CI mode
         id: read_mode
         run: |
@@ -147,7 +147,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-java-gradle
       - name: Clean Project
         run: echo "Skipping clean to use cache (if available) and speed up build"
@@ -160,7 +160,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-java-gradle
       - name: Run Lint
         run: ./gradlew lint --stacktrace
@@ -171,7 +171,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-java-gradle
       - name: Run Detekt
         run: ./gradlew detekt detektAndroidMain --stacktrace
@@ -182,7 +182,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-java-gradle
       - name: Run Unit Tests
         run: ./gradlew test --stacktrace
@@ -193,7 +193,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-java-gradle
       - name: Compile All Test Sources
         run: ./gradlew compileTestKotlin --stacktrace
@@ -204,7 +204,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-java-gradle
       - name: Enable KVM
         run: |
@@ -220,7 +220,7 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           # Pin Xcode version for reproducible iOS snapshots.
@@ -273,7 +273,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-java-gradle
       - name: Check Theme Layer Enforcement
         run: ./gradlew checkThemeLayer
@@ -284,7 +284,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-java-gradle
       - name: Check Test Coverage
         run: ./gradlew checkTestCoverage
@@ -295,7 +295,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-java-gradle
       - name: Check Naming Conventions
         run: ./gradlew checkNamingConventions
@@ -306,7 +306,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-java-gradle
       - name: Check Hardcoded Strings
         run: ./gradlew checkHardcodedStrings
@@ -317,7 +317,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-java-gradle
       - name: Check Architecture
         run: ./gradlew checkArchitecture checkPreviewTime
@@ -328,7 +328,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-java-gradle
       - name: Check Import Boundaries
         run: ./gradlew checkImportBoundary
@@ -339,7 +339,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-java-gradle
       - name: Build Android App
         run: ./gradlew :compose-app:assembleDebug
@@ -367,7 +367,7 @@ jobs:
           xcode-version: '26.3'
 
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       # Gradle caching for KMP framework build
       - name: Set up JDK
@@ -419,7 +419,7 @@ jobs:
           xcode-version: '26.3'
 
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       # Gradle caching for KMP framework build
       - name: Set up JDK
@@ -479,7 +479,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-java-gradle
       - name: Build Desktop App
         run: ./gradlew :compose-app:packageDistributionForCurrentOS
@@ -497,7 +497,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-java-gradle
       - name: Build Server
         run: ./gradlew :server:app:build
@@ -522,7 +522,7 @@ jobs:
     timeout-minutes: 15
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-java-gradle
       - name: Generate diagrams and analysis
         run: ./gradlew generateMermaidGraph analyzeCode
