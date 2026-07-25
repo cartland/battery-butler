@@ -472,6 +472,24 @@ the decode runs on, not *how much* work it does.
 
 ## P3
 
+### bb-kotlin-skie-upgrade — Upgrade SKIE + Kotlin together past the 2.3.0/0.10.9 pair
+
+Kotlin is now pinned at `< 2.3.10` in `.github/dependabot.yml` (tightened from `< 2.3.20`
+on 2026-07-25). Evidence: Kotlin 2.4.0 fails loudly under SKIE 0.10.9 ("does not support
+Kotlin 2.4.0", dependabot PR #1222), but 2.3.10 fails *subtly* — the shared framework
+builds fine, then `ios-app-swift-ui`'s test target fails with "missing argument for
+parameter 'imageEtag' in call" on `iosAppSwiftUITests/TestData.swift` calls that are
+byte-identical to main and compile green there. i.e., the SKIE-exported Swift API surface
+for `Device` changes shape under a Kotlin patch bump SKIE doesn't declare support for.
+Caught before merge by dispatching release-mode CI on dependabot PR #1244's branch
+(`gh workflow run "Battery Butler CI" --ref <branch> -f ci_mode=release`) — the documented
+verification requirement for KMP dep bumps, since dev-mode PR CI skips every iOS job.
+
+Forward path: pick a SKIE release that declares support for the target Kotlin version,
+bump `skie` + `kotlin` (+ `kotlin-gradle-plugin`/`kotlin-serialization` in buildSrc) in one
+change, and verify with a release-mode CI dispatch on the branch BEFORE merging. Then
+relax the dependabot ignore in `.github/dependabot.yml` to the next unsupported version.
+
 ### bb-crashlytics-ios — Extend Firebase Crashlytics to the two iOS apps
 
 Follow-up to `bb-crashlytics` (Android-only, done 2026-07-21, PR #1374): the same Kermit
