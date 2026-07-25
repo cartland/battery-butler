@@ -46,14 +46,18 @@ updates:
       # Each unblocks externally; DELETE its entry (and these comments) once the
       # upstream blocker clears, then let Dependabot re-propose the upgrade.
       # ───────────────────────────────────────────────────────────────────────
-      # Kotlin >= 2.3.20 blocked: SKIE 0.10.9 fails the build —
-      # "Error: SKIE 0.10.9 does not support Kotlin 2.4.0. Supported versions
-      # are: [..., 2.3.0]." Dependabot PR #1222 (kotlin group → 2.4.0) could not
-      # compile. Only the kotlin compiler/plugin artifacts are pinned; the
-      # kotlinx-* group (coroutines/datetime/serialization) stays free to update.
-      # REMOVE when a SKIE release supports the desired Kotlin version.
+      # Kotlin >= 2.3.10 blocked: SKIE 0.10.9 only supports up to Kotlin 2.3.0.
+      # 2.4.0 fails loudly ("SKIE 0.10.9 does not support Kotlin 2.4.0", PR #1222).
+      # 2.3.10 fails SUBTLY: the framework builds, but SKIE's exported Swift API
+      # changes shape — identical Swift test sources that compile on main fail with
+      # "missing argument for parameter 'imageEtag' in call" (TestData.swift), caught
+      # by a release-mode CI dispatch on PR #1244's branch before merge (2026-07-25).
+      # Only the kotlin compiler/plugin artifacts are pinned; the kotlinx-* group
+      # (coroutines/datetime/serialization) stays free to update.
+      # REMOVE when SKIE supports the desired Kotlin version (see bb-kotlin-skie-upgrade
+      # in TODO.md — bump SKIE and Kotlin together, verified via release-mode CI).
       - dependency-name: "org.jetbrains.kotlin:*"
-        versions: [">= 2.3.20"]
+        versions: [">= 2.3.10"]
       # gRPC >= 1.79 / Wire >= 6.0 blocked: the generated gRPC stubs call codegen
       # APIs removed in 1.79 (BlockingClientCall, blockingV2UnaryCall, ...),
       # producing 5 compile errors in server/app. Dependabot PR #1223 (grpc group
