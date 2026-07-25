@@ -50,12 +50,16 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.auth
 import com.chriscartland.batterybutler.composeresources.generated.resources.login_action_sign_in_google
 import com.chriscartland.batterybutler.composeresources.generated.resources.login_error_sign_in_unavailable
 import com.chriscartland.batterybutler.composeresources.generated.resources.login_info_local_only
+import com.chriscartland.batterybutler.composeresources.generated.resources.login_labs_session_expired
 import com.chriscartland.batterybutler.composeresources.generated.resources.login_tagline
 import com.chriscartland.batterybutler.composeresources.generated.resources.settings_labs_sign_in
 import com.chriscartland.batterybutler.domain.model.AuthError
 import com.chriscartland.batterybutler.domain.model.AuthState
+import com.chriscartland.batterybutler.domain.model.SignedOutCause
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationcore.theme.Padding
+import com.chriscartland.batterybutler.presentationfeature.auth.isLabsSessionExpired
+import com.chriscartland.batterybutler.presentationfeature.auth.labsAuthErrorText
 
 /**
  * Login screen content.
@@ -112,6 +116,11 @@ fun LoginContent(
                         isSignInAvailable = isSignInAvailable,
                         isLabsMode = isLabsMode,
                         isLoading = false,
+                        // Reactive session loss (the backend rejected the stored Labs session)
+                        // gets calm inline copy + the normal sign-in button — deliberately NOT
+                        // the error dialog: the user did nothing wrong and needs exactly one
+                        // action, signing in again.
+                        isSessionExpired = isLabsSessionExpired(authState),
                         onGoogleSignIn = onGoogleSignIn,
                         onSkipLogin = onSkipLogin,
                     )
@@ -134,6 +143,7 @@ fun LoginContent(
                     )
                     ErrorDialog(
                         error = authState.error,
+                        isLabsMode = isLabsMode,
                         onDismiss = onDismissError,
                         onRetry = onGoogleSignIn,
                     )
@@ -151,6 +161,7 @@ private fun LoginForm(
     onGoogleSignIn: () -> Unit,
     onSkipLogin: () -> Unit,
     modifier: Modifier = Modifier,
+    isSessionExpired: Boolean = false,
 ) {
     Column(
         modifier = modifier
@@ -185,6 +196,18 @@ private fun LoginForm(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
         )
+
+        // Session-expired notice: informational tone (primary color, no dialog) — local data is
+        // intact and the fix is the sign-in button right below.
+        if (isSessionExpired) {
+            Spacer(modifier = Modifier.height(24.dp))
+            Text(
+                text = composeStringResource(Res.string.login_labs_session_expired),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.primary,
+                textAlign = TextAlign.Center,
+            )
+        }
 
         Spacer(modifier = Modifier.height(48.dp))
 
@@ -253,10 +276,11 @@ private fun LoginForm(
 @Composable
 private fun ErrorDialog(
     error: AuthError,
+    isLabsMode: Boolean,
     onDismiss: () -> Unit,
     onRetry: () -> Unit,
 ) {
-    val (title, message) = getErrorText(error)
+    val (title, message) = getErrorText(error, isLabsMode)
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -281,11 +305,23 @@ private fun ErrorDialog(
 }
 
 /**
- * Returns user-friendly (title, message) pair for the given error.
+ * Returns user-friendly (title, message) pair for the given error. Labs sign-in failures map
+ * through [labsAuthErrorText] (Labs-specific copy); the branches below are the legacy own-backend
+ * flow's copy, unchanged.
  */
 @Composable
-private fun getErrorText(error: AuthError): Pair<String, String> =
-    when (error) {
+private fun getErrorText(
+    error: AuthError,
+    isLabsMode: Boolean,
+): Pair<String, String> {
+    if (isLabsMode) {
+        val text = labsAuthErrorText(error)
+        return Pair(
+            composeStringResource(text.title),
+            composeStringResource(text.message),
+        )
+    }
+    return when (error) {
         is AuthError.Configuration.NotConfigured -> Pair(
             composeStringResource(Res.string.auth_error_title_coming_soon),
             composeStringResource(Res.string.auth_error_message_coming_soon),
@@ -326,13 +362,29 @@ private fun getErrorText(error: AuthError): Pair<String, String> =
             composeStringResource(Res.string.auth_error_message_safe_data),
         )
     }
+}
 
 @Preview(showBackground = true)
 @Composable
 fun LoginContentLabsPreview() {
     BatteryButlerTheme {
         LoginContent(
-            authState = AuthState.Unauthenticated,
+            authState = AuthState.Unauthenticated(),
+            isSignInAvailable = true,
+            isLabsMode = true,
+            onGoogleSignIn = {},
+            onSkipLogin = {},
+            onDismissError = {},
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LoginContentSessionExpiredPreview() {
+    BatteryButlerTheme {
+        LoginContent(
+            authState = AuthState.Unauthenticated(cause = SignedOutCause.SESSION_EXPIRED),
             isSignInAvailable = true,
             isLabsMode = true,
             onGoogleSignIn = {},
@@ -347,7 +399,7 @@ fun LoginContentLabsPreview() {
 fun LoginContentUnauthenticatedPreview() {
     BatteryButlerTheme {
         LoginContent(
-            authState = AuthState.Unauthenticated,
+            authState = AuthState.Unauthenticated(),
             isSignInAvailable = true,
             isLabsMode = false,
             onGoogleSignIn = {},
@@ -377,7 +429,7 @@ fun LoginContentAuthenticatingPreview() {
 fun LoginContentNotConfiguredPreview() {
     BatteryButlerTheme {
         LoginContent(
-            authState = AuthState.Unauthenticated,
+            authState = AuthState.Unauthenticated(),
             isSignInAvailable = false,
             isLabsMode = false,
             onGoogleSignIn = {},

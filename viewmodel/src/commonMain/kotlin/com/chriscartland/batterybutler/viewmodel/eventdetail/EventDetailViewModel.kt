@@ -62,6 +62,8 @@ class EventDetailViewModel(
             viewModelScope = viewModelScope,
             started = defaultWhileSubscribed(),
             initialValue = EventDetailScreenState.Loading,
+            // See DeviceTypeDetailViewModel: transient DB failure -> NotFound (logged), not a wedge.
+            onError = { EventDetailScreenState.NotFound },
         )
 
     fun deleteEvent() {

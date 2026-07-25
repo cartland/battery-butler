@@ -16,8 +16,10 @@ import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.IsDeviceImagesSupportedUseCase
 import com.chriscartland.batterybutler.usecase.UpdateDeviceUseCase
 import com.chriscartland.batterybutler.usecase.UploadDeviceImageUseCase
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -141,6 +143,10 @@ class EditDeviceViewModelTest {
 
             assertEquals("etag-1", repo.devices[0].imageEtag)
             assertNull(viewModel.photoError.value)
+            assertEquals(false, viewModel.photoUploading.value)
+            // A successful upload raises the transient "Photo updated" success signal so the UI can
+            // confirm it worked -- important for a same-photo re-upload where the avatar is unchanged.
+            assertEquals(true, viewModel.photoUpdated.value)
         }
 
     @Test
@@ -161,6 +167,62 @@ class EditDeviceViewModelTest {
 
             assertIs<DeviceImageError.TooLarge>(viewModel.photoError.value)
             assertNull(repo.devices[0].imageEtag)
+            assertEquals(false, viewModel.photoUploading.value)
+            // A failed upload must NOT raise the success signal.
+            assertEquals(false, viewModel.photoUpdated.value)
+        }
+
+    /**
+     * Regression test: a real-world upload threw an unexpected exception (not a typed
+     * [DeviceImageError.NetworkError]) after the byte upload itself had already succeeded
+     * server-side, and [photoUploading] never got cleared -- the earlier version of `uploadPhoto`
+     * had no try/finally, so anything other than a [Result] return value left the spinner stuck
+     * forever with no error shown.
+     */
+    @Test
+    fun `uploadPhoto clears photoUploading and surfaces an error when the use case throws unexpectedly`() =
+        runTest {
+            val repo = FakeDeviceRepository()
+            val device = TestDevices.createDevice(id = "device-1", name = "Test Device")
+            repo.setDevices(listOf(device))
+            val imageRepo = FakeDeviceImageRepository().apply { uploadThrows = RuntimeException("boom") }
+
+            val viewModel = createViewModel(repo, "device-1", imageRepo)
+            viewModel.uiState.first { it is EditDeviceScreenState.Success }
+
+            viewModel.uploadPhoto(byteArrayOf(1, 2, 3), "image/jpeg")
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            assertEquals(false, viewModel.photoUploading.value)
+            assertIs<DeviceImageError.NetworkError>(viewModel.photoError.value)
+            assertNull(repo.devices[0].imageEtag)
+        }
+
+    @Test
+    fun `photoUpdated is cleared by clearPhotoUpdated and re-raised by a repeat same-photo upload`() =
+        runTest {
+            val repo = FakeDeviceRepository()
+            val device = TestDevices.createDevice(id = "device-1", name = "Test Device")
+            repo.setDevices(listOf(device))
+            val imageRepo = FakeDeviceImageRepository().apply { uploadResult = Result.Success("etag-1") }
+
+            val viewModel = createViewModel(repo, "device-1", imageRepo)
+            viewModel.uiState.first { it is EditDeviceScreenState.Success }
+
+            // Starts unset.
+            assertEquals(false, viewModel.photoUpdated.value)
+
+            // First upload raises the cue; the UI then clears it once shown.
+            viewModel.uploadPhoto(byteArrayOf(1, 2, 3), "image/jpeg")
+            testDispatcher.scheduler.advanceUntilIdle()
+            assertEquals(true, viewModel.photoUpdated.value)
+            viewModel.clearPhotoUpdated()
+            assertEquals(false, viewModel.photoUpdated.value)
+
+            // Re-uploading the identical photo raises a fresh cue -- the whole point of the signal.
+            viewModel.uploadPhoto(byteArrayOf(1, 2, 3), "image/jpeg")
+            testDispatcher.scheduler.advanceUntilIdle()
+            assertEquals(true, viewModel.photoUpdated.value)
         }
 
     @Test
@@ -179,6 +241,27 @@ class EditDeviceViewModelTest {
 
             assertEquals(listOf("device-1"), imageRepo.deletedDeviceIds)
             assertNull(repo.devices[0].imageEtag)
+            assertEquals(false, viewModel.photoUploading.value)
+        }
+
+    /** Same regression as the upload case, for `removePhoto`. */
+    @Test
+    fun `removePhoto clears photoUploading and surfaces an error when the use case throws unexpectedly`() =
+        runTest {
+            val repo = FakeDeviceRepository()
+            val device = TestDevices.createDevice(id = "device-1", name = "Test Device").copy(imageEtag = "etag-1")
+            repo.setDevices(listOf(device))
+            val imageRepo = FakeDeviceImageRepository().apply { deleteThrows = RuntimeException("boom") }
+
+            val viewModel = createViewModel(repo, "device-1", imageRepo)
+            viewModel.uiState.first { it is EditDeviceScreenState.Success }
+
+            viewModel.removePhoto()
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            assertEquals(false, viewModel.photoUploading.value)
+            assertIs<DeviceImageError.NetworkError>(viewModel.photoError.value)
+            assertEquals("etag-1", repo.devices[0].imageEtag)
         }
 
     @Test
@@ -201,16 +284,18 @@ class EditDeviceViewModelTest {
         repo: FakeDeviceRepository,
         deviceId: String,
         imageRepo: FakeDeviceImageRepository = FakeDeviceImageRepository(),
-    ): EditDeviceViewModel =
-        EditDeviceViewModel(
+    ): EditDeviceViewModel {
+        val scope = CoroutineScope(testDispatcher + Job())
+        return EditDeviceViewModel(
             deviceId = deviceId,
             getDeviceDetailUseCase = GetDeviceDetailUseCase(repo),
             getDeviceTypesUseCase = GetDeviceTypesUseCase(repo),
             updateDeviceUseCase = UpdateDeviceUseCase(repo),
             deleteDeviceUseCase = DeleteDeviceUseCase(repo),
             getCachedDeviceImageUseCase = GetCachedDeviceImageUseCase(imageRepo),
-            uploadDeviceImageUseCase = UploadDeviceImageUseCase(imageRepo),
-            deleteDeviceImageUseCase = DeleteDeviceImageUseCase(imageRepo),
+            uploadDeviceImageUseCase = UploadDeviceImageUseCase(imageRepo, repo, scope),
+            deleteDeviceImageUseCase = DeleteDeviceImageUseCase(imageRepo, repo, scope),
             isDeviceImagesSupportedUseCase = IsDeviceImagesSupportedUseCase(imageRepo),
         )
+    }
 }

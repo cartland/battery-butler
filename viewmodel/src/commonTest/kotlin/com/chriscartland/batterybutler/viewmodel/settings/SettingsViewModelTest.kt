@@ -11,6 +11,7 @@ import com.chriscartland.batterybutler.domain.model.LabsStagingUrl
 import com.chriscartland.batterybutler.domain.model.LegacyDatabaseInfo
 import com.chriscartland.batterybutler.domain.model.ProductionServerUrl
 import com.chriscartland.batterybutler.domain.model.RestoreResult
+import com.chriscartland.batterybutler.domain.model.SignedOutCause
 import com.chriscartland.batterybutler.domain.model.User
 import com.chriscartland.batterybutler.domain.model.ai.AiEngineType
 import com.chriscartland.batterybutler.domain.repository.AiPreferencesRepository
@@ -57,6 +58,10 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 class SettingsViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
+
+    // App-lifetime stand-in for SignInToLabsUseCase's injected scope; runs on the test dispatcher
+    // so launched resyncs execute under the test's virtual time.
+    private val useCaseScope = kotlinx.coroutines.CoroutineScope(testDispatcher + kotlinx.coroutines.SupervisorJob())
 
     @BeforeTest
     fun setUp() {
@@ -130,7 +135,7 @@ class SettingsViewModelTest {
     fun `currentUser is null when unauthenticated`() =
         runTest {
             val authRepo = FakeAuthRepository()
-            authRepo.setAuthState(AuthState.Unauthenticated)
+            authRepo.setAuthState(AuthState.Unauthenticated())
             val viewModel = createViewModel(authRepository = authRepo)
             advanceUntilIdle()
 
@@ -212,11 +217,53 @@ class SettingsViewModelTest {
             assertTrue(deviceRepo.getAllDevices().first().isEmpty())
         }
 
+    /**
+     * Reactive session loss: the Labs card's UI model must surface the session-expired cause so
+     * SettingsContent can say "Session expired — sign in again" instead of the first-run sign-in
+     * pitch; a plain signed-out state must keep the default cause.
+     */
+    @Test
+    fun `labsAuthState surfaces the session-expired cause`() =
+        runTest {
+            val labsRepo = FakeLabsAuthRepository()
+            labsRepo.setLabsAuthState(AuthState.Unauthenticated(cause = SignedOutCause.SESSION_EXPIRED))
+            val viewModel = createViewModel(labsAuthRepository = labsRepo)
+
+            // Collect explicitly: the StateFlow's initial value is already Unauthenticated(),
+            // so a bare `first { it is Unauthenticated }` would race the repository emission
+            // and pass/fail on the default value instead of the propagated cause.
+            val states = mutableListOf<AuthState>()
+            val collector = launch(testDispatcher) { viewModel.labsAuthState.collect { states.add(it) } }
+            advanceUntilIdle()
+
+            val state = states.last()
+            assertIs<AuthState.Unauthenticated>(state)
+            assertEquals(SignedOutCause.SESSION_EXPIRED, state.cause)
+            collector.cancel()
+        }
+
+    @Test
+    fun `labsAuthState keeps the default cause for a plain signed-out state`() =
+        runTest {
+            val labsRepo = FakeLabsAuthRepository()
+            labsRepo.setLabsAuthState(AuthState.Unauthenticated())
+            val viewModel = createViewModel(labsAuthRepository = labsRepo)
+
+            val states = mutableListOf<AuthState>()
+            val collector = launch(testDispatcher) { viewModel.labsAuthState.collect { states.add(it) } }
+            advanceUntilIdle()
+
+            val state = states.last()
+            assertIs<AuthState.Unauthenticated>(state)
+            assertEquals(SignedOutCause.SIGNED_OUT, state.cause)
+            collector.cancel()
+        }
+
     @Test
     fun `isSignedIn is false when unauthenticated`() =
         runTest {
             val authRepo = FakeAuthRepository()
-            authRepo.setAuthState(AuthState.Unauthenticated)
+            authRepo.setAuthState(AuthState.Unauthenticated())
             val viewModel = createViewModel(authRepository = authRepo)
             advanceUntilIdle()
 
@@ -689,7 +736,7 @@ class SettingsViewModelTest {
             restoreLegacyDatabaseUseCase = RestoreLegacyDatabaseUseCase(legacyDatabaseRepository),
             legacyDatabaseRepository = legacyDatabaseRepository,
             restartCoordinator = restartCoordinator,
-            signInToLabsUseCase = SignInToLabsUseCase(labsAuthRepository, deviceRepository),
+            signInToLabsUseCase = SignInToLabsUseCase(labsAuthRepository, deviceRepository, useCaseScope),
             signOutLabsUseCase = SignOutLabsUseCase(labsAuthRepository, deviceRepository),
             signOutUseCase = SignOutUseCase(authRepository, deviceRepository),
             featureFlagProvider = featureFlagProvider,

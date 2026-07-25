@@ -5,6 +5,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.android.tools.screenshot.PreviewTest
 import com.chriscartland.batterybutler.androidscreenshottests.util.ScreenshotTestTheme
 import com.chriscartland.batterybutler.presentationfeature.devicedetail.DeviceDetailContentPreview
+import com.chriscartland.batterybutler.presentationfeature.devicedetail.DeviceDetailErrorPreview
 import com.chriscartland.batterybutler.presentationfeature.devicedetail.DeviceDetailLoadingPreview
 import com.chriscartland.batterybutler.presentationfeature.devicedetail.DeviceDetailNotFoundPreview
 
@@ -35,5 +36,15 @@ fun DeviceDetailLoadingPreviewTest() {
 fun DeviceDetailNotFoundPreviewTest() {
     ScreenshotTestTheme {
         DeviceDetailNotFoundPreview()
+    }
+}
+
+@PreviewTest
+@Preview(showBackground = true, name = "Light")
+@Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun DeviceDetailErrorPreviewTest() {
+    ScreenshotTestTheme {
+        DeviceDetailErrorPreview()
     }
 }

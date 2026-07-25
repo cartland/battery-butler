@@ -11,7 +11,8 @@ struct TestData {
         batteryLastReplaced: KotlinInstant.Companion.shared.fromEpochMilliseconds(epochMilliseconds: 1704067200000),
         lastUpdated: KotlinInstant.Companion.shared.fromEpochMilliseconds(epochMilliseconds: 1704067200000),
         location: "Living Room",
-        imagePath: nil
+        imagePath: nil,
+        imageEtag: nil
     )
 
     static let device2 = Device(
@@ -21,7 +22,8 @@ struct TestData {
         batteryLastReplaced: KotlinInstant.Companion.shared.fromEpochMilliseconds(epochMilliseconds: 1701388800000),
         lastUpdated: KotlinInstant.Companion.shared.fromEpochMilliseconds(epochMilliseconds: 1701388800000),
         location: "Kitchen",
-        imagePath: nil
+        imagePath: nil,
+        imageEtag: nil
     )
 
     static let device3 = Device(
@@ -31,7 +33,8 @@ struct TestData {
         batteryLastReplaced: KotlinInstant.Companion.shared.fromEpochMilliseconds(epochMilliseconds: 1706745600000),
         lastUpdated: KotlinInstant.Companion.shared.fromEpochMilliseconds(epochMilliseconds: 1706745600000),
         location: nil,
-        imagePath: nil
+        imagePath: nil,
+        imageEtag: nil
     )
 
     static let deviceType = DeviceType(

@@ -194,6 +194,7 @@ Separately: a stale `~/Library/Developer/Xcode/DerivedData/iosAppSwiftUI-*` can 
 - **Validation**:
   - **Always** run `./scripts/validate.sh` before pushing to main. This script is maintained to match `ci.yml` strictly.
   - **Always** run `./scripts/spotless-apply.sh` and fix errors before pushing to main.
+  - **Observed incident (2026-07-20, PR #1370)**: pushed after running a hand-picked subset of Gradle tasks (`jvmTest`/`desktopTest`/`detekt`/`lintDebug` on the touched modules only) instead of `./scripts/validate.sh` — CI's `validation_spotless` job failed on import ordering (`kotlin.*` sorts last in this repo's convention) and chained-call wrapping (`scope.async{}.await()` → multi-line) in two new files, neither of which any of the manually-picked tasks would have caught. Running the full `./scripts/validate.sh` (or at minimum repo-wide `./gradlew spotlessCheck`) up front would have caught it before pushing instead of after a CI round-trip.
   - **Every plan must include `./scripts/validate.sh` as a verification step.** If a plan lists abbreviated checks (e.g. `compileDebugSources + spotless + test`), replace or append `./scripts/validate.sh` — it covers all of those and more (detekt, lint, architecture). Never let a plan leave out the full validation step.
   - **Avoid** `clean` steps in scripts and CI if possible, relying on Gradle's incremental build and caching for speed.
   - Stale Gradle daemons cause Kotlin version mismatch errors in lint — run `./gradlew --stop` then re-validate.

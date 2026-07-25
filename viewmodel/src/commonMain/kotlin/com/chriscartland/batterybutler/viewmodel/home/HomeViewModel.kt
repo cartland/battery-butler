@@ -30,6 +30,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
@@ -52,6 +54,9 @@ class HomeViewModel(
     private val isGroupAscendingFlow = MutableStateFlow(true)
     private val exportDataFlow = MutableStateFlow<String?>(null)
     private var autoDismissJob: Job? = null
+
+    /** Last images map emitted, used to seed re-keyed image observations — see the uiState liveness guard. */
+    private var lastKnownImages: Map<String, DeviceImageBytes> = emptyMap()
 
     companion object {
         private const val SYNC_SUCCESS_DISPLAY_DURATION_MS = 2000L
@@ -101,7 +106,16 @@ class HomeViewModel(
             ) { config, devices, types, syncStatus ->
                 DeviceListInputs(config, devices, types, syncStatus)
             }.flatMapLatest { inputs ->
-                observeImagesByEtag(inputs.devices).map { images -> inputs to images }
+                // Liveness guard: the image observation's first value comes from real DB queries
+                // (one Room flow per etag combined), so without a seed the WHOLE uiState would
+                // withhold its first emission — an already-populated device list stuck behind
+                // image hydration (loading screen forever if any image query stalls). Seed with
+                // the last known map (empty on first load); etags are content-addressed, so a
+                // briefly-stale entry is harmless and is replaced by the real emission.
+                observeImagesByEtag(inputs.devices)
+                    .onStart { emit(lastKnownImages) }
+                    .onEach { lastKnownImages = it }
+                    .map { images -> inputs to images }
             }.map { (inputs, images) ->
                 val (config, devices, types, syncStatus) = inputs
                 val typeMap = types.associateBy { it.id }

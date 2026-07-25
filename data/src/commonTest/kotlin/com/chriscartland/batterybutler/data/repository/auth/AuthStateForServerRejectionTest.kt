@@ -15,6 +15,6 @@ class AuthStateForServerRejectionTest {
 
     @Test
     fun `background attempt fails quietly`() {
-        assertEquals(AuthState.Unauthenticated, authStateForServerRejection(isExplicitAttempt = false, error = error))
+        assertEquals(AuthState.Unauthenticated(), authStateForServerRejection(isExplicitAttempt = false, error = error))
     }
 }

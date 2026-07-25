@@ -2,6 +2,7 @@ package com.chriscartland.batterybutler.domain.repository
 
 import com.chriscartland.batterybutler.domain.model.AuthError
 import com.chriscartland.batterybutler.domain.model.AuthState
+import com.chriscartland.batterybutler.domain.model.LabsSessionRestoreResult
 import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.model.User
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
  */
 data object NoOpLabsAuthRepository : LabsAuthRepository {
     override val labsAuthState: StateFlow<AuthState> =
-        MutableStateFlow(AuthState.Unauthenticated)
+        MutableStateFlow(AuthState.Unauthenticated())
 
     override suspend fun signInToLabs(): Result<User, AuthError> =
         Result.Error(
@@ -23,6 +24,9 @@ data object NoOpLabsAuthRepository : LabsAuthRepository {
                 cause = "Labs sign-in is not supported on this platform",
             ),
         )
+
+    /** Nothing is ever persisted on this platform, so the restore is trivially resolved. */
+    override suspend fun awaitLabsSessionRestore(): LabsSessionRestoreResult = LabsSessionRestoreResult.NO_SESSION
 
     override suspend fun signOutLabs() {}
 

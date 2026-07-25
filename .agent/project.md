@@ -140,6 +140,19 @@ when (status) {
 data class Failed(val message: String, val error: DataError? = null)
 ```
 
+**Known gap (found 2026-07-21, `bb-dimg` stuck-spinner bug)**: `RoomDeviceImageCache.put()`
+(`data-local/.../datalocal/RoomDeviceImageCache.kt`) calls `dao.put(...)` with no try/catch at
+all — a raw Room/SQLite exception there violates "never throws" and propagates uncaught up through
+`DefaultDeviceImageRepository.uploadImage()`, past `UploadDeviceImageUseCase`, into whatever
+ViewModel called it. The real fix shipped (PR #1371) added a catch-all in
+`EditDeviceViewModel.uploadPhoto()`/`removePhoto()` as a **screen-level safety net** (so the
+loading flag always clears), but that's treating the symptom at the wrong layer — the correct fix,
+not yet done, is wrapping `RoomDeviceImageCache.put()`/`get()`/`evictExcept()` at the boundary like
+every other Room-backed repository already does, so a cache-write failure surfaces as a typed
+`DeviceImageError` the caller can actually branch on, instead of an opaque generic `NetworkError`
+built from `e.message`. Worth auditing whether any other newer `data-local`/`data-network` class
+added during `bb-dimg` has the same gap.
+
 ### Single Responsibility Principle
 
 Classes should have one reason to change. See `docs/architecture/adr-004-single-responsibility-principle.md` for full guidelines and examples.

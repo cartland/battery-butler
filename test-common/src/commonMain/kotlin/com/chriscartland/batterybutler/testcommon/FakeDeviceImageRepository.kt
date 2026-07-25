@@ -18,6 +18,12 @@ class FakeDeviceImageRepository : DeviceImageRepository {
     var deleteResult = true
     val deletedDeviceIds = mutableListOf<String>()
 
+    /** When set, [uploadImage] throws this instead of returning [uploadResult] -- for testing an unexpected failure, not a typed [DeviceImageError]. */
+    var uploadThrows: Throwable? = null
+
+    /** When set, [deleteImage] throws this instead of returning [deleteResult]. */
+    var deleteThrows: Throwable? = null
+
     fun setSupported(value: Boolean) {
         supportedFlow.value = value
     }
@@ -37,6 +43,7 @@ class FakeDeviceImageRepository : DeviceImageRepository {
         bytes: ByteArray,
         contentType: String,
     ): Result<String, DeviceImageError> {
+        uploadThrows?.let { throw it }
         val result = uploadResult
         if (result is Result.Success) {
             setCachedImage(result.data, DeviceImageBytes(bytes, contentType))
@@ -45,6 +52,7 @@ class FakeDeviceImageRepository : DeviceImageRepository {
     }
 
     override suspend fun deleteImage(deviceId: String): Boolean {
+        deleteThrows?.let { throw it }
         deletedDeviceIds.add(deviceId)
         return deleteResult
     }

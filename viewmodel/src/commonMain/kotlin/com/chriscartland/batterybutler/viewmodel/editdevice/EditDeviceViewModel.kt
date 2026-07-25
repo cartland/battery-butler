@@ -1,5 +1,6 @@
 package com.chriscartland.batterybutler.viewmodel.editdevice
 
+import co.touchlab.kermit.Logger
 import com.chriscartland.batterybutler.domain.model.DeviceImageError
 import com.chriscartland.batterybutler.domain.model.DeviceInput
 import com.chriscartland.batterybutler.domain.model.Result
@@ -25,6 +26,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Clock
 
 @Inject
@@ -88,10 +90,26 @@ class EditDeviceViewModel(
             viewModelScope = viewModelScope,
             started = defaultWhileSubscribed(),
             initialValue = EditDeviceScreenState.Loading,
+            // See DeviceTypeDetailViewModel: transient DB failure -> NotFound (logged), not a wedge.
+            onError = { EditDeviceScreenState.NotFound },
         )
 
     private val _photoError = MutableStateFlow<DeviceImageError?>(viewModelScope, null)
     val photoError: StateFlow<DeviceImageError?> = _photoError
+
+    /** True while a photo upload or removal is in flight, for a loading indicator + double-tap guard. */
+    private val _photoUploading = MutableStateFlow(viewModelScope, false)
+    val photoUploading: StateFlow<Boolean> = _photoUploading
+
+    /**
+     * Set true for a brief moment after a successful photo upload, so the UI can show a transient
+     * "Photo updated" confirmation. This matters for a *same-photo* re-upload: the avatar is
+     * visually identical, so without an explicit cue the user gets no signal it worked. The UI
+     * clears it (via [clearPhotoUpdated]) after showing it; it's also reset at the start of each
+     * upload so a repeat upload re-triggers a fresh confirmation.
+     */
+    private val _photoUpdated = MutableStateFlow(viewModelScope, false)
+    val photoUpdated: StateFlow<Boolean> = _photoUpdated
 
     fun updateDevice(input: DeviceInput) {
         val currentState = uiState.value
@@ -115,32 +133,52 @@ class EditDeviceViewModel(
         }
     }
 
-    /** Uploads a photo already picked and normalized by the UI layer, then records the new etag. */
+    /**
+     * Uploads a photo already picked and normalized by the UI layer. The upload itself (and
+     * recording the new etag) runs on [UploadDeviceImageUseCase]'s own app-scoped coroutine, so it
+     * completes even if this screen closes before it's done -- only [photoUploading]/[photoError]
+     * are tied to this ViewModel's lifetime. [photoUploading] is cleared in a `finally` so an
+     * unexpected exception (not just a [Result.Error]) can never leave the spinner stuck forever.
+     */
     fun uploadPhoto(
         bytes: ByteArray,
         contentType: String,
     ) {
         viewModelScope.coroutineScope.launch {
-            when (val result = uploadDeviceImageUseCase(deviceId, bytes, contentType)) {
-                is Result.Success -> {
-                    _photoError.value = null
-                    applyImageEtag(result.data)
+            _photoError.value = null
+            _photoUpdated.value = false
+            _photoUploading.value = true
+            try {
+                when (val result = uploadDeviceImageUseCase(deviceId, bytes, contentType)) {
+                    is Result.Success -> _photoUpdated.value = true
+                    is Result.Error -> _photoError.value = result.error
                 }
-
-                is Result.Error -> {
-                    _photoError.value = result.error
-                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Logger.e(TAG, e) { "uploadPhoto($deviceId) failed unexpectedly" }
+                _photoError.value = DeviceImageError.NetworkError(cause = e.message)
+            } finally {
+                _photoUploading.value = false
             }
         }
     }
 
     fun removePhoto() {
         viewModelScope.coroutineScope.launch {
-            if (deleteDeviceImageUseCase(deviceId)) {
-                _photoError.value = null
-                applyImageEtag(null)
-            } else {
-                _photoError.value = DeviceImageError.NetworkError(message = "Failed to remove photo")
+            _photoError.value = null
+            _photoUploading.value = true
+            try {
+                if (!deleteDeviceImageUseCase(deviceId)) {
+                    _photoError.value = DeviceImageError.NetworkError(message = "Failed to remove photo")
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Logger.e(TAG, e) { "removePhoto($deviceId) failed unexpectedly" }
+                _photoError.value = DeviceImageError.NetworkError(cause = e.message)
+            } finally {
+                _photoUploading.value = false
             }
         }
     }
@@ -149,13 +187,17 @@ class EditDeviceViewModel(
         _photoError.value = null
     }
 
+    /** Called by the UI once it has shown the transient "Photo updated" confirmation. */
+    fun clearPhotoUpdated() {
+        _photoUpdated.value = false
+    }
+
     /** The UI layer picked bytes it couldn't decode/normalize locally -- surface it like any other photo error. */
     fun reportPhotoPickFailed() {
         _photoError.value = DeviceImageError.InvalidImage()
     }
 
-    private suspend fun applyImageEtag(imageEtag: String?) {
-        val current = (uiState.value as? EditDeviceScreenState.Success)?.device ?: return
-        updateDeviceUseCase(current.copy(imageEtag = imageEtag, lastUpdated = Clock.System.now()))
+    private companion object {
+        const val TAG = "EditDeviceViewModel"
     }
 }

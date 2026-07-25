@@ -80,7 +80,7 @@ class DefaultAuthRepository(
             tokenStorage.storedToken.collect { storedToken ->
                 if (_authState.value is AuthState.Unknown) {
                     if (storedToken == null) {
-                        _authState.value = AuthState.Unauthenticated
+                        _authState.value = AuthState.Unauthenticated()
                     } else {
                         // Optimistic: show the believed-signed-in user immediately (same rationale
                         // as DefaultLabsAuthRepository's persisted belief) rather than an
@@ -152,7 +152,7 @@ class DefaultAuthRepository(
         expiryJob?.cancel()
         googleSignInBridge.signOut()
         tokenStorage.clearToken()
-        _authState.value = AuthState.Unauthenticated
+        _authState.value = AuthState.Unauthenticated()
     }
 
     override suspend fun refreshToken(): Result<Unit, AuthError> {
@@ -271,7 +271,7 @@ class DefaultAuthRepository(
 
     override fun clearError() {
         if (_authState.value is AuthState.Failed) {
-            _authState.value = AuthState.Unauthenticated
+            _authState.value = AuthState.Unauthenticated()
         }
     }
 
@@ -316,7 +316,7 @@ class DefaultAuthRepository(
             is Result.Error -> {
                 log.i { "Silent session refresh not available: ${signIn.error.message}" }
                 tokenStorage.clearToken()
-                _authState.value = AuthState.Unauthenticated
+                _authState.value = AuthState.Unauthenticated()
             }
         }
     }

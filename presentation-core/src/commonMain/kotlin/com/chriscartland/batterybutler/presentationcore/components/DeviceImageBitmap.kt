@@ -1,29 +1,29 @@
 package com.chriscartland.batterybutler.presentationcore.components
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.graphics.ImageBitmap
-import co.touchlab.kermit.Logger
 import com.chriscartland.batterybutler.domain.model.DeviceImageBytes
-import org.jetbrains.compose.resources.decodeToImageBitmap
 
 /**
- * Decodes [imageBytes] to an [ImageBitmap] for display, or null if there's nothing to show yet
- * (no photo, not cached yet) or the bytes are corrupt. Decode is a manual, one-off call --
- * [org.jetbrains.compose.resources.decodeToImageBitmap] is the same Skia-backed decoder Compose
- * Multiplatform already uses for bundled resources, so this needs no new dependency (the
- * recommended choice in `docs/DEVICE_IMAGES.md` §6D/§8.1). [remember]ed by the byte array
- * reference, so a given cached photo is decoded once per composition, not on every recomposition.
+ * Returns the decoded [ImageBitmap] for [imageBytes], or null if there's nothing to show yet (no
+ * photo, not cached yet) or the bytes are corrupt. Decoding runs off the composition thread via
+ * [loader] -- see [DeviceImageBitmapLoader] for why the cache is keyed by [imageEtag] rather than
+ * the byte array itself.
  */
 @Composable
-fun rememberDeviceImageBitmap(imageBytes: DeviceImageBytes?): ImageBitmap? =
-    remember(imageBytes?.bytes) {
-        imageBytes?.bytes?.let {
-            try {
-                it.decodeToImageBitmap()
-            } catch (e: Exception) {
-                Logger.w("DeviceImageBitmap", e) { "Failed to decode cached device image" }
-                null
-            }
+fun rememberDeviceImageBitmap(
+    imageEtag: String?,
+    imageBytes: DeviceImageBytes?,
+    loader: DeviceImageBitmapLoader = DeviceImageBitmapLoader.shared,
+): ImageBitmap? {
+    val cachedBitmap = imageEtag?.let { loader.peek(it) }
+    val bitmapState = produceState(initialValue = cachedBitmap, imageEtag, imageBytes, loader) {
+        value = if (imageEtag != null && imageBytes != null) {
+            loader.load(imageEtag, imageBytes.bytes)
+        } else {
+            null
         }
     }
+    return bitmapState.value
+}

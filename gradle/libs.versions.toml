@@ -54,6 +54,7 @@ skie = "0.10.12"
 observableviewmodel = "1.0.1"
 kermit = "2.0.4"
 firebase-bom = "34.15.0"
+firebase-crashlytics-gradle = "3.0.7"
 okhttp = "5.3.2"
 okio = "3.17.0"
 googleApiClient = "2.2.0"
@@ -124,6 +125,7 @@ compose-ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-pre
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serializationJson" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
 firebase-ai = { module = "com.google.firebase:firebase-ai" }
+firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 mediapipe-tasks-genai = { module = "com.google.mediapipe:tasks-genai", version.ref = "mediapipe-genai" }
 localagents-fc = { module = "com.google.ai.edge.localagents:localagents-fc", version.ref = "localagents-fc" }
 mlkit-genai-prompt = { module = "com.google.mlkit:genai-prompt", version.ref = "mlkit-genai-prompt" }
@@ -183,3 +185,4 @@ screenshot = { id = "com.android.compose.screenshot", version.ref = "screenshot"
 detekt = { id = "io.gitlab.arturbosch.detekt", version = "1.23.8" }
 jib = { id = "com.google.cloud.tools.jib", version = "3.4.1" }
 googleServices = { id = "com.google.gms.google-services", version = "4.4.4" }
+firebaseCrashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebase-crashlytics-gradle" }

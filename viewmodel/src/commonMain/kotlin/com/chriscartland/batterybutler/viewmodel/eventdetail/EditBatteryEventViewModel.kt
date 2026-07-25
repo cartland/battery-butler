@@ -67,6 +67,8 @@ class EditBatteryEventViewModel(
             viewModelScope = viewModelScope,
             started = defaultWhileSubscribed(),
             initialValue = EditBatteryEventScreenState.Loading,
+            // See DeviceTypeDetailViewModel: transient DB failure -> NotFound (logged), not a wedge.
+            onError = { EditBatteryEventScreenState.NotFound },
         )
 
     fun updateEvent(

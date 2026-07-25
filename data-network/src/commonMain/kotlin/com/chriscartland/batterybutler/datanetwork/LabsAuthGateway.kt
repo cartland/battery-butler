@@ -2,6 +2,7 @@ package com.chriscartland.batterybutler.datanetwork
 
 import com.chriscartland.batterybutler.domain.model.AuthError
 import com.chriscartland.batterybutler.domain.model.Result
+import kotlinx.coroutines.flow.Flow
 
 /**
  * App-facing seam for the Labs REST session.
@@ -13,10 +14,19 @@ import com.chriscartland.batterybutler.domain.model.Result
  *
  *  - [signInToLabsWithGoogle] — the one interactive step (`bb-labs-signin`): exchange a Google ID
  *    token (minted for the **Labs** OAuth client) for a Labs session. Call once after Google
- *    Sign-In.
- *  - [getLabsIdToken] — the `Authorization: Bearer` source for [com.chriscartland.batterybutler
- *    .datanetwork.rest.RestRemoteDataSource]; `null` until sign-in (or when unconfigured),
- *    refreshed silently afterwards.
+ *    Sign-In. Success carries the [LabsSignInIdentity] the backend minted (Firebase uid + email)
+ *    so the caller keys the signed-in user on the uid the backend authorizes with.
+ *  - [getLabsToken] (from [LabsSyncTokenSource]) — the `Authorization: Bearer` source for
+ *    [com.chriscartland.batterybutler.datanetwork.rest.RestRemoteDataSource], as a typed
+ *    [LabsTokenResult] so "no session" and "transient refresh failure" stay distinguishable;
+ *    refreshed silently, restored on demand from the persisted refresh token when the in-memory
+ *    session is gone. [getLabsIdToken] remains the nullable convenience for non-sync callers
+ *    (e.g. Settings' token copy).
+ *  - [sessionInvalidations] — emits when a session is authoritatively rejected (a forced refresh
+ *    reports the refresh token invalid, or [reportSessionRejected] delivers a terminal 401): the
+ *    gateway clears the in-memory session + persisted refresh token, then emits so the auth
+ *    repository can flip that environment's state to session-expired. Local device data is
+ *    never touched here.
  *  - [restoreSession] — rebuild a session from a *persisted* refresh token (e.g. right after
  *    process start), with no Google/Credential Manager involvement. See
  *    `bb-labs-refresh-token-persistence` in TODO.md.
@@ -27,10 +37,22 @@ import com.chriscartland.batterybutler.domain.model.Result
  * lives here instead — a sign-in and a sync then always hit the same session regardless of how
  * many delegating-data-source instances exist.
  */
-interface LabsAuthGateway {
-    suspend fun signInToLabsWithGoogle(googleIdToken: String): Result<Unit, AuthError>
+interface LabsAuthGateway : LabsSyncTokenSource {
+    suspend fun signInToLabsWithGoogle(googleIdToken: String): Result<LabsSignInIdentity, AuthError>
 
+    /**
+     * The current token or null — convenience for callers that only need a best-effort token
+     * (e.g. Settings' "Copy Labs ID Token"). Sync paths use [getLabsToken] instead, which does
+     * not conflate "no session" with "transient refresh failure".
+     */
     suspend fun getLabsIdToken(): String?
+
+    /**
+     * Reactive session-loss events, one per authoritative rejection (see
+     * [LabsSessionInvalidation]). By the time an event is observed the gateway has already
+     * cleared the in-memory session and the persisted refresh token for that environment.
+     */
+    val sessionInvalidations: Flow<LabsSessionInvalidation>
 
     suspend fun signOutLabs()
 

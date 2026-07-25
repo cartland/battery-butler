@@ -5,6 +5,7 @@ import com.chriscartland.batterybutler.domain.model.DataError
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.Result
+import com.chriscartland.batterybutler.domain.model.SyncOutcome
 import com.chriscartland.batterybutler.domain.model.SyncStatus
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
@@ -50,8 +51,11 @@ interface DeviceRepository {
      *   to a short timeout tuned for an interactive spinner (pull-to-refresh); callers with a
      *   naturally longer wait already in progress and a higher chance of hitting a cold backend
      *   (e.g. immediately after sign-in) may pass a longer one.
+     * @return the typed terminal [SyncOutcome] of this attempt, so callers can distinguish
+     *   success from auth-required from failure instead of inferring from side effects. The same
+     *   terminal state is also published on [syncStatus].
      */
-    suspend fun resync(timeout: Duration = DEFAULT_RESYNC_TIMEOUT)
+    suspend fun resync(timeout: Duration = DEFAULT_RESYNC_TIMEOUT): SyncOutcome
 
     /**
      * Deletes all locally cached devices, device types, and events for whichever environment is

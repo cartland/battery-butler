@@ -22,7 +22,8 @@ final class DeviceTypeDetailScreenTests: XCTestCase {
                 batteryLastReplaced: KotlinInstant.Companion.shared.fromEpochMilliseconds(epochMilliseconds: 1704067200000),
                 lastUpdated: KotlinInstant.Companion.shared.fromEpochMilliseconds(epochMilliseconds: 1704067200000),
                 location: "Living Room",
-                imagePath: nil
+                imagePath: nil,
+                imageEtag: nil
             ),
             Device(
                 id: "d2",
@@ -31,7 +32,8 @@ final class DeviceTypeDetailScreenTests: XCTestCase {
                 batteryLastReplaced: KotlinInstant.Companion.shared.fromEpochMilliseconds(epochMilliseconds: 1704067200000),
                 lastUpdated: KotlinInstant.Companion.shared.fromEpochMilliseconds(epochMilliseconds: 1704067200000),
                 location: "Bedroom",
-                imagePath: nil
+                imagePath: nil,
+                imageEtag: nil
             ),
         ]
 

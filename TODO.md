@@ -9,6 +9,165 @@ Project task tracking for Battery Butler.
 
 ## P2
 
+### bb-sync-loop-starvation — One successful sync, then zero requests forever ("Syncing..." stuck) — fix shipped 2026-07-21
+
+**Symptom (confirmed live on android/56):** prod logs show `GET /sync` 401 at 15:24:49, `GET
+/sync` 200 at 15:24:57, then **zero requests for 30+ minutes** while the app displays
+"Syncing..." forever.
+
+**Root cause:** `DelegatingRemoteDataSource.subscribe()` was `dataMode.flatMapLatest { … }` over
+the infinite DataStore preferences flow. The inner Labs REST flow does one GET, emits once, and
+*completes* — but `flatMapLatest` swallows that completion and waits for the next `dataMode`
+emission, which (after `bb-signin-empty-list` added `distinctUntilChanged`) never comes. So
+`DefaultSyncManager.subscribeWithRetry`'s `collect` hung forever after the first emission, the
+"stream ended → reconnect with backoff" model never ran, and `_syncStatus` stuck at whatever was
+last set. Pre-56, spurious DataStore-write re-emissions of `dataMode` were *accidentally* driving
+the retry cadence — the distinct guard fixed one bug and unmasked this one. (#1380's typed wire
+failures partially masked the FAILURE case — exceptions end the collect, so the loop iterated —
+but the SUCCESS case still starved.)
+
+**Fix (PR B of the auth wave):** the sync loop owns its cadence. `DefaultSyncManager` runs
+`dataMode.distinctUntilChanged().collectLatest { mode -> syncLoopForMode(mode) }`: Labs
+(request/response) modes do one fetch per iteration (`subscribe().first()`) then sleep the 60s
+poll interval; Mock/gRPC (stream) modes collect until the stream ends, then reconnect; failures
+back off 1s→…→30s; `DataMode.None` parks until the mode changes; a mode change cancels and
+restarts the loop (the `NonCancellable` snapshot apply from `bb-signin-empty-list` keeps that
+safe). `DelegatingRemoteDataSource.subscribe()` now reads the mode **once per collection** and
+completes when the source completes — mode reactivity lives in exactly one place. Pinned by
+`DefaultSyncManagerTest`'s "after a successful Labs sync the loop fetches again within the poll
+interval" (fails against the pre-fix loop) and the None-mode idle/resume test. Full architecture:
+`docs/LABS-AUTH.md`.
+
+
+### bb-signin-empty-list — Device list empties after sign-out → sign-in (Labs) — fix shipped 2026-07-21
+
+**Symptom (reported on android/55):** a user signed out of Labs and back in; the device list came
+up **empty**, even though the backend still had every device and the final `/sync` returned 200
+with the full snapshot. **Not a regression** — every file in the faulty chain is byte-identical to
+android/54; the user simply exercised the sign-out → sign-in path.
+
+**Root cause:** sign-out intentionally wipes the local DB (`SignOutLabsUseCase` →
+`clearAllLocalData`), so repopulation depends on the post-sign-in `/sync`. But that resync was being
+defeated by two cancellation vectors:
+
+1. **Spurious `dataMode` re-emissions.** `dataMode` was `DataStore.data.map { … }` with **no
+   `distinctUntilChanged`**. `DataStore.data` re-emits the whole preferences object on every edit to
+   *any* key, and that store is shared with the Labs session + refresh-token persistence
+   (`DataStoreLabsSessionStorage` / `DataStoreLabsRefreshTokenPersistence`). Each sign-in write
+   therefore re-emitted a structurally-identical `DataMode`. `DelegatingRemoteDataSource.subscribe()`
+   does `dataMode.flatMapLatest { … }`, so every re-emission **cancelled the in-flight `/sync` GET
+   and restarted it** — the burst of ~10 interleaved 200/401 requests, and a repopulating 200 could
+   be discarded before it committed.
+2. **Torn snapshot write.** When a 200 *was* collected, `applyRemoteUpdate` wrote to Room on the
+   (cancellable) collector coroutine; a re-emission cancelling the collector between the delete pass
+   and the insert pass left the DB empty.
+
+**Fix (this change):**
+- `DataStoreDataModeRepository.dataMode` now ends in `.distinctUntilChanged()` — unrelated DataStore
+  writes no longer re-emit an unchanged mode, so they stop cancelling the sync. (pinned by
+  `DataStoreDataModeRepositoryTest`)
+- `DefaultSyncManager.applyRemoteUpdate` wraps the local-DB writes in `withContext(NonCancellable)`,
+  so a full-snapshot apply commits atomically even if the collector is cancelled mid-write (image
+  coordinator stays cancellable). (pinned by `DefaultSyncManagerTest`)
+
+Item 3 (resync on sign-in) was already present: `SignInToLabsUseCase` calls `resync(60s)` on
+success. The two fixes above are what make that existing resync (and the background sync) robust.
+
+**Residual / follow-up (not fixed here):** that sign-in resync runs on `LoginViewModel.viewModelScope`
+(`signInWithGoogle()` → `signInToLabsUseCase()`), and `authState` → `Authenticated` drives the
+Login→Main navigation that can tear that scope down. If navigation cancels the resync *before* its
+`subscribe().first()` GET returns, the list repopulates only on the next app open / pull-to-refresh
+(both recover; data is never lost). Consider running the sign-in resync on an app-scoped coroutine
+(or re-firing the background sync on auth-state → Authenticated) so it can't be cancelled by
+navigation.
+
+### bb-crashlytics — Add Firebase Crashlytics (Android) — DONE 2026-07-21
+
+Prompted directly by the stuck-spinner bug (android/52 → android/53): the app had **no crash
+reporting at all** — the only reason that bug was found was a user with direct Labs-backend log
+access; the client itself gave no signal anything had gone wrong. Confirmed before starting: no
+Crashlytics/Sentry/Bugsnag dependency anywhere, and `compose-app/google-services.json` is a
+**mock** file (`mock-project-id`, fake API key) — there is no real Firebase project for the app
+itself (separate from the Labs backend's own Firebase project used only for sign-in).
+
+**Scope, per explicit user choice**: Android only this pass (iOS needs Xcode-project-level
+SPM/CocoaPods changes on two separate iOS apps — bigger, riskier, deferred); scaffold the
+integration now and let it degrade gracefully until a real Firebase project + config files are
+supplied, mirroring the existing `LABS_*`/Google Sign-In "inject later" pattern in this repo.
+
+**What was added**:
+- `com.google.firebase.crashlytics` Gradle plugin (3.0.7, pinned like `googleServices`) +
+  `firebase-crashlytics` artifact (via the existing `firebase-bom`) in `compose-app`'s
+  `androidMain` only.
+- `CrashlyticsLogWriter` (`compose-app/.../composeapp/logging/`) — a Kermit `LogWriter` that
+  forwards any `Warn`/`Error`/`Assert` log call with a `Throwable` to
+  `FirebaseCrashlytics.recordException()`. Installed once via `Logger.addLogWriter(...)` in
+  `BatteryButlerApplication.onCreate()` — this means **every existing `Logger.e(tag, e) { ... }`
+  call site across the shared KMP modules** (auth token refresh, sync, device-image
+  upload/fetch/delete, etc.) gets non-fatal crash reporting automatically, with no per-call-site
+  changes needed. Doesn't replace the existing Logcat writer, only adds to it.
+- Closed the gap that made the original bug invisible: `EditDeviceViewModel.uploadPhoto()`/
+  `removePhoto()`'s new (bb-dimg-reliability) catch blocks didn't call `Logger.e` at all before
+  this — added it, so an unexpected exception there is now both surfaced to the user *and*
+  captured as a non-fatal, going forward.
+
+**Safe with the mock config**: `FirebaseCrashlytics` queues reports locally and only attempts a
+network upload later — a fake project id just means the upload silently fails, not a crash at
+init or log time. Verified: `compose-app:assembleDebug` (Android, real dexing/packaging),
+`compileKotlinDesktop`, `compileKotlinIosSimulatorArm64` all succeed with the plugin applied;
+`detekt`/`spotlessCheck` clean. Did not verify live on a device/emulator (none available in this
+session) — the build-level verification plus Firebase's documented non-throwing behavior on
+invalid config was judged sufficient, but worth a real first-launch check before/soon after
+release.
+
+**Deferred**: iOS (both `ios-app-compose-ui` and `ios-app-swift-ui`) — needs its own
+`GoogleService-Info.plist` + SPM/CocoaPods wiring; not started. Desktop — Firebase Crashlytics
+doesn't support JVM desktop targets; would need a different crash-reporting mechanism entirely if
+ever wanted there. **Still needs a real Firebase project**: create one (or reuse an existing
+Google/Firebase account project) registered for `com.chriscartland.batterybutler`, download the
+real `google-services.json`, and replace the mock file — until then Crashlytics silently reports
+nothing real.
+
+### bb-dimg-image-not-shown — Photo uploads: loading indicator now clears correctly, but the image still never displays — fix shipped 2026-07-21, live confirmation still pending
+
+**Live user report (2026-07-21), after android/53 (bb-dimg-reliability + the stuck-spinner fix,
+PR #1371) was released**: "the upload indicator stops but images still do not appear in the app."
+Confirmed via the same backend-log-access process that cracked the two earlier bugs this
+session: PUT succeeds, bytes land in the prod GCS bucket, the Firestore metadata doc has the
+correct `imageEtag`, and a subsequent `POST /sync` even carries that etag back — server side is
+fully correct. On the client, no error text was visible and no logcat access was available for
+this report, so the ruling-out had to happen by code audit rather than a captured stack trace.
+
+**Root cause found**: `UploadDeviceImageUseCase.applyImageEtag()` (and the equivalent in
+`DeleteDeviceImageUseCase`) called `deviceRepository.updateDevice(...)` — which returns
+`Result<Unit, DataError>` — and **discarded the return value**. It also `return`ed silently if
+`getDeviceById(deviceId).first()` came back null. Either failure mode meant the outer use case
+still reported `Result.Success` (since the *byte upload* itself succeeded) even though the local
+`imageEtag` write never actually landed — exactly matching the symptom: no error shown (because
+none was surfaced), spinner clears normally (because the use case really did return
+`Result.Success`), and no image ever appears (because `device.imageEtag` in Room genuinely never
+changed, so the reactive `getCachedDeviceImageUseCase(imageEtag)` Flow the UI depends on never had
+anything new to emit).
+
+**Fix**: `applyImageEtag()` now returns a typed result, and the caller propagates a real failure
+instead of masking it — `UploadDeviceImageUseCase.invoke()` returns `Result.Error` (not the
+upload's own stale `Result.Success`) if the etag-apply step fails, and `DeleteDeviceImageUseCase.invoke()`
+returns `false` in the same situation. `EditDeviceViewModel`'s existing error-surfacing (from
+PR #1371) now actually sees these failures. Regression-tested (`FakeDeviceRepository.updateDeviceResult`,
+new in `test-common`) and, per the established pattern this session, verified by temporarily
+reverting to the old discarded-`Result` code and confirming the new tests fail first.
+
+**Not yet confirmed live**: this is a real, structurally-confirmed defect that produces exactly
+the reported symptom, but there was no direct device-side evidence (logcat/Crashlytics — the
+latter isn't in a released build yet) pinning it down as *the* specific failure that occurred in
+the user's report, as opposed to one of the other candidates considered and not yet fully ruled
+out (a decode failure in `rememberDeviceImageBitmap()`, or a race with the general "Save" button
+overwriting a fresh `imageEtag` with a stale in-memory snapshot — see
+`EditDeviceViewModel.updateDevice()`, which copies from `uiState.value` at call time rather than a
+fresh repository read; not fixed here, flagged as a related latent bug worth a follow-up look if
+this fix doesn't fully resolve the report). **Needs a real re-test after this fix releases** before
+closing this out.
+
 ### bb-android42-release — Finish the in-progress android/42 release
 
 **In progress 2026-07-06.** PR #1324 (data-location isolation fix, merged, main
@@ -185,7 +344,96 @@ conclusion (defensive companion to the bb-2r4g close-on-success guard).
 
 **Result**: on Android, the account picker should now only ever appear on a genuinely first sign-in or after the user explicitly signs out / revokes access on-device — not on a routine ~1h/24h expiry. iOS/Desktop are unchanged (same deferred-scope reasoning as `bb-labs-silent-reauth` above).
 
+### bb-dimg-async-decode — Decode device photo bitmaps off the main thread — DONE 2026-07-23
+
+Reported as general app slowness "after the image API changes." Investigation (an Explore
+agent trace of the full device-image display path, ViewModel → use case →
+`DeviceImageRepository` → `RoomDeviceImageCache` → Compose UI) found the Room/repository layers
+were already correctly async — the actual problem was in
+`presentation-core/.../components/DeviceImageBitmap.kt`: `rememberDeviceImageBitmap` called
+`ByteArray.decodeToImageBitmap()` (a synchronous, CPU-bound Skia decode of up-to-2048px JPEGs,
+per the upload-time normalizer in `DeviceImageNormalizer.android.kt`) directly inside a Compose
+`remember{}` block — i.e. on the composition/main thread, with zero coroutine dispatch involved.
+This was made worse by the `remember` key being the `ByteArray` *reference*
+(`DeviceImageBytes` is deliberately not a `data class` — `ByteArray` equality is
+reference-based, see `DeviceImageBytes.kt`), so every unrelated state change that caused Room to
+re-emit the same cached image with a **new** `ByteArray` instance (e.g. sort/group toggles on
+Home, recording a battery event on Device Detail) forced a full-resolution re-decode of every
+visible photo on the main thread, even though the pixels never changed.
+
+**Fix**: new `DeviceImageBitmapLoader` (`presentation-core/.../components/`) — decodes via an
+injectable `CoroutineDispatcher` (`Dispatchers.Default` by default) and caches the decoded
+`ImageBitmap` by **`imageEtag`** (a stable, content-addressed key) rather than by byte-array
+reference, so a redundant re-fetch of the same cached photo is a cheap map lookup instead of a
+re-decode. `rememberDeviceImageBitmap` is now a thin `produceState`-based wrapper (genuinely
+suspends off the main thread via the loader) and takes an `imageEtag: String?` parameter,
+threaded from `DeviceListItem`, `DeviceDetailContent`, and `EditDeviceContent`'s
+`DevicePhotoSection` (all three already had `device.imageEtag` in scope). `decode` is an
+injectable lambda specifically so tests don't need a real Skia/Android bitmap decoder —
+`DeviceImageBitmapLoaderTest` covers off-thread dispatch (verified with the revert-fix/confirm-
+test-fails/restore-fix technique: temporarily removing `withContext` makes exactly one new test
+fail), per-etag caching across distinct byte-array instances, independent-etag decoding,
+`peek()` for the synchronous flicker-free initial value, FIFO cache eviction, decode-failure
+handling, and cancellation propagation.
+
+**Deliberately out of scope** (surfaced by the same investigation, not fixed here — see
+`bb-dimg-image-query-fanout` below): the N+1 Room query pattern in `HomeViewModel`
+(one live `Flow` per photographed device instead of one batched query) and the
+`flatMapLatest`-driven full resubscribe of all per-device image queries on unrelated state
+changes in both `HomeViewModel` and `DeviceDetailViewModel`. The etag-keyed cache added here
+makes both of those cheap (a map lookup instead of a decode) rather than eliminating the
+redundant queries themselves.
+
+### bb-dimg-image-query-fanout — Batch device-image Room queries; stop full resubscribe on unrelated state changes
+
+Follow-up to `bb-dimg-async-decode` (done 2026-07-23) — found during that investigation but
+deliberately not fixed, since it's a query-architecture change with more blast radius than "make
+decoding non-blocking." Two related issues:
+
+1. **N+1 query fan-out**: `HomeViewModel.observeImagesByEtag(devices)` opens one Room `Flow`
+   query per distinct `imageEtag` (`combine(etags.map { getCachedDeviceImageUseCase(etag) })`)
+   instead of a single batched query (e.g. `SELECT * FROM device_image_cache WHERE imageEtag IN
+   (...)`). A household with N photographed devices holds N live Room subscriptions instead of 1.
+2. **Full resubscribe on unrelated changes**: both `HomeViewModel.uiState` and
+   `DeviceDetailViewModel.uiState` wire the image-observing flow inside a `flatMapLatest` keyed
+   on broader state (sort/group/devices/types/syncStatus on Home; device/types/events on
+   Detail). Any unrelated change — toggling sort order, editing one device, recording a battery
+   replacement — tears down and re-creates **every** per-device image subscription, not just the
+   one that changed. `RoomDeviceImageCache.evictExcept` (run on every full sync snapshot) causes
+   a similar table-level-invalidation ripple independently of the `flatMapLatest` issue.
+
+Since `bb-dimg-async-decode` made the *decode* side of a redundant re-emission cheap (etag-keyed
+cache, not a re-decode), this is now a "wasted queries" efficiency issue rather than a
+main-thread-jank issue — lower urgency, but still real overhead on every sort toggle / device
+edit on a household with several photographed devices.
+
+### bb-dimg-thumbnail-decode — Decode/store a downscaled thumbnail for list/avatar display
+
+Follow-up to `bb-dimg-async-decode` — found during that investigation, not fixed. Cached device
+photo bytes are bounded to ~2048px long edge / ~200–600KB by the upload-time normalizer
+(`DeviceImageNormalizer.android.kt`), but the *display* decode path
+(`DeviceImageBitmapLoader`/`RoomDeviceImageCache`) always decodes and caches the **full**
+resolution bitmap, even though it's only ever rendered at 48dp (list row) or 112dp (avatar).
+Unlike the upload normalizer (which already does bounded/subsampled decoding), there's no
+`inSampleSize`-style subsampling or separate thumbnail column on the display path. Worth
+revisiting if decoded-bitmap memory pressure (not just CPU/thread) turns out to be a problem on
+lower-end devices — out of scope for the async-decode fix, which only addressed *which thread*
+the decode runs on, not *how much* work it does.
+
 ## P3
+
+### bb-crashlytics-ios — Extend Firebase Crashlytics to the two iOS apps
+
+Follow-up to `bb-crashlytics` (Android-only, done 2026-07-21, PR #1374): the same Kermit
+`LogWriter` → Crashlytics forwarding pattern should extend to `ios-app-compose-ui` (Compose
+Multiplatform) and `ios-app-swift-ui` (native SwiftUI) — right now neither iOS app reports crashes
+at all. Deferred deliberately because it needs Xcode-project-level changes (SPM or CocoaPods
+package addition, a real `GoogleService-Info.plist` per app once a real Firebase project exists)
+on **two separate** Xcode projects, materially bigger and riskier than the Android-only change.
+Not started; no investigation done yet on whether Kermit's `LogWriter` mechanism is even reachable
+the same way from Swift-side crash handling, or whether native Swift crashes need a separate
+`FirebaseCrashlytics`/Crashlytics-for-iOS SDK hook entirely (uncaught Swift exceptions won't route
+through Kermit at all — only Kotlin-side logged errors would).
 
 ### bb-dimg — Device photos: capture, upload, and display a per-device image (Labs backend)
 
@@ -220,6 +468,34 @@ upload-or-remove (idempotent PUT/DELETE, so a duplicate request just wastes band
 doesn't corrupt anything), and `HomeViewModel`'s per-etag image map re-queries Room on
 every sort/group change, not just when the device set's etags actually change (extra
 local reads, not a correctness issue).
+
+**Reliability fix (2026-07-20)** — user-reported after android/51: on real Labs staging,
+picking a photo showed no loading state, no error, and no image after the pick, even
+though the server logs confirmed the upload `PUT` genuinely succeeded (twice). Root
+cause: `EditDeviceViewModel.uploadPhoto()`/`removePhoto()` ran the upload/delete *and*
+the follow-up local write of the device's `imageEtag` entirely inside `viewModelScope`.
+With zero visual feedback during the upload, the natural next move is to tap Save or
+Back — which clears the ViewModel and cancels `viewModelScope` mid-upload, silently
+dropping the local etag write (and the cache population it depends on) even though the
+byte upload had already landed server-side. No error surfaced either, since the
+cancelled coroutine never reached the `_photoError` assignment.
+
+**Fix**: moved the upload/delete orchestration — network call, cache write, and the
+device's `imageEtag` update — out of `viewModelScope` and into `UploadDeviceImageUseCase`
+/`DeleteDeviceImageUseCase`, run via `scope.async { }.await()` on the injected app-scoped
+`CoroutineScope` (the same one `DeviceImageSyncCoordinator`/`DefaultSyncManager` already
+use). Awaiting from `viewModelScope` still gives immediate UI feedback while the screen
+is open, but cancelling the awaiter (screen closing) no longer cancels the underlying
+work, since `scope.async` is not a structured child of the caller's job. Also resolved
+the two deferred items from the review pass above: `EditDeviceViewModel` now exposes
+`photoUploading: StateFlow<Boolean>`, wired to a semi-transparent spinner overlay on the
+avatar and `enabled = !photoUploading` on the Change/Remove buttons (loading indicator +
+double-tap guard in one change). `_photoError` is now cleared at the start of every new
+attempt instead of only on the next result, so a stale error doesn't linger visibly
+through a retry. `HomeViewModel`'s re-query inefficiency remains deferred (unrelated to
+this bug). Verified: `usecase`/`viewmodel` unit tests updated and passing, and both DI
+graphs (`compose-app` Android, `ios-swift-di`) resolve the new use-case constructor
+params via KSP without any manual wiring changes.
 
 Let each device optionally have one photo, shown next to its name/location: pick →
 upload → replace/remove, displayed in the detail avatar + list item. **Full spec:

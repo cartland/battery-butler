@@ -75,6 +75,7 @@ class SyncStatusTest {
             SyncStatus.Syncing,
             SyncStatus.Success,
             SyncStatus.Failed(DataError.Unknown("error")),
+            SyncStatus.AuthRequired(SyncAuthReason.TOKEN_EXPIRED),
         )
 
         for (status in statuses) {
@@ -83,10 +84,27 @@ class SyncStatusTest {
                 is SyncStatus.Syncing -> "syncing"
                 is SyncStatus.Success -> "success"
                 is SyncStatus.Failed -> "failed"
+                is SyncStatus.AuthRequired -> "auth required"
             }
             // If we get here without error, the when is exhaustive
             assertTrue(description.isNotEmpty())
         }
+    }
+
+    @Test
+    fun `AuthRequired stores its reason and is distinct from Failed`() {
+        val authRequired = SyncStatus.AuthRequired(SyncAuthReason.TOKEN_EXPIRED)
+
+        assertEquals(SyncAuthReason.TOKEN_EXPIRED, authRequired.reason)
+        assertEquals(SyncStatus.AuthRequired(SyncAuthReason.TOKEN_EXPIRED), authRequired)
+        assertNotEquals<SyncStatus>(
+            SyncStatus.AuthRequired(SyncAuthReason.TOKEN_EXPIRED),
+            SyncStatus.AuthRequired(SyncAuthReason.NO_SESSION),
+        )
+        assertNotEquals<SyncStatus>(
+            authRequired,
+            SyncStatus.Failed(DataError.Unknown("error")),
+        )
     }
 
     @Test

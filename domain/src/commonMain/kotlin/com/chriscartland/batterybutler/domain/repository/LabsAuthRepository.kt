@@ -3,6 +3,7 @@ package com.chriscartland.batterybutler.domain.repository
 import com.chriscartland.batterybutler.domain.model.AuthError
 import com.chriscartland.batterybutler.domain.model.AuthState
 import com.chriscartland.batterybutler.domain.model.DataModeKeyedState
+import com.chriscartland.batterybutler.domain.model.LabsSessionRestoreResult
 import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.model.User
 import kotlinx.coroutines.flow.Flow
@@ -32,6 +33,19 @@ interface LabsAuthRepository {
      * Fails if the current mode isn't a Labs mode or the client isn't configured.
      */
     suspend fun signInToLabs(): Result<User, AuthError>
+
+    /**
+     * Suspends until the *currently selected* environment's persisted-session restore has
+     * resolved, triggering the restore if it hasn't started yet. This is the cold-start gate the
+     * sync layer awaits before firing its first Labs request, so a believed-signed-in launch
+     * doesn't churn out "sign in required" while the non-interactive restore
+     * ([com.chriscartland.batterybutler.domain.repository.LabsRefreshTokenPersistence] ->
+     * securetoken) is still in flight. Resolution is per environment and sticky: once resolved
+     * (any [LabsSessionRestoreResult]) this returns immediately. A transient restore failure
+     * resolves as [LabsSessionRestoreResult.TRANSIENT_FAILURE] rather than blocking — sync then
+     * proceeds and surfaces network errors, never a spurious auth prompt.
+     */
+    suspend fun awaitLabsSessionRestore(): LabsSessionRestoreResult
 
     /** Clear the Labs session. */
     suspend fun signOutLabs()

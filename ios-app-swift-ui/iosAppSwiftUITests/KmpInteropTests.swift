@@ -22,7 +22,8 @@ final class KmpInteropTests: XCTestCase {
             batteryLastReplaced: instant,
             lastUpdated: instant,
             location: "Room",
-            imagePath: nil
+            imagePath: nil,
+            imageEtag: nil
         )
         XCTAssertEqual(device.id, "d1")
         XCTAssertEqual(device.name, "Test Device")
@@ -126,7 +127,8 @@ final class KmpInteropTests: XCTestCase {
             groupOption: .none,
             exportData: nil,
             syncStatus: SyncStatusIdle(),
-            error: nil
+            error: nil,
+            deviceImagesByEtag: [:]
         )
         XCTAssertTrue(state.isSortAscending)
         XCTAssertEqual(state.sortOption, .name)
@@ -139,7 +141,10 @@ final class KmpInteropTests: XCTestCase {
 
     func testAuthStateSubtypes() {
         let unknown: AuthState = AuthStateUnknown()
-        let unauth: AuthState = AuthStateUnauthenticated()
+        // Unauthenticated is a data class with a required `cause` in Swift — Kotlin default
+        // arguments don't export through the ObjC bridge, so the cause is always explicit here.
+        let unauth: AuthState = AuthStateUnauthenticated(cause: .signedOut)
+        let expired: AuthState = AuthStateUnauthenticated(cause: .sessionExpired)
         let authing: AuthState = AuthStateAuthenticating()
 
         let user = User(id: "u1", email: nil, displayName: nil, photoUrl: nil)
@@ -151,9 +156,12 @@ final class KmpInteropTests: XCTestCase {
         // Verify type membership via is-checks
         XCTAssertTrue(unknown is AuthStateUnknown)
         XCTAssertTrue(unauth is AuthStateUnauthenticated)
+        XCTAssertTrue(expired is AuthStateUnauthenticated)
         XCTAssertTrue(authing is AuthStateAuthenticating)
         XCTAssertTrue(authed is AuthStateAuthenticated)
         XCTAssertTrue(failed is AuthStateFailed)
+        XCTAssertEqual((unauth as? AuthStateUnauthenticated)?.cause, .signedOut)
+        XCTAssertEqual((expired as? AuthStateUnauthenticated)?.cause, .sessionExpired)
     }
 
     func testSyncStatusSubtypes() {
@@ -176,12 +184,17 @@ final class KmpInteropTests: XCTestCase {
         let success: DeviceDetailScreenState = DeviceDetailScreenStateSuccess(
             device: device,
             deviceType: deviceType,
-            events: events
+            events: events,
+            imageBytes: nil
         )
+
+        let error: DeviceDetailScreenState = DeviceDetailScreenStateError(message: "boom")
 
         XCTAssertTrue(loading is DeviceDetailScreenStateLoading)
         XCTAssertTrue(notFound is DeviceDetailScreenStateNotFound)
         XCTAssertTrue(success is DeviceDetailScreenStateSuccess)
+        XCTAssertTrue(error is DeviceDetailScreenStateError)
+        XCTAssertEqual((error as? DeviceDetailScreenStateError)?.message, "boom")
     }
 
     func testBatchOperationResultSubtypes() {

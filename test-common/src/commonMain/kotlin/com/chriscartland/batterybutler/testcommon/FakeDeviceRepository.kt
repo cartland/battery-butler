@@ -5,6 +5,7 @@ import com.chriscartland.batterybutler.domain.model.DataError
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.Result
+import com.chriscartland.batterybutler.domain.model.SyncOutcome
 import com.chriscartland.batterybutler.domain.model.SyncStatus
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import kotlinx.coroutines.flow.Flow
@@ -48,6 +49,9 @@ class FakeDeviceRepository : DeviceRepository {
     private val eventsFlow = MutableStateFlow<List<BatteryEvent>>(emptyList())
     private val _syncStatus = MutableStateFlow<SyncStatus>(SyncStatus.Idle)
 
+    /** When set, [updateDevice] returns this instead of writing the device and returning success. */
+    var updateDeviceResult: Result<Unit, DataError>? = null
+
     /** Sets the devices and updates the flow. */
     fun setDevices(newDevices: List<Device>) {
         devices.clear()
@@ -88,9 +92,21 @@ class FakeDeviceRepository : DeviceRepository {
     /** The [Duration] passed to the most recent [resync] call, or null if never called. */
     var lastResyncTimeout: Duration? = null
 
-    override suspend fun resync(timeout: Duration) {
+    /** The [SyncOutcome] that [resync] returns. Set to simulate auth or sync failures. */
+    var resyncOutcome: SyncOutcome = SyncOutcome.Success
+
+    /** Number of times [resync] ran to completion (vs merely being called and then cancelled). */
+    var resyncCompletedCount = 0
+
+    /** Optional suspending body run inside [resync] — set to a gate to hold a resync in flight. */
+    var resyncBody: suspend () -> Unit = {}
+
+    override suspend fun resync(timeout: Duration): SyncOutcome {
         resyncCount++
         lastResyncTimeout = timeout
+        resyncBody()
+        resyncCompletedCount++
+        return resyncOutcome
     }
 
     /** Number of times [clearAllLocalData] has been called. */
@@ -117,6 +133,7 @@ class FakeDeviceRepository : DeviceRepository {
     }
 
     override suspend fun updateDevice(device: Device): Result<Unit, DataError> {
+        updateDeviceResult?.let { return it }
         val index = devices.indexOfFirst { it.id == device.id }
         if (index >= 0) {
             devices[index] = device

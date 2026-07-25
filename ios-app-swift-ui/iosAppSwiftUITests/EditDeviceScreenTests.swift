@@ -13,14 +13,20 @@ final class EditDeviceScreenTests: XCTestCase {
             batteryLastReplaced: KotlinInstant.Companion.shared.fromEpochMilliseconds(epochMilliseconds: 1704067200000), // Jan 1, 2024
             lastUpdated: KotlinInstant.Companion.shared.fromEpochMilliseconds(epochMilliseconds: 1704067200000),
             location: "Living Room",
-            imagePath: nil
+            imagePath: nil,
+            imageEtag: nil
         )
 
         let dummyTypes = [
             DeviceType(id: "t1", name: "TV Remote", defaultIcon: "tv", batteryType: "AAA", batteryQuantity: 2)
         ]
 
-        let state = EditDeviceScreenStateSuccess(device: dummyDevice, deviceTypes: dummyTypes)
+        let state = EditDeviceScreenStateSuccess(
+            device: dummyDevice,
+            deviceTypes: dummyTypes,
+            imagesSupported: false,
+            imageBytes: nil
+        )
 
         // Use bindings populated with initial fake data to simulate `.onAppear` having fired
         let view = EditDeviceContentView(

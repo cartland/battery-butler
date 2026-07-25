@@ -3,8 +3,10 @@ package com.chriscartland.batterybutler.viewmodel.devicedetail
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.DataError
 import com.chriscartland.batterybutler.domain.model.Device
+import com.chriscartland.batterybutler.domain.model.DeviceImageBytes
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.Result
+import com.chriscartland.batterybutler.domain.model.SyncOutcome
 import com.chriscartland.batterybutler.domain.model.SyncStatus
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.presentationmodel.devicedetail.DeviceDetailScreenState
@@ -210,9 +212,43 @@ class DeviceDetailViewModelTest {
             assertTrue(repo.updatedDevices[0].batteryLastReplaced > Instant.DISTANT_PAST)
         }
 
+    @Test
+    fun `Success state includes cached image bytes when device has an imageEtag`() =
+        runTest {
+            val repo = FakeDetailRepository()
+            repo.setDevice(TestDevices.createDevice(id = "device-1").copy(imageEtag = "etag-1"))
+            val imageRepo = FakeDeviceImageRepository()
+            val cachedBytes = DeviceImageBytes(byteArrayOf(1, 2, 3), "image/jpeg")
+            imageRepo.setCachedImage("etag-1", cachedBytes)
+
+            val viewModel = createViewModel(repo, "device-1", imageRepo)
+
+            advanceUntilIdle()
+
+            val state = viewModel.uiState.first { it is DeviceDetailScreenState.Success }
+            assertIs<DeviceDetailScreenState.Success>(state)
+            assertEquals(cachedBytes, state.imageBytes)
+        }
+
+    @Test
+    fun `Success state has null image bytes when device has no imageEtag`() =
+        runTest {
+            val repo = FakeDetailRepository()
+            repo.setDevice(TestDevices.createDevice(id = "device-1"))
+
+            val viewModel = createViewModel(repo, "device-1")
+
+            advanceUntilIdle()
+
+            val state = viewModel.uiState.first { it is DeviceDetailScreenState.Success }
+            assertIs<DeviceDetailScreenState.Success>(state)
+            assertEquals(null, state.imageBytes)
+        }
+
     private fun createViewModel(
         repo: FakeDetailRepository,
         deviceId: String,
+        imageRepo: FakeDeviceImageRepository = FakeDeviceImageRepository(),
     ): DeviceDetailViewModel =
         DeviceDetailViewModel(
             deviceId = deviceId,
@@ -221,7 +257,7 @@ class DeviceDetailViewModelTest {
             getBatteryEventsUseCase = GetBatteryEventsUseCase(repo),
             addBatteryEventUseCase = AddBatteryEventUseCase(repo, UpdateDeviceLastReplacedUseCase(repo)),
             updateDeviceUseCase = UpdateDeviceUseCase(repo),
-            getCachedDeviceImageUseCase = GetCachedDeviceImageUseCase(FakeDeviceImageRepository()),
+            getCachedDeviceImageUseCase = GetCachedDeviceImageUseCase(imageRepo),
         )
 }
 
@@ -253,7 +289,7 @@ private class FakeDetailRepository : DeviceRepository {
 
     override fun dismissSyncStatus() {}
 
-    override suspend fun resync(timeout: Duration) {}
+    override suspend fun resync(timeout: Duration): SyncOutcome = SyncOutcome.Success
 
     override suspend fun clearAllLocalData() {}
 

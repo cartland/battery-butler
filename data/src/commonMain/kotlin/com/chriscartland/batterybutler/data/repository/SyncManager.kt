@@ -3,6 +3,7 @@ package com.chriscartland.batterybutler.data.repository
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
+import com.chriscartland.batterybutler.domain.model.SyncOutcome
 import com.chriscartland.batterybutler.domain.model.SyncStatus
 import com.chriscartland.batterybutler.domain.repository.DEFAULT_RESYNC_TIMEOUT
 import kotlinx.coroutines.flow.StateFlow
@@ -24,8 +25,11 @@ interface SyncManager {
      * delay) and applies the result locally. Bounded by [timeout] so it always resolves even
      * against a server-streaming source with nothing new to push. Safe to call concurrently
      * with the background sync loop -- applying the same snapshot twice is a harmless no-op.
+     *
+     * @return the typed terminal [SyncOutcome] (also published on [syncStatus]) so callers can
+     *   branch on success / auth-required / failure rather than infer from side effects.
      */
-    suspend fun resync(timeout: Duration = DEFAULT_RESYNC_TIMEOUT)
+    suspend fun resync(timeout: Duration = DEFAULT_RESYNC_TIMEOUT): SyncOutcome
 
     fun pushUpdate(
         deviceTypes: List<DeviceType> = emptyList(),

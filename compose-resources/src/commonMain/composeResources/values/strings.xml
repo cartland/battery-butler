@@ -118,6 +118,22 @@
     <string name="auth_error_title_expired">Session Expired</string>
     <string name="auth_error_message_expired">Please sign in again to sync your data.</string>
     <string name="auth_error_title_unknown">Something Went Wrong</string>
+
+    <!-- Labs sign-in (REST backend). The auth_error_* strings above were written for the legacy
+         own-backend flow (e.g. "Coming Soon" for its unconfigured OAuth); Labs failures carry
+         their own accurate copy below. -->
+    <string name="login_labs_session_expired">Your Labs session expired — sign in again to keep syncing. Your data is safe on this device.</string>
+    <string name="labs_auth_error_title_cancelled">Sign-In Cancelled</string>
+    <string name="labs_auth_error_message_cancelled">No problem — you can sign in to Labs anytime.</string>
+    <string name="labs_auth_error_title_network">Connection Problem</string>
+    <string name="labs_auth_error_message_network">Couldn\'t reach the Labs sign-in service. Check your internet connection and try again.</string>
+    <string name="labs_auth_error_title_not_configured">Labs Sign-In Not Configured</string>
+    <string name="labs_auth_error_message_not_configured">This build isn\'t set up for Labs sign-in on the selected environment.</string>
+    <string name="labs_auth_error_title_session_expired">Labs Session Expired</string>
+    <string name="labs_auth_error_message_session_expired">Sign in to Labs again to keep syncing. Your data is safe on this device.</string>
+    <string name="labs_auth_error_title_failed">Labs Sign-In Failed</string>
+    <string name="labs_auth_error_message_failed">Something went wrong signing in to Labs. Please try again — your data is safe on this device.</string>
+
     <string name="action_try_again">Try Again</string>
     <string name="action_ok">OK</string>
     <string name="action_save_bold">Save</string>
@@ -144,6 +160,7 @@
     <string name="device_image_error_device_not_found">Device not found -- sync it before uploading a photo</string>
     <string name="device_image_error_too_large">Image is too large (10 MB limit)</string>
     <string name="device_image_error_network">Network error -- please try again</string>
+    <string name="device_image_updated">Photo updated</string>
 
     <!-- Settings -->
     <string name="form_error_device_name_required">Device name is required</string>
@@ -152,8 +169,6 @@
     <string name="form_error_type_name_required">Type name is required</string>
     <string name="settings_title">Settings</string>
     <string name="settings_section_account">Account</string>
-    <string name="settings_section_connection">Connection</string>
-    <string name="settings_section_ai">AI Assistant</string>
     <string name="settings_section_data">Data</string>
     <string name="settings_section_about">About</string>
     <string name="settings_user_signed_in">Signed In</string>
@@ -165,7 +180,7 @@
     <string name="settings_labs_signing_in">Signing in…</string>
     <string name="settings_labs_sign_out">Sign out of Labs</string>
     <string name="settings_labs_signed_in">Signed in to Labs</string>
-    <string name="settings_labs_sign_in_failed">Labs sign-in failed: %1$s</string>
+    <string name="settings_labs_session_expired">Session expired — sign in again</string>
     <string name="settings_advanced_title">Advanced</string>
     <string name="settings_advanced_copy_labs_token">Copy Labs ID Token</string>
     <string name="settings_advanced_copy_labs_token_description">This copies a live access token for your Labs account (valid about an hour). Anyone with it can read and change your synced data — treat it like a password. Only paste it into tools you trust, such as the official Labs CLI, and never share it.</string>
@@ -197,6 +212,7 @@
     <string name="status_syncing">Syncing...</string>
     <string name="error_something_went_wrong">Something went wrong</string>
     <string name="error_load_devices">Could not load devices</string>
+    <string name="error_load_device_detail">Could not load device details</string>
     <string name="error_load_device_types">Could not load device types</string>
     <string name="error_load_history">Could not load history</string>
     <string name="status_loading_device_types">Loading device types…</string>
@@ -209,6 +225,7 @@
     <string name="sync_error_data">There was a problem with your data. Please try again.</string>
     <string name="sync_error_ai">AI feature encountered an error. Please try again.</string>
     <string name="sync_error_unknown">Something went wrong. Your data is safe on this device.</string>
+    <string name="sync_error_auth_required">Sign in required. Your data is safe on this device.</string>
 
     <!-- Device Type List -->
     <string name="action_add_type">Add Type</string>
