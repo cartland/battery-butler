@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 import kotlin.coroutines.cancellation.CancellationException
@@ -76,7 +77,15 @@ class EditDeviceViewModel(
                 flowOf(EditDeviceScreenState.NotFound)
             } else {
                 val imageEtag = device.imageEtag
-                val imageBytesFlow = if (imageEtag != null) getCachedDeviceImageUseCase(imageEtag) else flowOf(null)
+                // Seed with null so Success is produced from device/type data immediately and the
+                // photo folds in when the cache emits. Without the seed, a slow or empty image flow
+                // withholds the first emission and wedges the screen at Loading (the bytes are a
+                // decoration -- they must never gate the screen). See DeviceDetailViewModel.
+                val imageBytesFlow = if (imageEtag != null) {
+                    getCachedDeviceImageUseCase(imageEtag).onStart { emit(null) }
+                } else {
+                    flowOf(null)
+                }
                 imageBytesFlow.map { imageBytes ->
                     EditDeviceScreenState.Success(
                         device = device,

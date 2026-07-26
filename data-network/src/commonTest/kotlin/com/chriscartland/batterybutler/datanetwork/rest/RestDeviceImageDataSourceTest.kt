@@ -1,6 +1,7 @@
 package com.chriscartland.batterybutler.datanetwork.rest
 
 import com.chriscartland.batterybutler.domain.model.DeviceImageError
+import com.chriscartland.batterybutler.domain.model.DispatcherProvider
 import com.chriscartland.batterybutler.domain.model.Result
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
@@ -15,7 +16,10 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.utils.io.core.toByteArray
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.test.runTest
+import kotlin.coroutines.CoroutineContext
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -146,6 +150,46 @@ class RestDeviceImageDataSourceTest {
             val source = dataSource { throw RuntimeException("boom") }
             assertEquals(false, source.delete("dev1"))
         }
+
+    @Test
+    fun `network calls run on the injected IO dispatcher`() =
+        runTest {
+            val recordingIo = RecordingDispatcher()
+            val client = HttpClient(MockEngine { respondStatus(HttpStatusCode.NotFound) }) {
+                install(ContentNegotiation) { json(syncJson) }
+            }
+            val source = RestDeviceImageDataSource(
+                httpClient = client,
+                baseUrl = "https://labs.example.com",
+                tokenProvider = { "tok123" },
+                dispatcherProvider = TestDispatchers(recordingIo),
+            )
+
+            source.fetch("dev1")
+
+            assertTrue(recordingIo.dispatches > 0, "fetch() must dispatch onto the injected IO dispatcher")
+        }
+
+    /** Immediate dispatcher that records whether it was dispatched to. */
+    private class RecordingDispatcher : CoroutineDispatcher() {
+        var dispatches = 0
+
+        override fun dispatch(
+            context: CoroutineContext,
+            block: Runnable,
+        ) {
+            dispatches++
+            block.run()
+        }
+    }
+
+    private class TestDispatchers(
+        private val dispatcher: CoroutineDispatcher,
+    ) : DispatcherProvider {
+        override val default: CoroutineDispatcher get() = dispatcher
+        override val io: CoroutineDispatcher get() = dispatcher
+        override val main: CoroutineDispatcher get() = dispatcher
+    }
 
     private companion object {
         fun dataSource(handler: suspend MockRequestHandleScope.(HttpRequestData) -> HttpResponseData): RestDeviceImageDataSource {

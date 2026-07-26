@@ -6,6 +6,7 @@ import com.chriscartland.batterybutler.datanetwork.grpc.GrpcClientState
 import com.chriscartland.batterybutler.datanetwork.rest.RestRemoteDataSource
 import com.chriscartland.batterybutler.datanetwork.rest.createSyncHttpClient
 import com.chriscartland.batterybutler.domain.model.DataMode
+import com.chriscartland.batterybutler.domain.model.DispatcherProvider
 import com.chriscartland.batterybutler.domain.repository.DataModeRepository
 import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
 import kotlinx.coroutines.CoroutineScope
@@ -30,6 +31,7 @@ class DelegatingRemoteDataSource(
     private val dataModeRepository: DataModeRepository,
     private val labsAuthGateway: LabsAuthGateway,
     private val scope: CoroutineScope,
+    private val dispatcherProvider: DispatcherProvider,
 ) : RemoteDataSource {
     // Lazily created on first use of a Labs (REST) mode. createSyncHttpClient() is internal to
     // data-network, so no DI wiring is needed for it.
@@ -44,6 +46,7 @@ class DelegatingRemoteDataSource(
             httpClient = syncHttpClient,
             baseUrl = url.orEmpty(),
             tokenSource = labsAuthGateway,
+            dispatcherProvider = dispatcherProvider,
         )
 
     override val state: StateFlow<RemoteDataSourceState> =

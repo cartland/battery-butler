@@ -31,6 +31,18 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 ---
 
+## 2026-07-25
+
+### Fixes
+
+- **Device Details (and Edit Device) no longer spin forever for a device with a photo**: user-reported on internal build android/60 — opening Device Details for a device that has an image showed a loading spinner that never cleared, while devices without a photo were fine. Two independent defects, both introduced with the device-images feature (#1359) and only surfacing once the app has switched data mode (e.g. after signing into Labs):
+  - **Correctness:** `RoomDeviceImageCache` was wired to a *static* `AppDatabase` (the fixed `DatabaseOption.OFFLINE`) instead of following `DynamicDatabaseProvider` like every other DAO. On a mode switch the provider `close()`s and evicts the OFFLINE database, leaving the cache querying a **closed** database. A Room `@Query` `Flow` on a closed database completes *silently* — no emission, no exception (confirmed with a throwaway probe test). The cache now reads through `DynamicDatabaseProvider` with the same `bound{}` re-subscribe mechanism as `RoomLocalDataSource`, so it stays on the live database and its writes/reads land in the active account's database.
+  - **Liveness:** `DeviceDetailViewModel` and `EditDeviceViewModel` gated their entire `Success` state on the image flow (`imageBytesFlow.map { Success }`), so a device with an image showed nothing until the photo bytes emitted — and the empty-completing closed-DB flow above never did. Both now seed the image flow with `onStart { emit(null) }`, so `Success` renders immediately from device/type/event data and the photo folds in when available (the same liveness guard `HomeViewModel` already documents). The image is a decoration and must never gate the screen.
+
+### Performance
+
+- **Device photo up/downloads and the sync snapshot download now run on the injected IO dispatcher**: `RestDeviceImageDataSource` (upload/fetch/delete) and `RestRemoteDataSource` (the sync GET/POST) previously ran their network round trips on whatever dispatcher the caller was on — in practice the app scope's `Dispatchers.Default` (the CPU-bound pool that also runs image decode). They now wrap the network + body deserialization in `withContext(dispatcherProvider.io)`, threaded in via the `Delegating*` sources, so long downloads use the elastic IO pool and don't contend with CPU work. The injected `DispatcherProvider` also makes these paths deterministic under test: added `TestDispatcherProvider` in `test-common` and a test asserting the image download dispatches onto the injected IO dispatcher.
+
 ## 2026-07-23
 
 ### Performance

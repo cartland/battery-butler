@@ -19,6 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -30,6 +31,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertNull
 
 /**
  * Regression tests for the production wedge seen on android/57: a transient Room/SQLite
@@ -135,6 +137,34 @@ class CrashProofDeviceDetailViewModelTest {
             assertIs<DeviceDetailScreenState.Success>(recovered)
             assertEquals("device-1", recovered.device.id)
             assertEquals("Smoke Detector", recovered.device.name)
+
+            job.cancel()
+        }
+
+    @Test
+    fun `uiState reaches Success even when the cached-image flow emits nothing`() =
+        runTest {
+            val fakeRepo = FakeDeviceRepository()
+            fakeRepo.setDevices(
+                listOf(TestDevices.createDevice(id = "device-1").copy(imageEtag = "etag-1")),
+            )
+            // Reproduce the closed-DB behavior: a cached-image flow that completes with no emission.
+            // Pre-fix (no onStart seed) this wedged the screen at Loading forever for a device with
+            // an image; the seed makes Success reachable, with the photo folding in later if it ever
+            // arrives.
+            val emptyImageRepo = object : DeviceImageRepository by FakeDeviceImageRepository() {
+                override fun observeCachedImage(imageEtag: String): Flow<DeviceImageBytes?> = emptyFlow()
+            }
+
+            val viewModel = createViewModel(fakeRepo, emptyImageRepo)
+
+            val job = launch { viewModel.uiState.collect {} }
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            val finalState = viewModel.uiState.value
+            assertIs<DeviceDetailScreenState.Success>(finalState)
+            assertEquals("device-1", finalState.device.id)
+            assertNull(finalState.imageBytes)
 
             job.cancel()
         }
