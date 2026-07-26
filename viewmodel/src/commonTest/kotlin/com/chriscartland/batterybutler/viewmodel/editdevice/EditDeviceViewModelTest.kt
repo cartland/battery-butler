@@ -1,9 +1,11 @@
 package com.chriscartland.batterybutler.viewmodel.editdevice
 
+import com.chriscartland.batterybutler.domain.model.DeviceImageBytes
 import com.chriscartland.batterybutler.domain.model.DeviceImageError
 import com.chriscartland.batterybutler.domain.model.DeviceInput
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.Result
+import com.chriscartland.batterybutler.domain.repository.DeviceImageRepository
 import com.chriscartland.batterybutler.presentationmodel.editdevice.EditDeviceScreenState
 import com.chriscartland.batterybutler.testcommon.FakeDeviceImageRepository
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
@@ -20,6 +22,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -280,10 +284,28 @@ class EditDeviceViewModelTest {
             assertNull(repo.devices[0].imageEtag)
         }
 
+    @Test
+    fun `Success is reached even when the cached-image flow emits nothing`() =
+        runTest {
+            val repo = FakeDeviceRepository()
+            repo.setDevices(listOf(TestDevices.createDevice(id = "device-1").copy(imageEtag = "etag-1")))
+            // A cached-image flow that completes with no emission (the closed-DB behavior). The
+            // onStart seed must still let Success through instead of wedging at Loading.
+            val emptyImageRepo = object : DeviceImageRepository by FakeDeviceImageRepository() {
+                override fun observeCachedImage(imageEtag: String): Flow<DeviceImageBytes?> = emptyFlow()
+            }
+
+            val viewModel = createViewModel(repo, "device-1", emptyImageRepo)
+
+            val state = viewModel.uiState.first { it is EditDeviceScreenState.Success }
+            assertIs<EditDeviceScreenState.Success>(state)
+            assertNull(state.imageBytes)
+        }
+
     private fun createViewModel(
         repo: FakeDeviceRepository,
         deviceId: String,
-        imageRepo: FakeDeviceImageRepository = FakeDeviceImageRepository(),
+        imageRepo: DeviceImageRepository = FakeDeviceImageRepository(),
     ): EditDeviceViewModel {
         val scope = CoroutineScope(testDispatcher + Job())
         return EditDeviceViewModel(

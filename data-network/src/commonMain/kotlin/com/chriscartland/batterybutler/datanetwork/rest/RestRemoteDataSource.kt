@@ -5,6 +5,7 @@ import com.chriscartland.batterybutler.datanetwork.LabsTokenResult
 import com.chriscartland.batterybutler.datanetwork.RemoteDataSource
 import com.chriscartland.batterybutler.datanetwork.RemoteDataSourceState
 import com.chriscartland.batterybutler.datanetwork.RemoteSyncException
+import com.chriscartland.batterybutler.domain.model.DispatcherProvider
 import com.chriscartland.batterybutler.domain.model.SyncAuthReason
 import com.chriscartland.batterybutler.domain.repository.RemoteUpdate
 import io.ktor.client.HttpClient
@@ -23,6 +24,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.withContext
 
 /**
  * A [RemoteDataSource] backed by the Labs REST `/v1/battery-butler/sync` endpoint.
@@ -62,6 +64,11 @@ internal class RestRemoteDataSource(
     private val httpClient: HttpClient,
     private val baseUrl: String,
     private val tokenSource: LabsSyncTokenSource,
+    // The sync snapshot GET is the largest download in the app; run the network round trips on the
+    // injected IO dispatcher (elastic pool, not the CPU-bound Default) and let tests substitute a
+    // test dispatcher. Production injects the shared provider via DelegatingRemoteDataSource; the
+    // default only applies to standalone/test construction.
+    private val dispatcherProvider: DispatcherProvider = DefaultRestDispatcherProvider,
 ) : RemoteDataSource {
     override val state: StateFlow<RemoteDataSourceState> =
         MutableStateFlow(
@@ -74,22 +81,27 @@ internal class RestRemoteDataSource(
 
     override fun subscribe(): Flow<RemoteUpdate> =
         flow {
-            val snapshot = executeAuthed<SyncSnapshotWire> { token ->
-                httpClient.get(syncUrl()) { bearerAuth(token) }
+            // Do the network fetch on IO, but emit on the collector's context (emitting inside
+            // withContext would violate the Flow context-preservation invariant).
+            val snapshot = withContext(dispatcherProvider.io) {
+                executeAuthed<SyncSnapshotWire> { token ->
+                    httpClient.get(syncUrl()) { bearerAuth(token) }
+                }
             }
             emit(RestSyncMapper.toRemoteUpdate(snapshot))
         }
 
-    override suspend fun push(update: RemoteUpdate): Boolean {
-        val pushResponse = executeAuthed<SyncPushResponseWire> { token ->
-            httpClient.post(syncUrl()) {
-                bearerAuth(token)
-                contentType(ContentType.Application.Json)
-                setBody(RestSyncMapper.toPushRequest(update))
+    override suspend fun push(update: RemoteUpdate): Boolean =
+        withContext(dispatcherProvider.io) {
+            val pushResponse = executeAuthed<SyncPushResponseWire> { token ->
+                httpClient.post(syncUrl()) {
+                    bearerAuth(token)
+                    contentType(ContentType.Application.Json)
+                    setBody(RestSyncMapper.toPushRequest(update))
+                }
             }
+            pushResponse.success
         }
-        return pushResponse.success
-    }
 
     /**
      * Runs [request] with a Bearer token, applying the retry-once policy documented on the class:

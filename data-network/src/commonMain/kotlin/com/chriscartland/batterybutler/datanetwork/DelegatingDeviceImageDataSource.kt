@@ -5,6 +5,7 @@ import com.chriscartland.batterybutler.datanetwork.rest.createSyncHttpClient
 import com.chriscartland.batterybutler.domain.model.DataMode
 import com.chriscartland.batterybutler.domain.model.DeviceImageBytes
 import com.chriscartland.batterybutler.domain.model.DeviceImageError
+import com.chriscartland.batterybutler.domain.model.DispatcherProvider
 import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.repository.DataModeRepository
 import kotlinx.coroutines.flow.Flow
@@ -24,6 +25,7 @@ import me.tatarka.inject.annotations.Inject
 class DelegatingDeviceImageDataSource(
     private val dataModeRepository: DataModeRepository,
     private val labsAuthGateway: LabsAuthGateway,
+    private val dispatcherProvider: DispatcherProvider,
 ) : DeviceImageDataSource {
     private val syncHttpClient by lazy { createSyncHttpClient() }
 
@@ -51,6 +53,7 @@ class DelegatingDeviceImageDataSource(
             httpClient = syncHttpClient,
             baseUrl = url,
             tokenProvider = labsAuthGateway::getLabsIdToken,
+            dispatcherProvider = dispatcherProvider,
         )
     }
 
