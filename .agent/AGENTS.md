@@ -77,6 +77,27 @@ Regardless of the role, the agent remains a tool, and the user retains ultimate 
         before proceeding to a tag/release action, merging on the strength of
         "CI passed," or reporting success to the user.
 
+7.  **RESPECT the Shared-API Contribution Boundary**:
+    *   The client is open source (this repo); the production server is closed
+        source in a separate private repo. The shared API is coordinated **in the
+        open, as documents**, under `docs/api-proposals/` (see
+        `docs/architecture/adr-005-public-api-coordination.md`).
+    *   The deciding question for this session is: **does it have access to the
+        private server source code?**
+        *   **If yes (server-side session):** edit **documentation only**
+            (proposals/decisions in `docs/api-proposals/` and related docs).
+            **Do NOT edit application, build, or configuration code** anywhere in
+            this repo — including the in-repo `server/` reference module. This
+            keeps the secret-leak audit surface small and text-only.
+        *   **If no (client-side session):** you may edit code and docs freely — a
+            session that never saw the server's secrets can't leak them.
+    *   The test is **access, not job title**. When uncertain whether this session
+        has private-server context, treat it as server-side and restrict to
+        documentation.
+    *   Before a proposal PR merges, a server-side reviewer runs the
+        **secret-safety review** (checklist in `docs/api-proposals/README.md`) to
+        confirm nothing secret was published.
+
 ## Build & Test Health
 
 Keeping the build and tests healthy is a top priority. When you identify or fix build/test issues:

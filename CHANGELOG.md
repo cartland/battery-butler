@@ -43,6 +43,10 @@ This changelog summarizes the history of changes to the Battery Butler repositor
 
 - **Device photo up/downloads and the sync snapshot download now run on the injected IO dispatcher**: `RestDeviceImageDataSource` (upload/fetch/delete) and `RestRemoteDataSource` (the sync GET/POST) previously ran their network round trips on whatever dispatcher the caller was on — in practice the app scope's `Dispatchers.Default` (the CPU-bound pool that also runs image decode). They now wrap the network + body deserialization in `withContext(dispatcherProvider.io)`, threaded in via the `Delegating*` sources, so long downloads use the elastic IO pool and don't contend with CPU work. The injected `DispatcherProvider` also makes these paths deterministic under test: added `TestDispatcherProvider` in `test-common` and a test asserting the image download dispatches onto the injected IO dispatcher.
 
+### Documentation
+
+- **Shared client/server API coordination process**: established a public, document-based workflow for designing the API that the open-source client and the closed-source server share. The client is open source; the production server is closed source in a separate private repo, so we now coordinate the shared API contract *in the open, as documents*, under `docs/api-proposals/` (hub + per-proposal template). To keep the server's secrets safe, an **information-barrier contribution boundary** governs who edits what: sessions **with** access to the private server code contribute **documentation only** (small, text-only, auditable surface), while **code** in this repo is edited only by sessions **without** private-server access (which structurally can't leak server secrets). Recorded the decision as [ADR-005](docs/architecture/adr-005-public-api-coordination.md), summarized it for contributors in `CONTRIBUTING.md`, and added Critical Rule #7 in `.agent/AGENTS.md` so agents honor the boundary.
+
 ## 2026-07-23
 
 ### Performance
