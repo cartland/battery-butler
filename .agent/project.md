@@ -232,15 +232,21 @@ Icon colors use the **`IconColorRole` enum** (`presentation-core/.../theme/IconC
 
 ### Device List Density (`DensityOption`)
 
-The Home device list has a third display control alongside Sort and Group: **View: Expanded / Compact** (`DensityOption` in `presentation-model/.../home/HomeScreenState.kt`, default `EXPANDED`).
+The Home device list has a third display control alongside Sort and Group: an **icon-only density toggle** (`DensityOption` in `presentation-model/.../home/HomeScreenState.kt`, default `EXPANDED`).
 
 - `EXPANDED` is the original row: 48.dp icon/photo, device name, a `"type • location"` secondary line, and the battery age stacked (big number over "days") in the trailing slot.
 - `COMPACT` drops the secondary line, shrinks the icon/photo to 24.dp (`ButlerIconBoxDefaults.CompactSize`), and puts the age on one trailing line ("5 days"), so the card is only as tall as its single line of text (~40.dp vs ~80.dp).
 
 Wiring mirrors Sort/Group exactly: a `MutableStateFlow` in `HomeViewModel` + `onDensityOptionSelected()`, surfaced as `HomeScreenState.densityOption`. Like Sort/Group it is **session-only — not persisted** across process restarts.
 
+The control is a square `IconControl` (`presentation-core/.../components/CompositeControl.kt`) — the icon-only sibling of `CompositeControl`, sharing its 32.dp size, border, and shape. A two-way choice isn't worth a labelled dropdown, and the earlier "View: Expanded" label cost more filter-row width than the control itself.
+
+- Icons: `Icons.Default.DensityLarge` (two spaced lines) = expanded, `Icons.Default.DensitySmall` (four tight lines) = compact.
+- **The icon shows the *current* state; the `contentDescription` describes the *action* a tap performs** (`content_desc_switch_to_compact` / `content_desc_switch_to_expanded`). Don't "fix" one to match the other — a screen-reader user needs the action, a sighted user needs the state.
+- Tapping toggles directly (no menu), so `DensityOption` has no `labelRes()` — the enum is never rendered as text on the Compose side.
+
 Two things to keep in mind when touching this:
-- **`HomeScreenFilterRow` uses `FlowRow`, not `Row`.** Three labelled controls ("Sort: Battery Age", "Group: Location", "View: Expanded") exceed a 360.dp phone width, so they must be allowed to wrap to a second line. Reverting to `Row` silently clips the third control off the right edge. On tablets all three fit on one line.
+- **`HomeScreenFilterRow` uses `FlowRow`, not `Row`.** Even with the density control reduced to an icon, "Sort: Battery Age" + "Group: Location" + the icon still exceed a narrow phone's width, so they must be allowed to wrap. Reverting to `Row` silently clips content off the right edge.
 - **`combine`'s typed overloads stop at five flows.** `HomeViewModel` therefore puts the five display options in the inner `combine` and moves `exportDataFlow` to the outer one. Adding a sixth display option needs another restructure, not a sixth argument.
 
 `ButlerListItemCard` gained `contentPadding` and `leadingSpacing` params (defaults preserve the expanded look), and `ButlerIconBox` gained `size`/`iconSize`. Other list items (device types, history) are unaffected and still use the defaults.

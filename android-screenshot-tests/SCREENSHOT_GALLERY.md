@@ -2,7 +2,7 @@
 
 # Screenshot Gallery
 
-Generated on Wed Jul 29 20:18:26 PDT 2026
+Generated on Wed Jul 29 20:48:14 PDT 2026
 
 ## Table of Contents
 - [AddDeviceScreenshotTestKt](#adddevicescreenshottestkt)
@@ -153,6 +153,12 @@ Generated on Wed Jul 29 20:18:26 PDT 2026
 
 ### HistoryListItemPreviewTest_Light_fc5b723e_0
 <img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ComponentsScreenshotTestKt/HistoryListItemPreviewTest_Light_fc5b723e_0.png" width="300" />
+
+### IconControlPreviewTest_Dark_77106447_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ComponentsScreenshotTestKt/IconControlPreviewTest_Dark_77106447_0.png" width="300" />
+
+### IconControlPreviewTest_Light_fc5b723e_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ComponentsScreenshotTestKt/IconControlPreviewTest_Light_fc5b723e_0.png" width="300" />
 
 ## CounterScreenshotTestKt
 

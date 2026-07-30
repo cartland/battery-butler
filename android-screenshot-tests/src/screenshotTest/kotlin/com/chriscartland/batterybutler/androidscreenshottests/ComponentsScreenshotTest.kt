@@ -18,6 +18,7 @@ import com.chriscartland.batterybutler.presentationcore.components.DeviceTypeLis
 import com.chriscartland.batterybutler.presentationcore.components.EmptyStateContentPreview
 import com.chriscartland.batterybutler.presentationcore.components.ExpandableSelectionControlPreview
 import com.chriscartland.batterybutler.presentationcore.components.HistoryListItemPreview
+import com.chriscartland.batterybutler.presentationcore.components.IconControlPreview
 
 @PreviewTest
 @Preview(showBackground = true, name = "Light")
@@ -116,6 +117,16 @@ fun DeviceListItemVeryOldPreviewTest() {
 fun DeviceListItemCompactPreviewTest() {
     ScreenshotTestTheme {
         DeviceListItemCompactPreview()
+    }
+}
+
+@PreviewTest
+@Preview(showBackground = true, name = "Light")
+@Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun IconControlPreviewTest() {
+    ScreenshotTestTheme {
+        IconControlPreview()
     }
 }
 

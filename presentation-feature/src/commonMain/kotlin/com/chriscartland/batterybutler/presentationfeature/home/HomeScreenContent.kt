@@ -21,6 +21,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DensityLarge
+import androidx.compose.material.icons.filled.DensitySmall
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.outlined.Devices
 import androidx.compose.material3.CircularProgressIndicator
@@ -51,10 +53,11 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.Res
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_try_again
 import com.chriscartland.batterybutler.composeresources.generated.resources.add_device_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.add_item_card_device
+import com.chriscartland.batterybutler.composeresources.generated.resources.content_desc_switch_to_compact
+import com.chriscartland.batterybutler.composeresources.generated.resources.content_desc_switch_to_expanded
 import com.chriscartland.batterybutler.composeresources.generated.resources.empty_devices_message
 import com.chriscartland.batterybutler.composeresources.generated.resources.empty_devices_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.error_load_devices
-import com.chriscartland.batterybutler.composeresources.generated.resources.filter_density_label
 import com.chriscartland.batterybutler.composeresources.generated.resources.filter_group_label
 import com.chriscartland.batterybutler.composeresources.generated.resources.filter_sort_label
 import com.chriscartland.batterybutler.composeresources.generated.resources.status_syncing
@@ -76,6 +79,7 @@ import com.chriscartland.batterybutler.presentationcore.components.ButlerDropdow
 import com.chriscartland.batterybutler.presentationcore.components.CompositeControl
 import com.chriscartland.batterybutler.presentationcore.components.DeviceListItem
 import com.chriscartland.batterybutler.presentationcore.components.EmptyStateContent
+import com.chriscartland.batterybutler.presentationcore.components.IconControl
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationcore.theme.Padding
 import com.chriscartland.batterybutler.presentationfeature.util.labelRes
@@ -221,9 +225,9 @@ fun HomeScreenFilterRow(
     onDensityOptionSelected: (DensityOption) -> Unit,
 ) {
     Column {
-        // FlowRow, not Row: the three labelled controls ("Sort: Battery Age", "Group: Location",
-        // "View: Expanded") are wider than a phone at their longest, so they wrap to a second
-        // line instead of being clipped off the right edge.
+        // FlowRow, not Row: at their longest ("Sort: Battery Age" + "Group: Location") the two
+        // labelled controls plus the density icon still exceed a narrow phone's width, so they
+        // wrap to a second line instead of being clipped off the right edge.
         FlowRow(
             modifier = Modifier
                 .fillMaxWidth(),
@@ -232,7 +236,6 @@ fun HomeScreenFilterRow(
         ) {
             var sortExpanded by remember { mutableStateOf(false) }
             var groupExpanded by remember { mutableStateOf(false) }
-            var densityExpanded by remember { mutableStateOf(false) }
 
             // Sort Button (First)
             Box {
@@ -290,35 +293,26 @@ fun HomeScreenFilterRow(
                 }
             }
 
-            // Density / View Button (Third)
-            Box {
-                CompositeControl(
-                    label = composeStringResource(
-                        Res.string.filter_density_label,
-                        composeStringResource(state.densityOption.labelRes()),
-                    ),
-                    // Density has no ascending/descending concept, so the direction half of the
-                    // control is suppressed (same as "Group: None") and the toggle is a no-op.
-                    isActive = false,
-                    isAscending = true,
-                    onClicked = { densityExpanded = true },
-                    onDirectionToggle = {},
-                )
-                ButlerDropdownMenu(
-                    expanded = densityExpanded,
-                    onDismissRequest = { densityExpanded = false },
-                ) {
-                    DensityOption.entries.forEach { option ->
-                        DropdownMenuItem(
-                            text = { Text(composeStringResource(option.labelRes())) },
-                            onClick = {
-                                onDensityOptionSelected(option)
-                                densityExpanded = false
-                            },
-                        )
-                    }
-                }
-            }
+            // Density toggle (Third) — icon-only. A two-way choice doesn't warrant a labelled
+            // dropdown, and "View: Expanded" cost more filter-row width than the control itself.
+            // The icon shows the CURRENT density (DensityLarge = spaced rows, DensitySmall =
+            // dense rows); the contentDescription describes what a tap does.
+            val isCompact = state.densityOption == DensityOption.COMPACT
+            IconControl(
+                icon = if (isCompact) Icons.Default.DensitySmall else Icons.Default.DensityLarge,
+                contentDescription = composeStringResource(
+                    if (isCompact) {
+                        Res.string.content_desc_switch_to_expanded
+                    } else {
+                        Res.string.content_desc_switch_to_compact
+                    },
+                ),
+                onClicked = {
+                    onDensityOptionSelected(
+                        if (isCompact) DensityOption.EXPANDED else DensityOption.COMPACT,
+                    )
+                },
+            )
         }
     }
 }

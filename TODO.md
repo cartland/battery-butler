@@ -483,11 +483,14 @@ The **native SwiftUI app is not wired up**: `ios-app-swift-ui/Features/Home/Home
 `state.densityOption` (it always renders the two-line layout). The shared state already carries
 the value, so nothing is broken — iOS just can't change or honor it.
 
-To close: add a density `Menu` to `HomeFilterRow` (mirroring the Sort/Group menus), thread an
-`onDensityOptionSelected` callback through `HomeScreen` to
-`viewModel.onDensityOptionSelected(option:)`, and give `DeviceRow` a compact branch (drop the
-`type • location` subtitle, shrink `ButlerIconBox`, single-line age — iOS already renders age as
-`"\(days)d"`). Then regenerate iOS snapshots and add a compact `HomeScreenTests` case.
+To close: add a square icon button to `HomeFilterRow` that toggles density (the Compose side uses
+SF-Symbol-equivalent `line.3.horizontal` / `line.2.horizontal`-style glyphs — Material
+`DensitySmall` for compact, `DensityLarge` for expanded), thread an `onDensityOptionSelected`
+callback through `HomeScreen` to `viewModel.onDensityOptionSelected(option:)`, and give
+`DeviceRow` a compact branch (drop the `type • location` subtitle, shrink `ButlerIconBox`,
+single-line age — iOS already renders age as `"\(days)d"`). Match the Compose convention: the
+icon shows the current state, the accessibility label describes the action. Then regenerate iOS
+snapshots and add a compact `HomeScreenTests` case.
 Note `validation_ios_ui` is dev-mode-skipped on PRs, so verify locally with `xcodebuild` or
 dispatch release-mode CI on the branch.
 

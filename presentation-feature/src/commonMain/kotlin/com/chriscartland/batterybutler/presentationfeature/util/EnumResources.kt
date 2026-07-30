@@ -1,8 +1,6 @@
 package com.chriscartland.batterybutler.presentationfeature.util
 
 import com.chriscartland.batterybutler.composeresources.generated.resources.Res
-import com.chriscartland.batterybutler.composeresources.generated.resources.density_compact
-import com.chriscartland.batterybutler.composeresources.generated.resources.density_expanded
 import com.chriscartland.batterybutler.composeresources.generated.resources.group_battery_type
 import com.chriscartland.batterybutler.composeresources.generated.resources.group_location
 import com.chriscartland.batterybutler.composeresources.generated.resources.group_none
@@ -14,7 +12,6 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.sort
 import com.chriscartland.batterybutler.composeresources.generated.resources.sort_type
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeGroupOption
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeSortOption
-import com.chriscartland.batterybutler.presentationmodel.home.DensityOption
 import com.chriscartland.batterybutler.presentationmodel.home.GroupOption
 import com.chriscartland.batterybutler.presentationmodel.home.SortOption
 import org.jetbrains.compose.resources.StringResource
@@ -32,12 +29,6 @@ fun GroupOption.labelRes(): StringResource =
         GroupOption.NONE -> Res.string.group_none
         GroupOption.TYPE -> Res.string.group_type
         GroupOption.LOCATION -> Res.string.group_location
-    }
-
-fun DensityOption.labelRes(): StringResource =
-    when (this) {
-        DensityOption.EXPANDED -> Res.string.density_expanded
-        DensityOption.COMPACT -> Res.string.density_compact
     }
 
 fun DeviceTypeSortOption.labelRes(): StringResource =
