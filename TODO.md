@@ -862,7 +862,7 @@ in `libs.versions.toml`) — bump it in lockstep. Note: Kotlin **2.4.0** still n
 newer SKIE (0.10.12 maxes at 2.3.21), so the dependabot `org.jetbrains.kotlin:* >= 2.3.20`
 ignore stays until BOTH SKIE and KMP-ObservableViewModel support the target Kotlin.
 
-### bb-gr79 — Unblock & re-enable gRPC 1.79+ / Wire 6.0+ (regenerate protos)
+### bb-gr79 — Unblock & re-enable gRPC 1.79+ (regenerate protos)
 
 Dependabot's grpc group bump (grpcJava 1.63→1.81, grpc-kotlin 1.4.1→1.5.0, wire
 5.0→6.4; PR #1223) was closed 2026-06-15: gRPC ≥1.79 removed the codegen APIs the
@@ -870,12 +870,51 @@ generated stubs call (`BlockingClientCall`, `blockingV2UnaryCall`, …), produci
 compile errors in `server/app` (generated `*Grpc.java`). Version-scoped ignores
 (`io.grpc:* >= 1.79.0`, `com.squareup.wire:* >= 6.0.0`) were added in PR #1243.
 
-**To unblock:** regenerate the protos with a codegen plugin version matching the new
-gRPC (`protobufPlugin` / gRPC codegen in `server/app/build.gradle.kts`), confirm
-`server/app` compiles, then delete the grpc/wire block in `.github/dependabot.yml`
-→ `ignore:`, remove the `# gRPC 1.79+ blocked` / `# Wire 6.0+ blocked` comments in
-`libs.versions.toml`, and bump `grpcJava` / `grpc-kotlin` / `wire`. Verify
+**Wire half resolved 2026-07-30 (PR #1414).** Wire was only ever collateral here —
+#1223 bundled both, and the compile errors were entirely on the gRPC side. Wire
+generates its own client (`wire-grpc-client`, used by `data-network` + `e2e-tests`)
+and never touches `server/app`'s `*Grpc.java`. Wire 6.4.5 was verified against
+protobuf 4.35.1 (`compileKotlinDesktop`, `compileAndroidMain`, `compileKotlinIosArm64`,
+`:e2e-tests:compileKotlin`, all force-rerun) and its ignore entry removed. **Only the
+gRPC half remains blocked.**
+
+**To unblock the rest:** regenerate the protos with a codegen plugin version matching
+the new gRPC (`protobufPlugin` / gRPC codegen in `server/app/build.gradle.kts`),
+confirm `server/app` compiles, then delete the `io.grpc:*` block in
+`.github/dependabot.yml` → `ignore:`, remove the `# gRPC 1.79+ blocked` comment in
+`libs.versions.toml`, and bump `grpcJava` / `grpc-kotlin`. Verify
 `validation_compile_tests` + `build_server` (release-mode) before merge.
+
+### bb-knt-testnames — `data-network` common tests don't compile for Kotlin/Native (invisible to CI)
+
+**Found 2026-07-30** while verifying the Wire 6.4.5 bump (`bb-gr79`). Running
+`./gradlew :data-network:compileTestKotlinIosArm64` fails with six errors:
+
+```
+FirebaseIdTokenProviderTest.kt:229:9  Name contains illegal characters: ","
+FirebaseIdTokenProviderTest.kt:240:9  Name contains illegal characters: ","
+RestSyncMapperTest.kt:64:9            Name contains illegal characters: ","
+RestSyncMapperTest.kt:123:9           Name contains illegal characters: ","
+SyncGoldenFixtureTest.kt:25:9         Name contains illegal characters: "()"
+SyncGoldenFixtureTest.kt:70:9         Name contains illegal characters: "()"
+```
+
+Kotlin/Native rejects `,` and `()` inside backtick-quoted declaration names; the JVM
+accepts them, so these `commonTest` functions compile for desktop/android and fail
+only for the iOS targets.
+
+**Confirmed pre-existing, not caused by the Wire bump:** the identical task fails the
+same way with `wire = "5.5.1"` on pristine `main`.
+
+**Why CI misses it:** `validation_compile_tests` runs `./gradlew compileTestKotlin`,
+which matches only tasks named exactly `compileTestKotlin` — never the target-suffixed
+KMP variants (`compileTestKotlinIosArm64`, …). `build_ios_native` builds the framework
+from *main* sources, not test sources. So nothing in CI compiles K/N test code.
+
+**To fix:** rename the offending test functions to drop `,` and `()`, then decide
+whether to add a K/N test-compile step to `validation_compile_tests` so this can't
+regress silently again. Worth checking other KMP modules for the same latent problem
+before wiring the job up, or it will land red.
 
 ### bb-cli-backup-import — `:cli push` can't consume the app's own Export Data backup format
 
