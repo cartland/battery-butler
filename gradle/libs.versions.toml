@@ -46,7 +46,10 @@ protobufVersion = "4.35.1"
 # Requires regenerating protos with matching codegen plugin version.
 grpcJava = "1.78.0"
 grpc-kotlin = "1.5.0"
-# Wire 6.0+ blocked: bundled with gRPC group upgrade above.
+# Wire is deliberately NOT pinned with gRPC above. It was only ever collateral: PR #1223
+# bumped both at once and failed on the gRPC half (server/app's generated *Grpc.java). Wire
+# generates its own client (wire-grpc-client, used by data-network + e2e-tests) and never
+# touches those stubs, so it was unpinned on its own in PR #1414.
 wire = "6.4.5"
 screenshot = "0.0.1-alpha12"
 skie = "0.10.12"

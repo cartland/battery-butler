@@ -65,15 +65,17 @@ updates:
       # marker group while leaving org.jetbrains.kotlinx* free (kotlinx has no dot).
       - dependency-name: "org.jetbrains.kotlin.*"
         versions: [">= 2.3.10"]
-      # gRPC >= 1.79 / Wire >= 6.0 blocked: the generated gRPC stubs call codegen
-      # APIs removed in 1.79 (BlockingClientCall, blockingV2UnaryCall, ...),
-      # producing 5 compile errors in server/app. Dependabot PR #1223 (grpc group
-      # → grpcJava 1.81, wire 6.4) could not compile. grpc-kotlin (< 1.79) stays
-      # free. REMOVE after regenerating protos with a matching codegen plugin.
+      # gRPC >= 1.79 blocked: the generated gRPC stubs call codegen APIs removed in
+      # 1.79 (BlockingClientCall, blockingV2UnaryCall, ...), producing 5 compile
+      # errors in server/app. Dependabot PR #1223 (grpc group → grpcJava 1.81, wire
+      # 6.4) could not compile. grpc-kotlin (< 1.79) stays free.
+      # REMOVE after regenerating protos with a matching codegen plugin.
+      #
+      # Wire is NOT ignored: #1223 failed on the gRPC half only, and Wire generates
+      # its own client rather than server/app's *Grpc.java. Unpinned in PR #1414
+      # after verifying 6.4.5 compiles on desktop/android/iosArm64 + e2e-tests.
       - dependency-name: "io.grpc:*"
         versions: [">= 1.79.0"]
-      - dependency-name: "com.squareup.wire:*"
-        versions: [">= 6.0.0"]
       # ───────────────────────────────────────────────────────────────────────
     labels:
       - "dependencies"
