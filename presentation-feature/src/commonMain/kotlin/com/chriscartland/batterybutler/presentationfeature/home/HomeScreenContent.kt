@@ -7,6 +7,8 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
@@ -52,6 +54,7 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.add_
 import com.chriscartland.batterybutler.composeresources.generated.resources.empty_devices_message
 import com.chriscartland.batterybutler.composeresources.generated.resources.empty_devices_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.error_load_devices
+import com.chriscartland.batterybutler.composeresources.generated.resources.filter_density_label
 import com.chriscartland.batterybutler.composeresources.generated.resources.filter_group_label
 import com.chriscartland.batterybutler.composeresources.generated.resources.filter_sort_label
 import com.chriscartland.batterybutler.composeresources.generated.resources.status_syncing
@@ -76,6 +79,7 @@ import com.chriscartland.batterybutler.presentationcore.components.EmptyStateCon
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationcore.theme.Padding
 import com.chriscartland.batterybutler.presentationfeature.util.labelRes
+import com.chriscartland.batterybutler.presentationmodel.home.DensityOption
 import com.chriscartland.batterybutler.presentationmodel.home.GroupOption
 import com.chriscartland.batterybutler.presentationmodel.home.HomeScreenState
 import com.chriscartland.batterybutler.presentationmodel.home.SortOption
@@ -91,6 +95,7 @@ fun HomeScreenContent(
     onGroupOptionSelected: (GroupOption) -> Unit,
     onSortOptionToggle: () -> Unit,
     onSortOptionSelected: (SortOption) -> Unit,
+    onDensityOptionSelected: (DensityOption) -> Unit,
     onDeviceClick: (Device) -> Unit,
     onAddDeviceClick: () -> Unit,
     onRetry: () -> Unit,
@@ -159,6 +164,7 @@ fun HomeScreenContent(
                     onGroupOptionSelected = onGroupOptionSelected,
                     onSortOptionToggle = onSortOptionToggle,
                     onSortOptionSelected = onSortOptionSelected,
+                    onDensityOptionSelected = onDensityOptionSelected,
                     onDeviceClick = onDeviceClick,
                     onAddDeviceClick = onAddDeviceClick,
                     onRetry = onRetry,
@@ -204,6 +210,7 @@ fun HomeScreenContent(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun HomeScreenFilterRow(
     state: HomeScreenState,
@@ -211,16 +218,21 @@ fun HomeScreenFilterRow(
     onGroupOptionSelected: (GroupOption) -> Unit,
     onSortOptionToggle: () -> Unit,
     onSortOptionSelected: (SortOption) -> Unit,
+    onDensityOptionSelected: (DensityOption) -> Unit,
 ) {
     Column {
-        // Filter Row
-        Row(
+        // FlowRow, not Row: the three labelled controls ("Sort: Battery Age", "Group: Location",
+        // "View: Expanded") are wider than a phone at their longest, so they wrap to a second
+        // line instead of being clipped off the right edge.
+        FlowRow(
             modifier = Modifier
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(Padding.small),
+            verticalArrangement = Arrangement.spacedBy(Padding.small),
         ) {
             var sortExpanded by remember { mutableStateOf(false) }
             var groupExpanded by remember { mutableStateOf(false) }
+            var densityExpanded by remember { mutableStateOf(false) }
 
             // Sort Button (First)
             Box {
@@ -277,6 +289,36 @@ fun HomeScreenFilterRow(
                     }
                 }
             }
+
+            // Density / View Button (Third)
+            Box {
+                CompositeControl(
+                    label = composeStringResource(
+                        Res.string.filter_density_label,
+                        composeStringResource(state.densityOption.labelRes()),
+                    ),
+                    // Density has no ascending/descending concept, so the direction half of the
+                    // control is suppressed (same as "Group: None") and the toggle is a no-op.
+                    isActive = false,
+                    isAscending = true,
+                    onClicked = { densityExpanded = true },
+                    onDirectionToggle = {},
+                )
+                ButlerDropdownMenu(
+                    expanded = densityExpanded,
+                    onDismissRequest = { densityExpanded = false },
+                ) {
+                    DensityOption.entries.forEach { option ->
+                        DropdownMenuItem(
+                            text = { Text(composeStringResource(option.labelRes())) },
+                            onClick = {
+                                onDensityOptionSelected(option)
+                                densityExpanded = false
+                            },
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -289,6 +331,7 @@ fun HomeScreenList(
     onGroupOptionSelected: (GroupOption) -> Unit,
     onSortOptionToggle: () -> Unit,
     onSortOptionSelected: (SortOption) -> Unit,
+    onDensityOptionSelected: (DensityOption) -> Unit,
     onDeviceClick: (Device) -> Unit,
     onAddDeviceClick: () -> Unit,
     onRetry: () -> Unit,
@@ -327,7 +370,11 @@ fun HomeScreenList(
         LazyColumn(
             modifier = modifier.fillMaxSize(),
             contentPadding = contentPadding,
-            verticalArrangement = Arrangement.spacedBy(Padding.medium),
+            // Compact rows sit closer together — 12.dp gaps around 40.dp cards would give back
+            // most of the height the shorter card just saved.
+            verticalArrangement = Arrangement.spacedBy(
+                if (state.densityOption == DensityOption.COMPACT) Padding.small else Padding.medium,
+            ),
         ) {
             item {
                 HomeScreenFilterRow(
@@ -336,6 +383,7 @@ fun HomeScreenList(
                     onGroupOptionSelected = onGroupOptionSelected,
                     onSortOptionToggle = onSortOptionToggle,
                     onSortOptionSelected = onSortOptionSelected,
+                    onDensityOptionSelected = onDensityOptionSelected,
                 )
             }
             item {
@@ -366,6 +414,7 @@ fun HomeScreenList(
                         onClick = { onDeviceClick(device) },
                         nowInstant = nowInstant,
                         imageBytes = device.imageEtag?.let { state.deviceImagesByEtag[it] },
+                        density = state.densityOption,
                     )
                 }
             }
@@ -437,6 +486,7 @@ fun HomeScreenPreview() {
             onGroupOptionSelected = {},
             onSortOptionToggle = {},
             onSortOptionSelected = {},
+            onDensityOptionSelected = {},
             onDeviceClick = {},
             onAddDeviceClick = {},
             onRetry = {},
@@ -456,6 +506,7 @@ fun HomeScreenErrorPreview() {
             onGroupOptionSelected = {},
             onSortOptionToggle = {},
             onSortOptionSelected = {},
+            onDensityOptionSelected = {},
             onDeviceClick = {},
             onAddDeviceClick = {},
             onRetry = {},
@@ -475,6 +526,7 @@ fun HomeScreenEmptyPreview() {
             onGroupOptionSelected = {},
             onSortOptionToggle = {},
             onSortOptionSelected = {},
+            onDensityOptionSelected = {},
             onDeviceClick = {},
             onAddDeviceClick = {},
             onRetry = {},
@@ -496,6 +548,7 @@ fun HomeScreenFilterRowPreview() {
                 onGroupOptionSelected = {},
                 onSortOptionToggle = {},
                 onSortOptionSelected = {},
+                onDensityOptionSelected = {},
             )
         }
     }
@@ -519,11 +572,83 @@ fun HomeScreenListPreview() {
             onGroupOptionSelected = {},
             onSortOptionToggle = {},
             onSortOptionSelected = {},
+            onDensityOptionSelected = {},
             onDeviceClick = {},
             onAddDeviceClick = {},
             onRetry = {},
             contentPadding = androidx.compose.foundation.layout
                 .PaddingValues(16.dp),
+            nowInstant = nowInstant,
+        )
+    }
+}
+
+/**
+ * The whole Home screen in compact density — the wrapping filter row plus several single-line
+ * device cards, which is what the density toggle is really about.
+ */
+@OptIn(ExperimentalTime::class, ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@Preview(showBackground = true)
+@Composable
+fun HomeScreenCompactPreview() {
+    BatteryButlerTheme {
+        val nowInstant = Instant.parse("2026-01-18T17:00:00Z")
+        val smokeType = DeviceType("type1", "Smoke Alarm", "detector_smoke")
+        val coType = DeviceType("type2", "CO Detector", "detector_co")
+        val devices = listOf(
+            Device("dev1", "Kitchen Smoke", "type1", Instant.parse("2026-01-13T17:00:00Z"), nowInstant, "Kitchen"),
+            Device("dev2", "Hallway CO Detector", "type2", Instant.parse("2025-07-02T17:00:00Z"), nowInstant, "Hallway"),
+            Device("dev3", "Bedroom Smoke", "type1", Instant.parse("2024-12-02T17:00:00Z"), nowInstant, "Bedroom"),
+            Device("dev4", "Garage Smoke", "type1", Instant.parse("2025-11-20T17:00:00Z"), nowInstant, "Garage"),
+        )
+        HomeScreenContent(
+            state = HomeScreenState(
+                groupedDevices = mapOf("All Devices" to devices),
+                deviceTypes = mapOf("type1" to smokeType, "type2" to coType),
+                densityOption = DensityOption.COMPACT,
+            ),
+            onGroupOptionToggle = {},
+            onGroupOptionSelected = {},
+            onSortOptionToggle = {},
+            onSortOptionSelected = {},
+            onDensityOptionSelected = {},
+            onDeviceClick = {},
+            onAddDeviceClick = {},
+            onRetry = {},
+            nowInstant = nowInstant,
+        )
+    }
+}
+
+/** The same devices in expanded density, as an A/B reference against [HomeScreenCompactPreview]. */
+@OptIn(ExperimentalTime::class, ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@Preview(showBackground = true)
+@Composable
+fun HomeScreenExpandedPreview() {
+    BatteryButlerTheme {
+        val nowInstant = Instant.parse("2026-01-18T17:00:00Z")
+        val smokeType = DeviceType("type1", "Smoke Alarm", "detector_smoke")
+        val coType = DeviceType("type2", "CO Detector", "detector_co")
+        val devices = listOf(
+            Device("dev1", "Kitchen Smoke", "type1", Instant.parse("2026-01-13T17:00:00Z"), nowInstant, "Kitchen"),
+            Device("dev2", "Hallway CO Detector", "type2", Instant.parse("2025-07-02T17:00:00Z"), nowInstant, "Hallway"),
+            Device("dev3", "Bedroom Smoke", "type1", Instant.parse("2024-12-02T17:00:00Z"), nowInstant, "Bedroom"),
+            Device("dev4", "Garage Smoke", "type1", Instant.parse("2025-11-20T17:00:00Z"), nowInstant, "Garage"),
+        )
+        HomeScreenContent(
+            state = HomeScreenState(
+                groupedDevices = mapOf("All Devices" to devices),
+                deviceTypes = mapOf("type1" to smokeType, "type2" to coType),
+                densityOption = DensityOption.EXPANDED,
+            ),
+            onGroupOptionToggle = {},
+            onGroupOptionSelected = {},
+            onSortOptionToggle = {},
+            onSortOptionSelected = {},
+            onDensityOptionSelected = {},
+            onDeviceClick = {},
+            onAddDeviceClick = {},
+            onRetry = {},
             nowInstant = nowInstant,
         )
     }

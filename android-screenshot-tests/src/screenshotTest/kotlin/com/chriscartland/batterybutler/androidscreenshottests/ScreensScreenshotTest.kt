@@ -16,8 +16,10 @@ import com.chriscartland.batterybutler.presentationfeature.editdevice.EditDevice
 import com.chriscartland.batterybutler.presentationfeature.history.HistoryListContentEmptyPreview
 import com.chriscartland.batterybutler.presentationfeature.history.HistoryListContentErrorPreview
 import com.chriscartland.batterybutler.presentationfeature.history.HistoryListContentLoadingPreview
+import com.chriscartland.batterybutler.presentationfeature.home.HomeScreenCompactPreview
 import com.chriscartland.batterybutler.presentationfeature.home.HomeScreenEmptyPreview
 import com.chriscartland.batterybutler.presentationfeature.home.HomeScreenErrorPreview
+import com.chriscartland.batterybutler.presentationfeature.home.HomeScreenExpandedPreview
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
@@ -28,6 +30,28 @@ import kotlin.time.ExperimentalTime
 fun HomeScreenEmptyPreviewTest() {
     ScreenshotTestTheme {
         HomeScreenEmptyPreview()
+    }
+}
+
+@OptIn(ExperimentalTime::class)
+@PreviewTest
+@Preview(showBackground = true, name = "Light")
+@Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun HomeScreenCompactPreviewTest() {
+    ScreenshotTestTheme {
+        HomeScreenCompactPreview()
+    }
+}
+
+@OptIn(ExperimentalTime::class)
+@PreviewTest
+@Preview(showBackground = true, name = "Light")
+@Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun HomeScreenExpandedPreviewTest() {
+    ScreenshotTestTheme {
+        HomeScreenExpandedPreview()
     }
 }
 

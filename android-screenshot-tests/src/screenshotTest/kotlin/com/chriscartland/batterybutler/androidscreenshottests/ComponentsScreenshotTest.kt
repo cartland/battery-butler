@@ -8,6 +8,8 @@ import com.chriscartland.batterybutler.presentationcore.components.AddItemCardPr
 import com.chriscartland.batterybutler.presentationcore.components.ButlerIconBoxPreview
 import com.chriscartland.batterybutler.presentationcore.components.ButlerListItemCardPreview
 import com.chriscartland.batterybutler.presentationcore.components.CompositeControlPreview
+import com.chriscartland.batterybutler.presentationcore.components.DeviceListItemCompactListPreview
+import com.chriscartland.batterybutler.presentationcore.components.DeviceListItemCompactPreview
 import com.chriscartland.batterybutler.presentationcore.components.DeviceListItemOldPreview
 import com.chriscartland.batterybutler.presentationcore.components.DeviceListItemPreview
 import com.chriscartland.batterybutler.presentationcore.components.DeviceListItemVeryOldPreview
@@ -104,6 +106,26 @@ fun DeviceListItemOldPreviewTest() {
 fun DeviceListItemVeryOldPreviewTest() {
     ScreenshotTestTheme {
         DeviceListItemVeryOldPreview()
+    }
+}
+
+@PreviewTest
+@Preview(showBackground = true, name = "Light")
+@Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun DeviceListItemCompactPreviewTest() {
+    ScreenshotTestTheme {
+        DeviceListItemCompactPreview()
+    }
+}
+
+@PreviewTest
+@Preview(showBackground = true, name = "Light")
+@Preview(showBackground = true, name = "Dark", uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun DeviceListItemCompactListPreviewTest() {
+    ScreenshotTestTheme {
+        DeviceListItemCompactListPreview()
     }
 }
 

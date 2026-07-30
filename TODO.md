@@ -472,6 +472,25 @@ the decode runs on, not *how much* work it does.
 
 ## P3
 
+### bb-density-ios — SwiftUI parity for the device list Compact/Expanded view option
+
+The Compose side shipped the `DensityOption` (View: Expanded / Compact) control on the Home
+device list — see "Device List Density" in `.agent/project.md`. That covers Android, Desktop,
+and the Compose iOS app.
+
+The **native SwiftUI app is not wired up**: `ios-app-swift-ui/Features/Home/HomeScreen.swift`'s
+`HomeFilterRow` still shows only Sort and Group, and `DeviceRow` ignores
+`state.densityOption` (it always renders the two-line layout). The shared state already carries
+the value, so nothing is broken — iOS just can't change or honor it.
+
+To close: add a density `Menu` to `HomeFilterRow` (mirroring the Sort/Group menus), thread an
+`onDensityOptionSelected` callback through `HomeScreen` to
+`viewModel.onDensityOptionSelected(option:)`, and give `DeviceRow` a compact branch (drop the
+`type • location` subtitle, shrink `ButlerIconBox`, single-line age — iOS already renders age as
+`"\(days)d"`). Then regenerate iOS snapshots and add a compact `HomeScreenTests` case.
+Note `validation_ios_ui` is dev-mode-skipped on PRs, so verify locally with `xcodebuild` or
+dispatch release-mode CI on the branch.
+
 ### bb-kotlin-skie-upgrade — Upgrade SKIE + Kotlin together past the 2.3.0/0.10.9 pair
 
 Kotlin is now pinned at `< 2.3.10` in `.github/dependabot.yml` (tightened from `< 2.3.20`

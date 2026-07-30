@@ -4,6 +4,7 @@ import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceImageBytes
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.SyncStatus
+import com.chriscartland.batterybutler.presentationmodel.home.DensityOption
 import com.chriscartland.batterybutler.presentationmodel.home.GroupOption
 import com.chriscartland.batterybutler.presentationmodel.home.HomeScreenState
 import com.chriscartland.batterybutler.presentationmodel.home.SortOption
@@ -52,6 +53,7 @@ class HomeViewModel(
     private val groupOptionFlow = MutableStateFlow(GroupOption.NONE)
     private val isSortAscendingFlow = MutableStateFlow(false)
     private val isGroupAscendingFlow = MutableStateFlow(true)
+    private val densityOptionFlow = MutableStateFlow(DensityOption.EXPANDED)
     private val exportDataFlow = MutableStateFlow<String?>(null)
     private var autoDismissJob: Job? = null
 
@@ -90,21 +92,24 @@ class HomeViewModel(
         initialValue = HomeScreenState(),
         onError = { HomeScreenState(error = it.message ?: "Failed to load devices") },
         source = {
+            // `combine`'s typed overloads top out at five flows, so the five list-display options
+            // fill the inner combine and `exportDataFlow` (unrelated to display) rides on the outer.
             combine(
                 combine(
                     sortOptionFlow,
                     groupOptionFlow,
                     isSortAscendingFlow,
                     isGroupAscendingFlow,
-                    exportDataFlow,
-                ) { sort, group, isSortAscending, isGroupAscending, exportData ->
-                    SortConfig(sort, group, isSortAscending, isGroupAscending, exportData)
+                    densityOptionFlow,
+                ) { sort, group, isSortAscending, isGroupAscending, density ->
+                    DisplayConfig(sort, group, isSortAscending, isGroupAscending, density)
                 },
                 getDevicesUseCase(),
                 getDeviceTypesUseCase(),
                 getSyncStatusUseCase(),
-            ) { config, devices, types, syncStatus ->
-                DeviceListInputs(config, devices, types, syncStatus)
+                exportDataFlow,
+            ) { config, devices, types, syncStatus, exportData ->
+                DeviceListInputs(config, devices, types, syncStatus, exportData)
             }.flatMapLatest { inputs ->
                 // Liveness guard: the image observation's first value comes from real DB queries
                 // (one Room flow per etag combined), so without a seed the WHOLE uiState would
@@ -117,7 +122,7 @@ class HomeViewModel(
                     .onEach { lastKnownImages = it }
                     .map { images -> inputs to images }
             }.map { (inputs, images) ->
-                val (config, devices, types, syncStatus) = inputs
+                val (config, devices, types, syncStatus, exportData) = inputs
                 val typeMap = types.associateBy { it.id }
 
                 val sortComparator = when (config.sort) {
@@ -149,9 +154,10 @@ class HomeViewModel(
                     groupOption = config.group,
                     isSortAscending = config.isSortAscending,
                     isGroupAscending = config.isGroupAscending,
-                    exportData = config.exportData,
+                    exportData = exportData,
                     syncStatus = syncStatus,
                     deviceImagesByEtag = images,
+                    densityOption = config.density,
                 )
             }
         },
@@ -163,6 +169,10 @@ class HomeViewModel(
 
     fun onGroupOptionSelected(option: GroupOption) {
         groupOptionFlow.value = option
+    }
+
+    fun onDensityOptionSelected(option: DensityOption) {
+        densityOptionFlow.value = option
     }
 
     fun toggleSortDirection() {
@@ -216,17 +226,18 @@ class HomeViewModel(
     }
 }
 
-private data class SortConfig(
+private data class DisplayConfig(
     val sort: SortOption,
     val group: GroupOption,
     val isSortAscending: Boolean,
     val isGroupAscending: Boolean,
-    val exportData: String?,
+    val density: DensityOption,
 )
 
 private data class DeviceListInputs(
-    val config: SortConfig,
+    val config: DisplayConfig,
     val devices: List<Device>,
     val types: List<DeviceType>,
     val syncStatus: SyncStatus,
+    val exportData: String?,
 )

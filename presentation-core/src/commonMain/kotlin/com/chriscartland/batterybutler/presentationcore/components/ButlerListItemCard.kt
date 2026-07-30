@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,17 +29,25 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationcore.theme.IconSize
 import com.chriscartland.batterybutler.presentationcore.theme.Padding
 
+/**
+ * @param contentPadding padding inside the card, around the leading/content/trailing row. Compact
+ *   rows tighten the vertical component so the card is only as tall as one line of text.
+ * @param leadingSpacing gap between [leading] and [content].
+ */
 @Composable
 fun ButlerListItemCard(
     onClick: () -> Unit,
     leading: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     colors: CardColors = CardDefaults.cardColors(),
+    contentPadding: PaddingValues = PaddingValues(Padding.standard),
+    leadingSpacing: Dp = Padding.standard,
     trailing: (@Composable () -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
@@ -56,12 +65,12 @@ fun ButlerListItemCard(
         shape = shape,
     ) {
         Row(
-            modifier = Modifier.padding(Padding.standard),
+            modifier = Modifier.padding(contentPadding),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             leading()
 
-            Spacer(modifier = Modifier.width(Padding.standard))
+            Spacer(modifier = Modifier.width(leadingSpacing))
 
             Column(modifier = Modifier.weight(1f)) {
                 content()
@@ -81,10 +90,12 @@ fun ButlerIconBox(
     modifier: Modifier = Modifier,
     containerColor: Color = MaterialTheme.colorScheme.primaryContainer,
     contentColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
+    size: Dp = ButlerIconBoxDefaults.Size,
+    iconSize: Dp = IconSize.Medium,
 ) {
     Box(
         modifier = modifier
-            .size(48.dp)
+            .size(size)
             .clip(MaterialTheme.shapes.small)
             .background(containerColor),
         contentAlignment = Alignment.Center,
@@ -93,9 +104,20 @@ fun ButlerIconBox(
             imageVector = icon,
             contentDescription = contentDescription,
             tint = contentColor,
-            modifier = Modifier.size(IconSize.Medium),
+            modifier = Modifier.size(iconSize),
         )
     }
+}
+
+object ButlerIconBoxDefaults {
+    /** Standard leading icon/photo size for a two-line list row. */
+    val Size = 48.dp
+
+    /**
+     * Leading icon/photo size for a single-line (compact) list row. Kept at or below the line
+     * height of `titleMedium` so the icon never makes the card taller than its text needs.
+     */
+    val CompactSize = 24.dp
 }
 
 @Preview(showBackground = true)

@@ -14,9 +14,14 @@
     <string name="sort_battery_type">Battery Type</string>
     <string name="group_battery_type">Battery Type</string>
 
+    <!-- DensityOption -->
+    <string name="density_expanded">Expanded</string>
+    <string name="density_compact">Compact</string>
+
     <!-- Sort/Group filter labels -->
     <string name="filter_sort_label">Sort: %1$s</string>
     <string name="filter_group_label">Group: %1$s</string>
+    <string name="filter_density_label">View: %1$s</string>
 
     <!-- Main Tabs -->
     <string name="tab_devices">Devices</string>

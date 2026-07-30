@@ -47,6 +47,7 @@ fun DevicesScreenRoot(
         onGroupOptionSelected = { viewModel.onGroupOptionSelected(it) },
         onSortOptionToggle = { viewModel.toggleSortDirection() },
         onSortOptionSelected = { viewModel.onSortOptionSelected(it) },
+        onDensityOptionSelected = { viewModel.onDensityOptionSelected(it) },
         onDeviceClick = { onDeviceClick(it.id) },
         onAddDeviceClick = onAddDeviceClick,
         onRetry = { viewModel.retry() },

@@ -94,6 +94,7 @@ import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeL
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeSortOption
 import com.chriscartland.batterybutler.presentationmodel.history.HistoryItemModel
 import com.chriscartland.batterybutler.presentationmodel.history.HistoryListScreenState
+import com.chriscartland.batterybutler.presentationmodel.home.DensityOption
 import com.chriscartland.batterybutler.presentationmodel.home.GroupOption
 import com.chriscartland.batterybutler.presentationmodel.home.HomeScreenState
 import com.chriscartland.batterybutler.presentationmodel.home.SortOption
@@ -415,6 +416,7 @@ fun DevicesScreen(
     onGroupOptionSelected: (GroupOption) -> Unit,
     onSortOptionToggle: () -> Unit,
     onSortOptionSelected: (SortOption) -> Unit,
+    onDensityOptionSelected: (DensityOption) -> Unit,
     onRetry: () -> Unit,
     aiMessages: List<ChatMessage>,
     isAiProcessing: Boolean,
@@ -443,6 +445,7 @@ fun DevicesScreen(
             onGroupOptionSelected = onGroupOptionSelected,
             onSortOptionToggle = onSortOptionToggle,
             onSortOptionSelected = onSortOptionSelected,
+            onDensityOptionSelected = onDensityOptionSelected,
             onDeviceClick = { onDeviceClick(it.id) },
             onAddDeviceClick = onAddDeviceClick,
             onRetry = onRetry,
@@ -563,6 +566,7 @@ fun DevicesScreenPreview() {
                 onGroupOptionSelected = {},
                 onSortOptionToggle = {},
                 onSortOptionSelected = {},
+                onDensityOptionSelected = {},
                 aiMessages = emptyList(),
                 isAiProcessing = false,
                 isAiExpanded = false,
@@ -662,6 +666,7 @@ fun AiBarCollapsedDevicesPreview() {
                 onGroupOptionSelected = {},
                 onSortOptionToggle = {},
                 onSortOptionSelected = {},
+                onDensityOptionSelected = {},
                 aiMessages = emptyList(),
                 isAiProcessing = false,
                 isAiExpanded = false,
@@ -761,6 +766,7 @@ fun AiOverlayExpandedPreview() {
                 onGroupOptionSelected = {},
                 onSortOptionToggle = {},
                 onSortOptionSelected = {},
+                onDensityOptionSelected = {},
                 aiMessages = listOf(
                     ChatMessage("1", "Add a smoke detector in the kitchen", isUser = true),
                     ChatMessage(
@@ -803,6 +809,7 @@ fun AiOverlayFullHeightPreview() {
                 onGroupOptionSelected = {},
                 onSortOptionToggle = {},
                 onSortOptionSelected = {},
+                onDensityOptionSelected = {},
                 aiMessages = listOf(
                     ChatMessage("1", "Add a smoke detector in the kitchen", isUser = true),
                     ChatMessage(

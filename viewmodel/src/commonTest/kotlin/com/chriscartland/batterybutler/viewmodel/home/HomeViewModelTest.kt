@@ -7,6 +7,7 @@ import com.chriscartland.batterybutler.domain.model.DispatcherProvider
 import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.repository.DeviceImageRepository
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
+import com.chriscartland.batterybutler.presentationmodel.home.DensityOption
 import com.chriscartland.batterybutler.presentationmodel.home.GroupOption
 import com.chriscartland.batterybutler.presentationmodel.home.SortOption
 import com.chriscartland.batterybutler.testcommon.FakeDeviceImageRepository
@@ -157,6 +158,52 @@ class HomeViewModelTest {
 
             val state = viewModel.uiState.first { it.groupOption == GroupOption.TYPE }
             assertEquals(GroupOption.TYPE, state.groupOption)
+        }
+
+    @Test
+    fun `density option defaults to expanded`() =
+        runTest {
+            val repo = FakeDeviceRepository()
+            val viewModel = createViewModel(repo)
+
+            val state = viewModel.uiState.first()
+
+            assertEquals(DensityOption.EXPANDED, state.densityOption)
+        }
+
+    @Test
+    fun `onDensityOptionSelected changes density option`() =
+        runTest {
+            val repo = FakeDeviceRepository()
+            val viewModel = createViewModel(repo)
+
+            viewModel.onDensityOptionSelected(DensityOption.COMPACT)
+
+            val state = viewModel.uiState.first { it.densityOption == DensityOption.COMPACT }
+            assertEquals(DensityOption.COMPACT, state.densityOption)
+        }
+
+    /**
+     * Density is a pure display toggle: it must not disturb the sort/group work the same
+     * `combine` feeds. Guards the two-step combine wiring (five display options inner, exportData
+     * outer) against silently dropping or reordering an input.
+     */
+    @Test
+    fun `changing density preserves sort and group selections`() =
+        runTest {
+            val repo = FakeDeviceRepository()
+            val viewModel = createViewModel(repo)
+
+            viewModel.onSortOptionSelected(SortOption.NAME)
+            viewModel.onGroupOptionSelected(GroupOption.TYPE)
+            viewModel.toggleSortDirection()
+            viewModel.onDensityOptionSelected(DensityOption.COMPACT)
+
+            val state = viewModel.uiState.first { it.densityOption == DensityOption.COMPACT }
+
+            assertEquals(SortOption.NAME, state.sortOption)
+            assertEquals(GroupOption.TYPE, state.groupOption)
+            assertTrue(state.isSortAscending)
         }
 
     @Test
