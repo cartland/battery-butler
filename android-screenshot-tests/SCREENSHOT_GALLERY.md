@@ -2,7 +2,7 @@
 
 # Screenshot Gallery
 
-Generated on Fri Jul 24 15:07:15 UTC 2026
+Generated on Wed Jul 29 20:48:14 PDT 2026
 
 ## Table of Contents
 - [AddDeviceScreenshotTestKt](#adddevicescreenshottestkt)
@@ -94,6 +94,18 @@ Generated on Fri Jul 24 15:07:15 UTC 2026
 ### CompositeControlPreviewTest_Light_fc5b723e_0
 <img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ComponentsScreenshotTestKt/CompositeControlPreviewTest_Light_fc5b723e_0.png" width="300" />
 
+### DeviceListItemCompactListPreviewTest_Dark_77106447_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ComponentsScreenshotTestKt/DeviceListItemCompactListPreviewTest_Dark_77106447_0.png" width="300" />
+
+### DeviceListItemCompactListPreviewTest_Light_fc5b723e_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ComponentsScreenshotTestKt/DeviceListItemCompactListPreviewTest_Light_fc5b723e_0.png" width="300" />
+
+### DeviceListItemCompactPreviewTest_Dark_77106447_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ComponentsScreenshotTestKt/DeviceListItemCompactPreviewTest_Dark_77106447_0.png" width="300" />
+
+### DeviceListItemCompactPreviewTest_Light_fc5b723e_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ComponentsScreenshotTestKt/DeviceListItemCompactPreviewTest_Light_fc5b723e_0.png" width="300" />
+
 ### DeviceListItemOldPreviewTest_Dark_77106447_0
 <img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ComponentsScreenshotTestKt/DeviceListItemOldPreviewTest_Dark_77106447_0.png" width="300" />
 
@@ -141,6 +153,12 @@ Generated on Fri Jul 24 15:07:15 UTC 2026
 
 ### HistoryListItemPreviewTest_Light_fc5b723e_0
 <img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ComponentsScreenshotTestKt/HistoryListItemPreviewTest_Light_fc5b723e_0.png" width="300" />
+
+### IconControlPreviewTest_Dark_77106447_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ComponentsScreenshotTestKt/IconControlPreviewTest_Dark_77106447_0.png" width="300" />
+
+### IconControlPreviewTest_Light_fc5b723e_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ComponentsScreenshotTestKt/IconControlPreviewTest_Light_fc5b723e_0.png" width="300" />
 
 ## CounterScreenshotTestKt
 
@@ -497,6 +515,12 @@ Generated on Fri Jul 24 15:07:15 UTC 2026
 ### HistoryListLoadingPreviewTest_Light_fc5b723e_0
 <img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/HistoryListLoadingPreviewTest_Light_fc5b723e_0.png" width="300" />
 
+### HomeScreenCompactPreviewTest_Dark_77106447_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/HomeScreenCompactPreviewTest_Dark_77106447_0.png" width="300" />
+
+### HomeScreenCompactPreviewTest_Light_fc5b723e_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/HomeScreenCompactPreviewTest_Light_fc5b723e_0.png" width="300" />
+
 ### HomeScreenEmptyPreviewTest_Dark_77106447_0
 <img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/HomeScreenEmptyPreviewTest_Dark_77106447_0.png" width="300" />
 
@@ -508,6 +532,12 @@ Generated on Fri Jul 24 15:07:15 UTC 2026
 
 ### HomeScreenErrorPreviewTest_Light_fc5b723e_0
 <img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/HomeScreenErrorPreviewTest_Light_fc5b723e_0.png" width="300" />
+
+### HomeScreenExpandedPreviewTest_Dark_77106447_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/HomeScreenExpandedPreviewTest_Dark_77106447_0.png" width="300" />
+
+### HomeScreenExpandedPreviewTest_Light_fc5b723e_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/ScreensScreenshotTestKt/HomeScreenExpandedPreviewTest_Light_fc5b723e_0.png" width="300" />
 
 ## TopAppBarScreenshotTestKt
 

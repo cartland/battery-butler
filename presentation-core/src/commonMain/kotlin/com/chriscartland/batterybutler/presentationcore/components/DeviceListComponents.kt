@@ -6,8 +6,10 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -19,6 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -31,6 +34,8 @@ import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationcore.theme.IconSize
 import com.chriscartland.batterybutler.presentationcore.theme.LocalButlerColors
+import com.chriscartland.batterybutler.presentationcore.theme.Padding
+import com.chriscartland.batterybutler.presentationmodel.home.DensityOption
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.daysUntil
 import kotlinx.datetime.toLocalDateTime
@@ -54,6 +59,23 @@ private fun batteryAgeColor(days: Int?): Color {
     }
 }
 
+/** Single-line battery age for a compact row, e.g. "5 days" / "1 day" / "—". */
+private fun compactAgeLabel(days: Int?): String =
+    when {
+        days == null -> "—"
+        days == 1 -> "$days day"
+        else -> "$days days"
+    }
+
+/**
+ * A device row in the Home list.
+ *
+ * [density] controls how much vertical room the row takes:
+ * - [DensityOption.EXPANDED] (default): a 48.dp icon/photo, the device name, and a
+ *   "type • location" secondary line, with the battery age stacked in the trailing slot.
+ * - [DensityOption.COMPACT]: name only, battery age on a single trailing line, and a 24.dp
+ *   icon/photo so nothing in the row is taller than the text itself.
+ */
 @OptIn(kotlin.time.ExperimentalTime::class)
 @Composable
 fun DeviceListItem(
@@ -63,6 +85,7 @@ fun DeviceListItem(
     modifier: Modifier = Modifier,
     nowInstant: Instant = Clock.System.now(),
     imageBytes: DeviceImageBytes? = null,
+    density: DensityOption = DensityOption.EXPANDED,
 ) {
     val daysInt = remember(device.batteryLastReplaced, nowInstant) {
         if (device.batteryLastReplaced.toEpochMilliseconds() == 0L) {
@@ -76,10 +99,18 @@ fun DeviceListItem(
     }
 
     val ageColor = batteryAgeColor(daysInt)
+    val isCompact = density == DensityOption.COMPACT
+    val leadingSize = if (isCompact) ButlerIconBoxDefaults.CompactSize else ButlerIconBoxDefaults.Size
 
     ButlerListItemCard(
         onClick = onClick,
         modifier = modifier,
+        contentPadding = if (isCompact) {
+            PaddingValues(horizontal = Padding.standard, vertical = Padding.small)
+        } else {
+            PaddingValues(Padding.standard)
+        },
+        leadingSpacing = if (isCompact) Padding.medium else Padding.standard,
         leading = {
             val imageBitmap = rememberDeviceImageBitmap(device.imageEtag, imageBytes)
             if (imageBitmap != null) {
@@ -87,7 +118,7 @@ fun DeviceListItem(
                     bitmap = imageBitmap,
                     contentDescription = composeStringResource(Res.string.content_desc_device_photo),
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.size(48.dp).clip(MaterialTheme.shapes.small),
+                    modifier = Modifier.size(leadingSize).clip(MaterialTheme.shapes.small),
                 )
             } else {
                 val accent = DeviceIconMapper.getResolvedIconAccent(deviceType?.defaultIcon)
@@ -96,29 +127,45 @@ fun DeviceListItem(
                     contentDescription = deviceType?.name ?: "Device Icon",
                     containerColor = accent.container,
                     contentColor = accent.content,
+                    size = leadingSize,
+                    iconSize = if (isCompact) IconSize.ExtraSmall else IconSize.Medium,
                 )
             }
         },
         trailing = {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.width(64.dp),
-            ) {
+            if (isCompact) {
+                // widthIn (not width) so a four-digit age still right-aligns without truncating.
+                val ageLabel = compactAgeLabel(daysInt)
                 Text(
-                    text = daysInt?.toString() ?: "—",
-                    style = MaterialTheme.typography.titleLarge,
+                    text = ageLabel,
+                    style = MaterialTheme.typography.labelLarge,
                     color = ageColor,
                     fontWeight = if (daysInt != null) FontWeight.Bold else null,
+                    maxLines = 1,
+                    textAlign = TextAlign.End,
+                    modifier = Modifier.widthIn(min = 64.dp),
                 )
-                Text(
-                    text = when {
-                        daysInt == null -> ""
-                        daysInt == 1 -> "day"
-                        else -> "days"
-                    },
-                    style = MaterialTheme.typography.labelSmall,
-                    color = ageColor,
-                )
+            } else {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.width(64.dp),
+                ) {
+                    Text(
+                        text = daysInt?.toString() ?: "—",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = ageColor,
+                        fontWeight = if (daysInt != null) FontWeight.Bold else null,
+                    )
+                    Text(
+                        text = when {
+                            daysInt == null -> ""
+                            daysInt == 1 -> "day"
+                            else -> "days"
+                        },
+                        style = MaterialTheme.typography.labelSmall,
+                        color = ageColor,
+                    )
+                }
             }
         },
     ) {
@@ -129,21 +176,23 @@ fun DeviceListItem(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
-        val typeName = deviceType?.name ?: "Unknown Type"
-        val location = device.location
-        val secondaryText = if (location.isNullOrBlank()) {
-            typeName
-        } else {
-            "$typeName • $location"
-        }
+        if (!isCompact) {
+            val typeName = deviceType?.name ?: "Unknown Type"
+            val location = device.location
+            val secondaryText = if (location.isNullOrBlank()) {
+                typeName
+            } else {
+                "$typeName • $location"
+            }
 
-        Text(
-            text = secondaryText,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
+            Text(
+                text = secondaryText,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
     }
 }
 
@@ -261,6 +310,84 @@ fun DeviceListItemVeryOldPreview() {
             onClick = {},
             nowInstant = nowInstant,
         )
+    }
+}
+
+@OptIn(kotlin.time.ExperimentalTime::class)
+@Preview(showBackground = true)
+@Composable
+fun DeviceListItemCompactPreview() {
+    BatteryButlerTheme {
+        val nowInstant = Instant.parse("2026-01-18T17:00:00Z")
+        val batteryReplacedInstant = Instant.parse("2026-01-13T17:00:00Z") // 5 days ago
+        val device = Device("dev1", "Kitchen Smoke", "type1", batteryReplacedInstant, nowInstant, "Kitchen")
+        val type = DeviceType("type1", "Smoke Alarm", "detector_smoke")
+        DeviceListItem(
+            device = device,
+            deviceType = type,
+            onClick = {},
+            nowInstant = nowInstant,
+            density = DensityOption.COMPACT,
+        )
+    }
+}
+
+/** Compact rows stacked, to check that consecutive short cards read as a dense list. */
+@OptIn(kotlin.time.ExperimentalTime::class)
+@Preview(showBackground = true)
+@Composable
+fun DeviceListItemCompactListPreview() {
+    BatteryButlerTheme {
+        val nowInstant = Instant.parse("2026-01-18T17:00:00Z")
+        val smokeType = DeviceType("type1", "Smoke Alarm", "detector_smoke")
+        val coType = DeviceType("type2", "CO Detector", "detector_co")
+        Column(
+            verticalArrangement = androidx.compose.foundation.layout.Arrangement
+                .spacedBy(Padding.medium),
+        ) {
+            DeviceListItem(
+                device = Device(
+                    "dev1",
+                    "Kitchen Smoke",
+                    "type1",
+                    Instant.parse("2026-01-13T17:00:00Z"), // 5 days
+                    nowInstant,
+                    "Kitchen",
+                ),
+                deviceType = smokeType,
+                onClick = {},
+                nowInstant = nowInstant,
+                density = DensityOption.COMPACT,
+            )
+            DeviceListItem(
+                device = Device(
+                    "dev2",
+                    "Hallway CO Detector",
+                    "type2",
+                    Instant.parse("2025-07-02T17:00:00Z"), // 200 days
+                    nowInstant,
+                    "Hallway",
+                ),
+                deviceType = coType,
+                onClick = {},
+                nowInstant = nowInstant,
+                density = DensityOption.COMPACT,
+            )
+            DeviceListItem(
+                device = Device(
+                    "dev3",
+                    "Bedroom Smoke",
+                    "type1",
+                    Instant.parse("2024-12-02T17:00:00Z"), // 412 days
+                    nowInstant,
+                    "Bedroom",
+                ),
+                deviceType = smokeType,
+                onClick = {},
+                nowInstant = nowInstant,
+                density = DensityOption.COMPACT,
+            )
+        }
     }
 }
 

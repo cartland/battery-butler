@@ -128,13 +128,15 @@ final class KmpInteropTests: XCTestCase {
             exportData: nil,
             syncStatus: SyncStatusIdle(),
             error: nil,
-            deviceImagesByEtag: [:]
+            deviceImagesByEtag: [:],
+            densityOption: .expanded
         )
         XCTAssertTrue(state.isSortAscending)
         XCTAssertEqual(state.sortOption, .name)
         XCTAssertEqual(state.groupOption, .none)
         XCTAssertNil(state.exportData)
         XCTAssertNil(state.error)
+        XCTAssertEqual(state.densityOption, .expanded)
     }
 
     // MARK: - Sealed Interface Subtypes

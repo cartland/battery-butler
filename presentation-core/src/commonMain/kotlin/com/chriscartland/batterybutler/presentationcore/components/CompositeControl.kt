@@ -3,6 +3,7 @@ package com.chriscartland.batterybutler.presentationcore.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -14,6 +15,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowUpward
+import androidx.compose.material.icons.filled.DensityLarge
+import androidx.compose.material.icons.filled.DensitySmall
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -23,11 +26,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationcore.theme.IconSize
 import com.chriscartland.batterybutler.presentationcore.theme.Padding
+
+/** Shared height for filter-row controls, so [CompositeControl] and [IconControl] line up. */
+private val ControlSize = 32.dp
 
 @Composable
 fun CompositeControl(
@@ -45,7 +52,7 @@ fun CompositeControl(
 
     Surface(
         modifier = modifier
-            .height(32.dp)
+            .height(ControlSize)
             .border(1.dp, borderColor, shape)
             .clip(shape),
         color = containerColor,
@@ -56,7 +63,7 @@ fun CompositeControl(
                 Box(
                     modifier = Modifier
                         .fillMaxHeight()
-                        .width(32.dp)
+                        .width(ControlSize)
                         .clickable { onDirectionToggle() },
                     contentAlignment = Alignment.Center,
                 ) {
@@ -101,6 +108,46 @@ fun CompositeControl(
     }
 }
 
+/**
+ * Icon-only sibling of [CompositeControl]: same height, border, and shape, but square and with no
+ * text label. For a binary display toggle (e.g. list density) where a labelled dropdown would cost
+ * more filter-row width than a two-way choice is worth.
+ *
+ * The caller decides what the icon means. The convention in the Home filter row is that the icon
+ * shows the **current** state while [contentDescription] describes the **action** a tap performs.
+ */
+@Composable
+fun IconControl(
+    icon: ImageVector,
+    contentDescription: String,
+    onClicked: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val borderColor = MaterialTheme.colorScheme.outline
+    val contentColor = MaterialTheme.colorScheme.onSurface
+    val shape = MaterialTheme.shapes.small
+
+    Surface(
+        modifier = modifier
+            .size(ControlSize)
+            .border(1.dp, borderColor, shape)
+            .clip(shape),
+        color = Color.Transparent,
+    ) {
+        Box(
+            modifier = Modifier.clickable { onClicked() },
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = contentDescription,
+                tint = contentColor,
+                modifier = Modifier.size(IconSize.Small),
+            )
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun CompositeControlPreview() {
@@ -113,6 +160,31 @@ fun CompositeControlPreview() {
                 onClicked = {},
                 onDirectionToggle = {},
             )
+        }
+    }
+}
+
+/** Both density icons side by side: expanded (spaced rows) then compact (dense rows). */
+@Preview(showBackground = true)
+@Composable
+fun IconControlPreview() {
+    BatteryButlerTheme {
+        Surface {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(Padding.small),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                IconControl(
+                    icon = Icons.Default.DensityLarge,
+                    contentDescription = "Expanded view",
+                    onClicked = {},
+                )
+                IconControl(
+                    icon = Icons.Default.DensitySmall,
+                    contentDescription = "Compact view",
+                    onClicked = {},
+                )
+            }
         }
     }
 }

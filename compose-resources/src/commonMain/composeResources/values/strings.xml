@@ -14,6 +14,11 @@
     <string name="sort_battery_type">Battery Type</string>
     <string name="group_battery_type">Battery Type</string>
 
+    <!-- DensityOption — the control is icon-only, so these are the accessibility labels.
+         They describe the action a tap performs, not the icon's current state. -->
+    <string name="content_desc_switch_to_expanded">Switch to expanded view</string>
+    <string name="content_desc_switch_to_compact">Switch to compact view</string>
+
     <!-- Sort/Group filter labels -->
     <string name="filter_sort_label">Sort: %1$s</string>
     <string name="filter_group_label">Group: %1$s</string>
