@@ -242,7 +242,10 @@ jobs:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
           packageName: com.chriscartland.batterybutler
           releaseFiles: compose-app/build/outputs/bundle/release/*.aab
-          track: internal
+          # Comma-separated. Keep this set: the action defaults to the *production* track when
+          # neither 'tracks' nor the deprecated 'track' is provided, so a typo here publishes
+          # publicly instead of failing. Setting both 'track' and 'tracks' is a hard error.
+          tracks: internal
           status: completed
           whatsNewDirectory: distribution/android/play-store/whatsnew
 
