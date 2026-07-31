@@ -75,8 +75,41 @@ if [[ "$RUN_CONCLUSION" == "success" ]]; then
     exit 0
   fi
 
-  echo "Real validation jobs that succeeded: $real_success_count. Proceeding"
-  echo "with close-on-success."
+  # Sentinel-set check — the same ground truth the release gate uses.
+  #
+  # real_success_count above is necessary but NOT sufficient: a development-mode
+  # run skips every sentinel while spotless/lint/detekt/test still succeed, so the
+  # count is non-zero and the run concludes success even though nothing that
+  # actually breaks main was exercised. That matters now that workflow_dispatch
+  # runs can resolve issues (see ci-post-merge-issue.yml) — a bare dispatch
+  # defaults to development mode. Without this, `gh workflow run` with no
+  # `-f ci_mode=release` would silently close a real regression.
+  #
+  # On push runs the sentinels always run, so this is a no-op for the normal path.
+  SENTINELS="validation_ios_ui validation_instrumented build_android build_ios_compose build_ios_native build_server"
+  missing=""
+  for job in $SENTINELS; do
+    conclusion=$(
+      gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID/jobs?per_page=100" \
+        --paginate \
+        --jq "[.jobs[] | select(.name == \"$job\") | .conclusion] | last // \"absent\""
+    )
+    if [[ "$conclusion" != "success" ]]; then
+      missing="$missing $job($conclusion)"
+    fi
+  done
+
+  if [[ -n "$missing" ]]; then
+    echo "Run succeeded but these sentinel jobs are not success:$missing"
+    echo "Skipping auto-close: this run did not exercise what breaks main"
+    echo "(most likely a development-mode run). Dispatch with"
+    echo "  gh workflow run \"Battery Butler CI\" --ref main -f ci_mode=release"
+    echo "to produce a run that can resolve open ci-failure issues."
+    exit 0
+  fi
+
+  echo "All sentinels green (real validation jobs: $real_success_count)."
+  echo "Proceeding with close-on-success."
 
   open_issues=$(gh issue list --label "$LABEL" --state open \
     --json number,title --jq '.[]')

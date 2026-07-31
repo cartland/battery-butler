@@ -36,6 +36,47 @@ git commit -m "chore: Switch CI to development mode"
 - `--admin` bypass: Warning in development mode, blocked in release mode
 - Validation-before-push: Always warning
 
+## Risky-Change Escalation
+
+Development mode's bargain — fast PRs, slow jobs post-merge — has one bad case: **dependency and build-wiring changes**. Those are exactly what break the skipped jobs, and the break only surfaces after merge, where it files a blocking issue and freezes the queue. Every dependency regression on `main` (lifecycle `iosX64` in #1225, exposed in #1425, jib in #1426, KSP in #1428) traced back to one of a small set of files.
+
+So the `changes` job emits a `risky` output, and the six sentinel jobs plus `build_desktop` run when it is true **regardless of CI mode**:
+
+```yaml
+if: needs.changes.outputs.code == 'true' &&
+    (github.event_name == 'push'
+     || needs.changes.outputs.ci_mode != 'development'
+     || needs.changes.outputs.risky == 'true')
+```
+
+`risky` matches `gradle/libs.versions.toml`, `gradle/**`, `gradlew*`, `**/build.gradle.kts`, `settings.gradle.kts`, `buildSrc/**`, `.github/workflows/**`, `.github/actions/**`.
+
+Ordinary source-only PRs are unaffected and stay fast. A dependabot PR now gets the full matrix on the PR instead of on `main`.
+
+## What Actually Runs Your Tests
+
+Three separate invocations in `validation_test`, because one does not cover the others:
+
+| Command | Covers |
+| --- | --- |
+| `./gradlew test` | JVM/Android-plugin projects: `server:*`, `cli`, `compose-app`, `compose-resources`, `e2e-tests`, `detekt-rules`, `android-screenshot-tests` |
+| `./gradlew desktopTest jvmTest` | KMP modules — `usecase`, `viewmodel`, `domain`, `data`, `data-network`, `data-local`, `presentation-*`, `ai`, `experimental/*` |
+| `./gradlew -p buildSrc test` | `buildSrc` (a separate build) |
+
+**`./gradlew test` schedules no KMP test task at all.** `test` only exists in projects with the JVM/Android plugin; KMP modules expose `desktopTest` or `jvmTest` (they disagree on which). Confirmed with `./gradlew test --dry-run`, which lists neither. Before this was fixed, ~796 tests across 13 modules had never run in CI.
+
+Kotlin/Native test *compilation* is separate again — see below.
+
+## Kotlin/Native Test Compilation
+
+K/N is stricter than the JVM about declaration names: it rejects `,` and `()` inside backticked identifiers. `commonTest` code that compiles for desktop and Android can therefore fail **only** for the iOS targets.
+
+Nothing used to catch this. `validation_compile_tests` runs `compileTestKotlin`, which matches only the exactly-named task and never the target-suffixed KMP variants (`compileTestKotlinIosSimulatorArm64`, …), and the iOS build jobs compile *main* sources. 14 such breakages accumulated undetected before PR #1438.
+
+`build_ios_compose` now runs `./gradlew compileTestKotlinIosSimulatorArm64`. It lives there rather than in a new job because Apple targets need a macOS runner and that one is already warm with the Gradle/KMP cache.
+
+When it fails, use `--continue`: the build is fail-fast, so the first run only reports errors from the first few modules.
+
 ## Path Filtering
 
 CI uses `dorny/paths-filter` to skip expensive builds for non-code changes:
@@ -232,6 +273,20 @@ This is what makes development-mode CI safe as the steady state: PRs only run fa
 **Verified working (2026-06-08)**: open / comment-dedup / close-on-green have all fired correctly in production history. Concrete examples — open: #1216–1218; comment-dedup: #1180 (3× "Job failed again." on the same `ci` issue instead of duplicates); auto-close-on-green: #1199/#1198/#1192/#1184/#1168/#1164/#1140/#1139. Note the most *recent* closures (the 05-16 batch) were closed *manually* by the developer who fixed `main`, ahead of the auto-close — that's expected, not a regression.
 
 **Companion gate**: `validation_no_blocking_issues` in `ci.yml` runs on every PR and fails if any open `ci-failure` issue carries the `blocking` label. This pauses new auto-merges until the regression is fixed forward.
+
+### Breaking the deadlock
+
+The gate used to be able to trap itself. Auto-close only fired on `push` runs, but while a blocking issue is open **nothing can merge** — so no push to `main` happens, so no green push run exists to close the issue, so nothing can merge. Issue #1429 (2026-07-30) hit this and had to be closed by hand.
+
+Two escape hatches now exist:
+
+1. **Label the fix-forward PR `ci-fix`.** `validation_no_blocking_issues` skips PRs carrying that label, so a repair can always land.
+2. **Dispatch a release-mode run on `main`.** `ci-post-merge-issue.yml` now accepts `workflow_run.event == 'workflow_dispatch'` as a resolution path:
+   ```bash
+   gh workflow run "Battery Butler CI" --ref main -f ci_mode=release
+   ```
+
+**`-f ci_mode=release` is required**, and `file-ci-failure-issue.sh` enforces it: auto-close now requires **every sentinel job to be `success`**, not merely "some non-gate job passed". A bare dispatch defaults to development mode, skips all six sentinels, and still concludes `success` — without the sentinel check that would silently close a real regression. On ordinary push runs the sentinels always run, so this is a no-op for the normal path.
 
 **Companion ritual**: run `/check-ci-issues` at session start, before picking up new feature work. The skill at `.claude/skills/check-ci-issues/SKILL.md` documents the triage flow. The fix is a normal PR off `origin/main`; the next green push-to-main auto-closes the issue.
 

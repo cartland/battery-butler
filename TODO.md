@@ -932,36 +932,24 @@ and requires the Kotlin bump. Verified locally before merge with `--rerun-tasks`
 `:ios-swift-di:kspKotlinIosSimulatorArm64` and `:compose-app:kspKotlinIosSimulatorArm64`
 (iOS KSP is skipped by dev-mode PR CI).
 
-### bb-knt-testnames — `data-network` common tests don't compile for Kotlin/Native (invisible to CI)
+### bb-knt-testnames — RESOLVED 2026-07-31
 
-**Found 2026-07-30** while verifying the Wire 6.4.5 bump (`bb-gr79`). Running
-`./gradlew :data-network:compileTestKotlinIosArm64` fails with six errors:
+**Resolved.** PR #1438 renamed the offending test functions; the CI-hardening PR added
+`./gradlew compileTestKotlinIosSimulatorArm64` to `build_ios_compose` so it cannot
+regress silently.
 
-```
-FirebaseIdTokenProviderTest.kt:229:9  Name contains illegal characters: ","
-FirebaseIdTokenProviderTest.kt:240:9  Name contains illegal characters: ","
-RestSyncMapperTest.kt:64:9            Name contains illegal characters: ","
-RestSyncMapperTest.kt:123:9           Name contains illegal characters: ","
-SyncGoldenFixtureTest.kt:25:9         Name contains illegal characters: "()"
-SyncGoldenFixtureTest.kt:70:9         Name contains illegal characters: "()"
-```
+The sweep this task asked for ("worth checking other KMP modules ... or it will land
+red") found **14** errors across 7 modules, not the 6 originally recorded — the original
+count came from compiling only `:data-network`, and the build is fail-fast so
+`--continue` was needed to see the rest.
 
-Kotlin/Native rejects `,` and `()` inside backtick-quoted declaration names; the JVM
-accepts them, so these `commonTest` functions compile for desktop/android and fail
-only for the iOS targets.
+Two related blind spots were found and fixed at the same time:
 
-**Confirmed pre-existing, not caused by the Wire bump:** the identical task fails the
-same way with `wire = "5.5.1"` on pristine `main`.
-
-**Why CI misses it:** `validation_compile_tests` runs `./gradlew compileTestKotlin`,
-which matches only tasks named exactly `compileTestKotlin` — never the target-suffixed
-KMP variants (`compileTestKotlinIosArm64`, …). `build_ios_native` builds the framework
-from *main* sources, not test sources. So nothing in CI compiles K/N test code.
-
-**To fix:** rename the offending test functions to drop `,` and `()`, then decide
-whether to add a K/N test-compile step to `validation_compile_tests` so this can't
-regress silently again. Worth checking other KMP modules for the same latent problem
-before wiring the job up, or it will land red.
+- `./gradlew test` schedules **no** KMP test task. `test` only exists in projects with
+  the JVM/Android plugin; KMP modules expose `desktopTest` or `jvmTest`. ~796 tests
+  across 13 modules had never run in CI. `validation_test` now runs them.
+- `buildSrc` tests could not execute at all (missing JUnit Platform launcher) and were
+  never invoked by CI — fixed in PR #1436.
 
 ### bb-cli-backup-import — `:cli push` can't consume the app's own Export Data backup format
 
