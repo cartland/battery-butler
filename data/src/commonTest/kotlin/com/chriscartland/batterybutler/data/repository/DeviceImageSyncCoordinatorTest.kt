@@ -120,7 +120,7 @@ class DeviceImageSyncCoordinatorTest {
         }
 
     @Test
-    fun `a partial (non-full-snapshot) update does not evict`() =
+    fun `a partial non-full-snapshot update does not evict`() =
         runTest {
             val dispatcher = StandardTestDispatcher(testScheduler)
             val images = FakeDeviceImageDataSource().apply { setSupported(true) }

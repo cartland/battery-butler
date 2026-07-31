@@ -26,7 +26,7 @@ class DatabaseOptionTest {
     }
 
     @Test
-    fun `null and blank urls resolve to the bare category file, with no suffix`() {
+    fun `null and blank urls resolve to the bare category file with no suffix`() {
         val nullUrl = DatabaseOption.fromDataMode(DataMode.GrpcAws(null))
         val blankUrl = DatabaseOption.fromDataMode(DataMode.GrpcAws("   "))
         val bare = DatabaseOption.baseFileNames.getValue(DatabaseCategory.ProductionServer)

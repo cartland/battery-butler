@@ -32,7 +32,7 @@ class EntityMapperTest {
     }
 
     @Test
-    fun `Device round-trip with null location, imagePath, and imageEtag`() {
+    fun `Device round-trip with null location and imagePath and imageEtag`() {
         val device = Device(
             id = "dev-1",
             name = "Test Device",
