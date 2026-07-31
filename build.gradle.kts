@@ -10,11 +10,17 @@ buildscript {
         // commons-compress 1.26+. Jib is held at 3.4.1, the last version that works against
         // the older API. PR #1133 bumped past this and broke build_server on main.
         //
-        // NOTE: commons-compress moved to 1.28.0 in PR #1424 (verified: :server:app:build +
-        // :server:app:jibBuildTar both green with jib 3.4.1). That means 1.26+ is now
-        // satisfied, so the jib pin is unblocked on this axis -- but unpinning it requires
-        // changing all three force()/classpath entries below AND re-verifying jibBuildTar.
-        // A version-catalog-only bump does NOT work: these forces override it (see PR #1426).
+        // DO NOT try to unpin jib on the "commons-compress is new enough now" theory.
+        // Tested 2026-07-31 and it is wrong. jib 3.5.4 *calls*
+        // putArchiveEntry(TarArchiveEntry) -- an overload commons-compress dropped -- so
+        // :server:app:jibBuildTar dies with NoSuchMethodError on that exact signature
+        // against commons-compress 1.25.0, 1.27.1 AND 1.28.0. All four sites (the
+        // classpath() below, both force() blocks, and libs.versions.toml) were changed
+        // together for each attempt; a version-catalog-only bump silently does nothing
+        // because these forces override it, which is why PR #1426 could never have worked.
+        //
+        // jib 3.4.1 + commons-compress 1.28.0 is the combination that works. Verified by
+        // :server:app:build + :server:app:jibBuildTar with --rerun-tasks.
         classpath("com.google.cloud.tools:jib-gradle-plugin:3.4.1")
         classpath("org.apache.commons:commons-compress:1.28.0")
         classpath("commons-codec:commons-codec:1.22.0")
