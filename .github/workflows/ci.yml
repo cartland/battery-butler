@@ -187,6 +187,11 @@ jobs:
       - name: Run Unit Tests
         run: ./gradlew test --stacktrace
 
+      # buildSrc is a separate build -- the root `test` above does not descend into it, so
+      # its tests need their own invocation. Without this they never run in CI at all.
+      - name: Run buildSrc Unit Tests
+        run: ./gradlew -p buildSrc test --stacktrace
+
   validation_compile_tests:
     needs: changes
     if: needs.changes.outputs.code == 'true'
