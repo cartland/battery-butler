@@ -3,6 +3,7 @@ package com.chriscartland.batterybutler.presentationmodel.home
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceImageBytes
 import com.chriscartland.batterybutler.domain.model.DeviceType
+import com.chriscartland.batterybutler.domain.model.DisplayDensity
 import com.chriscartland.batterybutler.domain.model.SyncStatus
 
 data class HomeScreenState(
@@ -44,3 +45,20 @@ enum class DensityOption {
     EXPANDED,
     COMPACT,
 }
+
+/**
+ * The rendered form of the stored [DisplayDensity].
+ *
+ * [DensityOption] deliberately has no `UNSPECIFIED`: by the time a screen state is built the
+ * question "has the user chosen?" is already answered, and a UI enum with an un-renderable third
+ * case would force every consumer — including the Swift `HomeScreenState` constructions in
+ * `iosAppSwiftUITests` — to handle a case that never reaches them.
+ */
+fun DisplayDensity.toDensityOption(): DensityOption = if (isCompact) DensityOption.COMPACT else DensityOption.EXPANDED
+
+/** The stored form of a user's explicit pick. Never produces [DisplayDensity.UNSPECIFIED]. */
+fun DensityOption.toDisplayDensity(): DisplayDensity =
+    when (this) {
+        DensityOption.EXPANDED -> DisplayDensity.EXPANDED
+        DensityOption.COMPACT -> DisplayDensity.COMPACT
+    }

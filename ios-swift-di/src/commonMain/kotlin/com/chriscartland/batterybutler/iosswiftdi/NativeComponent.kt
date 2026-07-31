@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import com.chriscartland.batterybutler.ai.NoOpAiEngine
 import com.chriscartland.batterybutler.data.provider.DefaultDispatcherProvider
 import com.chriscartland.batterybutler.data.repository.DataStoreDataModeRepository
+import com.chriscartland.batterybutler.data.repository.DataStoreDisplayDensityRepository
 import com.chriscartland.batterybutler.data.repository.DefaultDeviceImageRepository
 import com.chriscartland.batterybutler.data.repository.DefaultDeviceRepository
 import com.chriscartland.batterybutler.data.repository.DefaultFeatureFlagProvider
@@ -38,6 +39,7 @@ import com.chriscartland.batterybutler.domain.repository.AuthRepository
 import com.chriscartland.batterybutler.domain.repository.DataModeRepository
 import com.chriscartland.batterybutler.domain.repository.DeviceImageRepository
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
+import com.chriscartland.batterybutler.domain.repository.DisplayDensityRepository
 import com.chriscartland.batterybutler.domain.repository.FeatureFlagProvider
 import com.chriscartland.batterybutler.domain.repository.LabsAuthRepository
 import com.chriscartland.batterybutler.domain.repository.LegacyDatabaseRepository
@@ -143,6 +145,10 @@ abstract class NativeComponent(
     @Provides
     @SharedSingleton
     fun provideDataModeRepository(impl: DataStoreDataModeRepository): DataModeRepository = impl
+
+    @Provides
+    @SharedSingleton
+    fun provideDisplayDensityRepository(impl: DataStoreDisplayDensityRepository): DisplayDensityRepository = impl
 
     @Provides
     @SharedSingleton

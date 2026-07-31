@@ -6,6 +6,7 @@ import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeListScreenState
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
+import com.chriscartland.batterybutler.testcommon.FakeDisplayDensityRepository
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.PreloadCommonTypesUseCase
 import com.chriscartland.batterybutler.usecase.ResyncUseCase
@@ -100,5 +101,6 @@ class CrashProofDeviceTypeListViewModelTest {
             getDeviceTypesUseCase = GetDeviceTypesUseCase(repo),
             preloadCommonTypesUseCase = PreloadCommonTypesUseCase(repo),
             resyncUseCase = ResyncUseCase(repo),
+            displayDensityRepository = FakeDisplayDensityRepository(),
         )
 }

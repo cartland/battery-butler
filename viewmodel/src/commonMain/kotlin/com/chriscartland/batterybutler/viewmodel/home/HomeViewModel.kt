@@ -4,10 +4,13 @@ import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceImageBytes
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.SyncStatus
+import com.chriscartland.batterybutler.domain.repository.DisplayDensityRepository
 import com.chriscartland.batterybutler.presentationmodel.home.DensityOption
 import com.chriscartland.batterybutler.presentationmodel.home.GroupOption
 import com.chriscartland.batterybutler.presentationmodel.home.HomeScreenState
 import com.chriscartland.batterybutler.presentationmodel.home.SortOption
+import com.chriscartland.batterybutler.presentationmodel.home.toDensityOption
+import com.chriscartland.batterybutler.presentationmodel.home.toDisplayDensity
 import com.chriscartland.batterybutler.usecase.DismissSyncStatusUseCase
 import com.chriscartland.batterybutler.usecase.ExportDataUseCase
 import com.chriscartland.batterybutler.usecase.GetCachedDeviceImageUseCase
@@ -48,12 +51,17 @@ class HomeViewModel(
     private val dismissSyncStatusUseCase: DismissSyncStatusUseCase,
     private val resyncUseCase: ResyncUseCase,
     private val getCachedDeviceImageUseCase: GetCachedDeviceImageUseCase,
+    private val displayDensityRepository: DisplayDensityRepository,
 ) : ViewModel() {
     private val sortOptionFlow = MutableStateFlow(SortOption.BATTERY_AGE)
     private val groupOptionFlow = MutableStateFlow(GroupOption.NONE)
     private val isSortAscendingFlow = MutableStateFlow(false)
     private val isGroupAscendingFlow = MutableStateFlow(true)
-    private val densityOptionFlow = MutableStateFlow(DensityOption.EXPANDED)
+
+    // Persisted app-wide, unlike sort/group which stay session-only. Reads the stored
+    // DisplayDensity (which may be UNSPECIFIED on a fresh install) and resolves it to the
+    // renderable two-case DensityOption.
+    private val densityOptionFlow = displayDensityRepository.displayDensity.map { it.toDensityOption() }
     private val exportDataFlow = MutableStateFlow<String?>(null)
     private var autoDismissJob: Job? = null
 
@@ -172,7 +180,9 @@ class HomeViewModel(
     }
 
     fun onDensityOptionSelected(option: DensityOption) {
-        densityOptionFlow.value = option
+        viewModelScope.coroutineScope.launch {
+            displayDensityRepository.setDisplayDensity(option.toDisplayDensity())
+        }
     }
 
     fun toggleSortDirection() {

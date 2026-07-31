@@ -1,9 +1,12 @@
 package com.chriscartland.batterybutler.viewmodel.devicetypes
 
+import com.chriscartland.batterybutler.domain.model.DisplayDensity
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeGroupOption
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeListScreenState
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeSortOption
+import com.chriscartland.batterybutler.presentationmodel.home.DensityOption
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
+import com.chriscartland.batterybutler.testcommon.FakeDisplayDensityRepository
 import com.chriscartland.batterybutler.testcommon.TestDevices
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.PreloadCommonTypesUseCase
@@ -186,10 +189,59 @@ class DeviceTypeListViewModelTest {
             assertFalse(updatedState.isGroupAscending)
         }
 
-    private fun createViewModel(repo: FakeDeviceRepository): DeviceTypeListViewModel =
+    // A fresh install stores UNSPECIFIED; the screen must still render a concrete density.
+    @Test
+    fun `unspecified stored density renders as expanded`() =
+        runTest {
+            val repo = FakeDeviceRepository()
+            val viewModel = createViewModel(repo, FakeDisplayDensityRepository())
+
+            val state = viewModel.uiState.first { it is DeviceTypeListScreenState.Success }
+            assertIs<DeviceTypeListScreenState.Success>(state)
+            assertEquals(DensityOption.EXPANDED, state.densityOption)
+        }
+
+    @Test
+    fun `stored compact density is reflected in device types state`() =
+        runTest {
+            val repo = FakeDeviceRepository()
+            val density = FakeDisplayDensityRepository(DisplayDensity.COMPACT)
+            val viewModel = createViewModel(repo, density)
+
+            val state = viewModel.uiState.first {
+                it is DeviceTypeListScreenState.Success && it.densityOption == DensityOption.COMPACT
+            }
+            assertIs<DeviceTypeListScreenState.Success>(state)
+            assertEquals(DensityOption.COMPACT, state.densityOption)
+        }
+
+    // The whole point of persisting through a shared repository: selecting on this screen writes
+    // the same value Home reads, so the two cannot drift apart.
+    @Test
+    fun `selecting a density writes it to the shared repository`() =
+        runTest {
+            val repo = FakeDeviceRepository()
+            val density = FakeDisplayDensityRepository()
+            val viewModel = createViewModel(repo, density)
+
+            viewModel.onDensityOptionSelected(DensityOption.COMPACT)
+
+            // Await rather than read once: onDensityOptionSelected persists from a launched
+            // coroutine, so on StandardTestDispatcher the write has not happened yet at this point.
+            assertEquals(
+                DisplayDensity.COMPACT,
+                density.displayDensity.first { it == DisplayDensity.COMPACT },
+            )
+        }
+
+    private fun createViewModel(
+        repo: FakeDeviceRepository,
+        displayDensityRepository: FakeDisplayDensityRepository = FakeDisplayDensityRepository(),
+    ): DeviceTypeListViewModel =
         DeviceTypeListViewModel(
             getDeviceTypesUseCase = GetDeviceTypesUseCase(repo),
             preloadCommonTypesUseCase = PreloadCommonTypesUseCase(repo),
             resyncUseCase = ResyncUseCase(repo),
+            displayDensityRepository = displayDensityRepository,
         )
 }

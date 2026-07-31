@@ -76,6 +76,9 @@ class DataStoreDataModeRepositoryTest {
 /** A [PreferencesDataSource] whose stored value flow is supplied directly by the test. */
 private class FakePreferencesDataSource(
     override val dataModeValue: Flow<String?>,
+    override val displayDensityValue: Flow<String?> = flowOf(null),
 ) : PreferencesDataSource {
     override suspend fun setDataModeValue(value: String) = Unit
+
+    override suspend fun setDisplayDensityValue(value: String) = Unit
 }

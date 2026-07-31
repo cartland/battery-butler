@@ -20,6 +20,7 @@ class DataStorePreferencesDataSource(
         // DataMode rename) so existing installs keep their saved selection across the app update
         // that ships this rename, instead of silently reverting to the default.
         val DATA_MODE_KEY = stringPreferencesKey("network_mode")
+        val DISPLAY_DENSITY_KEY = stringPreferencesKey("display_density")
     }
 
     override val dataModeValue: Flow<String?> = dataStore.data
@@ -28,6 +29,15 @@ class DataStorePreferencesDataSource(
     override suspend fun setDataModeValue(value: String) {
         dataStore.edit { preferences ->
             preferences[DATA_MODE_KEY] = value
+        }
+    }
+
+    override val displayDensityValue: Flow<String?> = dataStore.data
+        .map { preferences -> preferences[DISPLAY_DENSITY_KEY] }
+
+    override suspend fun setDisplayDensityValue(value: String) {
+        dataStore.edit { preferences ->
+            preferences[DISPLAY_DENSITY_KEY] = value
         }
     }
 }

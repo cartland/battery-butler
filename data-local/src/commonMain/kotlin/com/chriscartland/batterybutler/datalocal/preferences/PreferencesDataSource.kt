@@ -16,4 +16,15 @@ interface PreferencesDataSource {
      * Store the data mode value.
      */
     suspend fun setDataModeValue(value: String)
+
+    /**
+     * Observe the stored app-wide list density value.
+     * Returns null if no value has been stored.
+     */
+    val displayDensityValue: Flow<String?>
+
+    /**
+     * Store the app-wide list density value.
+     */
+    suspend fun setDisplayDensityValue(value: String)
 }

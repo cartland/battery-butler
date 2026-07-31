@@ -1,6 +1,7 @@
 package com.chriscartland.batterybutler.presentationmodel.devicetypes
 
 import com.chriscartland.batterybutler.domain.model.DeviceType
+import com.chriscartland.batterybutler.presentationmodel.home.DensityOption
 
 sealed interface DeviceTypeListScreenState {
     data object Loading : DeviceTypeListScreenState
@@ -11,6 +12,7 @@ sealed interface DeviceTypeListScreenState {
         val groupOption: DeviceTypeGroupOption = DeviceTypeGroupOption.NONE,
         val isSortAscending: Boolean = true,
         val isGroupAscending: Boolean = true,
+        val densityOption: DensityOption = DensityOption.EXPANDED,
     ) : DeviceTypeListScreenState
 
     data class Error(

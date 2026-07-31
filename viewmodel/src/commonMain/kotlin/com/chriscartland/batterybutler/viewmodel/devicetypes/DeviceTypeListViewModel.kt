@@ -2,9 +2,13 @@ package com.chriscartland.batterybutler.viewmodel.devicetypes
 
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.Result
+import com.chriscartland.batterybutler.domain.repository.DisplayDensityRepository
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeGroupOption
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeListScreenState
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeSortOption
+import com.chriscartland.batterybutler.presentationmodel.home.DensityOption
+import com.chriscartland.batterybutler.presentationmodel.home.toDensityOption
+import com.chriscartland.batterybutler.presentationmodel.home.toDisplayDensity
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.PreloadCommonTypesUseCase
 import com.chriscartland.batterybutler.usecase.ResyncUseCase
@@ -17,6 +21,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
@@ -27,6 +32,7 @@ class DeviceTypeListViewModel(
     private val getDeviceTypesUseCase: GetDeviceTypesUseCase,
     private val preloadCommonTypesUseCase: PreloadCommonTypesUseCase,
     private val resyncUseCase: ResyncUseCase,
+    private val displayDensityRepository: DisplayDensityRepository,
 ) : ViewModel() {
     // Exposed to SwiftUI: must use the observable factory so @StateViewModel re-renders.
     // (Private funnel flows below stay plain — they combine into the observable uiState.)
@@ -58,6 +64,16 @@ class DeviceTypeListViewModel(
     private val isSortAscendingFlow = MutableStateFlow(true)
     private val isGroupAscendingFlow = MutableStateFlow(true)
 
+    // Shared app-wide with the Home device list -- same stored preference, same DataStore key,
+    // so toggling density on either screen moves both.
+    private val densityOptionFlow = displayDensityRepository.displayDensity.map { it.toDensityOption() }
+
+    fun onDensityOptionSelected(option: DensityOption) {
+        viewModelScope.coroutineScope.launch {
+            displayDensityRepository.setDisplayDensity(option.toDisplayDensity())
+        }
+    }
+
     private val retryTrigger = MutableStateFlow(0)
 
     fun retry() {
@@ -77,8 +93,9 @@ class DeviceTypeListViewModel(
                     groupOptionFlow,
                     isSortAscendingFlow,
                     isGroupAscendingFlow,
-                ) { sort, group, isSortAscending, isGroupAscending ->
-                    DeviceTypeSortConfig(sort, group, isSortAscending, isGroupAscending)
+                    densityOptionFlow,
+                ) { sort, group, isSortAscending, isGroupAscending, density ->
+                    DeviceTypeSortConfig(sort, group, isSortAscending, isGroupAscending, density)
                 },
                 getDeviceTypesUseCase(),
             ) { config, list ->
@@ -107,6 +124,7 @@ class DeviceTypeListViewModel(
                     groupOption = config.group,
                     isSortAscending = config.isSortAscending,
                     isGroupAscending = config.isGroupAscending,
+                    densityOption = config.density,
                 )
             }
         },
@@ -146,4 +164,5 @@ private data class DeviceTypeSortConfig(
     val group: DeviceTypeGroupOption,
     val isSortAscending: Boolean,
     val isGroupAscending: Boolean,
+    val density: DensityOption,
 )

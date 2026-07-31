@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.chriscartland.batterybutler.data.di.DataComponent
 import com.chriscartland.batterybutler.data.repository.DataStoreDataModeRepository
+import com.chriscartland.batterybutler.data.repository.DataStoreDisplayDensityRepository
 import com.chriscartland.batterybutler.data.repository.DefaultDeviceImageRepository
 import com.chriscartland.batterybutler.data.repository.DefaultDeviceRepository
 import com.chriscartland.batterybutler.data.repository.DefaultSyncManager
@@ -25,6 +26,7 @@ import com.chriscartland.batterybutler.domain.repository.AuthRepository
 import com.chriscartland.batterybutler.domain.repository.DataModeRepository
 import com.chriscartland.batterybutler.domain.repository.DeviceImageRepository
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
+import com.chriscartland.batterybutler.domain.repository.DisplayDensityRepository
 import com.chriscartland.batterybutler.domain.repository.LabsRefreshTokenPersistence
 import me.tatarka.inject.annotations.Provides
 
@@ -44,6 +46,10 @@ interface AppDataModule : DataComponent {
     @Provides
     @Singleton
     override fun provideDataModeRepository(repo: DataStoreDataModeRepository): DataModeRepository = super.provideDataModeRepository(repo)
+
+    @Provides
+    @Singleton
+    override fun provideDisplayDensityRepository(repo: DataStoreDisplayDensityRepository): DisplayDensityRepository = super.provideDisplayDensityRepository(repo)
 
     @Provides
     @Singleton
