@@ -956,14 +956,13 @@ real device, so an agent cannot close this alone. Two things worth deciding:
 If the process is not going to be followed, deleting the file is better than leaving a
 process doc that every release silently ignores.
 
-**Update 2026-07-31:** the doc no longer promises `/queue-android-smoke-test` (that
-command does not exist), and the queue now carries an explicit
-`## android/62 – android/66 — NOT smoke-tested` entry recording the gap with tag dates.
-It is deliberately not filled in with checkmarks — nobody walked those builds on a
-device. What remains is the maintainer decision: adopt from the next release, back-fill
-with one pass against the current internal build, or delete the file.
-
-
+**Update 2026-07-31:** the doc no longer promises `/queue-android-smoke-test` (that command
+does not exist). The queue now carries a `## No release has been smoke-tested` entry stating
+the gap as an **invariant** rather than a list of release numbers — the earlier version
+enumerated android/62–65, then needed edits for android/66 and again for android/67, once per
+release. It is deliberately not filled in with checkmarks; nobody walked those builds on a
+device. What remains is the maintainer decision: adopt from the next release, back-fill with
+one pass against the current internal build, or delete the file.
 ### bb-cli-test-data — Clean up leftover `cli-test-type-1` test data on Labs staging
 
 While building and testing the `:cli` module's `push` subcommand this session, a
