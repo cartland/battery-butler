@@ -6,17 +6,25 @@ buildscript {
     dependencies {
         // Fix Jib/Ktor plugin dependency conflict
         // See: https://github.com/GoogleContainerTools/jib/issues/4235
-        // Jib 3.5.2 bytecode calls putArchiveEntry(TarArchiveEntry) which requires commons-compress 1.21
-        // Downgrade to Jib 3.4.1 which is the last version properly compatible with 1.21
+        // Jib 3.5.x bytecode calls putArchiveEntry(TarArchiveEntry), which only exists in
+        // commons-compress 1.26+. Jib is held at 3.4.1, the last version that works against
+        // the older API. PR #1133 bumped past this and broke build_server on main.
+        //
+        // NOTE: commons-compress moved to 1.28.0 in PR #1424 (verified: :server:app:build +
+        // :server:app:jibBuildTar both green with jib 3.4.1). That means 1.26+ is now
+        // satisfied, so the jib pin is unblocked on this axis -- but unpinning it requires
+        // changing all three force()/classpath entries below AND re-verifying jibBuildTar.
+        // A version-catalog-only bump does NOT work: these forces override it (see PR #1426).
         classpath("com.google.cloud.tools:jib-gradle-plugin:3.4.1")
         classpath("org.apache.commons:commons-compress:1.28.0")
         classpath("commons-codec:commons-codec:1.22.0")
     }
     configurations.all {
         resolutionStrategy {
-            // Force consistent versions for Jib compatibility
-            // Jib 3.5.2 bytecode requires commons-compress 1.21 API (putArchiveEntry(TarArchiveEntry))
-            // Ktor plugin pulls in newer jib which declares 1.26.0 but was compiled against 1.21
+            // Force consistent versions for Jib compatibility.
+            // The Ktor plugin pulls in a newer jib transitively; pinning 3.4.1 here keeps the
+            // whole build on one jib. See the note above the classpath() block for why 3.4.1
+            // is held and what unpinning it would take.
             force("com.google.cloud.tools:jib-gradle-plugin:3.4.1")
             force("org.apache.commons:commons-compress:1.28.0")
             force("commons-codec:commons-codec:1.22.0")

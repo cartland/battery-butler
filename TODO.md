@@ -885,6 +885,40 @@ confirm `server/app` compiles, then delete the `io.grpc:*` block in
 `libs.versions.toml`, and bump `grpcJava` / `grpc-kotlin`. Verify
 `validation_compile_tests` + `build_server` (release-mode) before merge.
 
+### bb-exposed-1x — Migrate the server repository layer to Exposed 1.x
+
+**Found 2026-07-30** while draining the dependency queue. Dependabot PR #1425
+(`exposed 0.50.1 → 1.3.1`) was closed: Exposed 1.x relocated its packages, so
+`org.jetbrains.exposed.sql.javatime.timestamp` (`PostgresDeviceRepository.kt:14`) no
+longer resolves. `it[BatteryEvents.timestamp]` then degrades to `Any` and every
+downstream `.toKotlinInstant()` fails on receiver type. Verified by applying the PR to
+`main` and running CI's `./gradlew :server:app:build`.
+
+The compiler stopped after 5 errors at lines 237-239, but the same pattern is also at
+lines 75, 76, 106, 218 and 219 — the real blast radius is larger than the error count.
+
+**To unblock:** migrate imports and column-type handling across
+`server/app/src/main/kotlin/.../repository/` (all four modules: `exposed-core`,
+`exposed-jdbc`, `exposed-dao`, `exposed-java-time`, declared at
+`server/app/build.gradle.kts:66-69`), then delete the `org.jetbrains.exposed:*` entry in
+`.github/dependabot.yml` → `ignore:`. Verify with `:server:app:build` **and**
+`:server:app:jibBuildTar` (both are what `build_server` runs).
+
+### bb-ksp-kotlin-lockstep — KSP is pinned to the Kotlin version (cannot bump alone)
+
+**Found 2026-07-30.** Dependabot PR #1428 (`ksp 2.2.20-2.0.4 → 2.3.10`) was closed: it
+fails at **configuration time** with `Could not find the Android Gradle Plugin (AGP)
+extension` when running `./gradlew :compose-app:assembleDebug`. Confirmed caused by the
+bump — reverting only `ksp` on the same checkout makes the identical command succeed.
+
+KSP releases are versioned `<kotlin-version>-<ksp-version>`; the current pin encodes
+Kotlin 2.2.20 while the project is on `kotlin = "2.3.0"`, itself capped by the SKIE
+constraint (see `bb-kotlin-skie-upgrade`). The proposed `2.3.10` also abandons the
+compound version format entirely.
+
+**To unblock:** bump KSP as part of the Kotlin/SKIE upgrade, not on its own, then remove
+the two `com.google.devtools.ksp` entries from `.github/dependabot.yml` → `ignore:`.
+
 ### bb-knt-testnames — `data-network` common tests don't compile for Kotlin/Native (invisible to CI)
 
 **Found 2026-07-30** while verifying the Wire 6.4.5 bump (`bb-gr79`). Running
