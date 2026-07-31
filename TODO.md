@@ -904,6 +904,11 @@ lines 75, 76, 106, 218 and 219 — the real blast radius is larger than the erro
 `.github/dependabot.yml` → `ignore:`. Verify with `:server:app:build` **and**
 `:server:app:jibBuildTar` (both are what `build_server` runs).
 
+**Update 2026-07-31:** the baseline is now **0.61.0**, not 0.50.1 — PR #1434 bumped it
+within the 0.x line and merged green (`0a2395ae` on main, all six sentinels success).
+The ignore is scoped `>= 1.0.0`, so the 0.x line stays free and this only ever blocks
+the 1.x migration. Re-verify against 0.61.0, not 0.50.1, when picking this up.
+
 ### bb-ksp-kotlin-lockstep — KSP is pinned to the Kotlin version (cannot bump alone)
 
 **Found 2026-07-30.** Dependabot PR #1428 (`ksp 2.2.20-2.0.4 → 2.3.10`) was closed: it
@@ -918,6 +923,14 @@ compound version format entirely.
 
 **To unblock:** bump KSP as part of the Kotlin/SKIE upgrade, not on its own, then remove
 the two `com.google.devtools.ksp` entries from `.github/dependabot.yml` → `ignore:`.
+
+**Update 2026-07-31:** the pin is now **2.2.21-2.0.5**, not 2.2.20-2.0.4 — PR #1432
+merged green (`f05794b4` on main, all six sentinels success). Moving *within* the
+compound-version format is fine; what's blocked is `>= 2.3.0`, which abandons the format
+and requires the Kotlin bump. Verified locally before merge with `--rerun-tasks` on
+`:compose-app:assembleDebug` and `:experimental:compose-app:assembleDebug`, plus
+`:ios-swift-di:kspKotlinIosSimulatorArm64` and `:compose-app:kspKotlinIosSimulatorArm64`
+(iOS KSP is skipped by dev-mode PR CI).
 
 ### bb-knt-testnames — `data-network` common tests don't compile for Kotlin/Native (invisible to CI)
 
@@ -1052,6 +1065,30 @@ safe by default (e.g. always isolating the daemon registry, or documenting a
 workaround," not a structural fix.
 
 ## P4
+
+### bb-smoke-queue-unused — The Android smoke-test queue has never been used
+
+**Found 2026-07-31.** `docs/android-smoke-test-queue.md` exists and is well-motivated —
+it was created because android/30 shipped the `bb-lg42` post-restore Loading bug to the
+internal track and needed android/31 two days later. But the file still contains **only
+the `## android/N — YYYY-MM-DD` template**; no release has ever been given a section.
+
+Since then android/62, android/63, android/64 and android/65 have all shipped to the Play
+Store internal track with no entry. android/63, android/64 and android/65 all went out on
+2026-07-30/31.
+
+The queue is explicitly **advisory, not a gate** ("The maintainer can promote without
+smoke-testing — but the queue file makes the gap visible"), and filling it in requires a
+real device, so an agent cannot close this alone. Two things worth deciding:
+
+1. **Back-fill or reset?** Either add sections for the releases that shipped untested, or
+   start clean from the next release and accept the gap.
+2. **The doc references `/queue-android-smoke-test` "(once implemented)"** — that slash
+   command does not exist. Either implement it so `release-android.sh` can prompt for the
+   entry, or drop the reference so the doc stops promising a tool that isn't there.
+
+If the process is not going to be followed, deleting the file is better than leaving a
+process doc that every release silently ignores.
 
 ### bb-cli-test-data — Clean up leftover `cli-test-type-1` test data on Labs staging
 

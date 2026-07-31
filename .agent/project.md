@@ -710,6 +710,11 @@ The AI chat uses a **split-screen layout** — chat and tab content share the sc
 ./gradlew :server:app:build                   # Server
 xcodebuild -project ios-app-swift-ui/...      # iOS
 ruby ios-app-swift-ui/sync_pbxproj.rb         # Sync Swift files to Xcode
+
+# buildSrc tests -- buildSrc is a SEPARATE build, so the root `./gradlew test`
+# does NOT descend into it. It needs its own invocation (run by validation_test
+# since PR #1436; before that its tests had never run in CI at all).
+./gradlew -p buildSrc test
 ```
 
 ## Build System

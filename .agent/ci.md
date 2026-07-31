@@ -155,10 +155,42 @@ Dependabot is configured (`.github/dependabot.yml`) for weekly updates.
 - PRs that modify `.github/workflows/` files cannot be merged via CLI (GitHub security restriction) -> manual merge via web UI
 
 **Ignored dependencies** (`.github/dependabot.yml` → `ignore:`):
-- `com.google.cloud.tools:jib-gradle-plugin` — pinned to 3.4.1. Jib 3.5.x bytecode calls a `putArchiveEntry(TarArchiveEntry)` overload that only exists in commons-compress 1.26+, but the build forces commons-compress 1.21 for Ktor compat. PR #1133 bumped past this and broke `build_server` on main; reverted in PR #1146 and added to the ignore list. See `build.gradle.kts` lines 7-13 + 17-22 for the resolution-strategy forces and the upstream issue [jib#4235](https://github.com/GoogleContainerTools/jib/issues/4235).
+- `com.google.cloud.tools:jib-gradle-plugin` — pinned to 3.4.1. Jib 3.5.x bytecode calls a `putArchiveEntry(TarArchiveEntry)` overload that only exists in commons-compress 1.26+. PR #1133 bumped past this and broke `build_server` on main; reverted in PR #1146 and added to the ignore list. See `build.gradle.kts` for the resolution-strategy forces and the upstream issue [jib#4235](https://github.com/GoogleContainerTools/jib/issues/4235). **The commons-compress half is no longer a blocker:** PR #1424 moved it 1.21 → 1.28.0 (verified with `:server:app:build` + `:server:app:jibBuildTar` against jib 3.4.1), so 1.26+ is now satisfied. Unpinning jib still requires changing **all three** `force()`/`classpath` entries in `build.gradle.kts` together and re-running `jibBuildTar` — a version-catalog-only bump is silently overridden by those forces, which is why PR #1426 could never have worked.
 - `org.jetbrains.androidx.lifecycle:*` — pinned to `2.10.0-beta01` (`androidx-lifecycle-alpha` in `libs.versions.toml`). **2.11.0-beta01 dropped the `iosX64` target**, so every lifecycle artifact failed K/N resolution (`Couldn't resolve dependency … Unresolved platforms: [iosX64]`), breaking `build_ios_compose` / `build_ios_native` / `validation_ios_ui`. PR #1225 bumped it and broke `main` (commit `a9924c4`); reverted in PR #1239. **It passed PR CI because dev-mode skips iOS jobs on PRs — the break only surfaced post-merge.** Lesson: KMP/Compose dependency bumps with iOS/native targets must be validated in release-mode CI (or locally via `xcodebuild`/an iOS build) before merge; dev-mode PR CI cannot see iOS breaks.
-- `org.jetbrains.kotlin:*` — ignored for versions `>= 2.3.20` (kotlin compiler/plugin artifacts only; the `kotlinx-*` group is left free to update). SKIE 0.10.9 does not support Kotlin 2.4.0 — `validation_compile_tests` fails with `Error: SKIE 0.10.9 does not support Kotlin 2.4.0. Supported versions are: [..., 2.3.0].` Dependabot PR #1222 (kotlin group → 2.4.0) closed; ignore added in PR #1243. Remove when a SKIE release supports the target Kotlin — see TODO `bb-k4sk`.
-- `io.grpc:*` (>= 1.79.0) and `com.squareup.wire:*` (>= 6.0.0) — generated gRPC stubs call codegen APIs removed in gRPC 1.79 (`BlockingClientCall`, `blockingV2*Call`), producing 5 compile errors in `server/app`. Dependabot PR #1223 (grpc group → grpcJava 1.81 / wire 6.4) closed; ignore added in PR #1243. Remove after regenerating protos with a matching codegen plugin — see TODO `bb-gr79`.
+- `org.jetbrains.kotlin:*` — ignored for versions `>= 2.3.10` (kotlin compiler/plugin artifacts only; the `kotlinx-*` group is left free to update). SKIE 0.10.9 does not support Kotlin 2.4.0 — `validation_compile_tests` fails with `Error: SKIE 0.10.9 does not support Kotlin 2.4.0. Supported versions are: [..., 2.3.0].` Dependabot PR #1222 (kotlin group → 2.4.0) closed; ignore added in PR #1243. Remove when a SKIE release supports the target Kotlin — see TODO `bb-k4sk`.
+- `io.grpc:*` (>= 1.79.0) — generated gRPC stubs call codegen APIs removed in gRPC 1.79 (`BlockingClientCall`, `blockingV2*Call`), producing 5 compile errors in `server/app`. Dependabot PR #1223 (grpc group → grpcJava 1.81 / wire 6.4) closed; ignore added in PR #1243. Remove after regenerating protos with a matching codegen plugin — see TODO `bb-gr79`. **Wire is no longer pinned with it:** Wire was only ever collateral from #1223 bumping both at once. Wire generates its own client (`wire-grpc-client`, used by `data-network` + `e2e-tests`) and never touches those stubs, so it was unpinned on its own in PR #1414 and its ignore removed in PR #1423.
+- `org.jetbrains.exposed:*` (>= 1.0.0) — Exposed 1.x relocated its packages, so `org.jetbrains.exposed.sql.javatime.timestamp` stops resolving and every downstream `.toKotlinInstant()` fails on receiver type. Dependabot PR #1425 (0.50.1 → 1.3.1) closed; ignore added in PR #1430. The 0.x line is deliberately left free — 0.61.0 merged cleanly in PR #1434. Remove after migrating the server repository layer — see TODO `bb-exposed-1x`.
+- `com.google.devtools.ksp` (>= 2.3.0, both artifact and plugin-marker form) — KSP is versioned `<kotlin-version>-<ksp-version>` and must track Kotlin, which the SKIE pin caps at 2.3.0. Dependabot PR #1428 (2.2.20-2.0.4 → 2.3.10) failed at **configuration time** with "Could not find the Android Gradle Plugin (AGP) extension"; closed, ignore added in PR #1430. Compound-version bumps within the pin are fine — 2.2.21-2.0.5 merged in PR #1432. Remove together with the Kotlin/SKIE upgrade — see TODO `bb-ksp-kotlin-lockstep`.
+
+**Caveat: the ignore list is not reliable on its own.** Both jib and Wire were proposed by Dependabot on 2026-07-30 *despite* already being ignored in both artifact and plugin-marker form. Treat these entries as a speed bump, not a guarantee — and a bump appearing for something "ignored" is **not** evidence the pin was lifted.
+
+### Verifying a dependabot bump locally
+
+A green PR check on a dependabot PR proves very little. In development mode, PR CI **skips 7 jobs**: `validation_ios_ui`, `validation_instrumented`, `build_android`, `build_ios_compose`, `build_ios_native`, `build_desktop`, `build_server`. Every dependency break found on 2026-07-30/31 (#1425 exposed, #1426 jib, #1428 ksp) was invisible to PR CI and showed up only in a skipped job.
+
+Run the gate that actually covers the bump:
+
+```bash
+./gradlew :server:app:build :server:app:jibBuildTar   # build_server
+./gradlew :compose-app:assembleDebug :experimental:compose-app:assembleDebug   # build_android
+./gradlew :compose-app:packageDistributionForCurrentOS                          # build_desktop
+./gradlew :ios-swift-di:compileKotlinIosSimulatorArm64 \
+          :compose-app:compileKotlinIosSimulatorArm64                           # iOS KSP + compile
+./gradlew -p buildSrc test                                                      # buildSrc (separate build)
+```
+
+**A "BUILD SUCCESSFUL" is not proof the bump was exercised.** Two traps, both hit on 2026-07-31:
+
+1. **UP-TO-DATE masking.** After one build has run, a second invocation reports `kspDebugKotlinAndroid UP-TO-DATE` and passes in seconds without compiling anything. Use `--rerun-tasks` and confirm the summary reads `N actionable tasks: N executed` with no `up-to-date` count.
+2. **Truncated logs.** Piping Gradle through `| tail -N` truncates the *saved log*, so a full build can look like it only ran a handful of tasks. Redirect the full output to a file and grep that.
+
+Confirm the new version was actually **resolved**, not silently ignored, by checking the Gradle cache:
+
+```bash
+ls ~/.gradle/caches/modules-2/files-2.1/<group>/<artifact>
+```
+
+Finally, when a bump *does* fail, prove the failure is **caused by the bump** rather than pre-existing: revert only that one version on the same checkout and re-run the identical command. This is how #1428 was confirmed as a real break, and how the Kotlin/Native test-name failures (`bb-knt-testnames`) and the buildSrc JUnit launcher failure (PR #1436) were each cleared as pre-existing.
 
 **General rule for pinned dependencies**: if `build.gradle.kts` or `libs.versions.toml` has a `// Pinned to X` / `// Do not bump` comment, also add that dep to the dependabot ignore list — otherwise dependabot will propose the bump weekly and a slip-through is only a matter of time (especially in dev-mode CI where slow jobs are skipped on PRs).
 
