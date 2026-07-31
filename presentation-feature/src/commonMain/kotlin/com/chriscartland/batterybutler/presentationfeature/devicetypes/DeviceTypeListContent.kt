@@ -4,6 +4,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,6 +16,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.DensityLarge
+import androidx.compose.material.icons.filled.DensitySmall
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -41,6 +44,8 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.acti
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_load_common_types
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_try_again
 import com.chriscartland.batterybutler.composeresources.generated.resources.add_item_card_device_type
+import com.chriscartland.batterybutler.composeresources.generated.resources.content_desc_switch_to_compact
+import com.chriscartland.batterybutler.composeresources.generated.resources.content_desc_switch_to_expanded
 import com.chriscartland.batterybutler.composeresources.generated.resources.empty_types_message
 import com.chriscartland.batterybutler.composeresources.generated.resources.empty_types_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.error_load_device_types
@@ -53,6 +58,7 @@ import com.chriscartland.batterybutler.presentationcore.components.ButlerDropdow
 import com.chriscartland.batterybutler.presentationcore.components.CompositeControl
 import com.chriscartland.batterybutler.presentationcore.components.DeviceTypeListItem
 import com.chriscartland.batterybutler.presentationcore.components.EmptyStateContent
+import com.chriscartland.batterybutler.presentationcore.components.IconControl
 import com.chriscartland.batterybutler.presentationcore.components.LoadingWithLabel
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationcore.theme.Padding
@@ -60,6 +66,7 @@ import com.chriscartland.batterybutler.presentationfeature.util.labelRes
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeGroupOption
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeListScreenState
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeSortOption
+import com.chriscartland.batterybutler.presentationmodel.home.DensityOption
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -72,6 +79,7 @@ fun DeviceTypeListContent(
     onGroupOptionSelected: (DeviceTypeGroupOption) -> Unit,
     onSortDirectionToggle: () -> Unit,
     onGroupDirectionToggle: () -> Unit,
+    onDensityOptionSelected: (DensityOption) -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
@@ -139,6 +147,7 @@ fun DeviceTypeListContent(
                                     onGroupOptionSelected = onGroupOptionSelected,
                                     onSortDirectionToggle = onSortDirectionToggle,
                                     onGroupDirectionToggle = onGroupDirectionToggle,
+                                    onDensityOptionSelected = onDensityOptionSelected,
                                 )
                             }
                             item {
@@ -166,6 +175,7 @@ fun DeviceTypeListContent(
                                     DeviceTypeListItem(
                                         deviceType = type,
                                         onClick = { onEditType(type.id) },
+                                        density = state.densityOption,
                                     )
                                 }
                             }
@@ -184,13 +194,17 @@ fun DeviceTypeFilterRow(
     onGroupOptionSelected: (DeviceTypeGroupOption) -> Unit,
     onSortDirectionToggle: () -> Unit,
     onGroupDirectionToggle: () -> Unit,
+    onDensityOptionSelected: (DensityOption) -> Unit,
 ) {
     Column {
-        // Filter Row
-        Row(
+        // FlowRow, not Row: "Sort: Battery Type" + "Group: Battery Type" + the density icon exceed
+        // a narrow phone's width, and a plain Row silently clips the overflow off the right edge.
+        // Same reason HomeScreenFilterRow uses FlowRow -- see .agent/project.md.
+        FlowRow(
             modifier = Modifier
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(Padding.small),
+            verticalArrangement = Arrangement.spacedBy(Padding.small),
         ) {
             var sortExpanded by remember { mutableStateOf(false) }
             var groupExpanded by remember { mutableStateOf(false) }
@@ -250,6 +264,26 @@ fun DeviceTypeFilterRow(
                     }
                 }
             }
+
+            // Density toggle (Third) -- icon-only, identical to the Home filter row so the two
+            // screens read the same. The icon shows the CURRENT density; the contentDescription
+            // describes what a tap does. Don't "fix" one to match the other.
+            val isCompact = state.densityOption == DensityOption.COMPACT
+            IconControl(
+                icon = if (isCompact) Icons.Default.DensitySmall else Icons.Default.DensityLarge,
+                contentDescription = composeStringResource(
+                    if (isCompact) {
+                        Res.string.content_desc_switch_to_expanded
+                    } else {
+                        Res.string.content_desc_switch_to_compact
+                    },
+                ),
+                onClicked = {
+                    onDensityOptionSelected(
+                        if (isCompact) DensityOption.EXPANDED else DensityOption.COMPACT,
+                    )
+                },
+            )
         }
     }
 }
@@ -267,6 +301,7 @@ fun DeviceTypeListContentEmptyPreview() {
             onGroupOptionSelected = {},
             onSortDirectionToggle = {},
             onGroupDirectionToggle = {},
+            onDensityOptionSelected = {},
             onRetry = {},
         )
     }
@@ -285,6 +320,7 @@ fun DeviceTypeListContentLoadingPreview() {
             onGroupOptionSelected = {},
             onSortDirectionToggle = {},
             onGroupDirectionToggle = {},
+            onDensityOptionSelected = {},
             onRetry = {},
         )
     }
@@ -303,6 +339,7 @@ fun DeviceTypeListContentErrorPreview() {
             onGroupOptionSelected = {},
             onSortDirectionToggle = {},
             onGroupDirectionToggle = {},
+            onDensityOptionSelected = {},
             onRetry = {},
         )
     }
@@ -328,6 +365,7 @@ fun DeviceTypeListContentPreview() {
             onGroupOptionSelected = {},
             onSortDirectionToggle = {},
             onGroupDirectionToggle = {},
+            onDensityOptionSelected = {},
             onRetry = {},
         )
     }
@@ -349,6 +387,7 @@ fun DeviceTypeFilterRowPreview() {
                 onGroupOptionSelected = {},
                 onSortDirectionToggle = {},
                 onGroupDirectionToggle = {},
+                onDensityOptionSelected = {},
             )
         }
     }

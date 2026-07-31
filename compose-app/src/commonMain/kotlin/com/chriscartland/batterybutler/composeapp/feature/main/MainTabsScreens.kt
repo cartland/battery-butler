@@ -78,6 +78,7 @@ fun TypesScreenRoot(
         onGroupOptionSelected = { viewModel.onGroupOptionSelected(it) },
         onSortDirectionToggle = { viewModel.toggleSortDirection() },
         onGroupDirectionToggle = { viewModel.toggleGroupDirection() },
+        onDensityOptionSelected = { viewModel.onDensityOptionSelected(it) },
         onRetry = { viewModel.retry() },
         modifier = modifier,
         contentPadding = contentPadding,
