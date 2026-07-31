@@ -14,7 +14,7 @@ private fun keyFor(mode: DataMode): String =
 
 class DataModeKeyedStateTest {
     @Test
-    fun `switching key reads back the default, not the previous key's value`() =
+    fun `switching key reads back the default - not the previous key's value`() =
         runBlocking {
             val mode = MutableStateFlow<DataMode>(DataMode.LabsProd(null))
             val state = DataModeKeyedState(mode, ::keyFor, default = "unauthenticated")

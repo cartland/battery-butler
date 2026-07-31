@@ -333,7 +333,7 @@ class LoginViewModelTest {
         }
 
     @Test
-    fun `in Labs mode authState follows the Labs session, not the gRPC account`() =
+    fun `in Labs mode authState follows the Labs session - not the gRPC account`() =
         runTest {
             val grpcRepo = FakeAuthRepository()
             grpcRepo.setAuthState(AuthState.Authenticated(testUser)) // gRPC "signed in"

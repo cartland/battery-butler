@@ -226,7 +226,7 @@ class FirebaseIdTokenProviderTest {
         }
 
     @Test
-    fun `restoreSession maps a network exception to a transient NetworkError, not Invalid`() =
+    fun `restoreSession maps a network exception to a transient NetworkError - not Invalid`() =
         runTest {
             val provider = provider(backgroundScope) { throw RuntimeException("boom") }
 
@@ -237,7 +237,7 @@ class FirebaseIdTokenProviderTest {
         }
 
     @Test
-    fun `restoreSession maps a 5xx server error to a transient NetworkError, not Invalid`() =
+    fun `restoreSession maps a 5xx server error to a transient NetworkError - not Invalid`() =
         runTest {
             val provider = provider(backgroundScope) {
                 respond(

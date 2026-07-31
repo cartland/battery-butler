@@ -22,7 +22,7 @@ class SyncGoldenFixtureTest {
     private val lenient = Json { ignoreUnknownKeys = true }
 
     @Test
-    fun `snapshot golden parses into fully-populated DTOs (GET sync)`() {
+    fun `snapshot golden parses into fully-populated DTOs - GET sync`() {
         val snapshot = lenient.decodeFromString<SyncSnapshotWire>(SNAPSHOT_GOLDEN)
 
         assertEquals(
@@ -67,7 +67,7 @@ class SyncGoldenFixtureTest {
     }
 
     @Test
-    fun `push-request golden parses into fully-populated DTOs (POST sync)`() {
+    fun `push-request golden parses into fully-populated DTOs - POST sync`() {
         val push = lenient.decodeFromString<SyncPushRequestWire>(PUSH_REQUEST_GOLDEN)
 
         assertEquals(listOf("type-old"), push.deletedDeviceTypeIds)

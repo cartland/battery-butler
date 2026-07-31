@@ -100,7 +100,7 @@ class HomeViewModelTest {
         }
 
     @Test
-    fun `devices are sorted by battery age, most recently replaced first, by default`() =
+    fun `devices are sorted by battery age - most recently replaced first - by default`() =
         runTest {
             val repo = FakeDeviceRepository()
             val oldest = TestDevices.createDevice(

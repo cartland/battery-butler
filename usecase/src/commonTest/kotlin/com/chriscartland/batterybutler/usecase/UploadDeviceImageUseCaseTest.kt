@@ -120,7 +120,7 @@ class UploadDeviceImageUseCaseTest {
      * masking it as a successful upload.
      */
     @Test
-    fun `surfaces a failure when applying the etag to the device fails, even though the byte upload succeeded`() =
+    fun `surfaces a failure when applying the etag to the device fails - even though the byte upload succeeded`() =
         runTest {
             val imageRepo = FakeDeviceImageRepository().apply { uploadResult = Result.Success("etag-1") }
             val deviceRepo = FakeDeviceRepository()

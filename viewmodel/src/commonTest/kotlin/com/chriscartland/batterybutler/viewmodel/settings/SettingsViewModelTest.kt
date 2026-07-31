@@ -749,7 +749,7 @@ class SettingsViewModelTest {
     // region Data mode availability tests
 
     @Test
-    fun `availableDataModes hides legacy modes and orders Device only, Production, Staging, Mock by default`() =
+    fun `availableDataModes hides legacy modes and orders Device only then Production then Staging then Mock by default`() =
         runTest {
             val viewModel = createViewModel()
             advanceUntilIdle()

@@ -61,7 +61,7 @@ class RestSyncMapperTest {
     // --- empty string -> null ---
 
     @Test
-    fun `empty location, defaultIcon, notes, imagePath, imageEtag map to null`() {
+    fun `empty location and defaultIcon and notes and imagePath and imageEtag map to null`() {
         val snapshot = SyncSnapshotWire(
             deviceTypes = listOf(DeviceTypeWire(id = "t", name = "T", defaultIcon = "")),
             devices = listOf(DeviceSnapshotWire(id = "d", name = "D", typeId = "t", location = "", imagePath = "", imageEtag = "")),
@@ -120,7 +120,7 @@ class RestSyncMapperTest {
     // --- round trips (domain -> wire -> domain) ---
 
     @Test
-    fun `round-trip preserves DeviceType, Device, and BatteryEvent`() {
+    fun `round-trip preserves DeviceType and Device and BatteryEvent`() {
         val update = RemoteUpdate(
             isFullSnapshot = true,
             deviceTypes = listOf(DeviceType(id = "t1", name = "Smoke Alarm", defaultIcon = "detector_smoke", batteryType = "9V", batteryQuantity = 2)),
