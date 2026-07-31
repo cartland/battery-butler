@@ -7,7 +7,7 @@ Each Play Store internal-track release should be smoke-tested on a real device b
 ## How to use
 
 1. After `./scripts/release-android.sh` pushes the tag and Play Store internal upload completes, install the new build on a test device.
-2. Either add a new `## android/N` section below using the **template** at the bottom, or run `/queue-android-smoke-test` (once implemented).
+2. Add a new `## android/N` section below using the **template** at the bottom.
 3. Walk each item in the checklist. Mark `[x]` for pass, `[F]` for fail with a one-line note, or `[~]` for "skipped — reason".
 4. Any `[F]` blocks promotion to production. Add a bug task to `TODO.md` for the failure.
 5. Commit the updated queue alongside (or before) promoting internal → production.
@@ -33,6 +33,36 @@ These are the user-facing flows that have broken historically and should be chec
   The release is "smoke-clear" only when every item has `[x]`, `[F]`, or `[~]`.
   Promotion to production should record the smoke-clear status here.
 -->
+
+## android/62 – android/65 — NOT smoke-tested
+
+**Recorded 2026-07-31.** This queue was created after android/30 shipped the `bb-lg42`
+post-restore Loading bug to internal track and needed android/31 two days later. Since
+then **no release has been given an entry** — the file has only ever contained its
+template.
+
+Four releases have shipped to the Play Store internal track with no device pass:
+
+| Release | Tagged | Smoke-tested |
+| --- | --- | --- |
+| android/65 | 2026-07-31 | ❌ no |
+| android/64 | 2026-07-30 | ❌ no |
+| android/63 | 2026-07-30 | ❌ no |
+| android/62 | 2026-07-29 | ❌ no |
+
+This entry exists because the file's stated purpose is that *"the queue makes the gap
+visible"* — leaving it empty made four untested releases look identical to four tested
+ones. It is deliberately **not** filled in with checkmarks: nobody walked these builds on
+a device, and recording otherwise would be worse than recording nothing.
+
+**Decision needed from the maintainer.** Either:
+
+- start the process from the next release and treat android/62–65 as accepted risk, or
+- back-fill by walking the checklist against the current internal build (one pass covers
+  all four, since 65 is the newest), or
+- delete this file — a process doc that every release ignores is worse than no doc.
+
+An agent cannot close this: it needs a real device.
 
 ### Template
 

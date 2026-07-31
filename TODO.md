@@ -81,53 +81,6 @@ Login→Main navigation that can tear that scope down. If navigation cancels the
 (or re-firing the background sync on auth-state → Authenticated) so it can't be cancelled by
 navigation.
 
-### bb-crashlytics — Add Firebase Crashlytics (Android) — DONE 2026-07-21
-
-Prompted directly by the stuck-spinner bug (android/52 → android/53): the app had **no crash
-reporting at all** — the only reason that bug was found was a user with direct Labs-backend log
-access; the client itself gave no signal anything had gone wrong. Confirmed before starting: no
-Crashlytics/Sentry/Bugsnag dependency anywhere, and `compose-app/google-services.json` is a
-**mock** file (`mock-project-id`, fake API key) — there is no real Firebase project for the app
-itself (separate from the Labs backend's own Firebase project used only for sign-in).
-
-**Scope, per explicit user choice**: Android only this pass (iOS needs Xcode-project-level
-SPM/CocoaPods changes on two separate iOS apps — bigger, riskier, deferred); scaffold the
-integration now and let it degrade gracefully until a real Firebase project + config files are
-supplied, mirroring the existing `LABS_*`/Google Sign-In "inject later" pattern in this repo.
-
-**What was added**:
-- `com.google.firebase.crashlytics` Gradle plugin (3.0.7, pinned like `googleServices`) +
-  `firebase-crashlytics` artifact (via the existing `firebase-bom`) in `compose-app`'s
-  `androidMain` only.
-- `CrashlyticsLogWriter` (`compose-app/.../composeapp/logging/`) — a Kermit `LogWriter` that
-  forwards any `Warn`/`Error`/`Assert` log call with a `Throwable` to
-  `FirebaseCrashlytics.recordException()`. Installed once via `Logger.addLogWriter(...)` in
-  `BatteryButlerApplication.onCreate()` — this means **every existing `Logger.e(tag, e) { ... }`
-  call site across the shared KMP modules** (auth token refresh, sync, device-image
-  upload/fetch/delete, etc.) gets non-fatal crash reporting automatically, with no per-call-site
-  changes needed. Doesn't replace the existing Logcat writer, only adds to it.
-- Closed the gap that made the original bug invisible: `EditDeviceViewModel.uploadPhoto()`/
-  `removePhoto()`'s new (bb-dimg-reliability) catch blocks didn't call `Logger.e` at all before
-  this — added it, so an unexpected exception there is now both surfaced to the user *and*
-  captured as a non-fatal, going forward.
-
-**Safe with the mock config**: `FirebaseCrashlytics` queues reports locally and only attempts a
-network upload later — a fake project id just means the upload silently fails, not a crash at
-init or log time. Verified: `compose-app:assembleDebug` (Android, real dexing/packaging),
-`compileKotlinDesktop`, `compileKotlinIosSimulatorArm64` all succeed with the plugin applied;
-`detekt`/`spotlessCheck` clean. Did not verify live on a device/emulator (none available in this
-session) — the build-level verification plus Firebase's documented non-throwing behavior on
-invalid config was judged sufficient, but worth a real first-launch check before/soon after
-release.
-
-**Deferred**: iOS (both `ios-app-compose-ui` and `ios-app-swift-ui`) — needs its own
-`GoogleService-Info.plist` + SPM/CocoaPods wiring; not started. Desktop — Firebase Crashlytics
-doesn't support JVM desktop targets; would need a different crash-reporting mechanism entirely if
-ever wanted there. **Still needs a real Firebase project**: create one (or reuse an existing
-Google/Firebase account project) registered for `com.chriscartland.batterybutler`, download the
-real `google-services.json`, and replace the mock file — until then Crashlytics silently reports
-nothing real.
-
 ### bb-dimg-image-not-shown — Photo uploads: loading indicator now clears correctly, but the image still never displays — fix shipped 2026-07-21, live confirmation still pending
 
 **Live user report (2026-07-21), after android/53 (bb-dimg-reliability + the stuck-spinner fix,
@@ -192,26 +145,6 @@ explicit confirmation.
 There's also a separate PR #1326 (Devices default-sort-order feature, CI green
 as of this note, not yet merged) that the user may want folded into this same
 release once merged — check its status too.
-
-### bb-data-location-rename — Rename `NetworkMode` → `DataMode` throughout the codebase — DONE 2026-07-07
-
-**Deferred 2026-07-06** from the `NetworkMode`-local-database-isolation fix (see the Done section
-entry for that PR), floated then as "data location". **Superseded 2026-07-07**: the user gave an
-explicit instruction to call it **"Data Mode"** instead, plus two related behavior changes bundled
-into the same PR:
-
-- Renamed `NetworkMode` → `DataMode` (sealed interface, repository, use case, `DataModeKeyedState`,
-  DI bindings, strings, docs, iOS Swift bindings) across ~90 files. The sealed variant names
-  themselves (`None`, `Mock`, `GrpcLocal`, `GrpcAws`, `GrpcDev`, `LabsStaging`, `LabsProd`) were
-  deliberately left unchanged — renaming `LabsStaging`/`LabsProd` would have cascaded into the
-  entire Labs auth subsystem (`LabsAuthRepository`, `LabsSessionStorage`, `apiKeyForMode`, etc.),
-  which was out of scope. The on-disk DataStore preference key literal (`"network_mode"`) was also
-  deliberately left unchanged, so existing installs keep their saved selection across the update.
-- Reordered + relabeled the visible Settings picker to **Device only / Production / Staging /
-  Mock** (`None` / `LabsProd` / `LabsStaging` / `Mock`), per the user's requested ordering.
-- Added `FeatureFlag.LEGACY_DATA_MODES` (disabled by default in both `AppComponent` and
-  `NativeComponent`) to hide the legacy own-backend modes (`GrpcLocal`, `GrpcAws`, `GrpcDev` —
-  AWS infrastructure is hibernated) from the picker unless explicitly enabled.
 
 ### bb-play-pub-stale — `docs/GOOGLE_PLAY_PUBLISHING.md` is stale relative to the actual release flow
 
@@ -347,92 +280,37 @@ clear it, until someone happens to run release-mode CI and manually closes it
 (per the documented allowance in `.agent/AGENTS.md`) or a lucky push satisfies
 whatever the real auto-close condition is.
 
-**Investigate:** find the actual auto-close workflow/script (likely near
-`ci-post-merge-issue.yml` / `scripts/file-ci-failure-issue.sh`) and confirm
-whether it requires the specific originally-failed job to report `success`, or
-whether it's keyed off the `ci` aggregator alone (which — per this incident —
-also didn't trigger it on routine dev-mode pushes). Fix: either have it accept
-`skipped` as "not currently failing" for jobs the current `ci-mode` doesn't run,
-or have it periodically re-check against the latest release-mode run instead of
-only reacting to push events.
+**Mechanism confirmed 2026-07-31** by reading `scripts/file-ci-failure-issue.sh`.
+The suspected root cause above is **wrong in its key detail**:
 
-### bb-labs-signout-clear — Clear local Labs data on sign-out, resync on sign-in — DONE 2026-07-06 (structural fix, `SignOutLabsUseCase`/`SignInToLabsUseCase`)
+- Auto-close is **not job-specific**. On any successful run it closes *every* open
+  `ci-failure` issue, regardless of which job originally failed. So "the originally
+  failed job must report success" was never the condition.
+- The real precondition is `real_success_count > 0` — at least one non-gate job
+  succeeded — added to stop path-filtered docs-only runs from false-closing (bb-2r4g).
+- Dev-mode skipping is **not** the cause on the normal path: `ci.yml`'s sentinel gates
+  include `github.event_name == 'push'`, so push-to-main runs the full set regardless of
+  `ci-mode.txt`. A routine green push therefore does close the issues.
+- What actually stalls it is a genuine **deadlock**: auto-close only fired on `push`
+  events, and while a blocking issue is open nothing can merge, so no push happens, so
+  nothing closes it. Reproduced on issue #1429 (2026-07-30), which needed manual closure.
 
-**User report**: "when I am signed out and change network, [both Labs environments] show data" — read as an isolation regression, but investigation showed the per-environment file isolation (bb PR #1324) was working correctly; the actual gap was that the Devices/Types/History tabs read local Room data with zero awareness of Labs auth state (by original offline-first design) and nothing had ever cleared local data on sign-out, so a previously-synced environment's cached devices stayed visible indefinitely after signing out.
+**Addressed in PR #1440** (`ci: test what actually breaks main…`): `workflow_dispatch`
+runs on `main` now count as a resolution path, and PRs labelled `ci-fix` bypass
+`validation_no_blocking_issues` so a repair can always land. That PR also *tightens*
+auto-close to require all six sentinels green, closing the false-resolve hole the
+dispatch path would otherwise open (a bare dispatch defaults to development mode).
 
-**Fix**: `DeviceRepository.clearAllLocalData()` (new) wired through two new UseCases — `SignOutLabsUseCase` (signs out + clears local data) and `SignInToLabsUseCase` (signs in + triggers an immediate `resync()` on success) — composed at the usecase layer rather than inside `DefaultLabsAuthRepository` itself, since that class takes an unfakeable platform `expect class` (`GoogleSignInBridge`) and is exempted from direct unit testing. `LoginViewModel`/`SettingsViewModel` now call these UseCases instead of the repository sign-in/out methods directly. Verified end-to-end on a real emulator against real Labs Prod data: sign-out immediately empties all three tabs; sign-in repopulates them.
-
-**Follow-up finding (not fixed, tracked separately below)**: on a *cold* Labs backend (first request after being idle), the immediate resync can exceed its 15s timeout — see `bb-labs-cold-resync`. This isn't a correctness bug (the ambient background sync loop still eventually recovers), just a latency characteristic worth improving.
-
-**Deferred**: the app's own gRPC `AuthRepository.signOut()` has the same gap (never clears local data) but is architecturally different (one global account spans all gRPC modes, vs. Labs's per-environment sessions) — not fixed here, flagged as a fast, low-risk follow-up if wanted.
-
-### bb-labs-persist-signin-belief — Persist "believed signed in to Labs" across process restarts — DONE 2026-07-07
-
-**Follow-up to `bb-labs-signout-clear`**: after that fix shipped (android/44), user asked whether more protection was needed. Investigation found a remaining gap: `labsAuthState` is in-memory only and always resets to `Unauthenticated` on process launch, so a user who is genuinely signed in but whose app process gets killed (common on Android under memory pressure) sees "Sign in to Labs" at the same moment the Devices/Types/History tabs still show their real, legitimately-cached data — the same contradictory symptom as the original bug, just triggered by a process restart instead of an explicit sign-out. A naive "clear local data whenever Unauthenticated is observed" fix was rejected — every cold start starts `Unauthenticated`, so this would wipe the cache on every restart and defeat offline-first caching.
-
-**Fix**: mirrored the existing pattern already used by the app's own gRPC `DefaultAuthRepository` (which persists via `AuthTokenStorage` and starts `AuthState.Unknown`, resolving from storage once). Added `LabsSessionStorage`/`DataStoreLabsSessionStorage` (`data-local/.../auth/`) — a lightweight, per-Labs-environment (staging/prod, keyed the same way as the existing in-memory `DataModeKeyedState`) persisted "believed signed in" flag storing only profile info (`User`), no tokens, no expiry. `DefaultLabsAuthRepository`'s `authStateByMode` now defaults to `AuthState.Unknown` and resolves to `Authenticated`/`Unauthenticated` from persisted storage in an `init` block, guarded by a new generic `DataModeKeyedState.compareAndSet` so it never clobbers a real sign-in/out that happens first. Sign-in saves the belief; sign-out (already called via `SignOutLabsUseCase`) clears it alongside the local data clear. Deliberately does not re-validate a real session or track expiry — per explicit user scoping ("I don't actually care about expired auth... I just care that we remember that we think we are signed in"). Verified end-to-end on a real emulator: sign in, `adb shell am force-stop` + relaunch → Settings shows the signed-in account immediately (no false "Sign in to Labs"), Devices tab still shows cached data; sign out, force-stop + relaunch → correctly shows signed-out with an empty Devices tab.
+**Still open:** the 2026-07-09 incident (#1334/#1335 staying open 2 days across green
+pushes) is not fully explained by the deadlock, since PRs were merging then. Most likely
+those pushes were path-filtered (`real_success_count == 0`) — worth confirming against
+the run history for `798fe1a1`'s descendants before closing this task.
 
 ### bb-labs-cold-resync — Immediate post-sign-in resync can time out on a cold Labs backend — Partially DONE 2026-07-07
 
 **Found 2026-07-06** while manually verifying `bb-labs-signout-clear` on a real emulator: the first sign-in after the Labs backend had been idle for a while took about 4 minutes for devices to actually populate (the new `SignInToLabsUseCase`'s immediate `resync()` call has a 15s timeout inherited from `DefaultSyncManager.RESYNC_TIMEOUT`, likely tied to a cold-start delay on the Labs backend's hosting). A second sign-in shortly after (backend already warm) synced within ~15 seconds, confirming this is backend cold-start latency, not a logic bug — the resync silently times out (caught, logged, `SyncStatus.Failed`), and the pre-existing ambient `subscribeWithRetry()` background loop is what eventually recovers, exactly as it did before this session's fix.
 
 **Fix (partial)**: `DeviceRepository`/`SyncManager.resync()` now takes an optional `timeout: Duration` param (default `DEFAULT_RESYNC_TIMEOUT` = 15s, unchanged for pull-to-refresh's interactive spinner). `SignInToLabsUseCase` now passes a longer 60s timeout for its post-sign-in resync, since that call already has a natural loading moment and is more likely to hit a cold backend. **Not fully closed**: 60s still doesn't cover the observed ~4-minute worst case, and no distinct "still connecting" UI state was added (the generic `SyncStatus.Failed` still shows if 60s isn't enough) — left as-is since the ambient background loop recovers regardless; revisit only if the 60s bump proves insufficient in practice.
-
-### bb-labs-silent-reauth — Opportunistic silent Labs re-auth on process restart — DONE 2026-07-07
-
-**Follow-up to `bb-labs-persist-signin-belief`**: that fix persisted the *belief* that the user is signed in to Labs so the UI doesn't contradict itself after a process restart, but deliberately left the *real* gateway session unrestored — meaning background sync could keep failing silently until the user explicitly re-signed in (whose entry point was now hidden, since the UI shows Authenticated). Flagged as the most concrete remaining gap when asked "do we need more protections."
-
-**Fix**: added `GoogleSignInBridge.signInSilentlyWithClient(clientId, clientSecret)` to the expect/actual (`data-network/.../auth/`). Android actual reuses the existing Credential Manager `performSignIn` path with `setFilterByAuthorizedAccounts(true)` instead of `false` (succeeds only if the account was previously authorized, no UI). iOS/Desktop actuals always return `Result.Error` immediately — neither uses a native Sign-In SDK (both are hand-rolled interactive OAuth flows with no persisted, silently-restorable session), so there's nothing to check without showing UI. `DefaultLabsAuthRepository`'s `init` block now calls a new `attemptSilentReauth()` right after resolving `AuthState.Unknown` from the persisted belief (guarded by `DataModeKeyedState.compareAndSet`'s new boolean return, so it only fires once per belief-resolution, not on every subsequent explicit sign-in). Best-effort by design: on failure it changes nothing (no state rollback, no UI impact) — background sync just keeps failing as it would without this attempt, exactly matching the tolerance already established for `bb-labs-persist-signin-belief`. Verified end-to-end on a real emulator: sign in, `adb shell am force-stop` + relaunch → logcat confirms `"Silent Labs re-auth succeeded; real session re-established"`, Settings' "Copy Labs ID Token" reflects a live token, no dialog ever shown.
-
-**Deferred**: real silent re-auth for iOS/Desktop would require adopting a native Sign-In SDK or building refresh-token persistence for the existing PKCE flows — a materially bigger feature, not done here. Those platforms rely solely on the persisted-belief UI fix; their real session still needs an explicit re-sign-in after a process restart if the ambient in-memory session was lost.
-
-### bb-auth-session-length — Own-backend session forced the interactive Google account picker every ~1h — DONE 2026-07-08
-
-**User report**: "when I return to the app after a while I get a popup to select my Google account" every "few hours." Investigation found the OWN-backend (gRPC) session token — separate from the Labs session above — expired after 24h if the server verified it, or a hardcoded **1 hour** (`DefaultAuthRepository.LOCAL_TOKEN_EXPIRY_MS`) if only locally-verified (e.g. server unreachable at sign-in). `refreshToken()` was a stub that always errored ("user must re-authenticate"), and neither the in-memory expiry timer nor a cold start finding an already-expired stored token ever attempted anything before dropping straight to `AuthState.Unauthenticated` — the only path back in was the fully interactive account picker (`GoogleSignInBridge.signIn()`, `filterByAuthorizedAccounts=false`).
-
-**Fix**: added `GoogleSignInBridge.signInSilently()` to the expect/actual (mirrors the Labs-specific `signInSilentlyWithClient` above, but uses the bridge's already-`initialize()`d default client instead of an explicit Labs client — so no new client-id plumbing needed). Android reuses `performSignIn(clientId, filterByAuthorizedAccounts = true)`; iOS/Desktop always return `Result.Error` (same reasoning as Labs — hand-rolled interactive flows, nothing to check silently). `DefaultAuthRepository`'s `scheduleTokenExpiry` and cold-start init path both now call a new `attemptSilentRefresh()` instead of clearing the token outright: on success it calls the existing `verifyWithServer(...)` exactly as an explicit sign-in would (re-arming the next expiry itself, so the loop self-perpetuates); on failure it falls back to the original clear-and-sign-out behavior. Cold start with an already-expired stored token now shows the believed-signed-in user optimistically (`toAuthState()` no longer checks expiry) while the silent refresh runs in the background, instead of flashing signed-out first — same rationale as `bb-labs-persist-signin-belief`.
-
-**Result**: on Android, the account picker should now only ever appear on a genuinely first sign-in or after the user explicitly signs out / revokes access on-device — not on a routine ~1h/24h expiry. iOS/Desktop are unchanged (same deferred-scope reasoning as `bb-labs-silent-reauth` above).
-
-### bb-dimg-async-decode — Decode device photo bitmaps off the main thread — DONE 2026-07-23
-
-Reported as general app slowness "after the image API changes." Investigation (an Explore
-agent trace of the full device-image display path, ViewModel → use case →
-`DeviceImageRepository` → `RoomDeviceImageCache` → Compose UI) found the Room/repository layers
-were already correctly async — the actual problem was in
-`presentation-core/.../components/DeviceImageBitmap.kt`: `rememberDeviceImageBitmap` called
-`ByteArray.decodeToImageBitmap()` (a synchronous, CPU-bound Skia decode of up-to-2048px JPEGs,
-per the upload-time normalizer in `DeviceImageNormalizer.android.kt`) directly inside a Compose
-`remember{}` block — i.e. on the composition/main thread, with zero coroutine dispatch involved.
-This was made worse by the `remember` key being the `ByteArray` *reference*
-(`DeviceImageBytes` is deliberately not a `data class` — `ByteArray` equality is
-reference-based, see `DeviceImageBytes.kt`), so every unrelated state change that caused Room to
-re-emit the same cached image with a **new** `ByteArray` instance (e.g. sort/group toggles on
-Home, recording a battery event on Device Detail) forced a full-resolution re-decode of every
-visible photo on the main thread, even though the pixels never changed.
-
-**Fix**: new `DeviceImageBitmapLoader` (`presentation-core/.../components/`) — decodes via an
-injectable `CoroutineDispatcher` (`Dispatchers.Default` by default) and caches the decoded
-`ImageBitmap` by **`imageEtag`** (a stable, content-addressed key) rather than by byte-array
-reference, so a redundant re-fetch of the same cached photo is a cheap map lookup instead of a
-re-decode. `rememberDeviceImageBitmap` is now a thin `produceState`-based wrapper (genuinely
-suspends off the main thread via the loader) and takes an `imageEtag: String?` parameter,
-threaded from `DeviceListItem`, `DeviceDetailContent`, and `EditDeviceContent`'s
-`DevicePhotoSection` (all three already had `device.imageEtag` in scope). `decode` is an
-injectable lambda specifically so tests don't need a real Skia/Android bitmap decoder —
-`DeviceImageBitmapLoaderTest` covers off-thread dispatch (verified with the revert-fix/confirm-
-test-fails/restore-fix technique: temporarily removing `withContext` makes exactly one new test
-fail), per-etag caching across distinct byte-array instances, independent-etag decoding,
-`peek()` for the synchronous flicker-free initial value, FIFO cache eviction, decode-failure
-handling, and cancellation propagation.
-
-**Deliberately out of scope** (surfaced by the same investigation, not fixed here — see
-`bb-dimg-image-query-fanout` below): the N+1 Room query pattern in `HomeViewModel`
-(one live `Flow` per photographed device instead of one batched query) and the
-`flatMapLatest`-driven full resubscribe of all per-device image queries on unrelated state
-changes in both `HomeViewModel` and `DeviceDetailViewModel`. The etag-keyed cache added here
-makes both of those cheap (a map lookup instead of a decode) rather than eliminating the
-redundant queries themselves.
 
 ### bb-dimg-image-query-fanout — Batch device-image Room queries; stop full resubscribe on unrelated state changes
 
@@ -1090,6 +968,14 @@ real device, so an agent cannot close this alone. Two things worth deciding:
 If the process is not going to be followed, deleting the file is better than leaving a
 process doc that every release silently ignores.
 
+**Update 2026-07-31:** the doc no longer promises `/queue-android-smoke-test` (that
+command does not exist), and the queue now carries an explicit
+`## android/62 – android/65 — NOT smoke-tested` entry recording the gap with tag dates.
+It is deliberately not filled in with checkmarks — nobody walked those builds on a
+device. What remains is the maintainer decision: adopt from the next release, back-fill
+with one pass against the current internal build, or delete the file.
+
+
 ### bb-cli-test-data — Clean up leftover `cli-test-type-1` test data on Labs staging
 
 While building and testing the `:cli` module's `push` subcommand this session, a
@@ -1169,6 +1055,146 @@ Swift reads the generated `xValue` — with a local `./scripts/build-ios.sh` (de
 Related: bb-k4sk (Kotlin/SKIE version coupling), `.agent/ios.md` (Option A pattern).
 
 ## Done
+
+### bb-crashlytics — Add Firebase Crashlytics (Android) — DONE 2026-07-21
+
+Prompted directly by the stuck-spinner bug (android/52 → android/53): the app had **no crash
+reporting at all** — the only reason that bug was found was a user with direct Labs-backend log
+access; the client itself gave no signal anything had gone wrong. Confirmed before starting: no
+Crashlytics/Sentry/Bugsnag dependency anywhere, and `compose-app/google-services.json` is a
+**mock** file (`mock-project-id`, fake API key) — there is no real Firebase project for the app
+itself (separate from the Labs backend's own Firebase project used only for sign-in).
+
+**Scope, per explicit user choice**: Android only this pass (iOS needs Xcode-project-level
+SPM/CocoaPods changes on two separate iOS apps — bigger, riskier, deferred); scaffold the
+integration now and let it degrade gracefully until a real Firebase project + config files are
+supplied, mirroring the existing `LABS_*`/Google Sign-In "inject later" pattern in this repo.
+
+**What was added**:
+- `com.google.firebase.crashlytics` Gradle plugin (3.0.7, pinned like `googleServices`) +
+  `firebase-crashlytics` artifact (via the existing `firebase-bom`) in `compose-app`'s
+  `androidMain` only.
+- `CrashlyticsLogWriter` (`compose-app/.../composeapp/logging/`) — a Kermit `LogWriter` that
+  forwards any `Warn`/`Error`/`Assert` log call with a `Throwable` to
+  `FirebaseCrashlytics.recordException()`. Installed once via `Logger.addLogWriter(...)` in
+  `BatteryButlerApplication.onCreate()` — this means **every existing `Logger.e(tag, e) { ... }`
+  call site across the shared KMP modules** (auth token refresh, sync, device-image
+  upload/fetch/delete, etc.) gets non-fatal crash reporting automatically, with no per-call-site
+  changes needed. Doesn't replace the existing Logcat writer, only adds to it.
+- Closed the gap that made the original bug invisible: `EditDeviceViewModel.uploadPhoto()`/
+  `removePhoto()`'s new (bb-dimg-reliability) catch blocks didn't call `Logger.e` at all before
+  this — added it, so an unexpected exception there is now both surfaced to the user *and*
+  captured as a non-fatal, going forward.
+
+**Safe with the mock config**: `FirebaseCrashlytics` queues reports locally and only attempts a
+network upload later — a fake project id just means the upload silently fails, not a crash at
+init or log time. Verified: `compose-app:assembleDebug` (Android, real dexing/packaging),
+`compileKotlinDesktop`, `compileKotlinIosSimulatorArm64` all succeed with the plugin applied;
+`detekt`/`spotlessCheck` clean. Did not verify live on a device/emulator (none available in this
+session) — the build-level verification plus Firebase's documented non-throwing behavior on
+invalid config was judged sufficient, but worth a real first-launch check before/soon after
+release.
+
+**Deferred**: iOS (both `ios-app-compose-ui` and `ios-app-swift-ui`) — needs its own
+`GoogleService-Info.plist` + SPM/CocoaPods wiring; not started. Desktop — Firebase Crashlytics
+doesn't support JVM desktop targets; would need a different crash-reporting mechanism entirely if
+ever wanted there. **Still needs a real Firebase project**: create one (or reuse an existing
+Google/Firebase account project) registered for `com.chriscartland.batterybutler`, download the
+real `google-services.json`, and replace the mock file — until then Crashlytics silently reports
+nothing real.
+
+### bb-data-location-rename — Rename `NetworkMode` → `DataMode` throughout the codebase — DONE 2026-07-07
+
+**Deferred 2026-07-06** from the `NetworkMode`-local-database-isolation fix (see the Done section
+entry for that PR), floated then as "data location". **Superseded 2026-07-07**: the user gave an
+explicit instruction to call it **"Data Mode"** instead, plus two related behavior changes bundled
+into the same PR:
+
+- Renamed `NetworkMode` → `DataMode` (sealed interface, repository, use case, `DataModeKeyedState`,
+  DI bindings, strings, docs, iOS Swift bindings) across ~90 files. The sealed variant names
+  themselves (`None`, `Mock`, `GrpcLocal`, `GrpcAws`, `GrpcDev`, `LabsStaging`, `LabsProd`) were
+  deliberately left unchanged — renaming `LabsStaging`/`LabsProd` would have cascaded into the
+  entire Labs auth subsystem (`LabsAuthRepository`, `LabsSessionStorage`, `apiKeyForMode`, etc.),
+  which was out of scope. The on-disk DataStore preference key literal (`"network_mode"`) was also
+  deliberately left unchanged, so existing installs keep their saved selection across the update.
+- Reordered + relabeled the visible Settings picker to **Device only / Production / Staging /
+  Mock** (`None` / `LabsProd` / `LabsStaging` / `Mock`), per the user's requested ordering.
+- Added `FeatureFlag.LEGACY_DATA_MODES` (disabled by default in both `AppComponent` and
+  `NativeComponent`) to hide the legacy own-backend modes (`GrpcLocal`, `GrpcAws`, `GrpcDev` —
+  AWS infrastructure is hibernated) from the picker unless explicitly enabled.
+
+### bb-labs-signout-clear — Clear local Labs data on sign-out, resync on sign-in — DONE 2026-07-06 (structural fix, `SignOutLabsUseCase`/`SignInToLabsUseCase`)
+
+**User report**: "when I am signed out and change network, [both Labs environments] show data" — read as an isolation regression, but investigation showed the per-environment file isolation (bb PR #1324) was working correctly; the actual gap was that the Devices/Types/History tabs read local Room data with zero awareness of Labs auth state (by original offline-first design) and nothing had ever cleared local data on sign-out, so a previously-synced environment's cached devices stayed visible indefinitely after signing out.
+
+**Fix**: `DeviceRepository.clearAllLocalData()` (new) wired through two new UseCases — `SignOutLabsUseCase` (signs out + clears local data) and `SignInToLabsUseCase` (signs in + triggers an immediate `resync()` on success) — composed at the usecase layer rather than inside `DefaultLabsAuthRepository` itself, since that class takes an unfakeable platform `expect class` (`GoogleSignInBridge`) and is exempted from direct unit testing. `LoginViewModel`/`SettingsViewModel` now call these UseCases instead of the repository sign-in/out methods directly. Verified end-to-end on a real emulator against real Labs Prod data: sign-out immediately empties all three tabs; sign-in repopulates them.
+
+**Follow-up finding (not fixed, tracked separately below)**: on a *cold* Labs backend (first request after being idle), the immediate resync can exceed its 15s timeout — see `bb-labs-cold-resync`. This isn't a correctness bug (the ambient background sync loop still eventually recovers), just a latency characteristic worth improving.
+
+**Deferred**: the app's own gRPC `AuthRepository.signOut()` has the same gap (never clears local data) but is architecturally different (one global account spans all gRPC modes, vs. Labs's per-environment sessions) — not fixed here, flagged as a fast, low-risk follow-up if wanted.
+
+### bb-labs-persist-signin-belief — Persist "believed signed in to Labs" across process restarts — DONE 2026-07-07
+
+**Follow-up to `bb-labs-signout-clear`**: after that fix shipped (android/44), user asked whether more protection was needed. Investigation found a remaining gap: `labsAuthState` is in-memory only and always resets to `Unauthenticated` on process launch, so a user who is genuinely signed in but whose app process gets killed (common on Android under memory pressure) sees "Sign in to Labs" at the same moment the Devices/Types/History tabs still show their real, legitimately-cached data — the same contradictory symptom as the original bug, just triggered by a process restart instead of an explicit sign-out. A naive "clear local data whenever Unauthenticated is observed" fix was rejected — every cold start starts `Unauthenticated`, so this would wipe the cache on every restart and defeat offline-first caching.
+
+**Fix**: mirrored the existing pattern already used by the app's own gRPC `DefaultAuthRepository` (which persists via `AuthTokenStorage` and starts `AuthState.Unknown`, resolving from storage once). Added `LabsSessionStorage`/`DataStoreLabsSessionStorage` (`data-local/.../auth/`) — a lightweight, per-Labs-environment (staging/prod, keyed the same way as the existing in-memory `DataModeKeyedState`) persisted "believed signed in" flag storing only profile info (`User`), no tokens, no expiry. `DefaultLabsAuthRepository`'s `authStateByMode` now defaults to `AuthState.Unknown` and resolves to `Authenticated`/`Unauthenticated` from persisted storage in an `init` block, guarded by a new generic `DataModeKeyedState.compareAndSet` so it never clobbers a real sign-in/out that happens first. Sign-in saves the belief; sign-out (already called via `SignOutLabsUseCase`) clears it alongside the local data clear. Deliberately does not re-validate a real session or track expiry — per explicit user scoping ("I don't actually care about expired auth... I just care that we remember that we think we are signed in"). Verified end-to-end on a real emulator: sign in, `adb shell am force-stop` + relaunch → Settings shows the signed-in account immediately (no false "Sign in to Labs"), Devices tab still shows cached data; sign out, force-stop + relaunch → correctly shows signed-out with an empty Devices tab.
+
+### bb-labs-silent-reauth — Opportunistic silent Labs re-auth on process restart — DONE 2026-07-07
+
+**Follow-up to `bb-labs-persist-signin-belief`**: that fix persisted the *belief* that the user is signed in to Labs so the UI doesn't contradict itself after a process restart, but deliberately left the *real* gateway session unrestored — meaning background sync could keep failing silently until the user explicitly re-signed in (whose entry point was now hidden, since the UI shows Authenticated). Flagged as the most concrete remaining gap when asked "do we need more protections."
+
+**Fix**: added `GoogleSignInBridge.signInSilentlyWithClient(clientId, clientSecret)` to the expect/actual (`data-network/.../auth/`). Android actual reuses the existing Credential Manager `performSignIn` path with `setFilterByAuthorizedAccounts(true)` instead of `false` (succeeds only if the account was previously authorized, no UI). iOS/Desktop actuals always return `Result.Error` immediately — neither uses a native Sign-In SDK (both are hand-rolled interactive OAuth flows with no persisted, silently-restorable session), so there's nothing to check without showing UI. `DefaultLabsAuthRepository`'s `init` block now calls a new `attemptSilentReauth()` right after resolving `AuthState.Unknown` from the persisted belief (guarded by `DataModeKeyedState.compareAndSet`'s new boolean return, so it only fires once per belief-resolution, not on every subsequent explicit sign-in). Best-effort by design: on failure it changes nothing (no state rollback, no UI impact) — background sync just keeps failing as it would without this attempt, exactly matching the tolerance already established for `bb-labs-persist-signin-belief`. Verified end-to-end on a real emulator: sign in, `adb shell am force-stop` + relaunch → logcat confirms `"Silent Labs re-auth succeeded; real session re-established"`, Settings' "Copy Labs ID Token" reflects a live token, no dialog ever shown.
+
+**Deferred**: real silent re-auth for iOS/Desktop would require adopting a native Sign-In SDK or building refresh-token persistence for the existing PKCE flows — a materially bigger feature, not done here. Those platforms rely solely on the persisted-belief UI fix; their real session still needs an explicit re-sign-in after a process restart if the ambient in-memory session was lost.
+
+### bb-auth-session-length — Own-backend session forced the interactive Google account picker every ~1h — DONE 2026-07-08
+
+**User report**: "when I return to the app after a while I get a popup to select my Google account" every "few hours." Investigation found the OWN-backend (gRPC) session token — separate from the Labs session above — expired after 24h if the server verified it, or a hardcoded **1 hour** (`DefaultAuthRepository.LOCAL_TOKEN_EXPIRY_MS`) if only locally-verified (e.g. server unreachable at sign-in). `refreshToken()` was a stub that always errored ("user must re-authenticate"), and neither the in-memory expiry timer nor a cold start finding an already-expired stored token ever attempted anything before dropping straight to `AuthState.Unauthenticated` — the only path back in was the fully interactive account picker (`GoogleSignInBridge.signIn()`, `filterByAuthorizedAccounts=false`).
+
+**Fix**: added `GoogleSignInBridge.signInSilently()` to the expect/actual (mirrors the Labs-specific `signInSilentlyWithClient` above, but uses the bridge's already-`initialize()`d default client instead of an explicit Labs client — so no new client-id plumbing needed). Android reuses `performSignIn(clientId, filterByAuthorizedAccounts = true)`; iOS/Desktop always return `Result.Error` (same reasoning as Labs — hand-rolled interactive flows, nothing to check silently). `DefaultAuthRepository`'s `scheduleTokenExpiry` and cold-start init path both now call a new `attemptSilentRefresh()` instead of clearing the token outright: on success it calls the existing `verifyWithServer(...)` exactly as an explicit sign-in would (re-arming the next expiry itself, so the loop self-perpetuates); on failure it falls back to the original clear-and-sign-out behavior. Cold start with an already-expired stored token now shows the believed-signed-in user optimistically (`toAuthState()` no longer checks expiry) while the silent refresh runs in the background, instead of flashing signed-out first — same rationale as `bb-labs-persist-signin-belief`.
+
+**Result**: on Android, the account picker should now only ever appear on a genuinely first sign-in or after the user explicitly signs out / revokes access on-device — not on a routine ~1h/24h expiry. iOS/Desktop are unchanged (same deferred-scope reasoning as `bb-labs-silent-reauth` above).
+
+### bb-dimg-async-decode — Decode device photo bitmaps off the main thread — DONE 2026-07-23
+
+Reported as general app slowness "after the image API changes." Investigation (an Explore
+agent trace of the full device-image display path, ViewModel → use case →
+`DeviceImageRepository` → `RoomDeviceImageCache` → Compose UI) found the Room/repository layers
+were already correctly async — the actual problem was in
+`presentation-core/.../components/DeviceImageBitmap.kt`: `rememberDeviceImageBitmap` called
+`ByteArray.decodeToImageBitmap()` (a synchronous, CPU-bound Skia decode of up-to-2048px JPEGs,
+per the upload-time normalizer in `DeviceImageNormalizer.android.kt`) directly inside a Compose
+`remember{}` block — i.e. on the composition/main thread, with zero coroutine dispatch involved.
+This was made worse by the `remember` key being the `ByteArray` *reference*
+(`DeviceImageBytes` is deliberately not a `data class` — `ByteArray` equality is
+reference-based, see `DeviceImageBytes.kt`), so every unrelated state change that caused Room to
+re-emit the same cached image with a **new** `ByteArray` instance (e.g. sort/group toggles on
+Home, recording a battery event on Device Detail) forced a full-resolution re-decode of every
+visible photo on the main thread, even though the pixels never changed.
+
+**Fix**: new `DeviceImageBitmapLoader` (`presentation-core/.../components/`) — decodes via an
+injectable `CoroutineDispatcher` (`Dispatchers.Default` by default) and caches the decoded
+`ImageBitmap` by **`imageEtag`** (a stable, content-addressed key) rather than by byte-array
+reference, so a redundant re-fetch of the same cached photo is a cheap map lookup instead of a
+re-decode. `rememberDeviceImageBitmap` is now a thin `produceState`-based wrapper (genuinely
+suspends off the main thread via the loader) and takes an `imageEtag: String?` parameter,
+threaded from `DeviceListItem`, `DeviceDetailContent`, and `EditDeviceContent`'s
+`DevicePhotoSection` (all three already had `device.imageEtag` in scope). `decode` is an
+injectable lambda specifically so tests don't need a real Skia/Android bitmap decoder —
+`DeviceImageBitmapLoaderTest` covers off-thread dispatch (verified with the revert-fix/confirm-
+test-fails/restore-fix technique: temporarily removing `withContext` makes exactly one new test
+fail), per-etag caching across distinct byte-array instances, independent-etag decoding,
+`peek()` for the synchronous flicker-free initial value, FIFO cache eviction, decode-failure
+handling, and cancellation propagation.
+
+**Deliberately out of scope** (surfaced by the same investigation, not fixed here — see
+`bb-dimg-image-query-fanout` below): the N+1 Room query pattern in `HomeViewModel`
+(one live `Flow` per photographed device instead of one batched query) and the
+`flatMapLatest`-driven full resubscribe of all per-device image queries on unrelated state
+changes in both `HomeViewModel` and `DeviceDetailViewModel`. The etag-keyed cache added here
+makes both of those cheap (a map lookup instead of a decode) rather than eliminating the
+redundant queries themselves.
+
 
 ### bb-labs-refresh-token-persistence — Google Sign-In dialog still appeared on 1.0.0-49 after `bb-silent-reauth-cooldown` — DONE 2026-07-18
 
