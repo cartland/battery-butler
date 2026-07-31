@@ -45,6 +45,16 @@ Regardless of the role, the agent remains a tool, and the user retains ultimate 
         (observed 2026-07-04, `--allow-tagged-commit` during the `bb-gsi-sha1`
         config-only re-release). This is a legitimate pattern (see the
         `release-android` skill), just never a unilateral one.
+    *   **Releasing from a worktree: point `--check` at the real target commit first.**
+        `--check` resolves the target from **`HEAD`**, not from `main`. A worktree
+        cannot check out `main` (the primary checkout holds it), so `HEAD` is
+        whatever agent branch you were last on, and `--check` will happily report
+        that commit's CI — where the six sentinels read `skipped`, because dev-mode
+        PR runs skip them. Releasing that is releasing the wrong commit. Fix:
+        `git fetch origin main && git checkout --detach origin/main`, re-run
+        `--check` (sentinels should now all read `success`), then run the
+        `--confirm-tag` + `--confirm-hash` command it prints **verbatim**. Observed
+        2026-07-31 during the `android/65` release.
 
 3.  **NEVER Deploy Directly to Production**:
     *   **All server deploys go to dev first.** Use `/deploy-server` or `./scripts/release-server.sh`.
