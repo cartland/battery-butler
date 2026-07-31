@@ -15,7 +15,8 @@ final class DeviceTypeListScreenTests: XCTestCase {
             sortOption: .name,
             groupOption: .none,
             isSortAscending: true,
-            isGroupAscending: true
+            isGroupAscending: true,
+            densityOption: .expanded
         )
 
         let view = DeviceTypeListContentView(
@@ -42,7 +43,8 @@ final class DeviceTypeListScreenTests: XCTestCase {
             sortOption: .name,
             groupOption: .none,
             isSortAscending: true,
-            isGroupAscending: true
+            isGroupAscending: true,
+            densityOption: .expanded
         )
 
         let view = DeviceTypeListContentView(
