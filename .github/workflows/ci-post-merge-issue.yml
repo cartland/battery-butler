@@ -32,7 +32,13 @@ on:
 
 jobs:
   file-or-resolve:
-    if: github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main'
+    # workflow_dispatch is accepted alongside push so a manually dispatched green run on
+    # main can resolve open issues. Previously only `push` counted, which deadlocked:
+    # while a blocking issue is open nothing merges, so no push to main happens, so no
+    # run existed that could close it. Recovering meant closing the issue by hand
+    # (issue #1429, 2026-07-30). A dispatched run is now a valid resolution path --
+    # `gh workflow run "Battery Butler CI" --ref main -f ci_mode=release`.
+    if: (github.event.workflow_run.event == 'push' || github.event.workflow_run.event == 'workflow_dispatch') && github.event.workflow_run.head_branch == 'main'
     runs-on: ubuntu-latest
     permissions:
       issues: write

@@ -40,6 +40,10 @@ jobs:
       docs_only: ${{ steps.filter.outputs.docs_only }}
       needs_spotless: ${{ steps.filter.outputs.needs_spotless }}
       ci_mode: ${{ steps.read_mode.outputs.ci_mode }}
+      # True when a PR touches dependency/build wiring. Those changes break the jobs
+      # development mode skips on PRs, so the sentinels run for them regardless of mode.
+      # See "Risky-change escalation" in .agent/ci.md.
+      risky: ${{ steps.filter.outputs.risky }}
     steps:
       - uses: actions/checkout@v7
       - name: Read CI mode
@@ -101,6 +105,19 @@ jobs:
               - 'LICENSE'
               - '.gitignore'
               - '.gitattributes'
+            # Dependency / build wiring. A change here can break Android, iOS, desktop or
+            # server in ways the fast PR checks cannot see, because development mode skips
+            # those jobs on PRs. Every dependency break on main traced back to a file in
+            # this list, so these PRs get the full sentinel set even in development mode.
+            risky:
+              - 'gradle/libs.versions.toml'
+              - 'gradle/**'
+              - 'gradlew*'
+              - '**/build.gradle.kts'
+              - 'settings.gradle.kts'
+              - '.github/workflows/**'
+              - '.github/actions/**'
+              - 'buildSrc/**'
             # Files that need spotless (code + markdown)
             needs_spotless:
               - '**/*.kt'
@@ -113,9 +130,15 @@ jobs:
   # on a push to main. While one is open, new auto-merges are paused so we
   # fix-forward instead of piling on top of broken main. The issue auto-closes
   # on the next green push-to-main CI run.
+  #
+  # ESCAPE HATCH: a PR labelled `ci-fix` skips this gate. Without it the gate
+  # deadlocks -- while a blocking issue is open nothing can merge, so no push to
+  # main happens, so no green push-to-main run exists to auto-close the issue, so
+  # nothing can merge. Hit for real on issue #1429 (2026-07-30), which had to be
+  # closed by hand. Label the fix-forward PR `ci-fix` to break the cycle.
   validation_no_blocking_issues:
     needs: changes
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'ci-fix')
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
@@ -187,6 +210,19 @@ jobs:
       - name: Run Unit Tests
         run: ./gradlew test --stacktrace
 
+      # `test` above only exists in projects with the JVM/Android plugin. KMP modules
+      # expose desktopTest / jvmTest instead, and `./gradlew test` schedules NEITHER --
+      # verified with `./gradlew test --dry-run`, which lists no desktopTest or jvmTest
+      # task in any project. That silently excluded ~796 tests across 13 modules
+      # (usecase, viewmodel, domain, data, data-network, data-local, presentation-*,
+      # ai, and the experimental/* mirrors) from every CI run.
+      #
+      # Both task names are needed: modules disagree on whether the JVM target is called
+      # `desktop` or `jvm`. Gradle only errors if NO project has a given task, and at
+      # least one project has each, so naming both is safe.
+      - name: Run KMP Unit Tests
+        run: ./gradlew desktopTest jvmTest --stacktrace
+
       # buildSrc is a separate build -- the root `test` above does not descend into it, so
       # its tests need their own invocation. Without this they never run in CI at all.
       - name: Run buildSrc Unit Tests
@@ -205,7 +241,7 @@ jobs:
 
   validation_instrumented:
     needs: changes
-    if: needs.changes.outputs.code == 'true' && (github.event_name == 'push' || needs.changes.outputs.ci_mode != 'development')
+    if: needs.changes.outputs.code == 'true' && (github.event_name == 'push' || needs.changes.outputs.ci_mode != 'development' || needs.changes.outputs.risky == 'true')
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -221,7 +257,7 @@ jobs:
 
   validation_ios_ui:
     needs: changes
-    if: needs.changes.outputs.code == 'true' && (github.event_name == 'push' || needs.changes.outputs.ci_mode != 'development')
+    if: needs.changes.outputs.code == 'true' && (github.event_name == 'push' || needs.changes.outputs.ci_mode != 'development' || needs.changes.outputs.risky == 'true')
     runs-on: macos-latest
     timeout-minutes: 45
     steps:
@@ -340,7 +376,7 @@ jobs:
 
   build_android:
     needs: changes
-    if: needs.changes.outputs.code == 'true' && (github.event_name == 'push' || needs.changes.outputs.ci_mode != 'development')
+    if: needs.changes.outputs.code == 'true' && (github.event_name == 'push' || needs.changes.outputs.ci_mode != 'development' || needs.changes.outputs.risky == 'true')
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -361,7 +397,7 @@ jobs:
 
   build_ios_compose:
     needs: changes
-    if: needs.changes.outputs.code == 'true' && (github.event_name == 'push' || needs.changes.outputs.ci_mode != 'development')
+    if: needs.changes.outputs.code == 'true' && (github.event_name == 'push' || needs.changes.outputs.ci_mode != 'development' || needs.changes.outputs.risky == 'true')
     runs-on: macos-latest
     timeout-minutes: 30
     steps:
@@ -400,6 +436,19 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-xcode-compose-
 
+      # Kotlin/Native is stricter than the JVM about declaration names -- it rejects `,`
+      # and `()` inside backticked identifiers. commonTest code that compiles fine for
+      # desktop and Android can therefore fail only for the iOS targets, and nothing else
+      # in CI compiles K/N test sources: validation_compile_tests runs `compileTestKotlin`,
+      # which matches only the exactly-named task and never the target-suffixed KMP
+      # variants, and the iOS builds below compile main sources, not test sources.
+      # 14 such breakages accumulated undetected before PR #1438 fixed them.
+      #
+      # This runs here rather than in a new macOS job because Apple targets need a macOS
+      # runner and this one is already warm with the Gradle/KMP cache.
+      - name: Compile Kotlin/Native Test Sources
+        run: ./gradlew compileTestKotlinIosSimulatorArm64 --stacktrace
+
       - name: Build iOS App (Compose UI)
         run: |
           xcodebuild -project ios-app-compose-ui/iosAppComposeUI.xcodeproj -configuration Debug -scheme iosAppComposeUI -destination 'generic/platform=iOS Simulator' build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO CONFIGURATION_BUILD_DIR=build/ios-compose/
@@ -413,7 +462,7 @@ jobs:
 
   build_ios_native:
     needs: changes
-    if: needs.changes.outputs.code == 'true' && (github.event_name == 'push' || needs.changes.outputs.ci_mode != 'development')
+    if: needs.changes.outputs.code == 'true' && (github.event_name == 'push' || needs.changes.outputs.ci_mode != 'development' || needs.changes.outputs.risky == 'true')
     runs-on: macos-latest
     timeout-minutes: 30
     steps:
@@ -477,7 +526,7 @@ jobs:
 
   build_desktop:
     needs: changes
-    if: needs.changes.outputs.code == 'true' && (github.event_name == 'push' || needs.changes.outputs.ci_mode != 'development')
+    if: needs.changes.outputs.code == 'true' && (github.event_name == 'push' || needs.changes.outputs.ci_mode != 'development' || needs.changes.outputs.risky == 'true')
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
     strategy:
@@ -498,7 +547,7 @@ jobs:
 
   build_server:
     needs: changes
-    if: needs.changes.outputs.code == 'true' && (github.event_name == 'push' || needs.changes.outputs.ci_mode != 'development')
+    if: needs.changes.outputs.code == 'true' && (github.event_name == 'push' || needs.changes.outputs.ci_mode != 'development' || needs.changes.outputs.risky == 'true')
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
