@@ -34,33 +34,29 @@ These are the user-facing flows that have broken historically and should be chec
   Promotion to production should record the smoke-clear status here.
 -->
 
-## android/62 – android/66 — NOT smoke-tested
+## No release has been smoke-tested
 
-**Recorded 2026-07-31.** This queue was created after android/30 shipped the `bb-lg42`
-post-restore Loading bug to internal track and needed android/31 two days later. Since
-then **no release has been given an entry** — the file has only ever contained its
-template.
+**This queue has never been used.** It was created after android/30 shipped the `bb-lg42`
+post-restore Loading bug to internal track and needed android/31 two days later — yet the
+file below has only ever contained its template. Every release since has gone to the Play
+Store internal track with no device pass.
 
-Five releases have shipped to the Play Store internal track with no device pass:
+That statement is deliberately phrased as an invariant rather than a list of release
+numbers: it stays true (and stays accurate) until someone actually adds a `## android/N`
+section, instead of going stale the moment the next release ships. As a snapshot, the
+newest release at the time of writing was **android/67 (2026-07-31)**, and the run of
+untested releases goes back at least to android/62 (2026-07-29).
 
-| Release | Tagged | Smoke-tested |
-| --- | --- | --- |
-| android/66 | 2026-07-31 | ❌ no |
-| android/65 | 2026-07-31 | ❌ no |
-| android/64 | 2026-07-30 | ❌ no |
-| android/63 | 2026-07-30 | ❌ no |
-| android/62 | 2026-07-29 | ❌ no |
-
-This entry exists because the file's stated purpose is that *"the queue makes the gap
-visible"* — leaving it empty made five untested releases look identical to five tested
-ones. It is deliberately **not** filled in with checkmarks: nobody walked these builds on
-a device, and recording otherwise would be worse than recording nothing.
+Nothing here is filled in with checkmarks. Nobody walked these builds on a device, and
+recording otherwise would be worse than recording nothing — the whole point of the file is
+that *"the queue makes the gap visible"*, and an empty file made untested releases look
+identical to tested ones.
 
 **Decision needed from the maintainer.** Either:
 
-- start the process from the next release and treat android/62–66 as accepted risk, or
+- start the process from the next release and treat the backlog as accepted risk, or
 - back-fill by walking the checklist against the current internal build (one pass covers
-  all five, since 66 is the newest), or
+  the backlog, since the newest build is what's installed), or
 - delete this file — a process doc that every release ignores is worse than no doc.
 
 An agent cannot close this: it needs a real device.
