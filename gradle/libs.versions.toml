@@ -65,7 +65,7 @@ googleHttpClientGson = "2.2.0"
 serializationJson = "1.11.0"
 protobufPlugin = "0.10.0"
 awsSdk = "2.49.4"
-postgres = "42.7.10"
+postgres = "42.7.13"
 hikari = "7.0.2"
 # Exposed 1.x blocked: major API migration (DSL moved to new packages, transaction API changed).
 # See https://github.com/JetBrains/Exposed/wiki/Migrating-from-0.x-to-1.0
