@@ -18,7 +18,7 @@ apply(plugin = "com.google.cloud.tools.jib")
 // See: https://github.com/GoogleContainerTools/jib/issues/4235
 configurations.all {
     resolutionStrategy {
-        force("org.apache.commons:commons-compress:1.21")
+        force("org.apache.commons:commons-compress:1.28.0")
         force("commons-codec:commons-codec:1.22.0")
     }
 }
