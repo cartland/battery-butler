@@ -958,7 +958,7 @@ process doc that every release silently ignores.
 
 **Update 2026-07-31:** the doc no longer promises `/queue-android-smoke-test` (that
 command does not exist), and the queue now carries an explicit
-`## android/62 – android/65 — NOT smoke-tested` entry recording the gap with tag dates.
+`## android/62 – android/66 — NOT smoke-tested` entry recording the gap with tag dates.
 It is deliberately not filled in with checkmarks — nobody walked those builds on a
 device. What remains is the maintainer decision: adopt from the next release, back-fill
 with one pass against the current internal build, or delete the file.
