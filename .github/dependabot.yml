@@ -27,10 +27,12 @@ updates:
       # only exists in commons-compress 1.26+.
       # See build.gradle.kts comments + https://github.com/GoogleContainerTools/jib/issues/4235
       # PR #1133 bumped past this constraint and broke build_server on main.
-      # NOTE: commons-compress moved to 1.28.0 in PR #1424, so the 1.26+ requirement is
-      # now met and this pin is unblocked on that axis. Unpinning still needs the three
-      # force()/classpath entries in build.gradle.kts changed together, plus a
-      # :server:app:jibBuildTar run — a catalog-only bump is overridden (PR #1426).
+      # DO NOT try to unpin this on the "commons-compress is new enough now" theory.
+      # That was tested on 2026-07-31 and is wrong: jib 3.5.4 CALLS
+      # putArchiveEntry(TarArchiveEntry), and :server:app:jibBuildTar dies with
+      # NoSuchMethodError on that exact signature against commons-compress 1.25.0,
+      # 1.27.1 AND 1.28.0 — all four force/classpath sites changed together each time.
+      # jib 3.4.1 + commons-compress 1.28.0 is the combination that works.
       - dependency-name: "com.google.cloud.tools:jib-gradle-plugin"
       # Same pin, plugins-DSL marker form. Dependabot treats the plugin id used in
       # libs.versions.toml as a distinct dependency from the artifact above, so it
