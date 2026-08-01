@@ -110,6 +110,34 @@ Regardless of the role, the agent remains a tool, and the user retains ultimate 
 
 ## Build & Test Health
 
+**Re-run verification after your LAST edit, not your last convenient moment.**
+Observed 2026-07-31: a commit message claimed `spotlessCheck` passed, and it had — but
+before a subsequent iOS DI fix that introduced a misordered import. CI caught it. A
+verification claim covers only the tree that existed when it ran, so any edit after it
+invalidates it. Re-run, then commit.
+
+**A green local test run is not evidence a test is sound.** Two failure modes hit on
+2026-07-31/08-01, both of which passed locally:
+
+- A test that asserts on state populated by a *different* subscription is racy. It passed
+  five consecutive local runs and failed on CI. If you are waiting for something, wait on
+  the exact thing you assert about — a `Channel` handoff, not a shared list plus a separate
+  observation.
+- A test harness can silently exercise nothing. `runTest` + `advanceUntilIdle()` around a
+  Room-backed Flow never sees an emission, because Room uses its own executors. See
+  `.agent/testing.md` § Testing Room-backed Flows.
+
+**Mutation-check regression tests.** After writing a test for a bug, reintroduce the bug and
+confirm the test fails. If it still passes, the test is not testing what you think. This has
+paid for itself repeatedly (`bb-dimg` PRs #1370/#1371, `bb-qz7w` 2026-08-01) and has also
+produced useful negative results about which mechanism is actually load-bearing.
+
+**Do not reimplement a check a compiler already performs.** A buildSrc task comparing Kotlin
+constructor parameters against Swift call sites was written and deleted the same day: the
+Swift compiler already does it, definitively and for every failure mode, and the bespoke
+version covered only one module. The real problem was *when* the compiler ran, which a CI
+path filter fixes. Prefer scheduling the authoritative check over approximating it.
+
 Keeping the build and tests healthy is a top priority. When you identify or fix build/test issues:
 
 1. **Always Create PRs for Fixes**: Never leave build or test fixes uncommitted. Create a PR promptly so fixes are tracked and reviewed.

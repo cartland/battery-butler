@@ -44,6 +44,23 @@ Test types, coverage enforcement, and testing patterns for Battery Butler.
   - **Real production hit of Pattern B (2026-07, `bb-dimg` device photos)**: `EditDeviceViewModel.uploadPhoto()`/`removePhoto()` set a `_photoUploading` loading flag to `true`, then only cleared it on the line *after* the operation returned successfully — no `try/finally`. An unexpected (non-`Result`) exception from deep in the call chain (the local Room cache write, in this case) skipped that line entirely: no crash, no error shown, `_photoUploading` stuck at `true` forever — a real device confirmed the exact "spinner never clears" symptom this pattern predicts. Fix (PR #1371): wrap in `try { ... } catch (e: CancellationException) { throw e } catch (e: Exception) { /* surface as a typed error */ } finally { /* always clear the flag */ }`. **General rule going forward: any ViewModel loading-state flag set inside `viewModelScope.launch` must be cleared in a `finally`, not the line after the happy path** — this is now a concrete regression class, not just theoretical. Regression-tested via `FakeDeviceImageRepository.uploadThrows`/`deleteThrows` (an *unexpected* throw, distinct from a typed `DeviceImageError` `Result.Error`) — see `EditDeviceViewModelTest.kt`.
   - **Technique for proving a regression test actually catches the bug**: temporarily revert the fix locally, re-run the new test and confirm it fails, then restore the fix and confirm it passes again. Used twice in the `bb-dimg-reliability`/stuck-spinner fixes (PRs #1370, #1371) — both times the "obvious" test would have passed even against the buggy code if written slightly differently (e.g., without pausing a fake mid-operation to actually interleave a cancellation, or without a fake that can throw an *unexpected* exception distinct from a typed error). Cheap insurance against a test that looks like it covers the bug but doesn't.
 
+### Testing Room-backed Flows — `runTest` silently proves nothing
+
+**Room runs queries and invalidation on its own executors, which a `TestScheduler`'s virtual clock does not drive.** A `runTest` + `advanceUntilIdle()` harness around a Room `@Query` Flow will simply never observe an emission — the test then fails on its own precondition, or worse, passes because it asserted nothing. Use `runBlocking` with real dispatchers and a real `withTimeout` for these. `RestoreLateCollectorTest` (`data-local/src/jvmTest`) is the pattern.
+
+This is a large part of why the `bb-lg42` restore regression had no automated coverage for so long: the obvious harness looks correct and reports nothing.
+
+Two related traps from writing that test:
+
+- **Never assert on a list that a *different* subscription populated.** The first version launched a collector accumulating emissions into a `CopyOnWriteArrayList`, then waited on a separate `first { it.isNotEmpty() }` before asserting the list had the data. Those are independent subscriptions — the second seeing it proves nothing about the first having appended. It passed 5/5 locally and failed on CI. Hand emissions to the test through a `Channel` and drain *that*, so you observe exactly the collector under test.
+- **`seedLegacyFile` closes and renames the OFFLINE database file.** Seed the legacy fixture *before* constructing `DynamicDatabaseProvider`, or you pull the file out from under the provider's eagerly-created instance and nothing ever emits. Easy to misread as a product bug.
+
+### Mutation-check every regression test
+
+Extends the "temporarily revert the fix" technique above: after writing a regression test, reintroduce the bug and confirm the test fails. Applied to `RestoreLateCollectorTest` — reverting `restoreFromLegacy` to create the new database without publishing it to `_database` fails both tests.
+
+That exercise also produced a useful negative result: removing `rebindSignal` from `RoomLocalDataSource.bound()` does **not** fail those tests, because `restoreFromLegacy` assigns a new `_database` value and that `StateFlow` change alone re-triggers `flatMapLatest`. `rebindSignal` is defense-in-depth for the same-instance case, covered separately by `DynamicDatabaseProviderTest`. Worth knowing before anyone "simplifies" it.
+
 ## Headless Compose UI Tests (jvmTest, no emulator)
 
 Introduced with the record-replacement flight animation (PR #1347,
