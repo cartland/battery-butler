@@ -2,12 +2,16 @@ package com.chriscartland.batterybutler.presentationfeature.history
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DensityLarge
+import androidx.compose.material.icons.filled.DensitySmall
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
@@ -24,6 +28,8 @@ import com.chriscartland.batterybutler.composeresources.composeStringResource
 import com.chriscartland.batterybutler.composeresources.generated.resources.Res
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_try_again
 import com.chriscartland.batterybutler.composeresources.generated.resources.add_item_card_battery_event
+import com.chriscartland.batterybutler.composeresources.generated.resources.content_desc_switch_to_compact
+import com.chriscartland.batterybutler.composeresources.generated.resources.content_desc_switch_to_expanded
 import com.chriscartland.batterybutler.composeresources.generated.resources.empty_history_message
 import com.chriscartland.batterybutler.composeresources.generated.resources.empty_history_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.error_load_history
@@ -32,11 +38,13 @@ import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.presentationcore.components.AddItemCard
 import com.chriscartland.batterybutler.presentationcore.components.EmptyStateContent
 import com.chriscartland.batterybutler.presentationcore.components.HistoryListItem
+import com.chriscartland.batterybutler.presentationcore.components.IconControl
 import com.chriscartland.batterybutler.presentationcore.components.LoadingWithLabel
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationcore.theme.Padding
 import com.chriscartland.batterybutler.presentationmodel.history.HistoryItemModel
 import com.chriscartland.batterybutler.presentationmodel.history.HistoryListScreenState
+import com.chriscartland.batterybutler.presentationmodel.home.DensityOption
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -53,6 +61,7 @@ fun HistoryListContent(
     nowInstant: Instant = Clock.System.now(),
     isRefreshing: Boolean = false,
     onRefresh: () -> Unit = {},
+    onDensityOptionSelected: (DensityOption) -> Unit = {},
 ) {
     PullToRefreshBox(
         isRefreshing = isRefreshing,
@@ -97,6 +106,34 @@ fun HistoryListContent(
                             verticalArrangement = Arrangement.spacedBy(Padding.medium),
                         ) {
                             item {
+                                // History has no sort/group controls, so this row holds the density
+                                // toggle alone. It is still a FlowRow for consistency with the other
+                                // two filter rows -- if a control is ever added here it must be able
+                                // to wrap rather than clip off the right edge.
+                                val isCompact = state.densityOption == DensityOption.COMPACT
+                                FlowRow(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(Padding.small),
+                                    verticalArrangement = Arrangement.spacedBy(Padding.small),
+                                ) {
+                                    IconControl(
+                                        icon = if (isCompact) Icons.Default.DensitySmall else Icons.Default.DensityLarge,
+                                        contentDescription = composeStringResource(
+                                            if (isCompact) {
+                                                Res.string.content_desc_switch_to_expanded
+                                            } else {
+                                                Res.string.content_desc_switch_to_compact
+                                            },
+                                        ),
+                                        onClicked = {
+                                            onDensityOptionSelected(
+                                                if (isCompact) DensityOption.EXPANDED else DensityOption.COMPACT,
+                                            )
+                                        },
+                                    )
+                                }
+                            }
+                            item {
                                 AddItemCard(composeStringResource(Res.string.add_item_card_battery_event), onAddEventClick)
                             }
                             items(state.items, key = { it.event.id }) { item ->
@@ -109,6 +146,7 @@ fun HistoryListContent(
                                         onEventClick(item.event.id, item.event.deviceId)
                                     },
                                     nowInstant = nowInstant,
+                                    density = state.densityOption,
                                 )
                             }
                         }

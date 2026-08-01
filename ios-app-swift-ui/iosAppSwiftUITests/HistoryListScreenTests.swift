@@ -16,7 +16,8 @@ final class HistoryListScreenTests: XCTestCase {
 
     func testHistoryListContentView_Success() {
         let successState = HistoryListScreenStateSuccess(
-            items: [TestData.historyItem, TestData.historyItem2]
+            items: [TestData.historyItem, TestData.historyItem2],
+            densityOption: .expanded
         )
 
         let view = makeView(state: successState)
@@ -41,7 +42,7 @@ final class HistoryListScreenTests: XCTestCase {
     }
 
     func testHistoryListContentView_Empty() {
-        let emptyState = HistoryListScreenStateSuccess(items: [])
+        let emptyState = HistoryListScreenStateSuccess(items: [], densityOption: .expanded)
 
         let view = makeView(state: emptyState)
 

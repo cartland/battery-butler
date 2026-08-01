@@ -1,5 +1,6 @@
 package com.chriscartland.batterybutler.viewmodel.history
 
+import com.chriscartland.batterybutler.domain.repository.DisplayDensityRepository
 import com.chriscartland.batterybutler.usecase.GetBatteryEventsUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.GetDevicesUseCase
@@ -12,6 +13,7 @@ class HistoryListViewModelFactory(
     private val getDevicesUseCase: GetDevicesUseCase,
     private val getDeviceTypesUseCase: GetDeviceTypesUseCase,
     private val resyncUseCase: ResyncUseCase,
+    private val displayDensityRepository: DisplayDensityRepository,
 ) {
     fun create(): HistoryListViewModel =
         HistoryListViewModel(
@@ -19,5 +21,6 @@ class HistoryListViewModelFactory(
             getDevicesUseCase,
             getDeviceTypesUseCase,
             resyncUseCase,
+            displayDensityRepository,
         )
 }

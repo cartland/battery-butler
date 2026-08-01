@@ -6,6 +6,7 @@ import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.presentationmodel.history.HistoryListScreenState
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
+import com.chriscartland.batterybutler.testcommon.FakeDisplayDensityRepository
 import com.chriscartland.batterybutler.usecase.GetBatteryEventsUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.GetDevicesUseCase
@@ -126,5 +127,6 @@ class CrashProofHistoryListViewModelTest {
             getDevicesUseCase = GetDevicesUseCase(repo),
             getDeviceTypesUseCase = GetDeviceTypesUseCase(repo),
             resyncUseCase = ResyncUseCase(repo),
+            displayDensityRepository = FakeDisplayDensityRepository(),
         )
 }

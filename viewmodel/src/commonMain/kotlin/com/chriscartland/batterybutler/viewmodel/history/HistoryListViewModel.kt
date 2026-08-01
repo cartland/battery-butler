@@ -1,7 +1,11 @@
 package com.chriscartland.batterybutler.viewmodel.history
 
+import com.chriscartland.batterybutler.domain.repository.DisplayDensityRepository
 import com.chriscartland.batterybutler.presentationmodel.history.HistoryItemModel
 import com.chriscartland.batterybutler.presentationmodel.history.HistoryListScreenState
+import com.chriscartland.batterybutler.presentationmodel.home.DensityOption
+import com.chriscartland.batterybutler.presentationmodel.home.toDensityOption
+import com.chriscartland.batterybutler.presentationmodel.home.toDisplayDensity
 import com.chriscartland.batterybutler.usecase.GetBatteryEventsUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.GetDevicesUseCase
@@ -26,8 +30,18 @@ class HistoryListViewModel(
     private val getDevicesUseCase: GetDevicesUseCase,
     private val getDeviceTypesUseCase: GetDeviceTypesUseCase,
     private val resyncUseCase: ResyncUseCase,
+    private val displayDensityRepository: DisplayDensityRepository,
 ) : ViewModel() {
     private val retryTrigger = MutableStateFlow(0)
+
+    // Shared app-wide: same stored preference as Home and Device Types.
+    private val densityOptionFlow = displayDensityRepository.displayDensity.map { it.toDensityOption() }
+
+    fun onDensityOptionSelected(option: DensityOption) {
+        viewModelScope.coroutineScope.launch {
+            displayDensityRepository.setDisplayDensity(option.toDisplayDensity())
+        }
+    }
 
     fun retry() {
         retryTrigger.update { it + 1 }
@@ -60,7 +74,8 @@ class HistoryListViewModel(
                 getBatteryEventsUseCase(),
                 getDevicesUseCase(),
                 getDeviceTypesUseCase(),
-            ) { events, devices, types ->
+                densityOptionFlow,
+            ) { events, devices, types, density ->
                 val deviceMap = devices.associateBy { it.id }
                 val typeMap = types.associateBy { it.id }
 
@@ -74,7 +89,7 @@ class HistoryListViewModel(
                         deviceLocation = device?.location,
                     )
                 }
-                HistoryListScreenState.Success(items)
+                HistoryListScreenState.Success(items, density)
             }
         },
     )

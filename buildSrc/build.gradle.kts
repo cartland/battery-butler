@@ -56,6 +56,10 @@ gradlePlugin {
             id = "import.boundary.check"
             implementationClass = "importboundary.ImportBoundaryPlugin"
         }
+        create("swiftConstructorCheck") {
+            id = "swift.constructor.check"
+            implementationClass = "kmpinterop.SwiftConstructorPlugin"
+        }
         create("dataStoreSingletonCheck") {
             id = "datastore.singleton.check"
             implementationClass = "datastoreguard.DataStoreSingletonPlugin"

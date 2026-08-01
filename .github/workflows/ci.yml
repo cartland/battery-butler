@@ -118,6 +118,12 @@ jobs:
               - '.github/workflows/**'
               - '.github/actions/**'
               - 'buildSrc/**'
+              # presentation-model holds the state classes Kotlin/Native exports to Swift. A
+              # changed constructor breaks Swift call sites while Kotlin still compiles, and
+              # checkSwiftConstructors only catches the arity case -- renamed or retyped
+              # properties still need the real Swift build. Cheap to include: it is a small
+              # module that changes far less often than domain/ or viewmodel/.
+              - 'presentation-model/**'
             # Files that need spotless (code + markdown)
             needs_spotless:
               - '**/*.kt'
@@ -361,7 +367,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-java-gradle
       - name: Check Architecture
-        run: ./gradlew checkArchitecture checkPreviewTime
+        run: ./gradlew checkArchitecture checkPreviewTime checkSwiftConstructors
 
   validation_import_boundary:
     needs: changes

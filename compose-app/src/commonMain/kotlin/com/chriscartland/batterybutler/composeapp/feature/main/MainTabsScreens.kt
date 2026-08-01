@@ -107,5 +107,6 @@ fun HistoryScreenRoot(
         contentPadding = contentPadding,
         isRefreshing = isRefreshing,
         onRefresh = { viewModel.onRefresh() },
+        onDensityOptionSelected = { viewModel.onDensityOptionSelected(it) },
     )
 }
