@@ -9,6 +9,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -149,21 +150,29 @@ class RestoreLateCollectorTest {
             )
             val localDataSource = RoomLocalDataSource(provider)
 
-            val seen = java.util.concurrent.CopyOnWriteArrayList<List<DeviceType>>()
+            // Hand emissions to the test through a Channel rather than accumulating them in a
+            // list and asserting afterwards. Asserting on a shared list races: a SEPARATE
+            // observation of the restored data does not prove THIS collector has appended yet.
+            // That version passed locally and failed on CI.
+            val emissions = Channel<List<DeviceType>>(Channel.UNLIMITED)
             val job = launch(Dispatchers.Default) {
-                localDataSource.getAllDeviceTypes().collect { seen.add(it) }
+                localDataSource.getAllDeviceTypes().collect { emissions.send(it) }
             }
-            withTimeout(TIMEOUT_MS) { localDataSource.getAllDeviceTypes().first() }
+
+            // Block until the collector is genuinely subscribed, so the restore below happens
+            // while it is active -- that is the whole point of this test.
+            withTimeout(TIMEOUT_MS) { emissions.receive() }
 
             provider.restoreFromLegacy(legacyFileName)
 
+            // Drain until THIS collector delivers the restored row. Deterministic: the timeout
+            // fires only if the emission never arrives.
             withTimeout(TIMEOUT_MS) {
-                localDataSource.getAllDeviceTypes().first { it.isNotEmpty() }
+                while (true) {
+                    val types = emissions.receive()
+                    if (types.any { it.name == legacyType.name }) break
+                }
             }
-            assertTrue(
-                seen.any { types -> types.any { it.name == legacyType.name } },
-                "collector active across the restore never saw the restored data; saw $seen",
-            )
 
             job.cancel()
             providerScope.cancel()
@@ -197,8 +206,8 @@ class RestoreLateCollectorTest {
         private val mode = MutableStateFlow(initial)
         override val dataMode: Flow<DataMode> = mode
 
-        override suspend fun setDataMode(m: DataMode) {
-            mode.value = m
+        override suspend fun setDataMode(mode: DataMode) {
+            this.mode.value = mode
         }
     }
 }
