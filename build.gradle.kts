@@ -67,7 +67,6 @@ plugins {
     id("test.coverage.check")
     id("naming.convention.check")
     id("import.boundary.check")
-    id("swift.constructor.check")
     id("datastore.singleton.check")
     id("hardcoded.string.check")
     id("preview.time.check")

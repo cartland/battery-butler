@@ -118,11 +118,15 @@ jobs:
               - '.github/workflows/**'
               - '.github/actions/**'
               - 'buildSrc/**'
-              # presentation-model holds the state classes Kotlin/Native exports to Swift. A
-              # changed constructor breaks Swift call sites while Kotlin still compiles, and
-              # checkSwiftConstructors only catches the arity case -- renamed or retyped
-              # properties still need the real Swift build. Cheap to include: it is a small
-              # module that changes far less often than domain/ or viewmodel/.
+              # Types Kotlin/Native exports to Swift. Adding a parameter to one of these is
+              # source-compatible for Kotlin and a COMPILE ERROR for every Swift call site --
+              # K/N emits one initializer taking all parameters and Kotlin defaults do not
+              # cross the boundary. Swift constructs these directly (TestData.swift builds
+              # Device/DeviceType/BatteryEvent; the *ScreenTests build the screen states), so
+              # the Swift test target is the thing that catches it. Escalating here makes
+              # validation_ios_ui -- which dev mode would otherwise skip on PRs -- run on
+              # exactly the changes that can break it, instead of finding out post-merge.
+              - 'domain/**'
               - 'presentation-model/**'
             # Files that need spotless (code + markdown)
             needs_spotless:
@@ -367,7 +371,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-java-gradle
       - name: Check Architecture
-        run: ./gradlew checkArchitecture checkPreviewTime checkSwiftConstructors
+        run: ./gradlew checkArchitecture checkPreviewTime
 
   validation_import_boundary:
     needs: changes
