@@ -521,6 +521,7 @@ fun HistoryScreen(
     onSendAiMessage: (String) -> Unit,
     onClearAiChat: () -> Unit,
     nowInstant: Instant = Clock.System.now(),
+    onDensityOptionSelected: (DensityOption) -> Unit = {},
 ) {
     MainScreenShell(
         currentTab = MainTab.History,
@@ -541,6 +542,7 @@ fun HistoryScreen(
             modifier = contentModifier,
             contentPadding = bottomContentPadding,
             nowInstant = nowInstant,
+            onDensityOptionSelected = onDensityOptionSelected,
         )
     }
 }

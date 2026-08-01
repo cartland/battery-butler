@@ -3,6 +3,7 @@ package com.chriscartland.batterybutler.viewmodel.history
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.presentationmodel.history.HistoryListScreenState
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
+import com.chriscartland.batterybutler.testcommon.FakeDisplayDensityRepository
 import com.chriscartland.batterybutler.testcommon.TestDevices
 import com.chriscartland.batterybutler.usecase.GetBatteryEventsUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
@@ -221,5 +222,6 @@ class HistoryListViewModelTest {
             getDevicesUseCase = GetDevicesUseCase(repo),
             getDeviceTypesUseCase = GetDeviceTypesUseCase(repo),
             resyncUseCase = ResyncUseCase(repo),
+            displayDensityRepository = FakeDisplayDensityRepository(),
         )
 }
