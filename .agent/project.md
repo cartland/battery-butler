@@ -230,14 +230,25 @@ Icon colors use the **`IconColorRole` enum** (`presentation-core/.../theme/IconC
 
 **Material icons — prefer AutoMirrored**: For glyphs that have an `Icons.AutoMirrored.Filled.*` variant (`Notes`, `OpenInNew`, `Logout`, `List`, etc.), use the AutoMirrored variant. They flip in RTL locales, which is the recommended behavior; the non-AutoMirrored versions emit deprecation warnings.
 
-### Device List Density (`DensityOption`)
+### List Density (`DisplayDensity` / `DensityOption`)
 
-The Home device list has a third display control alongside Sort and Group: an **icon-only density toggle** (`DensityOption` in `presentation-model/.../home/HomeScreenState.kt`, default `EXPANDED`).
+**App-wide and persisted.** Home, Device Types and History all read one stored preference, so toggling on any of them moves all three.
 
 - `EXPANDED` is the original row: 48.dp icon/photo, device name, a `"type • location"` secondary line, and the battery age stacked (big number over "days") in the trailing slot.
 - `COMPACT` drops the secondary line, shrinks the icon/photo to 24.dp (`ButlerIconBoxDefaults.CompactSize`), and puts the age on one trailing line ("5 days"), so the card is only as tall as its single line of text (~40.dp vs ~80.dp).
 
-Wiring mirrors Sort/Group exactly: a `MutableStateFlow` in `HomeViewModel` + `onDensityOptionSelected()`, surfaced as `HomeScreenState.densityOption`. Like Sort/Group it is **session-only — not persisted** across process restarts.
+**Two enums, on purpose.**
+
+- `DisplayDensity` (`domain/model/DisplayDensity.kt`) is the **stored** form: `UNSPECIFIED`, `COMPACT`, `EXPANDED`. `UNSPECIFIED` means "the user has never chosen" — not a third layout — and `orDefault()` resolves it to `EXPANDED` so the fresh-install default lives in exactly one place.
+- `DensityOption` (`presentation-model/.../home/HomeScreenState.kt`) is the **rendered** form and has only the two real cases. It deliberately has no `UNSPECIFIED`: by the time a screen state is built the question is answered, and an un-renderable third case would force every consumer to handle something that never reaches it — including the Swift `HomeScreenState` constructions in `iosAppSwiftUITests`.
+
+`toDensityOption()` / `toDisplayDensity()` map between them.
+
+Persistence is `DisplayDensityRepository` → `DataStoreDisplayDensityRepository` → the shared preferences DataStore under key `display_density`. Stored as lowercase tokens (`"compact"`), **not** `Enum.name` (couples the on-disk format to a Kotlin identifier) and **not** `ordinal` (silently remaps every install's saved value if a constant is inserted mid-enum). An unknown or corrupt value degrades to `UNSPECIFIED`, i.e. looks like a fresh install rather than crashing.
+
+The read flow is `distinctUntilChanged` for the same reason `DataStoreDataModeRepository` is: DataStore re-emits the whole preferences object on any edit to any key, and that store is shared with the data mode and Labs session/refresh-token entries.
+
+Unlike Sort/Group, which remain session-only, density survives process restarts.
 
 The control is a square `IconControl` (`presentation-core/.../components/CompositeControl.kt`) — the icon-only sibling of `CompositeControl`, sharing its 32.dp size, border, and shape. A two-way choice isn't worth a labelled dropdown, and the earlier "View: Expanded" label cost more filter-row width than the control itself.
 
@@ -249,9 +260,17 @@ Two things to keep in mind when touching this:
 - **`HomeScreenFilterRow` uses `FlowRow`, not `Row`.** Even with the density control reduced to an icon, "Sort: Battery Age" + "Group: Location" + the icon still exceed a narrow phone's width, so they must be allowed to wrap. Reverting to `Row` silently clips content off the right edge.
 - **`combine`'s typed overloads stop at five flows.** `HomeViewModel` therefore puts the five display options in the inner `combine` and moves `exportDataFlow` to the outer one. Adding a sixth display option needs another restructure, not a sixth argument.
 
-`ButlerListItemCard` gained `contentPadding` and `leadingSpacing` params (defaults preserve the expanded look), and `ButlerIconBox` gained `size`/`iconSize`. Other list items (device types, history) are unaffected and still use the defaults.
+`ButlerListItemCard` gained `contentPadding` and `leadingSpacing` params (defaults preserve the expanded look), and `ButlerIconBox` gained `size`/`iconSize`.
 
-**Not yet on the native SwiftUI app** — `ios-app-swift-ui`'s `DeviceRow`/`HomeFilterRow` ignore `densityOption`; see `bb-density-ios` in `TODO.md`.
+**Each row compacts differently, and that is deliberate** — the rule is "drop what is redundant, keep what the list is sorted or identified by":
+
+- `DeviceListItem` drops the `"type • location"` secondary line outright.
+- `DeviceTypeListItem` **moves** the `"N x BatteryType"` summary to the trailing slot instead of dropping it — it is the only thing distinguishing two similarly-named types.
+- `HistoryListItem` keeps the date in the leading slot, shrunk to a single-line `"MMM DD"` — a date-sorted list is unusable without it — and moves the age to one trailing line.
+
+History has no Sort/Group controls, so its filter row holds the density toggle alone. It is still a `FlowRow` so a future control can wrap rather than clip.
+
+**Not yet on the native SwiftUI app** — `ios-app-swift-ui` ignores `densityOption` on all three lists; see `bb-density-ios` in `TODO.md`.
 
 ### Form Validation UX
 

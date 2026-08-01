@@ -771,6 +771,49 @@ confirm `server/app` compiles, then delete the `io.grpc:*` block in
 `libs.versions.toml`, and bump `grpcJava` / `grpc-kotlin`. Verify
 `validation_compile_tests` + `build_server` (release-mode) before merge.
 
+### bb-compose-rules-schema — compose-rules >= 0.6 rejects our detekt config
+
+**Found 2026-08-01** while draining the dependency queue. Dependabot PR #1442
+(`io.nlopez.compose.rules:detekt 0.4.12 → 0.6.3`) was closed: `validation_detekt` fails in
+**28 modules**, including ones with no Compose code at all (`:domain`, `:cli`,
+`:test-common`), with:
+
+```
+Run failed with 1 invalid config property.
+  - Property 'Compose>CompositionLocalAllowlist>allowedCompositionLocals'
+    is misspelled or does not exist.
+```
+
+`build_server` fails for the same reason (it runs detekt as part of `:server:app:build`).
+
+**Root cause — not new lint violations.** The property was *not* renamed: the string
+`allowedCompositionLocals` is still present in `CompositionLocalAllowlist.class` inside
+`common-detekt-0.6.3.jar`, so the rule still reads it. What changed is the **bundled config
+schema**: `config/config.yml` in `detekt-0.6.3.jar` declares every Compose rule with only
+`active:` and no per-rule properties. Since `detekt.yml` sets `config.validation: true`,
+our allowlist is rejected as unknown.
+
+**`config.excludes` does not work.** Both the specific form
+`'Compose>CompositionLocalAllowlist>[allowedCompositionLocals]'` and the wildcard
+`'.*>.*>[allowedCompositionLocals]'` were tried; neither suppresses it, and both make it
+worse — validation then also reports the property against unrelated `style>UnusedParameter`,
+`style>UnusedPrivateMember` and `style>UnusedPrivateProperty` rules.
+
+**Reproduce:** set `composeRules = "0.6.3"` in `libs.versions.toml` and run
+`./gradlew detekt --continue`. Reverting only that version makes the identical command pass,
+so it is caused by the bump and is not pre-existing.
+
+**To unblock**, one of:
+1. Wait for upstream to ship a complete config schema (preferred).
+2. Disable `config.validation` repo-wide in `detekt.yml` — rejected here, it loses real typo
+   detection across the whole config for one property.
+3. Drop the allowlist and let `CompositionLocalAllowlist` flag all 10 intentional
+   `CompositionLocal`s — rejected, they are deliberate.
+
+Then remove the `io.nlopez.compose.rules:detekt` entry from `.github/dependabot.yml` →
+`ignore:`. The ignore is scoped `>= 0.6.0`; 0.5.x is untested and deliberately left free so
+Dependabot can propose it.
+
 ### bb-exposed-1x — Migrate the server repository layer to Exposed 1.x
 
 **Found 2026-07-30** while draining the dependency queue. Dependabot PR #1425

@@ -98,6 +98,21 @@ updates:
       # Same pin, plugins-DSL marker form (see the kotlin/jib marker entries above).
       - dependency-name: "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin"
         versions: [">= 2.3.0"]
+      # compose-rules >= 0.6 blocked: 0.6.x ships a config schema that declares every
+      # Compose rule with ONLY `active:` and no per-rule properties. detekt.yml sets
+      # `config.validation: true`, so our `CompositionLocalAllowlist.allowedCompositionLocals`
+      # list is rejected as "misspelled or does not exist" and detekt fails in 28 modules --
+      # including ones with no Compose code. The rule itself still reads the property (the
+      # string is present in common-detekt-0.6.3.jar); only validation objects.
+      # `config.excludes` does not suppress it: both the specific
+      # 'Compose>CompositionLocalAllowlist>[allowedCompositionLocals]' and wildcard
+      # '.*>.*>[allowedCompositionLocals]' forms were tried and made it worse, reporting the
+      # property against unrelated `style>Unused*` rules too. PR #1442 closed.
+      # 0.5.x is deliberately NOT pinned -- untested, so let Dependabot propose it.
+      # REMOVE when upstream ships a complete schema, or if we accept disabling
+      # config.validation repo-wide (which loses real typo detection everywhere).
+      - dependency-name: "io.nlopez.compose.rules:detekt"
+        versions: [">= 0.6.0"]
       # ───────────────────────────────────────────────────────────────────────
     labels:
       - "dependencies"
