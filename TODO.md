@@ -194,31 +194,39 @@ c. Pre-restore schema validation — inspect the legacy file's schema before cop
    it over the active DB; surface an error instead of restoring to a broken state.
 d. Capture Logcat from a repro to see exactly what Room is doing on `getAllEvents()`.
 
-**Next steps:** add the missing end-to-end test (see bb-qz7w); determine the
-legacy DB's actual schema version (cross-ref git log of `Migrations.kt`); decide
-between (a)/(b)/(c) — likely (a) for production.
+**Next steps:** determine the legacy DB's actual schema version (cross-ref git log of
+`Migrations.kt`); decide between (a)/(b)/(c) — likely (a) for production.
 
-### bb-qz7w — Add end-to-end test for `restoreFromLegacy` → late-collector data flow
+**Update 2026-08-01:** the end-to-end test is done — `bb-qz7w` is resolved by
+`RestoreLateCollectorTest`, which reproduces the late-collector symptom in process and fails
+if the rebind is removed. That closes the *regression-prevention* half of this task and is
+what allowed the manual Android smoke-test queue to be deleted. The schema-mismatch half
+(a/b/c above) is still open: the test seeds a legacy file at the CURRENT schema, so it does
+not yet cover a v3 legacy file with missing tables. That variant is the remaining work here.
 
-PR #1190's test only asserts `rebindSignal` emits during `restoreFromLegacy`. It
-does NOT exercise the real scenario: a downstream collector unsubscribed during
-restore, re-subscribing and querying the new DB. This gap let android/31 ship with
-the bb-lg42 symptom still present.
+### bb-qz7w — RESOLVED 2026-08-01
 
-**What to add** (in `data-local/src/jvmTest/...` or appropriate location):
-1. Seed a legacy file with a known schema and data.
-2. Construct `DynamicDatabaseProvider` + `RoomLocalDataSource` at the current
-   schema version.
-3. Subscribe to a Room-backed flow (`getAllDeviceTypes()`, `getAllEvents()`).
-4. Unsubscribe (simulate `WhileSubscribed` timeout).
-5. Call `restoreFromLegacy(legacyFileName)`.
-6. Re-subscribe.
-7. Assert the flow emits restored data within a timeout (NOT `Loading`/stuck).
+**Resolved** by `RestoreLateCollectorTest`
+(`data-local/src/jvmTest/.../room/RestoreLateCollectorTest.kt`), which covers the scenario
+this task specified: subscribe, unsubscribe (the `WhileSubscribed` timeout), restore with no
+collector attached, re-subscribe, assert the restored data arrives. A mirror test covers a
+collector active *across* the restore so a future change cannot fix one by breaking the other.
 
-Variants: legacy file at v3 (missing tables) to catch the schema-mismatch case
-(bb-lg42); concurrent restores (rebindCounter monotonicity); in-flight collection
-active during restore (the Devices tab case, which works today). Independent of
-bb-lg42 — that's the user-facing bug; this is the regression-prevention infra.
+Proven non-vacuous by mutation: reintroducing the bb-lg42 bug — `restoreFromLegacy` creating
+the new database but never publishing it to `_database` — makes both tests fail. Restoring the
+code makes both pass.
+
+Two things worth knowing for anyone touching this area:
+
+- It runs on **real dispatchers via `runBlocking`**, not `runTest`. Room executes queries and
+  invalidation on its own executors, which a `TestScheduler`'s virtual clock does not drive, so
+  `advanceUntilIdle()` never sees an emission. That is why this scenario had no coverage.
+- The legacy file must be seeded **before** the provider is constructed. `seedLegacyFile`
+  closes and renames the OFFLINE database file, so seeding afterwards pulls the file out from
+  under the provider's eagerly-created instance.
+
+This test replaced the manual Android smoke-test queue, which was deleted the same day — see
+[[docs/android-smoke-test-queue.md]] in git history.
 
 ### bb-w73e — Push-to-main CI runs cancelled despite SHA-based concurrency (observed 2026-05-12)
 
@@ -932,37 +940,6 @@ workaround," not a structural fix.
 
 ## P4
 
-### bb-smoke-queue-unused — The Android smoke-test queue has never been used
-
-**Found 2026-07-31.** `docs/android-smoke-test-queue.md` exists and is well-motivated —
-it was created because android/30 shipped the `bb-lg42` post-restore Loading bug to the
-internal track and needed android/31 two days later. But the file still contains **only
-the `## android/N — YYYY-MM-DD` template**; no release has ever been given a section.
-
-Since then android/62, android/63, android/64 and android/65 have all shipped to the Play
-Store internal track with no entry. android/63, android/64 and android/65 all went out on
-2026-07-30/31.
-
-The queue is explicitly **advisory, not a gate** ("The maintainer can promote without
-smoke-testing — but the queue file makes the gap visible"), and filling it in requires a
-real device, so an agent cannot close this alone. Two things worth deciding:
-
-1. **Back-fill or reset?** Either add sections for the releases that shipped untested, or
-   start clean from the next release and accept the gap.
-2. **The doc references `/queue-android-smoke-test` "(once implemented)"** — that slash
-   command does not exist. Either implement it so `release-android.sh` can prompt for the
-   entry, or drop the reference so the doc stops promising a tool that isn't there.
-
-If the process is not going to be followed, deleting the file is better than leaving a
-process doc that every release silently ignores.
-
-**Update 2026-07-31:** the doc no longer promises `/queue-android-smoke-test` (that command
-does not exist). The queue now carries a `## No release has been smoke-tested` entry stating
-the gap as an **invariant** rather than a list of release numbers — the earlier version
-enumerated android/62–65, then needed edits for android/66 and again for android/67, once per
-release. It is deliberately not filled in with checkmarks; nobody walked those builds on a
-device. What remains is the maintainer decision: adopt from the next release, back-fill with
-one pass against the current internal build, or delete the file.
 ### bb-cli-test-data — Clean up leftover `cli-test-type-1` test data on Labs staging
 
 While building and testing the `:cli` module's `push` subcommand this session, a
