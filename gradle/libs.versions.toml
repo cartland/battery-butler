@@ -54,7 +54,7 @@ wire = "6.4.5"
 screenshot = "0.0.1-alpha12"
 skie = "0.10.12"
 # bb-ovm1 spike: KMP-ObservableViewModel is Kotlin-version-pinned; 1.0.1 ↔ Kotlin 2.3.0.
-observableviewmodel = "1.0.1"
+observableviewmodel = "1.0.6"
 kermit = "2.1.0"
 firebase-bom = "34.15.0"
 firebase-crashlytics-gradle = "3.0.7"
