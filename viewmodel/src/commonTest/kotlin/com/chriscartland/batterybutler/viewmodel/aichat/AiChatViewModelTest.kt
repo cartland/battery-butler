@@ -122,6 +122,55 @@ class AiChatViewModelTest {
         }
 
     @Test
+    fun `duplicate message ids from engine are remapped to unique ids`() =
+        runTest {
+            // Regression: AndroidAiEngine used to emit every error AiMessage with the fixed id
+            // "error". The chat LazyColumn keys items by id, so the SECOND failed send crashed
+            // the app with "Key 'error' was already used". The ViewModel must never expose a
+            // list containing duplicate ids, whatever the engine does.
+            val engine = FakeAiEngine()
+            engine.fixedResponseId = "error"
+            engine.defaultResponseText = "AI is unavailable"
+            val viewModel = createViewModel(engine = engine)
+
+            viewModel.sendMessage("First")
+            testDispatcher.scheduler.advanceUntilIdle()
+            viewModel.sendMessage("Second")
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            val messages = viewModel.messages.value
+            assertEquals(4, messages.size)
+            assertEquals(
+                messages.size,
+                messages.map { it.id }.toSet().size,
+                "chat message ids must be unique: ${messages.map { it.id }}",
+            )
+            // Both engine messages are retained, not dropped or overwritten
+            assertEquals(2, messages.count { it.role == AiRole.MODEL })
+        }
+
+    @Test
+    fun `consecutive failures produce unique error message ids`() =
+        runTest {
+            val engine = FakeAiEngine()
+            engine.errorToThrow = IllegalStateException("boom")
+            val viewModel = createViewModel(engine = engine)
+
+            viewModel.sendMessage("First")
+            testDispatcher.scheduler.advanceUntilIdle()
+            viewModel.sendMessage("Second")
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            val messages = viewModel.messages.value
+            assertEquals(4, messages.size)
+            assertEquals(
+                messages.size,
+                messages.map { it.id }.toSet().size,
+                "chat message ids must be unique: ${messages.map { it.id }}",
+            )
+        }
+
+    @Test
     fun `sendMessage with hints augments message text`() =
         runTest {
             val engine = FakeAiEngine()

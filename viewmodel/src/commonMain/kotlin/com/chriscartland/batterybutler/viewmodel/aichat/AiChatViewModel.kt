@@ -39,7 +39,7 @@ class AiChatViewModel(
             text = text,
             hints = hints,
         )
-        _messages.update { it + userMessage }
+        _messages.update { it.plusUnique(userMessage) }
         _isProcessing.value = true
 
         val hintLines = hints.entries.joinToString("\n") { "[${it.key}: ${it.value}]" }
@@ -51,7 +51,7 @@ class AiChatViewModel(
                     // Replace partial messages with the final one
                     _messages.update { current ->
                         val withoutPartial = current.filter { !it.isPartial }
-                        withoutPartial + aiMessage
+                        withoutPartial.plusUnique(aiMessage)
                     }
                 }
             } catch (e: Exception) {
@@ -63,12 +63,29 @@ class AiChatViewModel(
                 )
                 _messages.update { current ->
                     val withoutPartial = current.filter { !it.isPartial }
-                    withoutPartial + errorMessage
+                    withoutPartial.plusUnique(errorMessage)
                 }
             } finally {
                 _isProcessing.value = false
             }
         }
+    }
+
+    /**
+     * Appends [message], remapping its id if the list already contains it.
+     *
+     * The chat UIs key list items by message id (Compose `LazyColumn(key = ...)` crashes the app
+     * on a duplicate key), but ids come from platform [AiEngine][com.chriscartland.batterybutler.domain.model.ai.AiEngine]
+     * implementations that have shipped fixed ids (e.g. every error emitted as `"error"`), and the
+     * timestamp-based ids above can collide within one millisecond. This list's owner is the last
+     * line of defense, so uniqueness is enforced here rather than trusted from below.
+     */
+    private fun List<AiMessage>.plusUnique(message: AiMessage): List<AiMessage> {
+        val ids = mapTo(HashSet()) { it.id }
+        if (message.id !in ids) return this + message
+        var suffix = 2
+        while ("${message.id}_$suffix" in ids) suffix++
+        return this + message.copy(id = "${message.id}_$suffix")
     }
 
     fun clearChat() {
