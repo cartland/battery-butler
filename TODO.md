@@ -9,7 +9,39 @@ Project task tracking for Battery Butler.
 
 ## P2
 
-### bb-sync-loop-starvation — One successful sync, then zero requests forever ("Syncing..." stuck) — fix shipped 2026-07-21
+### bb-sync-snapshot-deletions — Full-snapshot sync never applies server-side deletions to a warm local cache
+
+**Found 2026-08-04** during the Labs prod data restore: after an event was deleted
+server-side (`POST /sync` with `deletedEventIds`), a device that already had the
+row cached kept showing it indefinitely — the same pull correctly applied a
+device-row *update*, so this is not a sync-liveness problem.
+
+**Root cause**: `DefaultSyncManager.applyRemoteUpdate` only processes
+`deletedDeviceTypeIds`/`deletedDeviceIds`/`deletedEventIds` when
+`!update.isFullSnapshot`. Every Labs REST pull is a full snapshot
+(`RestSyncMapper.toRemoteUpdate` hardcodes `isFullSnapshot = true`) and carries
+no deleted-id lists — for a snapshot, *absence from the payload* is the deletion
+signal, and `applyRemoteUpdate` ignores it: it upserts the snapshot's rows and
+never removes local rows missing from it. Consequence: a server-side delete can
+only ever reach a device via the Labs sign-out path (`clearAllLocalData()`) or a
+fresh install.
+
+**Fix shape**: when `isFullSnapshot` is true, reconcile — delete local rows
+whose ids are absent from the snapshot (all three tables), then upsert. Prefer
+targeted deletes over clear-all + insert so Room flows don't churn and
+`device_image_cache` stays warm. Mind the existing `NonCancellable` block
+(`bb-signin-empty-list`) — reconciliation must stay inside it so a mode
+re-emission can't tear a half-applied snapshot. Needs a regression test:
+seed local rows, apply a full snapshot missing one of them, assert the missing
+row is gone locally (per-table), plus the inverse (patch update with
+deletedIds still works). gRPC-transport full snapshots take the same path and
+gain the same behavior — verify the server's stream semantics agree
+(`isFullSnapshot = true` on `InMemoryDeviceRepository`/`PostgresDeviceRepository`
+initial emissions).
+
+**Observed impact**: phantom "Dining Desk Button 2026-03-12" event persisted on
+device after server-side deletion (restored-then-corrected during the 2026-08
+data-restore incident); any future server-side cleanup has the same blind spot.
 
 **Symptom (confirmed live on android/56):** prod logs show `GET /sync` 401 at 15:24:49, `GET
 /sync` 200 at 15:24:57, then **zero requests for 30+ minutes** while the app displays
