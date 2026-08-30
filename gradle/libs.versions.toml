@@ -52,7 +52,7 @@ grpc-kotlin = "1.5.0"
 # touches those stubs, so it was unpinned on its own in PR #1414.
 wire = "6.4.5"
 screenshot = "0.0.1-alpha12"
-skie = "0.10.12"
+skie = "0.10.14"
 # bb-ovm1 spike: KMP-ObservableViewModel is Kotlin-version-pinned; 1.0.1 ↔ Kotlin 2.3.0.
 observableviewmodel = "1.0.1"
 kermit = "2.1.0"
