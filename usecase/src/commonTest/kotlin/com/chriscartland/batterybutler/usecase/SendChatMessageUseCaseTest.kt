@@ -2,6 +2,8 @@ package com.chriscartland.batterybutler.usecase
 
 import com.chriscartland.batterybutler.testcommon.FakeAiEngine
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
+import com.chriscartland.batterybutler.testcommon.FakeNeedsBatteryRepository
+import com.chriscartland.batterybutler.usecase.SetDeviceNeedsBatteryUseCase
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -18,7 +20,7 @@ class SendChatMessageUseCaseTest {
         val findOrCreateType = FindOrCreateDeviceTypeUseCase(repo)
         val findOrCreateDevice = FindOrCreateDeviceUseCase(repo, findOrCreateType)
         val updateLastReplaced = UpdateDeviceLastReplacedUseCase(repo)
-        val toolHandler = DeviceToolHandler(repo, findOrCreateType, findOrCreateDevice, updateLastReplaced)
+        val toolHandler = DeviceToolHandler(repo, findOrCreateType, findOrCreateDevice, updateLastReplaced, SetDeviceNeedsBatteryUseCase(FakeNeedsBatteryRepository()))
         val buildContext = BuildAiContextUseCase(repo)
         val useCase = SendChatMessageUseCase(engine, toolHandler, buildContext)
         return useCase to engine

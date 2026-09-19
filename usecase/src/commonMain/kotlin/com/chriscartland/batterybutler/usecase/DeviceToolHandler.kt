@@ -33,6 +33,7 @@ class DeviceToolHandler(
     private val findOrCreateDeviceTypeUseCase: FindOrCreateDeviceTypeUseCase,
     private val findOrCreateDeviceUseCase: FindOrCreateDeviceUseCase,
     private val updateDeviceLastReplacedUseCase: UpdateDeviceLastReplacedUseCase,
+    private val setDeviceNeedsBatteryUseCase: SetDeviceNeedsBatteryUseCase,
 ) : ToolHandler {
     override suspend fun execute(
         name: String,
@@ -124,6 +125,11 @@ class DeviceToolHandler(
                 .updateDevice(targetDevice.copy(batteryLastReplaced = instant))
                 .getOrElse { return "Error: ${it.message}" }
         }
+
+        // Same rule as AddBatteryEventUseCase: recording a replacement clears the "needs a new
+        // battery" mark, whichever entry point recorded it.
+        setDeviceNeedsBatteryUseCase(targetDevice.id, needsBattery = false)
+            .getOrElse { return "Error: ${it.message}" }
 
         return "Success: Recorded battery replacement for '$deviceName' on $dateStr"
     }

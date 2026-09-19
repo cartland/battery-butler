@@ -7,12 +7,15 @@ import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.presentationmodel.devicedetail.DeviceDetailScreenState
 import com.chriscartland.batterybutler.testcommon.FakeDeviceImageRepository
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
+import com.chriscartland.batterybutler.testcommon.FakeNeedsBatteryRepository
 import com.chriscartland.batterybutler.testcommon.TestDevices
 import com.chriscartland.batterybutler.usecase.AddBatteryEventUseCase
 import com.chriscartland.batterybutler.usecase.GetBatteryEventsUseCase
 import com.chriscartland.batterybutler.usecase.GetCachedDeviceImageUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceDetailUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
+import com.chriscartland.batterybutler.usecase.GetNeedsBatteryDeviceIdsUseCase
+import com.chriscartland.batterybutler.usecase.SetDeviceNeedsBatteryUseCase
 import com.chriscartland.batterybutler.usecase.UpdateDeviceLastReplacedUseCase
 import com.chriscartland.batterybutler.usecase.UpdateDeviceUseCase
 import kotlinx.coroutines.Dispatchers
@@ -179,8 +182,14 @@ class CrashProofDeviceDetailViewModelTest {
             getDeviceDetailUseCase = GetDeviceDetailUseCase(repo),
             getDeviceTypesUseCase = GetDeviceTypesUseCase(repo),
             getBatteryEventsUseCase = GetBatteryEventsUseCase(repo),
-            addBatteryEventUseCase = AddBatteryEventUseCase(repo, UpdateDeviceLastReplacedUseCase(repo)),
+            addBatteryEventUseCase = AddBatteryEventUseCase(
+                repo,
+                UpdateDeviceLastReplacedUseCase(repo),
+                SetDeviceNeedsBatteryUseCase(FakeNeedsBatteryRepository()),
+            ),
             updateDeviceUseCase = UpdateDeviceUseCase(repo),
             getCachedDeviceImageUseCase = GetCachedDeviceImageUseCase(imageRepo),
+            getNeedsBatteryDeviceIdsUseCase = GetNeedsBatteryDeviceIdsUseCase(FakeNeedsBatteryRepository()),
+            setDeviceNeedsBatteryUseCase = SetDeviceNeedsBatteryUseCase(FakeNeedsBatteryRepository()),
         )
 }

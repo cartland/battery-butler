@@ -20,6 +20,7 @@ fun DeviceDetailScreen(
     DeviceDetailContent(
         state = uiState,
         onRecordReplacement = { viewModel.recordReplacement() },
+        onToggleNeedsBattery = { viewModel.toggleNeedsBattery() },
         onBack = onBack,
         onEdit = onEdit,
         onEventClick = onEventClick,

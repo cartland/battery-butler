@@ -409,6 +409,7 @@ fun HomeScreenList(
                         nowInstant = nowInstant,
                         imageBytes = device.imageEtag?.let { state.deviceImagesByEtag[it] },
                         density = state.densityOption,
+                        needsBattery = device.id in state.needsBatteryDeviceIds,
                     )
                 }
             }

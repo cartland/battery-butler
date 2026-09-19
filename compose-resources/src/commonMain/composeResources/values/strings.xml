@@ -78,6 +78,9 @@
     <string name="label_quantity">Quantity</string>
     <string name="action_record_replacement">Record Replacement</string>
     <string name="action_record_replacement_description">Log battery change for today</string>
+    <string name="action_mark_needs_battery">Needs a new battery</string>
+    <string name="action_mark_needs_battery_description">Flag this device so it stands out in your list</string>
+    <string name="status_needs_battery">Needs battery</string>
     <string name="section_history">History</string>
     <string name="action_view_all">View All</string>
 

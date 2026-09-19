@@ -42,6 +42,7 @@ class RecordReplacementFlightUiTest {
                         onRecordReplacement = {
                             events = listOf(BatteryEvent("evt-new", "dev1", now)) + events
                         },
+                        onToggleNeedsBattery = {},
                         onEventClick = {},
                         nowInstant = now,
                     )
@@ -74,6 +75,7 @@ class RecordReplacementFlightUiTest {
                     DeviceDetailBody(
                         state = DeviceDetailScreenState.Success(device, deviceType, events),
                         onRecordReplacement = {},
+                        onToggleNeedsBattery = {},
                         onEventClick = {},
                         nowInstant = now,
                     )

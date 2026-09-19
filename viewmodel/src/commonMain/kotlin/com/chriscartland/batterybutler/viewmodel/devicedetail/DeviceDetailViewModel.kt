@@ -8,6 +8,8 @@ import com.chriscartland.batterybutler.usecase.GetBatteryEventsUseCase
 import com.chriscartland.batterybutler.usecase.GetCachedDeviceImageUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceDetailUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
+import com.chriscartland.batterybutler.usecase.GetNeedsBatteryDeviceIdsUseCase
+import com.chriscartland.batterybutler.usecase.SetDeviceNeedsBatteryUseCase
 import com.chriscartland.batterybutler.usecase.UpdateDeviceUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
 import com.chriscartland.batterybutler.viewmodel.retryableStateIn
@@ -34,6 +36,8 @@ class DeviceDetailViewModelFactory(
     private val addBatteryEventUseCase: AddBatteryEventUseCase,
     private val updateDeviceUseCase: UpdateDeviceUseCase,
     private val getCachedDeviceImageUseCase: GetCachedDeviceImageUseCase,
+    private val getNeedsBatteryDeviceIdsUseCase: GetNeedsBatteryDeviceIdsUseCase,
+    private val setDeviceNeedsBatteryUseCase: SetDeviceNeedsBatteryUseCase,
 ) {
     fun create(deviceId: String): DeviceDetailViewModel =
         DeviceDetailViewModel(
@@ -44,6 +48,8 @@ class DeviceDetailViewModelFactory(
             addBatteryEventUseCase,
             updateDeviceUseCase,
             getCachedDeviceImageUseCase,
+            getNeedsBatteryDeviceIdsUseCase,
+            setDeviceNeedsBatteryUseCase,
         )
 }
 
@@ -56,6 +62,8 @@ class DeviceDetailViewModel(
     private val addBatteryEventUseCase: AddBatteryEventUseCase,
     private val updateDeviceUseCase: UpdateDeviceUseCase,
     private val getCachedDeviceImageUseCase: GetCachedDeviceImageUseCase,
+    private val getNeedsBatteryDeviceIdsUseCase: GetNeedsBatteryDeviceIdsUseCase,
+    private val setDeviceNeedsBatteryUseCase: SetDeviceNeedsBatteryUseCase,
 ) : ViewModel() {
     private val retryTrigger = MutableStateFlow(0)
 
@@ -95,18 +103,37 @@ class DeviceDetailViewModel(
                         } else {
                             flowOf(null)
                         }
-                        imageBytesFlow.map { imageBytes ->
+                        // Seeded for the same reason as imageBytesFlow: the mark is a decoration on
+                        // top of the device data and must never gate the screen at Loading.
+                        val needsBatteryFlow = getNeedsBatteryDeviceIdsUseCase()
+                            .map { deviceId in it }
+                            .onStart { emit(false) }
+                        combine(imageBytesFlow, needsBatteryFlow) { imageBytes, needsBattery ->
                             DeviceDetailScreenState.Success(
                                 device = device,
                                 deviceType = deviceType,
                                 events = events,
                                 imageBytes = imageBytes,
+                                needsBattery = needsBattery,
                             )
                         }
                     }
                 }
         },
     )
+
+    /**
+     * Flips this device's "needs a new battery" mark.
+     *
+     * Reads the current value from [uiState] rather than taking it as a parameter so the toggle
+     * can't act on a value the UI has already redrawn past.
+     */
+    fun toggleNeedsBattery() {
+        viewModelScope.coroutineScope.launch {
+            val current = (uiState.value as? DeviceDetailScreenState.Success)?.needsBattery ?: return@launch
+            setDeviceNeedsBatteryUseCase(deviceId, needsBattery = !current)
+        }
+    }
 
     fun recordReplacement() {
         viewModelScope.coroutineScope.launch {

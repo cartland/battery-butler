@@ -2,6 +2,7 @@ package com.chriscartland.batterybutler.usecase
 
 import com.chriscartland.batterybutler.domain.repository.AuthRepository
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
+import com.chriscartland.batterybutler.domain.repository.NeedsBatteryRepository
 import me.tatarka.inject.annotations.Inject
 
 /**
@@ -16,9 +17,12 @@ import me.tatarka.inject.annotations.Inject
 class SignOutUseCase(
     private val authRepository: AuthRepository,
     private val deviceRepository: DeviceRepository,
+    private val needsBatteryRepository: NeedsBatteryRepository,
 ) {
     suspend operator fun invoke() {
         authRepository.signOut()
         deviceRepository.clearAllLocalData()
+        // Marks live outside the synced tables, so clearAllLocalData() doesn't reach them.
+        needsBatteryRepository.clearAll()
     }
 }

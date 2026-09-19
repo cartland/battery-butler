@@ -19,6 +19,11 @@ data class HomeScreenState(
     /** Cached photo bytes keyed by [Device.imageEtag], for devices whose photo has finished caching. */
     val deviceImagesByEtag: Map<String, DeviceImageBytes> = emptyMap(),
     val densityOption: DensityOption = DensityOption.EXPANDED,
+    /**
+     * Ids of devices the user has marked as needing a new battery. A side-set rather than a field
+     * on [Device] because the mark is local-only and never crosses the sync wire.
+     */
+    val needsBatteryDeviceIds: Set<String> = emptySet(),
 )
 
 enum class SortOption {

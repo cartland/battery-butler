@@ -8,13 +8,16 @@ import com.chriscartland.batterybutler.data.repository.DataStoreDisplayDensityRe
 import com.chriscartland.batterybutler.data.repository.DefaultDeviceImageRepository
 import com.chriscartland.batterybutler.data.repository.DefaultDeviceRepository
 import com.chriscartland.batterybutler.data.repository.DefaultLegacyDatabaseRepository
+import com.chriscartland.batterybutler.data.repository.DefaultNeedsBatteryRepository
 import com.chriscartland.batterybutler.data.repository.DefaultSyncManager
 import com.chriscartland.batterybutler.data.repository.SyncManager
 import com.chriscartland.batterybutler.data.repository.auth.DefaultAuthRepository
 import com.chriscartland.batterybutler.datalocal.DeviceImageCache
 import com.chriscartland.batterybutler.datalocal.LocalDataSource
+import com.chriscartland.batterybutler.datalocal.NeedsBatteryStore
 import com.chriscartland.batterybutler.datalocal.RoomDeviceImageCache
 import com.chriscartland.batterybutler.datalocal.RoomLocalDataSource
+import com.chriscartland.batterybutler.datalocal.RoomNeedsBatteryStore
 import com.chriscartland.batterybutler.datalocal.auth.AuthTokenStorage
 import com.chriscartland.batterybutler.datalocal.auth.DataStoreAuthTokenStorage
 import com.chriscartland.batterybutler.datalocal.auth.DataStoreLabsRefreshTokenPersistence
@@ -40,6 +43,7 @@ import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.domain.repository.DisplayDensityRepository
 import com.chriscartland.batterybutler.domain.repository.LabsRefreshTokenPersistence
 import com.chriscartland.batterybutler.domain.repository.LegacyDatabaseRepository
+import com.chriscartland.batterybutler.domain.repository.NeedsBatteryRepository
 import com.chriscartland.batterybutler.proto.AuthServiceClient
 import com.chriscartland.batterybutler.proto.GrpcAuthServiceClient
 import com.chriscartland.batterybutler.proto.GrpcSyncServiceClient
@@ -103,6 +107,12 @@ interface DataComponent {
 
     @Provides
     fun provideDeviceImageCache(cache: RoomDeviceImageCache): DeviceImageCache = cache
+
+    @Provides
+    fun provideNeedsBatteryStore(store: RoomNeedsBatteryStore): NeedsBatteryStore = store
+
+    @Provides
+    fun provideNeedsBatteryRepository(repo: DefaultNeedsBatteryRepository): NeedsBatteryRepository = repo
 
     @Provides
     fun provideSyncServiceClient(client: GrpcClient): SyncServiceClient = GrpcSyncServiceClient(client)

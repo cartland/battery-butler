@@ -7,18 +7,21 @@ import com.chriscartland.batterybutler.domain.model.DispatcherProvider
 import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.repository.DeviceImageRepository
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
+import com.chriscartland.batterybutler.domain.repository.NeedsBatteryRepository
 import com.chriscartland.batterybutler.presentationmodel.home.DensityOption
 import com.chriscartland.batterybutler.presentationmodel.home.GroupOption
 import com.chriscartland.batterybutler.presentationmodel.home.SortOption
 import com.chriscartland.batterybutler.testcommon.FakeDeviceImageRepository
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
 import com.chriscartland.batterybutler.testcommon.FakeDisplayDensityRepository
+import com.chriscartland.batterybutler.testcommon.FakeNeedsBatteryRepository
 import com.chriscartland.batterybutler.testcommon.TestDevices
 import com.chriscartland.batterybutler.usecase.DismissSyncStatusUseCase
 import com.chriscartland.batterybutler.usecase.ExportDataUseCase
 import com.chriscartland.batterybutler.usecase.GetCachedDeviceImageUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.GetDevicesUseCase
+import com.chriscartland.batterybutler.usecase.GetNeedsBatteryDeviceIdsUseCase
 import com.chriscartland.batterybutler.usecase.GetSyncStatusUseCase
 import com.chriscartland.batterybutler.usecase.ResyncUseCase
 import kotlinx.coroutines.CoroutineDispatcher
@@ -332,6 +335,7 @@ class HomeViewModelTest {
     private fun createViewModel(
         repo: DeviceRepository,
         imageRepository: DeviceImageRepository = FakeDeviceImageRepository(),
+        needsBatteryRepository: NeedsBatteryRepository = FakeNeedsBatteryRepository(),
     ): HomeViewModel =
         HomeViewModel(
             getDevicesUseCase = GetDevicesUseCase(repo),
@@ -341,6 +345,7 @@ class HomeViewModelTest {
             dismissSyncStatusUseCase = DismissSyncStatusUseCase(repo),
             resyncUseCase = ResyncUseCase(repo),
             getCachedDeviceImageUseCase = GetCachedDeviceImageUseCase(imageRepository),
+            getNeedsBatteryDeviceIdsUseCase = GetNeedsBatteryDeviceIdsUseCase(needsBatteryRepository),
             displayDensityRepository = FakeDisplayDensityRepository(),
         )
 

@@ -10,13 +10,16 @@ import com.chriscartland.batterybutler.data.repository.DefaultDeviceImageReposit
 import com.chriscartland.batterybutler.data.repository.DefaultDeviceRepository
 import com.chriscartland.batterybutler.data.repository.DefaultFeatureFlagProvider
 import com.chriscartland.batterybutler.data.repository.DefaultLegacyDatabaseRepository
+import com.chriscartland.batterybutler.data.repository.DefaultNeedsBatteryRepository
 import com.chriscartland.batterybutler.data.repository.DefaultSyncManager
 import com.chriscartland.batterybutler.data.repository.InMemoryAiPreferencesRepository
 import com.chriscartland.batterybutler.data.repository.SyncManager
 import com.chriscartland.batterybutler.datalocal.DeviceImageCache
 import com.chriscartland.batterybutler.datalocal.LocalDataSource
+import com.chriscartland.batterybutler.datalocal.NeedsBatteryStore
 import com.chriscartland.batterybutler.datalocal.RoomDeviceImageCache
 import com.chriscartland.batterybutler.datalocal.RoomLocalDataSource
+import com.chriscartland.batterybutler.datalocal.RoomNeedsBatteryStore
 import com.chriscartland.batterybutler.datalocal.preferences.DataStoreFactory
 import com.chriscartland.batterybutler.datalocal.preferences.DataStorePreferencesDataSource
 import com.chriscartland.batterybutler.datalocal.preferences.PreferencesDataSource
@@ -43,6 +46,7 @@ import com.chriscartland.batterybutler.domain.repository.DisplayDensityRepositor
 import com.chriscartland.batterybutler.domain.repository.FeatureFlagProvider
 import com.chriscartland.batterybutler.domain.repository.LabsAuthRepository
 import com.chriscartland.batterybutler.domain.repository.LegacyDatabaseRepository
+import com.chriscartland.batterybutler.domain.repository.NeedsBatteryRepository
 import com.chriscartland.batterybutler.domain.repository.NoOpLabsAuthRepository
 import com.chriscartland.batterybutler.domain.repository.RestartCoordinator
 import com.chriscartland.batterybutler.viewmodel.addbatteryevent.AddBatteryEventViewModel
@@ -133,6 +137,14 @@ abstract class NativeComponent(
     @Provides
     @SharedSingleton
     fun provideDeviceImageCache(cache: RoomDeviceImageCache): DeviceImageCache = cache
+
+    @Provides
+    @SharedSingleton
+    fun provideNeedsBatteryStore(store: RoomNeedsBatteryStore): NeedsBatteryStore = store
+
+    @Provides
+    @SharedSingleton
+    fun provideNeedsBatteryRepository(repo: DefaultNeedsBatteryRepository): NeedsBatteryRepository = repo
 
     @Provides
     @SharedSingleton
