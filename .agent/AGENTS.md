@@ -244,7 +244,8 @@ Separately: a stale `~/Library/Developer/Xcode/DerivedData/iosAppSwiftUI-*` can 
   - **Always** use `-derivedDataPath ios-app-swift-ui/build/<target_name>` (e.g., `ios-app-swift-ui/build/ios-build`) when running `xcodebuild`. This ensures **artifact isolation** between steps, mimicking CI parity, and prevents accidental cross-linking of frameworks.
   - **Always** use `-target` instead of `-scheme` if the scheme file is not shared (checked into git).
   - **Always** disable code signing for local simulator builds or CI builds without certificates using `CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO`.
-  - **Always** specify the OS version for simulator destinations (e.g., `name=iPhone 16,OS=18.5`). Omitting `OS` causes "device not found" when multiple OS versions are installed.
+  - **Always** specify the OS version for simulator destinations. Omitting `OS` causes "device not found" when multiple OS versions are installed.
+  - **Never hardcode a simulator model.** Source `scripts/lib/resolve-ios-simulator.sh` and call `resolve_ios_simulator` (or just use `./scripts/test-ios.sh`). A pinned `iPhone 16` silently broke the `ios-snapshots` job on every run from 2026-08 once the runner image moved to iOS 26 / iPhone 17.
 
 - **Bazel**:
   - **Bazel Outputs:** All Bazel outputs are consolidated in `.bazel/` (e.g. `.bazel/bin`) via `.bazelrc`. This directory is gitignored and excluded from Spotless.
