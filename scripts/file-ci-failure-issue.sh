@@ -3,7 +3,23 @@
 # File or resolve a GitHub issue for a CI failure on `main`.
 #
 # Invoked by .github/workflows/ci-post-merge-issue.yml on every
-# `workflow_run` completion for Battery Butler CI on `main`.
+# `workflow_run` completion for a watched workflow on `main`.
+#
+# Two modes, selected by the caller:
+#
+#   Blocking (default, Battery Butler CI). Files `ci-failure` + `blocking`
+#   issues, which pause PR auto-merges via ci.yml's
+#   validation_no_blocking_issues. Verifies sentinels before closing.
+#
+#   Non-blocking (the automation pipeline: Auto-Generate Content, CI for Auto
+#   PRs). Files issues under a DIFFERENT label with no `blocking` tag, so a
+#   janitorial failure gets visibility without freezing every merge in the
+#   repo. The sentinel check is skipped -- those are Battery Butler CI job
+#   names and mean nothing here.
+#
+# The two modes must never share a label: the success path closes every open
+# issue carrying $ISSUE_LABEL, so a green auto-generate run closing real
+# `ci-failure` issues would silently disarm the safety net.
 #
 # Failure path:
 #   - List failing jobs from the run via the Actions API.
@@ -18,11 +34,20 @@
 # Required env:
 #   GH_TOKEN, GITHUB_REPOSITORY, RUN_ID, RUN_URL, RUN_CONCLUSION,
 #   HEAD_SHA, WORKFLOW_NAME
+#
+# Optional env (defaults reproduce the original blocking behaviour exactly):
+#   ISSUE_LABEL      label to file/close under        (default: ci-failure)
+#   BLOCKING         also tag `blocking`              (default: true)
+#   TITLE_PREFIX     issue title prefix               (default: "CI failure on main:")
+#   CHECK_SENTINELS  verify sentinels before closing  (default: true)
 
 set -euo pipefail
 
-LABEL="ci-failure"
+LABEL="${ISSUE_LABEL:-ci-failure}"
 BLOCKING_LABEL="blocking"
+BLOCKING="${BLOCKING:-true}"
+TITLE_PREFIX="${TITLE_PREFIX:-CI failure on main:}"
+CHECK_SENTINELS="${CHECK_SENTINELS:-true}"
 
 echo "Run:        $RUN_URL"
 echo "Conclusion: $RUN_CONCLUSION"
@@ -39,8 +64,35 @@ ensure_label() {
   fi
 }
 
-ensure_label "$LABEL" "B60205" "CI regression on main; filed automatically by ci-post-merge-issue.yml"
-ensure_label "$BLOCKING_LABEL" "B60205" "Must resolve before new auto-merges proceed"
+close_open_issues() {
+  local open_issues num title
+  open_issues=$(gh issue list --label "$LABEL" --state open \
+    --json number,title --jq '.[]')
+  if [[ -z "$open_issues" ]]; then
+    echo "No open $LABEL issues to close."
+    return 0
+  fi
+  # Collect into an array first: `... | while read` runs the body in a
+  # subshell, so nothing it does survives the loop.
+  local rows=()
+  while IFS= read -r row; do
+    [[ -n "$row" ]] && rows+=("$row")
+  done < <(echo "$open_issues" | jq -c '.')
+  for row in "${rows[@]}"; do
+    num=$(echo "$row" | jq -r '.number')
+    title=$(echo "$row" | jq -r '.title')
+    echo "Closing #$num: $title"
+    gh issue close "$num" --comment "Resolved: \`$WORKFLOW_NAME\` is green again on \`main\`.
+
+- Run: $RUN_URL
+- Commit: \`$HEAD_SHA\`"
+  done
+}
+
+ensure_label "$LABEL" "B60205" "Failure on main; filed automatically by ci-post-merge-issue.yml"
+if [[ "$BLOCKING" == "true" ]]; then
+  ensure_label "$BLOCKING_LABEL" "B60205" "Must resolve before new auto-merges proceed"
+fi
 
 # -----------------------------------------------------------------------------
 # Success path: close all open ci-failure issues.
@@ -52,6 +104,15 @@ ensure_label "$BLOCKING_LABEL" "B60205" "Must resolve before new auto-merges pro
 # the underlying break is still on main. See bb-2r4g.
 # -----------------------------------------------------------------------------
 if [[ "$RUN_CONCLUSION" == "success" ]]; then
+  # The sentinel names below are Battery Butler CI jobs. In non-blocking mode
+  # the watched workflow has entirely different jobs, so the check would
+  # always conclude "nothing real ran" and never close anything.
+  if [[ "$CHECK_SENTINELS" != "true" ]]; then
+    echo "Sentinel check skipped (CHECK_SENTINELS=$CHECK_SENTINELS)."
+    close_open_issues
+    exit 0
+  fi
+
   # Count jobs that succeeded and aren't control-flow gates. `changes`,
   # `ci`, and `validation_no_blocking_issues` always run (they're gates,
   # not validations of the code itself), so they don't count as evidence
@@ -111,21 +172,7 @@ if [[ "$RUN_CONCLUSION" == "success" ]]; then
   echo "All sentinels green (real validation jobs: $real_success_count)."
   echo "Proceeding with close-on-success."
 
-  open_issues=$(gh issue list --label "$LABEL" --state open \
-    --json number,title --jq '.[]')
-  if [[ -z "$open_issues" ]]; then
-    echo "No open ci-failure issues to close."
-    exit 0
-  fi
-  echo "$open_issues" | jq -c '.' | while read -r row; do
-    num=$(echo "$row" | jq -r '.number')
-    title=$(echo "$row" | jq -r '.title')
-    echo "Closing #$num: $title"
-    gh issue close "$num" --comment "Resolved: \`main\` CI is green again.
-
-- Run: $RUN_URL
-- Commit: \`$HEAD_SHA\`"
-  done
+  close_open_issues
   exit 0
 fi
 
@@ -144,7 +191,7 @@ if [[ ${#failed_jobs[@]} -eq 0 ]]; then
 fi
 
 for job in "${failed_jobs[@]}"; do
-  title="CI failure on main: $job"
+  title="$TITLE_PREFIX $job"
 
   existing=$(
     gh issue list --label "$LABEL" --state open \
@@ -161,15 +208,21 @@ for job in "${failed_jobs[@]}"; do
 - Commit: \`$HEAD_SHA\`"
   else
     echo "Opening new issue for job: $job"
+    if [[ "$BLOCKING" == "true" ]]; then
+      impact="This issue is **blocking**. New PR auto-merges are paused until it is resolved."
+    else
+      impact="This issue is **not blocking** -- it does not pause merges. It reports a failure in the automation pipeline, which produces generated content and housekeeping PRs rather than anything that ships."
+    fi
+
     body=$(cat <<EOF
-\`main\` CI failed on job: **\`$job\`**.
+\`main\` failed on job: **\`$job\`**.
 
 - Run: $RUN_URL
 - Commit: \`$HEAD_SHA\`
 - Workflow: $WORKFLOW_NAME
 
-This issue is **blocking**. New PR auto-merges are paused until it is resolved.
-It will auto-close on the next green push-to-\`main\` CI run.
+$impact
+It will auto-close on the next green run of \`$WORKFLOW_NAME\` on \`main\`.
 
 To investigate:
 \`\`\`bash
@@ -177,10 +230,13 @@ gh run view $RUN_ID --log-failed
 \`\`\`
 EOF
 )
+    labels=(--label "$LABEL")
+    if [[ "$BLOCKING" == "true" ]]; then
+      labels+=(--label "$BLOCKING_LABEL")
+    fi
     gh issue create \
       --title "$title" \
       --body "$body" \
-      --label "$LABEL" \
-      --label "$BLOCKING_LABEL"
+      "${labels[@]}"
   fi
 done
