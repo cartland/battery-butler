@@ -29,7 +29,8 @@ final class DeviceDetailScreenTests: XCTestCase {
             device: dummyDevice,
             deviceType: dummyType,
             events: [],
-            imageBytes: nil
+            imageBytes: nil,
+            needsBattery: false
         )
 
         let view = DeviceDetailContentView(
