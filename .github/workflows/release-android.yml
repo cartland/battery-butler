@@ -204,6 +204,34 @@ jobs:
         run: |
           echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> local.properties
 
+      - name: Inject google-services.json
+        env:
+          GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
+        run: |
+          # compose-app/google-services.json is committed as a mock (project_id
+          # mock-project-id) so local and PR builds compile without Firebase
+          # credentials. Release builds overwrite it with the real config; without
+          # it the cloud AI chat reports "Firebase is not configured with a valid
+          # Gemini API key" at runtime. See bb-fbai-setup in TODO.md.
+          if [ -z "$GOOGLE_SERVICES_JSON_BASE64" ]; then
+            echo "::warning::GOOGLE_SERVICES_JSON_BASE64 is not set - shipping the mock google-services.json. Cloud AI chat will be unavailable in this build."
+            exit 0
+          fi
+
+          printf '%s' "$GOOGLE_SERVICES_JSON_BASE64" | base64 --decode > compose-app/google-services.json
+
+          if ! PROJECT_ID=$(jq -er '.project_info.project_id' compose-app/google-services.json); then
+            echo "::error::GOOGLE_SERVICES_JSON_BASE64 did not decode to a valid google-services.json."
+            exit 1
+          fi
+
+          if [ "$PROJECT_ID" = "mock-project-id" ]; then
+            echo "::error::GOOGLE_SERVICES_JSON_BASE64 holds the mock config. Upload the real google-services.json from the Firebase console."
+            exit 1
+          fi
+
+          echo "Injected google-services.json for Firebase project: $PROJECT_ID"
+
       - name: Build Release Bundle
         run: |
           ./gradlew :compose-app:bundleRelease --stacktrace \
