@@ -44,9 +44,14 @@ xcodebuild -project ios-app-swift-ui/iosAppSwiftUI.xcodeproj -scheme iosAppSwift
   -destination 'generic/platform=iOS Simulator' build \
   CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO \
   -derivedDataPath ios-app-swift-ui/build/ios-build
-# Test (must specify OS version — no 'latest' match)
+# Test (must specify OS version — no 'latest' match).
+# Prefer ./scripts/test-ios.sh, which resolves an available device for you.
+# To build the destination by hand:
+#   source scripts/lib/resolve-ios-simulator.sh && resolve_ios_simulator
+# Do NOT hardcode a model: the CI runner image dropped iPhone 16 in 2026-08
+# and the snapshot job failed on every run until the lookup became dynamic.
 xcodebuild test -project ios-app-swift-ui/iosAppSwiftUI.xcodeproj -scheme iosAppSwiftUITests \
-  -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.5' \
+  -destination "platform=iOS Simulator,name=${IOS_DEVICE_NAME},OS=${IOS_RUNTIME_VERSION}" \
   CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO \
   -derivedDataPath ios-app-swift-ui/build/ios-tests
 ```

@@ -204,6 +204,25 @@ Merging PRs that modify `.github/workflows/` files requires the `workflow` OAuth
 
 CI uses concurrency groups to prevent parallel runs on the same branch. If a `workflow_dispatch` run starts while a `pull_request` run is in-flight, the `pull_request` run gets cancelled. The `ci` gate treats `cancelled` as failure. **PR status checks only track `pull_request`-event runs**, so a successful `workflow_dispatch` run won't clear the red status. Fix: push a new commit to the PR branch to trigger a fresh `pull_request` CI run, or use `gh run rerun <run-id>` on the original `pull_request`-triggered run (not `gh workflow run`).
 
+## iOS Simulator Selection (Never Hardcode a Model)
+
+`scripts/test-ios.sh` and `scripts/record-ios-snapshots.sh` both pinned `DEVICE_NAME="iPhone 16"`. GitHub's macos runner image moved to iOS 26.x, which ships iPhone 17 / 17 Pro / Air / 16e and **no plain iPhone 16** -- so the `ios-snapshots` job in `auto-generate.yml` failed on *every* run from roughly 2026-08 with:
+
+```
+ERROR: No 'iPhone 16' simulator found in any available iOS runtime.
+```
+
+It went unnoticed for weeks because the automation pipeline filed no issues until PR #1485. Note this never broke a merge gate: `validation_ios_ui` builds with `-destination 'generic/platform=iOS Simulator'` and never runs the snapshot comparisons, so only regeneration was affected.
+
+Both scripts now source `scripts/lib/resolve-ios-simulator.sh` and call `resolve_ios_simulator`, which sets `IOS_DEVICE_NAME` and `IOS_RUNTIME_VERSION`.
+
+- **Ordered preference, not "newest available"**: `iPhone 17`, then `16`, then `15`. Snapshot dimensions depend on the device, so drifting automatically onto whatever is newest would silently rewrite every reference PNG. The older entries keep local machines on older Xcode working.
+- **Exact name match**: `iPhone 17` must not select `iPhone 17 Pro`, which renders at different dimensions.
+- **Newest runtime for the chosen device**: `simctl` lists runtimes ascending, so the last match wins.
+- **Override**: `IOS_SIMULATOR_DEVICE="iPhone Air" ./scripts/test-ios.sh`.
+
+Expect the first successful `ios-snapshots` run after this fix to regenerate the iOS references at iPhone 17 dimensions -- a large but one-time diff, landing as a reviewable `auto/update-ios-screenshots` PR.
+
 ## iOS CI — Xcode Version Pinning
 
 iOS CI jobs (`validation_ios_ui`, `build_ios_compose`, `build_ios_native`, `ios-snapshots` in auto-generate) use `maxim-lobanov/setup-xcode@v1` to select an Xcode version.
