@@ -287,7 +287,7 @@ jobs:
           # Update this when changing local dev Xcode version.
           xcode-version: '26.3'
       - name: Set up JDK
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           java-version: '21'
           distribution: 'temurin'
@@ -450,7 +450,7 @@ jobs:
 
       # Gradle caching for KMP framework build
       - name: Set up JDK
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           java-version: '21'
           distribution: 'temurin'
@@ -520,7 +520,7 @@ jobs:
 
       # Gradle caching for KMP framework build
       - name: Set up JDK
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           java-version: '21'
           distribution: 'temurin'
