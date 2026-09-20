@@ -11,12 +11,15 @@ import com.chriscartland.batterybutler.domain.model.SyncStatus
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.presentationmodel.devicedetail.DeviceDetailScreenState
 import com.chriscartland.batterybutler.testcommon.FakeDeviceImageRepository
+import com.chriscartland.batterybutler.testcommon.FakeNeedsBatteryRepository
 import com.chriscartland.batterybutler.testcommon.TestDevices
 import com.chriscartland.batterybutler.usecase.AddBatteryEventUseCase
 import com.chriscartland.batterybutler.usecase.GetBatteryEventsUseCase
 import com.chriscartland.batterybutler.usecase.GetCachedDeviceImageUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceDetailUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
+import com.chriscartland.batterybutler.usecase.GetNeedsBatteryDeviceIdsUseCase
+import com.chriscartland.batterybutler.usecase.SetDeviceNeedsBatteryUseCase
 import com.chriscartland.batterybutler.usecase.UpdateDeviceLastReplacedUseCase
 import com.chriscartland.batterybutler.usecase.UpdateDeviceUseCase
 import kotlinx.coroutines.Dispatchers
@@ -225,7 +228,14 @@ class DeviceDetailViewModelTest {
 
             advanceUntilIdle()
 
-            val state = viewModel.uiState.first { it is DeviceDetailScreenState.Success }
+            // Wait for the emission this test actually asserts about, not merely the first
+            // Success. The image flow is deliberately seeded with null so the screen renders
+            // before the photo resolves, so Success(imageBytes = null) is a real, expected
+            // intermediate state -- relying on StateFlow conflation to skip it made this
+            // assertion depend on emission timing.
+            val state = viewModel.uiState.first {
+                it is DeviceDetailScreenState.Success && it.imageBytes != null
+            }
             assertIs<DeviceDetailScreenState.Success>(state)
             assertEquals(cachedBytes, state.imageBytes)
         }
@@ -249,15 +259,22 @@ class DeviceDetailViewModelTest {
         repo: FakeDetailRepository,
         deviceId: String,
         imageRepo: FakeDeviceImageRepository = FakeDeviceImageRepository(),
+        needsBatteryRepo: FakeNeedsBatteryRepository = FakeNeedsBatteryRepository(),
     ): DeviceDetailViewModel =
         DeviceDetailViewModel(
             deviceId = deviceId,
             getDeviceDetailUseCase = GetDeviceDetailUseCase(repo),
             getDeviceTypesUseCase = GetDeviceTypesUseCase(repo),
             getBatteryEventsUseCase = GetBatteryEventsUseCase(repo),
-            addBatteryEventUseCase = AddBatteryEventUseCase(repo, UpdateDeviceLastReplacedUseCase(repo)),
+            addBatteryEventUseCase = AddBatteryEventUseCase(
+                repo,
+                UpdateDeviceLastReplacedUseCase(repo),
+                SetDeviceNeedsBatteryUseCase(needsBatteryRepo),
+            ),
             updateDeviceUseCase = UpdateDeviceUseCase(repo),
             getCachedDeviceImageUseCase = GetCachedDeviceImageUseCase(imageRepo),
+            getNeedsBatteryDeviceIdsUseCase = GetNeedsBatteryDeviceIdsUseCase(needsBatteryRepo),
+            setDeviceNeedsBatteryUseCase = SetDeviceNeedsBatteryUseCase(needsBatteryRepo),
         )
 }
 

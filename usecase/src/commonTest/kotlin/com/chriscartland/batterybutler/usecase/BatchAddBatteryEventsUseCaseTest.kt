@@ -6,6 +6,8 @@ import com.chriscartland.batterybutler.domain.model.ai.AiMessage
 import com.chriscartland.batterybutler.domain.model.ai.AiRole
 import com.chriscartland.batterybutler.domain.model.ai.ToolHandler
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
+import com.chriscartland.batterybutler.testcommon.FakeNeedsBatteryRepository
+import com.chriscartland.batterybutler.usecase.SetDeviceNeedsBatteryUseCase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
@@ -23,7 +25,7 @@ class BatchAddBatteryEventsUseCaseTest {
             val findOrCreateType = FindOrCreateDeviceTypeUseCase(repo)
             val findOrCreateDevice = FindOrCreateDeviceUseCase(repo, findOrCreateType)
             val updateLastReplaced = UpdateDeviceLastReplacedUseCase(repo)
-            val addBatteryEvent = AddBatteryEventUseCase(repo, updateLastReplaced)
+            val addBatteryEvent = AddBatteryEventUseCase(repo, updateLastReplaced, SetDeviceNeedsBatteryUseCase(FakeNeedsBatteryRepository()))
             val useCase = BatchAddBatteryEventsUseCase(engine, addBatteryEvent, findOrCreateDevice)
 
             val results = useCase("Replaced smoke detector batteries on 2025-03-15").toList()
@@ -46,7 +48,7 @@ class BatchAddBatteryEventsUseCaseTest {
             val findOrCreateType = FindOrCreateDeviceTypeUseCase(repo)
             val findOrCreateDevice = FindOrCreateDeviceUseCase(repo, findOrCreateType)
             val updateLastReplaced = UpdateDeviceLastReplacedUseCase(repo)
-            val addBatteryEvent = AddBatteryEventUseCase(repo, updateLastReplaced)
+            val addBatteryEvent = AddBatteryEventUseCase(repo, updateLastReplaced, SetDeviceNeedsBatteryUseCase(FakeNeedsBatteryRepository()))
             val useCase = BatchAddBatteryEventsUseCase(engine, addBatteryEvent, findOrCreateDevice)
 
             val results = useCase("Some event").toList()
@@ -64,7 +66,7 @@ class BatchAddBatteryEventsUseCaseTest {
             val findOrCreateType = FindOrCreateDeviceTypeUseCase(repo)
             val findOrCreateDevice = FindOrCreateDeviceUseCase(repo, findOrCreateType)
             val updateLastReplaced = UpdateDeviceLastReplacedUseCase(repo)
-            val addBatteryEvent = AddBatteryEventUseCase(repo, updateLastReplaced)
+            val addBatteryEvent = AddBatteryEventUseCase(repo, updateLastReplaced, SetDeviceNeedsBatteryUseCase(FakeNeedsBatteryRepository()))
             val useCase = BatchAddBatteryEventsUseCase(engine, addBatteryEvent, findOrCreateDevice)
 
             val results = useCase("Some event").toList()

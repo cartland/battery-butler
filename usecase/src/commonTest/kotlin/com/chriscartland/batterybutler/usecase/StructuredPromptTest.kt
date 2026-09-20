@@ -12,6 +12,8 @@ import com.chriscartland.batterybutler.domain.model.ai.AiMessage
 import com.chriscartland.batterybutler.domain.model.ai.AiRole
 import com.chriscartland.batterybutler.domain.model.ai.ToolHandler
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
+import com.chriscartland.batterybutler.testcommon.FakeNeedsBatteryRepository
+import com.chriscartland.batterybutler.usecase.SetDeviceNeedsBatteryUseCase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -119,7 +121,7 @@ class StructuredPromptTest {
             val repo = MockRepository()
             val findOrCreateType = FindOrCreateDeviceTypeUseCase(repo)
             val findOrCreateDevice = FindOrCreateDeviceUseCase(repo, findOrCreateType)
-            val addBatteryEventUseCase = AddBatteryEventUseCase(repo, UpdateDeviceLastReplacedUseCase(repo))
+            val addBatteryEventUseCase = AddBatteryEventUseCase(repo, UpdateDeviceLastReplacedUseCase(repo), SetDeviceNeedsBatteryUseCase(FakeNeedsBatteryRepository()))
             val useCase = BatchAddBatteryEventsUseCase(engine, addBatteryEventUseCase, findOrCreateDevice)
 
             useCase("2023-01-01 Remote").toList()

@@ -16,6 +16,7 @@ import com.chriscartland.batterybutler.usecase.ExportDataUseCase
 import com.chriscartland.batterybutler.usecase.GetCachedDeviceImageUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.GetDevicesUseCase
+import com.chriscartland.batterybutler.usecase.GetNeedsBatteryDeviceIdsUseCase
 import com.chriscartland.batterybutler.usecase.GetSyncStatusUseCase
 import com.chriscartland.batterybutler.usecase.ResyncUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
@@ -51,6 +52,7 @@ class HomeViewModel(
     private val dismissSyncStatusUseCase: DismissSyncStatusUseCase,
     private val resyncUseCase: ResyncUseCase,
     private val getCachedDeviceImageUseCase: GetCachedDeviceImageUseCase,
+    private val getNeedsBatteryDeviceIdsUseCase: GetNeedsBatteryDeviceIdsUseCase,
     private val displayDensityRepository: DisplayDensityRepository,
 ) : ViewModel() {
     private val sortOptionFlow = MutableStateFlow(SortOption.BATTERY_AGE)
@@ -67,6 +69,9 @@ class HomeViewModel(
 
     /** Last images map emitted, used to seed re-keyed image observations — see the uiState liveness guard. */
     private var lastKnownImages: Map<String, DeviceImageBytes> = emptyMap()
+
+    /** Same liveness guard as [lastKnownImages]: the flag set is a Room flow, so seed it rather than withhold the list. */
+    private var lastKnownNeedsBattery: Set<String> = emptySet()
 
     companion object {
         private const val SYNC_SUCCESS_DISPLAY_DURATION_MS = 2000L
@@ -125,11 +130,15 @@ class HomeViewModel(
                 // image hydration (loading screen forever if any image query stalls). Seed with
                 // the last known map (empty on first load); etags are content-addressed, so a
                 // briefly-stale entry is harmless and is replaced by the real emission.
-                observeImagesByEtag(inputs.devices)
-                    .onStart { emit(lastKnownImages) }
-                    .onEach { lastKnownImages = it }
-                    .map { images -> inputs to images }
-            }.map { (inputs, images) ->
+                combine(
+                    observeImagesByEtag(inputs.devices)
+                        .onStart { emit(lastKnownImages) }
+                        .onEach { lastKnownImages = it },
+                    getNeedsBatteryDeviceIdsUseCase()
+                        .onStart { emit(lastKnownNeedsBattery) }
+                        .onEach { lastKnownNeedsBattery = it },
+                ) { images, needsBattery -> Triple(inputs, images, needsBattery) }
+            }.map { (inputs, images, needsBatteryIds) ->
                 val (config, devices, types, syncStatus, exportData) = inputs
                 val typeMap = types.associateBy { it.id }
 
@@ -153,7 +162,7 @@ class HomeViewModel(
                     groupKeySelector = groupKeySelector,
                     defaultGroupName = "All Devices",
                     isGroupAscending = config.isGroupAscending,
-                )
+                ).withNeedsBatteryFirst(needsBatteryIds)
 
                 HomeScreenState(
                     groupedDevices = finalGroupedDevices,
@@ -166,6 +175,7 @@ class HomeViewModel(
                     syncStatus = syncStatus,
                     deviceImagesByEtag = images,
                     densityOption = config.density,
+                    needsBatteryDeviceIds = needsBatteryIds,
                 )
             }
         },
@@ -251,3 +261,18 @@ private data class DeviceListInputs(
     val syncStatus: SyncStatus,
     val exportData: String?,
 )
+
+/**
+ * Floats devices marked as needing a battery to the top of each group.
+ *
+ * Applied *after* [sortAndGroup] rather than folded into its comparator, because that function
+ * reverses the sorted list wholesale for descending order — a comparator-based "flagged first"
+ * would silently become "flagged last" whenever the user flipped the sort direction. Kotlin's sort
+ * is stable, so within the flagged and unflagged halves the user's chosen order is preserved.
+ */
+private fun Map<String, List<Device>>.withNeedsBatteryFirst(needsBatteryIds: Set<String>): Map<String, List<Device>> =
+    if (needsBatteryIds.isEmpty()) {
+        this
+    } else {
+        mapValues { (_, devices) -> devices.sortedByDescending { it.id in needsBatteryIds } }
+    }

@@ -3,7 +3,9 @@ package com.chriscartland.batterybutler.usecase
 import com.chriscartland.batterybutler.domain.model.ai.AiToolNames
 import com.chriscartland.batterybutler.domain.model.ai.AiToolParams
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
+import com.chriscartland.batterybutler.testcommon.FakeNeedsBatteryRepository
 import com.chriscartland.batterybutler.testcommon.TestDevices
+import com.chriscartland.batterybutler.usecase.SetDeviceNeedsBatteryUseCase
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -17,7 +19,7 @@ class DeviceToolHandlerTest {
         val findOrCreateType = FindOrCreateDeviceTypeUseCase(repo)
         val findOrCreateDevice = FindOrCreateDeviceUseCase(repo, findOrCreateType)
         val updateLastReplaced = UpdateDeviceLastReplacedUseCase(repo)
-        val handler = DeviceToolHandler(repo, findOrCreateType, findOrCreateDevice, updateLastReplaced)
+        val handler = DeviceToolHandler(repo, findOrCreateType, findOrCreateDevice, updateLastReplaced, SetDeviceNeedsBatteryUseCase(FakeNeedsBatteryRepository()))
         return handler to repo
     }
 

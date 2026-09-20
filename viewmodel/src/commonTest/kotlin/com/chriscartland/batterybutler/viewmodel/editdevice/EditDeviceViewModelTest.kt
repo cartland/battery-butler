@@ -9,6 +9,7 @@ import com.chriscartland.batterybutler.domain.repository.DeviceImageRepository
 import com.chriscartland.batterybutler.presentationmodel.editdevice.EditDeviceScreenState
 import com.chriscartland.batterybutler.testcommon.FakeDeviceImageRepository
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
+import com.chriscartland.batterybutler.testcommon.FakeNeedsBatteryRepository
 import com.chriscartland.batterybutler.testcommon.TestDevices
 import com.chriscartland.batterybutler.usecase.DeleteDeviceImageUseCase
 import com.chriscartland.batterybutler.usecase.DeleteDeviceUseCase
@@ -16,6 +17,7 @@ import com.chriscartland.batterybutler.usecase.GetCachedDeviceImageUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceDetailUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.IsDeviceImagesSupportedUseCase
+import com.chriscartland.batterybutler.usecase.SetDeviceNeedsBatteryUseCase
 import com.chriscartland.batterybutler.usecase.UpdateDeviceUseCase
 import com.chriscartland.batterybutler.usecase.UploadDeviceImageUseCase
 import kotlinx.coroutines.CoroutineScope
@@ -313,7 +315,7 @@ class EditDeviceViewModelTest {
             getDeviceDetailUseCase = GetDeviceDetailUseCase(repo),
             getDeviceTypesUseCase = GetDeviceTypesUseCase(repo),
             updateDeviceUseCase = UpdateDeviceUseCase(repo),
-            deleteDeviceUseCase = DeleteDeviceUseCase(repo),
+            deleteDeviceUseCase = DeleteDeviceUseCase(repo, SetDeviceNeedsBatteryUseCase(FakeNeedsBatteryRepository())),
             getCachedDeviceImageUseCase = GetCachedDeviceImageUseCase(imageRepo),
             uploadDeviceImageUseCase = UploadDeviceImageUseCase(imageRepo, repo, scope),
             deleteDeviceImageUseCase = DeleteDeviceImageUseCase(imageRepo, repo, scope),

@@ -23,6 +23,7 @@ import com.chriscartland.batterybutler.testcommon.FakeAuthRepository
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
 import com.chriscartland.batterybutler.testcommon.FakeLabsAuthRepository
 import com.chriscartland.batterybutler.testcommon.FakeLegacyDatabaseRepository
+import com.chriscartland.batterybutler.testcommon.FakeNeedsBatteryRepository
 import com.chriscartland.batterybutler.testcommon.TestDevices
 import com.chriscartland.batterybutler.usecase.ExportDataUseCase
 import com.chriscartland.batterybutler.usecase.GetAppVersionUseCase
@@ -737,8 +738,8 @@ class SettingsViewModelTest {
             legacyDatabaseRepository = legacyDatabaseRepository,
             restartCoordinator = restartCoordinator,
             signInToLabsUseCase = SignInToLabsUseCase(labsAuthRepository, deviceRepository, useCaseScope),
-            signOutLabsUseCase = SignOutLabsUseCase(labsAuthRepository, deviceRepository),
-            signOutUseCase = SignOutUseCase(authRepository, deviceRepository),
+            signOutLabsUseCase = SignOutLabsUseCase(labsAuthRepository, deviceRepository, FakeNeedsBatteryRepository()),
+            signOutUseCase = SignOutUseCase(authRepository, deviceRepository, FakeNeedsBatteryRepository()),
             featureFlagProvider = featureFlagProvider,
             productionServerUrl = ProductionServerUrl("http://test-server:80"),
             devServerUrl = DevServerUrl("http://test-dev-server:80"),
