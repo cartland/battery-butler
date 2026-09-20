@@ -7,6 +7,7 @@ import com.chriscartland.batterybutler.presentationmodel.home.SortOption
 import com.chriscartland.batterybutler.testcommon.FakeDeviceImageRepository
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
 import com.chriscartland.batterybutler.testcommon.FakeDisplayDensityRepository
+import com.chriscartland.batterybutler.testcommon.FakeListArrangementRepository
 import com.chriscartland.batterybutler.testcommon.FakeNeedsBatteryRepository
 import com.chriscartland.batterybutler.testcommon.TestDevices
 import com.chriscartland.batterybutler.usecase.DismissSyncStatusUseCase
@@ -75,6 +76,7 @@ class HomeViewModelNeedsBatteryTest {
             getCachedDeviceImageUseCase = GetCachedDeviceImageUseCase(FakeDeviceImageRepository()),
             getNeedsBatteryDeviceIdsUseCase = GetNeedsBatteryDeviceIdsUseCase(needsBatteryRepository),
             displayDensityRepository = FakeDisplayDensityRepository(),
+            listArrangementRepository = FakeListArrangementRepository(),
         )
 
     /** oldest -> newest by battery age, so the default descending sort yields newest, middle, oldest. */

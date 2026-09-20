@@ -7,6 +7,7 @@ import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeS
 import com.chriscartland.batterybutler.presentationmodel.home.DensityOption
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
 import com.chriscartland.batterybutler.testcommon.FakeDisplayDensityRepository
+import com.chriscartland.batterybutler.testcommon.FakeListArrangementRepository
 import com.chriscartland.batterybutler.testcommon.TestDevices
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.PreloadCommonTypesUseCase
@@ -237,11 +238,13 @@ class DeviceTypeListViewModelTest {
     private fun createViewModel(
         repo: FakeDeviceRepository,
         displayDensityRepository: FakeDisplayDensityRepository = FakeDisplayDensityRepository(),
+        listArrangementRepository: FakeListArrangementRepository = FakeListArrangementRepository(),
     ): DeviceTypeListViewModel =
         DeviceTypeListViewModel(
             getDeviceTypesUseCase = GetDeviceTypesUseCase(repo),
             preloadCommonTypesUseCase = PreloadCommonTypesUseCase(repo),
             resyncUseCase = ResyncUseCase(repo),
             displayDensityRepository = displayDensityRepository,
+            listArrangementRepository = listArrangementRepository,
         )
 }

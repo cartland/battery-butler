@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import com.chriscartland.batterybutler.data.provider.DefaultDispatcherProvider
 import com.chriscartland.batterybutler.data.repository.DataStoreDataModeRepository
 import com.chriscartland.batterybutler.data.repository.DataStoreDisplayDensityRepository
+import com.chriscartland.batterybutler.data.repository.DataStoreListArrangementRepository
 import com.chriscartland.batterybutler.data.repository.DefaultDeviceImageRepository
 import com.chriscartland.batterybutler.data.repository.DefaultDeviceRepository
 import com.chriscartland.batterybutler.data.repository.DefaultLegacyDatabaseRepository
@@ -43,6 +44,7 @@ import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import com.chriscartland.batterybutler.domain.repository.DisplayDensityRepository
 import com.chriscartland.batterybutler.domain.repository.LabsRefreshTokenPersistence
 import com.chriscartland.batterybutler.domain.repository.LegacyDatabaseRepository
+import com.chriscartland.batterybutler.domain.repository.ListArrangementRepository
 import com.chriscartland.batterybutler.domain.repository.NeedsBatteryRepository
 import com.chriscartland.batterybutler.proto.AuthServiceClient
 import com.chriscartland.batterybutler.proto.GrpcAuthServiceClient
@@ -92,6 +94,9 @@ interface DataComponent {
 
     @Provides
     fun provideDisplayDensityRepository(repo: DataStoreDisplayDensityRepository): DisplayDensityRepository = repo
+
+    @Provides
+    fun provideListArrangementRepository(repo: DataStoreListArrangementRepository): ListArrangementRepository = repo
 
     @Provides
     fun provideDataModeFlow(repo: DataModeRepository): Flow<DataMode> = repo.dataMode

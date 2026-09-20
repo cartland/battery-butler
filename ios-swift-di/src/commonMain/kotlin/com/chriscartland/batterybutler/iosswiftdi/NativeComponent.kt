@@ -6,6 +6,7 @@ import com.chriscartland.batterybutler.ai.NoOpAiEngine
 import com.chriscartland.batterybutler.data.provider.DefaultDispatcherProvider
 import com.chriscartland.batterybutler.data.repository.DataStoreDataModeRepository
 import com.chriscartland.batterybutler.data.repository.DataStoreDisplayDensityRepository
+import com.chriscartland.batterybutler.data.repository.DataStoreListArrangementRepository
 import com.chriscartland.batterybutler.data.repository.DefaultDeviceImageRepository
 import com.chriscartland.batterybutler.data.repository.DefaultDeviceRepository
 import com.chriscartland.batterybutler.data.repository.DefaultFeatureFlagProvider
@@ -46,6 +47,7 @@ import com.chriscartland.batterybutler.domain.repository.DisplayDensityRepositor
 import com.chriscartland.batterybutler.domain.repository.FeatureFlagProvider
 import com.chriscartland.batterybutler.domain.repository.LabsAuthRepository
 import com.chriscartland.batterybutler.domain.repository.LegacyDatabaseRepository
+import com.chriscartland.batterybutler.domain.repository.ListArrangementRepository
 import com.chriscartland.batterybutler.domain.repository.NeedsBatteryRepository
 import com.chriscartland.batterybutler.domain.repository.NoOpLabsAuthRepository
 import com.chriscartland.batterybutler.domain.repository.RestartCoordinator
@@ -161,6 +163,10 @@ abstract class NativeComponent(
     @Provides
     @SharedSingleton
     fun provideDisplayDensityRepository(impl: DataStoreDisplayDensityRepository): DisplayDensityRepository = impl
+
+    @Provides
+    @SharedSingleton
+    fun provideListArrangementRepository(impl: DataStoreListArrangementRepository): ListArrangementRepository = impl
 
     @Provides
     @SharedSingleton

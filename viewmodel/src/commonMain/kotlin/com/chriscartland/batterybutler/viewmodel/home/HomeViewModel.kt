@@ -3,8 +3,11 @@ package com.chriscartland.batterybutler.viewmodel.home
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceImageBytes
 import com.chriscartland.batterybutler.domain.model.DeviceType
+import com.chriscartland.batterybutler.domain.model.ListArrangement
+import com.chriscartland.batterybutler.domain.model.ListScreen
 import com.chriscartland.batterybutler.domain.model.SyncStatus
 import com.chriscartland.batterybutler.domain.repository.DisplayDensityRepository
+import com.chriscartland.batterybutler.domain.repository.ListArrangementRepository
 import com.chriscartland.batterybutler.presentationmodel.home.DensityOption
 import com.chriscartland.batterybutler.presentationmodel.home.GroupOption
 import com.chriscartland.batterybutler.presentationmodel.home.HomeScreenState
@@ -32,6 +35,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -54,15 +58,15 @@ class HomeViewModel(
     private val getCachedDeviceImageUseCase: GetCachedDeviceImageUseCase,
     private val getNeedsBatteryDeviceIdsUseCase: GetNeedsBatteryDeviceIdsUseCase,
     private val displayDensityRepository: DisplayDensityRepository,
+    private val listArrangementRepository: ListArrangementRepository,
 ) : ViewModel() {
-    private val sortOptionFlow = MutableStateFlow(SortOption.BATTERY_AGE)
-    private val groupOptionFlow = MutableStateFlow(GroupOption.NONE)
-    private val isSortAscendingFlow = MutableStateFlow(false)
-    private val isGroupAscendingFlow = MutableStateFlow(true)
+    // The stored sort/group choices, which survive app restarts. Held as one flow rather than four
+    // MutableStateFlows: the store is the single source of truth, so a change written here comes
+    // back through the same path the initial read uses and there is no in-memory copy to drift.
+    private val arrangementFlow = listArrangementRepository.arrangement(ListScreen.DEVICES)
 
-    // Persisted app-wide, unlike sort/group which stay session-only. Reads the stored
-    // DisplayDensity (which may be UNSPECIFIED on a fresh install) and resolves it to the
-    // renderable two-case DensityOption.
+    // Reads the stored DisplayDensity (which may be UNSPECIFIED on a fresh install) and resolves
+    // it to the renderable two-case DensityOption.
     private val densityOptionFlow = displayDensityRepository.displayDensity.map { it.toDensityOption() }
     private val exportDataFlow = MutableStateFlow<String?>(null)
     private var autoDismissJob: Job? = null
@@ -105,17 +109,20 @@ class HomeViewModel(
         initialValue = HomeScreenState(),
         onError = { HomeScreenState(error = it.message ?: "Failed to load devices") },
         source = {
-            // `combine`'s typed overloads top out at five flows, so the five list-display options
-            // fill the inner combine and `exportDataFlow` (unrelated to display) rides on the outer.
+            // `combine`'s typed overloads top out at five flows, so the display options fill the
+            // inner combine and `exportDataFlow` (unrelated to display) rides on the outer.
             combine(
                 combine(
-                    sortOptionFlow,
-                    groupOptionFlow,
-                    isSortAscendingFlow,
-                    isGroupAscendingFlow,
+                    arrangementFlow,
                     densityOptionFlow,
-                ) { sort, group, isSortAscending, isGroupAscending, density ->
-                    DisplayConfig(sort, group, isSortAscending, isGroupAscending, density)
+                ) { arrangement, density ->
+                    DisplayConfig(
+                        sort = arrangement.sortKey.toSortOption(),
+                        group = arrangement.groupKey.toGroupOption(),
+                        isSortAscending = arrangement.isSortAscending ?: DEFAULT_SORT_ASCENDING,
+                        isGroupAscending = arrangement.isGroupAscending ?: DEFAULT_GROUP_ASCENDING,
+                        density = density,
+                    )
                 },
                 getDevicesUseCase(),
                 getDeviceTypesUseCase(),
@@ -162,7 +169,11 @@ class HomeViewModel(
                     groupKeySelector = groupKeySelector,
                     defaultGroupName = "All Devices",
                     isGroupAscending = config.isGroupAscending,
-                ).withNeedsBatteryFirst(needsBatteryIds)
+                    // Passed into sortAndGroup rather than applied to the grouped result, so a
+                    // marked device pulls its whole group to the front as well as leading it --
+                    // group priority comes from each group's first item.
+                    priorityFirst = { it.id in needsBatteryIds },
+                )
 
                 HomeScreenState(
                     groupedDevices = finalGroupedDevices,
@@ -182,11 +193,11 @@ class HomeViewModel(
     )
 
     fun onSortOptionSelected(option: SortOption) {
-        sortOptionFlow.value = option
+        persist { it.copy(sortKey = option.storageKey()) }
     }
 
     fun onGroupOptionSelected(option: GroupOption) {
-        groupOptionFlow.value = option
+        persist { it.copy(groupKey = option.storageKey()) }
     }
 
     fun onDensityOptionSelected(option: DensityOption) {
@@ -196,11 +207,25 @@ class HomeViewModel(
     }
 
     fun toggleSortDirection() {
-        isSortAscendingFlow.value = !isSortAscendingFlow.value
+        persist { it.copy(isSortAscending = !(it.isSortAscending ?: DEFAULT_SORT_ASCENDING)) }
     }
 
     fun toggleGroupDirection() {
-        isGroupAscendingFlow.value = !isGroupAscendingFlow.value
+        persist { it.copy(isGroupAscending = !(it.isGroupAscending ?: DEFAULT_GROUP_ASCENDING)) }
+    }
+
+    /**
+     * Applies [change] to the stored arrangement.
+     *
+     * Reads the current value from the repository rather than from [uiState], because `uiState`
+     * only holds a real value while something is subscribed — a toggle would otherwise flip
+     * relative to the initial placeholder instead of what is on disk.
+     */
+    private fun persist(change: (ListArrangement) -> ListArrangement) {
+        viewModelScope.coroutineScope.launch {
+            val current = arrangementFlow.first()
+            listArrangementRepository.setArrangement(ListScreen.DEVICES, change(current))
+        }
     }
 
     fun onExportData() {
@@ -263,16 +288,51 @@ private data class DeviceListInputs(
 )
 
 /**
- * Floats devices marked as needing a battery to the top of each group.
- *
- * Applied *after* [sortAndGroup] rather than folded into its comparator, because that function
- * reverses the sorted list wholesale for descending order — a comparator-based "flagged first"
- * would silently become "flagged last" whenever the user flipped the sort direction. Kotlin's sort
- * is stable, so within the flagged and unflagged halves the user's chosen order is preserved.
+ * The arrangement used until the user picks something — the behaviour before these choices were
+ * persisted, so an upgrading install sees no change until it opts in.
  */
-private fun Map<String, List<Device>>.withNeedsBatteryFirst(needsBatteryIds: Set<String>): Map<String, List<Device>> =
-    if (needsBatteryIds.isEmpty()) {
-        this
-    } else {
-        mapValues { (_, devices) -> devices.sortedByDescending { it.id in needsBatteryIds } }
+private const val DEFAULT_SORT_ASCENDING = false
+private const val DEFAULT_GROUP_ASCENDING = true
+
+// Stored as lowercase tokens rather than `Enum.name` or `ordinal`, for the same reasons
+// DataStoreDisplayDensityRepository gives: `name` couples the on-disk format to a Kotlin
+// identifier, and `ordinal` would silently remap every install's saved value if a constant were
+// ever inserted in the middle of the enum. An unknown token degrades to the default.
+private const val SORT_NAME = "name"
+private const val SORT_LOCATION = "location"
+private const val SORT_BATTERY_AGE = "battery_age"
+private const val SORT_TYPE = "type"
+
+private const val GROUP_NONE = "none"
+private const val GROUP_TYPE = "type"
+private const val GROUP_LOCATION = "location"
+
+private fun SortOption.storageKey(): String =
+    when (this) {
+        SortOption.NAME -> SORT_NAME
+        SortOption.LOCATION -> SORT_LOCATION
+        SortOption.BATTERY_AGE -> SORT_BATTERY_AGE
+        SortOption.TYPE -> SORT_TYPE
+    }
+
+private fun String?.toSortOption(): SortOption =
+    when (this) {
+        SORT_NAME -> SortOption.NAME
+        SORT_LOCATION -> SortOption.LOCATION
+        SORT_TYPE -> SortOption.TYPE
+        else -> SortOption.BATTERY_AGE
+    }
+
+private fun GroupOption.storageKey(): String =
+    when (this) {
+        GroupOption.NONE -> GROUP_NONE
+        GroupOption.TYPE -> GROUP_TYPE
+        GroupOption.LOCATION -> GROUP_LOCATION
+    }
+
+private fun String?.toGroupOption(): GroupOption =
+    when (this) {
+        GROUP_TYPE -> GroupOption.TYPE
+        GROUP_LOCATION -> GroupOption.LOCATION
+        else -> GroupOption.NONE
     }

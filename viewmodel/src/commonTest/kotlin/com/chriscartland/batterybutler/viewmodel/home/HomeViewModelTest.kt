@@ -14,6 +14,7 @@ import com.chriscartland.batterybutler.presentationmodel.home.SortOption
 import com.chriscartland.batterybutler.testcommon.FakeDeviceImageRepository
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
 import com.chriscartland.batterybutler.testcommon.FakeDisplayDensityRepository
+import com.chriscartland.batterybutler.testcommon.FakeListArrangementRepository
 import com.chriscartland.batterybutler.testcommon.FakeNeedsBatteryRepository
 import com.chriscartland.batterybutler.testcommon.TestDevices
 import com.chriscartland.batterybutler.usecase.DismissSyncStatusUseCase
@@ -347,6 +348,7 @@ class HomeViewModelTest {
             getCachedDeviceImageUseCase = GetCachedDeviceImageUseCase(imageRepository),
             getNeedsBatteryDeviceIdsUseCase = GetNeedsBatteryDeviceIdsUseCase(needsBatteryRepository),
             displayDensityRepository = FakeDisplayDensityRepository(),
+            listArrangementRepository = FakeListArrangementRepository(),
         )
 
     /**
