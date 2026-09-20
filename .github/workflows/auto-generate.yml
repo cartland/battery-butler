@@ -18,6 +18,19 @@
 #   prevention), so each job closes/reopens the PR with BOT_PAT to trigger CI
 #   inline. ci-trigger-auto-prs.yml remains as a fallback.
 #
+# TRIGGERS:
+#   Post-submit only (push to main) plus manual dispatch. There is deliberately
+#   no cron here. A weekly "catch any drift" schedule cannot find drift that
+#   the post-merge run has not already found -- generated content is a pure
+#   function of the code, so the push that changes the code is the only event
+#   that can change the output. All a cron added was runs at an hour when
+#   nobody was watching, and a second writer racing the post-merge run for the
+#   same auto/* branches.
+#
+#   The stale-PR cleanup that used to run on its own daily cron is now Job 1
+#   here, for the same reason: auto/* PRs only go stale because main moved, so
+#   main moving is the event worth reacting to.
+#
 # =============================================================================
 
 name: Auto-Generate Content
@@ -36,10 +49,6 @@ on:
       - 'presentation-*/**'
       - 'android-screenshot-tests/**'
 
-  # Weekly refresh to catch any drift
-  schedule:
-    - cron: '0 6 * * 1'  # Monday at 6 AM UTC
-
   # Manual trigger for testing
   workflow_dispatch:
 
@@ -54,9 +63,39 @@ env:
 
 jobs:
   # ===========================================================================
-  # Job 1: Diagrams + Code Analysis
+  # Job 1: Close stale auto PRs, delete orphaned auto branches
+  # ===========================================================================
+  #
+  # Runs BEFORE the generation jobs so a PR that is about to be closed never
+  # gets CI triggered on it by ci-trigger-auto-prs.yml, which fires on this
+  # workflow's completion.
+  #
+  # Janitorial only: the generation jobs below declare `if: always()` so a
+  # failure here cannot block regenerating content.
+  # ===========================================================================
+  cleanup-stale-prs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Cleanup Stale Auto-Generated PRs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: ./scripts/cleanup-stale-auto-prs.sh
+
+  # ===========================================================================
+  # Job 2: Diagrams + Code Analysis
   # ===========================================================================
   diagrams-and-analysis:
+    needs: cleanup-stale-prs
+    if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -125,9 +164,11 @@ jobs:
           echo "CI now triggered on PR #$PR_NUM"
 
   # ===========================================================================
-  # Job 2: Android Screenshot Baselines
+  # Job 3: Android Screenshot Baselines
   # ===========================================================================
   android-screenshots:
+    needs: cleanup-stale-prs
+    if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
@@ -199,9 +240,11 @@ jobs:
           echo "CI now triggered on PR #$PR_NUM"
 
   # ===========================================================================
-  # Job 3: iOS Snapshots (Record + Gallery)
+  # Job 4: iOS Snapshots (Record + Gallery)
   # ===========================================================================
   ios-snapshots:
+    needs: cleanup-stale-prs
+    if: always()
     runs-on: macos-latest
     timeout-minutes: 45
 

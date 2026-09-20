@@ -94,7 +94,8 @@ CI uses `dorny/paths-filter` to skip expensive builds for non-code changes:
 
 **How it works:**
 1. Code merges to `main` -> `auto-generate.yml` runs
-2. Generates diagrams + analysis (Job 1), screenshots sequentially (Job 2), and iOS snapshots (Job 3)
+2. Closes stale/conflicting `auto/*` PRs and deletes orphaned `auto/*` branches (Job 1, `scripts/cleanup-stale-auto-prs.sh`)
+3. Generates diagrams + analysis (Job 2), screenshots sequentially (Job 3), and iOS snapshots (Job 4)
 3. `generateMermaidGraph` embeds `full_system_structure.mmd` into README.md (module dependency graph); `analyzeCode` embeds `code_distribution.mmd` into both README.md and CODE_ANALYSIS.md (sankey chart)
 4. Screenshots use `scripts/generate-android-screenshots.sh` to avoid OOM on CI runners
 5. Change detection includes `*.mmd`, `*.svg`, `docs/CODE_ANALYSIS.md`, and `README.md` — any of these trigger a follow-up PR
@@ -104,6 +105,33 @@ CI uses `dorny/paths-filter` to skip expensive builds for non-code changes:
 7. `ci-trigger-auto-prs.yml` remains as a fallback (fires on workflow completion)
 
 **Why inline trigger was needed:** `cancel-in-progress: true` could cancel an auto-generate run after it created a PR but before the workflow completed. Since `ci-trigger-auto-prs.yml` only fires on completion, the PR would sit with no CI checks for ~16 minutes until the next run completed.
+
+## No Scheduled (Cron) Workflows
+
+**Every workflow runs pre-submit (`pull_request`) or post-submit (`push` to `main` / `workflow_run` / tag). None run on a schedule.** `scripts/validate-workflows.sh` fails CI on any workflow that declares `schedule:` or `- cron:`, so this cannot regress silently.
+
+**Why.** Generated content is a pure function of the commit, so the push that changed the code is the only event that can change the output -- a nightly re-derivation of an unchanged commit finds nothing by construction. What a cron did add was a second writer racing the post-merge run for the same `auto/*` branches, and failures at an hour when nobody was watching. Note that the post-merge auto-issue safety net does not cover the automation pipeline (see below), so a cron-only failure was invisible until someone ran `/repo-check` by hand.
+
+**What was removed:**
+
+| Was | Now |
+| --- | --- |
+| `auto-generate.yml` weekly `0 6 * * 1` "catch any drift" | Nothing. The `push` to `main` trigger already covers it. |
+| `cleanup-stale-auto-prs.yml`, daily `0 0 * * *` | Job 1 of `auto-generate.yml`, running the same logic from `scripts/cleanup-stale-auto-prs.sh`. |
+
+Cleanup runs *before* the generation jobs so a PR about to be closed never gets CI triggered on it by `ci-trigger-auto-prs.yml`, which fires on this workflow's completion. The generation jobs declare `if: always()` so janitorial failure cannot block regenerating content.
+
+`.github/dependabot.yml` still has a `schedule:` — that is Dependabot's own config, not an Actions workflow, and the validator only reads `.github/workflows/`.
+
+## Validating Workflows Themselves (`validation_workflows`)
+
+`auto-generate.yml` triggers only on push to `main`; `release-android.yml` only on a tag. **Neither is exercised by any PR**, so a mistake in one used to surface only after merge. `validation_workflows` runs `scripts/validate-workflows.sh` on PRs touching `.github/workflows/**`, `.github/actions/**` or `scripts/**`, checking:
+
+1. No `schedule:` / `- cron:` trigger (see above).
+2. Every `./scripts/*.sh` a workflow invokes exists and is executable — catches a script renamed or `chmod -x`'d in the same PR.
+3. Every workflow parses as YAML (ruby, falling back to python-yaml, skipped if neither is present).
+
+Dependency-free on purpose: it is plain `grep` plus file tests, so it cannot be the thing that breaks.
 
 ## CI Concurrency on Main (PR #856)
 
