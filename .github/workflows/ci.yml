@@ -44,6 +44,8 @@ jobs:
       # development mode skips on PRs, so the sentinels run for them regardless of mode.
       # See "Risky-change escalation" in .agent/ci.md.
       risky: ${{ steps.filter.outputs.risky }}
+      # The workflow files themselves. Nothing else in CI reads them on a PR.
+      workflows: ${{ steps.filter.outputs.workflows }}
     steps:
       - uses: actions/checkout@v7
       - name: Read CI mode
@@ -128,6 +130,13 @@ jobs:
               # exactly the changes that can break it, instead of finding out post-merge.
               - 'domain/**'
               - 'presentation-model/**'
+            # Workflow definitions. Most workflows here trigger only on push to main
+            # or on a tag, so a mistake in one is not exercised by any PR. This filter
+            # gates the job that checks them directly.
+            workflows:
+              - '.github/workflows/**'
+              - '.github/actions/**'
+              - 'scripts/**'
             # Files that need spotless (code + markdown)
             needs_spotless:
               - '**/*.kt'
@@ -362,6 +371,20 @@ jobs:
       - name: Check Hardcoded Strings
         run: ./gradlew checkHardcodedStrings
 
+  # Checks the workflow files on the PR that changes them. auto-generate.yml
+  # triggers only on push to main and release-android.yml only on a tag, so
+  # without this nothing validates either until after merge. Also enforces the
+  # no-cron rule -- see the TRIGGERS note in auto-generate.yml.
+  validation_workflows:
+    needs: changes
+    if: needs.changes.outputs.workflows == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - name: Validate Workflows
+        run: ./scripts/validate-workflows.sh
+
   validation_architecture:
     needs: changes
     if: needs.changes.outputs.code == 'true'
@@ -409,7 +432,12 @@ jobs:
     needs: changes
     if: needs.changes.outputs.code == 'true' && (github.event_name == 'push' || needs.changes.outputs.ci_mode != 'development' || needs.changes.outputs.risky == 'true')
     runs-on: macos-latest
-    timeout-minutes: 30
+    # 45, not 30, to match validation_ios_ui, which does strictly more work
+    # (it builds the same framework AND runs the UI tests) and passed at
+    # 30m25s on PR #1474. Both iOS build jobs were cancelled at exactly the
+    # 30-minute mark on that PR -- a dependency bump reported as a build
+    # failure when the build had not actually failed.
+    timeout-minutes: 45
     steps:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
@@ -474,7 +502,12 @@ jobs:
     needs: changes
     if: needs.changes.outputs.code == 'true' && (github.event_name == 'push' || needs.changes.outputs.ci_mode != 'development' || needs.changes.outputs.risky == 'true')
     runs-on: macos-latest
-    timeout-minutes: 30
+    # 45, not 30, to match validation_ios_ui, which does strictly more work
+    # (it builds the same framework AND runs the UI tests) and passed at
+    # 30m25s on PR #1474. Both iOS build jobs were cancelled at exactly the
+    # 30-minute mark on that PR -- a dependency bump reported as a build
+    # failure when the build had not actually failed.
+    timeout-minutes: 45
     steps:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
@@ -623,6 +656,7 @@ jobs:
       - validation_hardcoded_strings
       - validation_architecture
       - validation_import_boundary
+      - validation_workflows
       - build_android
       - build_ios_compose
       - build_ios_native
@@ -659,7 +693,8 @@ jobs:
             "${{ needs.validation_naming_convention.result }}" \
             "${{ needs.validation_hardcoded_strings.result }}" \
             "${{ needs.validation_architecture.result }}" \
-            "${{ needs.validation_import_boundary.result }}"; do
+            "${{ needs.validation_import_boundary.result }}" \
+            "${{ needs.validation_workflows.result }}"; do
             if [[ "$result" == "failure" || "$result" == "cancelled" ]]; then
               FAILED=true
             fi
