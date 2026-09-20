@@ -27,7 +27,14 @@ name: CI Post-Merge Auto-Issue
 
 on:
   workflow_run:
-    workflows: ["Battery Butler CI"]
+    workflows:
+      - "Battery Butler CI"
+      # The automation pipeline. Failures here used to file nothing at all, no
+      # matter how often they happened, and so were invisible until someone ran
+      # /repo-check by hand -- see "Post-Merge Auto-Issue Safety Net" in
+      # .agent/ci.md. They are reported NON-BLOCKING (see the job below).
+      - "Auto-Generate Content"
+      - "CI for Auto PRs"
     types: [completed]
 
 jobs:
@@ -38,7 +45,7 @@ jobs:
     # run existed that could close it. Recovering meant closing the issue by hand
     # (issue #1429, 2026-07-30). A dispatched run is now a valid resolution path --
     # `gh workflow run "Battery Butler CI" --ref main -f ci_mode=release`.
-    if: (github.event.workflow_run.event == 'push' || github.event.workflow_run.event == 'workflow_dispatch') && github.event.workflow_run.head_branch == 'main'
+    if: github.event.workflow_run.name == 'Battery Butler CI' && (github.event.workflow_run.event == 'push' || github.event.workflow_run.event == 'workflow_dispatch') && github.event.workflow_run.head_branch == 'main'
     runs-on: ubuntu-latest
     permissions:
       issues: write
@@ -56,4 +63,44 @@ jobs:
           RUN_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
           HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
           WORKFLOW_NAME: ${{ github.event.workflow_run.name }}
+        run: ./scripts/file-ci-failure-issue.sh
+
+  # ===========================================================================
+  # Automation pipeline (Auto-Generate Content, CI for Auto PRs)
+  # ===========================================================================
+  #
+  # Deliberately NON-BLOCKING, under its own label. These workflows produce
+  # generated content and housekeeping PRs; nothing they do ships. Tagging
+  # their failures `blocking` would freeze every merge in the repo over a
+  # screenshot job or a branch deletion, which is far worse than the silence
+  # this replaces.
+  #
+  # The separate label also matters for correctness: the success path closes
+  # every open issue carrying its label, so sharing `ci-failure` would let a
+  # green auto-generate run close real CI failures and silently disarm the
+  # safety net.
+  # ===========================================================================
+  automation-pipeline:
+    if: github.event.workflow_run.name != 'Battery Butler CI'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: File or resolve automation-failure issues
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+          RUN_URL: ${{ github.event.workflow_run.html_url }}
+          RUN_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          WORKFLOW_NAME: ${{ github.event.workflow_run.name }}
+          ISSUE_LABEL: automation-failure
+          BLOCKING: 'false'
+          TITLE_PREFIX: 'Automation failure on main:'
+          CHECK_SENTINELS: 'false'
         run: ./scripts/file-ci-failure-issue.sh

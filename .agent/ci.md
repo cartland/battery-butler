@@ -274,7 +274,23 @@ For PRs that share files (e.g. `strings.xml`, list-screen content): disable auto
 
 This is what makes development-mode CI safe as the steady state: PRs only run fast checks, slow checks run post-merge on `main`, and any post-merge regression surfaces as a tracked issue instead of silent red.
 
-**Scope caveat — only watches `Battery Butler CI`**: the workflow's trigger gates on `workflow_run.name == "Battery Butler CI"` AND `event == 'push'` AND `head_branch == 'main'`. Failures in the *automation pipeline* (`Auto-Generate Content`, `CI for Auto PRs`) are NOT covered — they never file a `ci-failure` issue no matter how often they fail, and so they never gate the merge queue. They only surface via a manual `/repo-check`. (Observed 2026-06-08: weekly `CI for Auto PRs` → `trigger-ci` "Bad credentials" failures from the expired BOT_PAT, bb-16u1, were invisible to this net.)
+**Two modes, two labels.** `ci-post-merge-issue.yml` watches `Battery Butler CI`, `Auto-Generate Content` and `CI for Auto PRs`, and handles them differently:
+
+| | Battery Butler CI | Automation pipeline |
+| --- | --- | --- |
+| Job | `file-or-resolve` | `automation-pipeline` |
+| Label | `ci-failure` + `blocking` | `automation-failure`, **never** `blocking` |
+| Title | `CI failure on main: <job>` | `Automation failure on main: <job>` |
+| Gates merges | Yes, via `validation_no_blocking_issues` | No |
+| Sentinel check before closing | Yes | Skipped (those are Battery Butler CI job names) |
+
+Both share `scripts/file-ci-failure-issue.sh`; the automation job passes `ISSUE_LABEL`, `BLOCKING=false`, `TITLE_PREFIX` and `CHECK_SENTINELS=false`. The defaults reproduce the original blocking behaviour exactly, so the primary safety net is unchanged.
+
+**The two modes must never share a label.** The success path closes *every* open issue carrying `$ISSUE_LABEL`, so if the automation pipeline filed under `ci-failure`, one green auto-generate run would close real CI failures and silently disarm the net.
+
+**Why automation failures are not blocking**: these workflows produce generated content and housekeeping PRs -- nothing they do ships. Freezing every merge in the repo over a screenshot job or a branch deletion would be worse than the silence it replaces. They get an issue for visibility and nothing more.
+
+*Previously*: the trigger gated on `workflow_run.name == "Battery Butler CI"` only, so automation-pipeline failures filed nothing no matter how often they happened and surfaced only via a manual `/repo-check`. (Observed 2026-06-08: recurring `CI for Auto PRs` → `trigger-ci` "Bad credentials" failures from the expired BOT_PAT, bb-16u1, were invisible to this net.)
 
 **Verified working (2026-06-08)**: open / comment-dedup / close-on-green have all fired correctly in production history. Concrete examples — open: #1216–1218; comment-dedup: #1180 (3× "Job failed again." on the same `ci` issue instead of duplicates); auto-close-on-green: #1199/#1198/#1192/#1184/#1168/#1164/#1140/#1139. Note the most *recent* closures (the 05-16 batch) were closed *manually* by the developer who fixed `main`, ahead of the auto-close — that's expected, not a regression.
 
