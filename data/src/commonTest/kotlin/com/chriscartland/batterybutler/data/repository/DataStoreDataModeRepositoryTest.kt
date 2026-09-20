@@ -81,4 +81,11 @@ private class FakePreferencesDataSource(
     override suspend fun setDataModeValue(value: String) = Unit
 
     override suspend fun setDisplayDensityValue(value: String) = Unit
+
+    override fun stringValue(key: String): Flow<String?> = flowOf(null)
+
+    override suspend fun setStringValue(
+        key: String,
+        value: String,
+    ) = Unit
 }
