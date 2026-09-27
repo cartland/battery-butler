@@ -18,7 +18,7 @@ Update reference snapshots for iOS SwiftUI regression testing. This runs the sna
 2. **Run the Tests to Record:**
    Execute the `xcodebuild test` command. This will iterate over the test suite and automatically write new `.png` files for any snapshot assertion that lacks a reference image on disk.
    ```bash
-   cd ios-app-swift-ui && xcodebuild test -project iosAppSwiftUI.xcodeproj -scheme iosAppSwiftUITests -destination "platform=iOS Simulator,name=iPhone 16 Pro,OS=18.5"
+   ./scripts/record-ios-snapshots.sh
    ```
 
 3. **Verify the Changes:**
