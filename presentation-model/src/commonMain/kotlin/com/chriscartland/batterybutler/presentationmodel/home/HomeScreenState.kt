@@ -12,7 +12,7 @@ data class HomeScreenState(
     val isSortAscending: Boolean = false,
     val isGroupAscending: Boolean = true,
     val sortOption: SortOption = SortOption.BATTERY_AGE,
-    val groupOption: GroupOption = GroupOption.NONE,
+    val groupOption: GroupOption = GroupOption.TYPE,
     val exportData: String? = null,
     val syncStatus: SyncStatus = SyncStatus.Idle,
     val error: String? = null,
@@ -31,6 +31,15 @@ enum class SortOption {
     LOCATION,
     BATTERY_AGE,
     TYPE,
+
+    /**
+     * Most recently touched first: the newer of the device's own `lastUpdated` and the moment it
+     * was marked as needing a battery.
+     *
+     * Distinct from [BATTERY_AGE], which reads `batteryLastReplaced` -- a user-chosen date that is
+     * routinely backdated. This one ranks by when the *record* was acted on.
+     */
+    RECENT,
 }
 
 enum class GroupOption {

@@ -9,6 +9,7 @@ import me.tatarka.inject.annotations.Inject
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 /**
  * Local-only, so there is no [SyncManager] here and nothing is ever pushed -- the mark stays on
@@ -19,7 +20,7 @@ import kotlin.time.ExperimentalTime
 class DefaultNeedsBatteryRepository(
     private val store: NeedsBatteryStore,
 ) : NeedsBatteryRepository {
-    override fun getFlaggedDeviceIds(): Flow<Set<String>> = store.observeFlaggedDeviceIds()
+    override fun getNeedsBatteryMarks(): Flow<Map<String, Instant>> = store.observeFlags()
 
     override suspend fun setNeedsBattery(
         deviceId: String,

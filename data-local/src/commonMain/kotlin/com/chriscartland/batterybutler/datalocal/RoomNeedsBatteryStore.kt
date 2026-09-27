@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import me.tatarka.inject.annotations.Inject
+import kotlin.time.Instant
 
 @Inject
 class RoomNeedsBatteryStore(
@@ -28,9 +29,11 @@ class RoomNeedsBatteryStore(
             databaseProvider.rebindSignal.onStart { emit(0L) },
         ) { db, _ -> db }.flatMapLatest(query)
 
-    override fun observeFlaggedDeviceIds(): Flow<Set<String>> =
+    override fun observeFlags(): Flow<Map<String, Instant>> =
         bound { db ->
-            db.needsBatteryFlagDao().observeAll().map { flags -> flags.mapTo(mutableSetOf()) { it.deviceId } }
+            db.needsBatteryFlagDao().observeAll().map { flags ->
+                flags.associate { it.deviceId to Instant.fromEpochMilliseconds(it.flaggedAt) }
+            }
         }
 
     override suspend fun flag(

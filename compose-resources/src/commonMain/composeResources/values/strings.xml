@@ -4,6 +4,7 @@
     <string name="sort_location">Location</string>
     <string name="sort_battery_age">Battery Age</string>
     <string name="sort_type">Type</string>
+    <string name="sort_recent">Recent</string>
 
     <!-- GroupOption -->
     <string name="group_none">None</string>

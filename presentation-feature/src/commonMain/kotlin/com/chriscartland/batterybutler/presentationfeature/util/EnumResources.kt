@@ -9,6 +9,7 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.sort
 import com.chriscartland.batterybutler.composeresources.generated.resources.sort_battery_type
 import com.chriscartland.batterybutler.composeresources.generated.resources.sort_location
 import com.chriscartland.batterybutler.composeresources.generated.resources.sort_name
+import com.chriscartland.batterybutler.composeresources.generated.resources.sort_recent
 import com.chriscartland.batterybutler.composeresources.generated.resources.sort_type
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeGroupOption
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeSortOption
@@ -22,6 +23,7 @@ fun SortOption.labelRes(): StringResource =
         SortOption.LOCATION -> Res.string.sort_location
         SortOption.BATTERY_AGE -> Res.string.sort_battery_age
         SortOption.TYPE -> Res.string.sort_type
+        SortOption.RECENT -> Res.string.sort_recent
     }
 
 fun GroupOption.labelRes(): StringResource =

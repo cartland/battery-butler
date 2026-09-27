@@ -5,11 +5,13 @@ import com.chriscartland.batterybutler.domain.model.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
+import kotlin.time.Instant
 
 class DefaultNeedsBatteryRepositoryTest {
     private class RecordingStore(
@@ -20,7 +22,7 @@ class DefaultNeedsBatteryRepositoryTest {
         var clearAllCount = 0
         var throwOnWrite: Boolean = false
 
-        override fun observeFlaggedDeviceIds(): Flow<Set<String>> = flagged
+        override fun observeFlags(): Flow<Map<String, Instant>> = flagged.map { ids -> ids.associateWith { Instant.fromEpochMilliseconds(lastFlaggedAt ?: 0L) } }
 
         override suspend fun flag(
             deviceId: String,
@@ -80,7 +82,7 @@ class DefaultNeedsBatteryRepositoryTest {
         runTest {
             val store = RecordingStore(initial = setOf("d1", "d2"))
 
-            assertEquals(setOf("d1", "d2"), DefaultNeedsBatteryRepository(store).getFlaggedDeviceIds().first())
+            assertEquals(setOf("d1", "d2"), DefaultNeedsBatteryRepository(store).getNeedsBatteryMarks().first().keys)
         }
 
     @Test
