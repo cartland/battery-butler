@@ -3,6 +3,7 @@ package com.chriscartland.batterybutler.domain.repository
 import com.chriscartland.batterybutler.domain.model.DataError
 import com.chriscartland.batterybutler.domain.model.Result
 import kotlinx.coroutines.flow.Flow
+import kotlin.time.Instant
 
 /**
  * Tracks which devices the user has manually marked as needing a new battery.
@@ -15,8 +16,15 @@ import kotlinx.coroutines.flow.Flow
  * wire format and does not travel between a user's devices.
  */
 interface NeedsBatteryRepository {
-    /** The ids of every device currently marked. Emits again whenever a mark is added or removed. */
-    fun getFlaggedDeviceIds(): Flow<Set<String>>
+    /**
+     * Every current mark, keyed by device id, valued by when the mark was made. Emits again
+     * whenever a mark is added or removed.
+     *
+     * The timestamp is part of the contract because being marked counts as activity for the
+     * device list's "Recent" sort. Callers that only need membership use
+     * `GetNeedsBatteryDeviceIdsUseCase`.
+     */
+    fun getNeedsBatteryMarks(): Flow<Map<String, Instant>>
 
     /** Adds or removes [deviceId]'s mark. Setting a mark that already exists just refreshes its timestamp. */
     suspend fun setNeedsBattery(

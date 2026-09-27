@@ -473,6 +473,7 @@ fun HomeScreenPreview() {
         val device = Device("dev1", "Kitchen Smoke", "type1", batteryReplacedInstant, nowInstant, "Kitchen")
         val state = HomeScreenState(
             groupedDevices = mapOf("All" to listOf(device)),
+            groupOption = GroupOption.NONE,
             deviceTypes = mapOf("type1" to type),
         )
         HomeScreenContent(
@@ -561,6 +562,7 @@ fun HomeScreenListPreview() {
         HomeScreenList(
             state = HomeScreenState(
                 groupedDevices = mapOf("All" to listOf(device)),
+                groupOption = GroupOption.NONE,
                 deviceTypes = mapOf("type1" to type),
             ),
             onGroupOptionToggle = {},
@@ -599,6 +601,7 @@ fun HomeScreenCompactPreview() {
         HomeScreenContent(
             state = HomeScreenState(
                 groupedDevices = mapOf("All Devices" to devices),
+                groupOption = GroupOption.NONE,
                 deviceTypes = mapOf("type1" to smokeType, "type2" to coType),
                 densityOption = DensityOption.COMPACT,
             ),
@@ -633,6 +636,7 @@ fun HomeScreenExpandedPreview() {
         HomeScreenContent(
             state = HomeScreenState(
                 groupedDevices = mapOf("All Devices" to devices),
+                groupOption = GroupOption.NONE,
                 deviceTypes = mapOf("type1" to smokeType, "type2" to coType),
                 densityOption = DensityOption.EXPANDED,
             ),

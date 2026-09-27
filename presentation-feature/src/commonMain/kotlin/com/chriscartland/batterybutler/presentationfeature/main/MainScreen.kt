@@ -557,6 +557,7 @@ fun DevicesScreenPreview() {
             val device = Device("dev1", "Kitchen Smoke", "type1", now, now, "Kitchen")
             val state = HomeScreenState(
                 groupedDevices = mapOf("All" to listOf(device)),
+                groupOption = GroupOption.NONE,
                 deviceTypes = mapOf("type1" to type),
             )
             DevicesScreen(
@@ -658,6 +659,7 @@ fun AiBarCollapsedDevicesPreview() {
             val device = Device("dev1", "Kitchen Smoke", "type1", now, now, "Kitchen")
             val state = HomeScreenState(
                 groupedDevices = mapOf("All" to listOf(device)),
+                groupOption = GroupOption.NONE,
                 deviceTypes = mapOf("type1" to type),
             )
             DevicesScreen(
@@ -759,6 +761,7 @@ fun AiOverlayExpandedPreview() {
             val device = Device("dev1", "Kitchen Smoke", "type1", now, now, "Kitchen")
             val state = HomeScreenState(
                 groupedDevices = mapOf("All" to listOf(device)),
+                groupOption = GroupOption.NONE,
                 deviceTypes = mapOf("type1" to type),
             )
             DevicesScreen(
@@ -802,6 +805,7 @@ fun AiOverlayFullHeightPreview() {
             val device = Device("dev1", "Kitchen Smoke", "type1", now, now, "Kitchen")
             val state = HomeScreenState(
                 groupedDevices = mapOf("All" to listOf(device)),
+                groupOption = GroupOption.NONE,
                 deviceTypes = mapOf("type1" to type),
             )
             DevicesScreen(

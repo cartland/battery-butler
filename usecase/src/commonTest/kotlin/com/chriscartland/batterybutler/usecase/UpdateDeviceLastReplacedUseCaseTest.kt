@@ -43,6 +43,65 @@ class UpdateDeviceLastReplacedUseCaseTest {
             assertEquals(newDate, repo.devices.first().batteryLastReplaced)
         }
 
+    /**
+     * Logging a battery replacement is a metadata edit, so it must stamp `lastUpdated` -- the
+     * device list's RECENT sort reads that field and would otherwise never see the single most
+     * common change a user makes.
+     */
+    @Test
+    fun `invoke stamps lastUpdated when it writes`() =
+        runTest {
+            val repo = TestRepository()
+            val stale = Instant.parse("2020-01-01T00:00:00Z")
+            val device = TestDevices.createDevice(
+                id = "d1",
+                batteryLastReplaced = Instant.parse("2023-01-01T00:00:00Z"),
+                lastUpdated = stale,
+            )
+            repo.devices.add(device)
+            repo.events.add(BatteryEvent(id = "e1", deviceId = "d1", date = Instant.parse("2024-06-15T10:30:00Z")))
+
+            UpdateDeviceLastReplacedUseCase(repo)("d1").getOrThrow()
+
+            assertTrue(repo.devices.first().lastUpdated > stale, "lastUpdated should advance when the device is written")
+        }
+
+    @Test
+    fun `ifNewer stamps lastUpdated when it writes`() =
+        runTest {
+            val repo = TestRepository()
+            val stale = Instant.parse("2020-01-01T00:00:00Z")
+            repo.devices.add(
+                TestDevices.createDevice(
+                    id = "d1",
+                    batteryLastReplaced = Instant.parse("2023-01-01T00:00:00Z"),
+                    lastUpdated = stale,
+                ),
+            )
+
+            UpdateDeviceLastReplacedUseCase(repo).ifNewer("d1", Instant.parse("2024-06-15T10:30:00Z")).getOrThrow()
+
+            assertTrue(repo.devices.first().lastUpdated > stale, "lastUpdated should advance when the device is written")
+        }
+
+    /** No write, no stamp: an unchanged device must not look freshly touched. */
+    @Test
+    fun `lastUpdated is untouched when no write happens`() =
+        runTest {
+            val repo = TestRepository()
+            val stale = Instant.parse("2020-01-01T00:00:00Z")
+            val sameDate = Instant.parse("2023-01-01T00:00:00Z")
+            repo.devices.add(
+                TestDevices.createDevice(id = "d1", batteryLastReplaced = sameDate, lastUpdated = stale),
+            )
+            repo.events.add(BatteryEvent(id = "e1", deviceId = "d1", date = sameDate))
+
+            val changed = UpdateDeviceLastReplacedUseCase(repo)("d1").getOrThrow()
+
+            assertFalse(changed)
+            assertEquals(stale, repo.devices.first().lastUpdated)
+        }
+
     @Test
     fun `invoke corrects device timestamp when latest event is older than current`() =
         runTest {

@@ -1,6 +1,7 @@
 package com.chriscartland.batterybutler.datalocal
 
 import kotlinx.coroutines.flow.Flow
+import kotlin.time.Instant
 
 /**
  * Local-only record of which devices the user has marked as needing a new battery.
@@ -11,8 +12,14 @@ import kotlinx.coroutines.flow.Flow
  * separate table rather than a column on `devices`.
  */
 interface NeedsBatteryStore {
-    /** The ids of every device currently marked as needing a battery. Emits again on every change. */
-    fun observeFlaggedDeviceIds(): Flow<Set<String>>
+    /**
+     * Every current mark, keyed by device id, valued by when the mark was made.
+     *
+     * Carries the timestamp rather than just the ids because the device list's "Recent" sort
+     * ranks a device by its most recent activity, and being marked is one such activity.
+     * Emits again on every change.
+     */
+    fun observeFlags(): Flow<Map<String, Instant>>
 
     /** Marks [deviceId] as needing a battery, recording [flaggedAt] as the moment it was marked. */
     suspend fun flag(

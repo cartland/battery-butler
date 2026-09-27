@@ -15,7 +15,7 @@ import com.chriscartland.batterybutler.usecase.ExportDataUseCase
 import com.chriscartland.batterybutler.usecase.GetCachedDeviceImageUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.GetDevicesUseCase
-import com.chriscartland.batterybutler.usecase.GetNeedsBatteryDeviceIdsUseCase
+import com.chriscartland.batterybutler.usecase.GetNeedsBatteryMarksUseCase
 import com.chriscartland.batterybutler.usecase.GetSyncStatusUseCase
 import com.chriscartland.batterybutler.usecase.ResyncUseCase
 import kotlinx.coroutines.CoroutineDispatcher
@@ -74,7 +74,7 @@ class HomeViewModelNeedsBatteryTest {
             dismissSyncStatusUseCase = DismissSyncStatusUseCase(repo),
             resyncUseCase = ResyncUseCase(repo),
             getCachedDeviceImageUseCase = GetCachedDeviceImageUseCase(FakeDeviceImageRepository()),
-            getNeedsBatteryDeviceIdsUseCase = GetNeedsBatteryDeviceIdsUseCase(needsBatteryRepository),
+            getNeedsBatteryMarksUseCase = GetNeedsBatteryMarksUseCase(needsBatteryRepository),
             displayDensityRepository = FakeDisplayDensityRepository(),
             listArrangementRepository = FakeListArrangementRepository(),
         )

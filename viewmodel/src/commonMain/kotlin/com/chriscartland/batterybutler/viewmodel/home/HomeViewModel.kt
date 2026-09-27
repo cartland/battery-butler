@@ -19,7 +19,7 @@ import com.chriscartland.batterybutler.usecase.ExportDataUseCase
 import com.chriscartland.batterybutler.usecase.GetCachedDeviceImageUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.GetDevicesUseCase
-import com.chriscartland.batterybutler.usecase.GetNeedsBatteryDeviceIdsUseCase
+import com.chriscartland.batterybutler.usecase.GetNeedsBatteryMarksUseCase
 import com.chriscartland.batterybutler.usecase.GetSyncStatusUseCase
 import com.chriscartland.batterybutler.usecase.ResyncUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
@@ -44,6 +44,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
+import kotlin.time.Instant
 import com.rickclephas.kmp.observableviewmodel.MutableStateFlow as ObservableMutableStateFlow
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -56,7 +57,7 @@ class HomeViewModel(
     private val dismissSyncStatusUseCase: DismissSyncStatusUseCase,
     private val resyncUseCase: ResyncUseCase,
     private val getCachedDeviceImageUseCase: GetCachedDeviceImageUseCase,
-    private val getNeedsBatteryDeviceIdsUseCase: GetNeedsBatteryDeviceIdsUseCase,
+    private val getNeedsBatteryMarksUseCase: GetNeedsBatteryMarksUseCase,
     private val displayDensityRepository: DisplayDensityRepository,
     private val listArrangementRepository: ListArrangementRepository,
 ) : ViewModel() {
@@ -74,8 +75,8 @@ class HomeViewModel(
     /** Last images map emitted, used to seed re-keyed image observations — see the uiState liveness guard. */
     private var lastKnownImages: Map<String, DeviceImageBytes> = emptyMap()
 
-    /** Same liveness guard as [lastKnownImages]: the flag set is a Room flow, so seed it rather than withhold the list. */
-    private var lastKnownNeedsBattery: Set<String> = emptySet()
+    /** Same liveness guard as [lastKnownImages]: the marks are a Room flow, so seed rather than withhold the list. */
+    private var lastKnownNeedsBattery: Map<String, Instant> = emptyMap()
 
     companion object {
         private const val SYNC_SUCCESS_DISPLAY_DURATION_MS = 2000L
@@ -141,19 +142,26 @@ class HomeViewModel(
                     observeImagesByEtag(inputs.devices)
                         .onStart { emit(lastKnownImages) }
                         .onEach { lastKnownImages = it },
-                    getNeedsBatteryDeviceIdsUseCase()
+                    getNeedsBatteryMarksUseCase()
                         .onStart { emit(lastKnownNeedsBattery) }
                         .onEach { lastKnownNeedsBattery = it },
                 ) { images, needsBattery -> Triple(inputs, images, needsBattery) }
-            }.map { (inputs, images, needsBatteryIds) ->
+            }.map { (inputs, images, needsBatteryMarks) ->
                 val (config, devices, types, syncStatus, exportData) = inputs
                 val typeMap = types.associateBy { it.id }
 
                 val sortComparator = when (config.sort) {
                     SortOption.NAME -> compareBy<Device> { it.name }
+
                     SortOption.LOCATION -> compareBy<Device> { it.location ?: "" }.thenBy { it.name }
+
                     SortOption.BATTERY_AGE -> compareBy { it.batteryLastReplaced }
+
                     SortOption.TYPE -> compareBy { typeMap[it.typeId]?.name ?: "" }
+
+                    // Ascending here means oldest-activity-first; the default direction is
+                    // descending, so picking "Recent" shows the most recently touched first.
+                    SortOption.RECENT -> compareBy { device -> recencyOf(device, needsBatteryMarks) }
                 }
 
                 val groupKeySelector = when (config.group) {
@@ -172,7 +180,7 @@ class HomeViewModel(
                     // Passed into sortAndGroup rather than applied to the grouped result, so a
                     // marked device pulls its whole group to the front as well as leading it --
                     // group priority comes from each group's first item.
-                    priorityFirst = { it.id in needsBatteryIds },
+                    priorityFirst = { it.id in needsBatteryMarks },
                 )
 
                 HomeScreenState(
@@ -186,7 +194,7 @@ class HomeViewModel(
                     syncStatus = syncStatus,
                     deviceImagesByEtag = images,
                     densityOption = config.density,
-                    needsBatteryDeviceIds = needsBatteryIds,
+                    needsBatteryDeviceIds = needsBatteryMarks.keys,
                 )
             }
         },
@@ -271,6 +279,19 @@ class HomeViewModel(
     }
 }
 
+/**
+ * When [device] was last acted on: the newer of its own metadata edit and the moment it was
+ * marked as needing a battery.
+ *
+ * `batteryLastReplaced` deliberately does not feature. It is a user-chosen date that is routinely
+ * backdated, so it says when the battery was changed, not when the record was touched --
+ * `SortOption.BATTERY_AGE` is the sort that reads it.
+ */
+private fun recencyOf(
+    device: Device,
+    marks: Map<String, Instant>,
+): Instant = maxOf(device.lastUpdated, marks[device.id] ?: Instant.DISTANT_PAST)
+
 private data class DisplayConfig(
     val sort: SortOption,
     val group: GroupOption,
@@ -288,8 +309,12 @@ private data class DeviceListInputs(
 )
 
 /**
- * The arrangement used until the user picks something — the behaviour before these choices were
- * persisted, so an upgrading install sees no change until it opts in.
+ * The arrangement used until the user picks something.
+ *
+ * Grouping defaults to [GroupOption.TYPE] (see [toGroupOption]) rather than `NONE`: a flat list
+ * of every device is only readable while you own a handful. This one default does change what an
+ * upgrading install sees on first launch; the directions below do not, and an explicit
+ * "Group: None" is stored as a real token so choosing it still sticks.
  */
 private const val DEFAULT_SORT_ASCENDING = false
 private const val DEFAULT_GROUP_ASCENDING = true
@@ -302,6 +327,7 @@ private const val SORT_NAME = "name"
 private const val SORT_LOCATION = "location"
 private const val SORT_BATTERY_AGE = "battery_age"
 private const val SORT_TYPE = "type"
+private const val SORT_RECENT = "recent"
 
 private const val GROUP_NONE = "none"
 private const val GROUP_TYPE = "type"
@@ -313,6 +339,7 @@ private fun SortOption.storageKey(): String =
         SortOption.LOCATION -> SORT_LOCATION
         SortOption.BATTERY_AGE -> SORT_BATTERY_AGE
         SortOption.TYPE -> SORT_TYPE
+        SortOption.RECENT -> SORT_RECENT
     }
 
 private fun String?.toSortOption(): SortOption =
@@ -320,6 +347,7 @@ private fun String?.toSortOption(): SortOption =
         SORT_NAME -> SortOption.NAME
         SORT_LOCATION -> SortOption.LOCATION
         SORT_TYPE -> SortOption.TYPE
+        SORT_RECENT -> SortOption.RECENT
         else -> SortOption.BATTERY_AGE
     }
 
@@ -332,7 +360,10 @@ private fun GroupOption.storageKey(): String =
 
 private fun String?.toGroupOption(): GroupOption =
     when (this) {
-        GROUP_TYPE -> GroupOption.TYPE
+        GROUP_NONE -> GroupOption.NONE
+
         GROUP_LOCATION -> GroupOption.LOCATION
-        else -> GroupOption.NONE
+
+        // Covers both "never chosen" (null) and an unreadable token, which degrade to the default.
+        else -> GroupOption.TYPE
     }

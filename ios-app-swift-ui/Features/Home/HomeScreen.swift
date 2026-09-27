@@ -213,7 +213,7 @@ struct HomeFilterRow: View {
     }
 
     private var sortOptions: [SortOption] {
-        [.name, .location, .batteryAge, .type]
+        [.name, .location, .batteryAge, .type, .recent]
     }
 
     private var groupOptions: [GroupOption] {
@@ -226,6 +226,7 @@ struct HomeFilterRow: View {
         case .location: return String(localized: "sort.location")
         case .batteryAge: return String(localized: "sort.battery_age")
         case .type: return String(localized: "sort.type")
+        case .recent: return String(localized: "sort.recent")
         }
     }
 

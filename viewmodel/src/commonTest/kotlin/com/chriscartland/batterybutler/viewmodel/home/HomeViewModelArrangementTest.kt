@@ -11,12 +11,13 @@ import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
 import com.chriscartland.batterybutler.testcommon.FakeDisplayDensityRepository
 import com.chriscartland.batterybutler.testcommon.FakeListArrangementRepository
 import com.chriscartland.batterybutler.testcommon.FakeNeedsBatteryRepository
+import com.chriscartland.batterybutler.testcommon.TestDevices
 import com.chriscartland.batterybutler.usecase.DismissSyncStatusUseCase
 import com.chriscartland.batterybutler.usecase.ExportDataUseCase
 import com.chriscartland.batterybutler.usecase.GetCachedDeviceImageUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.GetDevicesUseCase
-import com.chriscartland.batterybutler.usecase.GetNeedsBatteryDeviceIdsUseCase
+import com.chriscartland.batterybutler.usecase.GetNeedsBatteryMarksUseCase
 import com.chriscartland.batterybutler.usecase.GetSyncStatusUseCase
 import com.chriscartland.batterybutler.usecase.ResyncUseCase
 import kotlinx.coroutines.CoroutineDispatcher
@@ -74,22 +75,56 @@ class HomeViewModelArrangementTest {
             dismissSyncStatusUseCase = DismissSyncStatusUseCase(repo),
             resyncUseCase = ResyncUseCase(repo),
             getCachedDeviceImageUseCase = GetCachedDeviceImageUseCase(FakeDeviceImageRepository()),
-            getNeedsBatteryDeviceIdsUseCase = GetNeedsBatteryDeviceIdsUseCase(FakeNeedsBatteryRepository()),
+            getNeedsBatteryMarksUseCase = GetNeedsBatteryMarksUseCase(FakeNeedsBatteryRepository()),
             displayDensityRepository = FakeDisplayDensityRepository(),
             listArrangementRepository = arrangementRepository,
         )
 
+    /**
+     * A device is present so the assertion lands on a hydrated emission.
+     *
+     * `uiState.first()` would return `retryableStateIn`'s initial placeholder -- a bare
+     * `HomeScreenState()` carrying the data class defaults rather than anything the stored
+     * arrangement produced -- and would pass no matter what the resolution logic did.
+     */
     @Test
     fun `defaults match the behaviour before these choices were persisted`() =
         runTest {
-            val viewModel = createViewModel(FakeDeviceRepository(), FakeListArrangementRepository())
+            val repo = FakeDeviceRepository()
+            repo.setDevices(listOf(TestDevices.createDevice(id = "1", name = "One")))
+            val viewModel = createViewModel(repo, FakeListArrangementRepository())
 
-            val state = viewModel.uiState.first()
+            val state = viewModel.uiState.first {
+                it.groupedDevices.values
+                    .flatten()
+                    .isNotEmpty()
+            }
 
             assertEquals(SortOption.BATTERY_AGE, state.sortOption)
-            assertEquals(GroupOption.NONE, state.groupOption)
+            assertEquals(GroupOption.TYPE, state.groupOption)
             assertFalse(state.isSortAscending)
             assertTrue(state.isGroupAscending)
+        }
+
+    /** An explicit "None" is a stored token, so choosing it still overrides the TYPE default. */
+    @Test
+    fun `an explicitly stored none grouping is honoured`() =
+        runTest {
+            val repo = FakeDeviceRepository()
+            repo.setDevices(listOf(TestDevices.createDevice(id = "1", name = "One")))
+            val arrangements = FakeListArrangementRepository(
+                initial = mapOf(ListScreen.DEVICES to ListArrangement(groupKey = "none")),
+            )
+
+            val state = createViewModel(repo, arrangements)
+                .uiState
+                .first {
+                    it.groupedDevices.values
+                        .flatten()
+                        .isNotEmpty()
+                }
+
+            assertEquals(GroupOption.NONE, state.groupOption)
         }
 
     @Test
@@ -184,7 +219,16 @@ class HomeViewModelArrangementTest {
                 initial = mapOf(ListScreen.DEVICES to ListArrangement(sortKey = "not-a-sort")),
             )
 
-            val state = createViewModel(FakeDeviceRepository(), arrangements).uiState.first()
+            val repo = FakeDeviceRepository()
+            repo.setDevices(listOf(TestDevices.createDevice(id = "1", name = "One")))
+
+            val state = createViewModel(repo, arrangements)
+                .uiState
+                .first {
+                    it.groupedDevices.values
+                        .flatten()
+                        .isNotEmpty()
+                }
 
             assertEquals(SortOption.BATTERY_AGE, state.sortOption)
         }
@@ -199,9 +243,18 @@ class HomeViewModelArrangementTest {
                 ),
             )
 
-            val state = createViewModel(FakeDeviceRepository(), arrangements).uiState.first()
+            val repo = FakeDeviceRepository()
+            repo.setDevices(listOf(TestDevices.createDevice(id = "1", name = "One")))
+
+            val state = createViewModel(repo, arrangements)
+                .uiState
+                .first {
+                    it.groupedDevices.values
+                        .flatten()
+                        .isNotEmpty()
+                }
 
             assertEquals(SortOption.BATTERY_AGE, state.sortOption)
-            assertEquals(GroupOption.NONE, state.groupOption)
+            assertEquals(GroupOption.TYPE, state.groupOption)
         }
 }
