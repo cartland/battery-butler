@@ -216,12 +216,14 @@ It went unnoticed for weeks because the automation pipeline filed no issues unti
 
 Both scripts now source `scripts/lib/resolve-ios-simulator.sh` and call `resolve_ios_simulator`, which sets `IOS_DEVICE_NAME` and `IOS_RUNTIME_VERSION`.
 
-- **Ordered preference, not "newest available"**: `iPhone 17`, then `16`, then `15`. Snapshot dimensions depend on the device, so drifting automatically onto whatever is newest would silently rewrite every reference PNG. The older entries keep local machines on older Xcode working.
-- **Exact name match**: `iPhone 17` must not select `iPhone 17 Pro`, which renders at different dimensions.
+- **Ordered preference, not "newest available"**: `iPhone 17`, then `16`, then `15`, so the chosen device only moves when someone edits the list. The older entries keep local machines on older Xcode working.
+- **Exact name match**: `iPhone 17` must not select `iPhone 17 Pro`.
 - **Newest runtime for the chosen device**: `simctl` lists runtimes ascending, so the last match wins.
 - **Override**: `IOS_SIMULATOR_DEVICE="iPhone Air" ./scripts/test-ios.sh`.
 
-Expect the first successful `ios-snapshots` run after this fix to regenerate the iOS references at iPhone 17 dimensions -- a large but one-time diff, landing as a reviewable `auto/update-ios-screenshots` PR.
+**The simulator model does not set snapshot image size.** Every `assertSnapshot` in `iosAppSwiftUITests` passes `layout: .device(config: .iPhone13Pro)`, so the rendered dimensions come from the test and are independent of the device running it. PR #1486 predicted the first green run would regenerate every reference at "iPhone 17 dimensions"; it did not, and could not. The first green `ios-snapshots` run (2026-09-27, after ~7 weeks of failures) produced **no** `auto/update-ios-screenshots` PR, because nothing changed.
+
+What the runtime *can* still affect is rendering -- fonts and system chrome differ across iOS versions -- which is why the device is chosen from an ordered list rather than drifting onto whatever is newest.
 
 ## iOS CI — Xcode Version Pinning
 

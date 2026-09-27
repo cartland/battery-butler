@@ -18,9 +18,16 @@
 #   because the automation pipeline filed no issues until PR #1485.
 #
 #   A single pinned model breaks every time Apple ships a new one. The list is
-#   still ordered and explicit rather than "newest available", because snapshot
-#   image dimensions depend on the device -- drifting automatically onto a new
-#   model would silently rewrite every reference PNG.
+#   still ordered and explicit rather than "newest available", so the chosen
+#   device only moves when someone edits this list.
+#
+#   It does NOT control snapshot image size: every assertSnapshot here passes
+#   `layout: .device(config: .iPhone13Pro)`, so the rendered dimensions come
+#   from the test, not from the simulator that runs it. What can still differ
+#   is the iOS runtime's rendering (fonts, system chrome), which is reason
+#   enough not to drift automatically -- but switching iPhone 16 -> 17
+#   produced no reference change at all, verified on the first green
+#   ios-snapshots run (2026-09-27).
 #
 # OVERRIDE:
 #   IOS_SIMULATOR_DEVICE="iPhone Air" ./scripts/test-ios.sh
@@ -49,8 +56,7 @@ resolve_ios_simulator() {
                 current="${BASH_REMATCH[1]}"
             elif [[ "$line" == *"$name"* ]] && [[ "$line" == *"Shutdown"* || "$line" == *"Booted"* ]]; then
                 device=$(echo "$line" | sed -E 's/^[[:space:]]+//' | sed -E 's/ \([A-F0-9-]+\).*//')
-                # Exact match only: "iPhone 17" must not select "iPhone 17 Pro",
-                # which renders at different dimensions.
+                # Exact match only: "iPhone 17" must not select "iPhone 17 Pro".
                 if [ "$device" = "$name" ]; then
                     version="$current"
                 fi
