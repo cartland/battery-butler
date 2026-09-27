@@ -113,6 +113,33 @@ updates:
       # config.validation repo-wide (which loses real typo detection everywhere).
       - dependency-name: "io.nlopez.compose.rules:detekt"
         versions: [">= 0.6.0"]
+      # kmp-observableviewmodel >= 1.0.2 blocked: its Kotlin/Native klibs are built
+      # with whatever Kotlin the library uses, and our Kotlin is capped at 2.3.0 by
+      # the SKIE pin above. A klib built by a newer Kotlin/Native cannot be read by
+      # the 2.3.0 compiler, which reports it as a missing file rather than a version
+      # mismatch -- ":viewmodel:compileKotlinIosSimulatorArm64" fails with
+      # "KLIB resolver: Could not find ...-iosSimulatorArm64Main-<v>.klib", naming a
+      # path inside the Gradle cache. That message reads like a broken download; it
+      # is not. The artifact is published and complete (verified on Maven Central).
+      # Confirmed by the kotlin-stdlib each release depends on:
+      #   1.0.1 -> 2.3.0   (current, works)
+      #   1.0.2 -> 2.3.10  (first version over the cap)
+      #   1.0.6 -> 2.4.10  (PR #1460, failed 2026-08-01 and again on rebase)
+      #   1.1.0 -> 2.4.20  (PR #1491, failed 2026-09-27)
+      # Three failures across two PRs and three versions, each reproduced on a fresh
+      # rebase against current main, so this is not a stale cache.
+      # REMOVE together with the Kotlin/SKIE upgrade -- this cannot move independently.
+      - dependency-name: "com.rickclephas.kmp:*"
+        versions: [">= 1.0.2"]
+      # Wire >= 7 blocked: it pulls com.squareup.okhttp3:okhttp-android:5.5.0, whose
+      # AAR metadata requires compileSdk >= 37. We are on 36
+      # (gradle/libs.versions.toml: android-compileSdk), so :compose-app:
+      # checkDebugAarMetadata fails and takes validation_test, validation_lint,
+      # validation_instrumented and build_android with it. PR #1487 (wire 6.4.5 ->
+      # 7.0.3) could not build. Nothing is wrong with Wire itself.
+      # REMOVE when compileSdk moves to 37+, which is its own piece of work.
+      - dependency-name: "com.squareup.wire:*"
+        versions: [">= 7.0.0"]
       # ───────────────────────────────────────────────────────────────────────
     labels:
       - "dependencies"
