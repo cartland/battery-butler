@@ -9,6 +9,41 @@ Project task tracking for Battery Butler.
 
 ## P2
 
+### bb-compilesdk-37 — compileSdk 36 blocks both Ktor >= 3.6 and Wire >= 7
+
+**Found 2026-09-29** while draining the dependabot queue. Two unrelated bumps
+fail identically:
+
+```
+> An issue was found when checking AAR metadata:
+  1. Dependency 'com.squareup.okhttp3:okhttp-android:5.5.0' requires
+     libraries and applications that compileSdk of at least 37.
+```
+
+`:compose-app:checkDebugAarMetadata` fails and takes `validation_test`,
+`validation_lint`, `validation_instrumented` and `build_android` with it.
+
+**Root cause**: `gradle/libs.versions.toml` sets `android-compileSdk = "36"`.
+Both libraries reached okhttp 5.5.0, which requires 37:
+
+| Bump | PR | Pulls |
+| --- | --- | --- |
+| Wire 6.4.5 -> 7.0.3 | #1487 | okhttp-android 5.5.0 |
+| Ktor 3.5.1 -> 3.6.0 | #1498 | okhttp-android 5.5.0 (via `ktor-client-okhttp`; 3.5.1 used 5.3.2) |
+
+Both are pinned in `.github/dependabot.yml` with version-scoped ignores, so
+unrelated updates in those groups still flow (verified: #1496 still delivered
+wire 6.4.5 -> 6.4.7 with the `>= 7.0.0` pin in place).
+
+**Fix shape**: raise `android-compileSdk` (and probably `android-targetSdk`) to
+37, then delete BOTH ignore entries together and let dependabot re-propose.
+Not attempted here because it is not a one-line change: AGP is pinned at 8.9.1
+and each AGP release supports a bounded compileSdk, SDK 37 was not installed on
+the dev machine (only 35/36) and may not be in the CI runner image, and a
+compileSdk bump moves lint's baseline — `validation_lint` is the job most
+likely to surface new findings. Verify with a release-mode CI run, since
+dev-mode PRs skip `build_android`.
+
 ### bb-sync-snapshot-deletions — Full-snapshot sync never applies server-side deletions to a warm local cache
 
 **Found 2026-08-04** during the Labs prod data restore: after an event was deleted
