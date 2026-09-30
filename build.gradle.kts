@@ -23,7 +23,7 @@ buildscript {
         // :server:app:build + :server:app:jibBuildTar with --rerun-tasks.
         classpath("com.google.cloud.tools:jib-gradle-plugin:3.4.1")
         classpath("org.apache.commons:commons-compress:1.28.0")
-        classpath("commons-codec:commons-codec:1.22.0")
+        classpath("commons-codec:commons-codec:1.22.1")
     }
     configurations.all {
         resolutionStrategy {
@@ -33,7 +33,7 @@ buildscript {
             // is held and what unpinning it would take.
             force("com.google.cloud.tools:jib-gradle-plugin:3.4.1")
             force("org.apache.commons:commons-compress:1.28.0")
-            force("commons-codec:commons-codec:1.22.0")
+            force("commons-codec:commons-codec:1.22.1")
         }
     }
 }
@@ -45,7 +45,7 @@ subprojects {
             resolutionStrategy {
                 force("com.google.cloud.tools:jib-gradle-plugin:3.4.1")
                 force("org.apache.commons:commons-compress:1.28.0")
-                force("commons-codec:commons-codec:1.22.0")
+                force("commons-codec:commons-codec:1.22.1")
             }
         }
     }
