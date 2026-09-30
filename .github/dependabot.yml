@@ -166,7 +166,20 @@ updates:
       # okhttp each ktor-client-okhttp release depends on:
       #   3.5.1 -> okhttp 5.3.2  (current, works)
       #   3.6.0 -> okhttp 5.5.0  (first version over the compileSdk cap)
+      #
+      # Two entries, for the same reason Wire needs two: the catalog declares a
+      # Ktor plugin (`ktor = { id = "io.ktor.plugin" }`) on the same `ktor`
+      # version key, and dependabot names a plugin by its bare id. "io.ktor:*"
+      # is colon-anchored and cannot match "io.ktor.plugin", so the glob alone
+      # would let the plugin drag the shared key past 3.6 exactly as
+      # com.squareup.wire did in PR #1502.
+      #
+      # Checked against every plugin id in the catalog: of the three pins here,
+      # only wire and ktor declare plugins. com.rickclephas.kmp is library-only,
+      # so its glob needs no companion.
       - dependency-name: "io.ktor:*"
+        versions: [">= 3.6.0"]
+      - dependency-name: "io.ktor.plugin"
         versions: [">= 3.6.0"]
       # ───────────────────────────────────────────────────────────────────────
     labels:
