@@ -288,7 +288,36 @@ ls ~/.gradle/caches/modules-2/files-2.1/<group>/<artifact>
 
 Finally, when a bump *does* fail, prove the failure is **caused by the bump** rather than pre-existing: revert only that one version on the same checkout and re-run the identical command. This is how #1428 was confirmed as a real break, and how the Kotlin/Native test-name failures (`bb-knt-testnames`) and the buildSrc JUnit launcher failure (PR #1436) were each cleared as pre-existing.
 
+**A pin on a version-catalog key that also backs a PLUGIN needs a bare-id entry.** Dependabot names a Gradle plugin by its bare id — `com.squareup.wire`, `io.ktor.plugin`, `com.google.devtools.ksp` — with **no colon**. A colon-anchored glob like `com.squareup.wire:*` matches the library artifacts and silently misses the plugin. Because the catalog's single version key backs both, the unignored plugin drags the key up anyway and the pin does nothing.
+
+Observed 2026-09-29: PR #1502 proposed wire 6.4.7 → 7.0.4 with `com.squareup.wire:* >= 7.0.0` already in place. Its three updates were `com.squareup.wire:wire-runtime`, `com.squareup.wire:wire-grpc-client` and the bare `com.squareup.wire`; the first two were ignored, the third was not. Fixed in PR #1509 (wire) and PR #1515 (ktor, same hole, caught before it bit).
+
+Two traps worth naming, because both produced a confidently wrong conclusion in that session:
+
+- **A bump *below* the floor proves nothing.** #1496 delivering wire 6.4.5 → 6.4.7 was cited as evidence the `>= 7.0.0` pin worked. It was not: 6.4.7 is under the floor and would have landed with or without the pin. Only a bump that *should* be blocked tests a pin.
+- **Check the whole `[plugins]` block, not a line range.** "ktor is library-only" was asserted from a `sed` window that started below `ktor = { id = "io.ktor.plugin" }`. Use `sed -n '/^\[plugins\]/,$p' gradle/libs.versions.toml | grep -oE 'id = "[^"]+"'` and cross-reference every pin.
+
 **General rule for pinned dependencies**: if `build.gradle.kts` or `libs.versions.toml` has a `// Pinned to X` / `// Do not bump` comment, also add that dep to the dependabot ignore list — otherwise dependabot will propose the bump weekly and a slip-through is only a matter of time (especially in dev-mode CI where slow jobs are skipped on PRs).
+
+## Release Preflight: Two Ways `--check` Misleads
+
+Both were hit while cutting `android/71` and `android/72` (2026-09-29/30). Both look like "CI is green" at the top level and are not.
+
+**1. A config-only commit produces a trivially green aggregator.** If a commit touches nothing in the `code` path filter (e.g. only `.github/dependabot.yml` or `TODO.md`), every real job is skipped and the `ci` aggregator still concludes `success` — over an empty set. `gh run view <id> --json conclusion` says `success` and means nothing was built or tested. Only the per-sentinel breakdown from `--check` shows it.
+
+**2. A later run masks an earlier green one.** `--check` takes the newest check-run per job name. A commit can carry several runs, so a path-filtered push run finishing *after* a full dispatched run overwrites `success` with `skipped` for the jobs it skipped. See `bb-release-check-newest-checkrun` in TODO.md; confirm with `gh api "repos/<owner>/<repo>/commits/<sha>/check-runs?per_page=100"` and look for duplicate job names.
+
+**The remedy for both is the same, and it is not an override flag**: dispatch a release-mode run so real results exist and are newest, then re-check.
+
+```bash
+gh workflow run "Battery Butler CI" --ref main -f ci_mode=release
+# wait for it, verify its conclusion directly, then:
+./scripts/release-android.sh --check
+```
+
+`workflow_dispatch` forces `code=true` in the `changes` job (see the `code:` output), so every sentinel runs regardless of the diff. **Do not reach for `--confirm-skipped-jobs`** — `AGENTS.md` requires the user to confirm that flag by name, and having personally verified the timestamps is exactly the reasoning that rule exists to distrust.
+
+Budget for it: these runs queue behind every open dependabot PR's CI, and the macOS jobs serialize. An hour of queue is normal when several bot PRs land at once.
 
 ## CI Debugging
 

@@ -87,6 +87,35 @@ Regardless of the role, the agent remains a tool, and the user retains ultimate 
         before proceeding to a tag/release action, merging on the strength of
         "CI passed," or reporting success to the user.
 
+6b. **VERIFY a Diagnosis Before Reporting It as Fact**:
+    *   Four wrong conclusions were stated confidently to the user in the
+        2026-09-27..30 session. Each was cheap to check and none was checked
+        before being asserted. The pattern is always the same: a plausible
+        mechanism is inferred from a symptom, then reported as the cause.
+    *   **A dependency bump below a pin's floor does not prove the pin works.**
+        Wire 6.4.5 → 6.4.7 was cited as evidence a `>= 7.0.0` ignore held. It
+        was not — 6.4.7 lands with or without the pin. Only a bump that
+        *should* be blocked tests a pin (PR #1502 then slipped 7.0.4 past it).
+    *   **Never conclude "X is absent" from a partial file read.** "ktor is
+        library-only, no plugin declared" came from a `sed` window that began
+        below `ktor = { id = "io.ktor.plugin" }`. Grep the whole block and
+        cross-reference every case before claiming absence.
+    *   **A "file not found" from a toolchain is rarely a missing file.**
+        `KLIB resolver: Could not find ...klib` was diagnosed first as a
+        missing Maven artifact, then as a stale Gradle cache. Both wrong: the
+        artifact is published and complete, and the real cause was the klib
+        being built by a newer Kotlin than our SKIE-capped compiler can read.
+        Check what the artifact was *built with* (its `kotlin-stdlib`
+        dependency) before blaming infrastructure.
+    *   **Check how a test fixes its own inputs before predicting output
+        churn.** A large iOS snapshot regeneration was predicted from a
+        simulator change; every `assertSnapshot` passes
+        `layout: .device(config: .iPhone13Pro)`, so image size never depended
+        on the simulator and nothing changed.
+    *   **Rule**: before reporting a root cause, name the single observation
+        that would falsify it and go look at that. If the check is not cheap,
+        report the finding as a hypothesis and say so.
+
 7.  **RESPECT the Shared-API Contribution Boundary**:
     *   The client is open source (this repo); the production server is closed
         source in a separate private repo. The shared API is coordinated **in the

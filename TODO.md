@@ -9,6 +9,51 @@ Project task tracking for Battery Butler.
 
 ## P2
 
+### bb-release-check-newest-checkrun — `--check` reads the newest check-run per job, so a later run can mask a green one
+
+**Found 2026-09-30** while releasing `android/72`. A release-mode `workflow_dispatch`
+on `3e5f47ab` finished with all six sentinels green, yet
+`./scripts/release-android.sh --check` reported `build_android` and `build_server`
+as **skipped**.
+
+**Root cause**: a commit can carry several CI runs, and `--check` takes the most
+recent check-run for each job name. Here the full dispatched run finished first and
+a path-filtered push run finished after it:
+
+```
+build_android  success  completed 21:14:36   <- dispatched release-mode run
+build_android  skipped  completed 21:19:26   <- later push run (config-only diff)
+```
+
+The later `skipped` won, so a commit that genuinely passed every sentinel looked
+unreleasable. Verify with:
+`gh api "repos/cartland/battery-butler/commits/<sha>/check-runs?per_page=100"` and
+look for duplicate names.
+
+**Workaround used** (no override flag needed): dispatch another release-mode run
+(`gh workflow run "Battery Butler CI" --ref main -f ci_mode=release`) so its results
+are newest, then re-run `--check`. Do NOT reach for `--confirm-skipped-jobs` — per
+`AGENTS.md` that flag needs the user to confirm it by name.
+
+**Fix shape**: make `--check` pick the *best* conclusion per job name rather than the
+newest (success beats skipped beats absent), or filter check-runs to a single run id.
+Prefer the former — it also covers a re-run of one failed job.
+
+### bb-login-screenshot-order — `LoginContentNotConfiguredPreviewTest_Dark` fails only in the full-suite run
+
+**Found 2026-09-27.** `./gradlew :android-screenshot-tests:validateDebugScreenshotTest
+-PforceAllScreenshots` fails this one test (65 tests, 1 failed, 1 skipped). Running the
+same test alone with `--tests "*LoginScreenshotTest*"` **passes**.
+
+Reproduces identically on unmodified `origin/main` (verified at `0598a94c`), so it is
+not caused by any particular change. The isolation-passes/suite-fails split points at
+test-ordering or memory interaction inside the single-invocation `-PforceAllScreenshots`
+path rather than a genuine reference drift — note that path exists specifically because
+the sequential script guards against OOM.
+
+Worth confirming before regenerating the reference: a blind
+`updateDebugScreenshotTest` would bake in whatever the suite run produced.
+
 ### bb-compilesdk-37 — compileSdk 36 blocks both Ktor >= 3.6 and Wire >= 7
 
 **Found 2026-09-29** while draining the dependabot queue. Two unrelated bumps
