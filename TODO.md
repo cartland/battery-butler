@@ -36,7 +36,11 @@ unrelated updates in those groups still flow (verified: #1496 still delivered
 wire 6.4.5 -> 6.4.7 with the `>= 7.0.0` pin in place).
 
 **Fix shape**: raise `android-compileSdk` (and probably `android-targetSdk`) to
-37, then delete BOTH ignore entries together and let dependabot re-propose.
+37, then delete all THREE ignore entries together and let dependabot re-propose.
+Three, not two: Wire needs both `com.squareup.wire:*` and the bare
+`com.squareup.wire`, because the version catalog declares a Wire plugin and
+dependabot names a plugin by its bare id with no colon — the colon-anchored
+glob alone does not hold it (PR #1502 slipped 6.4.7 -> 7.0.4 past it).
 Not attempted here because it is not a one-line change: AGP is pinned at 8.9.1
 and each AGP release supports a bounded compileSdk, SDK 37 was not installed on
 the dev machine (only 35/36) and may not be in the CI runner image, and a
