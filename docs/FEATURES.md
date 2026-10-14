@@ -22,6 +22,7 @@ Battery Butler helps users track battery-powered devices and their replacement h
 | Device List | Grouped/sorted list with icons, names, types, locations | J2 | HomeViewModelTest (9) |
 | Sort Options | By name, location, battery age, device type (asc/desc) | J2 | HomeViewModelTest |
 | Group Options | By none, type, or location (asc/desc) | J2 | HomeViewModelTest |
+| Type Group Header | Group-by-type header shows the type icon and battery ("• 2 x CR2032") | J2 | DeviceGroupHeaderTest |
 | Sync Status | Visual indicator showing sync state | J16 | DefaultDeviceRepositoryTest |
 | Empty State | Friendly prompt when no devices exist | J2 | MainTabsScreenshotTest |
 

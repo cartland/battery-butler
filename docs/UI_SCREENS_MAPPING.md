@@ -39,6 +39,7 @@ The following table tracks specific feature gaps between the Compose Multiplatfo
 |---------|---------|-------------|-----|
 | Sort/Group controls (Home) | Yes | Yes | ~~bb-847x~~ (PR #971) |
 | Sort/Group controls (Types) | Yes | Yes | ~~bb-847x~~ (PR #971) |
+| Home type-group header (icon + battery) | Yes | No | bb-group-header-ios |
 | Settings: Data mode | Yes | Yes | ~~bb-abn6~~ (PR #972) |
 | Settings: AI engine picker | Yes | Yes | ~~bb-abn6~~ (PR #972) |
 | Settings: Account section | Yes | Yes | ~~bb-abn6~~ (PR #972) |

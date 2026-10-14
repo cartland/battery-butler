@@ -31,6 +31,7 @@ Use this alongside [FEATURES.md](FEATURES.md) (feature inventory) and [TESTING.m
 
 1. User sees a grouped/sorted list of devices with icons, names, types, and locations.
 2. User can change sort order (name, location, battery age, device type) and grouping (none, type, location).
+   When grouped by type, each group header shows the type icon and its battery (e.g. "Smoke Alarm • 1 x 9V").
 3. Sync status indicator shows current sync state.
 4. If no devices exist, an empty state prompt is shown.
 

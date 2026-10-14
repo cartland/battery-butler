@@ -9,6 +9,10 @@ allowed-tools: Bash(*), Read, Glob, Grep
 > **Agent Rule:** NEVER create tags or push them without explicit user permission.
 > Tags trigger production releases and cannot be easily undone.
 > Always confirm the release details and get user approval before proceeding.
+>
+> **Exception — standing approval:** after mobile-app work is cleanly merged to `main` with
+> green sentinels, an internal-track release is pre-approved by the owner (see
+> `.agent/AGENTS.md` § Critical Rules 2). Override flags still need explicit confirmation.
 
 This skill is the agent-facing operational shortcut. `./scripts/release-android.sh --check` is the source of truth for which command to paste next — read its output, copy the recommended command, do not retype flag combinations from memory.
 
