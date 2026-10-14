@@ -34,6 +34,15 @@ Regardless of the role, the agent remains a tool, and the user retains ultimate 
     *   **NEVER** create git tags (e.g., `android/N`, release tags) without explicit user approval.
     *   **NEVER** push tags manually - always use release scripts (e.g., `./scripts/release-android.sh`).
     *   **NEVER** trigger deployment workflows without explicit user approval.
+    *   **Standing approval — Android internal-track releases (owner, 2026-10-14):** when
+        working on the mobile app, carry the change through by default: open the PR, merge
+        it once CI is green (auto-merge), and when all of the session's work is cleanly
+        merged to `main`, cut the next `android/N` with `./scripts/release-android.sh`
+        (`--check`, then the `--confirm-tag` command it prints). No per-release prompt is
+        needed for that. This covers **only** the Play Store internal track via the script;
+        it does **not** cover Play Console promotion, server deploys, the override flags
+        below (still confirm each by name), or a release while any sentinel is red or
+        skipped — fix CI instead. Docs-only or server-only work releases nothing.
     *   When the user says "deploy" or "release", **ASK** which target and confirm, then use the appropriate release script.
     *   Tags trigger production releases and cannot be easily undone.
     *   Release scripts provide safety checks, version validation, and confirmation prompts.
