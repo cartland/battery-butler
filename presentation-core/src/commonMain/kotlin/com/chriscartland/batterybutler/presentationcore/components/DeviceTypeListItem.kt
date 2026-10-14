@@ -18,6 +18,12 @@ import com.chriscartland.batterybutler.presentationcore.theme.Padding
 import com.chriscartland.batterybutler.presentationmodel.home.DensityOption
 
 /**
+ * The "N x BatteryType" summary shown wherever a device type's battery needs are listed — the
+ * device type row and the Home screen's group-by-type header. One function so the two never drift.
+ */
+fun DeviceType.batterySummary(): String = "$batteryQuantity x $batteryType"
+
+/**
  * A device type row.
  *
  * Honours the same app-wide density as the Home device list:
@@ -38,7 +44,7 @@ fun DeviceTypeListItem(
 ) {
     val isCompact = density == DensityOption.COMPACT
     val leadingSize = if (isCompact) ButlerIconBoxDefaults.CompactSize else ButlerIconBoxDefaults.Size
-    val batterySummary = "${deviceType.batteryQuantity} x ${deviceType.batteryType}"
+    val batterySummary = deviceType.batterySummary()
 
     ButlerListItemCard(
         onClick = onClick,

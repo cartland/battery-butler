@@ -475,6 +475,19 @@ the decode runs on, not *how much* work it does.
 
 ## P3
 
+### bb-group-header-ios — SwiftUI parity for the Home group-by-type header
+
+The Compose Home list's sticky group header now reads `[type icon] Smart Motion Sensor • 2 x CR2032`
+when grouping by type (`DeviceGroupHeader.kt` in `presentation-feature/.../home/`), so the type
+stays recognisable after device photos replace the per-row icon and the battery to buy is visible
+without opening a device. Android, Desktop, and the Compose iOS app have it.
+
+The native SwiftUI app still renders `Section(header: Text(key))` in
+`ios-app-swift-ui/Features/Home/HomeScreen.swift`. It also iterates
+`state.groupedDevices.keys.sorted()`, which discards the sort-driven group order the shared
+`sortAndGroup` produces — worth fixing in the same pass. Port `groupHeaderDeviceType`'s rule:
+show the icon and battery only when every device in the group shares one type id.
+
 ### bb-density-ios — SwiftUI parity for the device list Compact/Expanded view option
 
 The Compose side shipped the `DensityOption` (View: Expanded / Compact) control on the Home
