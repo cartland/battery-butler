@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import me.tatarka.inject.annotations.Inject
+import java.util.UUID
 
 @Inject
 class DynamicAiEngine(
@@ -54,7 +55,7 @@ class DynamicAiEngine(
 
             AiEngineType.NoOp -> flowOf(
                 AiMessage(
-                    id = "noop",
+                    id = "noop_${UUID.randomUUID()}",
                     role = AiRole.MODEL,
                     text = "AI is disabled in settings.",
                     isPartial = false,

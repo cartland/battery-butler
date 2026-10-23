@@ -27,6 +27,7 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.put
+import java.util.UUID
 import kotlin.coroutines.cancellation.CancellationException
 
 /**
@@ -205,7 +206,7 @@ class AndroidAiEngine : AiEngine {
             if (!_isAvailable.value) {
                 emit(
                     AiMessage(
-                        "error",
+                        "error_${UUID.randomUUID()}",
                         AiRole.MODEL,
                         "AI is unavailable: Firebase is not configured. Add a real google-services.json with the Gemini API enabled.",
                         false,
@@ -248,7 +249,7 @@ class AndroidAiEngine : AiEngine {
                 }
 
                 val text = response.text
-                emit(AiMessage("resp_${System.currentTimeMillis()}", AiRole.MODEL, text ?: "No text response", false))
+                emit(AiMessage("resp_${UUID.randomUUID()}", AiRole.MODEL, text ?: "No text response", false))
             } catch (e: InvalidAPIKeyException) {
                 // Thrown when google-services.json is syntactically valid (so isAvailable is true)
                 // but its Gemini API key is a placeholder/invalid, e.g. the mock config committed to
@@ -259,7 +260,7 @@ class AndroidAiEngine : AiEngine {
                     .e("AndroidAiEngine") { "Error generating response: ${e.message ?: "Unknown error"}" }
                 emit(
                     AiMessage(
-                        "error",
+                        "error_${UUID.randomUUID()}",
                         AiRole.MODEL,
                         "AI is unavailable: Firebase is not configured with a valid Gemini API key.",
                         false,
@@ -270,7 +271,7 @@ class AndroidAiEngine : AiEngine {
                 val errorMsg = e.message ?: "Unknown error"
                 co.touchlab.kermit.Logger
                     .e("AndroidAiEngine") { "Error generating response: $errorMsg" }
-                emit(AiMessage("error", AiRole.MODEL, "Error: $errorMsg", false))
+                emit(AiMessage("error_${UUID.randomUUID()}", AiRole.MODEL, "Error: $errorMsg", false))
             }
         }
 }

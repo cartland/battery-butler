@@ -34,6 +34,13 @@ class FakeAiEngine : AiEngine {
     /** When set, [generateResponse] will throw this exception instead. */
     var errorToThrow: Exception? = null
 
+    /**
+     * When set, every response message uses this exact id. Simulates engines that emit
+     * non-unique ids (e.g. a fixed "error" id on every failure) so consumers can prove
+     * they tolerate duplicate ids instead of crashing on them.
+     */
+    var fixedResponseId: String? = null
+
     private val _isAvailable = MutableStateFlow(true)
     override val isAvailable: Flow<Boolean> = _isAvailable
 
@@ -58,7 +65,7 @@ class FakeAiEngine : AiEngine {
         errorToThrow?.let { throw it }
         return flowOf(
             AiMessage(
-                id = "fake-${recordedPrompts.size}",
+                id = fixedResponseId ?: "fake-${recordedPrompts.size}",
                 role = AiRole.MODEL,
                 text = defaultResponseText,
             ),
