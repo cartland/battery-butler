@@ -79,11 +79,11 @@ jobs:
         run: |
           # compose-app/google-services.json is committed as a mock (project_id
           # mock-project-id) so local and PR builds compile without Firebase
-          # credentials. Release builds overwrite it with the real config; without
-          # it the cloud AI chat reports "Firebase is not configured with a valid
-          # Gemini API key" at runtime. See bb-fbai-setup in TODO.md.
+          # credentials. Release builds overwrite it with the real config, which
+          # Crashlytics needs to deliver reports. (Cloud AI chat does not use it -
+          # it is relayed through the Labs backend.) See docs/GOOGLE_PLAY_PUBLISHING.md.
           if [ -z "$GOOGLE_SERVICES_JSON_BASE64" ]; then
-            echo "::warning::GOOGLE_SERVICES_JSON_BASE64 is not set - shipping the mock google-services.json. Cloud AI chat will be unavailable in this build."
+            echo "::warning::GOOGLE_SERVICES_JSON_BASE64 is not set - shipping the mock google-services.json. Crashlytics reports will not be delivered from this build."
             exit 0
           fi
 

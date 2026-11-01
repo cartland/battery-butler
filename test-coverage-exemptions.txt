@@ -30,7 +30,6 @@ DefaultDispatcherProvider | Infrastructure: returns standard dispatchers
 
 # AI module (Android-specific implementations)
 DynamicAiEngine | Android-specific: requires on-device ML runtime
-AndroidAiEngine | Android-specific: requires Gemini Nano runtime
 OnDeviceAiEngine | Android-specific: requires on-device ML runtime
 # AiConfig is an interface, not enforced
 

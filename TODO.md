@@ -775,27 +775,17 @@ backend's `BATTERY-BUTLER.md` → "Owner setup: desktop client auth"; (2) set
 secrets and/or `local.properties`), which data-network's `BuildConfig` consumes (#1286); (3) grant
 the user access on the Labs backend (`grant-access` by email). Unblocks bb-labs-signin and bb-syncit.
 
-### bb-fbai-setup — Owner setup: real Firebase project for the AI chat (firebase-ai)
+### bb-gemini-key-cleanup — Remove the dead `GEMINI_API_KEY` build path
 
-The cloud AI engine migrated from the deprecated `com.google.ai.client.generativeai` SDK to
-`firebase-ai` (PR #1284) to remove a Ktor 2.x/3.x conflict that crashed the app on launch. That
-migration deleted `AiConfig`/`BuildConfigAiConfig`, which had fed the real `GEMINI_API_KEY` secret
-into `GenerativeModel(apiKey = ...)`. `firebase-ai` reads its key from `google-services.json`
-instead, and `compose-app/google-services.json` is a mock (`project_id: mock-project-id`) — so the
-app launches fine but the cloud AI chat reports unavailable. **This is a regression:** cloud chat
-worked through `android/34` and broke in `android/35`, the first release containing #1284.
+Cloud AI chat no longer calls Gemini from the app: `LabsCloudAiEngine` relays it through the Labs
+backend (`POST /v1/battery-butler/ai/generate`), which holds the key and picks the model. That
+fixed the android/35 regression, where `firebase-ai` needed a real `google-services.json` the repo
+never had (and the app also pinned the since-retired `gemini-2.5-flash`).
 
-The build plumbing is now in place: the release workflows decode the
-`GOOGLE_SERVICES_JSON_BASE64` secret over the committed mock at build time (see
-`docs/GOOGLE_PLAY_PUBLISHING.md` → Required GitHub Secrets). **Remaining owner action:** create a
-Firebase project with the **Gemini Developer API** enabled, add an Android app for package
-`com.chriscartland.batterybutler`, and save its `google-services.json` as that secret. Do not
-commit the real file — the mock is intentional so local and PR builds compile without credentials.
-
-Follow-up once cloud chat is verified working: the `GEMINI_API_KEY` path is now dead code —
-`compose-app/build.gradle.kts` still generates `BuildConfig.GEMINI_API_KEY` from `local.properties`
-and both release workflows still write the secret there, but nothing reads it. Remove the field,
-the `local.properties` writes, and the repo secret. The on-device mlkit engine is unaffected.
+Left behind: `compose-app/build.gradle.kts` still generates `BuildConfig.GEMINI_API_KEY` from
+`local.properties`, both release workflows still write the secret there, and nothing reads it.
+Remove the field, the `local.properties` writes, and the repo secret once the relay is verified on
+a release build.
 
 ### bb-ondevice-ai-warmup-verify — Confirm `warmup()` actually fixes the on-device AI `INFERENCE_ERROR` on real hardware
 
