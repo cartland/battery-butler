@@ -90,4 +90,11 @@ private class FakeDensityPreferencesDataSource(
     override suspend fun setDisplayDensityValue(value: String) {
         written = value
     }
+
+    override fun stringValue(key: String): Flow<String?> = flowOf(null)
+
+    override suspend fun setStringValue(
+        key: String,
+        value: String,
+    ) = Unit
 }

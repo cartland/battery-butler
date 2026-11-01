@@ -6,6 +6,7 @@ import com.chriscartland.batterybutler.domain.model.map
 import com.chriscartland.batterybutler.domain.repository.DeviceRepository
 import kotlinx.coroutines.flow.first
 import me.tatarka.inject.annotations.Inject
+import kotlin.time.Clock
 import kotlin.time.Instant
 
 /**
@@ -17,7 +18,18 @@ import kotlin.time.Instant
  *
  * This encapsulates the business rule: "A device's last replaced date should always
  * reflect the most recent battery replacement event."
+ *
+ * Writing here also stamps [Device.lastUpdated], whose contract is "when any device metadata was
+ * last modified" -- and [Device.batteryLastReplaced] is device metadata. Every other use case
+ * that edits a device already does this (see `UploadDeviceImageUseCase`); this one did not, so a
+ * logged battery replacement left `lastUpdated` stale and the device list's `RECENT` sort could
+ * not see the single most common edit a user makes.
+ *
+ * Note [Device.batteryLastReplaced] itself is NOT a recency signal: it is user-chosen and often
+ * backdated ("I changed this one six months ago"), so it records when the battery was replaced,
+ * not when the record was touched.
  */
+@OptIn(kotlin.time.ExperimentalTime::class)
 @Inject
 class UpdateDeviceLastReplacedUseCase(
     private val deviceRepository: DeviceRepository,
@@ -34,7 +46,9 @@ class UpdateDeviceLastReplacedUseCase(
         val latestDate = events.maxByOrNull { it.date }?.date ?: Instant.fromEpochMilliseconds(0)
 
         return if (latestDate != device.batteryLastReplaced) {
-            deviceRepository.updateDevice(device.copy(batteryLastReplaced = latestDate)).map { true }
+            deviceRepository
+                .updateDevice(device.copy(batteryLastReplaced = latestDate, lastUpdated = Clock.System.now()))
+                .map { true }
         } else {
             Result.Success(false)
         }
@@ -57,7 +71,9 @@ class UpdateDeviceLastReplacedUseCase(
         val device = deviceRepository.getDeviceById(deviceId).first() ?: return Result.Success(false)
 
         return if (newTimestamp > device.batteryLastReplaced) {
-            deviceRepository.updateDevice(device.copy(batteryLastReplaced = newTimestamp)).map { true }
+            deviceRepository
+                .updateDevice(device.copy(batteryLastReplaced = newTimestamp, lastUpdated = Clock.System.now()))
+                .map { true }
         } else {
             Result.Success(false)
         }

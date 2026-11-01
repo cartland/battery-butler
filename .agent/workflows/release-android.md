@@ -11,6 +11,10 @@ Release the Android app to Play Store internal testing by creating a release tag
 > **Agent Rule:** NEVER create tags or push them without explicit user permission.
 > Tags trigger production releases and cannot be easily undone.
 > Always confirm the release details and get user approval before proceeding.
+>
+> **Exception — standing approval:** after mobile-app work is cleanly merged to `main` with
+> green sentinels, an internal-track release is pre-approved by the owner (see
+> `.agent/AGENTS.md` § Critical Rules 2). Override flags still need explicit confirmation.
 
 ## Prerequisites
 

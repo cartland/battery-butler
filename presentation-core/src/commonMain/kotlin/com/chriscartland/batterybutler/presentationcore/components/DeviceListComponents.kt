@@ -4,12 +4,17 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BatteryAlert
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -28,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.composeresources.composeStringResource
 import com.chriscartland.batterybutler.composeresources.generated.resources.Res
 import com.chriscartland.batterybutler.composeresources.generated.resources.content_desc_device_photo
+import com.chriscartland.batterybutler.composeresources.generated.resources.status_needs_battery
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceImageBytes
 import com.chriscartland.batterybutler.domain.model.DeviceType
@@ -86,6 +92,7 @@ fun DeviceListItem(
     nowInstant: Instant = Clock.System.now(),
     imageBytes: DeviceImageBytes? = null,
     density: DensityOption = DensityOption.EXPANDED,
+    needsBattery: Boolean = false,
 ) {
     val daysInt = remember(device.batteryLastReplaced, nowInstant) {
         if (device.batteryLastReplaced.toEpochMilliseconds() == 0L) {
@@ -169,13 +176,24 @@ fun DeviceListItem(
             }
         },
     ) {
-        Text(
-            text = device.name,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(Padding.small),
+        ) {
+            Text(
+                text = device.name,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                // fill = false so a short name doesn't push the badge to the far edge, while a long
+                // one still ellipsizes instead of shoving the badge out of the row.
+                modifier = Modifier.weight(1f, fill = false),
+            )
+            if (needsBattery) {
+                NeedsBatteryBadge()
+            }
+        }
         if (!isCompact) {
             val typeName = deviceType?.name ?: "Unknown Type"
             val location = device.location
@@ -193,6 +211,38 @@ fun DeviceListItem(
                 overflow = TextOverflow.Ellipsis,
             )
         }
+    }
+}
+
+/**
+ * The "needs a new battery" marker shown beside a device's name.
+ *
+ * Uses the error container colors rather than the battery-age palette on purpose: age is a
+ * gradient the app computes, this is a binary thing the user asserted, and it should read as a
+ * deliberate mark rather than another shade of old.
+ */
+@Composable
+fun NeedsBatteryBadge(modifier: Modifier = Modifier) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(Padding.extraSmall),
+        modifier = modifier
+            .clip(MaterialTheme.shapes.small)
+            .background(MaterialTheme.colorScheme.errorContainer)
+            .padding(horizontal = Padding.small, vertical = Padding.extraSmall),
+    ) {
+        Icon(
+            imageVector = Icons.Default.BatteryAlert,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onErrorContainer,
+            modifier = Modifier.size(IconSize.ExtraSmall),
+        )
+        Text(
+            text = composeStringResource(Res.string.status_needs_battery),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onErrorContainer,
+            maxLines = 1,
+        )
     }
 }
 

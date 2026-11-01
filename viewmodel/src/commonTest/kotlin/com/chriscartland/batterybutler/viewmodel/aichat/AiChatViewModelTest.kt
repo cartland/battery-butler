@@ -3,11 +3,13 @@ package com.chriscartland.batterybutler.viewmodel.aichat
 import com.chriscartland.batterybutler.domain.model.ai.AiRole
 import com.chriscartland.batterybutler.testcommon.FakeAiEngine
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
+import com.chriscartland.batterybutler.testcommon.FakeNeedsBatteryRepository
 import com.chriscartland.batterybutler.usecase.BuildAiContextUseCase
 import com.chriscartland.batterybutler.usecase.DeviceToolHandler
 import com.chriscartland.batterybutler.usecase.FindOrCreateDeviceTypeUseCase
 import com.chriscartland.batterybutler.usecase.FindOrCreateDeviceUseCase
 import com.chriscartland.batterybutler.usecase.SendChatMessageUseCase
+import com.chriscartland.batterybutler.usecase.SetDeviceNeedsBatteryUseCase
 import com.chriscartland.batterybutler.usecase.UpdateDeviceLastReplacedUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -142,7 +144,7 @@ class AiChatViewModelTest {
         val findOrCreateType = FindOrCreateDeviceTypeUseCase(repo)
         val findOrCreateDevice = FindOrCreateDeviceUseCase(repo, findOrCreateType)
         val updateLastReplaced = UpdateDeviceLastReplacedUseCase(repo)
-        val toolHandler = DeviceToolHandler(repo, findOrCreateType, findOrCreateDevice, updateLastReplaced)
+        val toolHandler = DeviceToolHandler(repo, findOrCreateType, findOrCreateDevice, updateLastReplaced, SetDeviceNeedsBatteryUseCase(FakeNeedsBatteryRepository()))
         val buildAiContext = BuildAiContextUseCase(repo)
         val sendChatMessage = SendChatMessageUseCase(engine, toolHandler, buildAiContext)
         return AiChatViewModel(sendChatMessage)

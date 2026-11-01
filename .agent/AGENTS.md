@@ -34,6 +34,15 @@ Regardless of the role, the agent remains a tool, and the user retains ultimate 
     *   **NEVER** create git tags (e.g., `android/N`, release tags) without explicit user approval.
     *   **NEVER** push tags manually - always use release scripts (e.g., `./scripts/release-android.sh`).
     *   **NEVER** trigger deployment workflows without explicit user approval.
+    *   **Standing approval — Android internal-track releases (owner, 2026-10-14):** when
+        working on the mobile app, carry the change through by default: open the PR, merge
+        it once CI is green (auto-merge), and when all of the session's work is cleanly
+        merged to `main`, cut the next `android/N` with `./scripts/release-android.sh`
+        (`--check`, then the `--confirm-tag` command it prints). No per-release prompt is
+        needed for that. This covers **only** the Play Store internal track via the script;
+        it does **not** cover Play Console promotion, server deploys, the override flags
+        below (still confirm each by name), or a release while any sentinel is red or
+        skipped — fix CI instead. Docs-only or server-only work releases nothing.
     *   When the user says "deploy" or "release", **ASK** which target and confirm, then use the appropriate release script.
     *   Tags trigger production releases and cannot be easily undone.
     *   Release scripts provide safety checks, version validation, and confirmation prompts.
@@ -86,6 +95,35 @@ Regardless of the role, the agent remains a tool, and the user retains ultimate 
         (or equivalent) before treating a watched run as done — especially
         before proceeding to a tag/release action, merging on the strength of
         "CI passed," or reporting success to the user.
+
+6b. **VERIFY a Diagnosis Before Reporting It as Fact**:
+    *   Four wrong conclusions were stated confidently to the user in the
+        2026-09-27..30 session. Each was cheap to check and none was checked
+        before being asserted. The pattern is always the same: a plausible
+        mechanism is inferred from a symptom, then reported as the cause.
+    *   **A dependency bump below a pin's floor does not prove the pin works.**
+        Wire 6.4.5 → 6.4.7 was cited as evidence a `>= 7.0.0` ignore held. It
+        was not — 6.4.7 lands with or without the pin. Only a bump that
+        *should* be blocked tests a pin (PR #1502 then slipped 7.0.4 past it).
+    *   **Never conclude "X is absent" from a partial file read.** "ktor is
+        library-only, no plugin declared" came from a `sed` window that began
+        below `ktor = { id = "io.ktor.plugin" }`. Grep the whole block and
+        cross-reference every case before claiming absence.
+    *   **A "file not found" from a toolchain is rarely a missing file.**
+        `KLIB resolver: Could not find ...klib` was diagnosed first as a
+        missing Maven artifact, then as a stale Gradle cache. Both wrong: the
+        artifact is published and complete, and the real cause was the klib
+        being built by a newer Kotlin than our SKIE-capped compiler can read.
+        Check what the artifact was *built with* (its `kotlin-stdlib`
+        dependency) before blaming infrastructure.
+    *   **Check how a test fixes its own inputs before predicting output
+        churn.** A large iOS snapshot regeneration was predicted from a
+        simulator change; every `assertSnapshot` passes
+        `layout: .device(config: .iPhone13Pro)`, so image size never depended
+        on the simulator and nothing changed.
+    *   **Rule**: before reporting a root cause, name the single observation
+        that would falsify it and go look at that. If the check is not cheap,
+        report the finding as a hypothesis and say so.
 
 7.  **RESPECT the Shared-API Contribution Boundary**:
     *   The client is open source (this repo); the production server is closed
@@ -244,7 +282,8 @@ Separately: a stale `~/Library/Developer/Xcode/DerivedData/iosAppSwiftUI-*` can 
   - **Always** use `-derivedDataPath ios-app-swift-ui/build/<target_name>` (e.g., `ios-app-swift-ui/build/ios-build`) when running `xcodebuild`. This ensures **artifact isolation** between steps, mimicking CI parity, and prevents accidental cross-linking of frameworks.
   - **Always** use `-target` instead of `-scheme` if the scheme file is not shared (checked into git).
   - **Always** disable code signing for local simulator builds or CI builds without certificates using `CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO`.
-  - **Always** specify the OS version for simulator destinations (e.g., `name=iPhone 16,OS=18.5`). Omitting `OS` causes "device not found" when multiple OS versions are installed.
+  - **Always** specify the OS version for simulator destinations. Omitting `OS` causes "device not found" when multiple OS versions are installed.
+  - **Never hardcode a simulator model.** Source `scripts/lib/resolve-ios-simulator.sh` and call `resolve_ios_simulator` (or just use `./scripts/test-ios.sh`). A pinned `iPhone 16` silently broke the `ios-snapshots` job on every run from 2026-08 once the runner image moved to iOS 26 / iPhone 17.
 
 - **Bazel**:
   - **Bazel Outputs:** All Bazel outputs are consolidated in `.bazel/` (e.g. `.bazel/bin`) via `.bazelrc`. This directory is gitignored and excluded from Spotless.

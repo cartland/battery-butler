@@ -3,8 +3,11 @@ package com.chriscartland.batterybutler.viewmodel.home
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceImageBytes
 import com.chriscartland.batterybutler.domain.model.DeviceType
+import com.chriscartland.batterybutler.domain.model.ListArrangement
+import com.chriscartland.batterybutler.domain.model.ListScreen
 import com.chriscartland.batterybutler.domain.model.SyncStatus
 import com.chriscartland.batterybutler.domain.repository.DisplayDensityRepository
+import com.chriscartland.batterybutler.domain.repository.ListArrangementRepository
 import com.chriscartland.batterybutler.presentationmodel.home.DensityOption
 import com.chriscartland.batterybutler.presentationmodel.home.GroupOption
 import com.chriscartland.batterybutler.presentationmodel.home.HomeScreenState
@@ -16,6 +19,7 @@ import com.chriscartland.batterybutler.usecase.ExportDataUseCase
 import com.chriscartland.batterybutler.usecase.GetCachedDeviceImageUseCase
 import com.chriscartland.batterybutler.usecase.GetDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.GetDevicesUseCase
+import com.chriscartland.batterybutler.usecase.GetNeedsBatteryMarksUseCase
 import com.chriscartland.batterybutler.usecase.GetSyncStatusUseCase
 import com.chriscartland.batterybutler.usecase.ResyncUseCase
 import com.chriscartland.batterybutler.viewmodel.defaultWhileSubscribed
@@ -31,6 +35,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -39,6 +44,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
+import kotlin.time.Instant
 import com.rickclephas.kmp.observableviewmodel.MutableStateFlow as ObservableMutableStateFlow
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -51,22 +57,26 @@ class HomeViewModel(
     private val dismissSyncStatusUseCase: DismissSyncStatusUseCase,
     private val resyncUseCase: ResyncUseCase,
     private val getCachedDeviceImageUseCase: GetCachedDeviceImageUseCase,
+    private val getNeedsBatteryMarksUseCase: GetNeedsBatteryMarksUseCase,
     private val displayDensityRepository: DisplayDensityRepository,
+    private val listArrangementRepository: ListArrangementRepository,
 ) : ViewModel() {
-    private val sortOptionFlow = MutableStateFlow(SortOption.BATTERY_AGE)
-    private val groupOptionFlow = MutableStateFlow(GroupOption.NONE)
-    private val isSortAscendingFlow = MutableStateFlow(false)
-    private val isGroupAscendingFlow = MutableStateFlow(true)
+    // The stored sort/group choices, which survive app restarts. Held as one flow rather than four
+    // MutableStateFlows: the store is the single source of truth, so a change written here comes
+    // back through the same path the initial read uses and there is no in-memory copy to drift.
+    private val arrangementFlow = listArrangementRepository.arrangement(ListScreen.DEVICES)
 
-    // Persisted app-wide, unlike sort/group which stay session-only. Reads the stored
-    // DisplayDensity (which may be UNSPECIFIED on a fresh install) and resolves it to the
-    // renderable two-case DensityOption.
+    // Reads the stored DisplayDensity (which may be UNSPECIFIED on a fresh install) and resolves
+    // it to the renderable two-case DensityOption.
     private val densityOptionFlow = displayDensityRepository.displayDensity.map { it.toDensityOption() }
     private val exportDataFlow = MutableStateFlow<String?>(null)
     private var autoDismissJob: Job? = null
 
     /** Last images map emitted, used to seed re-keyed image observations — see the uiState liveness guard. */
     private var lastKnownImages: Map<String, DeviceImageBytes> = emptyMap()
+
+    /** Same liveness guard as [lastKnownImages]: the marks are a Room flow, so seed rather than withhold the list. */
+    private var lastKnownNeedsBattery: Map<String, Instant> = emptyMap()
 
     companion object {
         private const val SYNC_SUCCESS_DISPLAY_DURATION_MS = 2000L
@@ -100,17 +110,20 @@ class HomeViewModel(
         initialValue = HomeScreenState(),
         onError = { HomeScreenState(error = it.message ?: "Failed to load devices") },
         source = {
-            // `combine`'s typed overloads top out at five flows, so the five list-display options
-            // fill the inner combine and `exportDataFlow` (unrelated to display) rides on the outer.
+            // `combine`'s typed overloads top out at five flows, so the display options fill the
+            // inner combine and `exportDataFlow` (unrelated to display) rides on the outer.
             combine(
                 combine(
-                    sortOptionFlow,
-                    groupOptionFlow,
-                    isSortAscendingFlow,
-                    isGroupAscendingFlow,
+                    arrangementFlow,
                     densityOptionFlow,
-                ) { sort, group, isSortAscending, isGroupAscending, density ->
-                    DisplayConfig(sort, group, isSortAscending, isGroupAscending, density)
+                ) { arrangement, density ->
+                    DisplayConfig(
+                        sort = arrangement.sortKey.toSortOption(),
+                        group = arrangement.groupKey.toGroupOption(),
+                        isSortAscending = arrangement.isSortAscending ?: DEFAULT_SORT_ASCENDING,
+                        isGroupAscending = arrangement.isGroupAscending ?: DEFAULT_GROUP_ASCENDING,
+                        density = density,
+                    )
                 },
                 getDevicesUseCase(),
                 getDeviceTypesUseCase(),
@@ -125,19 +138,30 @@ class HomeViewModel(
                 // image hydration (loading screen forever if any image query stalls). Seed with
                 // the last known map (empty on first load); etags are content-addressed, so a
                 // briefly-stale entry is harmless and is replaced by the real emission.
-                observeImagesByEtag(inputs.devices)
-                    .onStart { emit(lastKnownImages) }
-                    .onEach { lastKnownImages = it }
-                    .map { images -> inputs to images }
-            }.map { (inputs, images) ->
+                combine(
+                    observeImagesByEtag(inputs.devices)
+                        .onStart { emit(lastKnownImages) }
+                        .onEach { lastKnownImages = it },
+                    getNeedsBatteryMarksUseCase()
+                        .onStart { emit(lastKnownNeedsBattery) }
+                        .onEach { lastKnownNeedsBattery = it },
+                ) { images, needsBattery -> Triple(inputs, images, needsBattery) }
+            }.map { (inputs, images, needsBatteryMarks) ->
                 val (config, devices, types, syncStatus, exportData) = inputs
                 val typeMap = types.associateBy { it.id }
 
                 val sortComparator = when (config.sort) {
                     SortOption.NAME -> compareBy<Device> { it.name }
+
                     SortOption.LOCATION -> compareBy<Device> { it.location ?: "" }.thenBy { it.name }
+
                     SortOption.BATTERY_AGE -> compareBy { it.batteryLastReplaced }
+
                     SortOption.TYPE -> compareBy { typeMap[it.typeId]?.name ?: "" }
+
+                    // Ascending here means oldest-activity-first; the default direction is
+                    // descending, so picking "Recent" shows the most recently touched first.
+                    SortOption.RECENT -> compareBy { device -> recencyOf(device, needsBatteryMarks) }
                 }
 
                 val groupKeySelector = when (config.group) {
@@ -153,6 +177,10 @@ class HomeViewModel(
                     groupKeySelector = groupKeySelector,
                     defaultGroupName = "All Devices",
                     isGroupAscending = config.isGroupAscending,
+                    // Passed into sortAndGroup rather than applied to the grouped result, so a
+                    // marked device pulls its whole group to the front as well as leading it --
+                    // group priority comes from each group's first item.
+                    priorityFirst = { it.id in needsBatteryMarks },
                 )
 
                 HomeScreenState(
@@ -166,17 +194,18 @@ class HomeViewModel(
                     syncStatus = syncStatus,
                     deviceImagesByEtag = images,
                     densityOption = config.density,
+                    needsBatteryDeviceIds = needsBatteryMarks.keys,
                 )
             }
         },
     )
 
     fun onSortOptionSelected(option: SortOption) {
-        sortOptionFlow.value = option
+        persist { it.copy(sortKey = option.storageKey()) }
     }
 
     fun onGroupOptionSelected(option: GroupOption) {
-        groupOptionFlow.value = option
+        persist { it.copy(groupKey = option.storageKey()) }
     }
 
     fun onDensityOptionSelected(option: DensityOption) {
@@ -186,11 +215,25 @@ class HomeViewModel(
     }
 
     fun toggleSortDirection() {
-        isSortAscendingFlow.value = !isSortAscendingFlow.value
+        persist { it.copy(isSortAscending = !(it.isSortAscending ?: DEFAULT_SORT_ASCENDING)) }
     }
 
     fun toggleGroupDirection() {
-        isGroupAscendingFlow.value = !isGroupAscendingFlow.value
+        persist { it.copy(isGroupAscending = !(it.isGroupAscending ?: DEFAULT_GROUP_ASCENDING)) }
+    }
+
+    /**
+     * Applies [change] to the stored arrangement.
+     *
+     * Reads the current value from the repository rather than from [uiState], because `uiState`
+     * only holds a real value while something is subscribed — a toggle would otherwise flip
+     * relative to the initial placeholder instead of what is on disk.
+     */
+    private fun persist(change: (ListArrangement) -> ListArrangement) {
+        viewModelScope.coroutineScope.launch {
+            val current = arrangementFlow.first()
+            listArrangementRepository.setArrangement(ListScreen.DEVICES, change(current))
+        }
     }
 
     fun onExportData() {
@@ -236,6 +279,19 @@ class HomeViewModel(
     }
 }
 
+/**
+ * When [device] was last acted on: the newer of its own metadata edit and the moment it was
+ * marked as needing a battery.
+ *
+ * `batteryLastReplaced` deliberately does not feature. It is a user-chosen date that is routinely
+ * backdated, so it says when the battery was changed, not when the record was touched --
+ * `SortOption.BATTERY_AGE` is the sort that reads it.
+ */
+private fun recencyOf(
+    device: Device,
+    marks: Map<String, Instant>,
+): Instant = maxOf(device.lastUpdated, marks[device.id] ?: Instant.DISTANT_PAST)
+
 private data class DisplayConfig(
     val sort: SortOption,
     val group: GroupOption,
@@ -251,3 +307,63 @@ private data class DeviceListInputs(
     val syncStatus: SyncStatus,
     val exportData: String?,
 )
+
+/**
+ * The arrangement used until the user picks something.
+ *
+ * Grouping defaults to [GroupOption.TYPE] (see [toGroupOption]) rather than `NONE`: a flat list
+ * of every device is only readable while you own a handful. This one default does change what an
+ * upgrading install sees on first launch; the directions below do not, and an explicit
+ * "Group: None" is stored as a real token so choosing it still sticks.
+ */
+private const val DEFAULT_SORT_ASCENDING = false
+private const val DEFAULT_GROUP_ASCENDING = true
+
+// Stored as lowercase tokens rather than `Enum.name` or `ordinal`, for the same reasons
+// DataStoreDisplayDensityRepository gives: `name` couples the on-disk format to a Kotlin
+// identifier, and `ordinal` would silently remap every install's saved value if a constant were
+// ever inserted in the middle of the enum. An unknown token degrades to the default.
+private const val SORT_NAME = "name"
+private const val SORT_LOCATION = "location"
+private const val SORT_BATTERY_AGE = "battery_age"
+private const val SORT_TYPE = "type"
+private const val SORT_RECENT = "recent"
+
+private const val GROUP_NONE = "none"
+private const val GROUP_TYPE = "type"
+private const val GROUP_LOCATION = "location"
+
+private fun SortOption.storageKey(): String =
+    when (this) {
+        SortOption.NAME -> SORT_NAME
+        SortOption.LOCATION -> SORT_LOCATION
+        SortOption.BATTERY_AGE -> SORT_BATTERY_AGE
+        SortOption.TYPE -> SORT_TYPE
+        SortOption.RECENT -> SORT_RECENT
+    }
+
+private fun String?.toSortOption(): SortOption =
+    when (this) {
+        SORT_NAME -> SortOption.NAME
+        SORT_LOCATION -> SortOption.LOCATION
+        SORT_TYPE -> SortOption.TYPE
+        SORT_RECENT -> SortOption.RECENT
+        else -> SortOption.BATTERY_AGE
+    }
+
+private fun GroupOption.storageKey(): String =
+    when (this) {
+        GroupOption.NONE -> GROUP_NONE
+        GroupOption.TYPE -> GROUP_TYPE
+        GroupOption.LOCATION -> GROUP_LOCATION
+    }
+
+private fun String?.toGroupOption(): GroupOption =
+    when (this) {
+        GROUP_NONE -> GroupOption.NONE
+
+        GROUP_LOCATION -> GroupOption.LOCATION
+
+        // Covers both "never chosen" (null) and an unreadable token, which degrade to the default.
+        else -> GroupOption.TYPE
+    }

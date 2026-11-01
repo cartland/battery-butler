@@ -16,6 +16,8 @@ sealed interface DeviceDetailScreenState {
         val events: List<BatteryEvent>,
         /** Null when [device] has no photo, or it hasn't finished caching yet -- show the fallback icon either way. */
         val imageBytes: DeviceImageBytes? = null,
+        /** Whether the user has marked this device as needing a new battery. Local-only; never synced. */
+        val needsBattery: Boolean = false,
     ) : DeviceDetailScreenState
 
     /**

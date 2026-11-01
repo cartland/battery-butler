@@ -1,31 +1,10 @@
 package com.chriscartland.batterybutler.viewmodel.util
 
 import kotlin.comparisons.naturalOrder
-import kotlin.comparisons.reverseOrder
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class SortAndGroupUtilTest {
-    // --- toSortedMap tests ---
-
-    @Test
-    fun `toSortedMap sorts by natural order`() {
-        val map = mapOf("c" to 3, "a" to 1, "b" to 2)
-
-        val result = map.toSortedMap(naturalOrder())
-
-        assertEquals(listOf("a", "b", "c"), result.keys.toList())
-    }
-
-    @Test
-    fun `toSortedMap sorts by reverse order`() {
-        val map = mapOf("c" to 3, "a" to 1, "b" to 2)
-
-        val result = map.toSortedMap(reverseOrder())
-
-        assertEquals(listOf("c", "b", "a"), result.keys.toList())
-    }
-
     // --- No grouping tests ---
 
     @Test
@@ -194,7 +173,10 @@ class SortAndGroupUtilTest {
             isGroupAscending = true,
         )
 
-        assertEquals(listOf("a", "b"), result.keys.toList())
+        // Descending sort puts "b2" first, so group "b" leads -- group order follows the sort, not
+        // the alphabet. This is one of only two cells in this matrix where the two differ, which is
+        // why it was the test that caught the change.
+        assertEquals(listOf("b", "a"), result.keys.toList())
         assertEquals(listOf("a2", "a1"), result["a"])
         assertEquals(listOf("b2", "b1"), result["b"])
     }
@@ -210,7 +192,8 @@ class SortAndGroupUtilTest {
             isGroupAscending = false,
         )
 
-        assertEquals(listOf("b", "a"), result.keys.toList())
+        // Sort order gives "b" then "a"; the descending group toggle reverses that to "a", "b".
+        assertEquals(listOf("a", "b"), result.keys.toList())
         assertEquals(listOf("a2", "a1"), result["a"])
         assertEquals(listOf("b2", "b1"), result["b"])
     }
@@ -368,5 +351,85 @@ class SortAndGroupUtilTest {
             listOf("first", "second", "third"),
             result["All"]?.map { it.label },
         )
+    }
+}
+
+/**
+ * Pins the group-ordering rule: groups are ordered by the sort, with each group's first item
+ * setting its priority — not alphabetically by group key.
+ *
+ * Every case here is built so the sort-derived order and the alphabetical order genuinely differ.
+ * The pre-existing tests above mostly cannot tell them apart, because their group keys happen to
+ * sort the same way either way.
+ */
+class SortAndGroupGroupOrderTest {
+    /** Pairs of (groupKey, sortValue) — sorting by the number, grouping by the letter. */
+    private val items = listOf(
+        "z" to 1,
+        "a" to 2,
+        "m" to 3,
+    )
+
+    private fun order(
+        isSortAscending: Boolean = true,
+        isGroupAscending: Boolean = true,
+        priorityFirst: ((Pair<String, Int>) -> Boolean)? = null,
+    ): List<String> =
+        sortAndGroup(
+            items = items,
+            sortComparator = compareBy { it.second },
+            isSortAscending = isSortAscending,
+            groupKeySelector = { it.first },
+            defaultGroupName = "All",
+            isGroupAscending = isGroupAscending,
+            priorityFirst = priorityFirst,
+        ).keys.toList()
+
+    @Test
+    fun `groups follow the sort rather than the alphabet`() {
+        // Sorting by value gives z(1), a(2), m(3). Alphabetically it would be a, m, z.
+        assertEquals(listOf("z", "a", "m"), order())
+    }
+
+    @Test
+    fun `reversing the sort reverses the group order too`() {
+        assertEquals(listOf("m", "a", "z"), order(isSortAscending = false))
+    }
+
+    @Test
+    fun `the group toggle reverses the sort-derived order`() {
+        assertEquals(listOf("m", "a", "z"), order(isGroupAscending = false))
+    }
+
+    @Test
+    fun `a prioritised item pulls its whole group to the front`() {
+        // "m" sorts last, but marking it makes it lead — and its group leads with it.
+        assertEquals(listOf("m", "z", "a"), order(priorityFirst = { it.first == "m" }))
+    }
+
+    /**
+     * The regression guard for the direction bug: priority is applied after the ascending/descending
+     * reversal, so flipping the sort must not turn "priority first" into "priority last".
+     */
+    @Test
+    fun `a prioritised item still leads when the sort is reversed`() {
+        assertEquals(
+            listOf("z", "m", "a"),
+            order(isSortAscending = false, priorityFirst = { it.first == "z" }),
+        )
+    }
+
+    @Test
+    fun `items keep their sort order inside a group`() {
+        val grouped = sortAndGroup(
+            items = listOf("a" to 3, "a" to 1, "a" to 2),
+            sortComparator = compareBy { it.second },
+            isSortAscending = true,
+            groupKeySelector = { it.first },
+            defaultGroupName = "All",
+            isGroupAscending = true,
+        )
+
+        assertEquals(listOf(1, 2, 3), grouped.getValue("a").map { it.second })
     }
 }

@@ -45,7 +45,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.composeresources.composeStringResource
@@ -386,18 +385,10 @@ fun HomeScreenList(
             state.groupedDevices.forEach { (groupName, devices) ->
                 if (state.groupOption != GroupOption.NONE) {
                     stickyHeader {
-                        Surface(
-                            modifier = Modifier.fillMaxWidth(),
-                            color = MaterialTheme.colorScheme.surfaceVariant,
-                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        ) {
-                            Text(
-                                text = groupName,
-                                modifier = Modifier.padding(horizontal = Padding.standard, vertical = Padding.small),
-                                style = MaterialTheme.typography.labelLarge,
-                                fontWeight = FontWeight.Bold,
-                            )
-                        }
+                        DeviceGroupHeader(
+                            title = groupName,
+                            deviceType = groupHeaderDeviceType(state.groupOption, devices, state.deviceTypes),
+                        )
                     }
                 }
 
@@ -409,6 +400,7 @@ fun HomeScreenList(
                         nowInstant = nowInstant,
                         imageBytes = device.imageEtag?.let { state.deviceImagesByEtag[it] },
                         density = state.densityOption,
+                        needsBattery = device.id in state.needsBatteryDeviceIds,
                     )
                 }
             }
@@ -472,6 +464,7 @@ fun HomeScreenPreview() {
         val device = Device("dev1", "Kitchen Smoke", "type1", batteryReplacedInstant, nowInstant, "Kitchen")
         val state = HomeScreenState(
             groupedDevices = mapOf("All" to listOf(device)),
+            groupOption = GroupOption.NONE,
             deviceTypes = mapOf("type1" to type),
         )
         HomeScreenContent(
@@ -560,6 +553,7 @@ fun HomeScreenListPreview() {
         HomeScreenList(
             state = HomeScreenState(
                 groupedDevices = mapOf("All" to listOf(device)),
+                groupOption = GroupOption.NONE,
                 deviceTypes = mapOf("type1" to type),
             ),
             onGroupOptionToggle = {},
@@ -598,6 +592,7 @@ fun HomeScreenCompactPreview() {
         HomeScreenContent(
             state = HomeScreenState(
                 groupedDevices = mapOf("All Devices" to devices),
+                groupOption = GroupOption.NONE,
                 deviceTypes = mapOf("type1" to smokeType, "type2" to coType),
                 densityOption = DensityOption.COMPACT,
             ),
@@ -632,6 +627,7 @@ fun HomeScreenExpandedPreview() {
         HomeScreenContent(
             state = HomeScreenState(
                 groupedDevices = mapOf("All Devices" to devices),
+                groupOption = GroupOption.NONE,
                 deviceTypes = mapOf("type1" to smokeType, "type2" to coType),
                 densityOption = DensityOption.EXPANDED,
             ),

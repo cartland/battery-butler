@@ -40,4 +40,17 @@ class DataStorePreferencesDataSource(
             preferences[DISPLAY_DENSITY_KEY] = value
         }
     }
+
+    override fun stringValue(key: String): Flow<String?> =
+        dataStore.data
+            .map { preferences -> preferences[stringPreferencesKey(key)] }
+
+    override suspend fun setStringValue(
+        key: String,
+        value: String,
+    ) {
+        dataStore.edit { preferences ->
+            preferences[stringPreferencesKey(key)] = value
+        }
+    }
 }

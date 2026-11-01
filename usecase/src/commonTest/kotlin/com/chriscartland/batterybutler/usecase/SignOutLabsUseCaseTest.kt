@@ -4,6 +4,7 @@ import com.chriscartland.batterybutler.domain.model.AuthState
 import com.chriscartland.batterybutler.domain.model.User
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
 import com.chriscartland.batterybutler.testcommon.FakeLabsAuthRepository
+import com.chriscartland.batterybutler.testcommon.FakeNeedsBatteryRepository
 import com.chriscartland.batterybutler.testcommon.TestDevices
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -21,7 +22,7 @@ class SignOutLabsUseCaseTest {
             labsAuthRepository.setLabsAuthState(AuthState.Authenticated(user))
             val deviceRepository = FakeDeviceRepository()
             deviceRepository.setDevices(listOf(TestDevices.createDevice(id = "1")))
-            val useCase = SignOutLabsUseCase(labsAuthRepository, deviceRepository)
+            val useCase = SignOutLabsUseCase(labsAuthRepository, deviceRepository, FakeNeedsBatteryRepository())
 
             useCase()
 
@@ -37,11 +38,23 @@ class SignOutLabsUseCaseTest {
             val labsAuthRepository = FakeLabsAuthRepository()
             val deviceRepository = FakeDeviceRepository()
             deviceRepository.setDeviceTypes(listOf(TestDevices.createDeviceType(id = "t1")))
-            val useCase = SignOutLabsUseCase(labsAuthRepository, deviceRepository)
+            val useCase = SignOutLabsUseCase(labsAuthRepository, deviceRepository, FakeNeedsBatteryRepository())
 
             useCase()
 
             assertEquals(1, deviceRepository.clearAllLocalDataCount)
             assertTrue(deviceRepository.getAllDeviceTypes().first().isEmpty())
+        }
+
+    /** Marks live outside the synced tables, so `clearAllLocalData()` alone leaves them behind. */
+    @Test
+    fun `invoke clears needs-battery marks`() =
+        runTest {
+            val needsBattery = FakeNeedsBatteryRepository(initialFlagged = setOf("d1", "d2"))
+
+            SignOutLabsUseCase(FakeLabsAuthRepository(), FakeDeviceRepository(), needsBattery)()
+
+            assertEquals(1, needsBattery.clearAllCount)
+            assertTrue(needsBattery.getFlaggedDeviceIds().first().isEmpty())
         }
 }

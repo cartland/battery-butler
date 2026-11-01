@@ -9,6 +9,91 @@ Project task tracking for Battery Butler.
 
 ## P2
 
+### bb-release-check-newest-checkrun — `--check` reads the newest check-run per job, so a later run can mask a green one
+
+**Found 2026-09-30** while releasing `android/72`. A release-mode `workflow_dispatch`
+on `3e5f47ab` finished with all six sentinels green, yet
+`./scripts/release-android.sh --check` reported `build_android` and `build_server`
+as **skipped**.
+
+**Root cause**: a commit can carry several CI runs, and `--check` takes the most
+recent check-run for each job name. Here the full dispatched run finished first and
+a path-filtered push run finished after it:
+
+```
+build_android  success  completed 21:14:36   <- dispatched release-mode run
+build_android  skipped  completed 21:19:26   <- later push run (config-only diff)
+```
+
+The later `skipped` won, so a commit that genuinely passed every sentinel looked
+unreleasable. Verify with:
+`gh api "repos/cartland/battery-butler/commits/<sha>/check-runs?per_page=100"` and
+look for duplicate names.
+
+**Workaround used** (no override flag needed): dispatch another release-mode run
+(`gh workflow run "Battery Butler CI" --ref main -f ci_mode=release`) so its results
+are newest, then re-run `--check`. Do NOT reach for `--confirm-skipped-jobs` — per
+`AGENTS.md` that flag needs the user to confirm it by name.
+
+**Fix shape**: make `--check` pick the *best* conclusion per job name rather than the
+newest (success beats skipped beats absent), or filter check-runs to a single run id.
+Prefer the former — it also covers a re-run of one failed job.
+
+### bb-login-screenshot-order — `LoginContentNotConfiguredPreviewTest_Dark` fails only in the full-suite run
+
+**Found 2026-09-27.** `./gradlew :android-screenshot-tests:validateDebugScreenshotTest
+-PforceAllScreenshots` fails this one test (65 tests, 1 failed, 1 skipped). Running the
+same test alone with `--tests "*LoginScreenshotTest*"` **passes**.
+
+Reproduces identically on unmodified `origin/main` (verified at `0598a94c`), so it is
+not caused by any particular change. The isolation-passes/suite-fails split points at
+test-ordering or memory interaction inside the single-invocation `-PforceAllScreenshots`
+path rather than a genuine reference drift — note that path exists specifically because
+the sequential script guards against OOM.
+
+Worth confirming before regenerating the reference: a blind
+`updateDebugScreenshotTest` would bake in whatever the suite run produced.
+
+### bb-compilesdk-37 — compileSdk 36 blocks both Ktor >= 3.6 and Wire >= 7
+
+**Found 2026-09-29** while draining the dependabot queue. Two unrelated bumps
+fail identically:
+
+```
+> An issue was found when checking AAR metadata:
+  1. Dependency 'com.squareup.okhttp3:okhttp-android:5.5.0' requires
+     libraries and applications that compileSdk of at least 37.
+```
+
+`:compose-app:checkDebugAarMetadata` fails and takes `validation_test`,
+`validation_lint`, `validation_instrumented` and `build_android` with it.
+
+**Root cause**: `gradle/libs.versions.toml` sets `android-compileSdk = "36"`.
+Both libraries reached okhttp 5.5.0, which requires 37:
+
+| Bump | PR | Pulls |
+| --- | --- | --- |
+| Wire 6.4.5 -> 7.0.3 | #1487 | okhttp-android 5.5.0 |
+| Ktor 3.5.1 -> 3.6.0 | #1498 | okhttp-android 5.5.0 (via `ktor-client-okhttp`; 3.5.1 used 5.3.2) |
+
+Both are pinned in `.github/dependabot.yml` with version-scoped ignores, so
+unrelated updates in those groups still flow (verified: #1496 still delivered
+wire 6.4.5 -> 6.4.7 with the `>= 7.0.0` pin in place).
+
+**Fix shape**: raise `android-compileSdk` (and probably `android-targetSdk`) to
+37, then delete all FOUR ignore entries together and let dependabot re-propose.
+Four, not two: Wire and Ktor each need a colon-anchored glob AND a bare
+plugin-id entry (`com.squareup.wire`, `io.ktor.plugin`), because the catalog
+declares a plugin on each of those version keys and dependabot names a plugin
+by its bare id with no colon — the glob alone does not hold it (PR #1502
+slipped wire 6.4.7 -> 7.0.4 past exactly that gap).
+Not attempted here because it is not a one-line change: AGP is pinned at 8.9.1
+and each AGP release supports a bounded compileSdk, SDK 37 was not installed on
+the dev machine (only 35/36) and may not be in the CI runner image, and a
+compileSdk bump moves lint's baseline — `validation_lint` is the job most
+likely to surface new findings. Verify with a release-mode CI run, since
+dev-mode PRs skip `build_android`.
+
 ### bb-sync-snapshot-deletions — Full-snapshot sync never applies server-side deletions to a warm local cache
 
 **Found 2026-08-04** during the Labs prod data restore: after an event was deleted
@@ -389,6 +474,19 @@ lower-end devices — out of scope for the async-decode fix, which only addresse
 the decode runs on, not *how much* work it does.
 
 ## P3
+
+### bb-group-header-ios — SwiftUI parity for the Home group-by-type header
+
+The Compose Home list's sticky group header now reads `[type icon] Smart Motion Sensor • 2 x CR2032`
+when grouping by type (`DeviceGroupHeader.kt` in `presentation-feature/.../home/`), so the type
+stays recognisable after device photos replace the per-row icon and the battery to buy is visible
+without opening a device. Android, Desktop, and the Compose iOS app have it.
+
+The native SwiftUI app still renders `Section(header: Text(key))` in
+`ios-app-swift-ui/Features/Home/HomeScreen.swift`. It also iterates
+`state.groupedDevices.keys.sorted()`, which discards the sort-driven group order the shared
+`sortAndGroup` produces — worth fixing in the same pass. Port `groupHeaderDeviceType`'s rule:
+show the icon and battery only when every device in the group shares one type id.
 
 ### bb-density-ios — SwiftUI parity for the device list Compact/Expanded view option
 

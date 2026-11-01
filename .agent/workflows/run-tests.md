@@ -49,8 +49,11 @@ Verify screenshots:
 
 Run the iOS SwiftUI Snapshot tests in the simulator (this will also record new baselines automatically if they are missing):
 ```bash
-cd ios-app-swift-ui && xcodebuild test -project iosAppSwiftUI.xcodeproj -scheme iosAppSwiftUITests -destination "platform=iOS Simulator,name=iPhone 16 Pro,OS=18.5"
+./scripts/test-ios.sh                      # all tests
+./scripts/test-ios.sh BatteryAgeHelperTests  # one class
 ```
+
+It resolves an available simulator itself (preferring iPhone 17, then 16, then 15) rather than pinning a model that ages out of the runner image. Override with `IOS_SIMULATOR_DEVICE="iPhone Air" ./scripts/test-ios.sh`.
 
 ## E2E Tests
 

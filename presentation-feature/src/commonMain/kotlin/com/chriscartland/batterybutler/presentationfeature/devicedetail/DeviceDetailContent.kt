@@ -25,6 +25,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.BatteryAlert
 import androidx.compose.material.icons.filled.BatteryFull
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.DevicesOther
@@ -35,9 +36,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -61,6 +64,8 @@ import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.composeresources.composeStringResource
 import com.chriscartland.batterybutler.composeresources.generated.resources.Res
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_edit
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_mark_needs_battery
+import com.chriscartland.batterybutler.composeresources.generated.resources.action_mark_needs_battery_description
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_record_replacement
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_record_replacement_description
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_try_again
@@ -100,6 +105,7 @@ import kotlin.time.Instant
 fun DeviceDetailContent(
     state: DeviceDetailScreenState,
     onRecordReplacement: () -> Unit,
+    onToggleNeedsBattery: () -> Unit,
     onBack: () -> Unit,
     onEdit: () -> Unit,
     onEventClick: (String) -> Unit,
@@ -152,6 +158,7 @@ fun DeviceDetailContent(
                     DeviceDetailBody(
                         state = state,
                         onRecordReplacement = onRecordReplacement,
+                        onToggleNeedsBattery = onToggleNeedsBattery,
                         onEventClick = onEventClick,
                         modifier = Modifier.fillMaxSize(),
                         nowInstant = nowInstant,
@@ -167,6 +174,7 @@ fun DeviceDetailContent(
 fun DeviceDetailBody(
     state: DeviceDetailScreenState.Success,
     onRecordReplacement: () -> Unit,
+    onToggleNeedsBattery: () -> Unit,
     onEventClick: (String) -> Unit,
     modifier: Modifier = Modifier,
     nowInstant: Instant = Clock.System.now(),
@@ -181,6 +189,8 @@ fun DeviceDetailBody(
     val viewAllLabel = composeStringResource(Res.string.action_view_all)
     val recordReplacementLabel = composeStringResource(Res.string.action_record_replacement)
     val recordReplacementDescription = composeStringResource(Res.string.action_record_replacement_description)
+    val needsBatteryLabel = composeStringResource(Res.string.action_mark_needs_battery)
+    val needsBatteryDescription = composeStringResource(Res.string.action_mark_needs_battery_description)
 
     val listState = rememberLazyListState()
     val flight = rememberRecordFlightState()
@@ -417,6 +427,57 @@ fun DeviceDetailBody(
                     }
                 }
             }
+
+            // "Needs a new battery" mark. Sits directly under Record Replacement because the two
+            // are the same decision at different times: mark it now, record it when it's done.
+            item {
+                Spacer(modifier = Modifier.height(12.dp))
+                val markHaptics = LocalHapticFeedback.current
+                FilledTonalButton(
+                    onClick = {
+                        markHaptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                        onToggleNeedsBattery()
+                    },
+                    modifier = Modifier
+                        .testTag(DeviceDetailTestTags.NEEDS_BATTERY_TOGGLE)
+                        .fillMaxWidth(),
+                    shape = MaterialTheme.shapes.large,
+                    colors = if (state.needsBattery) {
+                        ButtonDefaults.filledTonalButtonColors(
+                            containerColor = MaterialTheme.colorScheme.errorContainer,
+                            contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                        )
+                    } else {
+                        ButtonDefaults.filledTonalButtonColors()
+                    },
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    ) {
+                        Icon(Icons.Default.BatteryAlert, contentDescription = null)
+                        Column(verticalArrangement = Arrangement.Center, modifier = Modifier.weight(1f)) {
+                            Text(
+                                needsBatteryLabel,
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.SemiBold,
+                            )
+                            Text(
+                                needsBatteryDescription,
+                                style = MaterialTheme.typography.bodySmall,
+                            )
+                        }
+                        Switch(
+                            checked = state.needsBattery,
+                            // The whole row is the control; the switch is an indicator, so it must
+                            // not also be focusable/clickable on its own.
+                            onCheckedChange = null,
+                        )
+                    }
+                }
+            }
+
             item {
                 Spacer(modifier = Modifier.height(16.dp))
             }
@@ -530,6 +591,7 @@ fun DeviceDetailContentPreview() {
         DeviceDetailContent(
             state = state,
             onRecordReplacement = {},
+            onToggleNeedsBattery = {},
             onBack = {},
             onEdit = {},
             onEventClick = {},
@@ -546,6 +608,7 @@ fun DeviceDetailLoadingPreview() {
         DeviceDetailContent(
             state = DeviceDetailScreenState.Loading,
             onRecordReplacement = {},
+            onToggleNeedsBattery = {},
             onBack = {},
             onEdit = {},
             onEventClick = {},
@@ -562,6 +625,7 @@ fun DeviceDetailNotFoundPreview() {
         DeviceDetailContent(
             state = DeviceDetailScreenState.NotFound,
             onRecordReplacement = {},
+            onToggleNeedsBattery = {},
             onBack = {},
             onEdit = {},
             onEventClick = {},
@@ -578,6 +642,7 @@ fun DeviceDetailErrorPreview() {
         DeviceDetailContent(
             state = DeviceDetailScreenState.Error("Failed to load device details"),
             onRecordReplacement = {},
+            onToggleNeedsBattery = {},
             onBack = {},
             onEdit = {},
             onEventClick = {},

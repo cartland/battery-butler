@@ -30,3 +30,11 @@ val MIGRATION_6_7 = object : Migration(6, 7) {
         )
     }
 }
+
+val MIGRATION_7_8 = object : Migration(7, 8) {
+    override fun migrate(connection: SQLiteConnection) {
+        connection.execSQL(
+            "CREATE TABLE IF NOT EXISTS needs_battery_flags (deviceId TEXT NOT NULL PRIMARY KEY, flaggedAt INTEGER NOT NULL)",
+        )
+    }
+}

@@ -94,7 +94,8 @@ CI uses `dorny/paths-filter` to skip expensive builds for non-code changes:
 
 **How it works:**
 1. Code merges to `main` -> `auto-generate.yml` runs
-2. Generates diagrams + analysis (Job 1), screenshots sequentially (Job 2), and iOS snapshots (Job 3)
+2. Closes stale/conflicting `auto/*` PRs and deletes orphaned `auto/*` branches (Job 1, `scripts/cleanup-stale-auto-prs.sh`)
+3. Generates diagrams + analysis (Job 2), screenshots sequentially (Job 3), and iOS snapshots (Job 4)
 3. `generateMermaidGraph` embeds `full_system_structure.mmd` into README.md (module dependency graph); `analyzeCode` embeds `code_distribution.mmd` into both README.md and CODE_ANALYSIS.md (sankey chart)
 4. Screenshots use `scripts/generate-android-screenshots.sh` to avoid OOM on CI runners
 5. Change detection includes `*.mmd`, `*.svg`, `docs/CODE_ANALYSIS.md`, and `README.md` — any of these trigger a follow-up PR
@@ -104,6 +105,33 @@ CI uses `dorny/paths-filter` to skip expensive builds for non-code changes:
 7. `ci-trigger-auto-prs.yml` remains as a fallback (fires on workflow completion)
 
 **Why inline trigger was needed:** `cancel-in-progress: true` could cancel an auto-generate run after it created a PR but before the workflow completed. Since `ci-trigger-auto-prs.yml` only fires on completion, the PR would sit with no CI checks for ~16 minutes until the next run completed.
+
+## No Scheduled (Cron) Workflows
+
+**Every workflow runs pre-submit (`pull_request`) or post-submit (`push` to `main` / `workflow_run` / tag). None run on a schedule.** `scripts/validate-workflows.sh` fails CI on any workflow that declares `schedule:` or `- cron:`, so this cannot regress silently.
+
+**Why.** Generated content is a pure function of the commit, so the push that changed the code is the only event that can change the output -- a nightly re-derivation of an unchanged commit finds nothing by construction. What a cron did add was a second writer racing the post-merge run for the same `auto/*` branches, and failures at an hour when nobody was watching. Note that the post-merge auto-issue safety net does not cover the automation pipeline (see below), so a cron-only failure was invisible until someone ran `/repo-check` by hand.
+
+**What was removed:**
+
+| Was | Now |
+| --- | --- |
+| `auto-generate.yml` weekly `0 6 * * 1` "catch any drift" | Nothing. The `push` to `main` trigger already covers it. |
+| `cleanup-stale-auto-prs.yml`, daily `0 0 * * *` | Job 1 of `auto-generate.yml`, running the same logic from `scripts/cleanup-stale-auto-prs.sh`. |
+
+Cleanup runs *before* the generation jobs so a PR about to be closed never gets CI triggered on it by `ci-trigger-auto-prs.yml`, which fires on this workflow's completion. The generation jobs declare `if: always()` so janitorial failure cannot block regenerating content.
+
+`.github/dependabot.yml` still has a `schedule:` — that is Dependabot's own config, not an Actions workflow, and the validator only reads `.github/workflows/`.
+
+## Validating Workflows Themselves (`validation_workflows`)
+
+`auto-generate.yml` triggers only on push to `main`; `release-android.yml` only on a tag. **Neither is exercised by any PR**, so a mistake in one used to surface only after merge. `validation_workflows` runs `scripts/validate-workflows.sh` on PRs touching `.github/workflows/**`, `.github/actions/**` or `scripts/**`, checking:
+
+1. No `schedule:` / `- cron:` trigger (see above).
+2. Every `./scripts/*.sh` a workflow invokes exists and is executable — catches a script renamed or `chmod -x`'d in the same PR.
+3. Every workflow parses as YAML (ruby, falling back to python-yaml, skipped if neither is present).
+
+Dependency-free on purpose: it is plain `grep` plus file tests, so it cannot be the thing that breaks.
 
 ## CI Concurrency on Main (PR #856)
 
@@ -176,6 +204,27 @@ Merging PRs that modify `.github/workflows/` files requires the `workflow` OAuth
 
 CI uses concurrency groups to prevent parallel runs on the same branch. If a `workflow_dispatch` run starts while a `pull_request` run is in-flight, the `pull_request` run gets cancelled. The `ci` gate treats `cancelled` as failure. **PR status checks only track `pull_request`-event runs**, so a successful `workflow_dispatch` run won't clear the red status. Fix: push a new commit to the PR branch to trigger a fresh `pull_request` CI run, or use `gh run rerun <run-id>` on the original `pull_request`-triggered run (not `gh workflow run`).
 
+## iOS Simulator Selection (Never Hardcode a Model)
+
+`scripts/test-ios.sh` and `scripts/record-ios-snapshots.sh` both pinned `DEVICE_NAME="iPhone 16"`. GitHub's macos runner image moved to iOS 26.x, which ships iPhone 17 / 17 Pro / Air / 16e and **no plain iPhone 16** -- so the `ios-snapshots` job in `auto-generate.yml` failed on *every* run from roughly 2026-08 with:
+
+```
+ERROR: No 'iPhone 16' simulator found in any available iOS runtime.
+```
+
+It went unnoticed for weeks because the automation pipeline filed no issues until PR #1485. Note this never broke a merge gate: `validation_ios_ui` builds with `-destination 'generic/platform=iOS Simulator'` and never runs the snapshot comparisons, so only regeneration was affected.
+
+Both scripts now source `scripts/lib/resolve-ios-simulator.sh` and call `resolve_ios_simulator`, which sets `IOS_DEVICE_NAME` and `IOS_RUNTIME_VERSION`.
+
+- **Ordered preference, not "newest available"**: `iPhone 17`, then `16`, then `15`, so the chosen device only moves when someone edits the list. The older entries keep local machines on older Xcode working.
+- **Exact name match**: `iPhone 17` must not select `iPhone 17 Pro`.
+- **Newest runtime for the chosen device**: `simctl` lists runtimes ascending, so the last match wins.
+- **Override**: `IOS_SIMULATOR_DEVICE="iPhone Air" ./scripts/test-ios.sh`.
+
+**The simulator model does not set snapshot image size.** Every `assertSnapshot` in `iosAppSwiftUITests` passes `layout: .device(config: .iPhone13Pro)`, so the rendered dimensions come from the test and are independent of the device running it. PR #1486 predicted the first green run would regenerate every reference at "iPhone 17 dimensions"; it did not, and could not. The first green `ios-snapshots` run (2026-09-27, after ~7 weeks of failures) produced **no** `auto/update-ios-screenshots` PR, because nothing changed.
+
+What the runtime *can* still affect is rendering -- fonts and system chrome differ across iOS versions -- which is why the device is chosen from an ordered list rather than drifting onto whatever is newest.
+
 ## iOS CI — Xcode Version Pinning
 
 iOS CI jobs (`validation_ios_ui`, `build_ios_compose`, `build_ios_native`, `ios-snapshots` in auto-generate) use `maxim-lobanov/setup-xcode@v1` to select an Xcode version.
@@ -239,7 +288,36 @@ ls ~/.gradle/caches/modules-2/files-2.1/<group>/<artifact>
 
 Finally, when a bump *does* fail, prove the failure is **caused by the bump** rather than pre-existing: revert only that one version on the same checkout and re-run the identical command. This is how #1428 was confirmed as a real break, and how the Kotlin/Native test-name failures (`bb-knt-testnames`) and the buildSrc JUnit launcher failure (PR #1436) were each cleared as pre-existing.
 
+**A pin on a version-catalog key that also backs a PLUGIN needs a bare-id entry.** Dependabot names a Gradle plugin by its bare id — `com.squareup.wire`, `io.ktor.plugin`, `com.google.devtools.ksp` — with **no colon**. A colon-anchored glob like `com.squareup.wire:*` matches the library artifacts and silently misses the plugin. Because the catalog's single version key backs both, the unignored plugin drags the key up anyway and the pin does nothing.
+
+Observed 2026-09-29: PR #1502 proposed wire 6.4.7 → 7.0.4 with `com.squareup.wire:* >= 7.0.0` already in place. Its three updates were `com.squareup.wire:wire-runtime`, `com.squareup.wire:wire-grpc-client` and the bare `com.squareup.wire`; the first two were ignored, the third was not. Fixed in PR #1509 (wire) and PR #1515 (ktor, same hole, caught before it bit).
+
+Two traps worth naming, because both produced a confidently wrong conclusion in that session:
+
+- **A bump *below* the floor proves nothing.** #1496 delivering wire 6.4.5 → 6.4.7 was cited as evidence the `>= 7.0.0` pin worked. It was not: 6.4.7 is under the floor and would have landed with or without the pin. Only a bump that *should* be blocked tests a pin.
+- **Check the whole `[plugins]` block, not a line range.** "ktor is library-only" was asserted from a `sed` window that started below `ktor = { id = "io.ktor.plugin" }`. Use `sed -n '/^\[plugins\]/,$p' gradle/libs.versions.toml | grep -oE 'id = "[^"]+"'` and cross-reference every pin.
+
 **General rule for pinned dependencies**: if `build.gradle.kts` or `libs.versions.toml` has a `// Pinned to X` / `// Do not bump` comment, also add that dep to the dependabot ignore list — otherwise dependabot will propose the bump weekly and a slip-through is only a matter of time (especially in dev-mode CI where slow jobs are skipped on PRs).
+
+## Release Preflight: Two Ways `--check` Misleads
+
+Both were hit while cutting `android/71` and `android/72` (2026-09-29/30). Both look like "CI is green" at the top level and are not.
+
+**1. A config-only commit produces a trivially green aggregator.** If a commit touches nothing in the `code` path filter (e.g. only `.github/dependabot.yml` or `TODO.md`), every real job is skipped and the `ci` aggregator still concludes `success` — over an empty set. `gh run view <id> --json conclusion` says `success` and means nothing was built or tested. Only the per-sentinel breakdown from `--check` shows it.
+
+**2. A later run masks an earlier green one.** `--check` takes the newest check-run per job name. A commit can carry several runs, so a path-filtered push run finishing *after* a full dispatched run overwrites `success` with `skipped` for the jobs it skipped. See `bb-release-check-newest-checkrun` in TODO.md; confirm with `gh api "repos/<owner>/<repo>/commits/<sha>/check-runs?per_page=100"` and look for duplicate job names.
+
+**The remedy for both is the same, and it is not an override flag**: dispatch a release-mode run so real results exist and are newest, then re-check.
+
+```bash
+gh workflow run "Battery Butler CI" --ref main -f ci_mode=release
+# wait for it, verify its conclusion directly, then:
+./scripts/release-android.sh --check
+```
+
+`workflow_dispatch` forces `code=true` in the `changes` job (see the `code:` output), so every sentinel runs regardless of the diff. **Do not reach for `--confirm-skipped-jobs`** — `AGENTS.md` requires the user to confirm that flag by name, and having personally verified the timestamps is exactly the reasoning that rule exists to distrust.
+
+Budget for it: these runs queue behind every open dependabot PR's CI, and the macOS jobs serialize. An hour of queue is normal when several bot PRs land at once.
 
 ## CI Debugging
 
@@ -274,7 +352,23 @@ For PRs that share files (e.g. `strings.xml`, list-screen content): disable auto
 
 This is what makes development-mode CI safe as the steady state: PRs only run fast checks, slow checks run post-merge on `main`, and any post-merge regression surfaces as a tracked issue instead of silent red.
 
-**Scope caveat — only watches `Battery Butler CI`**: the workflow's trigger gates on `workflow_run.name == "Battery Butler CI"` AND `event == 'push'` AND `head_branch == 'main'`. Failures in the *automation pipeline* (`Auto-Generate Content`, `CI for Auto PRs`) are NOT covered — they never file a `ci-failure` issue no matter how often they fail, and so they never gate the merge queue. They only surface via a manual `/repo-check`. (Observed 2026-06-08: weekly `CI for Auto PRs` → `trigger-ci` "Bad credentials" failures from the expired BOT_PAT, bb-16u1, were invisible to this net.)
+**Two modes, two labels.** `ci-post-merge-issue.yml` watches `Battery Butler CI`, `Auto-Generate Content` and `CI for Auto PRs`, and handles them differently:
+
+| | Battery Butler CI | Automation pipeline |
+| --- | --- | --- |
+| Job | `file-or-resolve` | `automation-pipeline` |
+| Label | `ci-failure` + `blocking` | `automation-failure`, **never** `blocking` |
+| Title | `CI failure on main: <job>` | `Automation failure on main: <job>` |
+| Gates merges | Yes, via `validation_no_blocking_issues` | No |
+| Sentinel check before closing | Yes | Skipped (those are Battery Butler CI job names) |
+
+Both share `scripts/file-ci-failure-issue.sh`; the automation job passes `ISSUE_LABEL`, `BLOCKING=false`, `TITLE_PREFIX` and `CHECK_SENTINELS=false`. The defaults reproduce the original blocking behaviour exactly, so the primary safety net is unchanged.
+
+**The two modes must never share a label.** The success path closes *every* open issue carrying `$ISSUE_LABEL`, so if the automation pipeline filed under `ci-failure`, one green auto-generate run would close real CI failures and silently disarm the net.
+
+**Why automation failures are not blocking**: these workflows produce generated content and housekeeping PRs -- nothing they do ships. Freezing every merge in the repo over a screenshot job or a branch deletion would be worse than the silence it replaces. They get an issue for visibility and nothing more.
+
+*Previously*: the trigger gated on `workflow_run.name == "Battery Butler CI"` only, so automation-pipeline failures filed nothing no matter how often they happened and surfaced only via a manual `/repo-check`. (Observed 2026-06-08: recurring `CI for Auto PRs` → `trigger-ci` "Bad credentials" failures from the expired BOT_PAT, bb-16u1, were invisible to this net.)
 
 **Verified working (2026-06-08)**: open / comment-dedup / close-on-green have all fired correctly in production history. Concrete examples — open: #1216–1218; comment-dedup: #1180 (3× "Job failed again." on the same `ci` issue instead of duplicates); auto-close-on-green: #1199/#1198/#1192/#1184/#1168/#1164/#1140/#1139. Note the most *recent* closures (the 05-16 batch) were closed *manually* by the developer who fixed `main`, ahead of the auto-close — that's expected, not a regression.
 

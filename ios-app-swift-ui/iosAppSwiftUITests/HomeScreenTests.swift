@@ -36,7 +36,8 @@ final class HomeScreenTests: XCTestCase {
             syncStatus: SyncStatusIdle(),
             error: nil,
             deviceImagesByEtag: [:],
-            densityOption: .expanded
+            densityOption: .expanded,
+            needsBatteryDeviceIds: []
         )
 
         let view = makeView(state: state)
@@ -61,7 +62,8 @@ final class HomeScreenTests: XCTestCase {
             syncStatus: SyncStatusIdle(),
             error: nil,
             deviceImagesByEtag: [:],
-            densityOption: .expanded
+            densityOption: .expanded,
+            needsBatteryDeviceIds: []
         )
 
         let view = makeView(state: state)
@@ -89,7 +91,8 @@ final class HomeScreenTests: XCTestCase {
             syncStatus: SyncStatusSyncing(),
             error: nil,
             deviceImagesByEtag: [:],
-            densityOption: .expanded
+            densityOption: .expanded,
+            needsBatteryDeviceIds: []
         )
 
         let view = makeView(state: state)

@@ -37,6 +37,7 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -72,7 +73,11 @@ import com.chriscartland.batterybutler.presentationcore.components.ButlerCentere
 import com.chriscartland.batterybutler.presentationcore.components.DeviceIconMapper
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
 import com.chriscartland.batterybutler.presentationcore.theme.Padding
+import com.chriscartland.batterybutler.presentationcore.util.datePickerMillisToInstant
+import com.chriscartland.batterybutler.presentationcore.util.formatDatePickerMillis
+import com.chriscartland.batterybutler.presentationcore.util.instantToDatePickerMillis
 import com.chriscartland.batterybutler.presentationmodel.eventdetail.EditBatteryEventScreenState
+import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.ExperimentalTime
@@ -87,7 +92,11 @@ fun EditBatteryEventContent(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // UTC midnight of the selected day, matching DatePickerState.selectedDateMillis.
+    // Converted to and from an instant at the edges via the presentation-core helpers.
     var dateMillis by rememberSaveable { mutableStateOf<Long?>(null) }
+    // Preserved so editing the date doesn't rewrite an event's time of day.
+    var timeOfDayNanos by rememberSaveable { mutableLongStateOf(0L) }
     var batteryType by rememberSaveable { mutableStateOf("") }
     var notes by rememberSaveable { mutableStateOf("") }
     var isInitialized by rememberSaveable { mutableStateOf(false) }
@@ -109,7 +118,11 @@ fun EditBatteryEventContent(
                         onClick = {
                             dateMillis?.let { millis ->
                                 onSave(
-                                    Instant.fromEpochMilliseconds(millis),
+                                    datePickerMillisToInstant(
+                                        millis,
+                                        TimeZone.currentSystemDefault(),
+                                        LocalTime.fromNanosecondOfDay(timeOfDayNanos),
+                                    ),
                                     batteryType.takeIf { it.isNotBlank() },
                                     notes.takeIf { it.isNotBlank() },
                                 )
@@ -137,19 +150,19 @@ fun EditBatteryEventContent(
                     val event = uiState.event
                     LaunchedEffect(event) {
                         if (!isInitialized) {
-                            dateMillis = event.date.toEpochMilliseconds()
+                            val timeZone = TimeZone.currentSystemDefault()
+                            dateMillis = instantToDatePickerMillis(event.date, timeZone)
+                            timeOfDayNanos = event.date
+                                .toLocalDateTime(timeZone)
+                                .time
+                                .toNanosecondOfDay()
                             batteryType = event.batteryType ?: ""
                             notes = event.notes ?: ""
                             isInitialized = true
                         }
                     }
 
-                    val currentDate = dateMillis?.let {
-                        val date = Instant
-                            .fromEpochMilliseconds(it)
-                            .toLocalDateTime(TimeZone.currentSystemDefault())
-                        "${date.year}-${(date.month.ordinal + 1).toString().padStart(2, '0')}-${date.day.toString().padStart(2, '0')}"
-                    } ?: ""
+                    val currentDate = dateMillis?.let { formatDatePickerMillis(it) } ?: ""
 
                     if (showDatePicker) {
                         val datePickerState = rememberDatePickerState(

@@ -1,8 +1,11 @@
 package com.chriscartland.batterybutler.viewmodel.devicetypes
 
 import com.chriscartland.batterybutler.domain.model.DeviceType
+import com.chriscartland.batterybutler.domain.model.ListArrangement
+import com.chriscartland.batterybutler.domain.model.ListScreen
 import com.chriscartland.batterybutler.domain.model.Result
 import com.chriscartland.batterybutler.domain.repository.DisplayDensityRepository
+import com.chriscartland.batterybutler.domain.repository.ListArrangementRepository
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeGroupOption
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeListScreenState
 import com.chriscartland.batterybutler.presentationmodel.devicetypes.DeviceTypeSortOption
@@ -21,6 +24,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -33,6 +37,7 @@ class DeviceTypeListViewModel(
     private val preloadCommonTypesUseCase: PreloadCommonTypesUseCase,
     private val resyncUseCase: ResyncUseCase,
     private val displayDensityRepository: DisplayDensityRepository,
+    private val listArrangementRepository: ListArrangementRepository,
 ) : ViewModel() {
     // Exposed to SwiftUI: must use the observable factory so @StateViewModel re-renders.
     // (Private funnel flows below stay plain — they combine into the observable uiState.)
@@ -59,10 +64,9 @@ class DeviceTypeListViewModel(
         _actionError.value = null
     }
 
-    private val sortOptionFlow = MutableStateFlow(DeviceTypeSortOption.NAME)
-    private val groupOptionFlow = MutableStateFlow(DeviceTypeGroupOption.NONE)
-    private val isSortAscendingFlow = MutableStateFlow(true)
-    private val isGroupAscendingFlow = MutableStateFlow(true)
+    // Persisted per list screen, so this survives app restarts and is independent of the device
+    // list's own arrangement -- sorting devices by battery age says nothing about device types.
+    private val arrangementFlow = listArrangementRepository.arrangement(ListScreen.DEVICE_TYPES)
 
     // Shared app-wide with the Home device list -- same stored preference, same DataStore key,
     // so toggling density on either screen moves both.
@@ -89,13 +93,16 @@ class DeviceTypeListViewModel(
         source = {
             combine(
                 combine(
-                    sortOptionFlow,
-                    groupOptionFlow,
-                    isSortAscendingFlow,
-                    isGroupAscendingFlow,
+                    arrangementFlow,
                     densityOptionFlow,
-                ) { sort, group, isSortAscending, isGroupAscending, density ->
-                    DeviceTypeSortConfig(sort, group, isSortAscending, isGroupAscending, density)
+                ) { arrangement, density ->
+                    DeviceTypeSortConfig(
+                        sort = arrangement.sortKey.toDeviceTypeSortOption(),
+                        group = arrangement.groupKey.toDeviceTypeGroupOption(),
+                        isSortAscending = arrangement.isSortAscending ?: DEFAULT_TYPE_SORT_ASCENDING,
+                        isGroupAscending = arrangement.isGroupAscending ?: DEFAULT_TYPE_GROUP_ASCENDING,
+                        density = density,
+                    )
                 },
                 getDeviceTypesUseCase(),
             ) { config, list ->
@@ -131,19 +138,27 @@ class DeviceTypeListViewModel(
     )
 
     fun onSortOptionSelected(option: DeviceTypeSortOption) {
-        sortOptionFlow.value = option
+        persist { it.copy(sortKey = option.storageKey()) }
     }
 
     fun onGroupOptionSelected(option: DeviceTypeGroupOption) {
-        groupOptionFlow.value = option
+        persist { it.copy(groupKey = option.storageKey()) }
     }
 
     fun toggleSortDirection() {
-        isSortAscendingFlow.value = !isSortAscendingFlow.value
+        persist { it.copy(isSortAscending = !(it.isSortAscending ?: DEFAULT_TYPE_SORT_ASCENDING)) }
     }
 
     fun toggleGroupDirection() {
-        isGroupAscendingFlow.value = !isGroupAscendingFlow.value
+        persist { it.copy(isGroupAscending = !(it.isGroupAscending ?: DEFAULT_TYPE_GROUP_ASCENDING)) }
+    }
+
+    /** Reads from the repository, not [uiState], for the reason given on HomeViewModel.persist. */
+    private fun persist(change: (ListArrangement) -> ListArrangement) {
+        viewModelScope.coroutineScope.launch {
+            val current = arrangementFlow.first()
+            listArrangementRepository.setArrangement(ListScreen.DEVICE_TYPES, change(current))
+        }
     }
 
     fun preloadCommonTypes() {
@@ -166,3 +181,37 @@ private data class DeviceTypeSortConfig(
     val isGroupAscending: Boolean,
     val density: DensityOption,
 )
+
+/** Defaults matching the behaviour before these choices were persisted. */
+private const val DEFAULT_TYPE_SORT_ASCENDING = true
+private const val DEFAULT_TYPE_GROUP_ASCENDING = true
+
+// Lowercase tokens, not `name`/`ordinal` -- see the note in HomeViewModel.
+private const val TYPE_SORT_NAME = "name"
+private const val TYPE_SORT_BATTERY_TYPE = "battery_type"
+private const val TYPE_GROUP_NONE = "none"
+private const val TYPE_GROUP_BATTERY_TYPE = "battery_type"
+
+private fun DeviceTypeSortOption.storageKey(): String =
+    when (this) {
+        DeviceTypeSortOption.NAME -> TYPE_SORT_NAME
+        DeviceTypeSortOption.BATTERY_TYPE -> TYPE_SORT_BATTERY_TYPE
+    }
+
+private fun String?.toDeviceTypeSortOption(): DeviceTypeSortOption =
+    when (this) {
+        TYPE_SORT_BATTERY_TYPE -> DeviceTypeSortOption.BATTERY_TYPE
+        else -> DeviceTypeSortOption.NAME
+    }
+
+private fun DeviceTypeGroupOption.storageKey(): String =
+    when (this) {
+        DeviceTypeGroupOption.NONE -> TYPE_GROUP_NONE
+        DeviceTypeGroupOption.BATTERY_TYPE -> TYPE_GROUP_BATTERY_TYPE
+    }
+
+private fun String?.toDeviceTypeGroupOption(): DeviceTypeGroupOption =
+    when (this) {
+        TYPE_GROUP_BATTERY_TYPE -> DeviceTypeGroupOption.BATTERY_TYPE
+        else -> DeviceTypeGroupOption.NONE
+    }

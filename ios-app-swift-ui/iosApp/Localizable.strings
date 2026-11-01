@@ -219,6 +219,7 @@
 "sort.location" = "Location";
 "sort.battery_age" = "Battery Age";
 "sort.type" = "Type";
+"sort.recent" = "Recent";
 "sort.battery_type" = "Battery Type";
 "group.none" = "None";
 "group.type" = "Type";

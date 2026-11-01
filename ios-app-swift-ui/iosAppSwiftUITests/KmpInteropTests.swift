@@ -129,7 +129,8 @@ final class KmpInteropTests: XCTestCase {
             syncStatus: SyncStatusIdle(),
             error: nil,
             deviceImagesByEtag: [:],
-            densityOption: .expanded
+            densityOption: .expanded,
+            needsBatteryDeviceIds: []
         )
         XCTAssertTrue(state.isSortAscending)
         XCTAssertEqual(state.sortOption, .name)
@@ -187,7 +188,8 @@ final class KmpInteropTests: XCTestCase {
             device: device,
             deviceType: deviceType,
             events: events,
-            imageBytes: nil
+            imageBytes: nil,
+            needsBattery: false
         )
 
         let error: DeviceDetailScreenState = DeviceDetailScreenStateError(message: "boom")

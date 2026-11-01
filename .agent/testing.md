@@ -132,11 +132,52 @@ Pixel-perfect UI regression tests against reference images. Failures indicate UI
 - **Two-tier structure**: Screenshot tests have exactly two tiers — (1) **full-screen** (with Scaffold, tabs, app bar) and (2) **individual components** (reusable design-system pieces). Intermediate layouts (e.g. just the filter row, just the list section, just a sub-section) must not have standalone screenshot tests. When removing an intermediate-layout screenshot test, also remove the `@Preview` annotation from the source composable (keep the composable function itself; just drop the `@Preview`).
 - **Battery age states** (`DeviceListItemOldPreview`, `DeviceListItemVeryOldPreview`) are component-level tests — they verify distinct visual states (amber warning ≥180 days, red bold ≥365 days) that matter for regression detection.
 - **Platform API overrides for previews**: When a composable reads a platform API (e.g., `WindowInsets.ime`) that always returns a fixed value in previews, use **parameter hoisting** — add a parameter with the platform read as its default (e.g., `imeVisible: Boolean = WindowInsets.ime.getBottom(LocalDensity.current) > 0`). Previews pass the desired value directly. Do NOT use CompositionLocals for test-only overrides — that leaks test concerns into production code.
+- **`generate-android-screenshots.sh` takes no flags and always UPDATES.** It ignores unrecognised arguments silently, so `./scripts/generate-android-screenshots.sh --validate` runs `updateDebugScreenshotTest` and rewrites baselines rather than checking them (observed 2026-09-27: it regenerated 6 PNGs that way). To validate, call the Gradle task directly: `./gradlew :android-screenshot-tests:validateDebugScreenshotTest -PforceAllScreenshots`. Check `git status -- android-screenshot-tests/` afterwards either way.
 - **Blank-screenshot detection**: `./scripts/check-screenshot-health.sh` (also exposed as `/check-screenshot-health` skill) scans reference PNGs and reports any under 1 KB — these are usually previews that depend on runtime state (`ViewModel`, `LocalFileSaver`, `LocalFileLoader`, `appComponent`) and rendered empty in screenshot tests. The fix is creating a stateless preview overload that accepts demo data as parameters. Run this after `/update-android-screenshots` or after changing preview composables.
 
 ### iOS
 
 See [ios.md](ios.md) for iOS snapshot testing details.
+
+## Mutation Checks: When a Test Passes for the Wrong Reason
+
+`AGENTS.md` requires reintroducing a bug and confirming the test fails. The value is not
+ceremony — in the 2026-09-27 session (PR #1492) **two of four mutations passed**, and each
+exposed a test that asserted the right answer via the wrong mechanism.
+
+**1. Another feature masked the one under test.** A test claimed a device marked
+"needs battery" leads the `RECENT` sort. Removing the mark timestamp from the recency
+calculation did not fail it, because `sortAndGroup`'s `priorityFirst` floats *any* marked
+device to the front regardless of the comparator. One marked device proves nothing about
+the sort. Fix: mark **both** devices so the float cancels out and the timestamp is the only
+differentiator.
+
+> Generally: if a second mechanism can produce the expected ordering, the test must put that
+> mechanism in a state where it cannot.
+
+**2. The assertion landed on a placeholder, not a result.** Tests asserting default
+sort/group values read `viewModel.uiState.first()`. That returns `retryableStateIn`'s
+**initial value** — a bare `HomeScreenState()` carrying data class defaults — not anything
+the stored arrangement produced. Reverting the resolution logic did not fail them. It was
+pre-existing: those tests had never verified sort resolution either. Fix: seed a device and
+wait for a hydrated emission:
+
+```kotlin
+val state = viewModel.uiState.first { it.groupedDevices.values.flatten().isNotEmpty() }
+```
+
+**Make the wait condition order-independent.** A first draft waited on
+`first { ...first().name == expectedFirst }`, which **hangs forever** when the order is
+wrong instead of failing — and a hanging test is indistinguishable from a slow one in CI
+(same trap as the persistence tests in PR #1483). Wait on something true regardless of the
+outcome (a count), then assert the ordering:
+
+```kotlin
+uiState.first { it.groupedDevices.values.flatten().size == expectedCount &&
+                it.needsBatteryDeviceIds.size == expectedMarks }
+```
+
+After this change the same mutations failed in ~5s with a readable diff.
 
 ## Detekt
 

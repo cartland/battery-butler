@@ -283,6 +283,30 @@ For forms with required fields (AddDeviceContent, AddDeviceTypeContent, EditDevi
 
 String resources for form errors: `form_error_device_name_required`, `form_error_device_type_required`, `form_error_battery_type_required`, `form_error_type_name_required` (extend as new required fields are added).
 
+### Dates: Two Conventions, One Boundary
+
+Event dates live in **two incompatible representations**, and mixing them is an
+off-by-one-day bug that only shows up in some time zones:
+
+- **Domain/storage**: a `kotlin.time.Instant`, always read back with
+  `toLocalDateTime(TimeZone.currentSystemDefault())`. The Compose add paths
+  (`AddBatteryEventContent`, `BatchAddBatteryEventsUseCase`, `DeviceToolHandler`) create
+  these with `LocalDate.atStartOfDayIn(TimeZone.currentSystemDefault())`, i.e. **local**
+  start of day. iOS SwiftUI binds a real `Date`, so it stores the actual time of day.
+- **Material3 `DatePickerState.selectedDateMillis`**: **UTC** midnight of the picked
+  calendar day. It is not an instant and must never be passed to the domain directly.
+
+Passing the picker value straight through shifts the date back a day everywhere west of
+UTC; seeding the picker with a raw instant shifts it forward a day everywhere east of UTC.
+At UTC±0 both look correct, which is why it reads as "off by one *sometimes*".
+
+Cross the boundary only via the helpers in
+`presentation-core/.../util/DateTimeUtils.kt` — `instantToDatePickerMillis`,
+`datePickerMillisToInstant`, `formatDatePickerMillis`. `datePickerMillisToInstant` takes
+the original `LocalTime` so re-confirming the displayed date is a true no-op rather than
+silently rewriting an iOS-created event's time to midnight. Covered by
+`DatePickerTimeZoneTest` (both mutations verified to fail the tests).
+
 ### Retry With Fresh Subscription (ViewModel pattern)
 
 `retryableStateIn(...)` in `viewmodel/.../ViewModelExtensions.kt` (added in PR #1136) wraps a source flow factory in `retryTrigger.flatMapLatest { source().catch { onError } }`. Emitting a new value to the trigger cancels the prior inner subscription (including any errored `.catch`) and starts fresh. The `.catch` is INSIDE the `flatMapLatest` so it re-arms on every retry — outside, the downstream chain would be permanently dead after the first error.

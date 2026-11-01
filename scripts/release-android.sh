@@ -148,7 +148,15 @@ done
 # Compute state (used by both --check and release modes)
 # ============================================================
 
+# `gh repo view` needs GraphQL, which Claude Code cloud sessions refuse (HTTP 403) even though
+# gh's REST calls work there. Fall back to the origin remote so the CI gate below still runs
+# instead of silently reporting "no check_runs".
 REPO=$(gh repo view --json nameWithOwner --jq '.nameWithOwner' 2>/dev/null || echo "")
+if [ -z "$REPO" ]; then
+    REPO=$(git remote get-url origin 2>/dev/null |
+        sed -E 's#^(https://github\.com/|git@github\.com:)##; s#\.git$##' |
+        grep -E '^[^/]+/[^/]+$' || echo "")
+fi
 
 # Fetch tags
 git fetch origin --tags --quiet 2>/dev/null || git fetch origin --tags
