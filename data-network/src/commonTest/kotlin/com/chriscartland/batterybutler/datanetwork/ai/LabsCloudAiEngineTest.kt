@@ -66,7 +66,7 @@ class LabsCloudAiEngineTest {
         }
 
     @Test
-    fun `a tool call runs the handler and echoes the model turn verbatim, signature included`() =
+    fun `a tool call runs the handler and echoes the model turn verbatim with its signature`() =
         runTest {
             val requests = mutableListOf<JsonObject>()
             val callTurn =

@@ -23,7 +23,7 @@ class DeferredAiEngineTest {
     }
 
     @Test
-    fun `the provider is not read at construction, and is read once`() =
+    fun `the provider is not read at construction and is read once`() =
         runTest {
             var reads = 0
             val engine = DeferredAiEngine {
