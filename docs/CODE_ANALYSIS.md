@@ -3,36 +3,36 @@
 # Code Analysis
 
 This document provides a breakdown of the codebase by application layer and module.
-Total Lines of Code: 64739
+Total Lines of Code: 65455
 
 ## Application Breakdown
-* Shared Code: 47,305 lines (73.1%)
-* Other: 6,079 lines (9.4%)
-* iOS Swift App: 5,702 lines (8.8%)
-* CMP Android, iOS, Desktop: 2,831 lines (4.4%)
-* Server: 1,530 lines (2.4%)
+* Shared Code: 48,018 lines (73.4%)
+* Other: 6,079 lines (9.3%)
+* iOS Swift App: 5,702 lines (8.7%)
+* CMP Android, iOS, Desktop: 2,834 lines (4.3%)
+* Server: 1,530 lines (2.3%)
 * Android Screenshot Tests: 1,292 lines (2.0%)
 
 ## Module Breakdown
-* `:presentation-feature`: 8,458 lines (13.1%)
-* `:viewmodel`: 8,252 lines (12.7%)
-* `:usecase`: 6,574 lines (10.2%)
-* `:data-network`: 6,538 lines (10.1%)
-* `:iosAppSwiftUI.xcodeproj`: 5,702 lines (8.8%)
-* `:presentation-core`: 4,511 lines (7.0%)
-* `:data`: 4,408 lines (6.8%)
-* `:domain`: 3,258 lines (5.0%)
+* `:presentation-feature`: 8,658 lines (13.2%)
+* `:viewmodel`: 8,252 lines (12.6%)
+* `:data-network`: 7,253 lines (11.1%)
+* `:usecase`: 6,574 lines (10.0%)
+* `:iosAppSwiftUI.xcodeproj`: 5,702 lines (8.7%)
+* `:presentation-core`: 4,517 lines (6.9%)
+* `:data`: 4,408 lines (6.7%)
+* `:domain`: 3,252 lines (5.0%)
 * `:data-local`: 2,992 lines (4.6%)
 * `:buildSrc`: 2,810 lines (4.3%)
-* `:compose-app`: 2,564 lines (4.0%)
+* `:compose-app`: 2,567 lines (3.9%)
 * `:server:app`: 1,344 lines (2.1%)
 * `:android-screenshot-tests`: 1,292 lines (2.0%)
 * `:test-common`: 1,218 lines (1.9%)
-* `:ai`: 575 lines (0.9%)
 * `:detekt-rules`: 413 lines (0.6%)
 * `:experimental:viewmodel`: 397 lines (0.6%)
 * `:presentation-model`: 392 lines (0.6%)
-* `:experimental:data`: 357 lines (0.6%)
+* `:ai`: 373 lines (0.6%)
+* `:experimental:data`: 357 lines (0.5%)
 * `:experimental:usecase`: 316 lines (0.5%)
 * `:experimental:data-local`: 301 lines (0.5%)
 * `:e2e-tests`: 271 lines (0.4%)
@@ -49,8 +49,8 @@ Total Lines of Code: 64739
 * `:iosAppComposeUI.xcodeproj`: 31 lines (0.0%)
 
 ## Language Breakdown
-* Kotlin (.kt): 58,771 lines (90.8%)
-* Swift (.swift): 5,968 lines (9.2%)
+* Kotlin (.kt): 59,487 lines (90.9%)
+* Swift (.swift): 5,968 lines (9.1%)
 
 ## Code Distribution
 
@@ -68,23 +68,23 @@ config:
 %% GENERATED FILE - DO NOT EDIT
 sankey-beta
 
-Codebase,Shared Code,47305
+Codebase,Shared Code,48018
 Codebase,Other,6079
 Codebase,iOS Swift App,5702
-Codebase,CMP Apps,2831
+Codebase,CMP Apps,2834
 Codebase,Server,1530
 Codebase,Screenshot Tests,1292
 
-Shared Code,presentation-feature,8458
+Shared Code,presentation-feature,8658
 Shared Code,viewmodel,8252
+Shared Code,data-network,7253
 Shared Code,usecase,6574
-Shared Code,data-network,6538
-Shared Code,presentation-core,4511
+Shared Code,presentation-core,4517
 Shared Code,data,4408
-Shared Code,domain,3258
+Shared Code,domain,3252
 Shared Code,data-local,2992
-Shared Code,ai,575
 Shared Code,experimental:viewmodel,397
+Shared Code,ai,373
 Shared Code,experimental:data,357
 Shared Code,experimental:usecase,316
 Shared Code,experimental:data-local,301
@@ -105,7 +105,7 @@ Other,iosAppComposeUI,31
 
 iOS Swift App,iosAppSwiftUI,5702
 
-CMP Apps,compose-app,2564
+CMP Apps,compose-app,2567
 CMP Apps,experimental:compose-app,267
 
 Server,server:app,1344
@@ -114,24 +114,24 @@ Server,server:domain,34
 
 Screenshot Tests,android-screenshot-tests,1292
 
-presentation-feature,Kotlin,8458
+presentation-feature,Kotlin,8658
 viewmodel,Kotlin,8252
+data-network,Kotlin,7253
 usecase,Kotlin,6574
-data-network,Kotlin,6538
 iosAppSwiftUI,Swift,5702
-presentation-core,Kotlin,4511
+presentation-core,Kotlin,4517
 data,Kotlin,4408
-domain,Kotlin,3258
+domain,Kotlin,3252
 data-local,Kotlin,2992
 buildSrc,Kotlin,2810
-compose-app,Kotlin,2564
+compose-app,Kotlin,2567
 server:app,Kotlin,1344
 android-screenshot-tests,Kotlin,1292
 test-common,Kotlin,1218
-ai,Kotlin,575
 detekt-rules,Kotlin,413
 experimental:viewmodel,Kotlin,397
 presentation-model,Kotlin,392
+ai,Kotlin,373
 experimental:data,Kotlin,357
 experimental:usecase,Kotlin,316
 experimental:data-local,Kotlin,301
