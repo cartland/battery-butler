@@ -43,7 +43,7 @@ Architecture is enforced by `buildSrc/.../ArchitectureCheckTask.kt`. Key rules:
 - `:domain` depends on nothing (pure interfaces and models)
 - `:usecase` depends on `:domain`, `:presentation-model`
 - `:viewmodel` depends on `:usecase`, `:domain`, `:presentation-model`
-- `:ai` contains platform implementations (`AndroidAiEngine`, `DynamicAiEngine`, `OnDeviceAiEngine`, `NoOpAiEngine`); interfaces live in `:domain:model:ai`
+- `:ai` contains platform implementations (`DynamicAiEngine`, `DeferredAiEngine`, `OnDeviceAiEngine`, `NoOpAiEngine`); the cloud engine is `LabsCloudAiEngine` in `:data-network`, relayed through the Labs backend; interfaces live in `:domain:model:ai`
 - `:usecase` contains `SendChatMessageUseCase` (augments AI messages with time + user context) and `BuildAiContextUseCase` (builds user inventory summary from DeviceRepository)
 - `:data` provides implementations of domain interfaces
 
@@ -699,7 +699,7 @@ AI messages are augmented in `SendChatMessageUseCase` before reaching the AI eng
 2. **User context**: Device inventory, types, and recent events via `BuildAiContextUseCase`
 3. The augmented message is sent to `AiEngine.generateResponse()`
 
-The AI system instruction (in `AndroidAiEngine`) is immutable after model creation (Gemini API constraint), so dynamic context is prepended to user messages rather than modifying the system instruction.
+The AI system instruction (`LabsAiTools.SYSTEM_INSTRUCTION`, sent with every relay request) is fixed for the conversation, so dynamic context is prepended to user messages rather than modifying the system instruction.
 
 **AI Tools (DeviceToolHandler):**
 - 9 tools total: `addDevice`, `addDeviceType`, `recordBatteryReplacement`, `updateDevice`, `deleteDevice`, `updateDeviceType`, `deleteDeviceType`, `updateBatteryEvent`, `deleteBatteryEvent`

@@ -120,29 +120,29 @@ A Google Play service account JSON key for API access.
 
 ### 6. `GOOGLE_SERVICES_JSON_BASE64`
 
-Your real Firebase `google-services.json`, encoded as Base64. This powers the
-cloud AI chat (Gemini via `firebase-ai`).
+Your real Firebase `google-services.json`, encoded as Base64. **Optional**: it
+lets Crashlytics deliver crash reports. Cloud AI chat does **not** use it — the
+assistant is relayed through the Labs backend, which holds the Gemini key
+(`LabsCloudAiEngine`; labs-backend `POST /v1/battery-butler/ai/generate`).
 
 `compose-app/google-services.json` is committed as a **mock** (`project_id`
 `mock-project-id`) so the repo builds without credentials. The release workflows
 overwrite it with this secret at build time. Without the secret, release builds
-still succeed but the app reports *"AI is unavailable: Firebase is not configured
-with a valid Gemini API key"* at runtime.
+still succeed and log a warning; only crash reporting is affected.
 
 **To create it:**
 
 1. Go to the [Firebase Console](https://console.firebase.google.com/) and create
    a project (or select an existing one).
-2. Enable the **Gemini Developer API** (Firebase AI Logic) for the project.
-3. Add an Android app with package name `com.chriscartland.batterybutler`.
-4. Download the generated `google-services.json`.
-5. Encode it:
+2. Add an Android app with package name `com.chriscartland.batterybutler`.
+3. Download the generated `google-services.json`.
+4. Encode it:
 
 ```bash
 base64 -i google-services.json | tr -d '\n'
 ```
 
-6. Save the Base64 output as the `GOOGLE_SERVICES_JSON_BASE64` secret.
+5. Save the Base64 output as the `GOOGLE_SERVICES_JSON_BASE64` secret.
 
 **Do not commit the real file.** The committed mock is intentional; replacing it
 in the repo would publish a live API key.

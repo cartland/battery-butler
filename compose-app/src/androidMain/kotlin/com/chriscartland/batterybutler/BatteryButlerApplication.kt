@@ -2,7 +2,7 @@ package com.chriscartland.batterybutler
 
 import android.app.Application
 import co.touchlab.kermit.Logger
-import com.chriscartland.batterybutler.ai.AndroidAiEngine
+import com.chriscartland.batterybutler.ai.DeferredAiEngine
 import com.chriscartland.batterybutler.ai.DynamicAiEngine
 import com.chriscartland.batterybutler.ai.OnDeviceAiEngine
 import com.chriscartland.batterybutler.composeapp.BuildConfig
@@ -27,7 +27,8 @@ class BatteryButlerApplication : Application() {
         // AI Setup
         val settings = SharedPreferencesSettings(getSharedPreferences("ai_prefs", MODE_PRIVATE))
         val aiPreferencesRepository = AiPreferencesRepositoryImpl(settings)
-        val cloudAiEngine = AndroidAiEngine()
+        // Relayed through the Labs backend, which holds the Gemini key; built by the graph below.
+        val cloudAiEngine = DeferredAiEngine { appComponent.labsCloudAiEngine }
         val onDeviceAiEngine = OnDeviceAiEngine(this)
 
         val aiEngine = DynamicAiEngine(

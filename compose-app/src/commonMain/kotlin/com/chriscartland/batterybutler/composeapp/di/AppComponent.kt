@@ -10,6 +10,7 @@ import com.chriscartland.batterybutler.datalocal.room.DatabaseFactory
 import com.chriscartland.batterybutler.datanetwork.BuildConfig
 import com.chriscartland.batterybutler.datanetwork.DefaultLabsAuthGateway
 import com.chriscartland.batterybutler.datanetwork.LabsAuthGateway
+import com.chriscartland.batterybutler.datanetwork.ai.LabsCloudAiEngine
 import com.chriscartland.batterybutler.datanetwork.auth.GoogleSignInBridge
 import com.chriscartland.batterybutler.datanetwork.grpc.DelegatingGrpcClient
 import com.chriscartland.batterybutler.datanetwork.grpc.NetworkComponent
@@ -83,6 +84,7 @@ abstract class AppComponent(
     abstract val editBatteryEventViewModelFactory: EditBatteryEventViewModelFactory
     abstract val deviceRepository: DeviceRepository
     abstract val aiChatViewModel: AiChatViewModel
+    abstract val labsCloudAiEngine: LabsCloudAiEngine
     abstract val settingsViewModel: SettingsViewModel
     abstract val featureFlagProvider: FeatureFlagProvider
     abstract val dataModeRepository: DataModeRepository

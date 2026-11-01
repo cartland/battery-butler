@@ -14,7 +14,7 @@ import me.tatarka.inject.annotations.Inject
 
 @Inject
 class DynamicAiEngine(
-    private val cloudEngine: AndroidAiEngine,
+    private val cloudEngine: AiEngine,
     private val onDeviceEngine: OnDeviceAiEngine,
     private val aiPreferencesRepository: AiPreferencesRepository,
 ) : AiEngine {
