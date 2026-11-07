@@ -2,6 +2,8 @@ package com.chriscartland.batterybutler.data.repository
 
 import co.touchlab.kermit.Logger
 import com.chriscartland.batterybutler.datalocal.LocalDataSource
+import com.chriscartland.batterybutler.datalocal.NeedsBatteryStore
+import com.chriscartland.batterybutler.datalocal.SnapshotIds
 import com.chriscartland.batterybutler.datanetwork.RemoteDataSource
 import com.chriscartland.batterybutler.datanetwork.RemoteSyncException
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
@@ -25,6 +27,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.withTimeoutOrNull
@@ -41,8 +45,12 @@ class DefaultSyncManager(
     private val dataModeRepository: DataModeRepository,
     private val deviceImageSyncCoordinator: DeviceImageSyncCoordinator,
     private val labsAuthRepository: LabsAuthRepository,
+    private val needsBatteryStore: NeedsBatteryStore,
     private val scope: CoroutineScope,
 ) : SyncManager {
+    // The poll and a manual resync can both land a snapshot. Each reads the ids the other writes.
+    private val applyMutex = Mutex()
+
     private val _syncStatus = MutableStateFlow<SyncStatus>(SyncStatus.Idle)
     override val syncStatus: StateFlow<SyncStatus> = _syncStatus.asStateFlow()
 
@@ -180,17 +188,72 @@ class DefaultSyncManager(
         // coordinator below stays cancellable (it does its own network work). See
         // `bb-signin-empty-list` in TODO.md.
         withContext(NonCancellable) {
-            if (!update.isFullSnapshot) {
-                update.deletedDeviceTypeIds.forEach { localDataSource.deleteDeviceType(it) }
-                update.deletedDeviceIds.forEach { localDataSource.deleteDevice(it) }
-                update.deletedEventIds.forEach { localDataSource.deleteEvent(it) }
+            applyMutex.withLock {
+                if (update.isFullSnapshot) {
+                    reconcileWithSnapshot(update)
+                } else {
+                    update.deletedDeviceTypeIds.forEach { localDataSource.deleteDeviceType(it) }
+                    update.deletedDeviceIds.forEach { localDataSource.deleteDevice(it) }
+                    update.deletedEventIds.forEach { localDataSource.deleteEvent(it) }
+                }
+                localDataSource.addDeviceTypes(update.deviceTypes)
+                localDataSource.addDevices(update.devices)
+                localDataSource.addEvents(update.events)
             }
-            localDataSource.addDeviceTypes(update.deviceTypes)
-            localDataSource.addDevices(update.devices)
-            localDataSource.addEvents(update.events)
         }
 
         deviceImageSyncCoordinator.onRemoteUpdate(update)
+    }
+
+    /**
+     * Applies what a full snapshot says by omission: deletions made on another client.
+     *
+     * A row is removed only if the previous snapshot had it and this one doesn't. Being merely
+     * absent isn't enough, because a local row whose push failed is absent too, and pushes aren't
+     * retried: removing it would silently lose a battery change logged offline. See [SnapshotIds].
+     * A first snapshot therefore removes nothing.
+     *
+     * An entirely empty snapshot removes nothing either and leaves the remembered ids alone. The
+     * server emptied of data is far likelier to be a fault or an empty environment than a person
+     * deleting everything, and this phone may be holding the only copy.
+     */
+    private suspend fun reconcileWithSnapshot(update: RemoteUpdate) {
+        val current = SnapshotIds(
+            deviceTypeIds = update.deviceTypes.map { it.id }.toSet(),
+            deviceIds = update.devices.map { it.id }.toSet(),
+            eventIds = update.events.map { it.id }.toSet(),
+        )
+        val last = localDataSource.getLastSnapshotIds()
+        if (current == SnapshotIds() && last != current) {
+            Logger.w(TAG) { "Ignoring deletions from an empty snapshot" }
+            return
+        }
+
+        val goneDeviceIds = last.deviceIds - current.deviceIds
+        (last.eventIds - current.eventIds).forEach { localDataSource.deleteEvent(it) }
+        goneDeviceIds.forEach {
+            localDataSource.deleteDevice(it)
+            // Same reason as DeleteDeviceUseCase: the mark has no foreign key to `devices`.
+            needsBatteryStore.clear(it)
+        }
+        (last.deviceTypeIds - current.deviceTypeIds).forEach { localDataSource.deleteDeviceType(it) }
+        if (current != last) localDataSource.setLastSnapshotIds(current)
+
+        clearMarksSatisfiedByAnotherClient(update.devices)
+    }
+
+    /**
+     * A "needs a battery" mark never reaches other clients, so a change recorded on the web can't
+     * clear it the way `AddBatteryEventUseCase` does here. Do it on arrival: a replacement dated
+     * after the mark is the job the mark was asking for. An older, backdated one isn't.
+     */
+    private suspend fun clearMarksSatisfiedByAnotherClient(devices: List<Device>) {
+        val marks = needsBatteryStore.observeFlags().first()
+        if (marks.isEmpty()) return
+        devices.forEach { device ->
+            val markedAt = marks[device.id] ?: return@forEach
+            if (device.batteryLastReplaced > markedAt) needsBatteryStore.clear(device.id)
+        }
     }
 
     override fun pushUpdate(

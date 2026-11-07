@@ -2,6 +2,7 @@ package com.chriscartland.batterybutler.datalocal
 
 import com.chriscartland.batterybutler.datalocal.room.AppDatabase
 import com.chriscartland.batterybutler.datalocal.room.DynamicDatabaseProvider
+import com.chriscartland.batterybutler.datalocal.room.entity.LastSnapshotIdEntity
 import com.chriscartland.batterybutler.datalocal.room.entity.toDomain
 import com.chriscartland.batterybutler.datalocal.room.entity.toEntity
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
@@ -127,9 +128,30 @@ class RoomLocalDataSource(
         dao.deleteEvent(id)
     }
 
+    override suspend fun getLastSnapshotIds(): SnapshotIds {
+        val byKind = dao.getLastSnapshotIds().groupBy({ it.kind }, { it.id })
+        return SnapshotIds(
+            deviceTypeIds = byKind[LastSnapshotIdEntity.KIND_DEVICE_TYPE].orEmpty().toSet(),
+            deviceIds = byKind[LastSnapshotIdEntity.KIND_DEVICE].orEmpty().toSet(),
+            eventIds = byKind[LastSnapshotIdEntity.KIND_EVENT].orEmpty().toSet(),
+        )
+    }
+
+    override suspend fun setLastSnapshotIds(ids: SnapshotIds) {
+        // Not a transaction, and it needn't be: a tear leaves the set too small, which can only
+        // mean a later deletion is missed, never that a row is wrongly removed.
+        dao.deleteLastSnapshotIds()
+        dao.insertLastSnapshotIds(
+            ids.deviceTypeIds.map { LastSnapshotIdEntity(LastSnapshotIdEntity.KIND_DEVICE_TYPE, it) } +
+                ids.deviceIds.map { LastSnapshotIdEntity(LastSnapshotIdEntity.KIND_DEVICE, it) } +
+                ids.eventIds.map { LastSnapshotIdEntity(LastSnapshotIdEntity.KIND_EVENT, it) },
+        )
+    }
+
     override suspend fun clearAll() {
         dao.deleteAllDevices()
         dao.deleteAllDeviceTypes()
         dao.deleteAllEvents()
+        dao.deleteLastSnapshotIds()
     }
 }

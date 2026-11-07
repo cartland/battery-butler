@@ -8,6 +8,7 @@ import com.chriscartland.batterybutler.datalocal.room.entity.BatteryEventEntity
 import com.chriscartland.batterybutler.datalocal.room.entity.DeviceEntity
 import com.chriscartland.batterybutler.datalocal.room.entity.DeviceImageCacheEntity
 import com.chriscartland.batterybutler.datalocal.room.entity.DeviceTypeEntity
+import com.chriscartland.batterybutler.datalocal.room.entity.LastSnapshotIdEntity
 import com.chriscartland.batterybutler.datalocal.room.entity.NeedsBatteryFlagEntity
 
 @Database(
@@ -17,8 +18,9 @@ import com.chriscartland.batterybutler.datalocal.room.entity.NeedsBatteryFlagEnt
         BatteryEventEntity::class,
         DeviceImageCacheEntity::class,
         NeedsBatteryFlagEntity::class,
+        LastSnapshotIdEntity::class,
     ],
-    version = 8,
+    version = 9,
 )
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {

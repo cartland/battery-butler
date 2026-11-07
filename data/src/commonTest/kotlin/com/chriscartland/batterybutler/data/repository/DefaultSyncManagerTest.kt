@@ -1,12 +1,15 @@
 package com.chriscartland.batterybutler.data.repository
 
 import com.chriscartland.batterybutler.datalocal.LocalDataSource
+import com.chriscartland.batterybutler.datalocal.SnapshotIds
 import com.chriscartland.batterybutler.datanetwork.RemoteDataSource
 import com.chriscartland.batterybutler.datanetwork.RemoteDataSourceState
 import com.chriscartland.batterybutler.datanetwork.RemoteSyncException
+import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.DataError
 import com.chriscartland.batterybutler.domain.model.DataMode
 import com.chriscartland.batterybutler.domain.model.Device
+import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.LabsSessionRestoreResult
 import com.chriscartland.batterybutler.domain.model.SyncAuthReason
 import com.chriscartland.batterybutler.domain.model.SyncOutcome
@@ -17,6 +20,7 @@ import com.chriscartland.batterybutler.testcommon.FakeDeviceImageCache
 import com.chriscartland.batterybutler.testcommon.FakeDeviceImageDataSource
 import com.chriscartland.batterybutler.testcommon.FakeLabsAuthRepository
 import com.chriscartland.batterybutler.testcommon.FakeLocalDataSource
+import com.chriscartland.batterybutler.testcommon.FakeNeedsBatteryStore
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -37,6 +41,7 @@ import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.seconds
@@ -75,6 +80,7 @@ class DefaultSyncManagerTest {
                     scope,
                 ),
                 labsAuthRepository = FakeLabsAuthRepository(),
+                needsBatteryStore = FakeNeedsBatteryStore(),
                 scope = scope,
             )
 
@@ -240,6 +246,7 @@ class DefaultSyncManagerTest {
                     scope,
                 ),
                 labsAuthRepository = FakeLabsAuthRepository(),
+                needsBatteryStore = FakeNeedsBatteryStore(),
                 scope = scope,
             )
 
@@ -352,6 +359,7 @@ class DefaultSyncManagerTest {
                     scope,
                 ),
                 labsAuthRepository = FakeLabsAuthRepository(),
+                needsBatteryStore = FakeNeedsBatteryStore(),
                 scope = scope,
             )
 
@@ -547,8 +555,154 @@ class DefaultSyncManagerTest {
                 scope,
             ),
             labsAuthRepository = labsAuthRepository,
+            needsBatteryStore = FakeNeedsBatteryStore(),
             scope = scope,
         )
+
+    /**
+     * The fix for `bb-sync-snapshot-deletions`, and the trap in it. A snapshot says "deleted" only
+     * by omission, and a row whose push failed is omitted too, so only a row the server used to
+     * have may be removed. Removing everything absent would lose battery changes logged offline.
+     */
+    @Test
+    fun `a row the previous snapshot had and this one lacks is deleted, in every table`() =
+        runTest(testDispatcher) {
+            val h = snapshotHarness()
+            h.manager.applyRemoteUpdate(snapshot(typeIds = listOf("t1", "t2"), deviceIds = listOf("d1", "d2"), eventIds = listOf("e1", "e2")))
+
+            h.manager.applyRemoteUpdate(snapshot(typeIds = listOf("t1"), deviceIds = listOf("d1"), eventIds = listOf("e1")))
+
+            assertEquals(listOf("t2"), h.local.deletedDeviceTypeIds)
+            assertEquals(listOf("d2"), h.local.deletedDeviceIds)
+            assertEquals(listOf("e2"), h.local.deletedEventIds)
+            assertEquals(SnapshotIds(setOf("t1"), setOf("d1"), setOf("e1")), h.local.lastSnapshotIds)
+        }
+
+    @Test
+    fun `a local row the server has never had survives every snapshot`() =
+        runTest(testDispatcher) {
+            val h = snapshotHarness()
+            h.manager.applyRemoteUpdate(snapshot(eventIds = listOf("e1")))
+
+            // Logged offline: in the local table, never in a snapshot.
+            h.local.addEvent(createEvent("offline"))
+            h.manager.applyRemoteUpdate(snapshot(eventIds = listOf("e1")))
+            h.manager.applyRemoteUpdate(snapshot(eventIds = listOf("e1", "e2")))
+
+            assertEquals(emptyList(), h.local.deletedEventIds)
+        }
+
+    @Test
+    fun `the first snapshot after updating the app deletes nothing`() =
+        runTest(testDispatcher) {
+            val h = snapshotHarness()
+            h.local.addEvent(createEvent("from-before-the-update"))
+
+            h.manager.applyRemoteUpdate(snapshot(eventIds = listOf("e1")))
+
+            assertEquals(emptyList(), h.local.deletedEventIds)
+        }
+
+    @Test
+    fun `an empty snapshot removes nothing and a later good one still reconciles`() =
+        runTest(testDispatcher) {
+            val h = snapshotHarness()
+            h.manager.applyRemoteUpdate(snapshot(deviceIds = listOf("d1", "d2")))
+
+            h.manager.applyRemoteUpdate(snapshot())
+            assertEquals(emptyList(), h.local.deletedDeviceIds)
+            assertEquals(setOf("d1", "d2"), h.local.lastSnapshotIds.deviceIds)
+
+            h.manager.applyRemoteUpdate(snapshot(deviceIds = listOf("d1")))
+            assertEquals(listOf("d2"), h.local.deletedDeviceIds)
+        }
+
+    @Test
+    fun `a patch update still applies its deleted ids and leaves the remembered ids alone`() =
+        runTest(testDispatcher) {
+            val h = snapshotHarness()
+            h.manager.applyRemoteUpdate(snapshot(eventIds = listOf("e1")))
+
+            h.manager.applyRemoteUpdate(snapshot(isFullSnapshot = false).copy(deletedEventIds = listOf("e9")))
+
+            assertEquals(listOf("e9"), h.local.deletedEventIds)
+            assertEquals(setOf("e1"), h.local.lastSnapshotIds.eventIds)
+        }
+
+    @Test
+    fun `a device deleted elsewhere takes its needs-battery mark with it`() =
+        runTest(testDispatcher) {
+            val h = snapshotHarness()
+            h.manager.applyRemoteUpdate(snapshot(deviceIds = listOf("d1", "d2")))
+            h.marks.flag("d2", 1L)
+
+            h.manager.applyRemoteUpdate(snapshot(deviceIds = listOf("d1")))
+
+            assertFalse("d2" in h.marks.flags.value)
+        }
+
+    @Test
+    fun `a replacement recorded elsewhere clears the mark only if it is newer than the mark`() =
+        runTest(testDispatcher) {
+            val h = snapshotHarness()
+            val markedAt = 1_000L
+            h.marks.flag("done", markedAt)
+            h.marks.flag("backdated", markedAt)
+            h.marks.flag("untouched", markedAt)
+
+            h.manager.applyRemoteUpdate(
+                snapshot().copy(
+                    devices = listOf(
+                        createDevice("done", "Done").copy(batteryLastReplaced = Instant.fromEpochMilliseconds(markedAt + 1)),
+                        createDevice("backdated", "Backdated").copy(batteryLastReplaced = Instant.fromEpochMilliseconds(markedAt - 1)),
+                        createDevice("untouched", "Untouched"),
+                    ),
+                ),
+            )
+
+            assertEquals(setOf("backdated", "untouched"), h.marks.flags.value.keys)
+        }
+
+    private class SnapshotHarness(
+        val manager: DefaultSyncManager,
+        val local: FakeLocalDataSource,
+        val marks: FakeNeedsBatteryStore,
+    )
+
+    private fun snapshotHarness(): SnapshotHarness {
+        val local = FakeLocalDataSource()
+        val marks = FakeNeedsBatteryStore()
+        val scope = CoroutineScope(testDispatcher + Job())
+        val manager = DefaultSyncManager(
+            localDataSource = local,
+            remoteDataSource = ParkedRemoteDataSource(),
+            dataModeRepository = FakeDataModeRepository(DataMode.Mock),
+            deviceImageSyncCoordinator = DeviceImageSyncCoordinator(
+                FakeDeviceImageDataSource(),
+                FakeDeviceImageCache(),
+                scope,
+            ),
+            labsAuthRepository = FakeLabsAuthRepository(),
+            needsBatteryStore = marks,
+            scope = scope,
+        )
+        return SnapshotHarness(manager, local, marks)
+    }
+
+    private fun snapshot(
+        typeIds: List<String> = emptyList(),
+        deviceIds: List<String> = emptyList(),
+        eventIds: List<String> = emptyList(),
+        isFullSnapshot: Boolean = true,
+    ): RemoteUpdate =
+        RemoteUpdate(
+            isFullSnapshot = isFullSnapshot,
+            deviceTypes = typeIds.map { DeviceType(id = it, name = it) },
+            devices = deviceIds.map { createDevice(id = it, name = it) },
+            events = eventIds.map { createEvent(it) },
+        )
+
+    private fun createEvent(id: String): BatteryEvent = BatteryEvent(id = id, deviceId = "d1", date = Instant.DISTANT_PAST)
 
     private fun createDevice(
         id: String,

@@ -38,3 +38,11 @@ val MIGRATION_7_8 = object : Migration(7, 8) {
         )
     }
 }
+
+val MIGRATION_8_9 = object : Migration(8, 9) {
+    override fun migrate(connection: SQLiteConnection) {
+        connection.execSQL(
+            "CREATE TABLE IF NOT EXISTS last_snapshot_ids (kind TEXT NOT NULL, id TEXT NOT NULL, PRIMARY KEY(kind, id))",
+        )
+    }
+}
