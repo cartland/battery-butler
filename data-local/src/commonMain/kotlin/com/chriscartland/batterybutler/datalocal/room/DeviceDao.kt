@@ -8,6 +8,7 @@ import androidx.room.Update
 import com.chriscartland.batterybutler.datalocal.room.entity.BatteryEventEntity
 import com.chriscartland.batterybutler.datalocal.room.entity.DeviceEntity
 import com.chriscartland.batterybutler.datalocal.room.entity.DeviceTypeEntity
+import com.chriscartland.batterybutler.datalocal.room.entity.LastSnapshotIdEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -82,4 +83,13 @@ interface DeviceDao {
 
     @Query("DELETE FROM battery_events")
     suspend fun deleteAllEvents()
+
+    @Query("SELECT * FROM last_snapshot_ids")
+    suspend fun getLastSnapshotIds(): List<LastSnapshotIdEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertLastSnapshotIds(ids: List<LastSnapshotIdEntity>)
+
+    @Query("DELETE FROM last_snapshot_ids")
+    suspend fun deleteLastSnapshotIds()
 }

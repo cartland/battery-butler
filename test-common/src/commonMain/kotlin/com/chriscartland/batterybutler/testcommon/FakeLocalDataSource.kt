@@ -1,6 +1,7 @@
 package com.chriscartland.batterybutler.testcommon
 
 import com.chriscartland.batterybutler.datalocal.LocalDataSource
+import com.chriscartland.batterybutler.datalocal.SnapshotIds
 import com.chriscartland.batterybutler.domain.model.BatteryEvent
 import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceType
@@ -110,6 +111,14 @@ class FakeLocalDataSource : LocalDataSource {
         deletedEventIds.add(id)
     }
 
+    var lastSnapshotIds = SnapshotIds()
+
+    override suspend fun getLastSnapshotIds(): SnapshotIds = lastSnapshotIds
+
+    override suspend fun setLastSnapshotIds(ids: SnapshotIds) {
+        lastSnapshotIds = ids
+    }
+
     /** Number of times [clearAll] has been called. */
     var clearAllCallCount = 0
 
@@ -118,6 +127,7 @@ class FakeLocalDataSource : LocalDataSource {
         devices.clear()
         deviceTypes.clear()
         events.clear()
+        lastSnapshotIds = SnapshotIds()
         devicesFlow = emptyFlow()
         deviceTypesFlow = emptyFlow()
         eventsFlow = emptyFlow()
