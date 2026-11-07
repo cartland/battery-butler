@@ -29,14 +29,18 @@ final class AiChatScreenTests: XCTestCase {
                 role: .user,
                 text: "What batteries does my remote use?",
                 isPartial: false,
-                hints: [:]
+                hints: [:],
+                isError: false,
+                actions: []
             ),
             AiMessage(
                 id: "m2",
                 role: .model,
                 text: "Your Living Room Remote uses AAA batteries (quantity: 2).",
                 isPartial: false,
-                hints: [:]
+                hints: [:],
+                isError: false,
+                actions: []
             )
         ]
 
