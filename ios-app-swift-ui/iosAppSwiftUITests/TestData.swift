@@ -92,7 +92,9 @@ struct TestData {
         role: .user,
         text: "What batteries does my remote use?",
         isPartial: false,
-        hints: [:]
+        hints: [:],
+        isError: false,
+        actions: []
     )
 
     static let aiModelMessage = AiMessage(
@@ -100,7 +102,9 @@ struct TestData {
         role: .model,
         text: "Your TV remote uses AAA batteries.",
         isPartial: false,
-        hints: [:]
+        hints: [:],
+        isError: false,
+        actions: []
     )
 
     // MARK: - Input Types

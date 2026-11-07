@@ -11,7 +11,9 @@ final class MessageRowTests: XCTestCase {
             role: .user,
             text: "When was the last time I replaced batteries in the living room remote?",
             isPartial: false,
-            hints: [:]
+            hints: [:],
+            isError: false,
+            actions: []
         )
         let view = MessageRow(message: message)
 
@@ -29,7 +31,9 @@ final class MessageRowTests: XCTestCase {
             role: .model,
             text: "The last battery replacement for your Living Room Remote was on January 1, 2024. That was about 14 months ago.",
             isPartial: false,
-            hints: [:]
+            hints: [:],
+            isError: false,
+            actions: []
         )
         let view = MessageRow(message: message)
 
