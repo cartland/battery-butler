@@ -565,7 +565,7 @@ class DefaultSyncManagerTest {
      * have may be removed. Removing everything absent would lose battery changes logged offline.
      */
     @Test
-    fun `a row the previous snapshot had and this one lacks is deleted, in every table`() =
+    fun `a row the previous snapshot had and this one lacks is deleted in every table`() =
         runTest(testDispatcher) {
             val h = snapshotHarness()
             h.manager.applyRemoteUpdate(snapshot(typeIds = listOf("t1", "t2"), deviceIds = listOf("d1", "d2"), eventIds = listOf("e1", "e2")))
