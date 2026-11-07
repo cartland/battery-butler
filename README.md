@@ -227,23 +227,23 @@ config:
 %% GENERATED FILE - DO NOT EDIT
 sankey-beta
 
-Codebase,Shared Code,47305
-Codebase,Other,6079
-Codebase,iOS Swift App,5702
-Codebase,CMP Apps,2831
+Codebase,Shared Code,49174
+Codebase,Other,6140
+Codebase,iOS Swift App,5716
+Codebase,CMP Apps,2870
 Codebase,Server,1530
 Codebase,Screenshot Tests,1292
 
-Shared Code,presentation-feature,8458
-Shared Code,viewmodel,8252
-Shared Code,usecase,6574
-Shared Code,data-network,6538
-Shared Code,presentation-core,4511
-Shared Code,data,4408
-Shared Code,domain,3258
-Shared Code,data-local,2992
-Shared Code,ai,575
+Shared Code,presentation-feature,8895
+Shared Code,viewmodel,8382
+Shared Code,data-network,7353
+Shared Code,usecase,6805
+Shared Code,data,4626
+Shared Code,presentation-core,4517
+Shared Code,domain,3322
+Shared Code,data-local,3143
 Shared Code,experimental:viewmodel,397
+Shared Code,ai,392
 Shared Code,experimental:data,357
 Shared Code,experimental:usecase,316
 Shared Code,experimental:data-local,301
@@ -252,7 +252,7 @@ Shared Code,compose-resources,70
 Shared Code,experimental:domain,54
 
 Other,buildSrc,2810
-Other,test-common,1218
+Other,test-common,1279
 Other,detekt-rules,413
 Other,presentation-model,392
 Other,e2e-tests,271
@@ -262,9 +262,9 @@ Other,ExperimentalApp,235
 Other,fixtures,209
 Other,iosAppComposeUI,31
 
-iOS Swift App,iosAppSwiftUI,5702
+iOS Swift App,iosAppSwiftUI,5716
 
-CMP Apps,compose-app,2564
+CMP Apps,compose-app,2603
 CMP Apps,experimental:compose-app,267
 
 Server,server:app,1344
@@ -273,23 +273,23 @@ Server,server:domain,34
 
 Screenshot Tests,android-screenshot-tests,1292
 
-presentation-feature,Kotlin,8458
-viewmodel,Kotlin,8252
-usecase,Kotlin,6574
-data-network,Kotlin,6538
-iosAppSwiftUI,Swift,5702
-presentation-core,Kotlin,4511
-data,Kotlin,4408
-domain,Kotlin,3258
-data-local,Kotlin,2992
+presentation-feature,Kotlin,8895
+viewmodel,Kotlin,8382
+data-network,Kotlin,7353
+usecase,Kotlin,6805
+iosAppSwiftUI,Swift,5716
+data,Kotlin,4626
+presentation-core,Kotlin,4517
+domain,Kotlin,3322
+data-local,Kotlin,3143
 buildSrc,Kotlin,2810
-compose-app,Kotlin,2564
+compose-app,Kotlin,2603
 server:app,Kotlin,1344
 android-screenshot-tests,Kotlin,1292
-test-common,Kotlin,1218
-ai,Kotlin,575
+test-common,Kotlin,1279
 detekt-rules,Kotlin,413
 experimental:viewmodel,Kotlin,397
+ai,Kotlin,392
 presentation-model,Kotlin,392
 experimental:data,Kotlin,357
 experimental:usecase,Kotlin,316
