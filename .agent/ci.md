@@ -359,7 +359,7 @@ This is what makes development-mode CI safe as the steady state: PRs only run fa
 | Job | `file-or-resolve` | `automation-pipeline` |
 | Label | `ci-failure` + `blocking` | `automation-failure`, **never** `blocking` |
 | Title | `CI failure on main: <job>` | `Automation failure on main: <job>` |
-| Gates merges | Yes, via `validation_no_blocking_issues` | No |
+| Warns on PRs | Yes, via `report_blocking_issues` (never blocks) | No |
 | Sentinel check before closing | Yes | Skipped (those are Battery Butler CI job names) |
 
 Both share `scripts/file-ci-failure-issue.sh`; the automation job passes `ISSUE_LABEL`, `BLOCKING=false`, `TITLE_PREFIX` and `CHECK_SENTINELS=false`. The defaults reproduce the original blocking behaviour exactly, so the primary safety net is unchanged.
@@ -372,16 +372,18 @@ Both share `scripts/file-ci-failure-issue.sh`; the automation job passes `ISSUE_
 
 **Verified working (2026-06-08)**: open / comment-dedup / close-on-green have all fired correctly in production history. Concrete examples — open: #1216–1218; comment-dedup: #1180 (3× "Job failed again." on the same `ci` issue instead of duplicates); auto-close-on-green: #1199/#1198/#1192/#1184/#1168/#1164/#1140/#1139. Note the most *recent* closures (the 05-16 batch) were closed *manually* by the developer who fixed `main`, ahead of the auto-close — that's expected, not a regression.
 
-**Companion gate**: `validation_no_blocking_issues` in `ci.yml` runs on every PR and fails if any open `ci-failure` issue carries the `blocking` label. This pauses new auto-merges until the regression is fixed forward.
+**Companion report**: `report_blocking_issues` in `ci.yml` runs on every PR and, if any open `ci-failure` issue carries the `blocking` label, adds a "main is red" warning to the check and lists the issues in the run summary. It always passes — see "Why the report never gates" below.
 
-### Breaking the deadlock
+### Why the report never gates
 
-The gate used to be able to trap itself. Auto-close only fired on `push` runs, but while a blocking issue is open **nothing can merge** — so no push to `main` happens, so no green push run exists to close the issue, so nothing can merge. Issue #1429 (2026-07-30) hit this and had to be closed by hand.
+Until 2026-11-07 this job *failed* every PR while a blocking issue was open, so new work could not pile onto a broken `main`. That trapped itself: auto-close needs a green push-to-main run, a push needs a merge, and the gate stopped every merge — the fix included. Issue #1429 (2026-07-30) had to be closed by hand. A `ci-fix` label was added as an escape hatch (#1440), but it was never created in the repo, and the next time it was needed (#1529/#1530, 2026-11-07) an agent was refused permission to create or apply it — labelling a PR so that it skips a check looks exactly like bypassing CI, to a permission system and to a reviewer.
 
-Two escape hatches now exist:
+So the job now reports instead of gating. The information is unchanged — a warning on every PR's checks, the issue list in the run summary, the issues themselves — and the decision moves to a person reading the PR. The rule is unchanged too: **fixing `main` is priority zero**, and nothing unrelated merges onto a red `main` without saying so in its PR. The report just can't stop the repair.
 
-1. **Label the fix-forward PR `ci-fix`.** `validation_no_blocking_issues` skips PRs carrying that label, so a repair can always land.
-2. **Dispatch a release-mode run on `main`.** `ci-post-merge-issue.yml` now accepts `workflow_run.event == 'workflow_dispatch'` as a resolution path:
+A red `main` still resolves the same two ways:
+
+1. **Fix forward.** A normal PR off `origin/main`; the next green push-to-main run auto-closes the issues.
+2. **Dispatch a release-mode run on `main`** when the failure was transient. `ci-post-merge-issue.yml` accepts `workflow_run.event == 'workflow_dispatch'` as a resolution path:
    ```bash
    gh workflow run "Battery Butler CI" --ref main -f ci_mode=release
    ```
@@ -391,7 +393,5 @@ Two escape hatches now exist:
 **Companion ritual**: run `/check-ci-issues` at session start, before picking up new feature work. The skill at `.claude/skills/check-ci-issues/SKILL.md` documents the triage flow. The fix is a normal PR off `origin/main`; the next green push-to-main auto-closes the issue.
 
 **Implementation**: `scripts/file-ci-failure-issue.sh` (called by the workflow). Labels are created on demand the first time a failure occurs.
-
-**Chicken-and-egg unblock**: a fix-forward PR is itself blocked by `validation_no_blocking_issues` while the issue it fixes is open. Manually close the tracking issue(s) with a comment referencing the fix PR (e.g. `gh issue close N --comment "Fix in flight via PR #M"`), then `gh run rerun <run-id> --failed` on the PR's failed `validation_no_blocking_issues` check. Once the fix merges and a green push-to-main runs, the auto-issue workflow re-closes any stragglers. Two examples this session: PR #1137 (closed #1128/#1129), PR #1146 (closed #1144/#1145).
 
 **Former limitation — docs-only success false-close (NOW FIXED, bb-2r4g)**: if a code-level failure files an issue and the next push to `main` is a docs/auto-generate-only commit, that commit's CI returns `ci: success` because the path filter skips every real job — so the success path would close the issue even though the code break still lives in `main`. Originally observed between PR #1133 (jib bump break, filed #1144/#1145) and PR #1143 (docs-only epic close, success). **This is now guarded**: `scripts/file-ci-failure-issue.sh` computes `real_success_count` (jobs that succeeded excluding the control-flow gates `changes`, `ci`, `validation_no_blocking_issues`) and `exit 0`s without closing anything when it's `0` — i.e. a path-filtered run where every real job was SKIPPED no longer auto-closes a real-failure issue. Verified in the script source 2026-06-08.

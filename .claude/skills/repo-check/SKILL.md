@@ -71,7 +71,7 @@ for n in $(gh issue list --label ci-failure --state open --json number --jq '.[]
 done
 ```
 
-Why this matters: while any `ci-failure` + `blocking` issue is open, the `validation_no_blocking_issues` job in `ci.yml` fails every new PR — auto-merges are paused. Fixing `main` is priority zero. See `.agent/ci.md` → "Post-Merge Auto-Issue Safety Net".
+Why this matters: while any `ci-failure` + `blocking` issue is open, every PR's `report_blocking_issues` check carries a "main is red" warning. It never blocks, so fixing `main` is priority zero by discipline, not by a gate. See `.agent/ci.md` → "Post-Merge Auto-Issue Safety Net".
 
 Report: last push-to-main result, any open `ci-failure` issues with their commit SHA.
 
@@ -92,7 +92,7 @@ gh issue list --state open --json number,title,labels \
   --jq '.[] | {number, title, labels: [.labels[].name]}'
 ```
 
-Flag any with the `ci-failure` or `blocking` labels — those gate the queue.
+Flag any with the `ci-failure` or `blocking` labels — those mean `main` is red.
 
 ### 5. TODO Tasks
 

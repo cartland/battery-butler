@@ -8,8 +8,8 @@
 # Two modes, selected by the caller:
 #
 #   Blocking (default, Battery Butler CI). Files `ci-failure` + `blocking`
-#   issues, which pause PR auto-merges via ci.yml's
-#   validation_no_blocking_issues. Verifies sentinels before closing.
+#   issues, which ci.yml's report_blocking_issues surfaces as a warning on
+#   every PR (it never blocks). Verifies sentinels before closing.
 #
 #   Non-blocking (the automation pipeline: Auto-Generate Content, CI for Auto
 #   PRs). Files issues under a DIFFERENT label with no `blocking` tag, so a
@@ -25,8 +25,8 @@
 #   - List failing jobs from the run via the Actions API.
 #   - For each failing job, find an open issue titled "CI failure on main: <job>"
 #     with the ci-failure label. Comment on it if present, open a new one if not.
-#   - New issues are also tagged `blocking`, which gates new PR auto-merges via
-#     ci.yml's validation_no_blocking_issues job.
+#   - New issues are also tagged `blocking`, which ci.yml's
+#     report_blocking_issues job surfaces as a warning on every PR.
 #
 # Success path:
 #   - Close every open ci-failure issue with a resolution comment.
@@ -114,7 +114,7 @@ if [[ "$RUN_CONCLUSION" == "success" ]]; then
   fi
 
   # Count jobs that succeeded and aren't control-flow gates. `changes`,
-  # `ci`, and `validation_no_blocking_issues` always run (they're gates,
+  # `ci`, and `report_blocking_issues` always run (they're control flow,
   # not validations of the code itself), so they don't count as evidence
   # that anything real was checked.
   real_success_count=$(
@@ -124,7 +124,7 @@ if [[ "$RUN_CONCLUSION" == "success" ]]; then
               | select(.conclusion == "success")
               | select(.name != "changes"
                        and .name != "ci"
-                       and .name != "validation_no_blocking_issues")]
+                       and .name != "report_blocking_issues")]
             | length'
   )
 

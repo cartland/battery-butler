@@ -6,12 +6,12 @@ user-invocable: true
 
 # Check CI Issues
 
-Lists open issues labeled `ci-failure`. These are filed automatically by `.github/workflows/ci-post-merge-issue.yml` when CI fails on a push to `main`. While any `ci-failure` issue is also tagged `blocking`, PR auto-merges are paused (enforced by the `validation_no_blocking_issues` job in `ci.yml`).
+Lists open issues labeled `ci-failure`. These are filed automatically by `.github/workflows/ci-post-merge-issue.yml` when CI fails on a push to `main`. While any is also tagged `blocking`, the `report_blocking_issues` job in `ci.yml` puts a "main is red" warning on every PR. It never blocks a merge.
 
 ## When to Use
 
 - **At session start**, before picking up new feature work. If main is broken, fixing that is priority zero.
-- **When a PR's auto-merge appears stuck** — the `validation_no_blocking_issues` job will fail until the blocking issue is closed.
+- **When a PR shows a "main is red" warning** — to find the tracking issue and fix forward before merging anything else.
 - **After noticing red CI on main** — to find the canonical tracking issue and avoid filing a duplicate.
 
 ## Steps
@@ -35,9 +35,9 @@ gh issue list --label ci-failure --state open
 
 CI failures on `main` are fixed in a new PR off `origin/main`. Once that PR merges and the next push-to-main CI is green, the issue auto-closes via the same workflow that opened it.
 
-### 4. Re-enable auto-merge on parked PRs (if any)
+### 4. After the fix lands
 
-PRs that hit `validation_no_blocking_issues` before the fix landed need a fresh run after the issue closes — easiest path is to re-trigger CI on each (push an empty commit, or use the GraphQL `enablePullRequestAutoMerge` after the next CI run goes green).
+Nothing is parked by a red `main` any more. If a PR merged while the warning was up, check that `main` is green afterwards; a PR that only looked green because the break hid behind it files its own issue on the next push.
 
 ## Notes
 
