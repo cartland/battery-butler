@@ -18,8 +18,9 @@
 #   - On a fully-green push-to-main run: close every open ci-failure issue.
 #
 # PAIRED CHECKS:
-#   - `validation_no_blocking_issues` in ci.yml gates new PR auto-merges while
-#     any ci-failure + blocking issue is open. See `.agent/ci.md`.
+#   - `report_blocking_issues` in ci.yml warns on every PR while any
+#     ci-failure + blocking issue is open. It never blocks a merge -- see
+#     `.agent/ci.md` "Why the report never gates".
 #
 # =============================================================================
 
