@@ -1,8 +1,6 @@
 package com.chriscartland.batterybutler.presentationfeature.aichat
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -13,19 +11,12 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -33,7 +24,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -46,7 +36,6 @@ import com.chriscartland.batterybutler.composeresources.composeStringResource
 import com.chriscartland.batterybutler.composeresources.generated.resources.Res
 import com.chriscartland.batterybutler.composeresources.generated.resources.action_clear_chat
 import com.chriscartland.batterybutler.composeresources.generated.resources.ai_assistant_title
-import com.chriscartland.batterybutler.composeresources.generated.resources.ai_chat_empty_message
 import com.chriscartland.batterybutler.composeresources.generated.resources.content_desc_send_message
 import com.chriscartland.batterybutler.composeresources.generated.resources.placeholder_type_message
 import com.chriscartland.batterybutler.presentationcore.components.ButlerCenteredTopAppBar
@@ -61,16 +50,13 @@ fun AiChatContent(
     onClearChat: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    pendingAction: ChatPendingAction? = null,
+    onConfirmPending: () -> Unit = {},
+    onCancelPending: () -> Unit = {},
+    onUndo: (String) -> Unit = {},
+    onRetry: () -> Unit = {},
 ) {
     var inputText by rememberSaveable { mutableStateOf("") }
-    val listState = rememberLazyListState()
-
-    // Scroll to bottom when new messages arrive
-    LaunchedEffect(messages.size) {
-        if (messages.isNotEmpty()) {
-            listState.animateScrollToItem(messages.size - 1)
-        }
-    }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -113,88 +99,19 @@ fun AiChatContent(
             )
         },
     ) { innerPadding ->
-        if (messages.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = composeStringResource(Res.string.ai_chat_empty_message),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(Padding.extraLarge),
-                )
-            }
-        } else {
-            LazyColumn(
-                state = listState,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                items(messages, key = { it.id }) { message ->
-                    ChatBubble(message)
-                }
-                if (isProcessing) {
-                    item {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(Padding.small),
-                        ) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(24.dp),
-                                strokeWidth = 2.dp,
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun ChatBubble(
-    message: ChatMessage,
-    modifier: Modifier = Modifier,
-) {
-    val containerColor = if (message.isUser) {
-        MaterialTheme.colorScheme.primaryContainer
-    } else {
-        MaterialTheme.colorScheme.surfaceVariant
-    }
-    val textColor = if (message.isUser) {
-        MaterialTheme.colorScheme.onPrimaryContainer
-    } else {
-        MaterialTheme.colorScheme.onSurfaceVariant
-    }
-
-    Box(
-        modifier = modifier.fillMaxWidth(),
-        contentAlignment = if (message.isUser) Alignment.CenterEnd else Alignment.CenterStart,
-    ) {
-        Card(
-            colors = CardDefaults.cardColors(containerColor = containerColor),
-            shape = RoundedCornerShape(
-                topStart = 16.dp,
-                topEnd = 16.dp,
-                bottomStart = if (message.isUser) 16.dp else 4.dp,
-                bottomEnd = if (message.isUser) 4.dp else 16.dp,
-            ),
-            modifier = Modifier.fillMaxWidth(0.85f),
-        ) {
-            Text(
-                text = message.text,
-                style = MaterialTheme.typography.bodyMedium,
-                color = textColor,
-                modifier = Modifier.padding(Padding.medium),
-            )
-        }
+        ChatTranscript(
+            messages = messages,
+            isProcessing = isProcessing,
+            onSuggestion = onSendMessage,
+            pendingAction = pendingAction,
+            onConfirmPending = onConfirmPending,
+            onCancelPending = onCancelPending,
+            onUndo = onUndo,
+            onRetry = onRetry,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+        )
     }
 }
 

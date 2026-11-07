@@ -3,6 +3,7 @@ package com.chriscartland.batterybutler.usecase.di
 import com.chriscartland.batterybutler.usecase.AddBatteryEventUseCase
 import com.chriscartland.batterybutler.usecase.AddDeviceTypeUseCase
 import com.chriscartland.batterybutler.usecase.AddDeviceUseCase
+import com.chriscartland.batterybutler.usecase.AiChatSession
 import com.chriscartland.batterybutler.usecase.BatchAddBatteryEventsUseCase
 import com.chriscartland.batterybutler.usecase.BatchAddDeviceTypesUseCase
 import com.chriscartland.batterybutler.usecase.BatchAddDevicesUseCase
@@ -24,7 +25,6 @@ import com.chriscartland.batterybutler.usecase.GetSyncStatusUseCase
 import com.chriscartland.batterybutler.usecase.ImportDataUseCase
 import com.chriscartland.batterybutler.usecase.PreloadCommonTypesUseCase
 import com.chriscartland.batterybutler.usecase.RestoreLegacyDatabaseUseCase
-import com.chriscartland.batterybutler.usecase.SendChatMessageUseCase
 import com.chriscartland.batterybutler.usecase.SetDataModeUseCase
 import com.chriscartland.batterybutler.usecase.SuggestDeviceIconUseCase
 import com.chriscartland.batterybutler.usecase.UpdateBatteryEventUseCase
@@ -80,7 +80,7 @@ abstract class UseCaseComponent {
 
     // AI chat
     abstract val deviceToolHandler: DeviceToolHandler
-    abstract val sendChatMessageUseCase: SendChatMessageUseCase
+    abstract val aiChatSession: AiChatSession
 
     // Legacy database recovery
     abstract val getLegacyDatabaseInfoUseCase: GetLegacyDatabaseInfoUseCase

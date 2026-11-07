@@ -1,15 +1,15 @@
 package com.chriscartland.batterybutler.viewmodel.aichat
 
 import com.chriscartland.batterybutler.domain.model.ai.AiRole
+import com.chriscartland.batterybutler.domain.model.ai.AiToolNames
+import com.chriscartland.batterybutler.domain.model.ai.AiToolParams
 import com.chriscartland.batterybutler.testcommon.FakeAiEngine
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
 import com.chriscartland.batterybutler.testcommon.FakeNeedsBatteryRepository
+import com.chriscartland.batterybutler.testcommon.TestDevices
+import com.chriscartland.batterybutler.usecase.AiChatSession
 import com.chriscartland.batterybutler.usecase.BuildAiContextUseCase
 import com.chriscartland.batterybutler.usecase.DeviceToolHandler
-import com.chriscartland.batterybutler.usecase.FindOrCreateDeviceTypeUseCase
-import com.chriscartland.batterybutler.usecase.FindOrCreateDeviceUseCase
-import com.chriscartland.batterybutler.usecase.SendChatMessageUseCase
-import com.chriscartland.batterybutler.usecase.SetDeviceNeedsBatteryUseCase
 import com.chriscartland.batterybutler.usecase.UpdateDeviceLastReplacedUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -22,6 +22,8 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -38,115 +40,183 @@ class AiChatViewModelTest {
         Dispatchers.resetMain()
     }
 
+    private fun settle() = testDispatcher.scheduler.advanceUntilIdle()
+
     @Test
     fun `sendMessage adds user message to messages flow`() =
         runTest {
-            val viewModel = createViewModel()
-
-            viewModel.sendMessage("Hello AI")
+            val h = Harness()
+            h.viewModel.sendMessage("Hello AI")
             // User message is added synchronously before the coroutine launches
-            val messages = viewModel.messages.value
+            val messages = h.viewModel.messages.value
             assertEquals(1, messages.size)
             assertEquals(AiRole.USER, messages[0].role)
-            assertTrue(messages[0].text == "Hello AI")
+            assertEquals("Hello AI", messages[0].text)
         }
 
     @Test
     fun `sendMessage adds AI response after user message`() =
         runTest {
-            val engine = FakeAiEngine()
-            engine.defaultResponseText = "Hello human!"
-            val viewModel = createViewModel(engine = engine)
-
-            viewModel.sendMessage("Hello AI")
-            testDispatcher.scheduler.advanceUntilIdle()
-
-            val messages = viewModel.messages.value
+            val h = Harness()
+            h.engine.defaultResponseText = "Hello human!"
+            h.viewModel.sendMessage("Hello AI")
+            settle()
+            val messages = h.viewModel.messages.value
             assertEquals(2, messages.size)
-            assertEquals(AiRole.USER, messages[0].role)
             assertEquals(AiRole.MODEL, messages[1].role)
             assertEquals("Hello human!", messages[1].text)
         }
 
     @Test
-    fun `sendMessage ignores blank input`() =
+    fun `sendMessage ignores blank input and input while processing`() =
         runTest {
-            val viewModel = createViewModel()
+            val h = Harness()
+            h.viewModel.sendMessage("")
+            h.viewModel.sendMessage("   ")
+            assertTrue(
+                h.viewModel.messages.value
+                    .isEmpty(),
+            )
 
-            viewModel.sendMessage("")
-            viewModel.sendMessage("   ")
-
-            assertTrue(viewModel.messages.value.isEmpty())
+            h.viewModel.sendMessage("First message")
+            assertTrue(h.viewModel.isProcessing.value)
+            h.viewModel.sendMessage("Second message")
+            assertEquals(
+                1,
+                h.viewModel.messages.value
+                    .count { it.role == AiRole.USER },
+            )
+            settle()
+            assertFalse(h.viewModel.isProcessing.value)
         }
 
     @Test
-    fun `sendMessage ignores input while processing`() =
+    fun `hints reach the model as bracketed lines`() =
         runTest {
-            val viewModel = createViewModel()
-
-            viewModel.sendMessage("First message")
-            // isProcessing is true now, before the coroutine completes
-            assertTrue(viewModel.isProcessing.value)
-
-            viewModel.sendMessage("Second message")
-            // Second message should be ignored since we're still processing
-            val userMessages = viewModel.messages.value.filter { it.role == AiRole.USER }
-            assertEquals(1, userMessages.size)
+            val h = Harness()
+            h.viewModel.sendMessage("Help", hints = mapOf("Message sent from" to "Devices tab"))
+            settle()
+            assertEquals("[Message sent from: Devices tab]\n\nHelp", h.engine.recordedPrompts.single())
         }
 
     @Test
-    fun `isProcessing is true during AI call and false after`() =
+    fun `a reply carries the actions taken and and undo marks the row undone`() =
         runTest {
-            val viewModel = createViewModel()
+            val h = Harness()
+            h.engine.scriptedToolCalls = listOf(AiToolNames.ADD_DEVICE to mapOf(AiToolParams.NAME to "Porch Light"))
+            h.viewModel.sendMessage("add a porch light")
+            settle()
+            val action = h.viewModel.messages.value
+                .last()
+                .actions
+                .single()
+            assertTrue(action.undoable && !action.undone)
+            assertEquals(2, h.repo.devices.size)
 
-            assertFalse(viewModel.isProcessing.value)
-
-            viewModel.sendMessage("Hello")
-            assertTrue(viewModel.isProcessing.value)
-
-            testDispatcher.scheduler.advanceUntilIdle()
-            assertFalse(viewModel.isProcessing.value)
+            h.viewModel.undoAction(action.id)
+            settle()
+            val after = h.viewModel.messages.value
+                .last()
+                .actions
+                .single()
+            assertTrue(after.undone)
+            assertFalse(after.undoable)
+            assertEquals(1, h.repo.devices.size)
         }
 
     @Test
-    fun `clearChat resets messages and processing state`() =
+    fun `a deletion shows up as a pending action until the person decides`() =
         runTest {
-            val viewModel = createViewModel()
+            val h = Harness()
+            h.engine.scriptedToolCalls = listOf(AiToolNames.DELETE_DEVICE to mapOf(AiToolParams.ID to "d1"))
+            h.viewModel.sendMessage("delete the hall alarm")
+            settle()
+            val pending = assertNotNull(h.viewModel.pendingAction.value)
+            assertEquals("Delete Hall Alarm", pending.summary)
+            assertEquals(1, h.repo.devices.size)
 
-            viewModel.sendMessage("Hello")
-            testDispatcher.scheduler.advanceUntilIdle()
-            assertTrue(viewModel.messages.value.isNotEmpty())
-
-            viewModel.clearChat()
-
-            assertTrue(viewModel.messages.value.isEmpty())
-            assertFalse(viewModel.isProcessing.value)
+            h.viewModel.confirmPendingAction()
+            settle()
+            assertNull(h.viewModel.pendingAction.value)
+            assertTrue(h.repo.devices.isEmpty())
+            val entry = h.viewModel.messages.value
+                .last()
+            assertEquals(AiRole.SYSTEM, entry.role)
+            assertEquals("", entry.text)
+            assertEquals("Deleted Hall Alarm", entry.actions.single().summary)
+            assertTrue(entry.actions.single().undoable)
         }
 
     @Test
-    fun `sendMessage with hints augments message text`() =
+    fun `keeping a pending deletion deletes nothing and adds no entry`() =
         runTest {
-            val engine = FakeAiEngine()
-            engine.defaultResponseText = "Got it"
-            val viewModel = createViewModel(engine = engine)
-
-            viewModel.sendMessage("Help", hints = mapOf("Active tab" to "Devices"))
-            testDispatcher.scheduler.advanceUntilIdle()
-
-            assertTrue(engine.recordedPrompts.isNotEmpty())
-            val sentPrompt = engine.recordedPrompts[0]
-            assertTrue(sentPrompt.contains("[Active tab: Devices]"))
-            assertTrue(sentPrompt.contains("Help"))
+            val h = Harness()
+            h.engine.scriptedToolCalls = listOf(AiToolNames.DELETE_DEVICE to mapOf(AiToolParams.ID to "d1"))
+            h.viewModel.sendMessage("delete it")
+            settle()
+            val before = h.viewModel.messages.value.size
+            h.viewModel.cancelPendingAction()
+            settle()
+            assertNull(h.viewModel.pendingAction.value)
+            assertEquals(1, h.repo.devices.size)
+            assertEquals(before, h.viewModel.messages.value.size)
         }
 
-    private fun createViewModel(engine: FakeAiEngine = FakeAiEngine()): AiChatViewModel {
-        val repo = FakeDeviceRepository()
-        val findOrCreateType = FindOrCreateDeviceTypeUseCase(repo)
-        val findOrCreateDevice = FindOrCreateDeviceUseCase(repo, findOrCreateType)
-        val updateLastReplaced = UpdateDeviceLastReplacedUseCase(repo)
-        val toolHandler = DeviceToolHandler(repo, findOrCreateType, findOrCreateDevice, updateLastReplaced, SetDeviceNeedsBatteryUseCase(FakeNeedsBatteryRepository()))
-        val buildAiContext = BuildAiContextUseCase(repo)
-        val sendChatMessage = SendChatMessageUseCase(engine, toolHandler, buildAiContext)
-        return AiChatViewModel(sendChatMessage)
+    @Test
+    fun `a failed reply is an error entry and and retry sends the same words again`() =
+        runTest {
+            val h = Harness()
+            h.engine.errorToThrow = IllegalStateException("boom")
+            h.viewModel.sendMessage("Hello", hints = mapOf("k" to "v"))
+            settle()
+            val error = h.viewModel.messages.value
+                .last()
+            assertTrue(error.isError)
+            assertTrue(error.text.contains("Nothing in your data was changed"))
+
+            h.engine.errorToThrow = null
+            h.engine.defaultResponseText = "Back."
+            h.viewModel.retryLastMessage()
+            settle()
+            val messages = h.viewModel.messages.value
+            assertEquals(listOf(AiRole.USER, AiRole.MODEL), messages.map { it.role })
+            assertEquals("Back.", messages.last().text)
+            assertEquals(2, h.engine.recordedPrompts.size)
+            assertEquals(h.engine.recordedPrompts[0], h.engine.recordedPrompts[1])
+        }
+
+    @Test
+    fun `clearChat resets the transcript and the conversation behind it`() =
+        runTest {
+            val h = Harness()
+            h.viewModel.sendMessage("Hello")
+            settle()
+            assertTrue(
+                h.viewModel.messages.value
+                    .isNotEmpty(),
+            )
+
+            h.viewModel.clearChat()
+            settle()
+            assertTrue(
+                h.viewModel.messages.value
+                    .isEmpty(),
+            )
+            assertFalse(h.viewModel.isProcessing.value)
+            assertEquals(1, h.engine.resetCount)
+        }
+
+    private class Harness {
+        val repo = FakeDeviceRepository().apply {
+            setDevices(listOf(TestDevices.createDevice(id = "d1", name = "Hall Alarm")))
+        }
+        val engine = FakeAiEngine()
+        val viewModel = AiChatViewModel(
+            AiChatSession(
+                aiEngine = engine,
+                toolHandler = DeviceToolHandler(repo, FakeNeedsBatteryRepository(), UpdateDeviceLastReplacedUseCase(repo)),
+                buildAiContextUseCase = BuildAiContextUseCase(repo, FakeNeedsBatteryRepository()),
+            ),
+        )
     }
 }

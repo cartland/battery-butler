@@ -75,6 +75,12 @@ class LabsCloudAiEngine(
     override suspend fun generateResponse(
         prompt: String,
         toolHandler: ToolHandler?,
+    ): Flow<AiMessage> = generateResponse(prompt, toolHandler) { "" }
+
+    override suspend fun generateResponse(
+        prompt: String,
+        toolHandler: ToolHandler?,
+        situation: suspend () -> String,
     ): Flow<AiMessage> =
         flow {
             val baseUrl = dataModeRepository.dataMode.first().labsUrl()
@@ -82,20 +88,26 @@ class LabsCloudAiEngine(
                 emit(error(NOT_LABS_MESSAGE))
                 return@flow
             }
-            emit(mutex.withLock { converse(baseUrl, prompt, toolHandler) })
+            emit(mutex.withLock { converse(baseUrl, prompt, toolHandler, situation) })
         }.flowOn(dispatcherProvider.io)
+
+    override suspend fun resetConversation() {
+        mutex.withLock { history.clear() }
+    }
 
     /** Runs one user message to a final answer. On failure the conversation is rolled back. */
     private suspend fun converse(
         baseUrl: String,
         prompt: String,
         toolHandler: ToolHandler?,
+        situation: suspend () -> String,
     ): AiMessage {
         val checkpoint = history.size
         history.add(userText(prompt))
         try {
             repeat(MAX_TOOL_ROUNDS) {
-                val outcome = send(baseUrl)
+                // Re-read every round: a tool the model just ran has already changed the picture.
+                val outcome = send(baseUrl, situation())
                 if (outcome is Outcome.Failed) {
                     rollBack(checkpoint)
                     return error(outcome.message)
@@ -122,13 +134,16 @@ class LabsCloudAiEngine(
         }
     }
 
-    private suspend fun send(baseUrl: String): Outcome =
+    private suspend fun send(
+        baseUrl: String,
+        situation: String,
+    ): Outcome =
         try {
             val token = labsAuthGateway.getLabsIdToken() ?: return Outcome.Failed(SIGN_IN_MESSAGE)
             val response = httpClient.post("${baseUrl.trimEnd('/')}$GENERATE_PATH") {
                 bearerAuth(token)
                 contentType(ContentType.Application.Json)
-                setBody(requestBody())
+                setBody(requestBody(situation))
             }
             when {
                 response.status.isSuccess() -> Outcome.Ok(response.body<GenerateResponseWire>().content)
@@ -145,10 +160,15 @@ class LabsCloudAiEngine(
             Outcome.Failed(NETWORK_MESSAGE)
         }
 
-    private fun requestBody(): JsonObject {
+    /**
+     * The situation rides in the system instruction, not the conversation: it is rebuilt for
+     * every call, so the model always sees the present and the history never carries a stale
+     * copy of the inventory from each earlier turn.
+     */
+    private fun requestBody(situation: String): JsonObject {
         trimHistory()
         return buildJsonObject {
-            put("systemInstruction", LabsAiTools.SYSTEM_INSTRUCTION)
+            put("systemInstruction", systemInstruction(situation))
             put("tools", LabsAiTools.declarations)
             put("contents", JsonArray(history.toList()))
         }
@@ -246,7 +266,10 @@ class LabsCloudAiEngine(
 
         fun newId(): String = "resp_${++counter}"
 
-        fun error(message: String) = AiMessage("error", AiRole.MODEL, message, false)
+        /** Each error gets its own id: the transcript keys on ids, and two alike would crash it. */
+        fun error(message: String) = AiMessage("error_${++counter}", AiRole.MODEL, message, isPartial = false, isError = true)
+
+        fun systemInstruction(situation: String): String = if (situation.isBlank()) LabsAiTools.SYSTEM_INSTRUCTION else "${LabsAiTools.SYSTEM_INSTRUCTION}\n\n## Right now\n\n$situation"
 
         fun userText(text: String): JsonObject =
             buildJsonObject {

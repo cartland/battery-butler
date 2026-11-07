@@ -32,6 +32,8 @@ import com.chriscartland.batterybutler.composeapp.feature.addbatteryevent.AddBat
 import com.chriscartland.batterybutler.composeapp.feature.adddevice.AddDeviceScreen
 import com.chriscartland.batterybutler.composeapp.feature.adddevicetype.AddDeviceTypeScreen
 import com.chriscartland.batterybutler.composeapp.feature.aichat.AiChatScreen
+import com.chriscartland.batterybutler.composeapp.feature.aichat.toChatMessage
+import com.chriscartland.batterybutler.composeapp.feature.aichat.toChatPendingAction
 import com.chriscartland.batterybutler.composeapp.feature.devicedetail.DeviceDetailScreen
 import com.chriscartland.batterybutler.composeapp.feature.devicetypes.DeviceTypeDetailScreen
 import com.chriscartland.batterybutler.composeapp.feature.devicetypes.EditDeviceTypeScreen
@@ -65,7 +67,6 @@ import com.chriscartland.batterybutler.presentationcore.util.LocalSecureClipboar
 import com.chriscartland.batterybutler.presentationcore.util.LocalShareHandler
 import com.chriscartland.batterybutler.presentationcore.util.SecureClipboard
 import com.chriscartland.batterybutler.presentationcore.util.ShareHandler
-import com.chriscartland.batterybutler.presentationfeature.aichat.ChatMessage
 import com.chriscartland.batterybutler.presentationfeature.main.MainScreenShell
 import com.chriscartland.batterybutler.presentationfeature.main.MainTab
 import com.chriscartland.batterybutler.viewmodel.aichat.AiChatViewModel
@@ -159,17 +160,12 @@ fun App(
             val aiViewModel: AiChatViewModel = viewModel { component.aiChatViewModel }
             val aiMessages by aiViewModel.messages.collectAsStateWithLifecycle()
             val isAiProcessing by aiViewModel.isProcessing.collectAsStateWithLifecycle()
+            val pendingAiAction by aiViewModel.pendingAction.collectAsStateWithLifecycle()
             var isAiExpanded by rememberSaveable { mutableStateOf(false) }
             var tabTransitionForward by rememberSaveable { mutableStateOf(true) }
             var isTabTransition by rememberSaveable { mutableStateOf(false) }
 
-            val aiUiMessages = aiMessages.map { msg ->
-                ChatMessage(
-                    id = msg.id,
-                    text = msg.text,
-                    isUser = msg.role == AiRole.USER,
-                )
-            }
+            val aiUiMessages = aiMessages.map { it.toChatMessage() }
 
             // Derive shell visibility and current tab from the unified stack
             val topScreen = backStack.lastOrNull()
@@ -256,6 +252,11 @@ fun App(
                         onAiExpandedChange = { isAiExpanded = it },
                         onSendAiMessage = onSendAiMessage,
                         onClearAiChat = aiViewModel::clearChat,
+                        pendingAiAction = pendingAiAction?.toChatPendingAction(),
+                        onConfirmAiAction = aiViewModel::confirmPendingAction,
+                        onCancelAiAction = aiViewModel::cancelPendingAction,
+                        onUndoAiAction = aiViewModel::undoAction,
+                        onRetryAi = aiViewModel::retryLastMessage,
                     ) { contentModifier, bottomContentPadding ->
 
                         NavDisplay(

@@ -50,12 +50,32 @@ class FakeAiEngine : AiEngine {
         _compatibility.value = compatible
     }
 
+    /** The situation passed with each prompt, when the caller gave one; "" otherwise. */
+    val recordedSituations = mutableListOf<String>()
+
+    /** Tool calls to make, through the given handler, before answering. Results are recorded. */
+    var scriptedToolCalls: List<Pair<String, Map<String, Any?>>> = emptyList()
+    val recordedToolResults = mutableListOf<String>()
+
+    var resetCount = 0
+        private set
+
     override suspend fun generateResponse(
         prompt: String,
         toolHandler: ToolHandler?,
+    ): Flow<AiMessage> = generateResponse(prompt, toolHandler) { "" }
+
+    override suspend fun generateResponse(
+        prompt: String,
+        toolHandler: ToolHandler?,
+        situation: suspend () -> String,
     ): Flow<AiMessage> {
         recordedPrompts.add(prompt)
+        recordedSituations.add(situation())
         errorToThrow?.let { throw it }
+        for ((name, args) in scriptedToolCalls) {
+            recordedToolResults += toolHandler?.execute(name, args) ?: "no handler"
+        }
         return flowOf(
             AiMessage(
                 id = "fake-${recordedPrompts.size}",
@@ -63,5 +83,9 @@ class FakeAiEngine : AiEngine {
                 text = defaultResponseText,
             ),
         )
+    }
+
+    override suspend fun resetConversation() {
+        resetCount++
     }
 }

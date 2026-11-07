@@ -45,12 +45,18 @@ class DynamicAiEngine(
     override suspend fun generateResponse(
         prompt: String,
         toolHandler: ToolHandler?,
+    ): Flow<AiMessage> = generateResponse(prompt, toolHandler) { "" }
+
+    override suspend fun generateResponse(
+        prompt: String,
+        toolHandler: ToolHandler?,
+        situation: suspend () -> String,
     ): Flow<AiMessage> {
         val type = aiPreferencesRepository.aiEngineType.first()
         return when (type) {
-            AiEngineType.Cloud -> cloudEngine.generateResponse(prompt, toolHandler)
+            AiEngineType.Cloud -> cloudEngine.generateResponse(prompt, toolHandler, situation)
 
-            AiEngineType.OnDevice -> onDeviceEngine.generateResponse(prompt, toolHandler)
+            AiEngineType.OnDevice -> onDeviceEngine.generateResponse(prompt, toolHandler, situation)
 
             AiEngineType.NoOp -> flowOf(
                 AiMessage(
@@ -61,5 +67,10 @@ class DynamicAiEngine(
                 ),
             )
         }
+    }
+
+    override suspend fun resetConversation() {
+        cloudEngine.resetConversation()
+        onDeviceEngine.resetConversation()
     }
 }
