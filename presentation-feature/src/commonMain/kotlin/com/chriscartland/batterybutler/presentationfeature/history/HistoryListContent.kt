@@ -1,5 +1,6 @@
 package com.chriscartland.batterybutler.presentationfeature.history
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.FlowRow
@@ -17,6 +18,7 @@ import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -66,7 +68,9 @@ fun HistoryListContent(
     PullToRefreshBox(
         isRefreshing = isRefreshing,
         onRefresh = onRefresh,
-        modifier = modifier.fillMaxSize(),
+        // Opaque, so predictive back moves the tab as one sheet instead of showing its cards
+        // floating over whatever is behind. The Devices tab gets this from its Scaffold.
+        modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             when (state) {

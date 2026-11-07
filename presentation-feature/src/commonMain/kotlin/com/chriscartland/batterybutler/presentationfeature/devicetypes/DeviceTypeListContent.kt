@@ -1,6 +1,7 @@
 package com.chriscartland.batterybutler.presentationfeature.devicetypes
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -89,7 +90,9 @@ fun DeviceTypeListContent(
     PullToRefreshBox(
         isRefreshing = isRefreshing,
         onRefresh = onRefresh,
-        modifier = modifier.fillMaxSize(),
+        // Opaque, so predictive back moves the tab as one sheet instead of showing its cards
+        // floating over whatever is behind. The Devices tab gets this from its Scaffold.
+        modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             when (state) {
