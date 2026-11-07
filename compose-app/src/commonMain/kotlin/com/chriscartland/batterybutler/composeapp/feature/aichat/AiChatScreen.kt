@@ -4,9 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.chriscartland.batterybutler.domain.model.ai.AiRole
 import com.chriscartland.batterybutler.presentationfeature.aichat.AiChatContent
-import com.chriscartland.batterybutler.presentationfeature.aichat.ChatMessage
 import com.chriscartland.batterybutler.viewmodel.aichat.AiChatViewModel
 
 @Composable
@@ -17,21 +15,19 @@ fun AiChatScreen(
 ) {
     val messages by viewModel.messages.collectAsStateWithLifecycle()
     val isProcessing by viewModel.isProcessing.collectAsStateWithLifecycle()
-
-    val uiMessages = messages.map { msg ->
-        ChatMessage(
-            id = msg.id,
-            text = msg.text,
-            isUser = msg.role == AiRole.USER,
-        )
-    }
+    val pendingAction by viewModel.pendingAction.collectAsStateWithLifecycle()
 
     AiChatContent(
-        messages = uiMessages,
+        messages = messages.map { it.toChatMessage() },
         isProcessing = isProcessing,
         onSendMessage = viewModel::sendMessage,
         onClearChat = viewModel::clearChat,
         onBack = onBack,
         modifier = modifier,
+        pendingAction = pendingAction?.toChatPendingAction(),
+        onConfirmPending = viewModel::confirmPendingAction,
+        onCancelPending = viewModel::cancelPendingAction,
+        onUndo = viewModel::undoAction,
+        onRetry = viewModel::retryLastMessage,
     )
 }

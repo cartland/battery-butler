@@ -694,34 +694,22 @@ The app uses `androidx.core:core-splashscreen` (added in PR #1109) for cold-star
 
 ### AI Architecture
 
-AI messages are augmented in `SendChatMessageUseCase` before reaching the AI engine:
-1. **Time context**: Current date/time/timezone prepended via `buildTimeContext()`
-2. **User context**: Device inventory, types, and recent events via `BuildAiContextUseCase`
-3. The augmented message is sent to `AiEngine.generateResponse()`
+Full picture, with the rules and where each is enforced: `docs/AI_CHAT.md`.
 
-The AI system instruction (`LabsAiTools.SYSTEM_INSTRUCTION`, sent with every relay request) is fixed for the conversation, so dynamic context is prepended to user messages rather than modifying the system instruction.
-
-**AI Tools (DeviceToolHandler):**
-- 9 tools total: `addDevice`, `addDeviceType`, `recordBatteryReplacement`, `updateDevice`, `deleteDevice`, `updateDeviceType`, `deleteDeviceType`, `updateBatteryEvent`, `deleteBatteryEvent`
-- Tool names and params are constants in `domain/.../ai/AiTools.kt` (`AiToolNames`, `AiToolParams`)
-- `BuildAiContextUseCase` includes entity IDs as `[id:...]` prefixes so the AI can target specific items
-- Delete tools execute immediately; confirmation is enforced via system prompt instruction (not code guard)
-- `deleteDeviceType` has referential integrity: blocks if devices still reference the type
-- Event update/delete recalculates device `batteryLastReplaced` via `UpdateDeviceLastReplacedUseCase`
-- Gemini may send numeric params as String or Number — `parseIntParam()` handles both
-
-### Navigation Architecture (Unified Back Stack)
-
-The app uses a **single unified back stack** (`backStack` in `App.kt`) with one `NavDisplay`. All screens (tabs, login, detail, edit, settings) share the same stack. Shell chrome (top bar, bottom nav, AI overlay) is conditionally shown based on whether the top screen is a tab screen.
-
-Key design:
-- **Initial state**: `[Devices, Login]` — Login on top (full-screen, no chrome). After login, Login is removed, revealing Devices with shell.
-- **`Screen.isTabScreen`** extension property identifies Devices/Types/History as tab screens.
-- **`MainScreenShell.showChrome`** parameter: when `false`, hides top bar, bottom nav, AI input/overlay, and predictive back handler. Sets `contentWindowInsets = WindowInsets(0,0,0,0)` so detail screens handle their own insets.
-- **Tab switching** clears the entire stack and rebuilds with the tab hierarchy (e.g., Types = `[Devices, Types]`).
-- **`navigateTo`** does type-based dedup: same `::class` replaces top entry (e.g., `DeviceDetail("a")` → `DeviceDetail("b")`).
-- **`isTabTransition`** flag (set `true` by tab navigation, `false` by detail navigation) controls directional animations in `transitionSpec`.
-- **NavDisplay `transitionSpec` gotcha**: `initialState`/`targetState` in the lambda are wrapper types (not raw `Screen`), so extension properties like `isTabScreen` can't be called on them. Use external flags instead.
+- `AiChatSession` (usecase) owns one conversation: it sends the message, defers deletions to a
+  confirmation card (`AiPendingAction`), holds every undo, and prefixes the next message with
+  bracketed notes about outcomes the model couldn't see (confirmed / declined / undone).
+- `DeviceToolHandler.run()` returns a `ToolOutcome`: the result for the model, the `AiAction` the
+  person sees (written from stored data), and the undo. `execute()` is the plain `ToolHandler` view.
+- `BuildAiContextUseCase` renders the "situation": every device with id, type, batteries,
+  location, last change, age, status (ok/due/overdue/unknown), mark and change count; the types;
+  the 30 most recent changes. It is rebuilt before every model call and sent in the system
+  instruction (`AiEngine.generateResponse(prompt, tools, situation)`), never into the conversation.
+- 11 tools: the 9 before, plus `markNeedsBattery` and `getDeviceHistory`. Names and params in
+  `domain/.../ai/AiTools.kt`; `AiToolNames.DESTRUCTIVE` is the set the session gates.
+- Gemini may send numeric and boolean params as strings — the handler parses both.
+- The cloud engine gives every error message its own id and marks it `isError`; the transcript
+  keys on ids.
 
 ### AI Chat UI Architecture
 
@@ -732,8 +720,8 @@ The AI chat uses a **split-screen layout** — chat and tab content share the sc
 - **Split-screen layout**: `MainScreenShell` uses a `Column` with `content` in a `Box(Modifier.weight(1f))` and the chat panel below it. Content shrinks as the chat expands. This replaced the previous z-stacked overlay approach (PR #831).
 - **Chat height animation**: `Animatable<Float>` (0f = hidden, 1f = full target height) drives chat panel height. Target is 50% of available height normally, 100% when IME is visible. `PredictiveBackHandler` (expect/actual in `presentation-core/.../components/PredictiveBackHandler.kt`) is composed after `content()` for higher priority than NavDisplay's handler. On Android, the back gesture smoothly tracks finger position; on desktop/iOS, the handler is a no-op.
 - **Scroll anchoring**: `AiTabContent` uses `snapshotFlow { listState.layoutInfo.viewportSize.height }` to keep chat anchored at the bottom when the viewport resizes (chat panel appearing/resizing, IME toggling).
-- **`AiTabContent`** (`presentation-feature/aichat/AiTabContent.kt`) has a `showInput: Boolean = true` param. The split-screen chat panel passes `showInput = false` so only the chat history appears.
-- **AI messages** include an `[Active tab: <name>]` context prefix so the AI knows which screen the user is viewing.
+- **`AiTabContent`** (`presentation-feature/aichat/AiTabContent.kt`) has a `showInput: Boolean = true` param. The split-screen chat panel passes `showInput = false` so only the chat history appears. Both it and the full-screen `AiChatContent` render `ChatTranscript`, which owns the bubbles, the action rows with Undo, the confirmation card, the typing dots, Try again, and the empty-state suggestions.
+- **AI messages** carry a `[Message sent from: <Tab> tab]` hint so the AI knows which screen the user is viewing, plus any outcome notes from `AiChatSession`.
 - **Tab transitions** are directional: `tabTransitionForward` is set before each backstack mutation based on tab index. `NavDisplay.transitionSpec` reads it to slide left or right.
 - **`MainTab.AI`** was removed (PR #952) — the AI is a split-screen panel, not a nav tab. The `MainTab` enum now only contains `DEVICES`, `TYPES`, `HISTORY`.
 - **Predictive back (Android 13+)**: Opted in via `android:enableOnBackInvokedCallback="true"` in `AndroidManifest.xml`. AI chat collapse uses `PredictiveBackHandler` for gesture-tracked animation. Back on Login is a no-op (prevents revealing unauthenticated tabs). Full back gesture contract documented in `docs/TESTING.md`.

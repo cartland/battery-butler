@@ -652,9 +652,9 @@ ordered by payoff/effort:
 - [ ] **Staggered first-load entrance** — items fade+slide up with a small
   per-index delay on first composition of a tab list. Guard so it runs once per
   screen entry, not on every recomposition.
-- [ ] **AI chat message entrance + typing indicator** — new chat bubbles slide
-  in (`AiTabContent.kt`); replace the static "thinking" state with a pulsing
-  three-dot indicator.
+- [ ] **AI chat message entrance** — new chat bubbles slide in
+  (`ChatTranscript.kt`). The three-dot thinking indicator shipped with the
+  chat overhaul (2026-11-07).
 - [ ] **Battery icon fill on record** — after a replacement is recorded, animate
   the `BatteryFull` icon on the new row (or the stat card) filling from empty —
   reinforces "fresh battery".

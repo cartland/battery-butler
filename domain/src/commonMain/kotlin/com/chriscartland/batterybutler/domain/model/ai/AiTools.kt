@@ -10,6 +10,11 @@ data object AiToolNames {
     const val DELETE_DEVICE_TYPE = "deleteDeviceType"
     const val UPDATE_BATTERY_EVENT = "updateBatteryEvent"
     const val DELETE_BATTERY_EVENT = "deleteBatteryEvent"
+    const val MARK_NEEDS_BATTERY = "markNeedsBattery"
+    const val GET_DEVICE_HISTORY = "getDeviceHistory"
+
+    /** The tools that destroy data. The app asks the person before running any of these. */
+    val DESTRUCTIVE: Set<String> = setOf(DELETE_DEVICE, DELETE_DEVICE_TYPE, DELETE_BATTERY_EVENT)
 }
 
 data object AiToolParams {
@@ -31,4 +36,5 @@ data object AiToolParams {
     const val NEW_BATTERY_TYPE = "newBatteryType"
     const val NEW_BATTERY_QUANTITY = "newBatteryQuantity"
     const val NEW_ICON = "newIcon"
+    const val NEEDS_BATTERY = "needsBattery"
 }

@@ -242,14 +242,16 @@ Use this alongside [FEATURES.md](FEATURES.md) (feature inventory) and [TESTING.m
 
 1. User types a message in the always-visible AI input field at the bottom of any tab.
 2. User taps Send — AI overlay expands upward showing chat history.
-3. AI processes the message with full device context (inventory, types, events).
-4. AI response streams in with tool execution results (add device, record event, etc.).
-5. User can continue chatting or collapse the overlay.
+3. AI processes the message with the full inventory (devices with ages and marks, types, recent changes).
+4. The reply appears with a row for each change the app made (add device, record event, etc.), each with Undo.
+5. A deletion is never made outright: a card asks the user to confirm or keep.
+6. User can continue chatting or collapse the overlay.
 
 **Edge cases:**
 - Blank input — ignored
 - Input while processing — ignored (debounced)
-- AI engine unavailable — error message shown
+- AI engine unavailable — error message shown, with Try again
+- A new message while a deletion card is waiting — the card is withdrawn, nothing is deleted
 - Back press while overlay is open — collapses overlay (does not navigate back)
 - Tab switching while chat is open — collapses overlay, chat state preserved
 

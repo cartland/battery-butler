@@ -151,6 +151,19 @@
     <string name="ai_assistant_title">AI Assistant</string>
     <string name="action_clear_chat">Clear chat</string>
     <string name="ai_chat_empty_message">Ask me to add devices, record battery replacements, or manage your inventory.</string>
+    <string name="ai_chat_empty_title">Ask about your devices, or tell me what you changed</string>
+    <string name="ai_suggestion_due">Which batteries are due?</string>
+    <string name="ai_suggestion_shopping">What batteries should I buy?</string>
+    <string name="ai_suggestion_record">I changed the batteries in the hall alarm today</string>
+    <string name="ai_suggestion_add">Add a smoke alarm in the hallway</string>
+    <string name="ai_pending_title">Waiting for you</string>
+    <string name="ai_pending_irreversible">This can\'t be undone.</string>
+    <string name="ai_pending_confirm">Delete</string>
+    <string name="ai_pending_cancel">Keep</string>
+    <string name="ai_action_undo">Undo</string>
+    <string name="ai_action_undone">Undone</string>
+    <string name="ai_retry">Try again</string>
+    <string name="content_desc_ai_thinking">The assistant is thinking</string>
     <string name="content_desc_send_message">Send message</string>
     <string name="placeholder_type_message">Type a message...</string>
 

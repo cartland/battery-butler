@@ -27,4 +27,12 @@ class DeferredAiEngine(
         prompt: String,
         toolHandler: ToolHandler?,
     ): Flow<AiMessage> = engine.generateResponse(prompt, toolHandler)
+
+    override suspend fun generateResponse(
+        prompt: String,
+        toolHandler: ToolHandler?,
+        situation: suspend () -> String,
+    ): Flow<AiMessage> = engine.generateResponse(prompt, toolHandler, situation)
+
+    override suspend fun resetConversation() = engine.resetConversation()
 }

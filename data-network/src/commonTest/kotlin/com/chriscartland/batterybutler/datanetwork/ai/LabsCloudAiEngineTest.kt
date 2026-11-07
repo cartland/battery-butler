@@ -52,7 +52,7 @@ class LabsCloudAiEngineTest {
             assertEquals(listOf("You have 2 smoke alarms."), messages.map(AiMessage::text))
             val body = requests.single()
             assertTrue(body["systemInstruction"]!!.jsonPrimitive.content.startsWith("You are Battery Butler"))
-            assertEquals(9, body["tools"]!!.jsonArray.size)
+            assertEquals(11, body["tools"]!!.jsonArray.size)
             assertEquals(
                 "How many smoke alarms?",
                 body["contents"]!!
@@ -183,6 +183,57 @@ class LabsCloudAiEngineTest {
                     .jsonPrimitive.content,
             )
             assertTrue(contents.last().toString().contains("3x"))
+        }
+
+    @Test
+    fun `the situation rides in the system instruction and is re-read every round`() =
+        runTest {
+            val requests = mutableListOf<JsonObject>()
+            val callTurn = """{"role":"model","parts":[{"functionCall":{"name":"addDevice","args":{"name":"X"}}}]}"""
+            var n = 0
+            val engine = engine(this, requests) {
+                if (n++ == 0) respondJson("""{"content":$callTurn,"modelVersion":"m"}""") else respondJson(modelReply("Done."))
+            }
+            var reads = 0
+            engine.generateResponse("add X", { _, _ -> "ok" }) { "inventory read ${++reads}" }.toList()
+
+            assertEquals(2, reads, "once per model call, so the second round sees the tool's effect")
+            val first = requests[0]["systemInstruction"]!!.jsonPrimitive.content
+            val second = requests[1]["systemInstruction"]!!.jsonPrimitive.content
+            assertTrue(first.startsWith(LabsAiTools.SYSTEM_INSTRUCTION))
+            assertTrue(first.endsWith("inventory read 1"))
+            assertTrue(second.endsWith("inventory read 2"))
+            // ...and never into the conversation, which stays the bare exchange.
+            val contents = requests[1]["contents"]!!.jsonArray
+            assertEquals(
+                "add X",
+                contents[0]
+                    .jsonObject["parts"]!!
+                    .jsonArray[0]
+                    .jsonObject["text"]!!
+                    .jsonPrimitive.content,
+            )
+        }
+
+    @Test
+    fun `every error is its own transcript entry`() =
+        runTest {
+            val engine = engine(this) { respond("", HttpStatusCode.InternalServerError) }
+            val a = engine.generateResponse("one").toList().single()
+            val b = engine.generateResponse("two").toList().single()
+            assertTrue(a.isError && b.isError)
+            assertTrue(a.id != b.id, "the transcript keys on ids")
+        }
+
+    @Test
+    fun `resetting forgets the conversation`() =
+        runTest {
+            val requests = mutableListOf<JsonObject>()
+            val engine = engine(this, requests) { respondJson(modelReply("ok")) }
+            engine.generateResponse("first").toList()
+            engine.resetConversation()
+            engine.generateResponse("second").toList()
+            assertEquals(1, requests.last()["contents"]!!.jsonArray.size)
         }
 
     // ─── helpers ────────────────────────────────────────────────────────────────
