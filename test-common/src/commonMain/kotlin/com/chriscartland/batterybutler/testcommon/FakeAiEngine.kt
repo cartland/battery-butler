@@ -57,6 +57,12 @@ class FakeAiEngine : AiEngine {
     var scriptedToolCalls: List<Pair<String, Map<String, Any?>>> = emptyList()
     val recordedToolResults = mutableListOf<String>()
 
+    /** Thrown after [scriptedToolCalls] have run, like a failure partway through a turn. */
+    var errorAfterToolCalls: Exception? = null
+
+    /** Answer with this as an error message, the way the cloud engine reports a failed turn. */
+    var errorReplyText: String? = null
+
     var resetCount = 0
         private set
 
@@ -75,6 +81,10 @@ class FakeAiEngine : AiEngine {
         errorToThrow?.let { throw it }
         for ((name, args) in scriptedToolCalls) {
             recordedToolResults += toolHandler?.execute(name, args) ?: "no handler"
+        }
+        errorAfterToolCalls?.let { throw it }
+        errorReplyText?.let {
+            return flowOf(AiMessage(id = "fake-error-${recordedPrompts.size}", role = AiRole.MODEL, text = it, isError = true))
         }
         return flowOf(
             AiMessage(

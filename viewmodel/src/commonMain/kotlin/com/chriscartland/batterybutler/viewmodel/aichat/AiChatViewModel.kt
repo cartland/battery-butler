@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
-import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Clock
 
 /**
@@ -61,22 +60,26 @@ class AiChatViewModel(
                     // Replace partial messages with the final one
                     _messages.update { current -> current.filter { !it.isPartial } + aiMessage }
                 }
-            } catch (e: Exception) {
-                if (e is CancellationException) throw e
-                _messages.update { current ->
-                    current.filter { !it.isPartial } +
-                        AiMessage(id = "error_${now()}", role = AiRole.MODEL, text = FAILED_MESSAGE, isError = true)
-                }
             } finally {
                 _isProcessing.value = false
             }
         }
     }
 
-    /** Send the last message again, dropping the error it ended in. */
+    /**
+     * Send the last message again, dropping the error it ended in. Refused if that attempt made
+     * changes: repeating it would make them twice, and dropping the entry would lose their Undo.
+     */
     fun retryLastMessage() {
         val (text, hints) = lastSend ?: return
         if (_isProcessing.value) return
+        if (_messages.value
+                .lastOrNull()
+                ?.actions
+                ?.isNotEmpty() == true
+        ) {
+            return
+        }
         _messages.update { current ->
             // The message being retried is still the last user turn; the error after it goes.
             val lastUser = current.indexOfLast { it.role == AiRole.USER }
@@ -132,8 +135,4 @@ class AiChatViewModel(
     }
 
     private fun now() = Clock.System.now().toEpochMilliseconds()
-
-    private companion object {
-        const val FAILED_MESSAGE = "Something went wrong and the assistant couldn't answer. Nothing in your data was changed by this message."
-    }
 }

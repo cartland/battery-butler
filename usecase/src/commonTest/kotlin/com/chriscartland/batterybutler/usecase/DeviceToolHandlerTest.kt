@@ -203,6 +203,81 @@ class DeviceToolHandlerTest {
             assertNull(h.handler.describe(AiToolNames.ADD_DEVICE, mapOf(AiToolParams.ID to "d1")))
         }
 
+    @Test
+    fun `undoing an update leaves later edits to other fields alone`() =
+        runTest {
+            val h = Harness()
+            h.repo.setDevices(listOf(TestDevices.createDevice(id = "d1", name = "Hall Alarm", location = "Hall")))
+            val rename = h.handler.run(AiToolNames.UPDATE_DEVICE, mapOf(AiToolParams.ID to "d1", AiToolParams.NEW_NAME to "Landing Alarm"))
+            h.handler.run(AiToolNames.UPDATE_DEVICE, mapOf(AiToolParams.ID to "d1", AiToolParams.NEW_LOCATION to "Landing"))
+            rename.undoNow()
+            assertEquals(
+                "Hall Alarm",
+                h.repo.devices
+                    .single()
+                    .name,
+            )
+            assertEquals(
+                "Landing",
+                h.repo.devices
+                    .single()
+                    .location,
+            )
+        }
+
+    @Test
+    fun `undoing an update to something deleted since says so`() =
+        runTest {
+            val h = Harness()
+            h.repo.setDevices(listOf(TestDevices.createDevice(id = "d1", name = "Hall Alarm")))
+            val rename = h.handler.run(AiToolNames.UPDATE_DEVICE, mapOf(AiToolParams.ID to "d1", AiToolParams.NEW_NAME to "X"))
+            h.repo.setDevices(emptyList())
+            assertIs<Result.Error<*>>(assertNotNull(rename.undo)())
+            assertTrue(h.repo.devices.isEmpty(), "an undo must not resurrect it")
+        }
+
+    @Test
+    fun `undoing an older recorded change keeps the newer one's date`() =
+        runTest {
+            val h = Harness()
+            h.repo.setDevices(listOf(TestDevices.createDevice(id = "d1", name = "Hall Alarm", batteryLastReplaced = day("2026-01-01"))))
+            val older = h.handler.run(AiToolNames.RECORD_BATTERY_REPLACEMENT, mapOf(AiToolParams.DEVICE_NAME to "Hall Alarm", AiToolParams.DATE to "2026-03-01"))
+            h.handler.run(AiToolNames.RECORD_BATTERY_REPLACEMENT, mapOf(AiToolParams.DEVICE_NAME to "Hall Alarm", AiToolParams.DATE to "2026-05-01"))
+            older.undoNow()
+            assertEquals(
+                day("2026-05-01"),
+                h.repo.devices
+                    .single()
+                    .batteryLastReplaced,
+            )
+        }
+
+    @Test
+    fun `undoing the only recorded change restores a date that never came from an event`() =
+        runTest {
+            val h = Harness()
+            h.repo.setDevices(listOf(TestDevices.createDevice(id = "d1", name = "Hall Alarm", batteryLastReplaced = day("2026-01-01"))))
+            val change = h.handler.run(AiToolNames.RECORD_BATTERY_REPLACEMENT, mapOf(AiToolParams.DEVICE_NAME to "Hall Alarm", AiToolParams.DATE to "2026-03-01"))
+            change.undoNow()
+            assertEquals(
+                day("2026-01-01"),
+                h.repo.devices
+                    .single()
+                    .batteryLastReplaced,
+            )
+        }
+
+    @Test
+    fun `adding a device can't be undone once it has battery changes`() =
+        runTest {
+            val h = Harness()
+            val add = h.handler.run(AiToolNames.ADD_DEVICE, mapOf(AiToolParams.NAME to "Hall Alarm"))
+            h.handler.run(AiToolNames.RECORD_BATTERY_REPLACEMENT, mapOf(AiToolParams.DEVICE_NAME to "Hall Alarm"))
+            assertIs<Result.Error<*>>(assertNotNull(add.undo)())
+            assertEquals(1, h.repo.devices.size)
+            assertEquals(1, h.repo.events.size)
+        }
+
     // ─── types ──────────────────────────────────────────────────────────────────
 
     @Test

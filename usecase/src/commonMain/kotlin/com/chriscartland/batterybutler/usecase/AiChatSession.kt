@@ -1,5 +1,6 @@
 package com.chriscartland.batterybutler.usecase
 
+import co.touchlab.kermit.Logger
 import com.benasher44.uuid.uuid4
 import com.chriscartland.batterybutler.domain.model.DataError
 import com.chriscartland.batterybutler.domain.model.Result
@@ -7,14 +8,16 @@ import com.chriscartland.batterybutler.domain.model.ai.AiAction
 import com.chriscartland.batterybutler.domain.model.ai.AiEngine
 import com.chriscartland.batterybutler.domain.model.ai.AiMessage
 import com.chriscartland.batterybutler.domain.model.ai.AiPendingAction
+import com.chriscartland.batterybutler.domain.model.ai.AiRole
 import com.chriscartland.batterybutler.domain.model.ai.AiToolNames
 import com.chriscartland.batterybutler.domain.model.ai.ToolHandler
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.flow
 import me.tatarka.inject.annotations.Inject
+import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * One conversation with the assistant, and everything the app holds on its behalf: the deletion
@@ -52,38 +55,71 @@ class AiChatSession(
     )
 
     /**
-     * Send one message. The returned messages carry the actions taken while answering it.
+     * Send one message. The returned messages carry the actions taken while answering it, even
+     * when the answer fails partway: the changes already made are real and stay undoable.
      * [hints] are facts about where the person is in the app, shown to the model, not to them.
      */
-    suspend fun send(
+    fun send(
         text: String,
         hints: Map<String, String> = emptyMap(),
-    ): Flow<AiMessage> {
-        _pendingAction.value?.let { withdraw(it) }
-        val prompt = buildString {
-            notes.forEach { appendLine("[$it]") }
-            hints.forEach { (k, v) -> appendLine("[$k: $v]") }
-            if (isNotEmpty()) appendLine()
-            append(text)
-        }
-        notes.clear()
+    ): Flow<AiMessage> =
+        flow {
+            _pendingAction.value?.let { withdraw(it) }
+            val sentNotes = notes.toList()
+            notes.clear()
+            val prompt = buildString {
+                sentNotes.forEach { appendLine("[$it]") }
+                hints.forEach { (k, v) -> appendLine("[$k: $v]") }
+                if (isNotEmpty()) appendLine()
+                append(text)
+            }
 
-        val turnActions = mutableListOf<AiAction>()
-        val recording = ToolHandler { name, args ->
-            if (name in AiToolNames.DESTRUCTIVE) {
-                defer(name, args)
-            } else {
-                val outcome = toolHandler.run(name, args)
-                outcome.action?.let { action ->
-                    turnActions += action
-                    outcome.undo?.let { undos[action.id] = Undo(action.summary, it) }
+            val turnActions = mutableListOf<AiAction>()
+            val recording = ToolHandler { name, args ->
+                if (name in AiToolNames.DESTRUCTIVE) {
+                    defer(name, args)
+                } else {
+                    val outcome = toolHandler.run(name, args)
+                    outcome.action?.let { action ->
+                        turnActions += action
+                        outcome.undo?.let { undos[action.id] = Undo(action.summary, it) }
+                    }
+                    outcome.modelResult
                 }
-                outcome.modelResult
+            }
+            try {
+                aiEngine.generateResponse(prompt, recording) { buildAiContextUseCase() }.collect { message ->
+                    if (message.isError) rememberFailedTurn(sentNotes, turnActions)
+                    emit(if (message.isPartial) message else message.copy(actions = turnActions.toList()))
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Logger.e(TAG, e) { "chat turn failed" }
+                rememberFailedTurn(sentNotes, turnActions)
+                emit(
+                    AiMessage(
+                        id = "error_${uuid4()}",
+                        role = AiRole.MODEL,
+                        text = if (turnActions.isEmpty()) FAILED_NOTHING_CHANGED else FAILED_AFTER_CHANGES,
+                        isError = true,
+                        actions = turnActions.toList(),
+                    ),
+                )
             }
         }
-        return aiEngine
-            .generateResponse(prompt, recording) { buildAiContextUseCase() }
-            .map { message -> if (message.isPartial) message else message.copy(actions = turnActions.toList()) }
+
+    /**
+     * A failed turn is rolled out of the conversation, so the model never read its notes and
+     * won't remember what its tools did. Both go in the next message instead.
+     */
+    private fun rememberFailedTurn(
+        sentNotes: List<String>,
+        turnActions: List<AiAction>,
+    ) {
+        notes.addAll(0, sentNotes)
+        val done = turnActions.filter { it.undoable }.joinToString("; ") { it.summary }
+        if (done.isNotEmpty()) notes += "An earlier attempt failed partway, after the app had already done this: $done. Don't repeat it."
     }
 
     /** Hold a deletion for the person's answer, and tell the model so. */
@@ -158,5 +194,11 @@ class AiChatSession(
         undos.clear()
         notes.clear()
         aiEngine.resetConversation()
+    }
+
+    private companion object {
+        const val TAG = "AiChatSession"
+        const val FAILED_NOTHING_CHANGED = "Something went wrong and the assistant couldn't answer. Nothing in your data was changed by this message."
+        const val FAILED_AFTER_CHANGES = "Something went wrong before the assistant finished. The changes listed here were made."
     }
 }

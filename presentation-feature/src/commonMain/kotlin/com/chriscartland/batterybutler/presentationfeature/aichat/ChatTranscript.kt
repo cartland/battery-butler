@@ -62,12 +62,12 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.ai_a
 import com.chriscartland.batterybutler.composeresources.generated.resources.ai_chat_empty_title
 import com.chriscartland.batterybutler.composeresources.generated.resources.ai_pending_cancel
 import com.chriscartland.batterybutler.composeresources.generated.resources.ai_pending_confirm
-import com.chriscartland.batterybutler.composeresources.generated.resources.ai_pending_irreversible
 import com.chriscartland.batterybutler.composeresources.generated.resources.ai_pending_title
+import com.chriscartland.batterybutler.composeresources.generated.resources.ai_pending_undoable
 import com.chriscartland.batterybutler.composeresources.generated.resources.ai_retry
-import com.chriscartland.batterybutler.composeresources.generated.resources.ai_suggestion_add
 import com.chriscartland.batterybutler.composeresources.generated.resources.ai_suggestion_due
-import com.chriscartland.batterybutler.composeresources.generated.resources.ai_suggestion_record
+import com.chriscartland.batterybutler.composeresources.generated.resources.ai_suggestion_never_recorded
+import com.chriscartland.batterybutler.composeresources.generated.resources.ai_suggestion_recent
 import com.chriscartland.batterybutler.composeresources.generated.resources.ai_suggestion_shopping
 import com.chriscartland.batterybutler.composeresources.generated.resources.content_desc_ai_thinking
 import com.chriscartland.batterybutler.presentationcore.theme.Padding
@@ -83,7 +83,8 @@ import kotlinx.coroutines.flow.drop
  * - A card when a deletion is waiting for the person. Nothing is deleted until they tap it, and
  *   it says what would be lost for good.
  * - A failed reply ends in "Try again" instead of leaving a dead end.
- * - An empty chat offers a few things to ask, so the first message isn't a blank page.
+ * - An empty chat offers a few things to ask, so the first message isn't a blank page. A chip
+ *   sends at once, so every suggestion is a question: one tap must never change the inventory.
  */
 @Composable
 fun ChatTranscript(
@@ -128,7 +129,8 @@ fun ChatTranscript(
             ChatEntry(
                 message = message,
                 onUndo = onUndo,
-                onRetry = if (message.isError && isLast && !isProcessing) onRetry else null,
+                // Not after a turn that made changes: repeating it would make them twice.
+                onRetry = if (message.isError && isLast && !isProcessing && message.actions.isEmpty()) onRetry else null,
             )
         }
         if (pendingAction != null) {
@@ -249,7 +251,7 @@ private fun ChatActionKind.icon(): ImageVector =
 
 /**
  * A deletion waiting for the person. The confirm button names the act, and the card says what
- * can't come back, so agreeing is a decision rather than a reflex.
+ * can't come back (a photo) or that it can be undone, so agreeing is a decision, not a reflex.
  */
 @Composable
 private fun PendingActionCard(
@@ -276,7 +278,7 @@ private fun PendingActionCard(
                 modifier = Modifier.padding(top = Padding.extraSmall),
             )
             Text(
-                text = pending.consequence ?: composeStringResource(Res.string.ai_pending_irreversible),
+                text = pending.consequence ?: composeStringResource(Res.string.ai_pending_undoable),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onTertiaryContainer,
                 modifier = Modifier.padding(top = Padding.extraSmall),
@@ -344,8 +346,8 @@ private fun EmptyTranscript(
     val suggestions = listOf(
         composeStringResource(Res.string.ai_suggestion_due),
         composeStringResource(Res.string.ai_suggestion_shopping),
-        composeStringResource(Res.string.ai_suggestion_record),
-        composeStringResource(Res.string.ai_suggestion_add),
+        composeStringResource(Res.string.ai_suggestion_recent),
+        composeStringResource(Res.string.ai_suggestion_never_recorded),
     )
     Column(
         modifier = modifier.padding(Padding.standard),

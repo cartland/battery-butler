@@ -70,4 +70,14 @@ class BuildAiContextUseCaseTest {
             assertTrue(text.length < 20_000, "${text.length} chars")
             assertTrue(text.contains("8 of 40"), text)
         }
+
+    @Test
+    fun `an inventory too big for the relay is cut off and says so`() =
+        runTest {
+            val repo = FakeDeviceRepository()
+            repo.setDevices((1..400).map { TestDevices.createDevice(id = "device-$it", name = "Device number $it with a longish name", location = "Somewhere on floor $it") })
+            val text = BuildAiContextUseCase(repo, FakeNeedsBatteryRepository())(now)
+            assertTrue(text.length < 17_000, "${text.length} chars")
+            assertTrue(text.endsWith("Say so if it matters.]"), text.takeLast(120))
+        }
 }

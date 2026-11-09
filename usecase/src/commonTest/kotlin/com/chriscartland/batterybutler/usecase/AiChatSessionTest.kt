@@ -202,6 +202,79 @@ class AiChatSessionTest {
         }
 
     @Test
+    fun `a turn that fails after a write keeps the action and tells the model next time`() =
+        runTest {
+            val h = Harness()
+            h.engine.scriptedToolCalls = listOf(AiToolNames.ADD_DEVICE to mapOf(AiToolParams.NAME to "Porch Light"))
+            h.engine.errorAfterToolCalls = IllegalStateException("boom")
+            val reply = h.session
+                .send("add it")
+                .toList()
+                .single()
+
+            assertTrue(reply.isError)
+            assertEquals(1, reply.actions.size)
+            assertTrue(reply.text.contains("changes listed here were made"), reply.text)
+            assertTrue(h.session.canUndo(reply.actions.single().id))
+
+            h.engine.errorAfterToolCalls = null
+            h.engine.scriptedToolCalls = emptyList()
+            h.session.send("did that work?").toList()
+            assertTrue(
+                h.engine.recordedPrompts
+                    .last()
+                    .contains("already done this: Added Porch Light"),
+                h.engine.recordedPrompts.last(),
+            )
+        }
+
+    @Test
+    fun `a turn that fails before any write says nothing changed`() =
+        runTest {
+            val h = Harness()
+            h.engine.errorAfterToolCalls = IllegalStateException("boom")
+            val reply = h.session
+                .send("hello")
+                .toList()
+                .single()
+            assertTrue(reply.isError)
+            assertTrue(reply.text.contains("Nothing in your data was changed"), reply.text)
+        }
+
+    @Test
+    fun `an outcome note survives a turn that fails`() =
+        runTest {
+            val h = Harness()
+            h.engine.scriptedToolCalls = listOf(AiToolNames.ADD_DEVICE to mapOf(AiToolParams.NAME to "Porch Light"))
+            val action = h.session
+                .send("add it")
+                .toList()
+                .single()
+                .actions
+                .single()
+            h.engine.scriptedToolCalls = emptyList()
+            h.session.undo(action.id)
+
+            h.engine.errorReplyText = "The assistant is temporarily unavailable."
+            assertTrue(
+                h.session
+                    .send("hello")
+                    .toList()
+                    .single()
+                    .isError,
+            )
+            h.engine.errorReplyText = null
+
+            h.session.send("hello again").toList()
+            assertTrue(
+                h.engine.recordedPrompts
+                    .last()
+                    .startsWith("[The user undid this: Added Porch Light."),
+                h.engine.recordedPrompts.last(),
+            )
+        }
+
+    @Test
     fun `reset forgets the conversation and the way back and and the waiting deletion`() =
         runTest {
             val h = Harness()

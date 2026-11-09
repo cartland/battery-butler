@@ -40,7 +40,11 @@ class BuildAiContextUseCase(
 
         val full = render(now, devices, types, events, marks, typeById, deviceById, eventCounts, RECENT_EVENTS)
         if (full.length <= MAX_CHARS) return full
-        return render(now, devices, types, events, marks, typeById, deviceById, eventCounts, FEW_EVENTS)
+        val shorter = render(now, devices, types, events, marks, typeById, deviceById, eventCounts, FEW_EVENTS)
+        if (shorter.length <= MAX_CHARS) return shorter
+        // Past the relay's limit the whole request is refused, so a partial view beats no answer.
+        return shorter.take(shorter.lastIndexOf('\n', MAX_CHARS)) +
+            "\n[The inventory is too large to show in full; the rest was cut off here. Say so if it matters.]"
     }
 
     private fun render(
