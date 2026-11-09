@@ -10,6 +10,7 @@ import com.chriscartland.batterybutler.usecase.BatchAddDevicesUseCase
 import com.chriscartland.batterybutler.usecase.DeleteBatteryEventUseCase
 import com.chriscartland.batterybutler.usecase.DeleteDeviceTypeUseCase
 import com.chriscartland.batterybutler.usecase.DeleteDeviceUseCase
+import com.chriscartland.batterybutler.usecase.DeviceReadTools
 import com.chriscartland.batterybutler.usecase.DeviceToolHandler
 import com.chriscartland.batterybutler.usecase.DismissSyncStatusUseCase
 import com.chriscartland.batterybutler.usecase.ExportDataUseCase
@@ -80,6 +81,7 @@ abstract class UseCaseComponent {
 
     // AI chat
     abstract val deviceToolHandler: DeviceToolHandler
+    abstract val deviceReadTools: DeviceReadTools
     abstract val aiChatSession: AiChatSession
 
     // Legacy database recovery

@@ -1,8 +1,7 @@
 package com.chriscartland.batterybutler.viewmodel.aichat
 
-import com.chriscartland.batterybutler.domain.model.Result
+import com.chriscartland.batterybutler.domain.model.ai.AiCard
 import com.chriscartland.batterybutler.domain.model.ai.AiMessage
-import com.chriscartland.batterybutler.domain.model.ai.AiPendingAction
 import com.chriscartland.batterybutler.domain.model.ai.AiRole
 import com.chriscartland.batterybutler.usecase.AiChatSession
 import com.rickclephas.kmp.observableviewmodel.MutableStateFlow
@@ -30,16 +29,16 @@ class AiChatViewModel(
     private val _isProcessing = MutableStateFlow(viewModelScope, false)
     val isProcessing: StateFlow<Boolean> = _isProcessing.asStateFlow()
 
-    /** The deletion waiting for the person's answer, if any. Shown as a card under the chat. */
-    private val _pendingAction = MutableStateFlow<AiPendingAction?>(viewModelScope, null)
-    val pendingAction: StateFlow<AiPendingAction?> = _pendingAction.asStateFlow()
+    /** Cards of proposed changes, by id. Messages point at these; a card changes as it's decided. */
+    private val _cards = MutableStateFlow<Map<String, AiCard>>(viewModelScope, emptyMap())
+    val cards: StateFlow<Map<String, AiCard>> = _cards.asStateFlow()
 
     private var currentJob: Job? = null
     private var lastSend: Pair<String, Map<String, String>>? = null
 
     init {
         viewModelScope.coroutineScope.launch {
-            session.pendingAction.collect { _pendingAction.value = it }
+            session.cards.collect { _cards.value = it }
         }
     }
 
@@ -66,20 +65,11 @@ class AiChatViewModel(
         }
     }
 
-    /**
-     * Send the last message again, dropping the error it ended in. Refused if that attempt made
-     * changes: repeating it would make them twice, and dropping the entry would lose their Undo.
-     */
+    /** Send the last message again, dropping the error it ended in. Never when it left a card. */
     fun retryLastMessage() {
         val (text, hints) = lastSend ?: return
         if (_isProcessing.value) return
-        if (_messages.value
-                .lastOrNull()
-                ?.actions
-                ?.isNotEmpty() == true
-        ) {
-            return
-        }
+        if (_messages.value.lastOrNull()?.cardId != null) return
         _messages.update { current ->
             // The message being retried is still the last user turn; the error after it goes.
             val lastUser = current.indexOfLast { it.role == AiRole.USER }
@@ -88,42 +78,19 @@ class AiChatViewModel(
         sendMessage(text, hints)
     }
 
-    /** The person agreed to the pending deletion. What happened is appended to the transcript. */
-    fun confirmPendingAction() {
-        viewModelScope.coroutineScope.launch {
-            val outcome = session.confirmPendingAction() ?: return@launch
-            val action = outcome.action
-            _messages.update {
-                it + AiMessage(
-                    id = "system_${now()}",
-                    role = AiRole.SYSTEM,
-                    text = if (action == null) outcome.modelResult else "",
-                    isError = action == null,
-                    actions = listOfNotNull(action),
-                )
-            }
-        }
+    fun approveCard(
+        cardId: String,
+        leftOut: Set<String> = emptySet(),
+    ) {
+        viewModelScope.coroutineScope.launch { session.approve(cardId, leftOut) }
     }
 
-    fun cancelPendingAction() {
-        session.cancelPendingAction()
+    fun declineCard(cardId: String) {
+        viewModelScope.coroutineScope.launch { session.decline(cardId) }
     }
 
-    /** Take back one action. The row it came from shows "undone"; the model is told next turn. */
-    fun undoAction(actionId: String) {
-        viewModelScope.coroutineScope.launch {
-            when (val result = session.undo(actionId)) {
-                is Result.Success -> _messages.update { current ->
-                    current.map { message ->
-                        message.copy(actions = message.actions.map { if (it.id == actionId) it.copy(undone = true, undoable = false) else it })
-                    }
-                }
-
-                is Result.Error -> _messages.update {
-                    it + AiMessage(id = "error_${now()}", role = AiRole.SYSTEM, text = result.error.message, isError = true)
-                }
-            }
-        }
+    fun undoCard(cardId: String) {
+        viewModelScope.coroutineScope.launch { session.undo(cardId) }
     }
 
     fun clearChat() {

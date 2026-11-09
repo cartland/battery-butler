@@ -694,22 +694,13 @@ The app uses `androidx.core:core-splashscreen` (added in PR #1109) for cold-star
 
 ### AI Architecture
 
-Full picture, with the rules and where each is enforced: `docs/AI_CHAT.md`.
+Full picture, with the guarantees and what a bad model can and can't do: `docs/AI_CHAT.md`.
 
-- `AiChatSession` (usecase) owns one conversation: it sends the message, defers deletions to a
-  confirmation card (`AiPendingAction`), holds every undo, and prefixes the next message with
-  bracketed notes about outcomes the model couldn't see (confirmed / declined / undone).
-- `DeviceToolHandler.run()` returns a `ToolOutcome`: the result for the model, the `AiAction` the
-  person sees (written from stored data), and the undo. `execute()` is the plain `ToolHandler` view.
-- `BuildAiContextUseCase` renders the "situation": every device with id, type, batteries,
-  location, last change, age, status (ok/due/overdue/unknown), mark and change count; the types;
-  the 30 most recent changes. It is rebuilt before every model call and sent in the system
-  instruction (`AiEngine.generateResponse(prompt, tools, situation)`), never into the conversation.
-- 11 tools: the 9 before, plus `markNeedsBattery` and `getDeviceHistory`. Names and params in
-  `domain/.../ai/AiTools.kt`; `AiToolNames.DESTRUCTIVE` is the set the session gates.
-- Gemini may send numeric and boolean params as strings — the handler parses both.
-- The cloud engine gives every error message its own id and marks it `isError`; the transcript
-  keys on ids.
+- `AiChatSession` (usecase) owns one conversation. `AiToolNames.READ_ONLY` tools run through `DeviceReadTools`; every other tool only proposes, via `DeviceToolHandler.preview`, onto an `AiCard` the person approves or declines. Undo is on the card.
+- `DeviceToolHandler.run()` is only called after approval and returns a `ToolOutcome` with its undo.
+- `BuildAiContextUseCase` renders the inventory, rebuilt before every model call and sent in the system instruction (`AiEngine.generateResponse(prompt, tools, situation)`), never into the conversation.
+- Adding a tool: a read goes in `DeviceReadTools` and `READ_ONLY`; a write needs a `preview` and a `run` that returns an undo. Unclassified tools can't run.
+- Gemini may send numeric and boolean params as strings; the handlers parse both.
 
 ### AI Chat UI Architecture
 
@@ -720,7 +711,7 @@ The AI chat uses a **split-screen layout** — chat and tab content share the sc
 - **Split-screen layout**: `MainScreenShell` uses a `Column` with `content` in a `Box(Modifier.weight(1f))` and the chat panel below it. Content shrinks as the chat expands. This replaced the previous z-stacked overlay approach (PR #831).
 - **Chat height animation**: `Animatable<Float>` (0f = hidden, 1f = full target height) drives chat panel height. Target is 50% of available height normally, 100% when IME is visible. `PredictiveBackHandler` (expect/actual in `presentation-core/.../components/PredictiveBackHandler.kt`) is composed after `content()` for higher priority than NavDisplay's handler. On Android, the back gesture smoothly tracks finger position; on desktop/iOS, the handler is a no-op.
 - **Scroll anchoring**: `AiTabContent` uses `snapshotFlow { listState.layoutInfo.viewportSize.height }` to keep chat anchored at the bottom when the viewport resizes (chat panel appearing/resizing, IME toggling).
-- **`AiTabContent`** (`presentation-feature/aichat/AiTabContent.kt`) has a `showInput: Boolean = true` param. The split-screen chat panel passes `showInput = false` so only the chat history appears. Both it and the full-screen `AiChatContent` render `ChatTranscript`, which owns the bubbles, the action rows with Undo, the confirmation card, the typing dots, Try again, and the empty-state suggestions.
+- **`AiTabContent`** (`presentation-feature/aichat/AiTabContent.kt`) has a `showInput: Boolean = true` param. The split-screen chat panel passes `showInput = false` so only the chat history appears. Both it and the full-screen `AiChatContent` render `ChatTranscript`, which owns the bubbles, the proposal cards (approve, decline, outcome, Undo), the typing dots, Try again, and the empty-state suggestions.
 - **AI messages** carry a `[Message sent from: <Tab> tab]` hint so the AI knows which screen the user is viewing, plus any outcome notes from `AiChatSession`.
 - **Tab transitions** are directional: `tabTransitionForward` is set before each backstack mutation based on tab index. `NavDisplay.transitionSpec` reads it to slide left or right.
 - **`MainTab.AI`** was removed (PR #952) — the AI is a split-screen panel, not a nav tab. The `MainTab` enum now only contains `DEVICES`, `TYPES`, `HISTORY`.

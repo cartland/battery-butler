@@ -1,7 +1,7 @@
 package com.chriscartland.batterybutler.usecase
 
 import com.chriscartland.batterybutler.domain.model.Result
-import com.chriscartland.batterybutler.domain.model.ai.AiActionKind
+import com.chriscartland.batterybutler.domain.model.ai.AiChangeKind
 import com.chriscartland.batterybutler.domain.model.ai.AiToolNames
 import com.chriscartland.batterybutler.domain.model.ai.AiToolParams
 import com.chriscartland.batterybutler.testcommon.FakeDeviceRepository
@@ -56,8 +56,6 @@ class DeviceToolHandlerTest {
                     .single()
                     .name,
             )
-            assertEquals(AiActionKind.ADDED, outcome.action?.kind)
-            assertEquals("Added Hall Alarm (Smoke Alarm, Hall)", outcome.action?.summary)
         }
 
     @Test
@@ -97,7 +95,7 @@ class DeviceToolHandlerTest {
             val outcome = h.handler.run(AiToolNames.ADD_DEVICE, mapOf(AiToolParams.NAME to "hall alarm"))
             assertTrue(outcome.modelResult.startsWith("Error:"))
             assertTrue(outcome.modelResult.contains("id:d1"))
-            assertNull(outcome.action)
+            assertNull(outcome.undo)
             assertEquals(1, h.repo.devices.size)
         }
 
@@ -128,7 +126,6 @@ class DeviceToolHandlerTest {
             val h = Harness()
             h.repo.setDevices(listOf(TestDevices.createDevice(id = "d1", name = "Hall Alarm", location = "Hall", batteryLastReplaced = day("2026-01-01"))))
             val outcome = h.handler.run(AiToolNames.UPDATE_DEVICE, mapOf(AiToolParams.ID to "d1", AiToolParams.NEW_LOCATION to "Landing"))
-            assertEquals("Updated Hall Alarm: location → Landing", outcome.action?.summary)
             assertEquals(
                 "Landing",
                 h.repo.devices
@@ -158,7 +155,7 @@ class DeviceToolHandlerTest {
             h.repo.setDevices(listOf(TestDevices.createDevice(id = "d1", name = "Hall Alarm")))
             val outcome = h.handler.run(AiToolNames.UPDATE_DEVICE, mapOf(AiToolParams.ID to "d1", AiToolParams.NEW_NAME to "Hall Alarm"))
             assertTrue(outcome.modelResult.startsWith("Success:"))
-            assertNull(outcome.action)
+            assertNull(outcome.undo)
         }
 
     @Test
@@ -169,7 +166,6 @@ class DeviceToolHandlerTest {
             h.repo.setEvents(listOf(TestDevices.createBatteryEvent(id = "e1", deviceId = "d1"), TestDevices.createBatteryEvent(id = "e2", deviceId = "d1")))
 
             val outcome = h.handler.run(AiToolNames.DELETE_DEVICE, mapOf(AiToolParams.ID to "d1"))
-            assertEquals("Deleted Hall Alarm and its 2 battery changes", outcome.action?.summary)
             assertTrue(h.repo.devices.isEmpty())
             assertTrue(h.repo.events.isEmpty())
             assertFalse(h.marked("d1"))
@@ -190,17 +186,86 @@ class DeviceToolHandlerTest {
             assertTrue(h.marked("d1"))
         }
 
+    private suspend fun Harness.ready(
+        name: String,
+        args: Map<String, Any?>,
+    ): ToolPreview.Ready = assertIs<ToolPreview.Ready>(handler.preview(name, args))
+
     @Test
-    fun `describe says what a device deletion would take with it`() =
+    fun `a preview writes nothing`() =
         runTest {
             val h = Harness()
-            h.repo.setDevices(listOf(TestDevices.createDevice(id = "d1", name = "Hall Alarm", imagePath = "/p.jpg")))
+            h.repo.setDevices(listOf(TestDevices.createDevice(id = "d1", name = "Hall Alarm")))
+            h.handler.preview(AiToolNames.ADD_DEVICE, mapOf(AiToolParams.NAME to "New", AiToolParams.TYPE to "Fresh Type"))
+            h.handler.preview(AiToolNames.RECORD_BATTERY_REPLACEMENT, mapOf(AiToolParams.DEVICE_NAME to "Hall Alarm"))
+            h.handler.preview(AiToolNames.DELETE_DEVICE, mapOf(AiToolParams.ID to "d1"))
+            assertEquals(1, h.repo.devices.size)
+            assertTrue(h.repo.events.isEmpty())
+            assertTrue(h.repo.deviceTypes.isEmpty())
+        }
+
+    @Test
+    fun `a delete preview says what goes with it and warns about the photo`() =
+        runTest {
+            val h = Harness()
+            h.repo.setDevices(listOf(TestDevices.createDevice(id = "d1", name = "Hall Alarm").copy(imageEtag = "abc")))
             h.repo.setEvents(listOf(TestDevices.createBatteryEvent(id = "e1", deviceId = "d1")))
-            val preview = assertNotNull(h.handler.describe(AiToolNames.DELETE_DEVICE, mapOf(AiToolParams.ID to "d1")))
-            assertEquals("Delete Hall Alarm and its 1 battery change", preview.summary)
-            assertEquals("Its photo is removed for good.", preview.consequence)
-            assertNull(h.handler.describe(AiToolNames.DELETE_DEVICE, mapOf(AiToolParams.ID to "ghost")))
-            assertNull(h.handler.describe(AiToolNames.ADD_DEVICE, mapOf(AiToolParams.ID to "d1")))
+            val p = h.ready(AiToolNames.DELETE_DEVICE, mapOf(AiToolParams.ID to "d1"))
+            assertEquals(AiChangeKind.DELETE, p.kind)
+            assertEquals("Delete Hall Alarm and its 1 battery change", p.summary)
+            assertEquals("Undo can't bring back its photo.", p.warning)
+        }
+
+    @Test
+    fun `an update preview shows old and new values`() =
+        runTest {
+            val h = Harness()
+            h.repo.setDevices(listOf(TestDevices.createDevice(id = "d1", name = "Hall Alarm", location = "Hall")))
+            val p = h.ready(AiToolNames.UPDATE_DEVICE, mapOf(AiToolParams.ID to "d1", AiToolParams.NEW_LOCATION to "Landing"))
+            assertEquals("Update Hall Alarm: location Hall → Landing", p.summary)
+        }
+
+    @Test
+    fun `recording for an unknown device warns that it adds one`() =
+        runTest {
+            val h = Harness()
+            val p = h.ready(AiToolNames.RECORD_BATTERY_REPLACEMENT, mapOf(AiToolParams.DEVICE_NAME to "Hal Alarm", AiToolParams.DATE to "2026-03-09", AiToolParams.NOTES to "fresh"))
+            assertEquals("Record a battery change for Hal Alarm on 2026-03-09 — fresh", p.summary)
+            assertEquals("There's no device called Hal Alarm yet, so this also adds one.", p.warning)
+        }
+
+    @Test
+    fun `previews refuse what could never work`() =
+        runTest {
+            val h = Harness()
+            h.repo.setDeviceTypes(listOf(TestDevices.createDeviceType(id = "t1", name = "Lock")))
+            h.repo.setDevices(listOf(TestDevices.createDevice(id = "d1", name = "Hall Alarm", typeId = "t1")))
+            listOf(
+                AiToolNames.ADD_DEVICE to mapOf(AiToolParams.NAME to "hall alarm"),
+                AiToolNames.ADD_DEVICE_TYPE to mapOf(AiToolParams.NAME to "lock"),
+                AiToolNames.DELETE_DEVICE_TYPE to mapOf(AiToolParams.ID to "t1"),
+                AiToolNames.DELETE_DEVICE to mapOf(AiToolParams.ID to "ghost"),
+                AiToolNames.RECORD_BATTERY_REPLACEMENT to mapOf(AiToolParams.DEVICE_NAME to "Hall Alarm", AiToolParams.DATE to "yesterday"),
+                AiToolNames.RECORD_BATTERY_REPLACEMENT to mapOf(AiToolParams.DEVICE_NAME to "Hall Alarm", AiToolParams.DATE to "2999-01-01"),
+                "fly" to emptyMap(),
+            ).forEach { (name, args) -> assertIs<ToolPreview.Refused>(h.handler.preview(name, args), "$name $args") }
+        }
+
+    @Test
+    fun `undo won't overwrite a field edited again since`() =
+        runTest {
+            val h = Harness()
+            h.repo.setDevices(listOf(TestDevices.createDevice(id = "d1", name = "Hall Alarm", location = "Hall")))
+            val move = h.handler.run(AiToolNames.UPDATE_DEVICE, mapOf(AiToolParams.ID to "d1", AiToolParams.NEW_LOCATION to "Landing"))
+            h.handler.run(AiToolNames.UPDATE_DEVICE, mapOf(AiToolParams.ID to "d1", AiToolParams.NEW_LOCATION to "Attic"))
+            val result = assertIs<Result.Error<*>>(assertNotNull(move.undo)())
+            assertTrue(result.error.toString().contains("changed again since"), result.error.toString())
+            assertEquals(
+                "Attic",
+                h.repo.devices
+                    .single()
+                    .location,
+            )
         }
 
     @Test
@@ -292,7 +357,6 @@ class DeviceToolHandlerTest {
             assertEquals("9V", type.batteryType)
             assertEquals(1, type.batteryQuantity)
             assertEquals("detector_smoke", type.defaultIcon)
-            assertEquals("Added type Smoke Alarm (1 × 9V)", outcome.action?.summary)
         }
 
     @Test
@@ -380,7 +444,6 @@ class DeviceToolHandlerTest {
                     .batteryLastReplaced,
             )
             assertFalse(h.marked("d1"), "recording a change clears the mark")
-            assertEquals(AiActionKind.RECORDED, outcome.action?.kind)
         }
 
     @Test
@@ -400,7 +463,6 @@ class DeviceToolHandlerTest {
                     .name,
             )
             assertEquals(day("2026-03-09"), device.batteryLastReplaced)
-            assertTrue(outcome.action!!.summary.endsWith("(new device)"))
 
             outcome.undoNow()
             assertTrue(h.repo.devices.isEmpty())
@@ -462,7 +524,6 @@ class DeviceToolHandlerTest {
             )
 
             val delete = h.handler.run(AiToolNames.DELETE_BATTERY_EVENT, mapOf(AiToolParams.ID to "new"))
-            assertEquals("Deleted the battery change for Hall Alarm on 2026-05-01", delete.action?.summary)
             assertEquals(
                 day("2026-01-01"),
                 h.repo.devices
@@ -487,11 +548,10 @@ class DeviceToolHandlerTest {
             val h = Harness()
             h.repo.setDevices(listOf(TestDevices.createDevice(id = "d1", name = "Hall Alarm")))
             val mark = h.handler.run(AiToolNames.MARK_NEEDS_BATTERY, mapOf(AiToolParams.ID to "d1"))
-            assertEquals("Marked Hall Alarm as needing a battery", mark.action?.summary)
             assertTrue(h.marked("d1"))
 
             val again = h.handler.run(AiToolNames.MARK_NEEDS_BATTERY, mapOf(AiToolParams.ID to "d1", AiToolParams.NEEDS_BATTERY to "true"))
-            assertNull(again.action, "nothing changed, so nothing to show or undo")
+            assertNull(again.undo)
 
             val clear = h.handler.run(AiToolNames.MARK_NEEDS_BATTERY, mapOf(AiToolParams.ID to "d1", AiToolParams.NEEDS_BATTERY to "false"))
             assertFalse(h.marked("d1"))
@@ -500,29 +560,20 @@ class DeviceToolHandlerTest {
         }
 
     @Test
-    fun `getDeviceHistory lists every change newest first and is not undoable`() =
-        runTest {
-            val h = Harness()
-            h.repo.setDevices(listOf(TestDevices.createDevice(id = "d1", name = "Hall Alarm")))
-            h.repo.setEvents(
-                listOf(
-                    TestDevices.createBatteryEvent(id = "old", deviceId = "d1", date = day("2026-01-01"), notes = "first"),
-                    TestDevices.createBatteryEvent(id = "new", deviceId = "d1", date = day("2026-05-01")),
-                ),
-            )
-            val outcome = h.handler.run(AiToolNames.GET_DEVICE_HISTORY, mapOf(AiToolParams.ID to "d1"))
-            assertTrue(outcome.modelResult.indexOf("id:new") < outcome.modelResult.indexOf("id:old"))
-            assertTrue(outcome.modelResult.contains("first"))
-            assertEquals(AiActionKind.LOOKED_UP, outcome.action?.kind)
-            assertFalse(outcome.action!!.undoable)
-            assertNull(outcome.undo)
-        }
-
-    @Test
     fun `an unknown tool and a missing id are errors and not exceptions`() =
         runTest {
             val h = Harness()
-            assertTrue(h.handler.execute("fly", emptyMap()).startsWith("Error: Unknown tool"))
-            assertTrue(h.handler.execute(AiToolNames.UPDATE_DEVICE, emptyMap()).startsWith("Error: Missing id"))
+            assertTrue(
+                h.handler
+                    .run("fly", emptyMap())
+                    .modelResult
+                    .startsWith("Error: Unknown tool"),
+            )
+            assertTrue(
+                h.handler
+                    .run(AiToolNames.UPDATE_DEVICE, emptyMap())
+                    .modelResult
+                    .startsWith("Error: Missing id"),
+            )
         }
 }

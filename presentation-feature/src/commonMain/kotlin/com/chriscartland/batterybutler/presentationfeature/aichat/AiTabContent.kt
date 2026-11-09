@@ -48,10 +48,9 @@ fun AiTabContent(
     onSendMessage: (String) -> Unit,
     modifier: Modifier = Modifier,
     showInput: Boolean = true,
-    pendingAction: ChatPendingAction? = null,
-    onConfirmPending: () -> Unit = {},
-    onCancelPending: () -> Unit = {},
-    onUndo: (String) -> Unit = {},
+    onApproveCard: (String, Set<String>) -> Unit = { _, _ -> },
+    onDeclineCard: (String) -> Unit = {},
+    onUndoCard: (String) -> Unit = {},
     onRetry: () -> Unit = {},
 ) {
     var inputText by rememberSaveable { mutableStateOf("") }
@@ -61,10 +60,9 @@ fun AiTabContent(
             messages = messages,
             isProcessing = isProcessing,
             onSuggestion = onSendMessage,
-            pendingAction = pendingAction,
-            onConfirmPending = onConfirmPending,
-            onCancelPending = onCancelPending,
-            onUndo = onUndo,
+            onApproveCard = onApproveCard,
+            onDeclineCard = onDeclineCard,
+            onUndoCard = onUndoCard,
             onRetry = onRetry,
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 16.dp),
             modifier = Modifier.weight(1f),
@@ -124,18 +122,112 @@ fun AiTabContentPreview() {
                 ChatMessage("1", "Add a smoke detector in the kitchen", isUser = true),
                 ChatMessage(
                     "2",
-                    "Done. I've added it as a smoke detector in the kitchen.",
+                    "",
                     isUser = false,
-                    actions = listOf(
-                        ChatAction("a1", ChatActionKind.ADDED, "Added Kitchen Smoke Detector (Smoke Detector, Kitchen)", undoable = true),
+                    card = ChatCard(
+                        id = "c1",
+                        items = listOf(ChatCardItem("i1", ChatChangeKind.ADD, "Add Kitchen Smoke Detector (Smoke Detector, Kitchen)", outcome = ChatItemOutcome.APPLIED)),
+                        status = ChatCardStatus.APPLIED,
+                        canUndo = true,
                     ),
                 ),
                 ChatMessage("3", "Remove the old garage sensor", isUser = true),
-                ChatMessage("4", "The app is asking you to confirm deleting the garage sensor.", isUser = false),
+                ChatMessage(
+                    "4",
+                    "",
+                    isUser = false,
+                    card = ChatCard(
+                        id = "c2",
+                        items = listOf(ChatCardItem("i2", ChatChangeKind.DELETE, "Delete Garage Sensor and its 2 battery changes", warning = "Undo can't bring back its photo.")),
+                        status = ChatCardStatus.PENDING,
+                    ),
+                ),
             ),
             isProcessing = false,
             onSendMessage = {},
-            pendingAction = ChatPendingAction("p1", "Delete Garage Sensor and its 2 battery changes", "Its photo is removed for good."),
+        )
+    }
+}
+
+@Composable
+fun AiTabContentCardStatesPreview() {
+    BatteryButlerTheme {
+        AiTabContent(
+            messages = listOf(
+                ChatMessage(
+                    id = "m1",
+                    text = "",
+                    isUser = false,
+                    lookups = listOf("Listed devices", "Looked up the history of Hall Alarm"),
+                    card = ChatCard(
+                        id = "c1",
+                        items = listOf(
+                            ChatCardItem("a", ChatChangeKind.RECORD, "Record a battery change for Hall Alarm on 2026-11-09"),
+                            ChatCardItem("b", ChatChangeKind.UPDATE, "Update Hall Alarm: location Hall → Landing"),
+                            ChatCardItem("c", ChatChangeKind.RECORD, "Record a battery change for Hal Alarm on 2026-11-09", warning = "There's no device called Hal Alarm yet, so this also adds one."),
+                        ),
+                        status = ChatCardStatus.PENDING,
+                    ),
+                ),
+                ChatMessage(
+                    id = "m2",
+                    text = "",
+                    isUser = false,
+                    card = ChatCard(
+                        id = "c2",
+                        items = listOf(ChatCardItem("d", ChatChangeKind.DELETE, "Delete Garage Sensor and its 2 battery changes", warning = "Undo can't bring back its photo.")),
+                        status = ChatCardStatus.PENDING,
+                    ),
+                ),
+                ChatMessage(
+                    id = "m3",
+                    text = "",
+                    isUser = false,
+                    card = ChatCard(
+                        id = "c3",
+                        items = listOf(
+                            ChatCardItem("e", ChatChangeKind.ADD, "Add Porch Light", outcome = ChatItemOutcome.APPLIED),
+                            ChatCardItem("f", ChatChangeKind.UPDATE, "Update Gate Sensor: name Gate → Side Gate", outcome = ChatItemOutcome.CHANGED_SINCE, reason = "It changed after this was proposed, so it was left alone."),
+                        ),
+                        status = ChatCardStatus.PARTLY_APPLIED,
+                        canUndo = true,
+                    ),
+                ),
+                ChatMessage(
+                    id = "m4",
+                    text = "",
+                    isUser = false,
+                    card = ChatCard(
+                        id = "c4",
+                        items = listOf(ChatCardItem("g", ChatChangeKind.ADD, "Add Hall Alarm", outcome = ChatItemOutcome.UNDO_FAILED, reason = "Hall Alarm has battery changes recorded since, so adding it can't be undone. Delete it instead.")),
+                        status = ChatCardStatus.PARTLY_UNDONE,
+                        canUndo = true,
+                    ),
+                ),
+                ChatMessage(
+                    id = "m5",
+                    text = "",
+                    isUser = false,
+                    card = ChatCard(
+                        id = "c5",
+                        items = listOf(ChatCardItem("h", ChatChangeKind.RECORD, "Record a battery change for Attic Alarm on 2026-11-09", outcome = ChatItemOutcome.UNDONE)),
+                        status = ChatCardStatus.UNDONE,
+                    ),
+                ),
+                ChatMessage(
+                    id = "m6",
+                    text = "",
+                    isUser = false,
+                    card = ChatCard(
+                        id = "c6",
+                        items = listOf(ChatCardItem("i", ChatChangeKind.DELETE, "Delete the type Remote")),
+                        status = ChatCardStatus.DECLINED,
+                    ),
+                ),
+            ),
+            isProcessing = false,
+            onSendMessage = {},
+            showInput = false,
         )
     }
 }

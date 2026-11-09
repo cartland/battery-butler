@@ -50,10 +50,9 @@ fun AiChatContent(
     onClearChat: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
-    pendingAction: ChatPendingAction? = null,
-    onConfirmPending: () -> Unit = {},
-    onCancelPending: () -> Unit = {},
-    onUndo: (String) -> Unit = {},
+    onApproveCard: (String, Set<String>) -> Unit = { _, _ -> },
+    onDeclineCard: (String) -> Unit = {},
+    onUndoCard: (String) -> Unit = {},
     onRetry: () -> Unit = {},
 ) {
     var inputText by rememberSaveable { mutableStateOf("") }
@@ -103,10 +102,9 @@ fun AiChatContent(
             messages = messages,
             isProcessing = isProcessing,
             onSuggestion = onSendMessage,
-            pendingAction = pendingAction,
-            onConfirmPending = onConfirmPending,
-            onCancelPending = onCancelPending,
-            onUndo = onUndo,
+            onApproveCard = onApproveCard,
+            onDeclineCard = onDeclineCard,
+            onUndoCard = onUndoCard,
             onRetry = onRetry,
             modifier = Modifier
                 .fillMaxSize()

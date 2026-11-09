@@ -15,19 +15,18 @@ fun AiChatScreen(
 ) {
     val messages by viewModel.messages.collectAsStateWithLifecycle()
     val isProcessing by viewModel.isProcessing.collectAsStateWithLifecycle()
-    val pendingAction by viewModel.pendingAction.collectAsStateWithLifecycle()
+    val cards by viewModel.cards.collectAsStateWithLifecycle()
 
     AiChatContent(
-        messages = messages.map { it.toChatMessage() },
+        messages = messages.map { it.toChatMessage(cards) },
         isProcessing = isProcessing,
         onSendMessage = viewModel::sendMessage,
         onClearChat = viewModel::clearChat,
         onBack = onBack,
         modifier = modifier,
-        pendingAction = pendingAction?.toChatPendingAction(),
-        onConfirmPending = viewModel::confirmPendingAction,
-        onCancelPending = viewModel::cancelPendingAction,
-        onUndo = viewModel::undoAction,
+        onApproveCard = viewModel::approveCard,
+        onDeclineCard = viewModel::declineCard,
+        onUndoCard = viewModel::undoCard,
         onRetry = viewModel::retryLastMessage,
     )
 }

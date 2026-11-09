@@ -52,7 +52,7 @@ class LabsCloudAiEngineTest {
             assertEquals(listOf("You have 2 smoke alarms."), messages.map(AiMessage::text))
             val body = requests.single()
             assertTrue(body["systemInstruction"]!!.jsonPrimitive.content.startsWith("You are Battery Butler"))
-            assertEquals(11, body["tools"]!!.jsonArray.size)
+            assertEquals(15, body["tools"]!!.jsonArray.size)
             assertEquals(
                 "How many smoke alarms?",
                 body["contents"]!!

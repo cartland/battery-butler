@@ -13,7 +13,8 @@ final class MessageRowTests: XCTestCase {
             isPartial: false,
             hints: [:],
             isError: false,
-            actions: []
+            cardId: nil,
+            lookups: []
         )
         let view = MessageRow(message: message)
 
@@ -33,7 +34,8 @@ final class MessageRowTests: XCTestCase {
             isPartial: false,
             hints: [:],
             isError: false,
-            actions: []
+            cardId: nil,
+            lookups: []
         )
         let view = MessageRow(message: message)
 

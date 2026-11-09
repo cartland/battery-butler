@@ -1,39 +1,39 @@
 package com.chriscartland.batterybutler.composeapp.feature.aichat
 
-import com.chriscartland.batterybutler.domain.model.ai.AiAction
-import com.chriscartland.batterybutler.domain.model.ai.AiActionKind
+import com.chriscartland.batterybutler.domain.model.ai.AiCard
 import com.chriscartland.batterybutler.domain.model.ai.AiMessage
-import com.chriscartland.batterybutler.domain.model.ai.AiPendingAction
 import com.chriscartland.batterybutler.domain.model.ai.AiRole
-import com.chriscartland.batterybutler.presentationfeature.aichat.ChatAction
-import com.chriscartland.batterybutler.presentationfeature.aichat.ChatActionKind
+import com.chriscartland.batterybutler.presentationfeature.aichat.ChatCard
+import com.chriscartland.batterybutler.presentationfeature.aichat.ChatCardItem
+import com.chriscartland.batterybutler.presentationfeature.aichat.ChatCardStatus
+import com.chriscartland.batterybutler.presentationfeature.aichat.ChatChangeKind
+import com.chriscartland.batterybutler.presentationfeature.aichat.ChatItemOutcome
 import com.chriscartland.batterybutler.presentationfeature.aichat.ChatMessage
-import com.chriscartland.batterybutler.presentationfeature.aichat.ChatPendingAction
 
 /** Domain chat entries as the UI shows them. Lives here because the UI layer can't see `domain.model.ai`. */
-fun AiMessage.toChatMessage(): ChatMessage =
+fun AiMessage.toChatMessage(cards: Map<String, AiCard>): ChatMessage =
     ChatMessage(
         id = id,
         text = text,
         isUser = role == AiRole.USER,
         isError = isError,
-        actions = actions.map { it.toChatAction() },
+        card = cardId?.let(cards::get)?.toChatCard(),
+        lookups = lookups,
     )
 
-fun AiAction.toChatAction(): ChatAction =
-    ChatAction(
+private fun AiCard.toChatCard(): ChatCard =
+    ChatCard(
         id = id,
-        kind = when (kind) {
-            AiActionKind.ADDED -> ChatActionKind.ADDED
-            AiActionKind.UPDATED -> ChatActionKind.UPDATED
-            AiActionKind.RECORDED -> ChatActionKind.RECORDED
-            AiActionKind.DELETED -> ChatActionKind.DELETED
-            AiActionKind.MARKED -> ChatActionKind.MARKED
-            AiActionKind.LOOKED_UP -> ChatActionKind.LOOKED_UP
+        items = items.map { item ->
+            ChatCardItem(
+                id = item.id,
+                kind = ChatChangeKind.valueOf(item.kind.name),
+                summary = item.summary,
+                warning = item.warning,
+                outcome = ChatItemOutcome.valueOf(item.outcome.name),
+                reason = item.reason,
+            )
         },
-        summary = summary,
-        undoable = undoable,
-        undone = undone,
+        status = ChatCardStatus.valueOf(status.name),
+        canUndo = canUndo,
     )
-
-fun AiPendingAction.toChatPendingAction(): ChatPendingAction = ChatPendingAction(id = id, summary = summary, consequence = consequence)

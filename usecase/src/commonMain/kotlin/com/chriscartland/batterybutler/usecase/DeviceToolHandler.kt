@@ -7,11 +7,9 @@ import com.chriscartland.batterybutler.domain.model.Device
 import com.chriscartland.batterybutler.domain.model.DeviceIcons
 import com.chriscartland.batterybutler.domain.model.DeviceType
 import com.chriscartland.batterybutler.domain.model.Result
-import com.chriscartland.batterybutler.domain.model.ai.AiAction
-import com.chriscartland.batterybutler.domain.model.ai.AiActionKind
+import com.chriscartland.batterybutler.domain.model.ai.AiChangeKind
 import com.chriscartland.batterybutler.domain.model.ai.AiToolNames
 import com.chriscartland.batterybutler.domain.model.ai.AiToolParams
-import com.chriscartland.batterybutler.domain.model.ai.ToolHandler
 import com.chriscartland.batterybutler.domain.model.flatMap
 import com.chriscartland.batterybutler.domain.model.getOrElse
 import com.chriscartland.batterybutler.domain.model.map
@@ -25,18 +23,13 @@ import kotlinx.datetime.toLocalDateTime
 import me.tatarka.inject.annotations.Inject
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.days
 import kotlin.time.Instant
 
 /**
- * The assistant's tools, run against the local database.
- *
- * Every tool answers with a [ToolOutcome]: a result for the model, and for every write an
- * [AiAction] the person sees plus the undo that takes it back. The summaries are written here,
- * from what was actually stored, never from the model's own account of it.
- *
- * Deletions are the one kind of change the app does not make on the model's say-so. The chat
- * session asks the person first, using [describe]; [run] is only called once they've agreed.
- * The three delete tools therefore have no guard of their own.
+ * The assistant's tools that change data. Nothing here runs on the model's say-so: [preview] works
+ * out what a change would do without writing, the person approves it on a card, and only then does
+ * `AiChatSession` call [run]. Read-only tools are a separate class ([DeviceReadTools]).
  *
  * Rules the rest of the app keeps are kept here too: a recorded replacement moves the device's
  * last-changed date forward and clears its "needs a battery" mark (`AddBatteryEventUseCase`);
@@ -48,12 +41,7 @@ class DeviceToolHandler(
     private val deviceRepository: DeviceRepository,
     private val needsBatteryRepository: NeedsBatteryRepository,
     private val updateDeviceLastReplacedUseCase: UpdateDeviceLastReplacedUseCase,
-) : ToolHandler {
-    override suspend fun execute(
-        name: String,
-        args: Map<String, Any?>,
-    ): String = run(name, args).modelResult
-
+) {
     suspend fun run(
         name: String,
         args: Map<String, Any?>,
@@ -70,7 +58,6 @@ class DeviceToolHandler(
                 AiToolNames.UPDATE_BATTERY_EVENT -> updateBatteryEvent(args)
                 AiToolNames.DELETE_BATTERY_EVENT -> deleteBatteryEvent(args)
                 AiToolNames.MARK_NEEDS_BATTERY -> markNeedsBattery(args)
-                AiToolNames.GET_DEVICE_HISTORY -> getDeviceHistory(args)
                 else -> ToolOutcome.error("Unknown tool '$name'")
             }
         } catch (e: CancellationException) {
@@ -79,34 +66,48 @@ class DeviceToolHandler(
             ToolOutcome.error("$name failed: ${e.message}")
         }
 
-    /**
-     * What a deletion would do, for the confirmation card. Null when the tool isn't a deletion
-     * or its target doesn't exist, in which case [run] answers the model with the usual error.
-     */
-    suspend fun describe(
+    /** What [run] would do with these arguments, right now. Writes nothing. */
+    suspend fun preview(
         name: String,
         args: Map<String, Any?>,
-    ): DeletionPreview? {
+    ): ToolPreview =
+        try {
+            when (name) {
+                AiToolNames.ADD_DEVICE -> previewAddDevice(args)
+                AiToolNames.ADD_DEVICE_TYPE -> previewAddDeviceType(args)
+                AiToolNames.RECORD_BATTERY_REPLACEMENT -> previewRecord(args)
+                AiToolNames.UPDATE_DEVICE -> previewUpdateDevice(args)
+                AiToolNames.DELETE_DEVICE -> previewDeleteDevice(args)
+                AiToolNames.UPDATE_DEVICE_TYPE -> previewUpdateDeviceType(args)
+                AiToolNames.DELETE_DEVICE_TYPE -> previewDeleteDeviceType(args)
+                AiToolNames.UPDATE_BATTERY_EVENT -> previewUpdateEvent(args)
+                AiToolNames.DELETE_BATTERY_EVENT -> previewDeleteEvent(args)
+                AiToolNames.MARK_NEEDS_BATTERY -> previewMark(args)
+                else -> ToolPreview.Refused("Error: Unknown tool '$name'")
+            }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            ToolPreview.Refused("Error: $name failed: ${e.message}")
+        }
+
+    /** The current state of the row [preview] named as this change's basis, to compare at apply time. */
+    suspend fun currentBasis(
+        name: String,
+        args: Map<String, Any?>,
+    ): String? {
         val id = str(args, AiToolParams.ID) ?: return null
         return when (name) {
-            AiToolNames.DELETE_DEVICE -> {
-                val device = deviceRepository.getDeviceById(id).first() ?: return null
-                val events = deviceRepository.getEventsForDevice(id).first()
-                DeletionPreview(
-                    summary = "Delete ${device.name}${eventsClause(events.size)}",
-                    consequence = if (device.imageEtag != null || device.imagePath != null) "Its photo is removed for good." else null,
-                )
+            AiToolNames.UPDATE_DEVICE, AiToolNames.DELETE_DEVICE, AiToolNames.MARK_NEEDS_BATTERY -> {
+                deviceRepository.getDeviceById(id).first()?.basis()
             }
 
-            AiToolNames.DELETE_DEVICE_TYPE -> {
-                val type = deviceRepository.getDeviceTypeById(id).first() ?: return null
-                DeletionPreview("Delete the type ${type.name}", null)
+            AiToolNames.UPDATE_DEVICE_TYPE, AiToolNames.DELETE_DEVICE_TYPE -> {
+                deviceRepository.getDeviceTypeById(id).first()?.toString()
             }
 
-            AiToolNames.DELETE_BATTERY_EVENT -> {
-                val event = deviceRepository.getEventById(id).first() ?: return null
-                val name = deviceRepository.getDeviceById(event.deviceId).first()?.name ?: "a device"
-                DeletionPreview("Delete the battery change for $name on ${dateOf(event.date)}", null)
+            AiToolNames.UPDATE_BATTERY_EVENT, AiToolNames.DELETE_BATTERY_EVENT -> {
+                deviceRepository.getEventById(id).first()?.toString()
             }
 
             else -> {
@@ -114,6 +115,155 @@ class DeviceToolHandler(
             }
         }
     }
+
+    private fun Device.basis(): String = copy(lastUpdated = Instant.fromEpochMilliseconds(0)).toString()
+
+    // ─── previews ───────────────────────────────────────────────────────────────
+
+    private suspend fun previewAddDevice(args: Map<String, Any?>): ToolPreview {
+        val name = str(args, AiToolParams.NAME) ?: return ToolPreview.Refused("Error: Missing name")
+        findDevice(name)?.let {
+            return ToolPreview.Refused("Error: A device named '${it.name}' already exists (id:${it.id}). Update it instead.")
+        }
+        val type = str(args, AiToolParams.TYPE)
+        val extras = listOfNotNull(type, str(args, AiToolParams.LOCATION))
+        return ToolPreview.Ready(
+            kind = AiChangeKind.ADD,
+            summary = "Add $name" + if (extras.isEmpty()) "" else " (${extras.joinToString(", ")})",
+            warning = newTypeWarning(type),
+        )
+    }
+
+    private suspend fun previewAddDeviceType(args: Map<String, Any?>): ToolPreview {
+        val name = str(args, AiToolParams.NAME) ?: return ToolPreview.Refused("Error: Missing name")
+        findType(name)?.let {
+            return ToolPreview.Refused("Error: A type named '${it.name}' already exists (id:${it.id}). Update it instead.")
+        }
+        val battery = str(args, AiToolParams.BATTERY_TYPE) ?: "AA"
+        val quantity = parseInt(args[AiToolParams.BATTERY_QUANTITY])?.coerceAtLeast(1) ?: 1
+        return ToolPreview.Ready(AiChangeKind.ADD, "Add the type $name ($quantity × $battery)")
+    }
+
+    private suspend fun previewRecord(args: Map<String, Any?>): ToolPreview {
+        val deviceName = str(args, AiToolParams.DEVICE_NAME) ?: return ToolPreview.Refused("Error: Missing deviceName")
+        val date = str(args, AiToolParams.DATE)?.let { parseDate(it) ?: return ToolPreview.Refused("Error: date must be YYYY-MM-DD") }
+            ?: Clock.System.now()
+        if (date > Clock.System.now() + 1.days) return ToolPreview.Refused("Error: date is in the future")
+        val device = findDevice(deviceName)
+        val note = str(args, AiToolParams.NOTES)?.let { " — $it" }.orEmpty()
+        return ToolPreview.Ready(
+            kind = AiChangeKind.RECORD,
+            summary = "Record a battery change for ${device?.name ?: deviceName} on ${dateOf(date)}$note",
+            warning = if (device == null) "There's no device called $deviceName yet, so this also adds one." else null,
+        )
+    }
+
+    private suspend fun previewUpdateDevice(args: Map<String, Any?>): ToolPreview {
+        val id = str(args, AiToolParams.ID) ?: return ToolPreview.Refused("Error: Missing id")
+        val device = deviceRepository.getDeviceById(id).first()
+            ?: return ToolPreview.Refused("Error: Device not found with id '$id'")
+        val newName = str(args, AiToolParams.NEW_NAME)
+        val newLocation = str(args, AiToolParams.NEW_LOCATION)
+        val newType = str(args, AiToolParams.NEW_TYPE)
+        val currentType = deviceRepository.getDeviceTypeById(device.typeId).first()?.name
+        val changes = buildList {
+            if (newName != null && newName != device.name) add("name ${device.name} → $newName")
+            if (newLocation != null && newLocation != device.location) add("location ${device.location ?: "none"} → $newLocation")
+            if (newType != null && !newType.equals(currentType, ignoreCase = true)) add("type ${currentType ?: "none"} → $newType")
+        }
+        if (changes.isEmpty()) return ToolPreview.Refused("Success: Nothing to change on '${device.name}'")
+        return ToolPreview.Ready(AiChangeKind.UPDATE, "Update ${device.name}: ${changes.joinToString(", ")}", newTypeWarning(newType), id, device.basis())
+    }
+
+    private suspend fun previewDeleteDevice(args: Map<String, Any?>): ToolPreview {
+        val id = str(args, AiToolParams.ID) ?: return ToolPreview.Refused("Error: Missing id")
+        val device = deviceRepository.getDeviceById(id).first()
+            ?: return ToolPreview.Refused("Error: Device not found with id '$id'")
+        val events = deviceRepository.getEventsForDevice(id).first()
+        return ToolPreview.Ready(
+            kind = AiChangeKind.DELETE,
+            summary = "Delete ${device.name}${eventsClause(events.size)}",
+            warning = if (device.imageEtag != null) "Undo can't bring back its photo." else null,
+            target = id,
+            basis = device.basis(),
+        )
+    }
+
+    private suspend fun previewUpdateDeviceType(args: Map<String, Any?>): ToolPreview {
+        val id = str(args, AiToolParams.ID) ?: return ToolPreview.Refused("Error: Missing id")
+        val type = deviceRepository.getDeviceTypeById(id).first()
+            ?: return ToolPreview.Refused("Error: Device type not found with id '$id'")
+        val updated = updatedType(type, args)
+        val changes = typeChanges(type, updated)
+        if (changes.isEmpty()) return ToolPreview.Refused("Success: Nothing to change on type '${type.name}'")
+        return ToolPreview.Ready(AiChangeKind.UPDATE, "Update the type ${type.name}: ${changes.joinToString(", ")}", target = id, basis = type.toString())
+    }
+
+    private suspend fun previewDeleteDeviceType(args: Map<String, Any?>): ToolPreview {
+        val id = str(args, AiToolParams.ID) ?: return ToolPreview.Refused("Error: Missing id")
+        val type = deviceRepository.getDeviceTypeById(id).first()
+            ?: return ToolPreview.Refused("Error: Device type not found with id '$id'")
+        val inUse = deviceRepository.getAllDevices().first().count { it.typeId == id }
+        if (inUse > 0) return ToolPreview.Refused("Error: Cannot delete type '${type.name}' — $inUse device(s) still use it. Reassign them first.")
+        return ToolPreview.Ready(AiChangeKind.DELETE, "Delete the type ${type.name}", target = id, basis = type.toString())
+    }
+
+    private suspend fun previewUpdateEvent(args: Map<String, Any?>): ToolPreview {
+        val id = str(args, AiToolParams.ID) ?: return ToolPreview.Refused("Error: Missing id")
+        val event = deviceRepository.getEventById(id).first()
+            ?: return ToolPreview.Refused("Error: Battery event not found with id '$id'")
+        val newDate = str(args, AiToolParams.NEW_DATE)?.let { parseDate(it) ?: return ToolPreview.Refused("Error: newDate must be YYYY-MM-DD") }
+        val notes = str(args, AiToolParams.NOTES)
+        val changes = buildList {
+            if (newDate != null && newDate != event.date) add("date ${dateOf(event.date)} → ${dateOf(newDate)}")
+            if (notes != null && notes != event.notes) add("note → $notes")
+        }
+        if (changes.isEmpty()) return ToolPreview.Refused("Success: Nothing to change on that battery change")
+        val name = deviceRepository.getDeviceById(event.deviceId).first()?.name ?: "a device"
+        return ToolPreview.Ready(AiChangeKind.UPDATE, "Update the battery change for $name: ${changes.joinToString(", ")}", target = id, basis = event.toString())
+    }
+
+    private suspend fun previewDeleteEvent(args: Map<String, Any?>): ToolPreview {
+        val id = str(args, AiToolParams.ID) ?: return ToolPreview.Refused("Error: Missing id")
+        val event = deviceRepository.getEventById(id).first()
+            ?: return ToolPreview.Refused("Error: Battery event not found with id '$id'")
+        val name = deviceRepository.getDeviceById(event.deviceId).first()?.name ?: "a device"
+        return ToolPreview.Ready(AiChangeKind.DELETE, "Delete the battery change for $name on ${dateOf(event.date)}", target = id, basis = event.toString())
+    }
+
+    private suspend fun previewMark(args: Map<String, Any?>): ToolPreview {
+        val id = str(args, AiToolParams.ID) ?: return ToolPreview.Refused("Error: Missing id")
+        val device = deviceRepository.getDeviceById(id).first()
+            ?: return ToolPreview.Refused("Error: Device not found with id '$id'")
+        val wanted = parseBool(args[AiToolParams.NEEDS_BATTERY]) ?: true
+        if (isMarked(id) == wanted) return ToolPreview.Refused("Success: '${device.name}' is already ${if (wanted) "marked" else "unmarked"}")
+        val summary = if (wanted) "Mark ${device.name} as needing a battery" else "Clear the needs-a-battery mark on ${device.name}"
+        return ToolPreview.Ready(AiChangeKind.MARK, summary, target = id, basis = device.basis())
+    }
+
+    private suspend fun newTypeWarning(type: String?): String? = if (type != null && findType(type) == null) "This also creates the type $type." else null
+
+    private fun updatedType(
+        type: DeviceType,
+        args: Map<String, Any?>,
+    ): DeviceType =
+        type.copy(
+            name = str(args, AiToolParams.NEW_NAME) ?: type.name,
+            batteryType = str(args, AiToolParams.NEW_BATTERY_TYPE) ?: type.batteryType,
+            batteryQuantity = parseInt(args[AiToolParams.NEW_BATTERY_QUANTITY])?.coerceAtLeast(1) ?: type.batteryQuantity,
+            defaultIcon = str(args, AiToolParams.NEW_ICON)?.let(::icon) ?: type.defaultIcon,
+        )
+
+    private fun typeChanges(
+        prior: DeviceType,
+        updated: DeviceType,
+    ): List<String> =
+        buildList {
+            if (updated.name != prior.name) add("name → ${updated.name}")
+            if (updated.batteryType != prior.batteryType) add("battery → ${updated.batteryType}")
+            if (updated.batteryQuantity != prior.batteryQuantity) add("quantity → ${updated.batteryQuantity}")
+            if (updated.defaultIcon != prior.defaultIcon) add("icon → ${updated.defaultIcon}")
+        }
 
     // ─── devices ───────────────────────────────────────────────────────────────
 
@@ -133,10 +283,8 @@ class DeviceToolHandler(
             location = str(args, AiToolParams.LOCATION),
         )
         deviceRepository.addDevice(device).getOrElse { return ToolOutcome.error(it.message) }
-        val described = describeDevice(device)
         return ToolOutcome(
             modelResult = "Success: Added device '${device.name}' (id:${device.id})" + (createdType?.let { ", created type '${it.name}'" } ?: ""),
-            action = action(AiActionKind.ADDED, "Added $described"),
             undo = {
                 if (deviceRepository.getEventsForDevice(device.id).first().isNotEmpty()) {
                     gone("${device.name} has battery changes recorded since, so adding it can't be undone. Delete it instead.")
@@ -172,12 +320,16 @@ class DeviceToolHandler(
         deviceRepository.updateDevice(updated).getOrElse { return ToolOutcome.error(it.message) }
         return ToolOutcome(
             modelResult = "Success: Updated device '${updated.name}' (${changes.joinToString(", ")})",
-            action = action(AiActionKind.UPDATED, "Updated ${prior.name}: ${changes.joinToString(", ")}"),
             // Only the fields this change touched: anything edited since must survive the undo.
             undo = {
                 val current = deviceRepository.getDeviceById(id).first()
                 if (current == null) {
                     gone("${prior.name} no longer exists.")
+                } else if ((updated.name != prior.name && current.name != updated.name) ||
+                    (updated.location != prior.location && current.location != updated.location) ||
+                    (updated.typeId != prior.typeId && current.typeId != updated.typeId)
+                ) {
+                    gone("${prior.name} was changed again since, so this wasn't undone.")
                 } else {
                     deviceRepository
                         .updateDevice(
@@ -209,10 +361,9 @@ class DeviceToolHandler(
 
         return ToolOutcome(
             modelResult = "Success: Deleted device '${device.name}' and ${events.size} battery event(s)",
-            action = action(AiActionKind.DELETED, "Deleted ${device.name}${eventsClause(events.size)}"),
             undo = {
                 deviceRepository
-                    .addDevice(device)
+                    .addDevice(device.copy(imageEtag = null)) // The server removed the photo with the device.
                     .flatMap {
                         var result: Result<Unit, DataError> = Result.Success(Unit)
                         for (event in events) result = result.flatMap { deviceRepository.addEvent(event) }
@@ -239,7 +390,6 @@ class DeviceToolHandler(
         deviceRepository.addDeviceType(type).getOrElse { return ToolOutcome.error(it.message) }
         return ToolOutcome(
             modelResult = "Success: Added device type '${type.name}' (id:${type.id}, ${batteries(type)}, icon ${type.defaultIcon})",
-            action = action(AiActionKind.ADDED, "Added type ${type.name} (${batteries(type)})"),
             undo = { deviceRepository.deleteDeviceType(type.id) },
         )
     }
@@ -269,11 +419,16 @@ class DeviceToolHandler(
         deviceRepository.updateDeviceType(updated).getOrElse { return ToolOutcome.error(it.message) }
         return ToolOutcome(
             modelResult = "Success: Updated device type '${updated.name}' (${changes.joinToString(", ")})",
-            action = action(AiActionKind.UPDATED, "Updated type ${prior.name}: ${changes.joinToString(", ")}"),
             undo = {
                 val current = deviceRepository.getDeviceTypeById(id).first()
                 if (current == null) {
                     gone("The type ${prior.name} no longer exists.")
+                } else if ((updated.name != prior.name && current.name != updated.name) ||
+                    (updated.batteryType != prior.batteryType && current.batteryType != updated.batteryType) ||
+                    (updated.batteryQuantity != prior.batteryQuantity && current.batteryQuantity != updated.batteryQuantity) ||
+                    (updated.defaultIcon != prior.defaultIcon && current.defaultIcon != updated.defaultIcon)
+                ) {
+                    gone("The type ${prior.name} was changed again since, so this wasn't undone.")
                 } else {
                     deviceRepository.updateDeviceType(
                         current.copy(
@@ -299,7 +454,6 @@ class DeviceToolHandler(
         deviceRepository.deleteDeviceType(id).getOrElse { return ToolOutcome.error(it.message) }
         return ToolOutcome(
             modelResult = "Success: Deleted device type '${type.name}'",
-            action = action(AiActionKind.DELETED, "Deleted the type ${type.name}"),
             undo = { deviceRepository.addDeviceType(type) },
         )
     }
@@ -349,10 +503,6 @@ class DeviceToolHandler(
         return ToolOutcome(
             modelResult = "Success: Recorded battery replacement for '${device.name}' on $day" +
                 (createdDevice?.let { " (created the device, id:${it.id})" } ?: ""),
-            action = action(
-                AiActionKind.RECORDED,
-                "Recorded a battery change for ${device.name} on $day" + (if (createdDevice != null) " (new device)" else ""),
-            ),
             undo = {
                 deviceRepository
                     .deleteEvent(event.id)
@@ -389,11 +539,12 @@ class DeviceToolHandler(
         val name = deviceRepository.getDeviceById(prior.deviceId).first()?.name ?: "a device"
         return ToolOutcome(
             modelResult = "Success: Updated battery event (${changes.joinToString(", ")})",
-            action = action(AiActionKind.UPDATED, "Updated the battery change for $name: ${changes.joinToString(", ")}"),
             undo = {
                 val current = deviceRepository.getEventById(id).first()
                 if (current == null) {
                     gone("That battery change no longer exists.")
+                } else if ((updated.date != prior.date && current.date != updated.date) || (updated.notes != prior.notes && current.notes != updated.notes)) {
+                    gone("That battery change was edited again since, so this wasn't undone.")
                 } else {
                     deviceRepository
                         .updateEvent(
@@ -416,7 +567,6 @@ class DeviceToolHandler(
         val name = deviceRepository.getDeviceById(event.deviceId).first()?.name ?: "a device"
         return ToolOutcome(
             modelResult = "Success: Deleted battery event for '$name'",
-            action = action(AiActionKind.DELETED, "Deleted the battery change for $name on ${dateOf(event.date)}"),
             undo = { deviceRepository.addEvent(event).flatMap { updateDeviceLastReplacedUseCase(event.deviceId).map { } } },
         )
     }
@@ -435,25 +585,7 @@ class DeviceToolHandler(
         needsBatteryRepository.setNeedsBattery(id, wanted).getOrElse { return ToolOutcome.error(it.message) }
         return ToolOutcome(
             modelResult = "Success: ${if (wanted) "Marked" else "Unmarked"} '${device.name}'",
-            action = action(
-                AiActionKind.MARKED,
-                if (wanted) "Marked ${device.name} as needing a battery" else "Cleared the needs-battery mark on ${device.name}",
-            ),
             undo = { needsBatteryRepository.setNeedsBattery(id, prior) },
-        )
-    }
-
-    private suspend fun getDeviceHistory(args: Map<String, Any?>): ToolOutcome {
-        val id = str(args, AiToolParams.ID) ?: return ToolOutcome.error("Missing id")
-        val device = deviceRepository.getDeviceById(id).first()
-            ?: return ToolOutcome.error("Device not found with id '$id'")
-        val events = deviceRepository.getEventsForDevice(id).first().sortedByDescending { it.date }
-        val lines = events.joinToString("\n") { e ->
-            "- id:${e.id} | ${dateOf(e.date)}" + (e.batteryType?.let { " | $it" } ?: "") + (e.notes?.let { " | $it" } ?: "")
-        }
-        return ToolOutcome(
-            modelResult = "History of '${device.name}' (${events.size} battery change(s), newest first):\n" + lines.ifEmpty { "(none)" },
-            action = action(AiActionKind.LOOKED_UP, "Looked up the history of ${device.name}", undoable = false),
         )
     }
 
@@ -501,12 +633,6 @@ class DeviceToolHandler(
 
     private suspend fun isMarked(deviceId: String): Boolean = deviceId in needsBatteryRepository.getNeedsBatteryMarks().first()
 
-    private suspend fun describeDevice(device: Device): String {
-        val type = deviceRepository.getDeviceTypeById(device.typeId).first()
-        val extras = listOfNotNull(type?.name?.takeIf { device.typeId != DEFAULT_TYPE_ID }, device.location)
-        return device.name + if (extras.isEmpty()) "" else " (${extras.joinToString(", ")})"
-    }
-
     private fun batteries(type: DeviceType) = "${type.batteryQuantity} × ${type.batteryType}"
 
     private fun eventsClause(count: Int) =
@@ -517,12 +643,6 @@ class DeviceToolHandler(
         }
 
     private fun icon(name: String?): String = name?.takeIf { it in DeviceIcons.AvailableIcons } ?: "default"
-
-    private fun action(
-        kind: AiActionKind,
-        summary: String,
-        undoable: Boolean = true,
-    ) = AiAction(id = "act_${uuid4()}", kind = kind, summary = summary, undoable = undoable)
 
     private fun str(
         args: Map<String, Any?>,

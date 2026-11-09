@@ -71,7 +71,8 @@ final class KmpInteropTests: XCTestCase {
             isPartial: false,
             hints: [:],
             isError: false,
-            actions: []
+            cardId: nil,
+            lookups: []
         )
         XCTAssertEqual(msg.id, "m1")
         XCTAssertEqual(msg.role, .user)

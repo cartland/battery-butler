@@ -4,10 +4,12 @@ import co.touchlab.kermit.Logger
 import com.benasher44.uuid.uuid4
 import com.chriscartland.batterybutler.domain.model.DataError
 import com.chriscartland.batterybutler.domain.model.Result
-import com.chriscartland.batterybutler.domain.model.ai.AiAction
+import com.chriscartland.batterybutler.domain.model.ai.AiCard
+import com.chriscartland.batterybutler.domain.model.ai.AiCardItem
+import com.chriscartland.batterybutler.domain.model.ai.AiCardStatus
 import com.chriscartland.batterybutler.domain.model.ai.AiEngine
+import com.chriscartland.batterybutler.domain.model.ai.AiItemOutcome
 import com.chriscartland.batterybutler.domain.model.ai.AiMessage
-import com.chriscartland.batterybutler.domain.model.ai.AiPendingAction
 import com.chriscartland.batterybutler.domain.model.ai.AiRole
 import com.chriscartland.batterybutler.domain.model.ai.AiToolNames
 import com.chriscartland.batterybutler.domain.model.ai.ToolHandler
@@ -16,55 +18,59 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import me.tatarka.inject.annotations.Inject
 import kotlin.coroutines.cancellation.CancellationException
 
 /**
- * One conversation with the assistant, and everything the app holds on its behalf: the deletion
- * waiting for the person's answer, the way back from each change, and what to tell the model
- * about outcomes it didn't see.
+ * One conversation with the assistant. The model can read, and it can ask. Everything else is here,
+ * so the guarantees hold however badly the model behaves:
  *
- * Three rules, kept here rather than in the prompt:
- *
- * - **A deletion never runs on the model's say-so.** The tool call becomes an [AiPendingAction];
- *   the model is told to describe it and stop; the person decides on a card. Only one can wait
- *   at a time, and a new message withdraws it.
- * - **Everything else is undoable**, so it runs at once. The [AiAction] the person sees is
- *   written by the tool from the stored data, and its undo stays available until the chat is
- *   cleared.
- * - **The model is told what happened.** A confirmation, a refusal or an undo is something it
- *   didn't do and can't see, so the next message carries a bracketed note about it, and the
- *   prompt tells the model to trust those notes over its own memory.
+ * - **Reads run; writes propose.** A tool in [AiToolNames.READ_ONLY] goes to [DeviceReadTools]. Any
+ *   other call is previewed and put on a card, and the model is told nothing has happened yet.
+ * - **The card is the truth.** Its words come from the real data. A reply that proposes something
+ *   shows only the card, so a model that says "done" can't contradict it.
+ * - **Apply and Undo happen once.** Each is gated on the card's status, so a double tap is a no-op.
+ *   Every item reports its own outcome, and whatever goes wrong is written on the card with the
+ *   reason.
+ * - **The model hears what it can't see.** Approvals, declines and undos go at the top of the next
+ *   message, and survive a failed turn.
  */
 @Inject
 class AiChatSession(
     private val aiEngine: AiEngine,
-    private val toolHandler: DeviceToolHandler,
+    private val writer: DeviceToolHandler,
+    private val reader: DeviceReadTools,
     private val buildAiContextUseCase: BuildAiContextUseCase,
 ) {
-    private val _pendingAction = MutableStateFlow<AiPendingAction?>(null)
-    val pendingAction: StateFlow<AiPendingAction?> = _pendingAction.asStateFlow()
+    private val _cards = MutableStateFlow<Map<String, AiCard>>(emptyMap())
+    val cards: StateFlow<Map<String, AiCard>> = _cards.asStateFlow()
 
-    private var pendingRun: (suspend () -> ToolOutcome)? = null
-    private val undos = mutableMapOf<String, Undo>()
+    private val mutex = Mutex()
+    private val proposals = mutableMapOf<String, List<Proposal>>()
+    private val undos = mutableMapOf<String, suspend () -> Result<Unit, DataError>>()
     private val notes = mutableListOf<String>()
 
-    private class Undo(
-        val summary: String,
-        val run: suspend () -> Result<Unit, DataError>,
+    private class Proposal(
+        val itemId: String,
+        val name: String,
+        val args: Map<String, Any?>,
+        val target: String?,
+        val basis: String?,
+        val item: AiCardItem,
     )
 
     /**
-     * Send one message. The returned messages carry the actions taken while answering it, even
-     * when the answer fails partway: the changes already made are real and stay undoable.
-     * [hints] are facts about where the person is in the app, shown to the model, not to them.
+     * Send one message. Nothing the model does here can change data, so a turn that fails partway
+     * has changed nothing. [hints] are facts about where the person is, shown to the model only.
      */
     fun send(
         text: String,
         hints: Map<String, String> = emptyMap(),
     ): Flow<AiMessage> =
         flow {
-            _pendingAction.value?.let { withdraw(it) }
+            withdrawPending()
             val sentNotes = notes.toList()
             notes.clear()
             val prompt = buildString {
@@ -74,131 +80,241 @@ class AiChatSession(
                 append(text)
             }
 
-            val turnActions = mutableListOf<AiAction>()
-            val recording = ToolHandler { name, args ->
-                if (name in AiToolNames.DESTRUCTIVE) {
-                    defer(name, args)
-                } else {
-                    val outcome = toolHandler.run(name, args)
-                    outcome.action?.let { action ->
-                        turnActions += action
-                        outcome.undo?.let { undos[action.id] = Undo(action.summary, it) }
-                    }
-                    outcome.modelResult
-                }
+            val turn = Turn()
+            val tools = ToolHandler { name, args ->
+                if (name in AiToolNames.READ_ONLY) read(name, args, turn) else propose(name, args, turn)
             }
             try {
-                aiEngine.generateResponse(prompt, recording) { buildAiContextUseCase() }.collect { message ->
-                    if (message.isError) rememberFailedTurn(sentNotes, turnActions)
-                    emit(if (message.isPartial) message else message.copy(actions = turnActions.toList()))
+                aiEngine.generateResponse(prompt, tools) { buildAiContextUseCase() }.collect { message ->
+                    emit(if (message.isPartial) message else finish(message, turn, sentNotes))
                 }
+                if (turn.draft.isNotEmpty()) emit(finish(AiMessage(id = "card_${uuid4()}", role = AiRole.MODEL, text = ""), turn, sentNotes))
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
                 Logger.e(TAG, e) { "chat turn failed" }
-                rememberFailedTurn(sentNotes, turnActions)
-                emit(
-                    AiMessage(
-                        id = "error_${uuid4()}",
-                        role = AiRole.MODEL,
-                        text = if (turnActions.isEmpty()) FAILED_NOTHING_CHANGED else FAILED_AFTER_CHANGES,
-                        isError = true,
-                        actions = turnActions.toList(),
-                    ),
-                )
+                val failure = AiMessage(id = "error_${uuid4()}", role = AiRole.MODEL, text = FAILED, isError = true)
+                emit(finish(failure, turn, sentNotes))
             }
         }
 
-    /**
-     * A failed turn is rolled out of the conversation, so the model never read its notes and
-     * won't remember what its tools did. Both go in the next message instead.
-     */
-    private fun rememberFailedTurn(
-        sentNotes: List<String>,
-        turnActions: List<AiAction>,
-    ) {
-        notes.addAll(0, sentNotes)
-        val done = turnActions.filter { it.undoable }.joinToString("; ") { it.summary }
-        if (done.isNotEmpty()) notes += "An earlier attempt failed partway, after the app had already done this: $done. Don't repeat it."
+    private class Turn {
+        val draft = mutableListOf<Proposal>()
+        val lookups = mutableListOf<String>()
+        var reads = 0
     }
 
-    /** Hold a deletion for the person's answer, and tell the model so. */
-    private suspend fun defer(
+    private suspend fun read(
         name: String,
         args: Map<String, Any?>,
+        turn: Turn,
     ): String {
-        val preview = toolHandler.describe(name, args) ?: return toolHandler.run(name, args).modelResult
-        if (pendingRun != null) {
-            return "Error: another deletion is already waiting for the user's answer. Ask them to decide on it first."
-        }
-        _pendingAction.value = AiPendingAction(id = "pending_${uuid4()}", summary = preview.summary, consequence = preview.consequence)
-        pendingRun = { toolHandler.run(name, args) }
-        return "Waiting for the user: the app is showing them a card to confirm \"${preview.summary}\". " +
-            "Do not call this tool again. Tell the user in one sentence what the card will do, then stop."
+        if (++turn.reads > MAX_READS) return "Error: read limit reached for this message. Answer with what you have."
+        val result = reader.run(name, args)
+        result.lookup?.let { if (it !in turn.lookups) turn.lookups += it }
+        return result.modelResult
     }
 
-    /** The person said yes. Runs the deletion; the outcome is the message to show them. */
-    suspend fun confirmPendingAction(): ToolOutcome? {
-        val run = pendingRun ?: return null
-        val pending = _pendingAction.value
-        pendingRun = null
-        _pendingAction.value = null
-        val outcome = run()
-        val action = outcome.action
-        if (action != null) {
-            outcome.undo?.let { undos[action.id] = Undo(action.summary, it) }
-            notes += "The user confirmed, and the app did this: ${action.summary}."
-        } else {
-            notes += "The user confirmed \"${pending?.summary}\" but it failed: ${outcome.modelResult}"
-        }
-        return outcome
-    }
-
-    /** The person said no. Nothing happens, and the model is told. */
-    fun cancelPendingAction(): AiPendingAction? {
-        val pending = _pendingAction.value ?: return null
-        pendingRun = null
-        _pendingAction.value = null
-        notes += "The user declined \"${pending.summary}\". Nothing was deleted."
-        return pending
-    }
-
-    private fun withdraw(pending: AiPendingAction) {
-        pendingRun = null
-        _pendingAction.value = null
-        notes += "The user sent a new message instead of confirming \"${pending.summary}\". It was not done."
-    }
-
-    /** Take back an action. Afterwards the model is told, so it won't describe the change as done. */
-    suspend fun undo(actionId: String): Result<Unit, DataError> {
-        val undo = undos.remove(actionId) ?: return Result.Error(DataError.Unknown("That can no longer be undone", null))
-        return when (val result = undo.run()) {
-            is Result.Success -> {
-                notes += "The user undid this: ${undo.summary}. Treat it as not having happened."
-                result
+    private suspend fun propose(
+        name: String,
+        args: Map<String, Any?>,
+        turn: Turn,
+    ): String {
+        if (turn.draft.size >= MAX_ITEMS) return "Error: this message already proposes $MAX_ITEMS changes. Stop, and propose the rest after these."
+        if (turn.draft.any { it.name == name && it.args == args }) return ALREADY_PROPOSED
+        return when (val preview = writer.preview(name, args)) {
+            is ToolPreview.Refused -> {
+                preview.message
             }
 
-            is Result.Error -> {
-                undos[actionId] = undo
-                result
+            is ToolPreview.Ready -> {
+                val itemId = "item_${uuid4()}"
+                turn.draft += Proposal(
+                    itemId = itemId,
+                    name = name,
+                    args = args,
+                    target = preview.target,
+                    basis = preview.basis,
+                    item = AiCardItem(id = itemId, kind = preview.kind, summary = preview.summary, warning = preview.warning),
+                )
+                "Proposed to the user on a card: \"${preview.summary}\". NOT done yet: they will approve or decline it. " +
+                    "Propose any other changes this request needs, then stop."
             }
         }
     }
 
-    fun canUndo(actionId: String): Boolean = actionId in undos
+    /** The reply as shown: the card if it proposed anything, otherwise the model's words, checked. */
+    private fun finish(
+        message: AiMessage,
+        turn: Turn,
+        sentNotes: List<String>,
+    ): AiMessage {
+        val cardId = publish(turn)
+        val lookups = turn.lookups.toList().also { turn.lookups.clear() }
+        var failed = message.isError
+        val text = when {
+            message.isError -> {
+                message.text
+            }
 
-    /** Forget everything: the conversation, the pending deletion, and every way back. */
+            cardId != null -> {
+                ""
+            }
+
+            else -> {
+                val cleaned = AiReplyGuard.clean(message.text)
+                when {
+                    cleaned.isBlank() -> {
+                        failed = true
+                        UNUSABLE
+                    }
+
+                    AiReplyGuard.claimsAChange(cleaned) -> {
+                        "$cleaned\n\n$NOTHING_CHANGED_LINE"
+                    }
+
+                    else -> {
+                        cleaned
+                    }
+                }
+            }
+        }
+        if (failed) notes.addAll(0, sentNotes)
+        return message.copy(text = text, isError = failed, cardId = cardId, lookups = lookups)
+    }
+
+    private fun publish(turn: Turn): String? {
+        if (turn.draft.isEmpty()) return null
+        val cardId = "card_${uuid4()}"
+        proposals[cardId] = turn.draft.toList()
+        put(AiCard(id = cardId, items = turn.draft.map { it.item }, status = AiCardStatus.PENDING))
+        turn.draft.clear()
+        return cardId
+    }
+
+    /** The person approved, leaving out [leftOut]. Each change is applied and reported on its own. */
+    suspend fun approve(
+        cardId: String,
+        leftOut: Set<String> = emptySet(),
+    ) = mutex.withLock {
+        val card = _cards.value[cardId]?.takeIf { it.status == AiCardStatus.PENDING } ?: return@withLock
+        val planned = proposals[cardId].orEmpty()
+        put(card.copy(status = AiCardStatus.APPLYING))
+
+        // A change earlier in this card may touch a row a later one depends on; that isn't a conflict.
+        val touched = mutableSetOf<String>()
+        val results = planned.map { proposal ->
+            val item = proposal.item
+            when {
+                proposal.itemId in leftOut -> {
+                    item.copy(outcome = AiItemOutcome.LEFT_OUT)
+                }
+
+                proposal.target != null && proposal.target !in touched && writer.currentBasis(proposal.name, proposal.args) != proposal.basis -> {
+                    item.copy(outcome = AiItemOutcome.CHANGED_SINCE, reason = CHANGED_SINCE)
+                }
+
+                else -> {
+                    val outcome = writer.run(proposal.name, proposal.args)
+                    if (outcome.failed) {
+                        Logger.w(TAG) { "apply failed: ${proposal.name}: ${outcome.modelResult}" }
+                        item.copy(outcome = AiItemOutcome.FAILED, reason = outcome.modelResult.removePrefix("Error: "))
+                    } else {
+                        proposal.target?.let { touched += it }
+                        outcome.undo?.let { undos[proposal.itemId] = it }
+                        item.copy(outcome = AiItemOutcome.APPLIED)
+                    }
+                }
+            }
+        }
+        proposals.remove(cardId)
+
+        val applied = results.filter { it.outcome == AiItemOutcome.APPLIED }
+        val problems = results.filter { it.outcome == AiItemOutcome.FAILED || it.outcome == AiItemOutcome.CHANGED_SINCE }
+        val status = when {
+            applied.isEmpty() -> AiCardStatus.FAILED
+            problems.isNotEmpty() -> AiCardStatus.PARTLY_APPLIED
+            else -> AiCardStatus.APPLIED
+        }
+        put(card.copy(items = results, status = status, canUndo = results.any { it.id in undos }))
+        if (applied.isNotEmpty()) notes += "The user approved, and the app did this: ${joined(applied)}."
+        if (problems.isNotEmpty()) notes += "These were not done: ${problems.joinToString("; ") { "${it.summary} (${it.reason})" }}."
+        results.filter { it.outcome == AiItemOutcome.LEFT_OUT }.takeIf { it.isNotEmpty() }?.let {
+            notes += "The user left these out, so they were not done: ${joined(it)}."
+        }
+    }
+
+    /** The person declined. Nothing happens, and the model is told. */
+    suspend fun decline(cardId: String) =
+        mutex.withLock {
+            val card = _cards.value[cardId]?.takeIf { it.status == AiCardStatus.PENDING } ?: return@withLock
+            proposals.remove(cardId)
+            put(card.copy(status = AiCardStatus.DECLINED))
+            notes += "The user declined this, so it was not done: ${joined(card.items)}."
+        }
+
+    /** Take a card back, newest change first. Whatever can't be undone says why on the card. */
+    suspend fun undo(cardId: String) =
+        mutex.withLock {
+            val card = _cards.value[cardId]?.takeIf { it.canUndo && it.status in UNDOABLE } ?: return@withLock
+            put(card.copy(status = AiCardStatus.UNDOING, canUndo = false))
+            val updated = card.items.toMutableList()
+            for (index in updated.indices.reversed()) {
+                val item = updated[index]
+                val step = undos[item.id] ?: continue
+                updated[index] = when (val result = step()) {
+                    is Result.Success -> {
+                        undos.remove(item.id)
+                        item.copy(outcome = AiItemOutcome.UNDONE, reason = null)
+                    }
+
+                    is Result.Error -> {
+                        Logger.w(TAG) { "undo failed: ${item.summary}: ${result.error.message}" }
+                        item.copy(outcome = AiItemOutcome.UNDO_FAILED, reason = result.error.message)
+                    }
+                }
+            }
+            val undone = updated.filter { it.outcome == AiItemOutcome.UNDONE }
+            val stuck = updated.any { it.id in undos }
+            put(card.copy(items = updated, status = if (stuck) AiCardStatus.PARTLY_UNDONE else AiCardStatus.UNDONE, canUndo = stuck))
+            val newlyUndone = undone.filter { old -> card.items.first { it.id == old.id }.outcome != AiItemOutcome.UNDONE }
+            if (newlyUndone.isNotEmpty()) notes += "The user undid this: ${joined(newlyUndone)}. Treat it as not having happened."
+        }
+
+    private fun withdrawPending() {
+        _cards.value.values.filter { it.status == AiCardStatus.PENDING }.forEach { card ->
+            proposals.remove(card.id)
+            put(card.copy(status = AiCardStatus.WITHDRAWN))
+            notes += "The user sent a new message instead of answering, so this was not done: ${joined(card.items)}."
+        }
+    }
+
+    /** Forget everything: the conversation, the cards, and every way back. */
     suspend fun reset() {
-        pendingRun = null
-        _pendingAction.value = null
-        undos.clear()
-        notes.clear()
+        mutex.withLock {
+            proposals.clear()
+            undos.clear()
+            notes.clear()
+            _cards.value = emptyMap()
+        }
         aiEngine.resetConversation()
     }
 
+    private fun put(card: AiCard) {
+        _cards.value = _cards.value + (card.id to card)
+    }
+
+    private fun joined(items: List<AiCardItem>) = items.joinToString("; ") { it.summary }
+
     private companion object {
         const val TAG = "AiChatSession"
-        const val FAILED_NOTHING_CHANGED = "Something went wrong and the assistant couldn't answer. Nothing in your data was changed by this message."
-        const val FAILED_AFTER_CHANGES = "Something went wrong before the assistant finished. The changes listed here were made."
+        const val MAX_READS = 12
+        const val MAX_ITEMS = 50
+        const val ALREADY_PROPOSED = "That change is already on the card. Don't propose it again."
+        const val CHANGED_SINCE = "It changed after this was proposed, so it was left alone."
+        const val FAILED = "Something went wrong and the assistant couldn't answer. Nothing in your data was changed."
+        const val UNUSABLE = "The assistant didn't give a usable answer. Nothing in your data was changed."
+        const val NOTHING_CHANGED_LINE = "(No changes were made. Changes only happen from a card you approve.)"
+        val UNDOABLE = setOf(AiCardStatus.APPLIED, AiCardStatus.PARTLY_APPLIED, AiCardStatus.PARTLY_UNDONE)
     }
 }

@@ -94,7 +94,8 @@ struct TestData {
         isPartial: false,
         hints: [:],
         isError: false,
-        actions: []
+        cardId: nil,
+        lookups: []
     )
 
     static let aiModelMessage = AiMessage(
@@ -104,7 +105,8 @@ struct TestData {
         isPartial: false,
         hints: [:],
         isError: false,
-        actions: []
+        cardId: nil,
+        lookups: []
     )
 
     // MARK: - Input Types

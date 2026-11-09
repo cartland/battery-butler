@@ -1,5 +1,6 @@
 package com.chriscartland.batterybutler.viewmodel.aichat
 
+import com.chriscartland.batterybutler.domain.model.ai.AiCardStatus
 import com.chriscartland.batterybutler.domain.model.ai.AiRole
 import com.chriscartland.batterybutler.domain.model.ai.AiToolNames
 import com.chriscartland.batterybutler.domain.model.ai.AiToolParams
@@ -9,6 +10,7 @@ import com.chriscartland.batterybutler.testcommon.FakeNeedsBatteryRepository
 import com.chriscartland.batterybutler.testcommon.TestDevices
 import com.chriscartland.batterybutler.usecase.AiChatSession
 import com.chriscartland.batterybutler.usecase.BuildAiContextUseCase
+import com.chriscartland.batterybutler.usecase.DeviceReadTools
 import com.chriscartland.batterybutler.usecase.DeviceToolHandler
 import com.chriscartland.batterybutler.usecase.UpdateDeviceLastReplacedUseCase
 import kotlinx.coroutines.Dispatchers
@@ -23,7 +25,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -42,45 +43,44 @@ class AiChatViewModelTest {
 
     private fun settle() = testDispatcher.scheduler.advanceUntilIdle()
 
-    @Test
-    fun `sendMessage adds user message to messages flow`() =
-        runTest {
-            val h = Harness()
-            h.viewModel.sendMessage("Hello AI")
-            // User message is added synchronously before the coroutine launches
-            val messages = h.viewModel.messages.value
-            assertEquals(1, messages.size)
-            assertEquals(AiRole.USER, messages[0].role)
-            assertEquals("Hello AI", messages[0].text)
-        }
+    private val addPorch = AiToolNames.ADD_DEVICE to mapOf<String, Any?>(AiToolParams.NAME to "Porch Light")
 
     @Test
-    fun `sendMessage adds AI response after user message`() =
+    fun `sendMessage adds the user message at once and the reply after`() =
         runTest {
             val h = Harness()
             h.engine.defaultResponseText = "Hello human!"
             h.viewModel.sendMessage("Hello AI")
+            assertEquals(
+                listOf(AiRole.USER),
+                h.viewModel.messages.value
+                    .map { it.role },
+            )
             settle()
-            val messages = h.viewModel.messages.value
-            assertEquals(2, messages.size)
-            assertEquals(AiRole.MODEL, messages[1].role)
-            assertEquals("Hello human!", messages[1].text)
+            assertEquals(
+                listOf(AiRole.USER, AiRole.MODEL),
+                h.viewModel.messages.value
+                    .map { it.role },
+            )
+            assertEquals(
+                "Hello human!",
+                h.viewModel.messages.value[1]
+                    .text,
+            )
         }
 
     @Test
     fun `sendMessage ignores blank input and input while processing`() =
         runTest {
             val h = Harness()
-            h.viewModel.sendMessage("")
             h.viewModel.sendMessage("   ")
             assertTrue(
                 h.viewModel.messages.value
                     .isEmpty(),
             )
-
-            h.viewModel.sendMessage("First message")
+            h.viewModel.sendMessage("First")
             assertTrue(h.viewModel.isProcessing.value)
-            h.viewModel.sendMessage("Second message")
+            h.viewModel.sendMessage("Second")
             assertEquals(
                 1,
                 h.viewModel.messages.value
@@ -100,70 +100,67 @@ class AiChatViewModelTest {
         }
 
     @Test
-    fun `a reply carries the actions taken and and undo marks the row undone`() =
+    fun `a proposal reaches the screen as a card and nothing changes until approved`() =
         runTest {
             val h = Harness()
-            h.engine.scriptedToolCalls = listOf(AiToolNames.ADD_DEVICE to mapOf(AiToolParams.NAME to "Porch Light"))
+            h.engine.scriptedToolCalls = listOf(addPorch)
             h.viewModel.sendMessage("add a porch light")
             settle()
-            val action = h.viewModel.messages.value
-                .last()
-                .actions
-                .single()
-            assertTrue(action.undoable && !action.undone)
+            val cardId = assertNotNull(
+                h.viewModel.messages.value
+                    .last()
+                    .cardId,
+            )
+            assertEquals(
+                AiCardStatus.PENDING,
+                h.viewModel.cards.value[cardId]
+                    ?.status,
+            )
+            assertEquals(1, h.repo.devices.size)
+
+            h.viewModel.approveCard(cardId)
+            settle()
+            assertEquals(
+                AiCardStatus.APPLIED,
+                h.viewModel.cards.value[cardId]
+                    ?.status,
+            )
             assertEquals(2, h.repo.devices.size)
 
-            h.viewModel.undoAction(action.id)
+            h.viewModel.undoCard(cardId)
             settle()
-            val after = h.viewModel.messages.value
-                .last()
-                .actions
-                .single()
-            assertTrue(after.undone)
-            assertFalse(after.undoable)
+            assertEquals(
+                AiCardStatus.UNDONE,
+                h.viewModel.cards.value[cardId]
+                    ?.status,
+            )
             assertEquals(1, h.repo.devices.size)
         }
 
     @Test
-    fun `a deletion shows up as a pending action until the person decides`() =
-        runTest {
-            val h = Harness()
-            h.engine.scriptedToolCalls = listOf(AiToolNames.DELETE_DEVICE to mapOf(AiToolParams.ID to "d1"))
-            h.viewModel.sendMessage("delete the hall alarm")
-            settle()
-            val pending = assertNotNull(h.viewModel.pendingAction.value)
-            assertEquals("Delete Hall Alarm", pending.summary)
-            assertEquals(1, h.repo.devices.size)
-
-            h.viewModel.confirmPendingAction()
-            settle()
-            assertNull(h.viewModel.pendingAction.value)
-            assertTrue(h.repo.devices.isEmpty())
-            val entry = h.viewModel.messages.value
-                .last()
-            assertEquals(AiRole.SYSTEM, entry.role)
-            assertEquals("", entry.text)
-            assertEquals("Deleted Hall Alarm", entry.actions.single().summary)
-            assertTrue(entry.actions.single().undoable)
-        }
-
-    @Test
-    fun `keeping a pending deletion deletes nothing and adds no entry`() =
+    fun `declining leaves the data alone`() =
         runTest {
             val h = Harness()
             h.engine.scriptedToolCalls = listOf(AiToolNames.DELETE_DEVICE to mapOf(AiToolParams.ID to "d1"))
             h.viewModel.sendMessage("delete it")
             settle()
-            val before = h.viewModel.messages.value.size
-            h.viewModel.cancelPendingAction()
+            val cardId = assertNotNull(
+                h.viewModel.messages.value
+                    .last()
+                    .cardId,
+            )
+            h.viewModel.declineCard(cardId)
             settle()
-            assertNull(h.viewModel.pendingAction.value)
+            assertEquals(
+                AiCardStatus.DECLINED,
+                h.viewModel.cards.value[cardId]
+                    ?.status,
+            )
             assertEquals(1, h.repo.devices.size)
-            assertEquals(before, h.viewModel.messages.value.size)
         }
 
     @Test
-    fun `a failed reply is an error entry and and retry sends the same words again`() =
+    fun `a failed reply can be retried with the same words`() =
         runTest {
             val h = Harness()
             h.engine.errorToThrow = IllegalStateException("boom")
@@ -178,46 +175,50 @@ class AiChatViewModelTest {
             h.engine.defaultResponseText = "Back."
             h.viewModel.retryLastMessage()
             settle()
-            val messages = h.viewModel.messages.value
-            assertEquals(listOf(AiRole.USER, AiRole.MODEL), messages.map { it.role })
-            assertEquals("Back.", messages.last().text)
-            assertEquals(2, h.engine.recordedPrompts.size)
+            assertEquals(
+                listOf(AiRole.USER, AiRole.MODEL),
+                h.viewModel.messages.value
+                    .map { it.role },
+            )
+            assertEquals(
+                "Back.",
+                h.viewModel.messages.value
+                    .last()
+                    .text,
+            )
             assertEquals(h.engine.recordedPrompts[0], h.engine.recordedPrompts[1])
         }
 
     @Test
-    fun `retry is refused after a failed turn that made changes`() =
+    fun `retry is refused when the failed reply left a card`() =
         runTest {
             val h = Harness()
-            h.engine.scriptedToolCalls = listOf(AiToolNames.RECORD_BATTERY_REPLACEMENT to mapOf(AiToolParams.DEVICE_NAME to "Hall Alarm"))
+            h.engine.scriptedToolCalls = listOf(addPorch)
             h.engine.errorAfterToolCalls = IllegalStateException("boom")
-            h.viewModel.sendMessage("I changed it")
+            h.viewModel.sendMessage("add it")
             settle()
-            assertEquals(1, h.repo.events.size)
             val before = h.viewModel.messages.value
-
             h.engine.errorAfterToolCalls = null
             h.viewModel.retryLastMessage()
             settle()
-            assertEquals(1, h.repo.events.size, "a retry must not record it twice")
-            assertEquals(before, h.viewModel.messages.value, "the row and its Undo stay")
+            assertEquals(before, h.viewModel.messages.value)
         }
 
     @Test
-    fun `clearChat resets the transcript and the conversation behind it`() =
+    fun `clearChat resets the transcript the cards and the conversation`() =
         runTest {
             val h = Harness()
-            h.viewModel.sendMessage("Hello")
+            h.engine.scriptedToolCalls = listOf(addPorch)
+            h.viewModel.sendMessage("add it")
             settle()
-            assertTrue(
-                h.viewModel.messages.value
-                    .isNotEmpty(),
-            )
-
             h.viewModel.clearChat()
             settle()
             assertTrue(
                 h.viewModel.messages.value
+                    .isEmpty(),
+            )
+            assertTrue(
+                h.viewModel.cards.value
                     .isEmpty(),
             )
             assertFalse(h.viewModel.isProcessing.value)
@@ -229,11 +230,13 @@ class AiChatViewModelTest {
             setDevices(listOf(TestDevices.createDevice(id = "d1", name = "Hall Alarm")))
         }
         val engine = FakeAiEngine()
+        private val marks = FakeNeedsBatteryRepository()
         val viewModel = AiChatViewModel(
             AiChatSession(
                 aiEngine = engine,
-                toolHandler = DeviceToolHandler(repo, FakeNeedsBatteryRepository(), UpdateDeviceLastReplacedUseCase(repo)),
-                buildAiContextUseCase = BuildAiContextUseCase(repo, FakeNeedsBatteryRepository()),
+                writer = DeviceToolHandler(repo, marks, UpdateDeviceLastReplacedUseCase(repo)),
+                reader = DeviceReadTools(repo, marks),
+                buildAiContextUseCase = BuildAiContextUseCase(repo, marks),
             ),
         )
     }
