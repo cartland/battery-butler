@@ -186,6 +186,24 @@ class AiChatViewModelTest {
         }
 
     @Test
+    fun `retry is refused after a failed turn that made changes`() =
+        runTest {
+            val h = Harness()
+            h.engine.scriptedToolCalls = listOf(AiToolNames.RECORD_BATTERY_REPLACEMENT to mapOf(AiToolParams.DEVICE_NAME to "Hall Alarm"))
+            h.engine.errorAfterToolCalls = IllegalStateException("boom")
+            h.viewModel.sendMessage("I changed it")
+            settle()
+            assertEquals(1, h.repo.events.size)
+            val before = h.viewModel.messages.value
+
+            h.engine.errorAfterToolCalls = null
+            h.viewModel.retryLastMessage()
+            settle()
+            assertEquals(1, h.repo.events.size, "a retry must not record it twice")
+            assertEquals(before, h.viewModel.messages.value, "the row and its Undo stay")
+        }
+
+    @Test
     fun `clearChat resets the transcript and the conversation behind it`() =
         runTest {
             val h = Harness()

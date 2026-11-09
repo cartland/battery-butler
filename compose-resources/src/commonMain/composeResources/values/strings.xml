@@ -154,10 +154,10 @@
     <string name="ai_chat_empty_title">Ask about your devices, or tell me what you changed</string>
     <string name="ai_suggestion_due">Which batteries are due?</string>
     <string name="ai_suggestion_shopping">What batteries should I buy?</string>
-    <string name="ai_suggestion_record">I changed the batteries in the hall alarm today</string>
-    <string name="ai_suggestion_add">Add a smoke alarm in the hallway</string>
+    <string name="ai_suggestion_recent">What did I change most recently?</string>
+    <string name="ai_suggestion_never_recorded">Which devices have no change recorded?</string>
     <string name="ai_pending_title">Waiting for you</string>
-    <string name="ai_pending_irreversible">This can\'t be undone.</string>
+    <string name="ai_pending_undoable">You can undo this from the chat afterwards.</string>
     <string name="ai_pending_confirm">Delete</string>
     <string name="ai_pending_cancel">Keep</string>
     <string name="ai_action_undo">Undo</string>

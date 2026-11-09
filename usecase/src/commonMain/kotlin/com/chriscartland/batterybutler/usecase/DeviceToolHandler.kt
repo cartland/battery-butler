@@ -138,7 +138,11 @@ class DeviceToolHandler(
             modelResult = "Success: Added device '${device.name}' (id:${device.id})" + (createdType?.let { ", created type '${it.name}'" } ?: ""),
             action = action(AiActionKind.ADDED, "Added $described"),
             undo = {
-                deviceRepository.deleteDevice(device.id).flatMap { removeIfUnused(createdType) }
+                if (deviceRepository.getEventsForDevice(device.id).first().isNotEmpty()) {
+                    gone("${device.name} has battery changes recorded since, so adding it can't be undone. Delete it instead.")
+                } else {
+                    deviceRepository.deleteDevice(device.id).flatMap { removeIfUnused(createdType) }
+                }
             },
         )
     }
@@ -169,7 +173,23 @@ class DeviceToolHandler(
         return ToolOutcome(
             modelResult = "Success: Updated device '${updated.name}' (${changes.joinToString(", ")})",
             action = action(AiActionKind.UPDATED, "Updated ${prior.name}: ${changes.joinToString(", ")}"),
-            undo = { deviceRepository.updateDevice(prior).flatMap { removeIfUnused(createdType) } },
+            // Only the fields this change touched: anything edited since must survive the undo.
+            undo = {
+                val current = deviceRepository.getDeviceById(id).first()
+                if (current == null) {
+                    gone("${prior.name} no longer exists.")
+                } else {
+                    deviceRepository
+                        .updateDevice(
+                            current.copy(
+                                name = if (updated.name != prior.name) prior.name else current.name,
+                                location = if (updated.location != prior.location) prior.location else current.location,
+                                typeId = if (updated.typeId != prior.typeId) prior.typeId else current.typeId,
+                                lastUpdated = Clock.System.now(),
+                            ),
+                        ).flatMap { removeIfUnused(createdType) }
+                }
+            },
         )
     }
 
@@ -250,7 +270,21 @@ class DeviceToolHandler(
         return ToolOutcome(
             modelResult = "Success: Updated device type '${updated.name}' (${changes.joinToString(", ")})",
             action = action(AiActionKind.UPDATED, "Updated type ${prior.name}: ${changes.joinToString(", ")}"),
-            undo = { deviceRepository.updateDeviceType(prior) },
+            undo = {
+                val current = deviceRepository.getDeviceTypeById(id).first()
+                if (current == null) {
+                    gone("The type ${prior.name} no longer exists.")
+                } else {
+                    deviceRepository.updateDeviceType(
+                        current.copy(
+                            name = if (updated.name != prior.name) prior.name else current.name,
+                            batteryType = if (updated.batteryType != prior.batteryType) prior.batteryType else current.batteryType,
+                            batteryQuantity = if (updated.batteryQuantity != prior.batteryQuantity) prior.batteryQuantity else current.batteryQuantity,
+                            defaultIcon = if (updated.defaultIcon != prior.defaultIcon) prior.defaultIcon else current.defaultIcon,
+                        ),
+                    )
+                }
+            },
         )
     }
 
@@ -279,8 +313,7 @@ class DeviceToolHandler(
 
         var createdType: DeviceType? = null
         var createdDevice: Device? = null
-        val prior = findDevice(deviceName)
-        val device = prior ?: run {
+        val device = findDevice(deviceName) ?: run {
             val (typeId, newType) = resolveType(str(args, AiToolParams.DEVICE_TYPE))
             createdType = newType
             Device(
@@ -324,9 +357,15 @@ class DeviceToolHandler(
                 deviceRepository
                     .deleteEvent(event.id)
                     .flatMap {
+                        val remaining = deviceRepository.getEventsForDevice(device.id).first()
                         when {
-                            createdDevice != null -> deviceRepository.deleteDevice(device.id).flatMap { removeIfUnused(createdType) }
-                            else -> deviceRepository.updateDevice(prior!!)
+                            createdDevice != null && remaining.isEmpty() -> {
+                                deviceRepository.deleteDevice(device.id).flatMap { removeIfUnused(createdType) }
+                            }
+
+                            else -> {
+                                restoreLastReplaced(device.id, remaining, fallback = device.batteryLastReplaced)
+                            }
                         }
                     }.flatMap { if (wasMarked) needsBatteryRepository.setNeedsBattery(device.id, true) else Result.Success(Unit) }
             },
@@ -351,7 +390,20 @@ class DeviceToolHandler(
         return ToolOutcome(
             modelResult = "Success: Updated battery event (${changes.joinToString(", ")})",
             action = action(AiActionKind.UPDATED, "Updated the battery change for $name: ${changes.joinToString(", ")}"),
-            undo = { deviceRepository.updateEvent(prior).flatMap { updateDeviceLastReplacedUseCase(prior.deviceId).map { } } },
+            undo = {
+                val current = deviceRepository.getEventById(id).first()
+                if (current == null) {
+                    gone("That battery change no longer exists.")
+                } else {
+                    deviceRepository
+                        .updateEvent(
+                            current.copy(
+                                date = if (updated.date != prior.date) prior.date else current.date,
+                                notes = if (updated.notes != prior.notes) prior.notes else current.notes,
+                            ),
+                        ).flatMap { updateDeviceLastReplacedUseCase(prior.deviceId).map { } }
+                }
+            },
         )
     }
 
@@ -423,6 +475,23 @@ class DeviceToolHandler(
         deviceRepository.addDeviceType(type).getOrElse { return DEFAULT_TYPE_ID to null }
         return type.id to type
     }
+
+    /**
+     * Put a device's last-changed date back after an undo: the newest event that's left, or
+     * [fallback] with none, so a date that never came from an event isn't wiped to "never".
+     * Works from the current row, so a later edit to the device survives.
+     */
+    private suspend fun restoreLastReplaced(
+        deviceId: String,
+        remaining: List<BatteryEvent>,
+        fallback: Instant,
+    ): Result<Unit, DataError> {
+        val current = deviceRepository.getDeviceById(deviceId).first() ?: return Result.Success(Unit)
+        val date = remaining.maxOfOrNull { it.date } ?: fallback
+        return deviceRepository.updateDevice(current.copy(batteryLastReplaced = date, lastUpdated = Clock.System.now()))
+    }
+
+    private fun gone(message: String): Result<Unit, DataError> = Result.Error(DataError.Unknown(message, null))
 
     private suspend fun removeIfUnused(type: DeviceType?): Result<Unit, DataError> {
         if (type == null) return Result.Success(Unit)

@@ -13,8 +13,10 @@ to do, how the person sees it, and why.
   cleared.
 - **A card when a deletion is waiting.** Nothing is deleted until they tap the button that names
   the act. The card says what would be lost for good (a photo).
-- **"Try again"** under a failed reply, and a line saying nothing in their data changed.
-- **Suggested questions** when the chat is empty.
+- **"Try again"** under a failed reply that changed nothing. A turn that failed after making
+  changes keeps its rows and Undo, and offers no retry, because repeating it would make them twice.
+- **Suggested questions** when the chat is empty. A chip sends at once, so each one is a question
+  and never a change.
 
 ## The rules, and where they live
 
@@ -36,7 +38,7 @@ them. Each is enforced in code.
 |---|---|---|
 | `addDevice`, `addDeviceType` | at once | removes it (and a type it created, if nothing else uses it) |
 | `recordBatteryReplacement` | at once | removes the change, restores the device's date and mark, removes a device it created |
-| `updateDevice`, `updateDeviceType`, `updateBatteryEvent` | at once | restores the prior copy |
+| `updateDevice`, `updateDeviceType`, `updateBatteryEvent` | at once | restores only the fields it changed, so later edits survive |
 | `markNeedsBattery` | at once | restores the prior mark |
 | `getDeviceHistory` | at once | nothing to undo |
 | `deleteDevice`, `deleteDeviceType`, `deleteBatteryEvent` | after the person confirms | puts it back, with its events and mark |
@@ -60,5 +62,5 @@ gets the same tools and the same gate, but the situation is folded into each pro
 - The transcript lives in memory. Killing the app loses it, and the undo buttons with it.
 - Undo of a deletion restores the record, not a photo the server already removed.
 - Batch import and icon suggestion share the cloud engine's conversation with the chat.
-- The SwiftUI screen shows messages only: no action rows, no confirmation card. A deletion asked
-  for there waits forever, so the iOS app should not offer the delete tools until it has the card.
+- Chat is Android-only in practice: desktop and both iOS apps run `NoOpAiEngine`. The SwiftUI screen
+  shows messages only, so it needs action rows and the confirmation card before iOS gets a real engine.
