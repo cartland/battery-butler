@@ -1,66 +1,85 @@
 # AI chat
 
-The assistant is a chat panel over the person's own inventory. It can answer questions about
-their devices and make changes to them. This page is about the second part: what it is allowed
-to do, how the person sees it, and why.
+The assistant is a chat panel over the person's own inventory. It is built on one assumption: **the
+model may be wrong, confused or misbehaving, and the app must still be safe and make sense.** So the
+model can read and it can ask. It can't change anything, and it doesn't get to describe what changed.
 
 ## What the person sees
 
-- **Their words and the assistant's reply**, as bubbles.
-- **A row for each change the app made** under the reply: "Added Hall Alarm (Smoke Alarm,
-  Hall)", "Recorded a battery change for Hall Alarm on 2026-11-07". The app writes these from
-  what it stored, never from the model's description. Each row has **Undo** until the chat is
-  cleared.
-- **A card when a deletion is waiting.** Nothing is deleted until they tap the button that names
-  the act. The card says what would be lost for good (a photo).
-- **"Try again"** under a failed reply that changed nothing. A turn that failed after making
-  changes keeps its rows and Undo, and offers no retry, because repeating it would make them twice.
-- **Suggested questions** when the chat is empty. A chip sends at once, so each one is a question
-  and never a change.
+- **Their words and the assistant's reply**, as bubbles, with a quiet line saying what it looked at.
+- **A card for every change it wants to make**, listing each one in the app's own words from the
+  real data: "Update Hall Alarm: location Hall → Landing". Nothing has happened yet, and the card says
+  so. Approve, or Decline; a card of several changes can be trimmed with checkboxes. When everything
+  on it is a deletion the button says Delete.
+- **The same card then carries the result**: Done, or Some of this worked, with the reason beside
+  anything that failed. **Undo** is on the card and takes back every change on it.
+- **Try again** under a reply that failed without proposing anything.
+- **Suggested questions** when the chat is empty. A chip sends at once, so each is a question.
 
-## The rules, and where they live
+## The strategy
 
-The prompt describes these rules to the model, but none of them depends on the model following
-them. Each is enforced in code.
-
-| Rule | Where |
+| Principle | How it's enforced |
 |---|---|
-| A deletion never runs on the model's say-so. The call becomes an `AiPendingAction`; the person decides on a card. One at a time; a new message withdraws it. | `AiChatSession.defer` |
-| Everything else runs at once, because it can be undone. The way back is held by the session until used or the chat is cleared. | `DeviceToolHandler` returns `ToolOutcome.undo`; `AiChatSession.undo` |
-| The person sees what happened, in the app's words. | `ToolOutcome.action`, written by the tool from the stored data |
-| The model is told what it couldn't see: a confirmation, a refusal, an undo. The next message starts with a bracketed note, and the prompt says to trust those notes over its memory. | `AiChatSession.notes` |
-| The model sees the present. The whole inventory, with ids, ages and marks, is rebuilt before every model call and sent as part of the system instruction, never into the conversation. | `BuildAiContextUseCase`; `AiEngine.generateResponse(prompt, tools, situation)`; `LabsCloudAiEngine.requestBody` |
-| A type in use can't be deleted; a recorded change clears the device's mark and moves its date; an edited or deleted change recomputes that date. | `DeviceToolHandler`, mirroring the use cases the screens call |
+| Reads run, writes propose | `AiToolNames.READ_ONLY` goes to `DeviceReadTools`, a class with no write path. Anything else is previewed and carded. A tool nobody classified can't run. |
+| The card is the truth | `DeviceToolHandler.preview` writes the summary from stored data. A reply that proposes shows only the card, so "Done!" from the model can't contradict it. |
+| One decision, applied once | Approve, Decline and Undo are gated on the card's status under a mutex, so a double tap is a no-op. A new message withdraws a waiting card. |
+| No silent overwrite | A card remembers the row it was built from. If that row changed before approval, the item is left alone and says so. |
+| Every outcome is visible | Each item has its own outcome and, when it didn't work, a reason. One failure doesn't stop the rest. |
+| The model hears what it can't see | Approvals, declines and undos open the next message as bracketed notes, and survive a failed turn. |
+| A failed turn changed nothing | No tool can write during a turn, so the failure message is always true. |
+
+## What a bad model can and can't do
+
+| It does this | What happens |
+|---|---|
+| Says "done" without proposing | The reply gets a line: no changes were made. |
+| Says "done" while proposing | Only the card is shown. |
+| Invents an id, a bad date, a future date | The preview refuses it and tells the model. No card. |
+| Misspells a device | The card warns that it would add a new device. |
+| Proposes the same thing repeatedly | It appears once. |
+| Reads or proposes forever | Budgets: 12 reads and 50 changes a message. |
+| Leaks tool syntax into its reply | Stripped. If nothing's left, an honest error with Try again. |
+| Ignores the prompt entirely | Nothing changes. None of this depends on the prompt. |
+
+## Undo
+
+Undo takes a card back newest change first, so a card that adds a device and records its battery
+comes apart cleanly. The hard cases, and what happens:
+
+| Case | Behaviour |
+|---|---|
+| A field was edited again since | That item refuses and says so, rather than overwrite the newer edit. Other fields are never touched. |
+| The record was deleted since | Refused, and it isn't resurrected. |
+| A device added here has battery changes from a later card | Refused with the reason. Undo the later card first; the Undo stays available. |
+| A deleted device had a photo | The card warned before approval. Undo restores everything but the photo. |
+| Some items fail | The card says which and why, and Undo can be tried again for those. |
+
+Undos are held in memory, so they last until the chat is cleared or the app is killed.
 
 ## Tools
 
-| Tool | Runs | Undo |
-|---|---|---|
-| `addDevice`, `addDeviceType` | at once | removes it (and a type it created, if nothing else uses it) |
-| `recordBatteryReplacement` | at once | removes the change, restores the device's date and mark, removes a device it created |
-| `updateDevice`, `updateDeviceType`, `updateBatteryEvent` | at once | restores only the fields it changed, so later edits survive |
-| `markNeedsBattery` | at once | restores the prior mark |
-| `getDeviceHistory` | at once | nothing to undo |
-| `deleteDevice`, `deleteDeviceType`, `deleteBatteryEvent` | after the person confirms | puts it back, with its events and mark |
+Read-only, run immediately: `listDevices`, `getDevice`, `getDeviceHistory`, `listBatteryChanges`,
+`getBatteriesToBuy`. Proposing: `addDevice`, `addDeviceType`, `recordBatteryReplacement`,
+`updateDevice`, `updateDeviceType`, `updateBatteryEvent`, `markNeedsBattery`, `deleteDevice`,
+`deleteDeviceType`, `deleteBatteryEvent`.
 
-Names and parameters: `domain/.../ai/AiTools.kt`. Declarations and the prompt, sent with every
-relay request: `data-network/.../ai/LabsAiTools.kt`.
+To add a tool: a read goes in `DeviceReadTools` and `AiToolNames.READ_ONLY`. A write needs a
+`preview` case and a `run` case that returns an undo. Names are in `domain/.../ai/AiTools.kt`, and
+declarations and the prompt in `data-network/.../ai/LabsAiTools.kt`.
+
+The model sees the present: `BuildAiContextUseCase` rebuilds the inventory before every model call
+and sends it in the system instruction, never into the conversation.
 
 ## Where the model runs
 
-The cloud engine relays through the Labs backend (`POST /v1/battery-butler/ai/generate`), which
-holds the key and picks the model; the app owns the prompt, the tools and the conversation. The
-backend accepts a 20,000-character system instruction, which is why the situation cuts its list
-of recent changes first and offers `getDeviceHistory` instead. See the labs repo's
-`services/labs-backend/docs/BATTERY-BUTLER.md`.
-
-The on-device engine (Gemini Nano) has no conversation and runs at most one tool per message. It
-gets the same tools and the same gate, but the situation is folded into each prompt.
+The cloud engine relays through the Labs backend (`POST /v1/battery-butler/ai/generate`), which holds
+the key and picks the model; the app owns the prompt, the tools and the conversation. See the labs
+repo's `services/labs-backend/docs/BATTERY-BUTLER.md`. The on-device engine has no conversation and
+runs at most one tool per message, through the same gate.
 
 ## Known limits
 
-- The transcript lives in memory. Killing the app loses it, and the undo buttons with it.
-- Undo of a deletion restores the record, not a photo the server already removed.
+- The transcript and undos are in memory. Killing the app loses them.
 - Batch import and icon suggestion share the cloud engine's conversation with the chat.
 - Chat is Android-only in practice: desktop and both iOS apps run `NoOpAiEngine`. The SwiftUI screen
-  shows messages only, so it needs action rows and the confirmation card before iOS gets a real engine.
+  shows messages only, so it needs cards before iOS gets a real engine.

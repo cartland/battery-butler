@@ -35,6 +35,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -44,6 +45,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,13 +61,21 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.chriscartland.batterybutler.composeresources.composeStringResource
 import com.chriscartland.batterybutler.composeresources.generated.resources.Res
-import com.chriscartland.batterybutler.composeresources.generated.resources.ai_action_undo
-import com.chriscartland.batterybutler.composeresources.generated.resources.ai_action_undone
+import com.chriscartland.batterybutler.composeresources.generated.resources.ai_card_approve
+import com.chriscartland.batterybutler.composeresources.generated.resources.ai_card_decline
+import com.chriscartland.batterybutler.composeresources.generated.resources.ai_card_delete
+import com.chriscartland.batterybutler.composeresources.generated.resources.ai_card_status_applied
+import com.chriscartland.batterybutler.composeresources.generated.resources.ai_card_status_applying
+import com.chriscartland.batterybutler.composeresources.generated.resources.ai_card_status_declined
+import com.chriscartland.batterybutler.composeresources.generated.resources.ai_card_status_failed
+import com.chriscartland.batterybutler.composeresources.generated.resources.ai_card_status_partly_applied
+import com.chriscartland.batterybutler.composeresources.generated.resources.ai_card_status_partly_undone
+import com.chriscartland.batterybutler.composeresources.generated.resources.ai_card_status_pending
+import com.chriscartland.batterybutler.composeresources.generated.resources.ai_card_status_undoing
+import com.chriscartland.batterybutler.composeresources.generated.resources.ai_card_status_undone
+import com.chriscartland.batterybutler.composeresources.generated.resources.ai_card_status_withdrawn
+import com.chriscartland.batterybutler.composeresources.generated.resources.ai_card_undo
 import com.chriscartland.batterybutler.composeresources.generated.resources.ai_chat_empty_title
-import com.chriscartland.batterybutler.composeresources.generated.resources.ai_pending_cancel
-import com.chriscartland.batterybutler.composeresources.generated.resources.ai_pending_confirm
-import com.chriscartland.batterybutler.composeresources.generated.resources.ai_pending_title
-import com.chriscartland.batterybutler.composeresources.generated.resources.ai_pending_undoable
 import com.chriscartland.batterybutler.composeresources.generated.resources.ai_retry
 import com.chriscartland.batterybutler.composeresources.generated.resources.ai_suggestion_due
 import com.chriscartland.batterybutler.composeresources.generated.resources.ai_suggestion_never_recorded
@@ -73,18 +85,19 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.cont
 import com.chriscartland.batterybutler.presentationcore.theme.Padding
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
+import org.jetbrains.compose.resources.StringResource
 
 /**
  * The transcript, shared by the split-screen panel and the full-screen chat.
  *
  * What it shows beyond bubbles, and why:
- * - A row under a reply for each change the app made, with Undo. The assistant's words say
- *   what it meant to do; the row says what happened.
- * - A card when a deletion is waiting for the person. Nothing is deleted until they tap it, and
- *   it says what would be lost for good.
+ * - A card for every change the assistant wants to make. Nothing happens until the person approves
+ *   it, and the app wrote every word on it, so a confused model can't misdescribe a change. The
+ *   same card then carries the result, the reason for anything that failed, and Undo.
+ * - A quiet line saying what the assistant looked at.
  * - A failed reply ends in "Try again" instead of leaving a dead end.
  * - An empty chat offers a few things to ask, so the first message isn't a blank page. A chip
- *   sends at once, so every suggestion is a question: one tap must never change the inventory.
+ *   sends at once, so every suggestion is a question.
  */
 @Composable
 fun ChatTranscript(
@@ -92,16 +105,14 @@ fun ChatTranscript(
     isProcessing: Boolean,
     onSuggestion: (String) -> Unit,
     modifier: Modifier = Modifier,
-    pendingAction: ChatPendingAction? = null,
-    onConfirmPending: () -> Unit = {},
-    onCancelPending: () -> Unit = {},
-    onUndo: (String) -> Unit = {},
+    onApproveCard: (String, Set<String>) -> Unit = { _, _ -> },
+    onDeclineCard: (String) -> Unit = {},
+    onUndoCard: (String) -> Unit = {},
     onRetry: () -> Unit = {},
     contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
     listState: LazyListState = rememberLazyListState(),
 ) {
-    // Everything after the messages (the card, the typing dots) counts as one more row to scroll to.
-    val rowCount = messages.size + (if (pendingAction != null) 1 else 0) + (if (isProcessing) 1 else 0)
+    val rowCount = messages.size + (if (isProcessing) 1 else 0)
     LaunchedEffect(rowCount) {
         if (rowCount > 0) listState.animateScrollToItem(rowCount - 1)
     }
@@ -113,7 +124,7 @@ fun ChatTranscript(
             .collect { if (rowCount > 0) listState.animateScrollToItem(rowCount - 1) }
     }
 
-    if (messages.isEmpty() && pendingAction == null && !isProcessing) {
+    if (messages.isEmpty() && !isProcessing) {
         EmptyTranscript(onSuggestion = onSuggestion, modifier = modifier.fillMaxSize())
         return
     }
@@ -126,42 +137,36 @@ fun ChatTranscript(
     ) {
         items(messages, key = { it.id }) { message ->
             val isLast = message.id == messages.last().id
-            ChatEntry(
-                message = message,
-                onUndo = onUndo,
-                // Not after a turn that made changes: repeating it would make them twice.
-                onRetry = if (message.isError && isLast && !isProcessing && message.actions.isEmpty()) onRetry else null,
-            )
-        }
-        if (pendingAction != null) {
-            item(key = pendingAction.id) {
-                PendingActionCard(pendingAction, onConfirm = onConfirmPending, onCancel = onCancelPending)
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = if (message.isUser) Alignment.End else Alignment.Start,
+            ) {
+                if (message.text.isNotBlank()) ChatBubble(message)
+                if (message.lookups.isNotEmpty()) {
+                    Text(
+                        text = message.lookups.joinToString(" · "),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.outline,
+                        modifier = Modifier.padding(top = 2.dp).testTag("ai_lookups"),
+                    )
+                }
+                message.card?.let { card ->
+                    ProposalCard(
+                        card = card,
+                        onApprove = { leftOut -> onApproveCard(card.id, leftOut) },
+                        onDecline = { onDeclineCard(card.id) },
+                        onUndo = { onUndoCard(card.id) },
+                    )
+                }
+                if (message.isError && isLast && !isProcessing && message.card == null) {
+                    TextButton(onClick = onRetry, modifier = Modifier.testTag("ai_retry")) {
+                        Text(composeStringResource(Res.string.ai_retry))
+                    }
+                }
             }
         }
         if (isProcessing) {
             item(key = "thinking") { ThinkingIndicator() }
-        }
-    }
-}
-
-@Composable
-private fun ChatEntry(
-    message: ChatMessage,
-    onUndo: (String) -> Unit,
-    onRetry: (() -> Unit)?,
-) {
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = if (message.isUser) Alignment.End else Alignment.Start,
-    ) {
-        if (message.text.isNotBlank()) ChatBubble(message)
-        message.actions.forEach { action ->
-            ActionRow(action = action, onUndo = { onUndo(action.id) })
-        }
-        if (onRetry != null) {
-            TextButton(onClick = onRetry, modifier = Modifier.testTag("ai_retry")) {
-                Text(composeStringResource(Res.string.ai_retry))
-            }
         }
     }
 }
@@ -197,115 +202,161 @@ private fun ChatBubble(message: ChatMessage) {
     }
 }
 
-/** One change the app made: what, and the way back while there still is one. */
-@Composable
-private fun ActionRow(
-    action: ChatAction,
-    onUndo: () -> Unit,
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth(0.85f)
-            .padding(top = 2.dp)
-            .testTag("ai_action"),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Icon(
-            imageVector = action.kind.icon(),
-            contentDescription = null,
-            tint = if (action.undone) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(18.dp),
-        )
-        Text(
-            text = action.summary,
-            style = MaterialTheme.typography.bodySmall,
-            color = if (action.undone) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.onSurface,
-            textDecoration = if (action.undone) TextDecoration.LineThrough else null,
-            modifier = Modifier
-                .weight(1f)
-                .padding(start = Padding.small),
-        )
-        when {
-            action.undone -> Text(
-                text = composeStringResource(Res.string.ai_action_undone),
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.outline,
-            )
-
-            action.undoable -> TextButton(onClick = onUndo, modifier = Modifier.testTag("ai_undo")) {
-                Text(composeStringResource(Res.string.ai_action_undo))
-            }
-        }
-    }
-}
-
-private fun ChatActionKind.icon(): ImageVector =
-    when (this) {
-        ChatActionKind.ADDED -> Icons.Default.Add
-        ChatActionKind.UPDATED -> Icons.Default.Edit
-        ChatActionKind.RECORDED -> Icons.Default.Check
-        ChatActionKind.DELETED -> Icons.Default.Delete
-        ChatActionKind.MARKED -> Icons.Default.Warning
-        ChatActionKind.LOOKED_UP -> Icons.Default.Search
-    }
-
 /**
- * A deletion waiting for the person. The confirm button names the act, and the card says what
- * can't come back (a photo) or that it can be undone, so agreeing is a decision, not a reflex.
+ * Proposed changes and what became of them. The confirm button names the act when everything on
+ * the card is a deletion, and a batch can be trimmed item by item before approving.
  */
 @Composable
-private fun PendingActionCard(
-    pending: ChatPendingAction,
-    onConfirm: () -> Unit,
-    onCancel: () -> Unit,
+private fun ProposalCard(
+    card: ChatCard,
+    onApprove: (Set<String>) -> Unit,
+    onDecline: () -> Unit,
+    onUndo: () -> Unit,
 ) {
+    var leftOut by rememberSaveable(card.id) { mutableStateOf(listOf<String>()) }
+    val pending = card.status == ChatCardStatus.PENDING
+    val settled = card.status == ChatCardStatus.DECLINED || card.status == ChatCardStatus.WITHDRAWN
+    val allDeletes = card.items.all { it.kind == ChatChangeKind.DELETE }
+    val busy = card.status == ChatCardStatus.APPLYING || card.status == ChatCardStatus.UNDOING
     Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
+        colors = CardDefaults.cardColors(
+            containerColor = if (pending) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.surfaceVariant,
+        ),
         modifier = Modifier
             .fillMaxWidth()
-            .testTag("ai_pending"),
+            .padding(top = 4.dp)
+            .testTag("ai_card"),
     ) {
         Column(modifier = Modifier.padding(Padding.medium)) {
             Text(
-                text = composeStringResource(Res.string.ai_pending_title),
+                text = composeStringResource(card.status.label()),
                 style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onTertiaryContainer,
+                color = if (pending) MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.testTag("ai_card_status"),
             )
-            Text(
-                text = pending.summary,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onTertiaryContainer,
-                modifier = Modifier.padding(top = Padding.extraSmall),
-            )
-            Text(
-                text = pending.consequence ?: composeStringResource(Res.string.ai_pending_undoable),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onTertiaryContainer,
-                modifier = Modifier.padding(top = Padding.extraSmall),
-            )
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = Padding.small),
-                horizontalArrangement = Arrangement.spacedBy(Padding.small, Alignment.End),
-            ) {
-                OutlinedButton(onClick = onCancel, modifier = Modifier.testTag("ai_pending_cancel")) {
-                    Text(composeStringResource(Res.string.ai_pending_cancel))
-                }
-                Button(
-                    onClick = onConfirm,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.error,
-                        contentColor = MaterialTheme.colorScheme.onError,
-                    ),
-                    modifier = Modifier.testTag("ai_pending_confirm"),
+            card.items.forEach { item ->
+                CardItemRow(
+                    item = item,
+                    faded = settled || item.outcome == ChatItemOutcome.UNDONE || item.id in leftOut || item.outcome == ChatItemOutcome.LEFT_OUT,
+                    checked = (item.id !in leftOut).takeIf { pending && card.items.size > 1 },
+                    onCheckedChange = { include -> leftOut = if (include) leftOut - item.id else leftOut + item.id },
+                )
+            }
+            if (pending) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = Padding.small),
+                    horizontalArrangement = Arrangement.spacedBy(Padding.small, Alignment.End),
                 ) {
-                    Text(composeStringResource(Res.string.ai_pending_confirm))
+                    OutlinedButton(onClick = onDecline, modifier = Modifier.testTag("ai_card_decline")) {
+                        Text(composeStringResource(Res.string.ai_card_decline))
+                    }
+                    Button(
+                        onClick = { onApprove(leftOut.toSet()) },
+                        enabled = leftOut.size < card.items.size,
+                        colors = if (allDeletes) {
+                            ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.error,
+                                contentColor = MaterialTheme.colorScheme.onError,
+                            )
+                        } else {
+                            ButtonDefaults.buttonColors()
+                        },
+                        modifier = Modifier.testTag("ai_card_approve"),
+                    ) {
+                        Text(composeStringResource(if (allDeletes) Res.string.ai_card_delete else Res.string.ai_card_approve))
+                    }
+                }
+            }
+            if (card.canUndo && !busy) {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                    TextButton(onClick = onUndo, modifier = Modifier.testTag("ai_card_undo")) {
+                        Text(composeStringResource(Res.string.ai_card_undo))
+                    }
                 }
             }
         }
     }
 }
+
+@Composable
+private fun CardItemRow(
+    item: ChatCardItem,
+    faded: Boolean,
+    checked: Boolean?,
+    onCheckedChange: (Boolean) -> Unit,
+) {
+    val color = if (faded) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.onSurface
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = Padding.small)
+            .testTag("ai_card_item"),
+        verticalAlignment = Alignment.Top,
+    ) {
+        if (checked != null) {
+            Checkbox(
+                checked = checked,
+                onCheckedChange = onCheckedChange,
+                modifier = Modifier.size(24.dp).testTag("ai_card_item_check"),
+            )
+        } else {
+            Icon(
+                imageVector = item.kind.icon(),
+                contentDescription = null,
+                tint = if (faded) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(20.dp),
+            )
+        }
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = Padding.small),
+        ) {
+            Text(
+                text = item.summary,
+                style = MaterialTheme.typography.bodyMedium,
+                color = color,
+                textDecoration = if (item.outcome == ChatItemOutcome.UNDONE) TextDecoration.LineThrough else null,
+            )
+            item.warning?.takeIf { item.outcome == ChatItemOutcome.PROPOSED }?.let {
+                Text(text = it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+            }
+            item.reason?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.testTag("ai_card_item_reason"),
+                )
+            }
+        }
+    }
+}
+
+private fun ChatChangeKind.icon(): ImageVector =
+    when (this) {
+        ChatChangeKind.ADD -> Icons.Default.Add
+        ChatChangeKind.UPDATE -> Icons.Default.Edit
+        ChatChangeKind.RECORD -> Icons.Default.Check
+        ChatChangeKind.DELETE -> Icons.Default.Delete
+        ChatChangeKind.MARK -> Icons.Default.Warning
+    }
+
+private fun ChatCardStatus.label(): StringResource =
+    when (this) {
+        ChatCardStatus.PENDING -> Res.string.ai_card_status_pending
+        ChatCardStatus.APPLYING -> Res.string.ai_card_status_applying
+        ChatCardStatus.APPLIED -> Res.string.ai_card_status_applied
+        ChatCardStatus.PARTLY_APPLIED -> Res.string.ai_card_status_partly_applied
+        ChatCardStatus.FAILED -> Res.string.ai_card_status_failed
+        ChatCardStatus.DECLINED -> Res.string.ai_card_status_declined
+        ChatCardStatus.WITHDRAWN -> Res.string.ai_card_status_withdrawn
+        ChatCardStatus.UNDOING -> Res.string.ai_card_status_undoing
+        ChatCardStatus.UNDONE -> Res.string.ai_card_status_undone
+        ChatCardStatus.PARTLY_UNDONE -> Res.string.ai_card_status_partly_undone
+    }
 
 /** Three dots that take turns, in place of a reply that hasn't come yet. */
 @Composable

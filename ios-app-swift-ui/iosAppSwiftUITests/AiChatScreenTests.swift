@@ -31,7 +31,8 @@ final class AiChatScreenTests: XCTestCase {
                 isPartial: false,
                 hints: [:],
                 isError: false,
-                actions: []
+                cardId: nil,
+                lookups: []
             ),
             AiMessage(
                 id: "m2",
@@ -40,7 +41,8 @@ final class AiChatScreenTests: XCTestCase {
                 isPartial: false,
                 hints: [:],
                 isError: false,
-                actions: []
+                cardId: nil,
+                lookups: []
             )
         ]
 

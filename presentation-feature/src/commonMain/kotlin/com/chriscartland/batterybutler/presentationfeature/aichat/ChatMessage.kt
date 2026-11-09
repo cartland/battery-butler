@@ -1,40 +1,59 @@
 package com.chriscartland.batterybutler.presentationfeature.aichat
 
-/**
- * UI model for one entry in the chat transcript.
- *
- * A message with no text and some [actions] is an entry the app wrote itself: a confirmed
- * deletion, for instance. It renders as the action rows alone.
- */
+/** UI model for one entry in the chat transcript. */
 data class ChatMessage(
     val id: String,
     val text: String,
     val isUser: Boolean,
     val isError: Boolean = false,
-    val actions: List<ChatAction> = emptyList(),
+    val card: ChatCard? = null,
+    val lookups: List<String> = emptyList(),
 )
 
-/** One thing the app did for the assistant, as the app describes it. */
-data class ChatAction(
+/** Changes the assistant proposed, with their outcome once the person has decided. */
+data class ChatCard(
     val id: String,
-    val kind: ChatActionKind,
-    val summary: String,
-    val undoable: Boolean,
-    val undone: Boolean = false,
+    val items: List<ChatCardItem>,
+    val status: ChatCardStatus,
+    val canUndo: Boolean = false,
 )
 
-enum class ChatActionKind {
-    ADDED,
-    UPDATED,
-    RECORDED,
-    DELETED,
-    MARKED,
-    LOOKED_UP,
+data class ChatCardItem(
+    val id: String,
+    val kind: ChatChangeKind,
+    val summary: String,
+    val warning: String? = null,
+    val outcome: ChatItemOutcome = ChatItemOutcome.PROPOSED,
+    val reason: String? = null,
+)
+
+enum class ChatChangeKind {
+    ADD,
+    UPDATE,
+    RECORD,
+    DELETE,
+    MARK,
 }
 
-/** A deletion the assistant asked for, waiting on the person. */
-data class ChatPendingAction(
-    val id: String,
-    val summary: String,
-    val consequence: String? = null,
-)
+enum class ChatItemOutcome {
+    PROPOSED,
+    LEFT_OUT,
+    APPLIED,
+    FAILED,
+    CHANGED_SINCE,
+    UNDONE,
+    UNDO_FAILED,
+}
+
+enum class ChatCardStatus {
+    PENDING,
+    APPLYING,
+    APPLIED,
+    PARTLY_APPLIED,
+    FAILED,
+    DECLINED,
+    WITHDRAWN,
+    UNDOING,
+    UNDONE,
+    PARTLY_UNDONE,
+}

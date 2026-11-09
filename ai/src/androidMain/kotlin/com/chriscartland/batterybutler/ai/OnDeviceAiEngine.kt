@@ -108,7 +108,7 @@ class OnDeviceAiEngine(
 
                     To call a tool, ONLY output JSON: { "tool": "toolName", "args": { ... } }
                     If no tool is needed, respond normally.
-                    BEFORE deleting anything, tell the user what you will delete and ask for confirmation.
+                    Changes are shown to the user on a card to approve. Never say a change was made.
                     """.trimIndent()
                 val fullPrompt = "$systemPrompt\n\nUser: $prompt"
 

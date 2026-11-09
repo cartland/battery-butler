@@ -33,7 +33,6 @@ import com.chriscartland.batterybutler.composeapp.feature.adddevice.AddDeviceScr
 import com.chriscartland.batterybutler.composeapp.feature.adddevicetype.AddDeviceTypeScreen
 import com.chriscartland.batterybutler.composeapp.feature.aichat.AiChatScreen
 import com.chriscartland.batterybutler.composeapp.feature.aichat.toChatMessage
-import com.chriscartland.batterybutler.composeapp.feature.aichat.toChatPendingAction
 import com.chriscartland.batterybutler.composeapp.feature.devicedetail.DeviceDetailScreen
 import com.chriscartland.batterybutler.composeapp.feature.devicetypes.DeviceTypeDetailScreen
 import com.chriscartland.batterybutler.composeapp.feature.devicetypes.EditDeviceTypeScreen
@@ -160,12 +159,12 @@ fun App(
             val aiViewModel: AiChatViewModel = viewModel { component.aiChatViewModel }
             val aiMessages by aiViewModel.messages.collectAsStateWithLifecycle()
             val isAiProcessing by aiViewModel.isProcessing.collectAsStateWithLifecycle()
-            val pendingAiAction by aiViewModel.pendingAction.collectAsStateWithLifecycle()
+            val aiCards by aiViewModel.cards.collectAsStateWithLifecycle()
             var isAiExpanded by rememberSaveable { mutableStateOf(false) }
             var tabTransitionForward by rememberSaveable { mutableStateOf(true) }
             var isTabTransition by rememberSaveable { mutableStateOf(false) }
 
-            val aiUiMessages = aiMessages.map { it.toChatMessage() }
+            val aiUiMessages = aiMessages.map { it.toChatMessage(aiCards) }
 
             // Derive shell visibility and current tab from the unified stack
             val topScreen = backStack.lastOrNull()
@@ -252,10 +251,9 @@ fun App(
                         onAiExpandedChange = { isAiExpanded = it },
                         onSendAiMessage = onSendAiMessage,
                         onClearAiChat = aiViewModel::clearChat,
-                        pendingAiAction = pendingAiAction?.toChatPendingAction(),
-                        onConfirmAiAction = aiViewModel::confirmPendingAction,
-                        onCancelAiAction = aiViewModel::cancelPendingAction,
-                        onUndoAiAction = aiViewModel::undoAction,
+                        onApproveAiCard = aiViewModel::approveCard,
+                        onDeclineAiCard = aiViewModel::declineCard,
+                        onUndoAiCard = aiViewModel::undoCard,
                         onRetryAi = aiViewModel::retryLastMessage,
                     ) { contentModifier, bottomContentPadding ->
 

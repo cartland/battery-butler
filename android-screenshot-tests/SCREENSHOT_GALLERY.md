@@ -2,10 +2,11 @@
 
 # Screenshot Gallery
 
-Generated on Sun Sep 20 05:31:47 UTC 2026
+Generated on Mon Nov  9 08:45:22 PST 2026
 
 ## Table of Contents
 - [AddDeviceScreenshotTestKt](#adddevicescreenshottestkt)
+- [AiCardScreenshotTestKt](#aicardscreenshottestkt)
 - [AiOverlayScreenshotTestKt](#aioverlayscreenshottestkt)
 - [ComponentsScreenshotTestKt](#componentsscreenshottestkt)
 - [CounterScreenshotTestKt](#counterscreenshottestkt)
@@ -35,6 +36,14 @@ Generated on Sun Sep 20 05:31:47 UTC 2026
 
 ### AddDeviceFilledPreviewTest_Light_fc5b723e_0
 <img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/AddDeviceScreenshotTestKt/AddDeviceFilledPreviewTest_Light_fc5b723e_0.png" width="300" />
+
+## AiCardScreenshotTestKt
+
+### AiCardStatesPreviewTest_Dark_101f1d7e_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/AiCardScreenshotTestKt/AiCardStatesPreviewTest_Dark_101f1d7e_0.png" width="300" />
+
+### AiCardStatesPreviewTest_Light_1a896405_0
+<img src="src/screenshotTestDebug/reference/com/chriscartland/batterybutler/androidscreenshottests/AiCardScreenshotTestKt/AiCardStatesPreviewTest_Light_1a896405_0.png" width="300" />
 
 ## AiOverlayScreenshotTestKt
 

@@ -86,7 +86,6 @@ import com.chriscartland.batterybutler.presentationcore.theme.LocalAiAvailable
 import com.chriscartland.batterybutler.presentationcore.theme.Padding
 import com.chriscartland.batterybutler.presentationfeature.aichat.AiTabContent
 import com.chriscartland.batterybutler.presentationfeature.aichat.ChatMessage
-import com.chriscartland.batterybutler.presentationfeature.aichat.ChatPendingAction
 import com.chriscartland.batterybutler.presentationfeature.devicetypes.DeviceTypeListContent
 import com.chriscartland.batterybutler.presentationfeature.history.HistoryListContent
 import com.chriscartland.batterybutler.presentationfeature.home.HomeScreenContent
@@ -141,10 +140,9 @@ fun MainScreenShell(
     onClearAiChat: () -> Unit,
     modifier: Modifier = Modifier,
     showChrome: Boolean = true,
-    pendingAiAction: ChatPendingAction? = null,
-    onConfirmAiAction: () -> Unit = {},
-    onCancelAiAction: () -> Unit = {},
-    onUndoAiAction: (String) -> Unit = {},
+    onApproveAiCard: (String, Set<String>) -> Unit = { _, _ -> },
+    onDeclineAiCard: (String) -> Unit = {},
+    onUndoAiCard: (String) -> Unit = {},
     onRetryAi: () -> Unit = {},
     imeVisible: Boolean = WindowInsets.ime.getBottom(LocalDensity.current) > 0,
     content: @Composable (Modifier, PaddingValues) -> Unit,
