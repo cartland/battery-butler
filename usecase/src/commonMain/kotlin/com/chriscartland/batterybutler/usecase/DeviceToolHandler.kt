@@ -91,33 +91,6 @@ class DeviceToolHandler(
             ToolPreview.Refused("Error: $name failed: ${e.message}")
         }
 
-    /** The current state of the row [preview] named as this change's basis, to compare at apply time. */
-    suspend fun currentBasis(
-        name: String,
-        args: Map<String, Any?>,
-    ): String? {
-        val id = str(args, AiToolParams.ID) ?: return null
-        return when (name) {
-            AiToolNames.UPDATE_DEVICE, AiToolNames.DELETE_DEVICE, AiToolNames.MARK_NEEDS_BATTERY -> {
-                deviceRepository.getDeviceById(id).first()?.basis()
-            }
-
-            AiToolNames.UPDATE_DEVICE_TYPE, AiToolNames.DELETE_DEVICE_TYPE -> {
-                deviceRepository.getDeviceTypeById(id).first()?.toString()
-            }
-
-            AiToolNames.UPDATE_BATTERY_EVENT, AiToolNames.DELETE_BATTERY_EVENT -> {
-                deviceRepository.getEventById(id).first()?.toString()
-            }
-
-            else -> {
-                null
-            }
-        }
-    }
-
-    private fun Device.basis(): String = copy(lastUpdated = Instant.fromEpochMilliseconds(0)).toString()
-
     // ─── previews ───────────────────────────────────────────────────────────────
 
     private suspend fun previewAddDevice(args: Map<String, Any?>): ToolPreview {
@@ -172,7 +145,7 @@ class DeviceToolHandler(
             if (newType != null && !newType.equals(currentType, ignoreCase = true)) add("type ${currentType ?: "none"} → $newType")
         }
         if (changes.isEmpty()) return ToolPreview.Refused("Success: Nothing to change on '${device.name}'")
-        return ToolPreview.Ready(AiChangeKind.UPDATE, "Update ${device.name}: ${changes.joinToString(", ")}", newTypeWarning(newType), id, device.basis())
+        return ToolPreview.Ready(AiChangeKind.UPDATE, "Update ${device.name}: ${changes.joinToString(", ")}", newTypeWarning(newType))
     }
 
     private suspend fun previewDeleteDevice(args: Map<String, Any?>): ToolPreview {
@@ -184,8 +157,6 @@ class DeviceToolHandler(
             kind = AiChangeKind.DELETE,
             summary = "Delete ${device.name}${eventsClause(events.size)}",
             warning = if (device.imageEtag != null) "Undo can't bring back its photo." else null,
-            target = id,
-            basis = device.basis(),
         )
     }
 
@@ -196,7 +167,7 @@ class DeviceToolHandler(
         val updated = updatedType(type, args)
         val changes = typeChanges(type, updated)
         if (changes.isEmpty()) return ToolPreview.Refused("Success: Nothing to change on type '${type.name}'")
-        return ToolPreview.Ready(AiChangeKind.UPDATE, "Update the type ${type.name}: ${changes.joinToString(", ")}", target = id, basis = type.toString())
+        return ToolPreview.Ready(AiChangeKind.UPDATE, "Update the type ${type.name}: ${changes.joinToString(", ")}")
     }
 
     private suspend fun previewDeleteDeviceType(args: Map<String, Any?>): ToolPreview {
@@ -205,7 +176,7 @@ class DeviceToolHandler(
             ?: return ToolPreview.Refused("Error: Device type not found with id '$id'")
         val inUse = deviceRepository.getAllDevices().first().count { it.typeId == id }
         if (inUse > 0) return ToolPreview.Refused("Error: Cannot delete type '${type.name}' — $inUse device(s) still use it. Reassign them first.")
-        return ToolPreview.Ready(AiChangeKind.DELETE, "Delete the type ${type.name}", target = id, basis = type.toString())
+        return ToolPreview.Ready(AiChangeKind.DELETE, "Delete the type ${type.name}")
     }
 
     private suspend fun previewUpdateEvent(args: Map<String, Any?>): ToolPreview {
@@ -220,7 +191,7 @@ class DeviceToolHandler(
         }
         if (changes.isEmpty()) return ToolPreview.Refused("Success: Nothing to change on that battery change")
         val name = deviceRepository.getDeviceById(event.deviceId).first()?.name ?: "a device"
-        return ToolPreview.Ready(AiChangeKind.UPDATE, "Update the battery change for $name: ${changes.joinToString(", ")}", target = id, basis = event.toString())
+        return ToolPreview.Ready(AiChangeKind.UPDATE, "Update the battery change for $name: ${changes.joinToString(", ")}")
     }
 
     private suspend fun previewDeleteEvent(args: Map<String, Any?>): ToolPreview {
@@ -228,7 +199,7 @@ class DeviceToolHandler(
         val event = deviceRepository.getEventById(id).first()
             ?: return ToolPreview.Refused("Error: Battery event not found with id '$id'")
         val name = deviceRepository.getDeviceById(event.deviceId).first()?.name ?: "a device"
-        return ToolPreview.Ready(AiChangeKind.DELETE, "Delete the battery change for $name on ${dateOf(event.date)}", target = id, basis = event.toString())
+        return ToolPreview.Ready(AiChangeKind.DELETE, "Delete the battery change for $name on ${dateOf(event.date)}")
     }
 
     private suspend fun previewMark(args: Map<String, Any?>): ToolPreview {
@@ -238,7 +209,7 @@ class DeviceToolHandler(
         val wanted = parseBool(args[AiToolParams.NEEDS_BATTERY]) ?: true
         if (isMarked(id) == wanted) return ToolPreview.Refused("Success: '${device.name}' is already ${if (wanted) "marked" else "unmarked"}")
         val summary = if (wanted) "Mark ${device.name} as needing a battery" else "Clear the needs-a-battery mark on ${device.name}"
-        return ToolPreview.Ready(AiChangeKind.MARK, summary, target = id, basis = device.basis())
+        return ToolPreview.Ready(AiChangeKind.MARK, summary)
     }
 
     private suspend fun newTypeWarning(type: String?): String? = if (type != null && findType(type) == null) "This also creates the type $type." else null

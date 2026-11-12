@@ -17,13 +17,10 @@ class ToolOutcome(
 
 /** What a change would do, worked out from the real data without writing anything. */
 sealed interface ToolPreview {
-    /** [target] and [basis] name the row it depends on, to notice if that row changes first. */
     class Ready(
         val kind: AiChangeKind,
         val summary: String,
         val warning: String? = null,
-        val target: String? = null,
-        val basis: String? = null,
     ) : ToolPreview
 
     /** Nothing to put on a card: bad arguments, an unknown id, or no actual change. */

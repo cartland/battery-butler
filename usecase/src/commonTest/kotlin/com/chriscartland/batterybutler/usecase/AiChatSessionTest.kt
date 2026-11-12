@@ -338,6 +338,45 @@ class AiChatSessionTest {
         }
 
     @Test
+    fun `a background sync rewriting a row the same way doesn't make the card stale`() =
+        runTest {
+            val h = Harness()
+            h.repo.setEvents(listOf(TestDevices.createBatteryEvent(id = "e1", deviceId = "d1", batteryType = "9V", notes = "old")))
+            val card = h.proposed(AiToolNames.UPDATE_BATTERY_EVENT to mapOf(AiToolParams.ID to "e1", AiToolParams.NOTES to "fresh pack"))
+            // What a snapshot does: the wire has no battery type, so the row comes back without one.
+            h.repo.setEvents(listOf(TestDevices.createBatteryEvent(id = "e1", deviceId = "d1", batteryType = null, notes = "old")))
+            h.repo.setDevices(listOf(TestDevices.createDevice(id = "d1", name = "Hall Alarm", location = "Hall", lastUpdated = kotlin.time.Instant.fromEpochMilliseconds(99))))
+            h.session.approve(card.id)
+            assertEquals(
+                AiCardStatus.APPLIED,
+                h.card(card.id).status,
+                h
+                    .card(card.id)
+                    .items
+                    .single()
+                    .reason,
+            )
+            assertEquals(
+                "fresh pack",
+                h.repo.events
+                    .single()
+                    .notes,
+            )
+        }
+
+    @Test
+    fun `a change that's already been made elsewhere says so`() =
+        runTest {
+            val h = Harness()
+            val card = h.proposed(moveHall)
+            h.repo.setDevices(listOf(TestDevices.createDevice(id = "d1", name = "Hall Alarm", location = "Landing")))
+            h.session.approve(card.id)
+            val item = h.card(card.id).items.single()
+            assertEquals(AiItemOutcome.CHANGED_SINCE, item.outcome)
+            assertTrue(item.reason!!.contains("Nothing to change"), item.reason)
+        }
+
+    @Test
     fun `two changes to one device on one card don't conflict with each other`() =
         runTest {
             val h = Harness()
@@ -367,7 +406,7 @@ class AiChatSessionTest {
             h.session.approve(card.id)
             val after = h.card(card.id)
             assertEquals(AiCardStatus.PARTLY_APPLIED, after.status)
-            assertEquals(AiItemOutcome.FAILED, after.items[0].outcome)
+            assertEquals(AiItemOutcome.CHANGED_SINCE, after.items[0].outcome)
             assertTrue(after.items[0].reason!!.contains("already exists"))
             assertEquals(AiItemOutcome.APPLIED, after.items[1].outcome)
         }
