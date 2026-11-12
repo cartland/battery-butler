@@ -49,11 +49,11 @@ fun AiChatContent(
     onSendMessage: (String) -> Unit,
     onClearChat: () -> Unit,
     onBack: () -> Unit,
+    onApproveCard: (String, Set<String>) -> Unit,
+    onDeclineCard: (String) -> Unit,
+    onUndoCard: (String) -> Unit,
+    onRetry: () -> Unit,
     modifier: Modifier = Modifier,
-    onApproveCard: (String, Set<String>) -> Unit = { _, _ -> },
-    onDeclineCard: (String) -> Unit = {},
-    onUndoCard: (String) -> Unit = {},
-    onRetry: () -> Unit = {},
 ) {
     var inputText by rememberSaveable { mutableStateOf("") }
 
@@ -159,6 +159,10 @@ private fun ChatInputBar(
 fun AiChatContentPreview() {
     BatteryButlerTheme {
         AiChatContent(
+            onApproveCard = { _, _ -> },
+            onDeclineCard = {},
+            onUndoCard = {},
+            onRetry = {},
             messages = listOf(
                 ChatMessage("1", "Add a smoke detector in the kitchen", isUser = true),
                 ChatMessage(
@@ -187,6 +191,10 @@ fun AiChatContentPreview() {
 fun AiChatContentEmptyPreview() {
     BatteryButlerTheme {
         AiChatContent(
+            onApproveCard = { _, _ -> },
+            onDeclineCard = {},
+            onUndoCard = {},
+            onRetry = {},
             messages = emptyList(),
             isProcessing = false,
             onSendMessage = {},

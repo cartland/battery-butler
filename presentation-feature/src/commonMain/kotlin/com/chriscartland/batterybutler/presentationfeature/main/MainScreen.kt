@@ -138,12 +138,12 @@ fun MainScreenShell(
     onAiExpandedChange: (Boolean) -> Unit,
     onSendAiMessage: (String) -> Unit,
     onClearAiChat: () -> Unit,
+    onApproveAiCard: (String, Set<String>) -> Unit,
+    onDeclineAiCard: (String) -> Unit,
+    onUndoAiCard: (String) -> Unit,
+    onRetryAi: () -> Unit,
     modifier: Modifier = Modifier,
     showChrome: Boolean = true,
-    onApproveAiCard: (String, Set<String>) -> Unit = { _, _ -> },
-    onDeclineAiCard: (String) -> Unit = {},
-    onUndoAiCard: (String) -> Unit = {},
-    onRetryAi: () -> Unit = {},
     imeVisible: Boolean = WindowInsets.ime.getBottom(LocalDensity.current) > 0,
     content: @Composable (Modifier, PaddingValues) -> Unit,
 ) {
@@ -377,6 +377,10 @@ fun MainScreenShell(
                                     onSendMessage = onSendAiMessage,
                                     modifier = Modifier.weight(1f),
                                     showInput = false,
+                                    onApproveCard = onApproveAiCard,
+                                    onDeclineCard = onDeclineAiCard,
+                                    onUndoCard = onUndoAiCard,
+                                    onRetry = onRetryAi,
                                 )
                             }
                         }
@@ -441,6 +445,11 @@ fun DevicesScreen(
         onAiExpandedChange = onAiExpandedChange,
         onSendAiMessage = onSendAiMessage,
         onClearAiChat = onClearAiChat,
+        // Previews only: nothing here proposes changes.
+        onApproveAiCard = { _, _ -> },
+        onDeclineAiCard = {},
+        onUndoAiCard = {},
+        onRetryAi = {},
         imeVisible = imeVisible,
     ) { contentModifier, bottomContentPadding ->
         HomeScreenContent(
@@ -491,6 +500,11 @@ fun TypesScreen(
         onAiExpandedChange = onAiExpandedChange,
         onSendAiMessage = onSendAiMessage,
         onClearAiChat = onClearAiChat,
+        // Previews only: nothing here proposes changes.
+        onApproveAiCard = { _, _ -> },
+        onDeclineAiCard = {},
+        onUndoAiCard = {},
+        onRetryAi = {},
     ) { contentModifier, bottomContentPadding ->
         DeviceTypeListContent(
             state = state,
@@ -537,6 +551,11 @@ fun HistoryScreen(
         onAiExpandedChange = onAiExpandedChange,
         onSendAiMessage = onSendAiMessage,
         onClearAiChat = onClearAiChat,
+        // Previews only: nothing here proposes changes.
+        onApproveAiCard = { _, _ -> },
+        onDeclineAiCard = {},
+        onUndoAiCard = {},
+        onRetryAi = {},
     ) { contentModifier, bottomContentPadding ->
         HistoryListContent(
             state = state,
