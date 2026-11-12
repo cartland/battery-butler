@@ -109,6 +109,34 @@ class AiChatSessionTest {
             )
         }
 
+    @Test
+    fun `steps show what the assistant has done so far and clear when it answers`() =
+        runTest {
+            val h = Harness()
+            var midTurn = emptyList<String>()
+            h.engine.afterToolCalls = { midTurn = h.session.steps.value }
+            h.script(AiToolNames.GET_DEVICE_HISTORY to mapOf(AiToolParams.ID to "d1"), addPorch)
+            h.ask()
+            assertEquals(listOf("Looked up the history of Hall Alarm", "Drafted: Add Porch Light"), midTurn)
+            assertTrue(
+                h.session.steps.value
+                    .isEmpty(),
+            )
+        }
+
+    @Test
+    fun `steps clear when a turn fails`() =
+        runTest {
+            val h = Harness()
+            h.script(addPorch)
+            h.engine.errorAfterToolCalls = IllegalStateException("boom")
+            h.ask()
+            assertTrue(
+                h.session.steps.value
+                    .isEmpty(),
+            )
+        }
+
     // ─── a bad model ────────────────────────────────────────────────────────────
 
     @Test

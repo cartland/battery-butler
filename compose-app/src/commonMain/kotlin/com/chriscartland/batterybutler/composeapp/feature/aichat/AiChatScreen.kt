@@ -16,10 +16,12 @@ fun AiChatScreen(
     val messages by viewModel.messages.collectAsStateWithLifecycle()
     val isProcessing by viewModel.isProcessing.collectAsStateWithLifecycle()
     val cards by viewModel.cards.collectAsStateWithLifecycle()
+    val steps by viewModel.steps.collectAsStateWithLifecycle()
 
     AiChatContent(
         messages = messages.map { it.toChatMessage(cards) },
         isProcessing = isProcessing,
+        steps = steps,
         onSendMessage = viewModel::sendMessage,
         onClearChat = viewModel::clearChat,
         onBack = onBack,

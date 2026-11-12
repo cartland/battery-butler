@@ -57,6 +57,9 @@ class FakeAiEngine : AiEngine {
     var scriptedToolCalls: List<Pair<String, Map<String, Any?>>> = emptyList()
     val recordedToolResults = mutableListOf<String>()
 
+    /** Called once [scriptedToolCalls] have run, before answering: the middle of a turn. */
+    var afterToolCalls: (() -> Unit)? = null
+
     /** Thrown after [scriptedToolCalls] have run, like a failure partway through a turn. */
     var errorAfterToolCalls: Exception? = null
 
@@ -82,6 +85,7 @@ class FakeAiEngine : AiEngine {
         for ((name, args) in scriptedToolCalls) {
             recordedToolResults += toolHandler?.execute(name, args) ?: "no handler"
         }
+        afterToolCalls?.invoke()
         errorAfterToolCalls?.let { throw it }
         errorReplyText?.let {
             return flowOf(AiMessage(id = "fake-error-${recordedPrompts.size}", role = AiRole.MODEL, text = it, isError = true))

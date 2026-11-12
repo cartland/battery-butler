@@ -171,6 +171,7 @@
     <string name="ai_card_status_undone">Undone</string>
     <string name="ai_card_status_partly_undone">Some of this couldn't be undone</string>
     <string name="ai_retry">Try again</string>
+    <string name="ai_thinking">Thinking…</string>
     <string name="content_desc_ai_thinking">The assistant is thinking</string>
     <string name="content_desc_send_message">Send message</string>
     <string name="placeholder_type_message">Type a message...</string>

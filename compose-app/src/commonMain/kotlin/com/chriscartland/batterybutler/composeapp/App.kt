@@ -160,6 +160,7 @@ fun App(
             val aiMessages by aiViewModel.messages.collectAsStateWithLifecycle()
             val isAiProcessing by aiViewModel.isProcessing.collectAsStateWithLifecycle()
             val aiCards by aiViewModel.cards.collectAsStateWithLifecycle()
+            val aiSteps by aiViewModel.steps.collectAsStateWithLifecycle()
             var isAiExpanded by rememberSaveable { mutableStateOf(false) }
             var tabTransitionForward by rememberSaveable { mutableStateOf(true) }
             var isTabTransition by rememberSaveable { mutableStateOf(false) }
@@ -247,6 +248,7 @@ fun App(
                         },
                         aiMessages = aiUiMessages,
                         isAiProcessing = isAiProcessing,
+                        aiSteps = aiSteps,
                         isAiExpanded = isAiExpanded,
                         onAiExpandedChange = { isAiExpanded = it },
                         onSendAiMessage = onSendAiMessage,

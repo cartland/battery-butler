@@ -33,12 +33,19 @@ class AiChatViewModel(
     private val _cards = MutableStateFlow<Map<String, AiCard>>(viewModelScope, emptyMap())
     val cards: StateFlow<Map<String, AiCard>> = _cards.asStateFlow()
 
+    /** What the assistant has done so far in the reply it's working on, for the thinking row. */
+    private val _steps = MutableStateFlow<List<String>>(viewModelScope, emptyList())
+    val steps: StateFlow<List<String>> = _steps.asStateFlow()
+
     private var currentJob: Job? = null
     private var lastSend: Pair<String, Map<String, String>>? = null
 
     init {
         viewModelScope.coroutineScope.launch {
             session.cards.collect { _cards.value = it }
+        }
+        viewModelScope.coroutineScope.launch {
+            session.steps.collect { _steps.value = it }
         }
     }
 
