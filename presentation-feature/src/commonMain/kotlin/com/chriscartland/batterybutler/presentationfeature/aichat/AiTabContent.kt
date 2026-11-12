@@ -45,6 +45,7 @@ import com.chriscartland.batterybutler.presentationcore.theme.Padding
 fun AiTabContent(
     messages: List<ChatMessage>,
     isProcessing: Boolean,
+    steps: List<String>,
     onSendMessage: (String) -> Unit,
     onApproveCard: (String, Set<String>) -> Unit,
     onDeclineCard: (String) -> Unit,
@@ -59,6 +60,7 @@ fun AiTabContent(
         ChatTranscript(
             messages = messages,
             isProcessing = isProcessing,
+            steps = steps,
             onSuggestion = onSendMessage,
             onApproveCard = onApproveCard,
             onDeclineCard = onDeclineCard,
@@ -148,6 +150,7 @@ fun AiTabContentPreview() {
                 ),
             ),
             isProcessing = false,
+            steps = emptyList(),
             onSendMessage = {},
         )
     }
@@ -223,6 +226,16 @@ fun AiTabContentCardStatesPreview() {
                     ),
                 ),
                 ChatMessage(
+                    id = "m7",
+                    text = "",
+                    isUser = false,
+                    card = ChatCard(
+                        id = "c7",
+                        items = listOf(ChatCardItem("j", ChatChangeKind.MARK, "Mark Gate Sensor as needing a battery")),
+                        status = ChatCardStatus.APPLYING,
+                    ),
+                ),
+                ChatMessage(
                     id = "m6",
                     text = "",
                     isUser = false,
@@ -233,7 +246,8 @@ fun AiTabContentCardStatesPreview() {
                     ),
                 ),
             ),
-            isProcessing = false,
+            isProcessing = true,
+            steps = listOf("Looked up the history of Hall Alarm", "Drafted: Record a battery change for Hall Alarm on 2026-11-12"),
             onSendMessage = {},
             showInput = false,
         )
@@ -250,6 +264,7 @@ fun AiTabContentEmptyPreview() {
             onRetry = {},
             messages = emptyList(),
             isProcessing = false,
+            steps = emptyList(),
             onSendMessage = {},
         )
     }

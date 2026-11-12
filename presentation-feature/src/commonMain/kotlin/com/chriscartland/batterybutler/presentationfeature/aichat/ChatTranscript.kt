@@ -1,11 +1,13 @@
 package com.chriscartland.batterybutler.presentationfeature.aichat
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,13 +24,18 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
@@ -37,6 +44,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SuggestionChip
@@ -46,6 +54,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -54,6 +63,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -81,6 +92,7 @@ import com.chriscartland.batterybutler.composeresources.generated.resources.ai_s
 import com.chriscartland.batterybutler.composeresources.generated.resources.ai_suggestion_never_recorded
 import com.chriscartland.batterybutler.composeresources.generated.resources.ai_suggestion_recent
 import com.chriscartland.batterybutler.composeresources.generated.resources.ai_suggestion_shopping
+import com.chriscartland.batterybutler.composeresources.generated.resources.ai_thinking
 import com.chriscartland.batterybutler.composeresources.generated.resources.content_desc_ai_thinking
 import com.chriscartland.batterybutler.presentationcore.theme.Padding
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -103,6 +115,7 @@ import org.jetbrains.compose.resources.StringResource
 fun ChatTranscript(
     messages: List<ChatMessage>,
     isProcessing: Boolean,
+    steps: List<String>,
     onSuggestion: (String) -> Unit,
     onApproveCard: (String, Set<String>) -> Unit,
     onDeclineCard: (String) -> Unit,
@@ -113,7 +126,7 @@ fun ChatTranscript(
     listState: LazyListState = rememberLazyListState(),
 ) {
     val rowCount = messages.size + (if (isProcessing) 1 else 0)
-    LaunchedEffect(rowCount) {
+    LaunchedEffect(rowCount, steps.size) {
         if (rowCount > 0) listState.animateScrollToItem(rowCount - 1)
     }
     // Keep the newest row in view when the viewport changes height (the panel resizing, the keyboard).
@@ -166,7 +179,7 @@ fun ChatTranscript(
             }
         }
         if (isProcessing) {
-            item(key = "thinking") { ThinkingIndicator() }
+            item(key = "thinking") { ThinkingIndicator(steps) }
         }
     }
 }
@@ -206,6 +219,7 @@ private fun ChatBubble(message: ChatMessage) {
  * Proposed changes and what became of them. The confirm button names the act when everything on
  * the card is a deletion, and a batch can be trimmed item by item before approving.
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ProposalCard(
     card: ChatCard,
@@ -218,6 +232,20 @@ private fun ProposalCard(
     val settled = card.status == ChatCardStatus.DECLINED || card.status == ChatCardStatus.WITHDRAWN
     val allDeletes = card.items.all { it.kind == ChatChangeKind.DELETE }
     val busy = card.status == ChatCardStatus.APPLYING || card.status == ChatCardStatus.UNDOING
+    val haptics = LocalHapticFeedback.current
+
+    // Whenever this card changes state after it first appears, scroll it fully into view, so the
+    // result of a tap is never just off-screen. Not on first appearance: that would fight a scroll.
+    val bringIntoView = remember { BringIntoViewRequester() }
+    val outcomes = card.items.map { it.outcome }
+    var seen by remember(card.id) { mutableStateOf(card.status to outcomes) }
+    LaunchedEffect(card.status, outcomes) {
+        if (seen != card.status to outcomes) {
+            seen = card.status to outcomes
+            bringIntoView.bringIntoView()
+        }
+    }
+
     Card(
         colors = CardDefaults.cardColors(
             containerColor = if (pending) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.surfaceVariant,
@@ -225,21 +253,29 @@ private fun ProposalCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 4.dp)
+            .bringIntoViewRequester(bringIntoView)
             .testTag("ai_card"),
     ) {
-        Column(modifier = Modifier.padding(Padding.medium)) {
-            Text(
-                text = composeStringResource(card.status.label()),
-                style = MaterialTheme.typography.labelMedium,
-                color = if (pending) MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.testTag("ai_card_status"),
-            )
+        Column(
+            modifier = Modifier
+                .padding(Padding.medium)
+                .animateContentSize(),
+        ) {
+            StatusLine(card.status, onContainer = pending)
             card.items.forEach { item ->
                 CardItemRow(
                     item = item,
                     faded = settled || item.outcome == ChatItemOutcome.UNDONE || item.id in leftOut || item.outcome == ChatItemOutcome.LEFT_OUT,
                     checked = (item.id !in leftOut).takeIf { pending && card.items.size > 1 },
                     onCheckedChange = { include -> leftOut = if (include) leftOut - item.id else leftOut + item.id },
+                )
+            }
+            if (busy) {
+                LinearProgressIndicator(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = Padding.small)
+                        .testTag("ai_card_busy"),
                 )
             }
             if (pending) {
@@ -249,11 +285,20 @@ private fun ProposalCard(
                         .padding(top = Padding.small),
                     horizontalArrangement = Arrangement.spacedBy(Padding.small, Alignment.End),
                 ) {
-                    OutlinedButton(onClick = onDecline, modifier = Modifier.testTag("ai_card_decline")) {
+                    OutlinedButton(
+                        onClick = {
+                            haptics.performHapticFeedback(HapticFeedbackType.Reject)
+                            onDecline()
+                        },
+                        modifier = Modifier.testTag("ai_card_decline"),
+                    ) {
                         Text(composeStringResource(Res.string.ai_card_decline))
                     }
                     Button(
-                        onClick = { onApprove(leftOut.toSet()) },
+                        onClick = {
+                            haptics.performHapticFeedback(HapticFeedbackType.Confirm)
+                            onApprove(leftOut.toSet())
+                        },
                         enabled = leftOut.size < card.items.size,
                         colors = if (allDeletes) {
                             ButtonDefaults.buttonColors(
@@ -271,12 +316,47 @@ private fun ProposalCard(
             }
             if (card.canUndo && !busy) {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                    TextButton(onClick = onUndo, modifier = Modifier.testTag("ai_card_undo")) {
+                    TextButton(
+                        onClick = {
+                            haptics.performHapticFeedback(HapticFeedbackType.Confirm)
+                            onUndo()
+                        },
+                        modifier = Modifier.testTag("ai_card_undo"),
+                    ) {
                         Text(composeStringResource(Res.string.ai_card_undo))
                     }
                 }
             }
         }
+    }
+}
+
+/** The card's state at a glance: an icon and a colour as well as the words. */
+@Composable
+private fun StatusLine(
+    status: ChatCardStatus,
+    onContainer: Boolean,
+) {
+    val (icon, tint) = when (status) {
+        ChatCardStatus.APPLIED, ChatCardStatus.UNDONE -> Icons.Default.CheckCircle to MaterialTheme.colorScheme.primary
+        ChatCardStatus.PARTLY_APPLIED, ChatCardStatus.FAILED, ChatCardStatus.PARTLY_UNDONE -> Icons.Default.Warning to MaterialTheme.colorScheme.error
+        ChatCardStatus.DECLINED, ChatCardStatus.WITHDRAWN -> Icons.Default.Close to MaterialTheme.colorScheme.outline
+        ChatCardStatus.PENDING, ChatCardStatus.APPLYING, ChatCardStatus.UNDOING -> null to MaterialTheme.colorScheme.onTertiaryContainer
+    }
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.testTag("ai_card_status")) {
+        if (icon != null) {
+            Icon(imageVector = icon, contentDescription = null, tint = tint, modifier = Modifier.size(16.dp).padding(end = 2.dp))
+        }
+        Text(
+            text = composeStringResource(status.label()),
+            style = MaterialTheme.typography.labelLarge,
+            color = when {
+                icon != null -> tint
+                onContainer -> MaterialTheme.colorScheme.onTertiaryContainer
+                else -> MaterialTheme.colorScheme.onSurfaceVariant
+            },
+            modifier = Modifier.padding(start = if (icon != null) 4.dp else 0.dp),
+        )
     }
 }
 
@@ -341,7 +421,7 @@ private fun ChatChangeKind.icon(): ImageVector =
         ChatChangeKind.UPDATE -> Icons.Default.Edit
         ChatChangeKind.RECORD -> Icons.Default.Check
         ChatChangeKind.DELETE -> Icons.Default.Delete
-        ChatChangeKind.MARK -> Icons.Default.Warning
+        ChatChangeKind.MARK -> Icons.Default.Notifications
     }
 
 private fun ChatCardStatus.label(): StringResource =
@@ -358,9 +438,12 @@ private fun ChatCardStatus.label(): StringResource =
         ChatCardStatus.PARTLY_UNDONE -> Res.string.ai_card_status_partly_undone
     }
 
-/** Three dots that take turns, in place of a reply that hasn't come yet. */
+/**
+ * What the assistant has done so far, then three dots that take turns. A reply can take several
+ * seconds, and a step appearing as each lookup or draft happens shows that it's getting somewhere.
+ */
 @Composable
-private fun ThinkingIndicator() {
+private fun ThinkingIndicator(steps: List<String>) {
     val transition = rememberInfiniteTransition(label = "thinking")
     val phase by transition.animateFloat(
         initialValue = 0f,
@@ -369,20 +452,48 @@ private fun ThinkingIndicator() {
         label = "phase",
     )
     val description = composeStringResource(Res.string.content_desc_ai_thinking)
-    Row(
+    Column(
         modifier = Modifier
             .padding(Padding.small)
-            .semantics { contentDescription = description },
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+            .animateContentSize()
+            .testTag("ai_thinking"),
     ) {
-        repeat(3) { index ->
-            val lit = phase.toInt() % 3 == index
-            Box(
-                modifier = Modifier
-                    .size(8.dp)
-                    .alpha(if (lit) 1f else 0.35f)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primary),
+        steps.forEach { step ->
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(bottom = 2.dp)) {
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.outline,
+                    modifier = Modifier.size(14.dp),
+                )
+                Text(
+                    text = step,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.outline,
+                    modifier = Modifier.padding(start = 4.dp).testTag("ai_step"),
+                )
+            }
+        }
+        Row(
+            modifier = Modifier.semantics { contentDescription = description },
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            repeat(3) { index ->
+                val lit = phase.toInt() % 3 == index
+                Box(
+                    modifier = Modifier
+                        .size(8.dp)
+                        .alpha(if (lit) 1f else 0.35f)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primary),
+                )
+            }
+            Text(
+                text = composeStringResource(Res.string.ai_thinking),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.outline,
+                modifier = Modifier.padding(start = 4.dp),
             )
         }
     }

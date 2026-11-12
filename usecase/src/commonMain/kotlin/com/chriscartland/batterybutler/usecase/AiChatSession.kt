@@ -47,6 +47,13 @@ class AiChatSession(
     private val _cards = MutableStateFlow<Map<String, AiCard>>(emptyMap())
     val cards: StateFlow<Map<String, AiCard>> = _cards.asStateFlow()
 
+    /**
+     * What the assistant has done so far in the reply it's working on: lookups and drafted changes,
+     * in order. Shown while the person waits, and empty between replies.
+     */
+    private val _steps = MutableStateFlow<List<String>>(emptyList())
+    val steps: StateFlow<List<String>> = _steps.asStateFlow()
+
     private val mutex = Mutex()
     private val proposals = mutableMapOf<String, List<Proposal>>()
     private val undos = mutableMapOf<String, suspend () -> Result<Unit, DataError>>()
@@ -82,6 +89,7 @@ class AiChatSession(
             val tools = ToolHandler { name, args ->
                 if (name in AiToolNames.READ_ONLY) read(name, args, turn) else propose(name, args, turn)
             }
+            _steps.value = emptyList()
             try {
                 aiEngine.generateResponse(prompt, tools) { buildAiContextUseCase() }.collect { message ->
                     emit(if (message.isPartial) message else finish(message, turn, sentNotes))
@@ -93,6 +101,8 @@ class AiChatSession(
                 Logger.e(TAG, e) { "chat turn failed" }
                 val failure = AiMessage(id = "error_${uuid4()}", role = AiRole.MODEL, text = FAILED, isError = true)
                 emit(finish(failure, turn, sentNotes))
+            } finally {
+                _steps.value = emptyList()
             }
         }
 
@@ -109,7 +119,12 @@ class AiChatSession(
     ): String {
         if (++turn.reads > MAX_READS) return "Error: read limit reached for this message. Answer with what you have."
         val result = reader.run(name, args)
-        result.lookup?.let { if (it !in turn.lookups) turn.lookups += it }
+        result.lookup?.let {
+            if (it !in turn.lookups) {
+                turn.lookups += it
+                _steps.value = _steps.value + it
+            }
+        }
         return result.modelResult
     }
 
@@ -133,6 +148,7 @@ class AiChatSession(
                     args = args,
                     item = AiCardItem(id = itemId, kind = preview.kind, summary = preview.summary, warning = preview.warning),
                 )
+                _steps.value = _steps.value + "Drafted: ${preview.summary}"
                 "Proposed to the user on a card: \"${preview.summary}\". NOT done yet: they will approve or decline it. " +
                     "Propose any other changes this request needs, then stop."
             }

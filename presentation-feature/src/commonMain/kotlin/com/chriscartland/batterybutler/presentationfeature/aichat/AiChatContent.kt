@@ -46,6 +46,7 @@ import com.chriscartland.batterybutler.presentationcore.theme.Padding
 fun AiChatContent(
     messages: List<ChatMessage>,
     isProcessing: Boolean,
+    steps: List<String>,
     onSendMessage: (String) -> Unit,
     onClearChat: () -> Unit,
     onBack: () -> Unit,
@@ -101,6 +102,7 @@ fun AiChatContent(
         ChatTranscript(
             messages = messages,
             isProcessing = isProcessing,
+            steps = steps,
             onSuggestion = onSendMessage,
             onApproveCard = onApproveCard,
             onDeclineCard = onDeclineCard,
@@ -179,6 +181,7 @@ fun AiChatContentPreview() {
                 ),
             ),
             isProcessing = false,
+            steps = emptyList(),
             onSendMessage = {},
             onClearChat = {},
             onBack = {},
@@ -197,6 +200,7 @@ fun AiChatContentEmptyPreview() {
             onRetry = {},
             messages = emptyList(),
             isProcessing = false,
+            steps = emptyList(),
             onSendMessage = {},
             onClearChat = {},
             onBack = {},

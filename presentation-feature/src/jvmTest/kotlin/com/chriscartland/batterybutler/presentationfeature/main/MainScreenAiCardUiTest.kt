@@ -3,7 +3,10 @@ package com.chriscartland.batterybutler.presentationfeature.main
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.runComposeUiTest
 import com.chriscartland.batterybutler.presentationcore.theme.BatteryButlerTheme
@@ -43,6 +46,8 @@ class MainScreenAiCardUiTest {
     private fun panel(
         card: ChatCard,
         calls: MutableList<String>,
+        processing: Boolean = false,
+        steps: List<String> = emptyList(),
     ): @androidx.compose.runtime.Composable () -> Unit =
         {
             BatteryButlerTheme {
@@ -52,7 +57,8 @@ class MainScreenAiCardUiTest {
                         onTabSelected = {},
                         onSettingsClick = {},
                         aiMessages = listOf(message(card)),
-                        isAiProcessing = false,
+                        isAiProcessing = processing,
+                        aiSteps = steps,
                         isAiExpanded = true,
                         onAiExpandedChange = {},
                         onSendAiMessage = {},
@@ -92,5 +98,24 @@ class MainScreenAiCardUiTest {
             setContent(panel(applied, calls))
             onNodeWithTag("ai_card_undo").performClick()
             assertEquals(listOf("undo:card-2"), calls)
+        }
+
+    @Test
+    fun `a card being applied shows progress and no buttons to tap again`() =
+        runComposeUiTest {
+            val calls = mutableListOf<String>()
+            setContent(panel(pending.copy(status = ChatCardStatus.APPLYING), calls))
+            onNodeWithTag("ai_card_busy").assertExists()
+            onAllNodesWithTag("ai_card_approve").assertCountEquals(0)
+            onAllNodesWithTag("ai_card_decline").assertCountEquals(0)
+        }
+
+    @Test
+    fun `the thinking row lists what the assistant has done so far`() =
+        runComposeUiTest {
+            val calls = mutableListOf<String>()
+            setContent(panel(applied, calls, processing = true, steps = listOf("Looked up Hall Alarm", "Drafted: Add Porch Light")))
+            onAllNodesWithTag("ai_step").assertCountEquals(2)
+            onNodeWithText("Drafted: Add Porch Light").assertExists()
         }
 }
