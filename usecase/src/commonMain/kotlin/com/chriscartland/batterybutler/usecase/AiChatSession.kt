@@ -56,8 +56,6 @@ class AiChatSession(
         val itemId: String,
         val name: String,
         val args: Map<String, Any?>,
-        val target: String?,
-        val basis: String?,
         val item: AiCardItem,
     )
 
@@ -133,8 +131,6 @@ class AiChatSession(
                     itemId = itemId,
                     name = name,
                     args = args,
-                    target = preview.target,
-                    basis = preview.basis,
                     item = AiCardItem(id = itemId, kind = preview.kind, summary = preview.summary, warning = preview.warning),
                 )
                 "Proposed to the user on a card: \"${preview.summary}\". NOT done yet: they will approve or decline it. " +
@@ -201,17 +197,19 @@ class AiChatSession(
         val planned = proposals[cardId].orEmpty()
         put(card.copy(status = AiCardStatus.APPLYING))
 
-        // A change earlier in this card may touch a row a later one depends on; that isn't a conflict.
-        val touched = mutableSetOf<String>()
+        // Check everything against the data as it is now, before applying anything: a change
+        // earlier on this card will alter what a later one sees, and that isn't a conflict.
+        val stale = planned.filter { it.itemId !in leftOut }.associate { it.itemId to recheck(it) }
         val results = planned.map { proposal ->
             val item = proposal.item
+            val reason = stale[proposal.itemId]
             when {
                 proposal.itemId in leftOut -> {
                     item.copy(outcome = AiItemOutcome.LEFT_OUT)
                 }
 
-                proposal.target != null && proposal.target !in touched && writer.currentBasis(proposal.name, proposal.args) != proposal.basis -> {
-                    item.copy(outcome = AiItemOutcome.CHANGED_SINCE, reason = CHANGED_SINCE)
+                reason != null -> {
+                    item.copy(outcome = AiItemOutcome.CHANGED_SINCE, reason = reason)
                 }
 
                 else -> {
@@ -220,7 +218,6 @@ class AiChatSession(
                         Logger.w(TAG) { "apply failed: ${proposal.name}: ${outcome.modelResult}" }
                         item.copy(outcome = AiItemOutcome.FAILED, reason = outcome.modelResult.removePrefix("Error: "))
                     } else {
-                        proposal.target?.let { touched += it }
                         outcome.undo?.let { undos[proposal.itemId] = it }
                         item.copy(outcome = AiItemOutcome.APPLIED)
                     }
@@ -243,6 +240,27 @@ class AiChatSession(
             notes += "The user left these out, so they were not done: ${joined(it)}."
         }
     }
+
+    /**
+     * Null if approving would still do exactly what the card says; otherwise why not. The card's
+     * own words are the test, so only a difference the person could see counts. Comparing rows
+     * instead refused changes that a background sync had merely rewritten in an equivalent form.
+     */
+    private suspend fun recheck(proposal: Proposal): String? =
+        when (val now = writer.preview(proposal.name, proposal.args)) {
+            is ToolPreview.Refused -> {
+                now.message.removePrefix("Error: ").removePrefix("Success: ")
+            }
+
+            is ToolPreview.Ready -> {
+                if (now.summary == proposal.item.summary && now.warning == proposal.item.warning) {
+                    null
+                } else {
+                    Logger.w(TAG) { "changed since proposed: '${proposal.item.summary}' is now '${now.summary}'" }
+                    "$CHANGED_SINCE Now it would be: ${now.summary}."
+                }
+            }
+        }
 
     /** The person declined. Nothing happens, and the model is told. */
     suspend fun decline(cardId: String) =
@@ -311,7 +329,7 @@ class AiChatSession(
         const val MAX_READS = 12
         const val MAX_ITEMS = 50
         const val ALREADY_PROPOSED = "That change is already on the card. Don't propose it again."
-        const val CHANGED_SINCE = "It changed after this was proposed, so it was left alone."
+        const val CHANGED_SINCE = "This changed after it was proposed, so it was left alone."
         const val FAILED = "Something went wrong and the assistant couldn't answer. Nothing in your data was changed."
         const val UNUSABLE = "The assistant didn't give a usable answer. Nothing in your data was changed."
         const val NOTHING_CHANGED_LINE = "(No changes were made. Changes only happen from a card you approve.)"
